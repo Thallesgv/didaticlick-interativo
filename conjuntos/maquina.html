@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Máquina das operações · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;color:var(--navy);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lbl{font-size:13px;color:var(--gray);margin:0 0 2px}
+.log{list-style:none;padding:0;margin:6px 0 0}
+.log li{padding:6px 0;border-bottom:1px dashed #D7DEEA;font-size:15px}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:13px;font-weight:600}
+.tag.ok{background:#DCFCE7;color:var(--ok)}.tag.bad{background:#FEE2E2;color:var(--bad)}.tag.info{background:#EEF3FF;color:var(--blue)}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-weight:600}
+.chips button.sel{border-color:var(--orange);background:#FFF3E6}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Conjuntos numéricos</div><h1 id="title">Máquina das operações</h1></header>
+<main>
+
+<div class="card"><p class="muted" id="lead" style="margin:0 0 8px"></p>
+<div class="grid3"><div><p class="lbl">1º número</p><input class="num" id="a" inputmode="text"></div>
+<div><p class="lbl">operação</p><select id="op"><option value="soma">+ adição</option><option value="sub">− subtração</option><option value="mult">× multiplicação</option><option value="div">÷ divisão</option><option value="pot">potência</option><option value="raiz">√ raiz quadrada</option></select></div>
+<div id="bw"><p class="lbl" id="lb">2º número</p><input class="num" id="b" inputmode="text"></div></div>
+<div class="eq" id="prev" style="margin-top:10px"></div>
+<div class="row"><button class="or" id="ok">OK, calcular e registrar</button><button class="alt" id="rnd">Sortear números</button></div>
+<div id="msg"></div></div>
+<div class="card"><h2 id="ph">Placar</h2><div class="grid2"><div class="msg ok" style="margin:0;text-align:center">Ficou no conjunto<div class="big" id="sin">0</div></div><div class="msg bad" style="margin:0;text-align:center">Saiu do conjunto<div class="big" id="sout">0</div></div></div>
+<ul class="log" id="log"></ul><div class="row" style="margin-top:8px"><button class="alt" id="clr">Apagar o registro</button></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0" id="obs"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C',GY='#6B7280',PU='#7A4BB5';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="${o.f||'Poppins,sans-serif'}">${s}</text>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const F=(p,q2=1)=>{if(q2<0){p=-p;q2=-q2;}const g=gcd(p,q2);return [p/g,q2/g];};
+const fs=f=>(f[1]===1?String(f[0]):f[0]+'/'+f[1]).replace(/-/g,'−');
+
+const C=(q.get('c')||'N').toUpperCase();const SYM={N:'ℕ',Z:'ℤ',Q:'ℚ',R:'ℝ',I:'𝕀'};const NOME={N:'naturais',Z:'inteiros',Q:'racionais',R:'reais'};
+const cj=s=>`<span class="cj">${SYM[s]}</span>`;
+$('title').innerHTML=`Máquina das operações em ${cj(C)}`;document.title='Máquina das operações · '+SYM[C]+' · DidatiClick';
+$('lead').innerHTML=`Escolha dois números ${C==='Q'?'racionais (pode usar fração como 3/4 ou decimal como 0,5)':C==='Z'?'inteiros (pode usar negativos, como −7)':'naturais (0, 1, 2, 3, …)'} e uma operação. Toque em <b>OK</b> para calcular e registrar: a máquina diz se o resultado ficou em ${cj(C)} ou saiu dele.`;
+$('ph').innerHTML=`Placar em ${cj(C)}`;
+const OBS={N:'A adição, a multiplicação e a potência sempre ficam em ℕ. A subtração sai de ℕ quando o 1º número é menor; a divisão, quando não é exata; a raiz, quando o número não é quadrado perfeito.',
+ Z:'Em ℤ a subtração sempre fecha. A divisão ainda sai de ℤ quando não é exata (ela cai em ℚ), e a raiz quadrada de negativo não existe nem nos reais.',
+ Q:'Em ℚ as quatro operações fecham (menos a divisão por zero, que não existe). A raiz quadrada é que escapa: √2 não é fração. Só raízes de quadrados perfeitos, como √(9/4) = 3/2, ficam em ℚ.'};
+$('obs').textContent=OBS[C]||OBS.Q;
+const op0=q.get('op');if(op0)$('op').value=op0;
+function parse(s){s=(s||'').trim().replace(/−/g,'-').replace(/\s/g,'');if(!s)return null;
+ let m=s.match(/^(-?\d+)\/(-?\d+)$/);if(m){const d=+m[2];if(d===0)return 'zero';return F(+m[1],d);}
+ m=s.match(/^(-?)(\d*)[,.](\d+)$/);if(m){const den=10**m[3].length;let p=(+(m[2]||0))*den+(+m[3]);if(m[1])p=-p;return F(p,den);}
+ m=s.match(/^-?\d+$/);if(m)return F(+s,1);return null;}
+const inSet=(f,c)=>c==='N'?(f[1]===1&&f[0]>=0):c==='Z'?f[1]===1:true;
+function cls(f){if(f[1]!==1)return 'Q';return f[0]>=0?'N':'Z';}
+const ORD={N:0,Z:1,Q:2,I:3,X:4};
+function isqrt(n){if(n<0)return null;const r=Math.round(Math.sqrt(n));return r*r===n?r:null;}
+function calc(a,b,op){
+ if(op==='soma')return {f:F(a[0]*b[1]+b[0]*a[1],a[1]*b[1]),t:`${fs(a)} + ${fs(b)}`};
+ if(op==='sub')return {f:F(a[0]*b[1]-b[0]*a[1],a[1]*b[1]),t:`${fs(a)} − ${fs(b)}`};
+ if(op==='mult')return {f:F(a[0]*b[0],a[1]*b[1]),t:`${fs(a)} × ${fs(b)}`};
+ if(op==='div'){if(b[0]===0)return {x:'Não existe divisão por zero: nenhum número vezes 0 dá '+fs(a)+'.',t:`${fs(a)} ÷ 0`};return {f:F(a[0]*b[1],a[1]*b[0]),t:`${fs(a)} ÷ ${fs(b)}`};}
+ if(op==='pot'){const t=`(${fs(a)})<sup>${fs(b)}</sup>`;if(b[1]!==1)return {e:'Use um expoente inteiro.'};const n=b[0];if(Math.abs(n)>12)return {e:'Use um expoente entre −12 e 12.'};
+  if(n<0&&C!=='Q')return {e:'Use um expoente natural (0, 1, 2, …). Expoentes negativos aparecem na apostila de racionais.'};
+  if(a[0]===0&&n<=0)return {x:'0 elevado a '+fs(b)+' não está definido.',t};
+  let p=a[0]**Math.abs(n),qq=a[1]**Math.abs(n);if(Math.abs(p)>1e12||qq>1e12)return {e:'Número grande demais. Tente valores menores.'};return {f:n>=0?F(p,qq):F(qq,p),t};}
+ if(op==='raiz'){const t=`√(${fs(a)})`;if(a[0]<0)return {x:'Não existe raiz quadrada de número negativo nos reais: todo número ao quadrado dá positivo ou zero.',t,cl:'X'};
+  const r1=isqrt(a[0]),r2=isqrt(a[1]);if(r1!==null&&r2!==null)return {f:F(r1,r2),t};
+  return {irr:Math.sqrt(a[0]/a[1]),t};}}
+let log=[];
+function prev(){const op=$('op').value;$('bw').style.visibility=op==='raiz'?'hidden':'visible';$('lb').textContent=op==='pot'?'expoente':'2º número';}
+$('op').onchange=()=>{prev();$('msg').innerHTML='';};
+function draw(){const i=log.filter(x=>x.ok).length;$('sin').textContent=i;$('sout').textContent=log.length-i;
+ $('log').innerHTML=log.slice().reverse().map(x=>`<li>${x.t} = <b>${x.r}</b> &nbsp;<span class="tag ${x.ok?'ok':'bad'}">${x.ok?'ficou em '+SYM[C]:x.w}</span></li>`).join('');}
+$('ok').onclick=()=>{const op=$('op').value;const a=parse($('a').value),b=op==='raiz'?[0,1]:parse($('b').value);
+ if(a==='zero'||b==='zero'){$('msg').innerHTML='<div class="msg bad">Uma fração não pode ter denominador zero.</div>';return;}
+ if(!a||!b){$('msg').innerHTML='<div class="msg bad">Digite os números. Exemplos: 12, −7, 3/4, 0,5.</div>';return;}
+ for(const [v,nm] of [[a,'1º número']].concat(op==='raiz'||op==='pot'?[]:[[b,'2º número']])){if(!inSet(v,C)){$('msg').innerHTML=`<div class="msg bad">${fs(v)} não pertence a ${SYM[C]}. Nesta máquina, use só números ${NOME[C]}.</div>`;return;}}
+ if(op==='pot'&&!inSet(a,C)){$('msg').innerHTML=`<div class="msg bad">A base precisa estar em ${SYM[C]}.</div>`;return;}
+ const r=calc(a,b,op);if(r.e){$('msg').innerHTML=`<div class="msg bad">${r.e}</div>`;return;}
+ let item;
+ if(r.x){item={t:r.t,r:'não existe',ok:false,w:'não existe'};$('msg').innerHTML=`<div class="msg bad">${r.x}</div>`;}
+ else if(r.irr!==undefined){item={t:r.t,r:'≈ '+r.irr.toLocaleString('pt-BR',{maximumFractionDigits:6})+'…',ok:false,w:'saiu: é irracional (está em ℝ)'};
+  $('msg').innerHTML=`<div class="msg bad">${r.t} ≈ ${r.irr.toLocaleString('pt-BR',{maximumFractionDigits:8})}… não é fração de inteiros: é um número <b>irracional</b>. Ele existe em ℝ, mas está fora de ${SYM[C]}.</div>`;}
+ else{const k=cls(r.f);const ok=ORD[k]<=ORD[C];const dec=r.f[1]!==1?' = '+(r.f[0]/r.f[1]).toLocaleString('pt-BR',{maximumFractionDigits:6})+(String(r.f[0]/r.f[1]).length>12?'…':''):'';
+  item={t:r.t,r:fs(r.f),ok,w:'saiu: caiu em '+SYM[k]};
+  $('msg').innerHTML=ok?`<div class="msg ok">${r.t} = ${fs(r.f)}${dec}. O resultado está em ${SYM[C]}.</div>`:`<div class="msg bad">${r.t} = ${fs(r.f)}${dec}. Esse número não está em ${SYM[C]}: ele pertence a ${SYM[k]} (${k==='Z'?'é negativo':'não é inteiro'}).</div>`;}
+ log.push(item);draw();};
+$('clr').onclick=()=>{log=[];draw();$('msg').innerHTML='';};
+const R=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
+$('rnd').onclick=()=>{const op=$('op').value;const lo=C==='N'?0:-12;
+ if(C==='Q'){const fr=()=>{const d=R(1,6),n=R(-9,9);return fs(F(n,d));};$('a').value=op==='raiz'?fs(F(R(1,10)**(R(0,1)?2:1),R(1,4)**2)):fr();$('b').value=op==='pot'?String(R(-3,3)):fr();}
+ else{$('a').value=op==='raiz'?String(R(C==='N'?0:-10,50)):String(R(lo,20)).replace('-','−');$('b').value=op==='pot'?String(R(0,4)):String(R(op==='div'?1:lo,op==='div'?9:20)).replace('-','−');}
+ $('msg').innerHTML='';};
+const defs={soma:['7','5'],sub:['5','12'],mult:['6','4'],div:['13','4'],pot:['2','5'],raiz:['10','']};
+const dz={soma:['−7','3'],sub:['5','12'],mult:['−3','−4'],div:['7','2'],pot:['−2','3'],raiz:['−4','']};
+const dq={soma:['1/2','1/3'],sub:['3/4','5/6'],mult:['2/3','3/4'],div:['7','2'],pot:['2/3','−2'],raiz:['2','']};
+const dd=(C==='Z'?dz:C==='Q'?dq:defs)[$('op').value]||defs.soma;$('a').value=q.get('a')||dd[0];$('b').value=q.get('b')||dd[1];
+prev();draw();
+</script>
+</body>
+</html>

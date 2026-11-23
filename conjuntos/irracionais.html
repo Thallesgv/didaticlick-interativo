@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Racional ou irracional? Dê o seu palpite · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;color:var(--navy);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lbl{font-size:13px;color:var(--gray);margin:0 0 2px}
+.log{list-style:none;padding:0;margin:6px 0 0}
+.log li{padding:6px 0;border-bottom:1px dashed #D7DEEA;font-size:15px}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:13px;font-weight:600}
+.tag.ok{background:#DCFCE7;color:var(--ok)}.tag.bad{background:#FEE2E2;color:var(--bad)}.tag.info{background:#EEF3FF;color:var(--blue)}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-weight:600}
+.chips button.sel{border-color:var(--orange);background:#FFF3E6}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Conjuntos numéricos</div><h1 id="title">Racional ou irracional? Dê o seu palpite</h1></header>
+<main>
+
+<div class="card"><p class="muted" style="margin:0 0 6px">Escolha dois números, uma operação e o seu palpite. Toque em <b>OK</b> para registrar e ver o resultado exato.</p>
+<p class="lbl">1º número</p><div class="chips" id="ca"></div>
+<p class="lbl" style="margin-top:8px">operação</p><div class="chips" id="co"></div>
+<p class="lbl" style="margin-top:8px">2º número</p><div class="chips" id="cb"></div>
+<div class="eq" id="pre" style="margin-top:10px"></div>
+<p class="lbl">o resultado será…</p><div class="chips" id="cp"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok" disabled>OK, registrar o palpite</button></div><div id="msg"></div></div>
+<div class="card"><h2>Seus palpites</h2><p style="margin:0" id="sc"></p><ul class="log" id="log"></ul></div>
+<div class="card"><h2>Repare</h2><p style="margin:0">Irracional com irracional pode dar racional: √2 × √8 = 4 e (1 + √2) + (1 − √2) = 2. Mas racional com irracional (multiplicando por um racional diferente de zero) dá sempre irracional. Por isso o conjunto dos irracionais não é fechado, mas ℝ é.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C',GY='#6B7280',PU='#7A4BB5';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="${o.f||'Poppins,sans-serif'}">${s}</text>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const F=(p,q2=1)=>{if(q2<0){p=-p;q2=-q2;}const g=gcd(p,q2);return [p/g,q2/g];};
+const fs=f=>(f[1]===1?String(f[0]):f[0]+'/'+f[1]).replace(/-/g,'−');
+
+// número = mapa radicando -> fração [p,q]; radicando 1 = parte racional
+const add=(x,y)=>F(x[0]*y[1]+y[0]*x[1],x[1]*y[1]),mul=(x,y)=>F(x[0]*y[0],x[1]*y[1]);
+function sqf(n){let s=1,t=n;for(let k=2;k*k<=t;k++){while(t%(k*k)===0){t/=k*k;s*=k;}}return [s,t];}
+function norm(m){const o={};for(const r in m){if(m[r][0]!==0)o[r]=m[r];}return o;}
+function nadd(a,b,sg=1){const o={...a};for(const r in b){const v=[sg*b[r][0],b[r][1]];o[r]=o[r]?add(o[r],v):v;}return norm(o);}
+function nmul(a,b){let o={};for(const r1 in a)for(const r2 in b){const [s,t]=sqf(+r1*+r2);const v=mul(mul(a[r1],b[r2]),[s,1]);o[t]=o[t]?add(o[t],v):v;}return norm(o);}
+function ninv(b){const ks=Object.keys(b);if(ks.length===1){const r=+ks[0],c=b[ks[0]];return {[r]:F(c[1],c[0]*r)};}
+ const r=ks.find(k=>k!=='1'),a=b['1'],c=b[r];const den=add(mul(a,a),mul(mul(c,c),[-(+r),1]));const inv=F(den[1],den[0]);return norm({1:mul(a,inv),[r]:mul([-c[0],c[1]],inv)});}
+function show(m){const ks=Object.keys(m).sort((x,y)=>x-y);if(!ks.length)return '0';return ks.map((r,i)=>{const c=m[r];let neg=c[0]<0;let a=[Math.abs(c[0]),c[1]];let s;
+ if(r==='1')s=fs(a);else{const co=a[0]===1&&a[1]===1?'':a[1]===1?String(a[0]):'('+fs(a)+')';s=co+'√'+r;}return (i?(neg?' − ':' + '):(neg?'−':''))+s;}).join('');}
+const rac=m=>Object.keys(m).every(r=>r==='1');
+const NUMS=[['√2',{2:[1,1]}],['−√2',{2:[-1,1]}],['√8',{2:[2,1]}],['√3',{3:[1,1]}],['2√3',{3:[2,1]}],['1 + √2',{1:[1,1],2:[1,1]}],['1 − √2',{1:[1,1],2:[-1,1]}],['2',{1:[2,1]}],['1/2',{1:[1,2]}],['√5',{5:[1,1]}]];
+const OPS=[['+','soma'],['−','sub'],['×','mult'],['÷','div']];let A=null,B=null,O=null,G=null,log=[];
+function chips(id,list,set,get){$(id).innerHTML=list.map((x,i)=>`<button data-i="${i}" class="${get()===i?'sel':''}">${x[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{set(+b.dataset.i);render();});}
+function render(){chips('ca',NUMS,i=>A=i,()=>A);chips('co',OPS,i=>O=i,()=>O);chips('cb',NUMS,i=>B=i,()=>B);chips('cp',[['racional'],['irracional']],i=>G=i,()=>G);
+ $('pre').innerHTML=A!==null&&O!==null&&B!==null?`(${NUMS[A][0]}) ${OPS[O][0]} (${NUMS[B][0]}) = ?`:'';$('ok').disabled=!(A!==null&&O!==null&&B!==null&&G!==null);}
+$('ok').onclick=()=>{const a=NUMS[A][1],b=NUMS[B][1],o=OPS[O][1];let r;
+ if(o==='soma')r=nadd(a,b);if(o==='sub')r=nadd(a,b,-1);if(o==='mult')r=nmul(a,b);if(o==='div')r=nmul(a,ninv(b));
+ const isr=rac(r),okk=(G===0)===isr;const t=`(${NUMS[A][0]}) ${OPS[O][0]} (${NUMS[B][0]}) = ${show(r)}`;
+ log.push({t,isr,okk});$('msg').innerHTML=`<div class="msg ${okk?'ok':'bad'}">${okk?'Acertou!':'Não foi desta vez.'} ${t}, que é <b>${isr?'racional':'irracional'}</b>.${o==='div'&&Object.keys(b).length>1?' (Para dividir, multiplicamos pelo conjugado e racionalizamos.)':''}</div>`;
+ const ac=log.filter(x=>x.okk).length;$('sc').textContent=`Registrados: ${log.length} · acertos: ${ac}`;
+ $('log').innerHTML=log.slice().reverse().map(x=>`<li>${x.t} <span class="tag ${x.isr?'info':'bad'}">${x.isr?'racional':'irracional'}</span> ${x.okk?'✓':'✗'}</li>`).join('');G=null;render();};
+$('sc').textContent='Nenhum palpite registrado ainda.';render();
+</script>
+</body>
+</html>
