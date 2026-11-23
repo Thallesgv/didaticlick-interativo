@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polígonos de Arquimedes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;color:var(--navy);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lbl{font-size:13px;color:var(--gray);margin:0 0 2px}
+.log{list-style:none;padding:0;margin:6px 0 0}
+.log li{padding:6px 0;border-bottom:1px dashed #D7DEEA;font-size:15px}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:13px;font-weight:600}
+.tag.ok{background:#DCFCE7;color:var(--ok)}.tag.bad{background:#FEE2E2;color:var(--bad)}.tag.info{background:#EEF3FF;color:var(--blue)}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-weight:600}
+.chips button.sel{border-color:var(--orange);background:#FFF3E6}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Conjuntos numéricos</div><h1 id="title">Polígonos de Arquimedes</h1></header>
+<main>
+
+<div class="card"><p class="muted" style="margin:0 0 6px">Círculo de diâmetro 1. O comprimento da circunferência é exatamente π. O polígono de dentro (azul) tem perímetro menor que π; o de fora (laranja), maior.</p>
+<svg class="fig" id="svg" viewBox="0 0 300 300"></svg><div class="res" id="res" style="text-align:center"></div><div id="msg"></div></div>
+<div class="card"><h2>Número de lados</h2><div class="sl"><b>lados</b><input type="range" id="n" min="3" max="96"><span id="nv"></span></div>
+<div class="row"><button class="alt" data-n="6">6</button><button class="alt" data-n="12">12</button><button class="alt" data-n="24">24</button><button class="alt" data-n="48">48</button><button class="or" data-n="96">96 (Arquimedes)</button></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0">Com mais lados, os dois polígonos grudam no círculo e cercam π cada vez mais de perto. Com 96 lados, Arquimedes (c. 250 a.C.) mostrou que 3,1408 &lt; π &lt; 3,1429. Mas nenhum polígono dá π exato: π é irracional, e seu decimal nunca termina nem se repete.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C',GY='#6B7280',PU='#7A4BB5';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="${o.f||'Poppins,sans-serif'}">${s}</text>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const F=(p,q2=1)=>{if(q2<0){p=-p;q2=-q2;}const g=gcd(p,q2);return [p/g,q2/g];};
+const fs=f=>(f[1]===1?String(f[0]):f[0]+'/'+f[1]).replace(/-/g,'−');
+
+function draw(){const n=+$('n').value;$('nv').textContent=n;const R=110,c=150;let g=`<circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="${NAVY}" stroke-width="2.5"/>`;
+ const pin=[],pout=[],Ro=R/Math.cos(Math.PI/n);for(let k=0;k<n;k++){const t=2*Math.PI*k/n-Math.PI/2;pin.push(`${c+R*Math.cos(t)},${c+R*Math.sin(t)}`);const t2=t+Math.PI/n;pout.push(`${c+Ro*Math.cos(t2)},${c+Ro*Math.sin(t2)}`);}
+ g=`<polygon points="${pout.join(' ')}" fill="${OR}" fill-opacity=".12" stroke="${OR}" stroke-width="2"/>`+g+`<polygon points="${pin.join(' ')}" fill="${BL}" fill-opacity=".12" stroke="${BL}" stroke-width="2"/>`;
+ $('svg').innerHTML=g;const a=n*Math.sin(Math.PI/n),b=n*Math.tan(Math.PI/n),fx=x=>x.toLocaleString('pt-BR',{minimumFractionDigits:5,maximumFractionDigits:5});
+ $('res').innerHTML=`<span style="color:${BL}">${fx(a)}</span> &lt; π &lt; <span style="color:${OR}">${fx(b)}</span>`;
+ $('msg').innerHTML=`<div class="msg info">Perímetro de dentro: ${n} lados de ${fx(Math.sin(Math.PI/n))}. Perímetro de fora: ${n} lados de ${fx(Math.tan(Math.PI/n))}. A diferença entre eles é ${(b-a).toLocaleString('pt-BR',{maximumFractionDigits:5})}.</div>`;}
+$('n').value=P('n',6,3,96);$('n').oninput=draw;document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{$('n').value=b.dataset.n;draw();});draw();
+</script>
+</body>
+</html>
