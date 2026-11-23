@@ -57,9 +57,17 @@ window.RES=Object.assign(window.RES||{},{
 });
 // Roteiros das simulações PhET (abertas pela página sim.html?id=...)
 window.SIMS={
-"phet-forcas-movimento":{title:"Forças e Movimento: Noções Básicas",tema:"Movimento · Módulo 4",
+"movimento-phet-forcas":{title:"Forças e Movimento: Noções Básicas",tema:"Movimento · Módulo 4",
 url:"https://phet.colorado.edu/sims/html/forces-and-motion-basics/latest/forces-and-motion-basics_pt_BR.html",
 intro:"Nesta simulação você empurra um objeto e vê a velocidade dele mudar. Vamos usá-la para ver a aceleração acontecendo.",
 passos:["Abra a tela <b>Aceleração</b>.","Marque <b>Velocidade</b> e <b>Valores</b> para ver o velocímetro com números.","Coloque o <b>atrito em zero</b> (ponteiro todo para a esquerda).","Aplique uma força constante de 100 N e observe o velocímetro: quanto a velocidade aumenta a cada segundo?","Agora dobre a força para 200 N. O que acontece com o ritmo em que a velocidade aumenta?","Por fim, aplique a força para o lado contrário enquanto o objeto anda. O movimento fica acelerado ou retardado?"],
 pergunta:"Com força constante e sem atrito, a velocidade aumenta sempre a mesma quantidade a cada segundo. Isso é um movimento uniformemente variado (MUV): a aceleração é constante."}
 };
+// Página própria da apostila (QR da capa): só os materiais desta apostila
+window.APOSTILAS=Object.assign(window.APOSTILAS||{},{
+"movimento":{title:"Física 9º ano · Movimento",mods:[
+{t:"Módulo 1 · Referencial, posição e deslocamento",l:[["Simulador: depende do referencial","fisica/referencial.html"],["Quiz do Módulo 1","quiz.html?id=movimento-m1"]]},
+{t:"Módulo 2 · Velocidade média",l:[["Resolução: exercício 5 (desafio)","resolucao.html?id=movimento-q2-5"],["Quiz do Módulo 2","quiz.html?id=movimento-m2"]]},
+{t:"Módulo 3 · Movimento uniforme",l:[["Simulador: carrinho e gráficos (MU)","fisica/movimento.html?modo=mu"],["Resolução: exercício 5","resolucao.html?id=movimento-q3-5"],["Quiz do Módulo 3","quiz.html?id=movimento-m3"]]},
+{t:"Módulo 4 · Movimento uniformemente variado",l:[["PhET: Forças e Movimento (com roteiro)","sim.html?id=movimento-phet-forcas"],["Simulador: carrinho e gráficos (MUV)","fisica/movimento.html?modo=muv"],["Resolução: exercício 3","resolucao.html?id=movimento-q4-3"],["Resolução: exercício 4","resolucao.html?id=movimento-q4-4"],["Quiz do Módulo 4","quiz.html?id=movimento-m4"]]}]}
+});

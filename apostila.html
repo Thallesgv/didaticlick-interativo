@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apostila interativa · DidatiClick</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/fisica.js"></script>
+<script src="data/astronomia.js"></script>
+<style>.card a{display:block;padding:9px 0;border-bottom:1px solid #EEF1F6;color:var(--navy);text-decoration:none;font-weight:500}.card a:last-child{border-bottom:0}.card a::after{content:" ›";color:var(--orange)}</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Apostila interativa</div><h1 id="title">Apostila</h1></header>
+<main>
+<p class="muted">Todos os materiais interativos desta apostila, organizados por módulo. Abrem direto no celular, sem cadastro.</p>
+<div id="mods"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const id=new URLSearchParams(location.search).get('id');const A=(window.APOSTILAS||{})[id];const $=x=>document.getElementById(x);
+if(!A){$('title').textContent='Apostila não encontrada';}
+else{document.title=A.title+' · DidatiClick';$('title').textContent=A.title;
+ $('mods').innerHTML=A.mods.map(m=>`<div class="card"><h2>${m.t}</h2>${m.l.map(([t,u])=>`<a href="${u}">${t}</a>`).join('')}</div>`).join('');}
+</script>
+</body>
+</html>
