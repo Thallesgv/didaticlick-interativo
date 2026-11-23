@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carrinho e gráficos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:#fff}
+.graphs{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:700px){.graphs{grid-template-columns:1fr 1fr}}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tabs button{flex:1}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}
+input[type=range]{width:100%}
+.read{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;margin-top:8px}
+.read div{background:var(--bg);border-radius:10px;padding:6px;font-size:13px;color:var(--gray)}
+.read b{display:block;font-size:18px;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física 9º ano</div><h1>Carrinho e gráficos do movimento</h1></header>
+<main>
+<div class="tabs"><button id="tMU" class="alt">Movimento uniforme</button><button id="tMUV" class="alt">Movimento variado</button></div>
+<div class="card">
+ <div class="eq" id="eq" style="font-size:20px"></div>
+ <canvas id="track" width="600" height="130"></canvas>
+ <div class="read"><div>tempo<b id="rt"></b></div><div>posição<b id="rs"></b></div><div>velocidade<b id="rv"></b></div></div>
+ <div class="row" style="margin-top:10px"><button id="play" class="or">▶ Iniciar</button><button id="reset" class="alt">↺ Recomeçar</button></div>
+ <p class="muted" style="margin:8px 0 0">As marcas laranja no trilho mostram onde o carrinho estava a cada 1 segundo.</p>
+</div>
+<div class="card">
+ <h2>Ajuste o movimento</h2>
+ <label>Posição inicial s₀: <b id="ls0"></b><input type="range" id="s0" min="-50" max="50" step="10" value="0"></label>
+ <label>Velocidade inicial v₀: <b id="lv0"></b><input type="range" id="v0" min="-10" max="10" step="1" value="5"></label>
+ <label id="boxA">Aceleração a: <b id="la"></b><input type="range" id="a" min="-3" max="3" step="0.5" value="2"></label>
+</div>
+<div class="graphs">
+ <div class="card"><h2>Gráfico s × t</h2><canvas id="gs" width="420" height="300"></canvas><p class="muted" id="ns" style="margin:6px 0 0"></p></div>
+ <div class="card"><h2>Gráfico v × t</h2><canvas id="gv" width="420" height="300"></canvas><p class="muted" id="nv" style="margin:6px 0 0"></p></div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol id="think" style="padding-left:20px;margin:0"></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const $=x=>document.getElementById(x);
+const T=10,SMIN=-100,SMAX=200,VMAX=40;
+let mode=new URLSearchParams(location.search).get('modo')==='muv'?'muv':'mu';
+let s0=0,v0=5,a=0,t=0,run=false,last=0,tEnd=T;
+const fmt=(x,d=1)=>{const r=Math.round(x*10**d)/10**d;return (Object.is(r,-0)?0:r).toLocaleString('pt-BR')};
+const sAt=tt=>s0+v0*tt+a*tt*tt/2, vAt=tt=>v0+a*tt;
+function calcEnd(){tEnd=T;for(let tt=0;tt<=T;tt+=0.01){const s=sAt(tt);if(s<SMIN||s>SMAX){tEnd=Math.max(0,tt-0.01);break;}}}
+function sgn(x,unit){return (x<0?'− ':'+ ')+fmt(Math.abs(x))+unit}
+function eqText(){
+ if(mode==='mu')return 's = '+fmt(s0)+' '+sgn(v0,'·t').replace('+ ','+ ')+'  (SI)';
+ return 's = '+fmt(s0)+' '+sgn(v0,'·t')+' '+sgn(a/2,'·t²')+'<br>v = '+fmt(v0)+' '+sgn(a,'·t');}
+function setMode(m){mode=m;$('tMU').classList.toggle('on',m==='mu');$('tMUV').classList.toggle('on',m==='muv');
+ $('boxA').hidden=m==='mu';a=m==='mu'?0:+$('a').value;
+ $('think').innerHTML=(m==='mu'?[
+ 'Com v₀ = 5 m/s, as marcas no trilho ficam igualmente espaçadas? Por quê?',
+ 'Deixe v₀ negativa. Para que lado o carrinho anda? Como fica a reta no gráfico s × t?',
+ 'Compare v₀ = 2 m/s e v₀ = 8 m/s: qual reta fica mais inclinada no gráfico s × t?',
+ 'No gráfico v × t, calcule a área laranja e compare com o deslocamento mostrado.']:[
+ 'Com a = 2 m/s², as marcas no trilho ficam cada vez mais afastadas. Por quê?',
+ 'Escolha v₀ = 8 m/s e a = −2 m/s². Em que instante o carrinho para? O que acontece depois?',
+ 'O gráfico s × t agora é uma curva (parábola). E o gráfico v × t, que forma tem?',
+ 'No gráfico v × t, a inclinação da reta é a aceleração. Confira mudando o valor de a.']).map(x=>'<li>'+x+'</li>').join('');
+ reset();}
+function reset(){run=false;t=0;$('play').textContent='▶ Iniciar';
+ s0=+$('s0').value;v0=+$('v0').value;if(mode==='muv')a=+$('a').value;
+ $('ls0').textContent=fmt(s0)+' m';$('lv0').textContent=fmt(v0)+' m/s';$('la').textContent=fmt(a)+' m/s²';
+ $('eq').innerHTML=eqText();calcEnd();draw();}
+function trackX(s){return 30+(s-SMIN)/(SMAX-SMIN)*540}
+function drawTrack(){const c=$('track').getContext('2d');c.clearRect(0,0,600,130);
+ c.fillStyle="#F5F7FB";c.fillRect(0,0,600,130);c.fillStyle="#0E2354";c.fillRect(20,96,560,4);
+ c.font='12px Poppins,sans-serif';c.textAlign='center';
+ for(let s=SMIN;s<=SMAX;s+=50){const x=trackX(s);c.fillStyle=s===0?'#0E2354':'#9AA7BC';c.fillRect(x-1,96,2,s===0?14:9);c.fillStyle='#6B7280';c.fillText(s+' m',x,124);}
+ let lx=-1e9;for(let k=0;k<=Math.floor(t+1e-9);k++){if(k>tEnd)break;const x=trackX(sAt(k));c.fillStyle='#F7821F';c.beginPath();c.arc(x,88,4,0,7);c.fill();if(Math.abs(x-lx)>=24){c.fillStyle='#B45309';c.font='10px Poppins,sans-serif';c.fillText(k+'s',x,78);lx=x;}}
+ const x=trackX(sAt(t)),dir=vAt(t)<0?-1:1;
+ c.fillStyle='#2457D6';c.beginPath();c.roundRect(x-26,52,52,30,8);c.fill();
+ c.fillStyle='#0E2354';[x-14,x+14].forEach(w=>{c.beginPath();c.arc(w,86,7,0,7);c.fill();});
+ if(Math.abs(vAt(t))>1e-6){c.strokeStyle='#F7821F';c.lineWidth=3;c.beginPath();c.moveTo(x,40);c.lineTo(x+dir*30,40);c.stroke();c.beginPath();c.moveTo(x+dir*30,40);c.lineTo(x+dir*22,34);c.lineTo(x+dir*22,46);c.closePath();c.fillStyle='#F7821F';c.fill();}}
+function axes(c,ymin,ymax,ylab,step){const L=50,R=405,Tp=15,B=265;c.clearRect(0,0,420,300);
+ const X=tt=>L+tt/T*(R-L),Y=y=>B-(y-ymin)/(ymax-ymin)*(B-Tp);
+ c.strokeStyle='#E5E9F2';c.lineWidth=1;c.font='11px Poppins,sans-serif';c.fillStyle='#6B7280';
+ for(let tt=0;tt<=T;tt+=2){c.beginPath();c.moveTo(X(tt),Tp);c.lineTo(X(tt),B);c.stroke();c.textAlign='center';c.fillText(tt,X(tt),B+15);}
+ for(let y=ymin;y<=ymax;y+=step){c.beginPath();c.moveTo(L,Y(y));c.lineTo(R,Y(y));c.stroke();c.textAlign='right';c.fillText(y,L-5,Y(y)+4);}
+ c.strokeStyle='#0E2354';c.lineWidth=1.5;c.beginPath();c.moveTo(L,Y(0));c.lineTo(R,Y(0));c.moveTo(L,Tp);c.lineTo(L,B);c.stroke();
+ c.textAlign='left';c.fillStyle='#0E2354';c.fillText(ylab,L+4,Tp+10);c.textAlign='right';c.fillText('t (s)',R,B-6);return{X,Y};}
+function drawGraphs(){const tt=Math.min(t,tEnd);
+ let c=$('gs').getContext('2d');let {X,Y}=axes(c,SMIN,SMAX,'s (m)',50);
+ c.strokeStyle='#2457D6';c.lineWidth=3;c.beginPath();for(let u=0;u<=tt+1e-9;u+=0.05){const p=[X(u),Y(sAt(u))];u?c.lineTo(...p):c.moveTo(...p);}c.stroke();
+ c.fillStyle='#F7821F';c.beginPath();c.arc(X(tt),Y(sAt(tt)),5,0,7);c.fill();
+ c=$('gv').getContext('2d');({X,Y}=axes(c,-VMAX,VMAX,'v (m/s)',10));
+ c.fillStyle='rgba(247,130,31,.28)';c.beginPath();c.moveTo(X(0),Y(0));for(let u=0;u<=tt+1e-9;u+=0.05)c.lineTo(X(u),Y(vAt(u)));c.lineTo(X(tt),Y(vAt(tt)));c.lineTo(X(tt),Y(0));c.closePath();c.fill();
+ c.strokeStyle='#2457D6';c.lineWidth=3;c.beginPath();for(let u=0;u<=tt+1e-9;u+=0.05){const p=[X(u),Y(vAt(u))];u?c.lineTo(...p):c.moveTo(...p);}c.stroke();
+ c.fillStyle='#F7821F';c.beginPath();c.arc(X(tt),Y(vAt(tt)),5,0,7);c.fill();
+ const ds=sAt(tt)-s0;
+ $('ns').textContent=mode==='mu'?'No MU, o gráfico s × t é uma reta. A inclinação da reta é a velocidade.':'No MUV, o gráfico s × t é uma parábola.';
+ $('nv').innerHTML='Área laranja (com sinal) = deslocamento: Δs = <b>'+fmt(ds)+' m</b>'+(mode==='muv'?'. A inclinação da reta é a aceleração.':'.');}
+function draw(){const tt=Math.min(t,tEnd);$('rt').textContent=fmt(tt)+' s';$('rs').textContent=fmt(sAt(tt))+' m';$('rv').textContent=fmt(vAt(tt))+' m/s';drawTrack();drawGraphs();}
+function loop(ts){if(!run)return;t+=Math.min(.05,(ts-last)/1000);last=ts;
+ if(t>=tEnd){t=tEnd;run=false;$('play').textContent='▶ Iniciar';draw();return;}draw();requestAnimationFrame(loop);}
+$('play').onclick=()=>{if(run){run=false;$('play').textContent='▶ Continuar';return;}if(t>=tEnd)t=0;run=true;$('play').textContent='⏸ Pausar';last=performance.now();requestAnimationFrame(loop);};
+$('reset').onclick=reset;['s0','v0','a'].forEach(k=>$(k).oninput=reset);
+$('tMU').onclick=()=>setMode('mu');$('tMUV').onclick=()=>setMode('muv');
+if(mode==='mu'){$('v0').value=5;}else{$('v0').value=0;$('a').value=2;}
+setMode(mode);if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body>
+</html>

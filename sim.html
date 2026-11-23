@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulação · DidatiClick</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/fisica.js"></script>
+<style>
+ol.passos{padding-left:20px;margin:6px 0}
+ol.passos li{margin:6px 0}
+a.big{display:block;text-align:center;text-decoration:none;background:var(--orange);color:#fff;font-weight:600;border-radius:12px;padding:14px;font-size:17px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Simulação interativa</div><h1 id="title">Simulação</h1></header>
+<main>
+<p class="muted" id="tema"></p>
+<div class="card"><h2>O que vamos fazer</h2><p id="intro" style="margin:0"></p></div>
+<div class="card"><h2>Roteiro</h2><ol class="passos" id="passos"></ol></div>
+<p><a class="big" id="go" target="_blank" rel="noopener">Abrir a simulação ▶</a></p>
+<p class="muted">A simulação é do PhET (Universidade do Colorado), gratuita e sem cadastro. Ela abre numa nova aba. Volte a esta aba para seguir o roteiro.</p>
+<div class="card"><h2>Depois de explorar</h2><div class="row"><button id="ver" class="alt">Ver a conclusão</button></div><div id="concl"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const id=new URLSearchParams(location.search).get('id');const S=(window.SIMS||{})[id];const $=x=>document.getElementById(x);
+if(!S){$('title').textContent='Simulação não encontrada';$('go').hidden=true;}
+else{document.title=S.title+' · DidatiClick';$('title').textContent=S.title;$('tema').textContent=S.tema;$('intro').innerHTML=S.intro;
+ $('passos').innerHTML=S.passos.map(p=>'<li>'+p+'</li>').join('');$('go').href=S.url;
+ $('ver').onclick=()=>{$('concl').innerHTML='<div class="msg ok">'+S.pergunta+'</div>';$('ver').hidden=true;};}
+</script>
+</body>
+</html>

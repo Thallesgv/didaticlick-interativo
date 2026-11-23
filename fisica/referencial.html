@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Depende do referencial · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;background:#EAF2FF;touch-action:manipulation}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tabs button{flex:1}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física 9º ano</div><h1>Depende do referencial</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Uma passageira solta uma bola dentro de um trem em movimento. Escolha de onde você quer olhar a cena:</p>
+<div class="tabs"><button id="fChao" class="alt">Do chão (plataforma)</button><button id="fTrem" class="alt">De dentro do trem</button></div>
+<canvas id="cv" width="800" height="300"></canvas>
+<div class="row" style="margin-top:10px"><button id="drop" class="or">Soltar a bola</button><button id="clear" class="alt">Apagar rastros</button></div>
+<p style="margin:12px 0 0"><label>Velocidade do trem: <b id="vLab"></b><br><input type="range" id="v" min="0" max="72" step="18" value="54" style="width:100%"></label></p>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Solte a bola olhando do chão e depois de dentro do trem. A trajetória é a mesma?</li>
+<li>Coloque a velocidade do trem em 0 km/h. O que muda?</li>
+<li>Olhando de dentro do trem, a passageira está parada ou em movimento? E a pessoa na plataforma?</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const $=x=>document.getElementById(x);
+let frame='chao',vk=54,t=0,running=false,last=0,trails=[],cur=null,tDrop=0.35;
+const G=60,HAND=150,FLOOR=228,TR0=40,TRS=280,OFF=135,OBS=640; // px
+function vpx(){return vk*2.5}
+function trainX(tt){return TR0+vpx()*tt}
+function setFrame(f){frame=f;$('fChao').classList.toggle('on',f==='chao');$('fTrem').classList.toggle('on',f==='trem');info();draw();}
+function info(){
+ const m=frame==='chao'
+ ?'Referencial: o chão. O trem anda para a direita. A bola cai e, ao mesmo tempo, acompanha o trem: a trajetória é uma <b>curva</b> (parábola). A passageira está em <b>movimento</b>; a pessoa na plataforma, em <b>repouso</b>.'
+ :'Referencial: o trem. Para a passageira, o trem está parado e é a plataforma que "anda" para trás. A bola cai em <b>linha reta</b>, bem abaixo da mão. A passageira está em <b>repouso</b>; a pessoa na plataforma, em <b>movimento</b>.';
+ $('msg').innerHTML=(vk===0?'Com o trem parado, os dois referenciais veem a mesma coisa: a bola cai em linha reta. ':'')+m;}
+function camX(){return frame==='chao'?0:trainX(t)-TRS} // world x shown at screen 0
+function ballAt(tt){ // world coords of ball
+ const xt=trainX(tt);
+ if(!cur||tt<tDrop)return {x:xt+OFF,y:HAND};
+ const d=tt-tDrop,y=Math.min(FLOOR,HAND+G*d*d/2);
+ return {x:trainX(Math.min(tt,cur.tLand))+OFF+(tt>cur.tLand?vpx()*(tt-cur.tLand):0),y};}
+function person(x,y,col){ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y-62,9,0,7);ctx.fill();
+ ctx.beginPath();ctx.moveTo(x,y-52);ctx.lineTo(x,y-22);ctx.moveTo(x,y-22);ctx.lineTo(x-9,y);ctx.moveTo(x,y-22);ctx.lineTo(x+9,y);ctx.moveTo(x,y-44);ctx.lineTo(x+14,y-36);ctx.stroke();}
+function draw(){
+ const W=800,H=300,c=camX();ctx.clearRect(0,0,W,H);
+ // sky / ground
+ ctx.fillStyle='#EAF2FF';ctx.fillRect(0,0,W,H);ctx.fillStyle='#C9D3E3';ctx.fillRect(0,250,W,50);
+ ctx.fillStyle='#8C99AE';ctx.fillRect(0,246,W,4);
+ // posts every 100 px world
+ for(let k=Math.floor((c-50)/100);k<=Math.floor((c+W+50)/100);k++){const x=k*100-c;ctx.fillStyle='#9AA7BC';ctx.fillRect(x-3,170,6,76);ctx.fillStyle='#F7821F';ctx.fillRect(x-8,164,16,8);}
+ // observer on platform
+ person(OBS-c,246,'#0E2354');
+ // train
+ const xt=trainX(t)-c;
+ ctx.fillStyle='#2457D6';ctx.beginPath();ctx.roundRect(xt,118,250,118,14);ctx.fill();
+ ctx.fillStyle='#DCE8FF';ctx.fillRect(xt+14,132,222,96);
+ ctx.fillStyle='#0E2354';[xt+45,xt+205].forEach(x=>{ctx.beginPath();ctx.arc(x,240,10,0,7);ctx.fill();});
+ // passenger inside (hand at OFF)
+ person(xt+OFF-16,FLOOR,'#B45309');
+ // trails
+ const draws=trails.concat(cur?[cur]:[]);
+ draws.forEach((tr,i)=>{ctx.strokeStyle=tr===cur?'#F7821F':'rgba(247,130,31,.35)';ctx.lineWidth=3;ctx.setLineDash([6,5]);ctx.beginPath();
+  tr.pts.forEach((p,j)=>{const sx=frame==='chao'?p.xw-c:p.xw-p.xt+TRS;j?ctx.lineTo(sx,p.y):ctx.moveTo(sx,p.y);});ctx.stroke();ctx.setLineDash([]);});
+ // ball
+ const b=ballAt(t);ctx.fillStyle='#F7821F';ctx.beginPath();ctx.arc(b.x-c,b.y-6,8,0,7);ctx.fill();
+ ctx.fillStyle='#0E2354';ctx.font='600 15px Poppins,sans-serif';
+ ctx.fillText(frame==='chao'?'Você está parado na plataforma':'Você está sentado no trem',12,24);
+ ctx.font='13px Poppins,sans-serif';ctx.fillText('t = '+t.toFixed(1)+' s',12,44);}
+function step(ts){if(!running)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;t+=dt;
+ if(cur&&t>=tDrop&&t<=cur.tLand+0.03){const b=ballAt(t);cur.pts.push({xw:b.x,y:b.y-6,xt:trainX(t)});}
+ draw();
+ if(cur&&t>cur.tLand+0.6){running=false;trails.push(cur);cur=null;$('drop').disabled=false;return;}
+ requestAnimationFrame(step);}
+$('drop').onclick=()=>{t=0;cur={pts:[],tLand:tDrop+Math.sqrt(2*(FLOOR-HAND)/G)};$('drop').disabled=true;running=true;last=performance.now();requestAnimationFrame(step);};
+$('clear').onclick=()=>{trails=[];draw();};
+$('v').oninput=e=>{vk=+e.target.value;$('vLab').textContent=vk+' km/h';trails=[];info();draw();};
+$('fChao').onclick=()=>setFrame('chao');$('fTrem').onclick=()=>setFrame('trem');
+$('vLab').textContent=vk+' km/h';setFrame('chao');
+if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body>
+</html>
