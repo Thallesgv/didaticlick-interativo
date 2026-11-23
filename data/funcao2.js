@@ -19,6 +19,8 @@ Object.assign(window.QUIZ,{
 {q:"Na forma canônica, x² + 8x + 10 é:",o:["(x + 4)² − 6","(x + 4)² + 10","(x + 8)² − 54","(x − 4)² − 6"],a:0,e:"x² + 8x = (x + 4)² − 16. Então x² + 8x + 10 = (x + 4)² − 6."},
 {q:"Qual é o d (primeira coordenada do vértice) de f(x) = 2x² − 12x + 1?",o:["−3","6","12","3"],a:3,e:"d = −b/(2a) = 12/4 = 3."},
 {q:"Qual é o vértice de f(x) = x² − 6x + 8?",o:["(3, −1)","(−3, 8)","(3, 1)","(6, 8)"],a:0,e:"d = 6/2 = 3 e e = f(3) = 9 − 18 + 8 = −1."},
+{q:"Em f(x) = x² − 4x + 7, em que ponto o gráfico corta o eixo y?",o:["(0, −4)","(0, 7)","(7, 0)","(0, 1)"],a:1,e:"O c mostra onde a parábola corta o eixo y: f(0) = c = 7. O ponto é (0, 7)."},
+{q:"Em f(x) = 2x² + 5x − 3, ao passar pelo eixo y (da esquerda para a direita), a parábola está:",o:["subindo","descendo","no vértice","não corta o eixo y"],a:0,e:"O b mostra como ela corta o eixo y: b = 5 > 0, então passa subindo."},
 {q:"Se f(x) = a(x − d)² + e tem a = 1 e d = 5, quanto vale b na forma geral?",o:["5","10","−10","−5"],a:2,e:"b = −2ad = −2 · 1 · 5 = −10."}]},
 "funcao2-m4":{title:"Função do 2º grau · Módulo 4: Máximos e mínimos",qs:[
 {q:"A altura de uma bola é h(t) = −5(t − 1)² + 5, em metros. Qual é a altura máxima?",o:["1 m","5 m","10 m","−5 m"],a:1,e:"a < 0, então o vértice é máximo: e = 5 m, no instante t = d = 1 s."},
@@ -47,7 +49,7 @@ Object.assign(window.RES,{
 ["Voltamos em a + e = 3.","e = 2"],
 ["A lei é:","f(x) = (x − 3)² + 2"],
 ["Conferindo: f(1) = 4 + 2 = 6 e f(2) = 1 + 2 = 3. Confere! E repare: do vértice (3, 2), 1 para a direita, sobe 1 = a.",""]],ans:"Resposta: f(x) = (x − 3)² + 2"},
-"funcao2-q3-11":{title:"Função do 2º grau · Módulo 3 · Exercício 11 (desafio)",enun:"Para que valor de k o vértice da parábola f(x) = x² − 6x + k fica sobre o eixo x?",steps:[
+"funcao2-q3-13":{title:"Função do 2º grau · Módulo 3 · Exercício 13 (desafio)",enun:"Para que valor de k o vértice da parábola f(x) = x² − 6x + k fica sobre o eixo x?",steps:[
 ["Completamos o quadrado: x² − 6x = (x − 3)² − 9.","f(x) = (x − 3)² − 9 + k"],
 ["Na forma canônica, o e é o que fica fora do quadrado.","e = k − 9"],
 ["O vértice (d, e) está sobre o eixo x quando e = 0.","k − 9 = 0  →  k = 9"],
