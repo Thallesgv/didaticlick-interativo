@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quando eles se encontram de novo? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:200px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.step3{display:inline-flex;align-items:center;gap:6px}.step3 button{width:42px;padding:8px 0}.step3 b{min-width:40px;text-align:center;font-size:20px;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+table.t td.l{text-align:left}
+.sim{color:var(--ok);font-weight:700}.nao{color:var(--bad);font-weight:700}
+.chips span{display:inline-block;border-radius:8px;padding:2px 9px;margin:3px;font-weight:600;background:#EEF3FF;color:var(--navy)}
+.chips span.g{background:#DCFCE7;color:var(--ok)}.chips span.o{background:var(--peach);color:#C2560C}
+.hide{display:none}
+.grid{display:grid;gap:3px}
+.grid button{padding:0;height:36px;font-size:14px;font-weight:600;border-radius:7px;background:#fff;color:var(--navy);border:1.5px solid #D7DEEA;position:relative}
+.grid button.p{color:#fff;border-color:transparent}
+.grid button.x{color:#B6BCC6;background:#F3F4F6}
+.grid button.x::after{content:"";position:absolute;left:18%;right:18%;top:50%;border-top:2.4px solid var(--c,#9CA3AF);transform:rotate(-38deg)}
+.grid button.u{color:#B6BCC6;background:#F3F4F6}
+.tog{display:flex;flex-wrap:wrap;gap:6px}.tog button{min-width:48px;background:#fff;color:var(--navy);border:2px solid var(--navy)}.tog button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.lamp{display:flex;gap:28px;justify-content:center;align-items:flex-end;margin:6px 0}
+.lamp div{text-align:center;font-size:13px;color:var(--gray)}
+.lamp i{display:block;width:62px;height:62px;border-radius:50%;margin:0 auto 6px;background:#E5E7EB;border:3px solid #D7DEEA;transition:background .15s}
+.lamp i.a{background:var(--blue);border-color:var(--blue);box-shadow:0 0 18px var(--blue)}
+.lamp i.b{background:var(--orange);border-color:var(--orange);box-shadow:0 0 18px var(--orange)}
+.log{font-size:14px;max-height:170px;overflow:auto;background:#F5F7FB;border-radius:10px;padding:8px 10px;margin-top:8px}
+</style>
+<script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Múltiplos, divisores e fatoração</div><h1 id="title">Quando eles se encontram de novo?</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Pisca-piscas</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre"><div class="card"><div class="row" style="gap:18px"><div><label class="l" style="color:var(--blue)">Azul: a cada</label><span class="step3" id="sa"></span> s</div>
+<div><label class="l" style="color:var(--orange)">Laranja: a cada</label><span class="step3" id="sb"></span> s</div></div>
+<div class="lamp"><div><i id="la"></i>azul</div><div style="font-size:30px;font-weight:700;color:var(--navy)" id="tempo">0 s</div><div><i id="lb"></i>laranja</div></div>
+<div class="row" style="justify-content:center"><button class="or" id="play">▶ Começar</button><button class="alt" id="passo">+1 segundo</button><button class="alt" id="zera">Zerar</button></div>
+<div id="m"></div><div class="log" id="log"></div></div>
+<div class="card"><h2>Na reta numerada</h2><div class="fig" id="reta"></div><p class="muted" style="margin:6px 0 0">Os pontos verdes são os múltiplos comuns. O primeiro deles é o <b>mmc</b>.</p></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Os momentos em que o azul pisca são os <b>múltiplos</b> do seu tempo; o mesmo vale para o laranja. Eles piscam juntos nos <b>múltiplos comuns</b>, e o primeiro encontro depois do zero é o <b>mínimo múltiplo comum (mmc)</b>.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(300,Math.min(620,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function stepper(id,v,lo,hi,cb){const el=$(id);el.innerHTML=`<button class="alt">−</button><b>${v}</b><button>+</button>`;const [m,,p]=el.children;
+ const set=x=>{v=Math.max(lo,Math.min(hi,x));el.children[1].textContent=v;cb(v);};m.onclick=()=>set(v-1);p.onclick=()=>set(v+1);return {get:()=>v,set};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+
+let a=P('a',4,1,30),b=P('b',6,1,30),t=0,tm=null,achou=false;
+function reta(){const M=MD.mmc(a,b),N=Math.min(Math.max(2*M,12),Math.max(a,b)*12);$('reta').innerHTML=MD.linha(a,b,N,{W:WW()});}
+function zera(){t=0;achou=false;$('log').innerHTML='';msg('m','No tempo 0 os dois piscaram juntos. Quando isso vai acontecer de novo?','info');lamp();reta();}
+function lamp(){const A=t%a===0,B=t%b===0;$('la').className=A?'a':'';$('lb').className=B?'b':'';$('tempo').textContent=t+' s';}
+function tic(){t++;lamp();const A=t%a===0,B=t%b===0;
+ if(A||B)$('log').innerHTML=`<div>${t} s: ${A&&B?'<b style="color:var(--ok)">os dois juntos!</b>':A?'<span style="color:var(--blue)">azul</span>':'<span style="color:var(--orange)">laranja</span>'}</div>`+$('log').innerHTML;
+ if(A&&B&&!achou){achou=true;parar();msg('m',`Juntos de novo aos <b>${t} segundos</b>! ${t} é múltiplo de ${a} (${a} × ${t/a}) e de ${b} (${b} × ${t/b}). mmc(${a}, ${b}) = <b>${t}</b>.`,'ok');}}
+function parar(){clearInterval(tm);tm=null;$('play').textContent='▶ Continuar';}
+$('play').onclick=()=>{if(tm){parar();return;}$('play').textContent='⏸ Pausar';tm=setInterval(tic,650);};
+$('passo').onclick=()=>{parar();tic();};$('zera').onclick=()=>{parar();$('play').textContent='▶ Começar';zera();};
+stepper('sa',a,1,30,v=>{a=v;parar();$('play').textContent='▶ Começar';zera();});stepper('sb',b,1,30,v=>{b=v;parar();$('play').textContent='▶ Começar';zera();});
+let alvo,feito;
+const CTX=[(x,y)=>`Dois ônibus saem juntos do terminal. Um sai a cada ${x} minutos e o outro a cada ${y} minutos. Depois de quantos minutos saem juntos de novo?`,
+ (x,y)=>`Carla toma um remédio de ${x} em ${x} horas e outro de ${y} em ${y} horas. Tomou os dois juntos agora. Daqui a quantas horas toma os dois juntos de novo?`,
+ (x,y)=>`Dois pisca-piscas acenderam juntos. Um acende a cada ${x} segundos e o outro a cada ${y}. Depois de quantos segundos acendem juntos de novo?`,
+ (x,y)=>`Numa pista, Davi completa uma volta a cada ${x} minutos e Nina a cada ${y}. Largaram juntos. Depois de quantos minutos passam juntos pela largada?`];
+function desafio(){feito=false;msg('dm','');let x,y;do{x=rnd(2,15);y=rnd(2,20);}while(x===y||MD.mmc(x,y)>120||MD.mmc(x,y)===Math.max(x,y)&&Math.random()<.7);alvo=[x,y];
+ $('dq').textContent='Quando se encontram de novo?';$('dbody').innerHTML=`<p style="margin:0 0 8px">${pick(CTX)(x,y)}</p><input type="number" id="resp" inputmode="numeric">`;}
+$('ok').onclick=()=>{if(feito)return;const v=parseInt($('resp').value);if(isNaN(v)){msg('dm','Digite um número antes do OK.','info');return;}feito=true;const [x,y]=alvo,M=MD.mmc(x,y),ok=v===M;placar(ok);
+ const lx=[],ly=[];for(let k=x;k<=M;k+=x)lx.push(k);for(let k=y;k<=M;k+=y)ly.push(k);
+ msg('dm',(ok?'Certo! ':'Ainda não. ')+`Múltiplos de ${x}: ${lx.join(', ')}…<br>Múltiplos de ${y}: ${ly.join(', ')}…<br>mmc(${x}, ${y}) = <b>${M}</b>.`,ok?'ok':'bad');};
+$('novo').onclick=desafio;tabs(['livre','desafio'],t=>{if(t==='desafio')desafio();});
+zera();
+
+</script>
+</body>
+</html>

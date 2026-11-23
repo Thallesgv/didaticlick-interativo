@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Um número, seis sistemas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Um número, seis sistemas</h1></header>
+<main>
+
+<div class="card"><label class="l">Digite um número de 1 a 3 999 999</label><input type="number" id="n" min="1" max="3999999" inputmode="numeric"><p id="ext" style="margin:8px 0 0;color:var(--navy)"></p></div>
+<div id="out"></div>
+<div class="card"><h2>Compare</h2><p style="margin:0">Nos sistemas <b>aditivos</b> (egípcio, romano) cada símbolo tem valor fixo e números grandes pedem muitos símbolos. Nos <b>posicionais</b> (babilônico, maia, indo-arábico, binário) o valor depende da casa, e poucos símbolos bastam para qualquer número, desde que exista o <b>zero</b> para marcar a casa vazia.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+function cnt(s){return s;}
+function go(){const n=parseInt($('n').value);if(isNaN(n)||n<1||n>3999999){$('out').innerHTML='';$('ext').textContent='';return;}
+ $('ext').textContent=SN.extenso(n);const eg=SN.egCounts(n).reduce((a,b)=>a+b,0),ro=SN.romanoGrande(n),rs=(ro.barra+ro.resto).length;
+ const bd=SN.bDigits(n),md=SN.mDigits(n),bin=SN.emBase(n,2).join('');
+ const bs=bd.reduce((s,d)=>s+(d?Math.floor(d/10)+d%10:1),0),ms=md.reduce((s,d)=>s+(d?Math.floor(d/5)+d%5:1),0);
+ const C=(t,tp,fig,info,link)=>`<div class="card"><h2>${t} <span class="muted" style="font-weight:500">· ${tp}</span></h2><div class="fig">${fig}</div><p class="muted" style="margin:6px 0 0">${info}${link?` · <a href="${link}">abrir</a>`:''}</p></div>`;
+ $('out').innerHTML=
+  C('Indo-arábico (o nosso)','posicional, base 10',`<div class="big">${SN.fmt(n)}</div>`,`${String(n).length} algarismos`,`abaco.html?n=${Math.min(n,999999)}`)+
+  C('Egípcio','aditivo, base 10',SN.egipcio(n,{maxRow:6}),`${eg} símbolos`,`egipcio.html?n=${n}`)+
+  C('Romano','aditivo e subtrativo',`<div class="big" style="font-family:Georgia,serif;letter-spacing:2px">${SN.romanoHTML(n)}</div>`,`${rs} símbolos`+(ro.barra?' (o traço em cima multiplica por 1 000)':''),`romano.html?n=${n}`)+
+  C('Babilônico','posicional, base 60',SN.babilonico(n,{rotulos:true,cores:true,zero:true}),`${bs} sinais em ${bd.length} casa${bd.length>1?'s':''}: `+bd.map((d,i)=>`${d} × ${SN.fmt(60**(bd.length-1-i))}`).join(' + '),`posicional.html?s=bab&n=${n}`)+
+  C('Maia','posicional, base 20',SN.maia(n,{rotulos:true,cores:true}),`${ms} sinais em ${md.length} casa${md.length>1?'s':''}: `+md.map((d,i)=>`${d} × ${SN.fmt(20**(md.length-1-i))}`).join(' + '),`posicional.html?s=maia&n=${n}`)+
+  C('Binário','posicional, base 2',`<div class="big" style="font-size:20px;word-break:break-all">${bin}</div>`,`${bin.length} algarismos, só 0 e 1`,`bases.html?b=2&n=${Math.min(n,200)}`);}
+$('n').oninput=go;$('n').value=P('n',2026,1,3999999);go();
+
+</script>
+</body>
+</html>
