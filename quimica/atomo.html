@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o átomo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;max-width:380px;height:auto;display:block;margin:0 auto}
+.ctl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.ctl div{text-align:center;background:#F5F7FB;border-radius:10px;padding:8px 4px}
+.ctl b{display:block;font-size:13px}
+.ctl .n{font-size:24px;font-weight:700;color:var(--navy)}
+.ctl button{padding:6px 14px;font-size:18px}
+.p b{color:#C0392B}.nn b{color:#6B7280}.e b{color:#2457D6}
+.ficha{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.sym{width:96px;height:96px;border:3px solid var(--navy);border-radius:12px;position:relative;font-weight:700;color:var(--navy)}
+.sym .s{position:absolute;left:0;right:0;top:24px;text-align:center;font-size:36px}
+.sym .a{position:absolute;left:8px;top:4px;font-size:14px}.sym .z{position:absolute;left:8px;bottom:4px;font-size:14px}
+.sym .c{position:absolute;right:6px;top:4px;font-size:14px;color:var(--orange)}
+.info div{margin:2px 0}
+.dist{font-size:18px;font-weight:600;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1>Monte o átomo</h1></header>
+<main>
+<div class="card">
+<canvas id="cv" width="380" height="380"></canvas>
+<div class="ctl">
+<div class="p"><b>Prótons</b><div class="n" id="np"></div><button data-k="p" data-d="-1" class="alt">−</button> <button data-k="p" data-d="1">+</button></div>
+<div class="nn"><b>Nêutrons</b><div class="n" id="nn"></div><button data-k="n" data-d="-1" class="alt">−</button> <button data-k="n" data-d="1">+</button></div>
+<div class="e"><b>Elétrons</b><div class="n" id="ne"></div><button data-k="e" data-d="-1" class="alt">−</button> <button data-k="e" data-d="1">+</button></div>
+</div>
+</div>
+<div class="card">
+<div class="ficha">
+<div class="sym"><span class="a" id="sA"></span><span class="s" id="sS"></span><span class="z" id="sZ"></span><span class="c" id="sC"></span></div>
+<div class="info" id="info"></div>
+</div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Desafios</h2>
+<p class="muted" style="margin:0 0 8px" id="dTxt"></p>
+<div class="row"><button id="dChk" class="or">Conferir</button><button id="dNext" class="alt">Outro desafio</button></div>
+<div id="dFb"></div>
+</div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const EL=[null,['H','Hidrogênio',1],['He','Hélio',4],['Li','Lítio',7],['Be','Berílio',9],['B','Boro',11],['C','Carbono',12],['N','Nitrogênio',14],['O','Oxigênio',16],['F','Flúor',19],['Ne','Neônio',20],
+ ['Na','Sódio',23],['Mg','Magnésio',24],['Al','Alumínio',27],['Si','Silício',28],['P','Fósforo',31],['S','Enxofre',32],['Cl','Cloro',35],['Ar','Argônio',40],['K','Potássio',39],['Ca','Cálcio',40]];
+const $=x=>document.getElementById(x);const A={p:6,n:6,e:6};const cv=$('cv'),ctx=cv.getContext('2d');let t=0;
+const LIM={p:[1,20],n:[0,24],e:[0,20]};
+document.querySelectorAll('.ctl button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;A[k]=Math.max(LIM[k][0],Math.min(LIM[k][1],A[k]+ +b.dataset.d));upd();});
+function camadas(e){const cap=[2,8,8,2+16],out=[];let r=e;for(const c of cap){if(r<=0)break;const x=Math.min(c,r);out.push(x);r-=x;}return out;}
+
+function cargaTxt(q){return q===0?'':(Math.abs(q)>1?Math.abs(q):'')+(q>0?'+':'−');}
+function upd(){const E=EL[A.p],Am=A.p+A.n,q=A.p-A.e,cs=camadas(A.e),nm='KLMN';
+ $('np').textContent=A.p;$('nn').textContent=A.n;$('ne').textContent=A.e;
+ $('sS').textContent=E[0];$('sA').textContent=Am;$('sZ').textContent=A.p;$('sC').textContent=cargaTxt(q);
+ const tipo=q===0?'átomo neutro':q>0?`cátion (íon positivo): perdeu ${q} elétron${q>1?'s':''}`:`ânion (íon negativo): ganhou ${-q} elétron${q<-1?'s':''}`;
+ $('info').innerHTML=`<div><b>${E[1]}</b> · Z = ${A.p} · A = ${Am}</div><div>Carga: <b>${q>0?'+':''}${q===0?'0':q}</b> → ${tipo}</div>`+
+  (A.e?`<div class="dist">${cs.map((x,i)=>nm[i]+' = '+x).join(' · ')}</div>`:'<div class="dist">sem elétrons</div>');
+ let m='O <b>número atômico (Z)</b> é o número de prótons: é ele que define o elemento. Mude os prótons e o elemento muda!';
+ if(A.n+A.p!==E[2]&&A.p<=20)m+=` A forma mais comum do ${E[1].toLowerCase()} tem A = ${E[2]} (${E[2]-A.p} nêutrons). Com ${A.n} nêutrons, este é um <b>isótopo</b> diferente: mesmo Z, massa diferente.`;
+ else m+=' A <b>massa (A)</b> é prótons + nêutrons. Os elétrons quase não têm massa.';
+ if(A.e>0)m+=` Na última camada há <b>${cs[cs.length-1]} elétron${cs[cs.length-1]>1?'s':''}</b> (camada de valência).`;
+ $('msg').innerHTML=m;}
+function draw(){t+=0.01;const W=380,cx=190,cy=190;ctx.clearRect(0,0,W,W);
+ const cs=camadas(A.e),R=[62,100,136,168];
+ cs.forEach((n,i)=>{ctx.strokeStyle='#C3CBD9';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,R[i],0,7);ctx.stroke();
+  ctx.fillStyle='#9AA5B8';ctx.font='600 12px Poppins,sans-serif';ctx.fillText('KLMN'[i],cx+R[i]*0.71+4,cy-R[i]*0.71-4);
+  for(let k=0;k<n;k++){const a=k/n*6.283+t*(1.2-i*0.25);ctx.fillStyle='#2457D6';ctx.beginPath();ctx.arc(cx+R[i]*Math.cos(a),cy+R[i]*Math.sin(a),6,0,7);ctx.fill();}});
+ // núcleo
+ const tot=A.p+A.n,pts=[];for(let k=0;k<tot;k++){const r=Math.sqrt(k)*5.2,a=k*2.4;pts.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}
+ const kinds=[];let pp=A.p,nn=A.n;for(let k=0;k<tot;k++){if(pp&&(k%2===0||!nn)){kinds.push('p');pp--;}else{kinds.push('n');nn--;}}
+ pts.forEach(([x,y],k)=>{ctx.fillStyle=kinds[k]==='p'?'#E74C3C':'#9AA5B8';ctx.beginPath();ctx.arc(x,y,5.5,0,7);ctx.fill();});
+ requestAnimationFrame(draw);}
+// desafios
+const D=[
+ ['Monte um átomo neutro de carbono com A = 12.',a=>a.p===6&&a.n===6&&a.e===6],
+ ['Monte o íon sódio Na⁺ (A = 23).',a=>a.p===11&&a.n===12&&a.e===10],
+ ['Monte o íon cloreto Cl⁻ com A = 35.',a=>a.p===17&&a.n===18&&a.e===18],
+ ['Monte o íon O²⁻ (A = 16).',a=>a.p===8&&a.n===8&&a.e===10],
+ ['Monte o carbono-14, isótopo usado para datar fósseis (átomo neutro).',a=>a.p===6&&a.n===8&&a.e===6],
+ ['Monte um átomo neutro com 3 camadas e 2 elétrons na última.',a=>a.p===12&&a.e===12],
+ ['Monte o íon Ca²⁺ (A = 40).',a=>a.p===20&&a.n===20&&a.e===18],
+ ['Monte um átomo neutro de um gás nobre com a camada L completa e nenhuma camada a mais.',a=>a.p===10&&a.e===10]];
+let di=0;function dShow(){$('dTxt').textContent=D[di][0];$('dFb').innerHTML='';}
+$('dChk').onclick=()=>{const ok=D[di][1](A);$('dFb').innerHTML=ok?'<div class="msg ok">Certo! Toque em "Outro desafio".</div>':'<div class="msg bad">Ainda não. Confira prótons (define o elemento), nêutrons (A − Z) e elétrons (carga).</div>';};
+$('dNext').onclick=()=>{di=(di+1)%D.length;dShow();};
+upd();draw();dShow();
+</script>
+</body>
+</html>

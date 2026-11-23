@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Triângulo do fogo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;max-width:420px;height:auto;display:block;margin:0 auto}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tg button{font-size:14px;padding:10px 6px}
+.tg button.off{background:#fff;color:var(--gray);border:2px dashed #C3CBD9}
+.ap{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ap button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 7º ano</div><h1>Triângulo do fogo</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Para haver fogo (combustão), três coisas precisam estar juntas. Toque em cada lado para tirar ou colocar.</p>
+<div class="tg"><button id="t0">Combustível</button><button id="t1">Comburente (oxigênio)</button><button id="t2">Calor</button></div>
+<canvas id="cv" width="420" height="330"></canvas>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Como apagar este fogo?</h2>
+<p class="muted" style="margin:0 0 8px">Acenda o fogo (os três lados) e escolha um jeito de apagar.</p>
+<div class="ap">
+<button data-a="abafar">Abafar com um pano ou tampa</button>
+<button data-a="agua">Jogar água</button>
+<button data-a="tirar">Fechar o gás / tirar a madeira</button>
+<button data-a="co2">Extintor de gás carbônico (CO₂)</button>
+</div>
+<div id="fb"></div>
+</div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Por que não se deve jogar água em óleo quente pegando fogo na panela?</li>
+<li>Um fósforo tem combustível e oxigênio ao redor. Por que ele não acende sozinho?</li>
+<li>Qual lado do triângulo o extintor de CO₂ retira?</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=x=>document.getElementById(x);const S=[true,true,true];const N=['combustível','comburente (oxigênio)','calor'];
+const cv=$('cv'),ctx=cv.getContext('2d');let t=0,flame=1;
+function upd(){S.forEach((s,i)=>$('t'+i).classList.toggle('off',!s));
+ const miss=N.filter((_,i)=>!S[i]);
+ $('msg').innerHTML=miss.length?`Sem <b>${miss.join(' e ')}</b>, não há fogo. Basta tirar <b>um</b> lado do triângulo para a combustão parar.`
+ :'Os três estão juntos: o combustível reage com o oxigênio e libera <b>calor e luz</b>. O próprio calor mantém o fogo aceso.';}
+[0,1,2].forEach(i=>$('t'+i).onclick=()=>{S[i]=!S[i];$('fb').innerHTML='';upd();});
+const AP={abafar:[1,'Abafar impede a chegada do <b>oxigênio</b> (comburente). É o jeito certo para óleo pegando fogo numa panela: tampe e desligue o fogo.'],
+ agua:[2,'A água <b>resfria</b>: tira o calor. Funciona em madeira e papel, mas <b>nunca</b> em óleo quente (espalha o fogo) nem em aparelhos ligados na tomada (choque).'],
+ tirar:[0,'Sem <b>combustível</b>, o fogo não tem o que queimar. É por isso que se fecha o registro do gás em caso de incêndio.'],
+ co2:[1,'O CO₂ é um gás mais denso que o ar e não alimenta a combustão: ele cobre o fogo e afasta o <b>oxigênio</b> (abafamento). Também resfria um pouco.']};
+document.querySelectorAll('.ap button').forEach(b=>b.onclick=()=>{
+ if(!S.every(x=>x)){$('fb').innerHTML='<div class="msg bad">O fogo já está apagado. Coloque os três lados para acender de novo.</div>';return;}
+ const [k,txt]=AP[b.dataset.a];S[k]=false;upd();$('fb').innerHTML=`<div class="msg ok">${txt}</div>`;});
+function tri(){const P=[[210,40],[60,300],[360,300]];
+ const L=[[P[1],P[2],0,'COMBUSTÍVEL',210,322],[P[0],P[1],1,'OXIGÊNIO',92,160],[P[0],P[2],2,'CALOR',330,160]];
+ L.forEach(([a,b,k,txt,lx,ly])=>{ctx.strokeStyle=S[k]?'#F7821F':'#C3CBD9';ctx.lineWidth=S[k]?12:4;ctx.setLineDash(S[k]?[]:[10,8]);
+  ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();ctx.setLineDash([]);
+  ctx.save();ctx.translate(lx,ly);if(k===1)ctx.rotate(-1.05);if(k===2)ctx.rotate(1.05);
+  ctx.fillStyle=S[k]?'#0E2354':'#9AA5B8';ctx.font='700 14px Poppins,sans-serif';ctx.textAlign='center';ctx.fillText(txt,0,k?-14:0);ctx.restore();});}
+function draw(){t+=0.05;ctx.clearRect(0,0,420,330);tri();
+ const all=S.every(x=>x);flame+=((all?1:0)-flame)*0.08;
+ // lenha
+ ctx.fillStyle=S[0]?'#8B5A2B':'#D9CBB8';ctx.save();ctx.translate(210,250);[-.25,.25].forEach(r=>{ctx.save();ctx.rotate(r);ctx.fillRect(-60,-8,120,16);ctx.restore();});ctx.restore();
+ if(flame>0.02){const h=110*flame;
+  for(let k=0;k<3;k++){const col=['rgba(247,130,31,.85)','rgba(255,190,40,.9)','rgba(255,240,170,.95)'][k],s=1-k*0.3;
+   ctx.fillStyle=col;ctx.beginPath();const w=46*s*flame,hh=h*s;
+   ctx.moveTo(210-w,240);
+   ctx.quadraticCurveTo(210-w*1.1,240-hh*0.5+Math.sin(t*3+k)*6,210+Math.sin(t*4+k)*8,240-hh);
+   ctx.quadraticCurveTo(210+w*1.1,240-hh*0.5+Math.cos(t*3+k)*6,210+w,240);ctx.closePath();ctx.fill();}}
+ else{ctx.fillStyle='rgba(150,150,160,.35)';for(let k=0;k<4;k++){const y=220-((t*20+k*30)%110);ctx.beginPath();ctx.arc(210+Math.sin(t+k)*10,y,10+k*2,0,7);ctx.fill();}}
+ requestAnimationFrame(draw);}
+upd();draw();
+</script>
+</body>
+</html>

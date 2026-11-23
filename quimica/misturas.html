@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a mistura · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;max-width:360px;height:auto;display:block;margin:0 auto}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA}
+.chips button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.big{font-size:20px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0 2px}
+ul.f{margin:6px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 6º ano</div><h1>Monte a mistura</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">O copo já tem água. Toque nos materiais para colocar ou tirar do copo e veja quantas fases a mistura tem.</p>
+<div class="chips" id="chips"></div>
+<canvas id="cv" width="360" height="330"></canvas>
+<div class="big" id="tipo"></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Coloque sal e açúcar. Quantas fases você vê? Por que a mistura continua homogênea?</li>
+<li>Coloque óleo e areia. Por que o óleo fica em cima e a areia embaixo?</li>
+<li>Deixe só o gelo com a água. O sistema tem duas fases, mas é uma mistura?</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const M=[
+ {k:'sal',n:'Sal de cozinha',tipo:'dissolve'},
+ {k:'acucar',n:'Açúcar',tipo:'dissolve'},
+ {k:'alcool',n:'Álcool',tipo:'dissolve'},
+ {k:'oleo',n:'Óleo',tipo:'cima'},
+ {k:'areia',n:'Areia',tipo:'fundo'},
+ {k:'gelo',n:'Gelo',tipo:'gelo'}];
+const on={};const $=x=>document.getElementById(x);
+const cv=$('cv'),ctx=cv.getContext('2d');let t=0;
+$('chips').innerHTML=M.map(m=>`<button data-k="${m.k}">${m.n}</button>`).join('');
+document.querySelectorAll('#chips button').forEach(b=>b.onclick=()=>{on[b.dataset.k]=!on[b.dataset.k];b.classList.toggle('on',on[b.dataset.k]);update();});
+function fases(){
+ const f=[];
+ if(on.gelo)f.push('gelo (água sólida), boiando');
+ if(on.oleo)f.push('óleo, por cima (é menos denso e não se mistura com a água)');
+ const dis=M.filter(m=>m.tipo==='dissolve'&&on[m.k]).map(m=>m.n.toLowerCase());
+ f.push(dis.length?'água com '+dis.join(', ').replace(/, ([^,]*)$/,' e $1')+' dissolvido'+(dis.length>1?'s':''):'água líquida');
+ if(on.areia)f.push('areia, no fundo (é mais densa e não se dissolve)');
+ return f;}
+function update(){
+ const f=fases(),n=f.length,comp=1+M.filter(m=>on[m.k]&&m.k!=='gelo').length;
+ let tipo,msg;
+ if(comp===1&&!on.gelo){tipo='Substância pura';msg='Só água: um único componente. É uma <b>substância pura</b>, com 1 fase.';}
+ else if(comp===1){tipo='Substância pura · 2 fases';msg='Água e gelo são a <b>mesma substância</b> em estados físicos diferentes. O sistema é <b>heterogêneo</b> (2 fases), mas <b>não é mistura</b>: só há um componente.';}
+ else{tipo=(n===1?'Mistura homogênea':'Mistura heterogênea')+' · '+n+(n===1?' fase':' fases');
+  msg=(n===1?'Os materiais se dissolveram na água e não dá para distinguir as partes: <b>uma fase só</b>.':'Dá para ver partes diferentes no copo: cada parte é uma <b>fase</b>.')+` Componentes: <b>${comp}</b>.`;}
+ $('tipo').textContent=tipo;
+ $('msg').innerHTML=msg+'<ul class="f">'+f.map(x=>'<li>'+x+'</li>').join('')+'</ul>';}
+function draw(){
+ t+=0.03;const W=360,H=330;ctx.clearRect(0,0,W,H);
+ const x0=80,x1=280,yTop=40,yBot=300;
+ const yWater=on.oleo?150:120,yOil=100,ySand=on.areia?262:yBot;
+ // água (cor muda levemente com dissolvidos)
+ const nd=['sal','acucar','alcool'].filter(k=>on[k]).length;
+ ctx.fillStyle=nd?`rgba(110,170,240,${0.45+0.08*nd})`:'rgba(120,180,245,.45)';
+ ctx.fillRect(x0,yWater,x1-x0,ySand-yWater);
+ if(on.oleo){ctx.fillStyle='rgba(240,190,40,.75)';ctx.fillRect(x0,yOil,x1-x0,yWater-yOil);}
+ if(on.areia){for(let i=0;i<260;i++){const r=(Math.sin(i*12.9898)*43758.5453)%1,s=(Math.sin(i*78.233)*12345.678)%1;
+   ctx.fillStyle=i%3?'#C89B5B':'#A87A3E';ctx.beginPath();ctx.arc(x0+4+Math.abs(r)*(x1-x0-8),ySand+3+Math.abs(s)*(yBot-ySand-6),2.4,0,7);ctx.fill();}}
+ // superfície ondulada
+ const ySurf=on.oleo?yOil:yWater;
+ ctx.strokeStyle='rgba(30,80,160,.5)';ctx.lineWidth=2;ctx.beginPath();
+ for(let x=x0;x<=x1;x+=4)ctx.lineTo(x,ySurf+Math.sin(x/12+t*3)*1.5);ctx.stroke();
+ if(on.gelo){[[120,0],[180,1],[230,2]].forEach(([gx,i])=>{const gy=ySurf-12+Math.sin(t*2+i)*2;
+   ctx.fillStyle='rgba(230,245,255,.95)';ctx.strokeStyle='#8FB8E8';ctx.lineWidth=2;ctx.beginPath();ctx.rect(gx-16,gy,32,26);ctx.fill();ctx.stroke();});}
+ // copo
+ ctx.strokeStyle='#0E2354';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x0-6,yTop);ctx.lineTo(x0-6,yBot+6);ctx.lineTo(x1+6,yBot+6);ctx.lineTo(x1+6,yTop);ctx.stroke();
+ // rótulos das fases
+ ctx.fillStyle='#0E2354';ctx.font='600 13px Poppins,sans-serif';ctx.textAlign='left';
+ const lab=(y,s)=>{ctx.fillText(s,x1+12,y+4);};
+ if(on.oleo)lab((yOil+yWater)/2,'óleo');
+ lab((yWater+ySand)/2,nd?'solução':'água');
+ if(on.areia)lab((ySand+yBot)/2,'areia');
+ if(on.gelo){ctx.textAlign='right';ctx.fillText('gelo',x0-12,ySurf);}
+ requestAnimationFrame(draw);}
+update();draw();
+</script>
+</body>
+</html>

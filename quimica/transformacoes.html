@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Física ou química? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.ev{font-size:20px;font-weight:700;color:var(--navy);text-align:center;margin:10px 0 14px;min-height:56px}
+.row button{flex:1}
+.prog{height:8px;background:#E5E9F2;border-radius:6px;overflow:hidden;margin-bottom:10px}
+.prog div{height:100%;background:var(--orange);width:0;transition:width .3s}
+.pistas{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.pistas span{background:var(--peach);color:var(--navy);border-radius:20px;padding:3px 10px;font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 6º ano</div><h1>Transformação física ou química?</h1></header>
+<main>
+<div class="card">
+<div class="prog"><div id="bar"></div></div>
+<p class="muted" style="margin:0" id="cont"></p>
+<div class="ev" id="ev"></div>
+<div class="row"><button id="bF" class="alt">Física</button><button id="bQ" class="or">Química</button></div>
+<div id="fb"></div>
+<div class="row" style="margin-top:10px"><button id="next" class="alt" hidden>Próxima ›</button></div>
+</div>
+<div class="card"><h2>Pistas de uma transformação química</h2>
+<p style="margin:0">Quando surge um <b>material novo</b>, a transformação é química. Algumas evidências:</p>
+<div class="pistas"><span>liberação de gás</span><span>mudança de cor</span><span>luz ou calor</span><span>formação de sólido</span><span>cheiro diferente</span><span>não dá para voltar atrás</span></div>
+<p class="muted" style="margin:8px 0 0">Atenção: as pistas ajudam, mas a prova é o surgimento de uma nova substância. Ferver água solta bolhas e é física!</p>
+</div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const E=[
+ ['Derreter um cubo de gelo','F','O gelo vira água líquida, mas continua sendo água. Só mudou o estado físico.'],
+ ['Queimar uma folha de papel','Q','Surgem cinzas, fumaça e gás carbônico: materiais novos. Há luz e calor.'],
+ ['Enferrujar um prego','Q','O ferro reage com o oxigênio e a umidade e forma ferrugem, uma substância nova.'],
+ ['Dissolver açúcar no café','F','O açúcar continua lá (o café fica doce). Evaporando a água, o açúcar pode ser recuperado.'],
+ ['Cozinhar um ovo','Q','As proteínas da clara mudam e ela fica branca e firme. Não dá para "descozinhar".'],
+ ['Rasgar uma folha de papel','F','Os pedaços continuam sendo papel. Mudou só a forma.'],
+ ['Misturar vinagre e bicarbonato','Q','Forma bolhas de gás carbônico, um material novo.'],
+ ['Ferver a água do macarrão','F','As bolhas são vapor de água. A água só passou do estado líquido para o gasoso.'],
+ ['Fermentar a massa do pão','Q','O fermento transforma o açúcar em gás carbônico (que faz a massa crescer) e álcool.'],
+ ['Amassar uma latinha','F','A latinha continua sendo de alumínio. Mudou só a forma.'],
+ ['Uma maçã cortada escurecendo','Q','Substâncias da maçã reagem com o oxigênio do ar e formam compostos escuros.'],
+ ['Secar roupa no varal','F','A água das roupas evapora. Continua sendo água, agora como vapor.'],
+ ['Queimar gás no fogão','Q','O gás reage com o oxigênio (combustão) e forma gás carbônico e água, liberando calor e luz.'],
+ ['Fazer gelo na forma','F','A água líquida vira sólida (solidificação). Continua sendo água.']];
+const $=x=>document.getElementById(x);let order=[],i=0,right=0,answered=false;
+function start(){order=E.map((_,k)=>k).sort(()=>Math.random()-.5);i=0;right=0;show();}
+function show(){answered=false;$('fb').innerHTML='';$('next').hidden=true;$('bF').disabled=$('bQ').disabled=false;
+ $('cont').textContent=`Situação ${i+1} de ${E.length} · acertos: ${right}`;$('bar').style.width=(i/E.length*100)+'%';$('ev').textContent=E[order[i]][0];}
+function ans(c){if(answered)return;answered=true;const e=E[order[i]],ok=c===e[1];if(ok)right++;
+ $('bF').disabled=$('bQ').disabled=true;
+ $('fb').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Ainda não.'} É uma transformação <b>${e[1]==='F'?'física':'química'}</b>. ${e[2]}</div>`;
+ $('cont').textContent=`Situação ${i+1} de ${E.length} · acertos: ${right}`;
+ $('next').hidden=false;$('next').textContent=i+1<E.length?'Próxima ›':'Ver resultado';}
+$('bF').onclick=()=>ans('F');$('bQ').onclick=()=>ans('Q');
+$('next').onclick=()=>{i++;if(i<E.length)show();else{$('bar').style.width='100%';$('ev').textContent=`Você acertou ${right} de ${E.length}!`;
+ $('fb').innerHTML=`<div class="msg info">${right>=12?'Excelente! Você reconhece bem as transformações.':'Releia as pistas abaixo e tente de novo.'}</div>`;
+ $('bF').disabled=$('bQ').disabled=true;$('next').textContent='Jogar de novo';$('next').onclick=()=>{$('next').onclick=nx;start();};}};
+const nx=$('next').onclick;start();
+</script>
+</body>
+</html>
