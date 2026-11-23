@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ladrilhos algébricos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+#mesa{min-height:120px;display:flex;flex-direction:column;gap:10px}
+.grp{display:flex;flex-wrap:wrap;gap:5px;align-items:flex-end;padding:6px;border-radius:10px;background:#F5F7FB}
+.grp .lab{width:100%;font-size:12px;color:var(--gray);font-weight:600}
+.t{border:2px solid rgba(0,0,0,.25);border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px}
+.t.neg{background:repeating-linear-gradient(45deg,#B91C1C,#B91C1C 5px,#DC2626 5px,#DC2626 10px)!important}
+.kx2{background:#2457D6}.kx{background:#F7821F}.ky{background:#15803D}.k1{background:#0E2354}
+.pal{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.pal div{text-align:center}
+.pal button{width:100%;padding:8px 2px;margin-top:4px}
+.sl{display:grid;grid-template-columns:90px 1fr 30px;align-items:center;gap:8px;margin:4px 0;font-size:14px}
+.expr{font-size:18px;font-weight:600;color:var(--navy);word-break:break-word}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1>Ladrilhos algébricos</h1></header>
+<main>
+<div class="card"><h2>Peças</h2>
+<div class="pal">
+ <div><b>x²</b><button data-k="x2" data-d="1">+</button><button data-k="x2" data-d="-1" class="alt">−</button></div>
+ <div><b>x</b><button data-k="x" data-d="1">+</button><button data-k="x" data-d="-1" class="alt">−</button></div>
+ <div><b>y</b><button data-k="y" data-d="1">+</button><button data-k="y" data-d="-1" class="alt">−</button></div>
+ <div><b>1</b><button data-k="1" data-d="1">+</button><button data-k="1" data-d="-1" class="alt">−</button></div>
+</div>
+<p class="muted" style="margin:8px 0 0">O botão − coloca uma peça negativa (listrada de vermelho). Uma peça e sua negativa formam um <b>par zero</b>.</p></div>
+
+<div class="card"><h2>Mesa</h2>
+<div class="muted">Você montou:</div><div class="expr" id="raw">0</div>
+<div id="mesa" style="margin-top:8px"></div>
+<div class="row" style="margin-top:10px"><button id="zero" class="or">Juntar semelhantes</button><button id="undo" class="alt">↶ Desfazer</button><button id="clear" class="alt">Limpar</button></div>
+<div class="msg info" id="msg">Monte uma expressão e toque em “Juntar semelhantes”.</div></div>
+
+<div class="card"><h2>Tamanho das peças</h2>
+<div class="sl"><span>valor de x</span><input type="range" id="vx" min="2" max="9" value="4"><b id="vxl"></b></div>
+<div class="sl"><span>valor de y</span><input type="range" id="vy" min="2" max="9" value="6"><b id="vyl"></b></div>
+<p class="muted" style="margin:6px 0 0">Mude x e y: as peças x e y mudam de tamanho de jeitos diferentes. Por isso <b>x e y nunca se juntam numa peça só</b>, e x² (um quadrado) também é diferente de x (uma barra).</p>
+<div class="msg info" id="val"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const $=i=>document.getElementById(i);const K=['x2','x','y','1'];const NM={x2:'x²',x:'x',y:'y','1':'1'};
+let seq=[],stack=[];
+const q=new URLSearchParams(location.search);
+if(q.get('e'))q.get('e').split(',').forEach(t=>{t=t.trim();let s=1;if(t[0]==='-'){s=-1;t=t.slice(1)}else if(t[0]==='+')t=t.slice(1);
+ const m=t.match(/^(\d*)(x2|x²|x|y|)$/);if(!m)return;const n=m[1]===''?(m[2]===''?0:1):+m[1];const k=m[2]===''?'1':(m[2]==='x²'?'x2':m[2]);
+ const c=m[2]===''?+m[1]:n;for(let i=0;i<c;i++)seq.push([k,s]);});
+function counts(){const c={};K.forEach(k=>c[k]={p:0,n:0});seq.forEach(([k,s])=>s>0?c[k].p++:c[k].n++);return c;}
+function term(k,v,first){if(!v)return'';const a=Math.abs(v);let s=(k==='1'?a:(a===1?'':a)+NM[k]);return (v<0?(first?'−':' − '):(first?'':' + '))+s;}
+function simp(c){let o='';K.forEach(k=>{const v=c[k].p-c[k].n;if(v){o+=term(k,v,o==='')}});return o||'0';}
+function rawE(){if(!seq.length)return'0';let o='';seq.forEach(([k,s],i)=>{o+=(s<0?(i?' − ':'−'):(i?' + ':''))+NM[k]});return o;}
+function tile(k,neg){const X=+$('vx').value*9,Y=+$('vy').value*9,U=12;const d={x2:[X,X],x:[X,U+6],y:[Y,U+6],'1':[U+6,U+6]}[k];
+ return `<div class="t k${k}${neg?' neg':''}" style="width:${d[0]}px;height:${d[1]}px">${k==='1'?'':NM[k]}</div>`;}
+function render(){const c=counts();$('vxl').textContent=$('vx').value;$('vyl').textContent=$('vy').value;$('raw').textContent=rawE();
+ $('mesa').innerHTML=K.filter(k=>c[k].p||c[k].n).map(k=>`<div class="grp"><div class="lab">peças ${NM[k]}</div>${tile(k,0).repeat(c[k].p)}${tile(k,1).repeat(c[k].n)}</div>`).join('')||'<p class="muted">Mesa vazia.</p>';
+ const x=+$('vx').value,y=+$('vy').value;const val=seq.reduce((a,[k,s])=>a+s*({x2:x*x,x:x,y:y,'1':1}[k]),0);
+ $('val').textContent=`Com x = ${x} e y = ${y}, sua expressão vale ${val}. Juntar semelhantes não muda esse valor.`;}
+document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{if(seq.length>=40)return;stack.push(JSON.stringify(seq));seq.push([b.dataset.k,+b.dataset.d]);
+ $('msg').className='msg info';$('msg').textContent='Toque em “Juntar semelhantes” quando quiser simplificar.';render();});
+$('zero').onclick=()=>{const c=counts();const before=rawE();const n=K.filter(k=>c[k].p+c[k].n>0).length;stack.push(JSON.stringify(seq));seq=[];
+ K.forEach(k=>{const v=c[k].p-c[k].n;for(let i=0;i<Math.abs(v);i++)seq.push([k,Math.sign(v)])});
+ const pares=K.reduce((a,k)=>a+Math.min(c[k].p,c[k].n),0);
+ $('msg').className='msg ok';$('msg').innerHTML=`${before} = <b>${simp(c)}</b>`+(pares?`<br>${pares} par(es) zero sumiram.`:'')+(n>1?`<br>Ficaram ${n} tipos de peça diferentes: eles não se juntam.`:'');render();};
+$('undo').onclick=()=>{if(stack.length){seq=JSON.parse(stack.pop());render();}};
+$('clear').onclick=()=>{stack.push(JSON.stringify(seq));seq=[];render();};
+$('vx').oninput=$('vy').oninput=render;render();
+</script>
+</body>
+</html>

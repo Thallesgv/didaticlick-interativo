@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Retângulo com letras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+#svg{width:100%;height:auto;display:block}
+.sl{display:grid;grid-template-columns:70px 1fr 36px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy)}
+.res{font-size:17px;margin:6px 0}
+.res .k{color:var(--orange);font-weight:700}
+label.ck{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:6px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1 id="title">Perímetro e área com letras</h1></header>
+<main>
+<div class="card"><svg id="svg" viewBox="0 0 360 260"></svg>
+<label class="ck"><input type="checkbox" id="grid" checked> Mostrar os quadradinhos de área 1</label></div>
+<div class="card"><h2>Mexa nas medidas</h2>
+<div class="sl"><b id="l1">x</b><input type="range" id="x" min="1" max="10" value="4"><span id="xv"></span></div>
+<div class="sl" id="ry"><b>y</b><input type="range" id="y" min="1" max="10" value="3"><span id="yv"></span></div>
+</div>
+<div class="card"><h2>O que acontece</h2>
+<div class="res"><span class="k">Perímetro:</span> <span id="P"></span></div>
+<div class="res"><span class="k">Área:</span> <span id="A"></span></div>
+<p class="muted" id="obs" style="margin:8px 0 0"></p></div>
+<div class="card"><h2>Repare</h2><p style="margin:0">A fórmula com letras não muda quando você mexe nas medidas: ela serve para <b>qualquer</b> retângulo desse tipo. O perímetro soma os quatro lados (é um comprimento); a área conta quantos quadradinhos cabem dentro (é uma superfície). Por isso o perímetro tem letras “sozinhas” e a área tem letras multiplicadas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const q=new URLSearchParams(location.search);const modo=q.get('modo')||'xy';const $=i=>document.getElementById(i);
+// modos: xy (lados x e y), quad (quadrado de lado x), x3 (lados x + 3 e x)
+if(modo!=='xy'){$('ry').hidden=true;}
+function render(){const x=+$('x').value,y=+$('y').value;$('xv').textContent=x;$('yv').textContent=y;
+ let W,H,lw,lh,P,A,obs;
+ if(modo==='quad'){W=x;H=x;lw='x';lh='x';P=`x + x + x + x = <b>4x</b> = 4 · ${x} = <b>${4*x}</b>`;A=`x · x = <b>x²</b> = ${x}² = <b>${x*x}</b>`;obs='Dobrando o lado, o perímetro dobra, mas a área fica 4 vezes maior.';}
+ else if(modo==='x3'){W=x+3;H=x;lw='x + 3';lh='x';P=`(x + 3) + x + (x + 3) + x = <b>4x + 6</b> = 4 · ${x} + 6 = <b>${4*x+6}</b>`;A=`x · (x + 3) = <b>x² + 3x</b> = ${x*x} + ${3*x} = <b>${x*(x+3)}</b>`;obs='A área se divide num quadrado x · x e num retângulo x · 3: x² + 3x.';}
+ else{W=x;H=y;lw='x';lh='y';P=`x + y + x + y = <b>2x + 2y</b> = 2 · ${x} + 2 · ${y} = <b>${2*x+2*y}</b>`;A=`x · y = <b>xy</b> = ${x} · ${y} = <b>${x*y}</b>`;obs='Repare: 2x + 2y não vira 4xy. x e y são medidas diferentes, então não se juntam.';}
+ $('P').innerHTML=P;$('A').innerHTML=A;$('obs').textContent=obs;
+ const s=Math.min(300/W,200/H),w=W*s,h=H*s,ox=(360-w)/2,oy=20+(200-h)/2;
+ let g=`<rect x="${ox}" y="${oy}" width="${w}" height="${h}" fill="#EEF3FF" stroke="#0E2354" stroke-width="3"/>`;
+ if($('grid').checked){for(let i=1;i<W;i++)g+=`<line x1="${ox+i*s}" y1="${oy}" x2="${ox+i*s}" y2="${oy+h}" stroke="#2457D6" stroke-opacity=".35"/>`;
+  for(let j=1;j<H;j++)g+=`<line x1="${ox}" y1="${oy+j*s}" x2="${ox+w}" y2="${oy+j*s}" stroke="#2457D6" stroke-opacity=".35"/>`;}
+ if(modo==='x3'){g+=`<line x1="${ox+x*s}" y1="${oy}" x2="${ox+x*s}" y2="${oy+h}" stroke="#F7821F" stroke-width="3" stroke-dasharray="6 4"/>`;
+  g+=`<text x="${ox+x*s/2}" y="${oy+h/2+6}" font-size="18" font-weight="700" fill="#0E2354" text-anchor="middle">x²</text><text x="${ox+x*s+1.5*s}" y="${oy+h/2+6}" font-size="18" font-weight="700" fill="#F7821F" text-anchor="middle">3x</text>`;}
+ g+=`<text x="${ox+w/2}" y="${oy-6}" font-size="16" font-weight="700" fill="#F7821F" text-anchor="middle">${lw}</text>`;
+ g+=`<text x="${ox-8}" y="${oy+h/2+5}" font-size="16" font-weight="700" fill="#F7821F" text-anchor="end">${lh}</text>`;
+ $('svg').innerHTML=g;}
+['x','y','grid'].forEach(i=>$(i).oninput=render);render();
+</script>
+</body>
+</html>

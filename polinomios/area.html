@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiplicação com área · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+#svg{width:100%;height:auto;display:block}
+.sl{display:grid;grid-template-columns:120px 1fr 30px;align-items:center;gap:8px;margin:5px 0;font-size:14px}
+.big{font-size:20px;font-weight:600;color:var(--navy);text-align:center;margin:4px 0}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1>Multiplicar é calcular área</h1></header>
+<main>
+<div class="card"><div class="big" id="prod"></div><svg id="svg" viewBox="0 0 360 300"></svg><div class="big" id="res"></div></div>
+<div class="card"><h2>Monte o retângulo</h2>
+<div class="sl"><span>base: x vezes</span><input type="range" id="p" min="0" max="2" value="1"><b id="pl"></b></div>
+<div class="sl"><span>base: + número</span><input type="range" id="a" min="0" max="6" value="2"><b id="al"></b></div>
+<div class="sl"><span>altura: x vezes</span><input type="range" id="q" min="0" max="2" value="1"><b id="ql"></b></div>
+<div class="sl"><span>altura: + número</span><input type="range" id="b" min="0" max="6" value="3"><b id="bl"></b></div>
+<div class="sl"><span>valor de x</span><input type="range" id="x" min="1" max="9" value="5"><b id="xl"></b></div>
+</div>
+<div class="card"><h2>Confira com números</h2><div class="msg info" id="chk"></div>
+<p class="muted" style="margin:8px 0 0">Cada parte do retângulo é um termo da resposta. Por isso (x + 3)² não é x² + 9: faltariam os dois retângulos 3x.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const $=i=>document.getElementById(i);const q0=new URLSearchParams(location.search);
+['p','a','q','b','x'].forEach(k=>{if(q0.get(k)!==null)$(k).value=q0.get(k)});
+const fx=(c,n)=>{const t=[];if(c)t.push((c===1?'':c)+'x');if(n||!c)t.push(n);return t.join(' + ');};
+function poly(A,B,C){const t=[];if(A)t.push((A===1?'':A)+'x²');if(B)t.push((B===1?'':B)+'x');if(C||!t.length)t.push(C);return t.join(' + ');}
+function render(){const p=+$('p').value,a=+$('a').value,q=+$('q').value,b=+$('b').value,x=+$('x').value;
+ ['p','a','q','b','x'].forEach(k=>$(k+'l').textContent=$(k).value);
+ if(p+a===0)$('a').value=a||1; if(q+b===0)$('b').value=b||1;
+ const W=p*x+a,H=q*x+b,s=Math.min(320/Math.max(W,1),250/Math.max(H,1)),ox=(360-W*s)/2,oy=25;
+ const f1=fx(p,a),f2=fx(q,b);$('prod').textContent=(f1.includes('+')?'('+f1+')':f1)+' · '+(f2.includes('+')?'('+f2+')':f2);
+ let g='';const cols=[[p*x,'x',p],[a,'n',a]],rows=[[q*x,'x',q],[b,'n',b]];let cx=ox;
+ const fill={xx:'#2457D6',xn:'#F7821F',nx:'#F7821F',nn:'#0E2354'};
+ cols.forEach(([cw,ck,cv])=>{if(!cw)return;let cy=oy;rows.forEach(([rh,rk,rv])=>{if(!rh)return;
+   const lab=ck==='x'&&rk==='x'?(cv*rv===1?'':cv*rv)+'x²':(ck==='n'&&rk==='n'?cv*rv:(cv*rv===1?'':cv*rv)+'x');
+   g+=`<rect x="${cx}" y="${cy}" width="${cw*s}" height="${rh*s}" fill="${fill[ck+rk]}" fill-opacity=".85" stroke="#fff" stroke-width="2"/>`;
+   g+=`<text x="${cx+cw*s/2}" y="${cy+rh*s/2+6}" font-size="${Math.min(18,cw*s/3,rh*s/1.4)}" font-weight="700" fill="#fff" text-anchor="middle">${lab}</text>`;cy+=rh*s;});cx+=cw*s;});
+ cx=ox;cols.forEach(([cw,ck,cv])=>{if(!cw)return;g+=`<text x="${cx+cw*s/2}" y="${oy-7}" font-size="14" font-weight="700" fill="#F7821F" text-anchor="middle">${ck==='x'?(cv===1?'':cv)+'x':cv}</text>`;cx+=cw*s;});
+ let cy=oy;rows.forEach(([rh,rk,rv])=>{if(!rh)return;g+=`<text x="${ox-5}" y="${cy+rh*s/2+5}" font-size="14" font-weight="700" fill="#F7821F" text-anchor="end">${rk==='x'?(rv===1?'':rv)+'x':rv}</text>`;cy+=rh*s;});
+ $('svg').setAttribute('viewBox',`0 0 360 ${Math.ceil(oy+H*s+10)}`);$('svg').innerHTML=g;
+ const A=p*q,B=p*b+a*q,C=a*b;$('res').innerHTML='= '+poly(A,B,C);
+ $('chk').textContent=`Com x = ${x}: base ${W} e altura ${H}, área ${W} · ${H} = ${W*H}. E ${poly(A,B,C)} = ${A*x*x+B*x+C}. Mesmo valor!`;}
+['p','a','q','b','x'].forEach(k=>$(k).oninput=render);render();
+</script>
+</body>
+</html>
