@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deriva continental e o fundo do oceano zebrado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física 9º ano</div><h1>Deriva continental e o fundo do oceano zebrado</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Há cerca de 200 milhões de anos, a América do Sul e a África estavam unidas. Aperte o play: veja o Oceano Atlântico se abrir e a rocha nova registrar o campo magnético da Terra em faixas.</p>
+<canvas id="cv" width="800" height="560"></canvas>
+<label style="font-size:14px;display:block;margin:8px 0">Tempo: <b id="lt"></b><input type="range" id="t" min="0" max="200" step="0.5" value="0" style="width:100%"></label>
+<div class="row"><button id="play" class="or">▶ Abrir o oceano</button><button id="reset" class="alt">↺ Voltar à Pangeia</button><button id="faixas" class="alt on">Faixas magnéticas</button></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Compare as faixas dos dois lados da dorsal (a linha no meio do oceano). O que você percebe?</li>
+<li>Onde está a rocha mais nova do fundo do oceano? E a mais antiga?</li>
+<li>Por que os fósseis do mesmo réptil (o mesossauro) aparecem no Brasil e na África?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const RATE=1.6,CX=400,TOP=40,BOT=520;let T=0,run=false,last=0,showF=true;
+// sequência de inversões (fixa): instantes em milhões de anos desde o início
+const REV=[];{let s=7,t=0;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280;};while(t<210){t+=7+rnd()*14;REV.push(t);}}
+const pol=tt=>{let k=0;for(const r of REV){if(r<=tt)k++;else break;}return k%2===0;}; // true = normal
+// contorno comum (litoral que encaixa)
+function edge(y){const u=(y-TOP)/(BOT-TOP);return 30*Math.sin(u*Math.PI*1.1+0.3)+ (u<0.35?55*(0.35-u)/0.35:0) + 12*Math.sin(u*9);}
+function draw(){const half=T*RATE;c.clearRect(0,0,800,560);c.fillStyle='#1E4E8C';c.fillRect(0,0,800,560);
+ // fundo oceânico
+ const k=Math.min(1,800/(2*half+780));c.save();c.translate(CX,290);c.scale(k,k);c.translate(-CX,-290);
+ if(half>0){const ts=[0,...REV.filter(x=>x<T),T];
+  for(let y=TOP+10;y<=BOT-30;y+=3){const rx=CX+edge(Math.max(TOP,Math.min(BOT,y)));
+   for(let i=0;i<ts.length-1;i++){const d1=(T-ts[i+1])*RATE,d2=(T-ts[i])*RATE;c.fillStyle=showF?(pol(ts[i])?'#E2553C':'#2457D6'):'#2A64A8';
+    c.fillRect(rx+d1,y,d2-d1+0.6,3.4);c.fillRect(rx-d2,y,d2-d1+0.6,3.4);}}
+  c.strokeStyle='#FDE9D8';c.lineWidth=3;c.setLineDash([8,6]);c.beginPath();for(let y=TOP+10;y<=BOT-30;y+=4){const rx=CX+edge(y);y===TOP+10?c.moveTo(rx,y):c.lineTo(rx,y);}c.stroke();c.setLineDash([]);c.lineWidth=1;}
+ // continentes (o litoral acompanha a abertura)
+ c.fillStyle='#4E9A5B';
+ // América do Sul: contorno leste = CX-half + edge(y) cortado; usamos edge para a borda
+ c.beginPath();c.moveTo(CX-half-300,TOP+10);for(let y=TOP+10;y<=BOT-30;y+=4)c.lineTo(CX-half+edge(y),y);c.lineTo(CX-half-120,BOT);c.lineTo(CX-half-330,BOT-120);c.lineTo(CX-half-360,TOP+80);c.closePath();c.fill();
+ c.fillStyle='#B98B4E';c.beginPath();c.moveTo(CX+half+330,TOP-10);for(let y=TOP;y<=BOT-60;y+=4)c.lineTo(CX+half+edge(y),y);c.lineTo(CX+half+170,BOT-20);c.lineTo(CX+half+360,BOT-160);c.lineTo(CX+half+380,TOP+20);c.closePath();c.fill();
+ c.fillStyle='#fff';c.font='600 22px Poppins,sans-serif';c.textAlign='center';c.fillText('América do Sul',CX-half-170,TOP+200);c.fillText('África',CX+half+200,TOP+200);
+ // fósseis de mesossauro (dos dois lados do litoral)
+ c.fillStyle='#F7B731';[[CX-half+edge(330)-26,330],[CX+half+edge(330)+26,330]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,8,0,7);c.fill();});
+ c.font='15px Poppins,sans-serif';c.fillText('fósseis de mesossauro',CX-half-120,370);c.fillText('fósseis de mesossauro',CX+half+150,370);
+ c.restore();
+ // bússola (campo atual)
+ const n=pol(T);c.fillStyle='rgba(255,255,255,.9)';c.beginPath();c.roundRect(640,440,150,110,12);c.fill();c.fillStyle='#0E2354';c.font='600 15px Poppins,sans-serif';c.textAlign='center';c.fillText('campo agora',715,462);
+ c.lineWidth=6;c.strokeStyle='#B91C1C';c.beginPath();c.moveTo(715,500);c.lineTo(715,n?474:526);c.stroke();c.strokeStyle='#9AA7BC';c.beginPath();c.moveTo(715,500);c.lineTo(715,n?526:474);c.stroke();c.lineWidth=1;
+ c.fillStyle=n?'#E2553C':'#2457D6';c.font='600 14px Poppins,sans-serif';c.fillText(n?'normal':'invertido',715,545);
+ if(showF){c.fillStyle='rgba(255,255,255,.9)';c.beginPath();c.roundRect(10,440,200,110,12);c.fill();c.textAlign='left';c.font='15px Poppins,sans-serif';
+  c.fillStyle='#E2553C';c.fillRect(22,462,22,16);c.fillStyle='#1F2937';c.fillText('campo normal',52,476);c.fillStyle='#2457D6';c.fillRect(22,490,22,16);c.fillStyle='#1F2937';c.fillText('campo invertido',52,504);c.fillStyle='#6B7280';c.fillText('- - dorsal',22,535);}
+ const ma=Math.round(200-T);$('lt').textContent=ma>0?`há ${ma} milhões de anos`:'hoje';
+ $('msg').innerHTML=T<1?'<b>Pangeia:</b> os continentes estão unidos. Repare como o litoral do Brasil encaixa no da África, e os fósseis de mesossauro ficam lado a lado.'
+  :T<199?'Na <b>dorsal</b> (linha tracejada), o magma sobe e forma rocha nova, que grava o campo magnético daquele momento. Quando o campo se inverte, a nova faixa ganha outra cor. As faixas ficam <b>simétricas</b>: iguais dos dois lados, como num espelho.'
+  :'<b>Hoje:</b> o Atlântico continua se abrindo, alguns centímetros por ano. As rochas mais novas estão na dorsal; as mais antigas, perto dos continentes. As faixas simétricas provaram que o fundo do oceano se expande e que os continentes se movem.';}
+function loop(ts){if(!run)return;T=Math.min(200,T+(ts-last)/1000*16);last=ts;$('t').value=T;draw();if(T>=200){run=false;$('play').textContent='▶ Abrir o oceano';return;}requestAnimationFrame(loop);}
+$('play').onclick=()=>{if(T>=200)T=0;run=!run;$('play').textContent=run?'⏸ Pausar':'▶ Continuar';if(run){last=performance.now();requestAnimationFrame(loop);}};
+$('reset').onclick=()=>{run=false;T=0;$('t').value=0;$('play').textContent='▶ Abrir o oceano';draw();};
+$('t').oninput=e=>{run=false;T=+e.target.value;$('play').textContent='▶ Continuar';draw();};
+$('faixas').onclick=()=>{showF=!showF;$('faixas').classList.toggle('on',showF);draw();};
+draw();if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>
