@@ -114,6 +114,9 @@
     // braça
     b += `<line x1="40" y1="100" x2="260" y2="100" stroke="${OR}" stroke-width="2.4"/><line x1="40" y1="93" x2="40" y2="107" stroke="${OR}" stroke-width="2.4"/><line x1="260" y1="93" x2="260" y2="107" stroke="${OR}" stroke-width="2.4"/>`;
     b += T(205, 118, 'braça ≈ 2,2 m', 12.5, OR);
+    // jarda: do nariz à ponta do polegar, braço esticado
+    b += `<line x1="150" y1="62" x2="260" y2="62" stroke="${RD}" stroke-width="2.4"/><line x1="150" y1="55" x2="150" y2="69" stroke="${RD}" stroke-width="2.4"/><line x1="260" y1="55" x2="260" y2="69" stroke="${RD}" stroke-width="2.4"/>`;
+    b += T(268, 60, 'jarda ≈ 91 cm', 12.5, RD, 700, 'start');
     // pé
     b += `<line x1="182" y1="234" x2="212" y2="234" stroke="${BL}" stroke-width="2.4"/><line x1="182" y1="228" x2="182" y2="240" stroke="${BL}" stroke-width="2.4"/><line x1="212" y1="228" x2="212" y2="240" stroke="${BL}" stroke-width="2.4"/>`;
     b += T(222, 238, 'pé ≈ 30 cm', 12.5, BL, 700, 'start');
