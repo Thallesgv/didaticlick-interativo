@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Balança das igualdades · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+#svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.side{background:#F5F7FB;border-radius:12px;padding:8px}
+.side h3{margin:0 0 6px;font-size:13px;color:var(--gray);font-weight:600;text-align:center}
+.side .row button{flex:1 1 40%;padding:8px 4px;font-size:14px}
+.both .row button{flex:1 1 30%}
+#hist{font-size:13px;color:var(--gray);margin:8px 0 0;padding-left:18px}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tabs button{flex:1}
+.tabs button.on{background:var(--orange)}
+label{font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1>Balança das igualdades</h1></header>
+<main>
+<div class="tabs"><button id="tExp" class="alt">Explorar</button><button id="tDes" class="alt">Desafios</button></div>
+
+<div class="card">
+  <div class="eq" id="eq"></div>
+  <svg id="svg" viewBox="0 0 400 230" aria-label="Balança"></svg>
+  <div class="msg info" id="msg"></div>
+</div>
+
+<div class="card both">
+  <h2>Faça a mesma coisa nos dois lados</h2>
+  <div class="row">
+    <button data-b="u-1">− 1 nos dois</button>
+    <button data-b="x-1">− x nos dois</button>
+    <button data-b="div">÷ nos dois</button>
+    <button data-b="u+1" class="alt">+ 1 nos dois</button>
+    <button data-b="x+1" class="alt">+ x nos dois</button>
+    <button data-b="undo" class="alt">↶ Desfazer</button>
+  </div>
+  <ol id="hist"></ol>
+</div>
+
+<div class="card" id="oneSide">
+  <h2>Mexer em um lado só</h2>
+  <p class="muted" style="margin:0 0 6px">Use para montar uma balança ou para ver o que acontece quando só um lado muda.</p>
+  <div class="sides">
+    <div class="side"><h3>Prato esquerdo</h3><div class="row">
+      <button data-s="L,x,1">+ x</button><button data-s="L,x,-1" class="alt">− x</button>
+      <button data-s="L,u,1">+ 1</button><button data-s="L,u,-1" class="alt">− 1</button></div></div>
+    <div class="side"><h3>Prato direito</h3><div class="row">
+      <button data-s="R,x,1">+ x</button><button data-s="R,x,-1" class="alt">− x</button>
+      <button data-s="R,u,1">+ 1</button><button data-s="R,u,-1" class="alt">− 1</button></div></div>
+  </div>
+  <p style="margin:12px 0 0"><label>Peso de cada caixa x: <b id="xvLab"></b><br>
+  <input type="range" id="xv" min="1" max="9" value="3" style="width:100%"></label></p>
+</div>
+
+<div class="card" id="chal" hidden>
+  <h2 id="chTitle"></h2>
+  <p class="muted" style="margin:0 0 8px">Cada caixa laranja pesa <b>x</b> e cada peso azul pesa <b>1</b>. Deixe uma caixa sozinha num prato, sem nunca desequilibrar a balança. Quanto vale x?</p>
+  <div class="row"><button id="prev" class="alt">← Anterior</button><button id="reset" class="alt">Recomeçar</button><button id="next">Próximo →</button></div>
+</div>
+
+<div class="card">
+  <h2>O que observar</h2>
+  <p style="margin:0">A balança só continua equilibrada quando você faz <b>a mesma coisa nos dois pratos</b>: tirar o mesmo peso dos dois lados (<i>propriedade aditiva</i>) ou dividir os dois lados em partes iguais (<i>propriedade multiplicativa</i>). É isso que fazemos ao resolver uma equação.</p>
+</div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+
+<script>
+const CH=[ // [xL,uL,xR,uR,valor de x]
+ [1,3,0,7,4],[1,5,0,9,4],[3,0,0,12,4],[2,1,0,9,4],[3,2,0,11,3],
+ [3,1,1,7,3],[4,2,2,8,3],[5,1,2,10,3],[2,6,4,2,2],[3,4,1,10,3]];
+const q=new URLSearchParams(location.search);
+let mode=q.get('modo')==='desafio'?'des':'exp', ci=Math.max(0,Math.min(CH.length-1,(+q.get('n')||1)-1));
+let S, hist=[], stack=[];
+const $=id=>document.getElementById(id);
+function start(){
+  hist=[];stack=[];
+  if(mode==='des'){const c=CH[ci];S={L:{x:c[0],u:c[1]},R:{x:c[2],u:c[3]},v:c[4]};}
+  else{const L=q.get('l'),R=q.get('r');
+    const p=s=>{const [x,u]=(s||'0,0').split(',').map(Number);return{x:x||0,u:u||0}};
+    S={L:L?p(L):{x:2,u:1},R:R?p(R):{x:0,u:7},v:+(q.get('v')||3)};}
+  $('xv').value=S.v;render();
+}
+const W=s=>S[s].x*S.v+S[s].u;
+function term(s){const {x,u}=S[s];const a=[];if(x)a.push((x===1?'':x)+'x');if(u||!x)a.push(u);return a.join(' + ');}
+function render(){
+  $('tExp').className=mode==='exp'?'on':'alt';$('tDes').className=mode==='des'?'on':'alt';
+  $('oneSide').hidden=mode==='des';$('chal').hidden=mode!=='des';
+  $('xvLab').textContent=S.v;
+  const wl=W('L'),wr=W('R'),eqOk=wl===wr;
+  $('eq').textContent=term('L')+(eqOk?' = ':(wl>wr?' > ':' < '))+term('R');
+  draw(Math.max(-1,Math.min(1,(wr-wl)/6)));
+  let m,c='info';
+  const solved=eqOk&&((S.L.x===1&&S.L.u===0&&S.R.x===0)||(S.R.x===1&&S.R.u===0&&S.L.x===0));
+  if(!eqOk){m='Desequilibrada! O prato '+(wl>wr?'esquerdo':'direito')+' ficou mais pesado. Isso acontece quando os dois lados não valem o mesmo.';c='bad';}
+  else if(solved){m='Equilibrada e resolvida: x = '+(S.L.x?S.R.u:S.L.u)+'. Confira: troque x por esse número na equação inicial.';c='ok';}
+  else m='Equilibrada: os dois pratos têm o mesmo peso ('+wl+'). '+(mode==='des'?'Continue isolando a caixa x.':'');
+  $('msg').className='msg '+c;$('msg').textContent=m;
+  $('hist').innerHTML=hist.map(h=>'<li>'+h+'</li>').join('');
+  if(mode==='des'){$('chTitle').textContent='Desafio '+(ci+1)+' de '+CH.length;$('prev').disabled=ci===0;$('next').disabled=ci===CH.length-1;}
+  document.querySelector('[data-b="x-1"]').disabled=!(S.L.x&&S.R.x);
+  document.querySelector('[data-b="u-1"]').disabled=!(S.L.u&&S.R.u);
+  document.querySelector('[data-b="undo"]').disabled=!stack.length;
+}
+function pan(cx,cy,x,u){let o='',items=[];for(let i=0;i<x;i++)items.push('x');for(let i=0;i<u;i++)items.push('u');
+  const per=6,rows=Math.ceil(items.length/per)||1;
+  items.forEach((t,i)=>{const r=Math.floor(i/per),k=i%per,n=Math.min(per,items.length-r*per);const px=cx+(k-(n-1)/2)*20,py=cy-12-r*20;
+    o+=t==='x'?`<rect x="${px-9}" y="${py-9}" width="18" height="18" rx="3" fill="#F7821F"/><text x="${px}" y="${py+4.5}" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">x</text>`
+             :`<circle cx="${px}" cy="${py}" r="8.5" fill="#2457D6"/><text x="${px}" y="${py+4}" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">1</text>`;});
+  return o;}
+function draw(t){const a=t*9*Math.PI/180,cx=200,cy=70,L=140;
+  const lx=cx-L*Math.cos(a),ly=cy-L*Math.sin(a),rx=cx+L*Math.cos(a),ry=cy+L*Math.sin(a);
+  let s=`<rect x="170" y="210" width="60" height="10" rx="3" fill="#0E2354"/><rect x="196" y="70" width="8" height="142" fill="#0E2354"/><polygon points="200,58 190,74 210,74" fill="#0E2354"/>`;
+  s+=`<line x1="${lx}" y1="${ly}" x2="${rx}" y2="${ry}" stroke="#0E2354" stroke-width="6" stroke-linecap="round"/>`;
+  [[lx,ly,'L'],[rx,ry,'R']].forEach(([x,y,k])=>{const py=y+90;
+    s+=`<line x1="${x}" y1="${y}" x2="${x-55}" y2="${py}" stroke="#6B7280"/><line x1="${x}" y1="${y}" x2="${x+55}" y2="${py}" stroke="#6B7280"/>`;
+    s+=`<path d="M${x-62},${py} L${x+62},${py} Q${x},${py+18} ${x-62},${py}Z" fill="#D7DEEA"/>`;
+    s+=pan(x,py,S[k].x,S[k].u);});
+  $('svg').innerHTML=s;}
+function push(){stack.push(JSON.stringify([S,hist]));}
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const [s,k,d]=b.dataset.s.split(',');const n=S[s][k]+(+d);if(n<0||n>18)return;push();S[s][k]=n;
+  hist.push((+d>0?'Coloquei ':'Tirei ')+(k==='x'?'uma caixa x':'um peso 1')+' só no prato '+(s==='L'?'esquerdo':'direito'));render();});
+document.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const t=b.dataset.b;
+  if(t==='undo'){if(!stack.length)return;[S,hist]=JSON.parse(stack.pop());render();return;}
+  if(t==='div'){const g=[S.L.x,S.L.u,S.R.x,S.R.u].reduce((a,c)=>{const G=(p,q)=>q?G(q,p%q):p;return G(a,c)},0);
+    const n=+prompt('Dividir os dois lados por quanto? (os pesos de cada prato precisam se repartir em partes iguais)', g>1?g:2);
+    if(!n||n<2)return; if([S.L.x,S.L.u,S.R.x,S.R.u].some(v=>v%n)){$('msg').className='msg bad';$('msg').textContent='Não dá para repartir tudo em '+n+' partes iguais. Tente outro número.';return;}
+    push();['L','R'].forEach(s=>{S[s].x/=n;S[s].u/=n});hist.push('Dividi os dois lados por '+n+' (propriedade multiplicativa)');render();return;}
+  const k=t[0],d=t.slice(1)==='+1'?1:-1;if(d<0&&(!S.L[k]||!S.R[k]))return;push();S.L[k]+=d;S.R[k]+=d;
+  hist.push((d>0?'Coloquei ':'Tirei ')+(k==='x'?'uma caixa x':'um peso 1')+' nos dois lados (propriedade aditiva)');render();});
+$('xv').oninput=e=>{S.v=+e.target.value;render();};
+$('tExp').onclick=()=>{mode='exp';start()};$('tDes').onclick=()=>{mode='des';start()};
+$('prev').onclick=()=>{ci--;start()};$('next').onclick=()=>{ci++;start()};$('reset').onclick=start;
+start();
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resolução comentada · DidatiClick</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/resolucoes.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Resolução comentada</div><h1 id="title">Resolução</h1></header>
+<main>
+<div class="card"><h2>Enunciado</h2><p id="enun" style="margin:0"></p></div>
+<p class="muted">Tente cada passo antes de abrir o próximo.</p>
+<div class="card" id="steps"></div>
+<div class="row" style="margin-bottom:16px"><button id="next" class="or">Mostrar próximo passo</button><button id="all" class="alt">Mostrar tudo</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const id=new URLSearchParams(location.search).get('id');const R=(window.RES||{})[id];const $=x=>document.getElementById(x);
+if(!R){$('title').textContent='Resolução não encontrada';$('next').hidden=$('all').hidden=true;}
+else{document.title=R.title+' · DidatiClick';$('title').textContent=R.title;$('enun').innerHTML=R.enun;let k=0;
+ const show=()=>{const s=R.steps[k++];$('steps').insertAdjacentHTML('beforeend',`<div class="step"><div class="why">${s[0]}</div>${s[1]?`<div class="math">${s[1]}</div>`:''}</div>`);
+  if(k>=R.steps.length){$('next').hidden=$('all').hidden=true;$('steps').insertAdjacentHTML('beforeend',`<div class="msg ok">${R.ans}</div>`);}};
+ $('next').onclick=show;$('all').onclick=()=>{while(k<R.steps.length)show();};show();}
+</script>
+</body>
+</html>

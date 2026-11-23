@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz de autocorreção · DidatiClick</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="data/quizzes.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Quiz de autocorreção</div><h1 id="title">Quiz</h1></header>
+<main>
+<p class="muted" id="sub"></p>
+<div id="qs"></div>
+<div class="card" id="score" hidden></div>
+<div class="row" style="margin-bottom:20px"><button id="again" class="alt" hidden>Refazer o quiz</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const id=new URLSearchParams(location.search).get('id');const Q=(window.QUIZ||{})[id];
+const $=x=>document.getElementById(x);
+if(!Q){$('title').textContent='Quiz não encontrado';}
+else{
+ document.title=Q.title+' · Quiz DidatiClick';$('title').textContent=Q.title;
+ $('sub').textContent='Responda cada questão e toque em Conferir. A explicação aparece logo depois. Não precisa de cadastro.';
+ let done=0,right=0;
+ function build(){done=0;right=0;$('score').hidden=true;$('again').hidden=true;
+  $('qs').innerHTML=Q.qs.map((q,i)=>`<div class="card" data-i="${i}"><h2>Questão ${i+1}</h2><p style="margin:0 0 6px">${q.q}</p>
+   ${q.o.map((o,j)=>`<button class="opt" data-j="${j}">${'ABCDE'[j]}) ${o}</button>`).join('')}
+   <div class="row" style="margin-top:8px"><button class="or chk" disabled>Conferir</button></div><div class="fb"></div></div>`).join('');
+  document.querySelectorAll('.card[data-i]').forEach(c=>{const i=+c.dataset.i,q=Q.qs[i];let sel=-1,locked=false;
+   c.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(locked)return;sel=+b.dataset.j;c.querySelectorAll('.opt').forEach(x=>x.classList.toggle('sel',x===b));c.querySelector('.chk').disabled=false;});
+   c.querySelector('.chk').onclick=()=>{if(locked||sel<0)return;locked=true;c.querySelector('.chk').disabled=true;
+    const ok=sel===q.a;done++;if(ok)right++;
+    c.querySelectorAll('.opt').forEach(x=>{const j=+x.dataset.j;if(j===q.a)x.classList.add('right');else if(j===sel)x.classList.add('wrong');});
+    c.querySelector('.fb').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Ainda não. A resposta é '+'ABCDE'[q.a]+'.'} ${q.e}</div>`;
+    if(done===Q.qs.length){$('score').hidden=false;$('again').hidden=false;
+     $('score').innerHTML=`<h2>Resultado: ${right} de ${Q.qs.length}</h2><p style="margin:0">${right===Q.qs.length?'Excelente! Você domina este módulo.':right>=Q.qs.length*0.6?'Bom trabalho! Revise as questões que errou.':'Releia o resumo do módulo e refaça o quiz.'}</p>`;
+     $('score').scrollIntoView({behavior:'smooth'});}};});}
+ $('again').onclick=()=>{build();scrollTo(0,0)};build();}
+</script>
+</body>
+</html>
