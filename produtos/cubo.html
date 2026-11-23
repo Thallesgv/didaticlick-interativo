@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cubo da soma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:118px 1fr 34px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+label.ck{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:6px}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:4px 0;line-height:1.6}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .r{color:var(--bad)}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:70px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.dq{font-size:21px;font-weight:600;color:var(--navy);line-height:2.1}
+</style>
+<script src="pn.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Produtos notáveis</div><h1 id="title">O cubo da soma</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Desmontar</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre">
+<div class="card"><div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Separar os blocos</b><input type="range"><span></span></div>
+<div class="row" style="margin:4px 0" id="tipos"></div>
+<div class="sl" id="sa"><b>a</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>b</b><input type="range"><span></span></div></div>
+<div class="card"><h2>As 8 peças</h2><div class="fig" id="pecas"></div><div id="conta" style="margin-top:8px"></div></div>
+</div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Complete os quadrinhos</h2><div class="dq" id="dq"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">O cubo de aresta a + b se desmonta em <b>8 blocos</b>: 1 cubo a³, 3 blocos a²b, 3 blocos ab² e 1 cubinho b³. Por isso <b>(a + b)³ = a³ + 3a²b + 3ab² + b³</b>. Repare que (a + b)³ <b>não</b> é a³ + b³: faltariam 6 blocos!</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(280,Math.min(560,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const sg=v=>v<0?'−'+(-v):String(v);
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,step){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=step||1;i.value=v;
+ const show=()=>{s.textContent=step&&step<1?'':i.value;};show();i.oninput=()=>{show();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;show();},el:i};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio com campos numéricos e botão OK (só conta depois do OK)
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha todos os quadrinhos e toque em OK.','info');return;}
+  const vals=ins.map(x=>parseInt(x.value.replace('−','-')));const ok=cur.res.every((r,i)=>r===vals[i]);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=cur.res[i]===vals[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=()=>'<input class="n" inputmode="numeric">';
+
+const E=slider('se',P('e',0,0,1),0,1,draw,0.05),A=slider('sa',P('a',5,2,8),2,8,draw),B=slider('sb',P('b',3,1,6),1,6,draw);
+const NOM=['a³','a²b','ab²','b³'],COR=[PN.BLUE,PN.ORANGE,PN.GREEN,PN.NAVY];let so=[0,1,2,3];
+$('tipos').innerHTML=NOM.map((n,i)=>`<button data-i="${i}" style="background:${COR[i]}">${n}</button>`).join('');
+$('tipos').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;so=so.includes(i)?so.filter(x=>x!==i):[...so,i];b.style.opacity=so.includes(i)?1:.3;if(so.includes(i)&&E.get()<.3)E.set(.6);draw();});
+function draw(){const a=A.get(),b=B.get(),e=E.get();
+ const u=Math.min(22,Math.floor(WW()/((a+b)*(1+e*1.1)*1.9)));
+ $('fig').innerHTML=PN.cubo(a,b,e,{s:u,so});
+ $('pecas').innerHTML=PN.pecas(a,b,{s:Math.max(4,Math.min(10,Math.floor(WW()/((a*5+b*5)*1.9+20))))});
+ $('conta').innerHTML=`<div class="res">(${a} + ${b})³ = ${a+b}³ = <span class="g">${(a+b)**3}</span></div>
+ <div class="res"><span style="color:var(--blue)">${a**3}</span> + 3 · <span class="k">${a*a*b}</span> + 3 · <span style="color:var(--ok)">${a*b*b}</span> + <span style="color:var(--navy)">${b**3}</span> = <span class="g">${(a+b)**3}</span> ✓</div>
+ <div class="res r" style="font-size:15px">Cuidado: ${a}³ + ${b}³ = ${a**3+b**3}, bem menos que ${(a+b)**3}.</div>`;}
+draw();tabs(['livre','desafio']);
+desafio(()=>{const k=rnd(1,5),m=rnd(0,1);const s=m?'−':'+';
+ return {html:`(x ${s} ${k})³ = x³ ${s} ${box()}x² + ${box()}x ${s} ${box()}`,res:[3*k,3*k*k,k**3],
+  exp:`(x ${s} ${k})³ = x³ ${s} 3·${k}x² + 3·${k}²x ${s} ${k}³ = x³ ${s} ${3*k}x² + ${3*k*k}x ${s} ${k**3}.${m?' Na diferença, os sinais vão alternando: +, −, +, −.':''}`};});
+
+</script>
+</body>
+</html>
