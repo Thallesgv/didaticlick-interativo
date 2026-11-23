@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sistemas de numeração · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;color:var(--navy);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lbl{font-size:13px;color:var(--gray);margin:0 0 2px}
+.log{list-style:none;padding:0;margin:6px 0 0}
+.log li{padding:6px 0;border-bottom:1px dashed #D7DEEA;font-size:15px}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:13px;font-weight:600}
+.tag.ok{background:#DCFCE7;color:var(--ok)}.tag.bad{background:#FEE2E2;color:var(--bad)}.tag.info{background:#EEF3FF;color:var(--blue)}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-weight:600}
+.chips button.sel{border-color:var(--orange);background:#FFF3E6}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Conjuntos numéricos</div><h1 id="title">Sistemas de numeração</h1></header>
+<main>
+
+<div class="card"><h2>Escolha um número</h2>
+<div class="sl"><b>número</b><input type="range" id="n" min="1" max="3999"><span id="nv"></span></div>
+<div class="row"><button class="alt" data-d="-100">−100</button><button class="alt" data-d="-10">−10</button><button class="alt" data-d="-1">−1</button><button class="alt" data-d="1">+1</button><button class="alt" data-d="10">+10</button><button class="alt" data-d="100">+100</button></div></div>
+<div class="card"><h2>Egípcio <span class="muted">(aditivo, c. 3000 a.C.)</span></h2><svg class="fig" id="eg" viewBox="0 0 360 60"></svg><p class="muted" id="egt" style="margin:4px 0 0"></p></div>
+<div class="card"><h2>Romano</h2><div class="big" id="ro"></div><p class="muted" id="rot" style="margin:4px 0 0"></p></div>
+<div class="card"><h2>Babilônico <span class="muted">(base 60)</span></h2><svg class="fig" id="ba" viewBox="0 0 360 60"></svg><p class="muted" id="bat" style="margin:4px 0 0"></p></div>
+<div class="card"><h2>Indo-arábico <span class="muted">(o nosso)</span></h2><div class="big" id="ia"></div><p class="muted" id="iat" style="margin:4px 0 0"></p></div>
+<div class="card"><h2>Desafio: que número é este?</h2><p class="muted" style="margin:0 0 6px">Leia o número escrito num sistema antigo, digite a resposta e toque em <b>OK</b> para registrar.</p>
+<svg class="fig" id="dsvg" viewBox="0 0 360 60"></svg><div class="big" id="dtxt"></div>
+<div class="grid2"><input class="num" id="dr" inputmode="numeric" placeholder="sua resposta"><button class="or" id="dok">OK, registrar</button></div>
+<div id="dmsg"></div><p class="muted" id="dsc" style="margin:6px 0 0"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C',GY='#6B7280',PU='#7A4BB5';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="${o.f||'Poppins,sans-serif'}">${s}</text>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const F=(p,q2=1)=>{if(q2<0){p=-p;q2=-q2;}const g=gcd(p,q2);return [p/g,q2/g];};
+const fs=f=>(f[1]===1?String(f[0]):f[0]+'/'+f[1]).replace(/-/g,'−');
+
+function egSVG(n){let m=Math.floor(n/1000),c=Math.floor(n/100)%10,d=Math.floor(n/10)%10,u=n%10,g='',x=6;
+ const lot=x=>`<path d="M${x+9},50 L${x+9},22" stroke="${NAVY}" stroke-width="2.2"/><path d="M${x+9},22 q-8,-2 -7,-10 q6,1 7,7 q1,-6 7,-7 q1,8 -7,10z" fill="${GR}"/><path d="M${x+9},50 q-6,0 -7,-5 M${x+9},50 q6,0 7,-5" stroke="${NAVY}" stroke-width="2" fill="none"/>`;
+ const coil=x=>`<path d="M${x+10},34 a3,3 0 1,1 3,3 a6,6 0 1,1 -6,-6 a9,9 0 1,1 9,9" fill="none" stroke="${OR}" stroke-width="2.4"/><line x1="${x+19}" y1="43" x2="${x+19}" y2="50" stroke="${OR}" stroke-width="2.4"/>`;
+ const heel=x=>`<path d="M${x+2},50 L${x+2},36 a7,8 0 0,1 14,0 L${x+16},50" fill="none" stroke="${BL}" stroke-width="2.6"/>`;
+ const bar=x=>`<line x1="${x+3}" y1="32" x2="${x+3}" y2="50" stroke="${NAVY}" stroke-width="2.6" stroke-linecap="round"/>`;
+ for(const [k,f,dx] of [[m,lot,22],[c,coil,26],[d,heel,20],[u,bar,8]]){for(let i=0;i<k;i++){g+=f(x);x+=dx;}if(k)x+=6;}
+ return {g,w:Math.max(x,60)};}
+function roman(n){const v=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];let s='';for(const [a,b] of v)while(n>=a){s+=b;n-=a;}return s;}
+function baSVG(n){const ds=[];let k=n;do{ds.unshift(k%60);k=Math.floor(k/60);}while(k>0);let g='',x=6;
+ const wedge=(x,y)=>`<path d="M${x},${y} l8,0 l-4,16 z" fill="${NAVY}"/><rect x="${x}" y="${y-3}" width="8" height="4" fill="${NAVY}"/>`;
+ const ten=(x,y)=>`<path d="M${x+12},${y} L${x},${y+8} L${x+12},${y+16}" fill="none" stroke="${OR}" stroke-width="3"/>`;
+ ds.forEach((dg,i)=>{const t=Math.floor(dg/10),u=dg%10;for(let j=0;j<t;j++){g+=ten(x,20);x+=13;}for(let j=0;j<u;j++){const r=j%3,c2=Math.floor(j/3);g+=wedge(x+c2*10,10+r*13);}x+=Math.ceil(u/3)*10+(dg===0?14:0);if(dg===0)g+=T(x-7,34,'·',{s:16,c:GY});if(i<ds.length-1){x+=18;}});
+ return {g,w:Math.max(x,60),ds};}
+function show(){const n=+$('n').value;$('nv').textContent=n;
+ const e=egSVG(n);$('eg').setAttribute('viewBox',`0 0 ${Math.max(e.w,200)} 60`);$('eg').innerHTML=e.g;
+ const m=Math.floor(n/1000),c=Math.floor(n/100)%10,d=Math.floor(n/10)%10,u=n%10;
+ $('egt').textContent=`${m} flor(es) de lótus (1 000) + ${c} espiral(is) (100) + ${d} calcanhar(es) (10) + ${u} traço(s) (1). A ordem não importa: o valor de cada símbolo é fixo.`;
+ const r=roman(n);$('ro').textContent=r;$('rot').textContent='I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1 000. Um símbolo menor antes de um maior subtrai: IV = 4, XC = 90, CM = 900.';
+ const b=baSVG(n);$('ba').setAttribute('viewBox',`0 0 ${Math.max(b.w,200)} 60`);$('ba').innerHTML=b.g;
+ $('bat').textContent=b.ds.length>1?`${n} = ${b.ds.map((x,i)=>x+(b.ds.length-1-i?' × '+(60**(b.ds.length-1-i)).toLocaleString('pt-BR'):'')).join(' + ')}. Cada grupo é um “algarismo” de 0 a 59: cunhas valem 1 e ângulos valem 10.`:`Até 59 o número cabe num só grupo: cunhas valem 1 e ângulos valem 10.`;
+ $('ia').textContent=fmt(n);const s=String(n),nm=['unidade','dezena','centena','milhar'];
+ $('iat').textContent=s.split('').map((x,i)=>`${x} × ${(10**(s.length-1-i)).toLocaleString('pt-BR')}`).join(' + ')+'. O mesmo algarismo vale mais conforme a posição, e o zero marca a casa vazia.';}
+$('n').value=P('n',1214,1,3999);$('n').oninput=show;
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{$('n').value=Math.max(1,Math.min(3999,+$('n').value+ +b.dataset.d));show();});
+let alvo=0,tipo='eg',ac=0,tot=0;
+function novo(){alvo=1+Math.floor(Math.random()*(Math.random()<.5?400:2500));tipo=Math.random()<.5?'eg':'ro';
+ if(tipo==='eg'){const e=egSVG(alvo);$('dsvg').style.display='block';$('dsvg').setAttribute('viewBox',`0 0 ${Math.max(e.w,200)} 60`);$('dsvg').innerHTML=e.g;$('dtxt').textContent='';}
+ else{$('dsvg').style.display='none';$('dtxt').textContent=roman(alvo);}$('dr').value='';}
+$('dok').onclick=()=>{const v=parseInt($('dr').value.replace(/\D/g,''));if(isNaN(v)){$('dmsg').innerHTML='<div class="msg bad">Digite um número.</div>';return;}
+ tot++;if(v===alvo){ac++;$('dmsg').innerHTML=`<div class="msg ok">Certo! É ${fmt(alvo)}. Veja o próximo.</div>`;}else $('dmsg').innerHTML=`<div class="msg bad">Era ${fmt(alvo)}${tipo==='ro'?' ('+roman(alvo)+')':''}. Veja o próximo.</div>`;
+ $('dsc').textContent=`Registrados: ${tot} · acertos: ${ac}`;novo();};
+show();novo();
+</script>
+</body>
+</html>
