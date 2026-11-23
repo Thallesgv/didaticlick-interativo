@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O canhão de Newton · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física</div><h1>O canhão de Newton</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Newton imaginou um canhão no alto de uma montanha altíssima, acima do ar. Escolha a velocidade da bala e dispare.</p>
+<canvas id="cv" width="800" height="600"></canvas>
+<label style="font-size:14px;display:block;margin:8px 0">Velocidade da bala: <b id="lv"></b><input type="range" id="v" min="1" max="12" step="0.1" value="5" style="width:100%"></label>
+<div class="row"><button id="fire" class="or">💥 Disparar</button><button id="clear" class="alt">Apagar trajetórias</button><button class="alt" data-v="7.7">Órbita circular</button><button class="alt" data-v="10.9">Escapar</button></div>
+<div class="msg info" id="msg">Comece com uma velocidade baixa e vá aumentando.</div>
+<p class="muted" style="margin:8px 0 0">Montanha exagerada (300 km de altura) e sem resistência do ar, como no desenho de Newton. Cálculo com a gravidade real da Terra.</p>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>O que acontece com o ponto onde a bala cai quando você aumenta a velocidade?</li>
+<li>Com cerca de 7,7 km/s, a bala dá a volta e volta ao canhão. Ela parou de cair?</li>
+<li>Entre 7,7 e 10,9 km/s, que forma tem a trajetória? E acima de 10,9 km/s?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const GM=398600,R=6371,H=300,CX=400,CY=215,SC=112/R;let trails=[],cur=null,run=false,last=0;
+const X=x=>CX+x*SC,Y=y=>CY-y*SC;
+function base(){c.clearRect(0,0,800,600);c.fillStyle='#050B24';c.fillRect(0,0,800,600);
+ c.fillStyle='#2E7BD6';c.beginPath();c.arc(CX,CY,R*SC,0,7);c.fill();c.fillStyle='#3FA36B';c.beginPath();c.ellipse(CX-40,CY+20,60,45,0.4,0,7);c.fill();c.beginPath();c.ellipse(CX+70,CY-50,45,60,-0.3,0,7);c.fill();
+ c.fillStyle='#8C6D4F';c.beginPath();c.moveTo(CX-30,Y(R-50));c.lineTo(CX,Y(R+H));c.lineTo(CX+30,Y(R-50));c.closePath();c.fill();
+ c.fillStyle='#0E2354';c.fillRect(CX-4,Y(R+H)-8,22,8);
+ trails.concat(cur?[cur]:[]).forEach(t=>{c.strokeStyle=t===cur?'#F7821F':t.col;c.lineWidth=4;c.beginPath();t.pts.forEach(([x,y],i)=>i?c.lineTo(X(x),Y(y)):c.moveTo(X(x),Y(y)));c.stroke();});
+ if(cur){const[x,y]=cur.pts[cur.pts.length-1];c.fillStyle='#FDE9D8';c.beginPath();c.arc(X(x),Y(y),5,0,7);c.fill();}c.lineWidth=1;}
+function classify(v,res){const vc=Math.sqrt(GM/(R+H)),ve=Math.sqrt(2*GM/(R+H));
+ if(res==='chão')return `A ${v.toFixed(1).replace('.',',')} km/s a bala cai de volta na Terra. Quanto mais rápida, mais longe ela cai, porque a Terra é redonda e “se curva” embaixo dela.`;
+ if(res==='escapou')return `A ${v.toFixed(1).replace('.',',')} km/s a bala <b>escapa</b> da Terra e nunca mais volta. A velocidade de escape, nessa altura, é de cerca de ${ve.toFixed(1).replace('.',',')} km/s.`;
+ return Math.abs(v-vc)<0.15?`<b>Órbita circular!</b> A ${v.toFixed(1).replace('.',',')} km/s a bala continua caindo, mas a Terra se curva na mesma medida: ela dá a volta e retorna ao canhão. É assim que funcionam os satélites.`
+  :`<b>Órbita elíptica:</b> a bala dá a volta na Terra numa trajetória oval e retorna ao canhão. A órbita circular, nessa altura, exige cerca de ${vc.toFixed(1).replace('.',',')} km/s.`;}
+function step(ts){if(!run)return;const real=Math.min(0.05,(ts-last)/1000);last=ts;const dt=5,n=Math.round(real*500/dt*8);
+ for(let k=0;k<n;k++){const s=cur.s,r=Math.hypot(s.x,s.y),a=-GM/(r*r*r);s.vx+=a*s.x*dt;s.vy+=a*s.y*dt;s.x+=s.vx*dt;s.y+=s.vy*dt;s.t+=dt;
+  if(k%4===0)cur.pts.push([s.x,s.y]);const r2=Math.hypot(s.x,s.y);
+  if(r2<R){cur.res='chão';break;}if(r2>4.5*R){cur.res='escapou';break;}
+  const ang=Math.atan2(s.x,s.y);if(s.t>600&&cur.prevAng<0&&ang>=0&&s.y>0){cur.res='órbita';break;}cur.prevAng=ang;}
+ if(cur.res){run=false;$('msg').innerHTML=classify(cur.v,cur.res);cur.col=cur.res==='chão'?'#E2553C':cur.res==='órbita'?'#4FC1C9':'#F7B731';trails.push(cur);cur=null;base();return;}
+ base();requestAnimationFrame(step);}
+$('fire').onclick=()=>{if(run)return;const v=+$('v').value;cur={v,pts:[[0,R+H]],s:{x:0,y:R+H,vx:v,vy:0,t:0},prevAng:0};run=true;last=performance.now();$('msg').textContent='Lá vai...';requestAnimationFrame(step);};
+$('clear').onclick=()=>{trails=[];base();};
+$('v').oninput=e=>{$('lv').textContent=(+e.target.value).toFixed(1).replace('.',',')+' km/s';};
+document.querySelectorAll('button[data-v]').forEach(b=>b.onclick=()=>{$('v').value=b.dataset.v;$('v').oninput({target:$('v')});$('fire').click();});
+$('v').oninput({target:$('v')});base();
+</script>
+</body></html>

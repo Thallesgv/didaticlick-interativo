@@ -1,4 +1,4 @@
-// Física · 9º ano · dados das páginas interativas (quizzes, resoluções e roteiros PhET)
+// Física · dados das páginas interativas (quizzes, resoluções e roteiros PhET)
 window.QUIZ=Object.assign(window.QUIZ||{},{
 "movimento-m1":{title:"Movimento · Módulo 1: Referencial, posição e deslocamento",qs:[
 {q:"Um passageiro está sentado num ônibus em movimento. Em relação ao motorista, o passageiro está:",o:["em movimento, porque o ônibus anda","em repouso, porque a distância entre eles não muda","em movimento, porque a rua passa por ele","em repouso só quando o ônibus para"],a:1,e:"Repouso e movimento dependem do referencial. A posição do passageiro em relação ao motorista não muda, então ele está em repouso em relação ao motorista."},
@@ -65,7 +65,7 @@ pergunta:"Com força constante e sem atrito, a velocidade aumenta sempre a mesma
 };
 // Página própria da apostila (QR da capa): só os materiais desta apostila
 window.APOSTILAS=Object.assign(window.APOSTILAS||{},{
-"movimento":{title:"Física 9º ano · Movimento",mods:[
+"movimento":{title:"Física · Movimento",mods:[
 {t:"Módulo 1 · Referencial, posição e deslocamento",l:[["Simulador: depende do referencial","fisica/referencial.html"],["Quiz do Módulo 1","quiz.html?id=movimento-m1"]]},
 {t:"Módulo 2 · Velocidade média",l:[["Resolução: exercício 5 (desafio)","resolucao.html?id=movimento-q2-5"],["Quiz do Módulo 2","quiz.html?id=movimento-m2"]]},
 {t:"Módulo 3 · Movimento uniforme",l:[["Simulador: carrinho e gráficos (MU)","fisica/movimento.html?modo=mu"],["Resolução: exercício 5","resolucao.html?id=movimento-q3-5"],["Quiz do Módulo 3","quiz.html?id=movimento-m3"]]},

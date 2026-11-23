@@ -65,7 +65,7 @@ function draw(){let s='';const cor=['#0E2354','#F7821F','#2457D6','#15803D','#7A
   else{$('m').innerHTML='<div class="msg bad">Este ábaco só vai até a centena de milhar.</div>';a[5]=9;}}else $('m').innerHTML='';
  if(modo==='livre')info();}
 function info(){const n=val();$('num').innerHTML=`<span class="k">${SN.fmt(n)}</span>`;$('ext').textContent=SN.extenso(n);
- const L=Math.max(1,String(n).length);let h='<table class="t"><tr><th>algarismo</th><th>ordem</th><th>valor posicional</th></tr>';
+ const L=Math.max(1,String(n).length);let h='<table class="t"><tr><th>algarismo<br>(valor absoluto)</th><th>ordem</th><th>valor relativo</th></tr>';
  for(let p=L-1;p>=0;p--){const d=a[p];h+=`<tr><td><b>${d}</b></td><td>${NL[p]}</td><td>${d} × ${SN.fmt(10**p)} = <b>${SN.fmt(d*10**p)}</b></td></tr>`;}
  $('tab').innerHTML=h+'</table>';}
 function desafio(){feito=false;msg('dm','');tipo=rnd(0,1);const f=[[100,999],[1000,9999],[10000,99999],[100000,999999]][Math.min(3,Math.floor(tt/2))];
