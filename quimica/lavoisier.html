@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança de Lavoisier · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;max-width:420px;height:auto;display:block;margin:0 auto}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.tabs button{font-size:14px;background:#fff;color:var(--navy);border:2px solid #D7DEEA}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.visor{font-size:28px;font-weight:700;text-align:center;color:var(--navy);margin:4px 0}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1>A balança de Lavoisier</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 6px">Escolha a reação e se o sistema fica aberto ou fechado. Depois, faça a reação acontecer e observe a balança.</p>
+<div class="tabs"><button data-r="bic">Vinagre + bicarbonato</button><button data-r="aco">Queima da palha de aço</button></div>
+<div class="tabs"><button data-s="aberto">Sistema aberto</button><button data-s="fechado">Sistema fechado</button></div>
+<canvas id="cv" width="420" height="300"></canvas>
+<div class="visor" id="vis"></div>
+<div class="row"><button id="go" class="or">Fazer a reação</button><button id="re" class="alt">Recomeçar</button></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Lei de Lavoisier</h2>
+<p style="margin:0">Num <b>sistema fechado</b>, a massa total dos reagentes é igual à massa total dos produtos. "Na natureza nada se cria, nada se perde, tudo se transforma." Quando a balança muda num sistema aberto, é porque algum gás <b>saiu</b> ou <b>entrou</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+// bic: frasco 100 g + vinagre 100 g (4% de ácido acético, em excesso) + bicarbonato 5,0 g → libera 2,6 g de CO2
+// aço: prato 100 g + palha de aço 10,0 g → absorve 1,5 g de O2 (queima parcial)
+const R={bic:{m0:205.0,dm:-2.6},aco:{m0:110.0,dm:+1.5}};
+const $=x=>document.getElementById(x);let r='bic',s='aberto',p=0,run=false,t=0;const cv=$('cv'),ctx=cv.getContext('2d');
+document.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{r=b.dataset.r;reset();});
+document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{s=b.dataset.s;reset();});
+function reset(){p=0;run=false;document.querySelectorAll('[data-r]').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
+ document.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===s));$('go').disabled=false;txt();}
+function mass(){return R[r].m0+(s==='aberto'?R[r].dm*p:0);}
+function txt(){$('vis').textContent=mass().toFixed(1).replace('.',',')+' g';
+ if(p===0){$('msg').innerHTML=r==='bic'?'O frasco tem vinagre e, no saquinho, bicarbonato de sódio. Toque em <b>Fazer a reação</b>.':'Um pouco de palha de aço (ferro) está sobre o prato. Toque em <b>Fazer a reação</b> para queimá-la.';return;}
+ if(p<1){$('msg').innerHTML='Reação acontecendo...';return;}
+ const M={bic:{aberto:'A massa <b>diminuiu 2,6 g</b>. A matéria sumiu? Não! A reação produziu <b>gás carbônico</b>, que escapou do frasco aberto.',
+  fechado:'A massa <b>não mudou</b>. O gás carbônico ficou preso e encheu o balão. Massa dos reagentes = massa dos produtos.'},
+  aco:{aberto:'A massa <b>aumentou 1,5 g</b>! O ferro reagiu com o <b>oxigênio do ar</b>, que passou a fazer parte do produto (óxido de ferro).',
+  fechado:'Dentro do frasco fechado, o ferro reagiu com o oxigênio que já estava lá dentro. A massa total <b>não mudou</b>.'}};
+ $('msg').innerHTML=M[r][s];}
+$('go').onclick=()=>{if(p>=1)return;run=true;$('go').disabled=true;};$('re').onclick=reset;
+function draw(){t+=0.05;if(run){p=Math.min(1,p+0.006);if(p>=1)run=false;txt();}
+ ctx.clearRect(0,0,420,300);
+ // balança
+ ctx.fillStyle='#0E2354';ctx.fillRect(110,250,200,30);ctx.fillStyle='#F7821F';ctx.fillRect(90,240,240,12);
+ ctx.fillStyle='#0b1b40';ctx.fillRect(170,258,80,16);ctx.fillStyle='#7CFC9A';ctx.font='700 13px monospace';ctx.textAlign='center';ctx.fillText(mass().toFixed(1)+' g',210,271);
+ if(r==='bic'){ // frasco
+  ctx.strokeStyle='#0E2354';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(185,110);ctx.lineTo(185,140);ctx.lineTo(150,235);ctx.lineTo(270,235);ctx.lineTo(235,140);ctx.lineTo(235,110);ctx.stroke();
+  ctx.fillStyle='rgba(120,180,245,.5)';ctx.beginPath();ctx.moveTo(165,190);ctx.lineTo(255,190);ctx.lineTo(270,235);ctx.lineTo(150,235);ctx.fill();
+  if(p>0&&p<1)for(let k=0;k<14;k++){const y=230-((t*40+k*17)%45);ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.arc(170+((k*37)%80),y,3,0,7);ctx.fill();}
+  if(s==='fechado'){const rb=12+38*p;ctx.fillStyle='#F7821F';ctx.beginPath();ctx.ellipse(210,110-rb,rb*0.85,rb,0,0,7);ctx.fill();ctx.fillRect(196,104,28,10);}
+  else if(p>0&&p<1){for(let k=0;k<8;k++){const y=100-((t*30+k*14)%90);ctx.fillStyle='rgba(150,150,160,.5)';ctx.font='600 11px Poppins';ctx.fillText('CO₂',200+Math.sin(t+k)*25,y);}}
+  if(p===0){ctx.fillStyle='#fff';ctx.strokeStyle='#999';ctx.lineWidth=1;ctx.fillRect(195,95,30,18);ctx.strokeRect(195,95,30,18);}}
+ else{ // prato com palha de aço
+  if(s==='fechado'){ctx.strokeStyle='rgba(14,35,84,.6)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(120,238);ctx.lineTo(120,120);ctx.quadraticCurveTo(210,60,300,120);ctx.lineTo(300,238);ctx.stroke();}
+  ctx.fillStyle='#B0B7C3';ctx.fillRect(140,228,140,10);
+  const col=p<1?(p>0?'#555':'#9AA0A8'):'#5A3A22';
+  for(let k=0;k<60;k++){const a=k*2.4,rr=(k%9)*4;ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(210+Math.cos(a)*rr*1.6,205+Math.sin(a)*rr*0.6,8,a,a+2);ctx.stroke();}
+  if(p>0&&p<1){for(let k=0;k<10;k++){ctx.fillStyle=k%2?'rgba(255,170,40,.9)':'rgba(255,90,20,.8)';ctx.beginPath();ctx.arc(180+((k*23)%60)+Math.sin(t*5+k)*3,205-((t*25+k*9)%30),2.5,0,7);ctx.fill();}
+   if(s==='aberto')for(let k=0;k<6;k++){const y=60+((t*30+k*20)%120);ctx.fillStyle='rgba(36,87,214,.6)';ctx.font='600 11px Poppins';ctx.fillText('O₂',150+k*25,y);}}}
+ requestAnimationFrame(draw);}
+reset();draw();
+</script>
+</body>
+</html>

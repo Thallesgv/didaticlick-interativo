@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aquecendo a água · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px}
+.two{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;align-items:start}
+@media(max-width:520px){.two{grid-template-columns:1fr}}
+.read{display:flex;justify-content:space-between;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.estado{font-size:19px;font-weight:700;color:var(--orange)}
+input[type=range]{width:100%}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1>Aquecendo a água: do gelo ao vapor</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Começamos com gelo a −20 °C. Aqueça (ou resfrie) e observe as partículas e o gráfico da temperatura.</p>
+<div class="two"><canvas id="box" width="300" height="300"></canvas><canvas id="gr" width="480" height="300"></canvas></div>
+<div class="read"><span>Temperatura: <span id="T"></span></span><span class="estado" id="est"></span></div>
+<input type="range" id="E" min="0" max="1000" value="0">
+<div class="row" style="margin-top:8px"><button id="aq" class="or">▶ Aquecer</button><button id="rf" class="alt">◀ Resfriar</button><button id="pa" class="alt">Pausar</button></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Enquanto o gelo derrete, a temperatura sobe? Para onde vai o calor fornecido?</li>
+<li>Compare a distância e a agitação das partículas no sólido, no líquido e no gás.</li>
+<li>Por que o patamar da ebulição é muito mais comprido que o da fusão?</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+// energia por grama (J): gelo −20→0: 42 | fusão: 334 | água 0→100: 418 | vaporização: 2260 | vapor 100→120: 40
+const SEG=[42,334,418,2260,40],TOT=SEG.reduce((a,b)=>a+b),CUM=[0];SEG.forEach((s,i)=>CUM.push(CUM[i]+s));
+function stateAt(q){ // q em J
+ if(q<=CUM[1])return{T:-20+20*q/42,f:0,ph:'s'};
+ if(q<=CUM[2])return{T:0,f:(q-CUM[1])/334,ph:'fus'};
+ if(q<=CUM[3])return{T:100*(q-CUM[2])/418,f:0,ph:'l'};
+ if(q<=CUM[4])return{T:100,f:(q-CUM[3])/2260,ph:'vap'};
+ return{T:100+20*(q-CUM[4])/40,f:0,ph:'g'};}
+const $=x=>document.getElementById(x);const box=$('box'),bx=box.getContext('2d'),gr=$('gr'),g=gr.getContext('2d');
+let dir=0,q=0,last=1;const N=36;const P=[];
+for(let i=0;i<N;i++){const c=i%6,r=Math.floor(i/6);P.push({hx:95+c*22,hy:150+r*22,x:95+c*22,y:150+r*22,vx:0,vy:0});}
+// ordem aleatória de quem muda de estado primeiro
+const ord=P.map((_,i)=>i).sort(()=>Math.random()-.5);P.forEach((p,i)=>p.rank=ord.indexOf(i)/N);
+function kind(p,s){ // 0 sólido, 1 líquido, 2 gás
+ if(s.ph==='s')return 0;if(s.ph==='fus')return p.rank<s.f?1:0;if(s.ph==='l')return 1;if(s.ph==='vap')return p.rank<s.f?2:1;return 2;}
+function step(){
+ const s=stateAt(q),agit=0.6+(s.T+20)/140*2.4;
+ bx.fillStyle='#EAF2FF';bx.fillRect(0,0,300,300);bx.strokeStyle='#0E2354';bx.lineWidth=4;bx.strokeRect(2,2,296,296);
+ // repulsão: as partículas não se sobrepõem
+ for(let i=0;i<N;i++)for(let j=i+1;j<N;j++){const a=P[i],b=P[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||0.01;
+  if(d<19){const f=(19-d)/2,ux=dx/d,uy=dy/d;a.x-=ux*f;a.y-=uy*f;b.x+=ux*f;b.y+=uy*f;}}
+ P.forEach(p=>{const k=kind(p,s);
+  if(k===0){p.x+=(p.hx-p.x)*0.3+(Math.random()-.5)*agit;p.y+=(p.hy+20-p.y)*0.3+(Math.random()-.5)*agit;p.vx=p.vy=0;}
+  else if(k===1){p.vx+=(Math.random()-.5)*agit*0.5;p.vy+=(Math.random()-.5)*agit*0.5+0.15;p.vx*=0.9;p.vy*=0.9;p.x+=p.vx;p.y+=p.vy;
+   if(p.y<150){p.y=150;p.vy=Math.abs(p.vy);} }
+  else{const sp=2+agit;if(Math.hypot(p.vx,p.vy)<sp*0.7){const a=Math.random()*6.28;p.vx=Math.cos(a)*sp;p.vy=Math.sin(a)*sp;}p.x+=p.vx;p.y+=p.vy;}
+  if(p.x<14){p.x=14;p.vx=Math.abs(p.vx);}if(p.x>286){p.x=286;p.vx=-Math.abs(p.vx);}
+  if(p.y<14){p.y=14;p.vy=Math.abs(p.vy);}if(p.y>286){p.y=286;p.vy=-Math.abs(p.vy);}
+  bx.fillStyle=k===0?'#2457D6':k===1?'#3B9BE0':'#F7821F';bx.beginPath();bx.arc(p.x,p.y,9,0,7);bx.fill();});
+ // gráfico
+ const L=50,R=470,Tp=20,B=260,X=e=>L+(R-L)*e/TOT,Y=T=>B-(B-Tp)*(T+20)/140;
+ g.fillStyle='#fff';g.fillRect(0,0,480,300);g.strokeStyle='#D7DEEA';g.lineWidth=1;g.font='12px Poppins,sans-serif';g.fillStyle='#6B7280';g.textAlign='right';
+ [-20,0,20,40,60,80,100,120].forEach(T=>{g.beginPath();g.moveTo(L,Y(T));g.lineTo(R,Y(T));g.stroke();g.fillText(T+' °C',L-4,Y(T)+4);});
+ g.textAlign='center';g.fillText('calor fornecido (tempo) →',(L+R)/2,290);
+ g.strokeStyle='#C3CBD9';g.lineWidth=3;g.beginPath();for(let e=0;e<=TOT;e+=8){const T=stateAt(e).T;e?g.lineTo(X(e),Y(T)):g.moveTo(X(e),Y(T));}g.stroke();
+ g.strokeStyle='#F7821F';g.lineWidth=4;g.beginPath();for(let e=0;e<=q;e+=4){const T=stateAt(e).T;e?g.lineTo(X(e),Y(T)):g.moveTo(X(e),Y(T));}g.stroke();
+ g.fillStyle='#0E2354';g.beginPath();g.arc(X(q),Y(s.T),7,0,7);g.fill();
+ g.font='600 11px Poppins,sans-serif';g.fillStyle='#0E2354';g.fillText('fusão',X(CUM[1]+167),Y(0)-8);g.fillText('ebulição',X(CUM[3]+1130),Y(100)-8);
+ // textos
+ $('T').textContent=s.T.toFixed(1).replace('.',',')+' °C';
+ const E={s:'Sólido',fus:'Sólido + líquido',l:'Líquido',vap:'Líquido + gás',g:'Gasoso'}[s.ph];$('est').textContent=E;
+ const aq=last>0;
+ const M={s:'As partículas estão bem juntas, presas em posições fixas, só <b>vibrando</b>. Quanto mais quente, mais vibram.',
+  fus:(aq?'<b>Fusão</b> a 0 °C':'<b>Solidificação</b> a 0 °C')+`: ${Math.round(s.f*100)}% já é líquido. A temperatura <b>não muda</b>: o calor está sendo usado para ${aq?'soltar':'(ao ser retirado) prender'} as partículas.`,
+  l:'No líquido, as partículas continuam próximas, mas <b>deslizam</b> umas sobre as outras. Por isso o líquido toma a forma do recipiente.',
+  vap:(aq?'<b>Ebulição (vaporização)</b> a 100 °C':'<b>Condensação</b> a 100 °C')+`: ${Math.round(s.f*100)}% já é vapor. De novo, a temperatura fica <b>constante</b> durante a mudança de estado.`,
+  g:'No gás (vapor), as partículas ficam <b>muito afastadas</b> e se movem rápido em todas as direções, ocupando todo o recipiente.'}[s.ph];
+ $('msg').innerHTML=M;
+ if(dir){q=Math.max(0,Math.min(TOT,q+dir*TOT/900));$('E').value=Math.round(q/TOT*1000);if(q<=0||q>=TOT)dir=0;}
+ requestAnimationFrame(step);}
+$('E').oninput=e=>{const nq=e.target.value/1000*TOT;last=nq>=q?1:-1;q=nq;dir=0;};
+$('aq').onclick=()=>{dir=1;last=1};$('rf').onclick=()=>{dir=-1;last=-1};$('pa').onclick=()=>dir=0;
+step();
+</script>
+</body>
+</html>

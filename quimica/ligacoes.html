@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quem se liga com quem? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.pick{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.pick button{padding:10px 0;font-weight:700;font-size:16px}
+.pick button.m{background:#fff;color:#8A4B0F;border:2px solid #F3C089}
+.pick button.a{background:#fff;color:var(--blue);border:2px solid #B9CCF3}
+.pick button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+.lado{font-weight:600;color:var(--navy);margin:10px 0 6px}
+.res{text-align:center;margin:6px 0}
+.res .f{font-size:34px;font-weight:700;color:var(--navy)}
+.res .tp{display:inline-block;border-radius:20px;padding:3px 12px;font-weight:600;font-size:14px}
+.tp.i{background:#FDE9D8;color:#8A4B0F}.tp.c{background:#E3ECFF;color:var(--blue)}.tp.me{background:#ECEFF4;color:#374151}
+pre{font-family:ui-monospace,Menlo,monospace;font-size:20px;line-height:1.25;color:var(--navy);text-align:center;margin:8px 0}
+.leg{font-size:12px;color:var(--gray)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1>Quem se liga com quem?</h1></header>
+<main>
+<div class="card">
+<p class="leg" style="margin:0 0 4px"><span style="color:#8A4B0F">■</span> metais &nbsp; <span style="color:var(--blue)">■</span> ametais e hidrogênio</p>
+<div class="lado">1º elemento</div><div class="pick" id="pA"></div>
+<div class="lado">2º elemento</div><div class="pick" id="pB"></div>
+</div>
+<div class="card" id="out"></div>
+<div class="card"><h2>A regra do octeto</h2>
+<p style="margin:0">Os átomos se ligam para ficar com a última camada completa (8 elétrons, ou 2 no caso do hidrogênio), como os gases nobres. <b>Metais</b> têm poucos elétrons na última camada e tendem a <b>perder</b>. <b>Ametais</b> têm muitos e tendem a <b>ganhar</b> ou <b>compartilhar</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+// s: símbolo, n: nome, m: metal?, v: elétrons na última camada, q: carga do íon, val: nº de ligações covalentes
+const EL={Na:{n:'sódio',m:1,v:1,q:1},K:{n:'potássio',m:1,v:1,q:1},Mg:{n:'magnésio',m:1,v:2,q:2},Ca:{n:'cálcio',m:1,v:2,q:2},Al:{n:'alumínio',m:1,v:3,q:3},
+ H:{n:'hidrogênio',m:0,v:1,q:-1,val:1},C:{n:'carbono',m:0,v:4,val:4},N:{n:'nitrogênio',m:0,v:5,q:-3,val:3},O:{n:'oxigênio',m:0,v:6,q:-2,val:2},F:{n:'flúor',m:0,v:7,q:-1,val:1},Cl:{n:'cloro',m:0,v:7,q:-1,val:1}};
+const ORD=['Na','K','Mg','Ca','Al','H','C','N','O','F','Cl'];
+// moléculas covalentes (par em ordem alfabética → fórmula, estrutural)
+const COV={'H|H':['H₂','H — H'],'N|N':['N₂','N ≡ N'],'O|O':['O₂','O = O'],'F|F':['F₂','F — F'],'Cl|Cl':['Cl₂','Cl — Cl'],
+ 'C|H':['CH₄','    H\n    |\nH — C — H\n    |\n    H'],'H|N':['NH₃','H — N — H\n    |\n    H'],'H|O':['H₂O','H — O — H'],'F|H':['HF','H — F'],'Cl|H':['HCl','H — Cl'],
+ 'C|O':['CO₂','O = C = O'],'C|F':['CF₄','    F\n    |\nF — C — F\n    |\n    F'],'C|Cl':['CCl₄','     Cl\n     |\nCl — C — Cl\n     |\n     Cl'],
+ 'F|N':['NF₃','F — N — F\n    |\n    F'],'Cl|N':['NCl₃','Cl — N — Cl\n     |\n     Cl'],'F|O':['OF₂','F — O — F'],'Cl|O':['Cl₂O','Cl — O — Cl'],'Cl|F':['ClF','Cl — F']};
+const FORA={'C|C':'O carbono sozinho forma o grafite e o diamante, que são redes enormes de átomos, e não moléculas pequenas.','C|N':'Carbono e nitrogênio formam compostos mais complexos, que ficam para o Ensino Médio.','N|O':'Nitrogênio e oxigênio formam vários óxidos diferentes (NO, NO₂, N₂O...). Fica para o Ensino Médio.'};
+const sub=n=>n===1?'':String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[c]).join('');
+const supq=q=>(Math.abs(q)>1?String(Math.abs(q)).split('').map(c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).join(''):'')+(q>0?'⁺':'⁻');
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const $=x=>document.getElementById(x);let a='Na',b='Cl';
+function pick(id,get,set){$(id).innerHTML=ORD.map(s=>`<button class="${EL[s].m?'m':'a'}" data-s="${s}">${s}</button>`).join('');
+ $(id).querySelectorAll('button').forEach(x=>x.onclick=()=>{set(x.dataset.s);mark();res();});}
+function mark(){[['pA',a],['pB',b]].forEach(([id,s])=>$(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.s===s)));}
+function ficha(s){const e=EL[s];return `<b>${s}</b> (${e.n}): ${e.v} elétron${e.v>1?'s':''} na última camada → ${e.m?`tende a <b>perder ${e.v}</b> e virar ${s}${supq(e.q)}`:s==='H'?'precisa de <b>1</b> para ficar com 2':s==='C'?'precisa de <b>4</b>':`tende a <b>ganhar ${8-e.v}</b>`}`;}
+function res(){const A=EL[a],B=EL[b];let h=`<p style="margin:0 0 8px">${ficha(a)}<br>${a!==b?ficha(b):''}</p>`;
+ if(A.m&&B.m){h+=`<div class="res"><span class="tp me">Ligação metálica</span><div class="f">${a===b?a:a+' + '+b}</div></div><div class="msg info">Entre metais, os elétrons da última camada ficam "soltos", formando um <b>mar de elétrons</b> que mantém os cátions unidos. ${a===b?'É assim no metal puro.':'A mistura de metais é uma <b>liga metálica</b>.'} Por isso os metais conduzem eletricidade.</div>`;}
+ else if(A.m||B.m){const [M,X]=A.m?[a,b]:[b,a],qm=EL[M].q,qx=EL[X].q;
+  if(X==='C'){h+='<div class="msg info">Metais com carbono formam compostos especiais (carbetos), que não estudamos no 9º ano. Tente outro par.</div>';}
+  else{let nm=Math.abs(qx),nx=qm;const g=gcd(nm,nx);nm/=g;nx/=g;
+  h+=`<div class="res"><span class="tp i">Ligação iônica</span><div class="f">${M}${sub(nm)}${X}${sub(nx)}</div></div>
+  <div class="msg info">O ${EL[M].n} <b>perde</b> ${qm} elétron${qm>1?'s':''} (vira ${M}${supq(qm)}) e o ${EL[X].n} <b>ganha</b> ${-qx} (vira ${X}${supq(qx)}). As cargas opostas se atraem.<br>
+  Para a carga total ser zero: ${nm} × (${qm>0?'+':''}${qm}) + ${nx} × (${qx}) = 0. ${nm>1||nx>1?'Truque: troque as cargas de lugar e simplifique.':''}</div>`;
+  if(X==='H')h+='<p class="muted">Aqui o hidrogênio ganha um elétron e vira H⁻ (hidreto). Com ametais ele compartilha.</p>';}}
+ else{const key=[a,b].sort().join('|');
+  if(COV[key]){const [f,e]=COV[key];h+=`<div class="res"><span class="tp c">Ligação covalente</span><div class="f">${f}</div></div><pre>${e}</pre>
+   <div class="msg info">Ametais não perdem elétrons: eles <b>compartilham</b> pares de elétrons. Cada traço é um par compartilhado. ${a!==b||'HNOFCl'.includes(a)?`O ${EL[a].n} faz ${EL[a].val} ligaç${EL[a].val>1?'ões':'ão'}${a!==b?` e o ${EL[b].n} faz ${EL[b].val}`:''}.`:''}</div>`;}
+  else h+=`<div class="msg info">${FORA[key]||'Combinação fora do 9º ano.'} Tente outro par.</div>`;}
+ $('out').innerHTML=h;}
+pick('pA',()=>a,s=>a=s);pick('pB',()=>b,s=>b=s);mark();res();
+</script>
+</body>
+</html>

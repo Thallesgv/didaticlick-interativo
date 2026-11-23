@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratório de separação · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-size:14px;padding:10px 8px}
+.grid button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.grid button.ok{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.mix{font-size:19px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.score{float:right;font-size:13px;color:var(--gray)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 6º ano</div><h1>Laboratório de separação</h1></header>
+<main>
+<div class="card">
+<h2>1. Escolha a mistura <span class="score" id="score"></span></h2>
+<div class="grid" id="mixes"></div>
+</div>
+<div class="card">
+<h2>2. Qual método separa?</h2>
+<div class="mix" id="mixName">Escolha uma mistura acima</div>
+<div class="grid" id="mets"></div>
+<div id="fb"></div>
+</div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Água com sal: qual a diferença entre evaporar e destilar? O que você recupera em cada caso?</li>
+<li>Por que a filtração não separa a água do sal?</li>
+<li>Como você separaria água, areia e sal, todos juntos? (Dica: use dois métodos, um depois do outro.)</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const MET={cat:'Catação',pen:'Peneiração',fil:'Filtração',dec:'Decantação (funil de separação)',eva:'Evaporação',ds:'Destilação simples',df:'Destilação fracionada',mag:'Separação magnética',flo:'Flotação'};
+const MIX=[
+ {n:'Feijão e pedrinhas',ok:{cat:'Certo! Na <b>catação</b> separamos as pedrinhas com a mão (ou pinça), porque dá para vê-las e pegá-las uma a uma.'},
+  why:'As pedrinhas são grandes e fáceis de ver.'},
+ {n:'Areia e pedras',ok:{pen:'Certo! Na <b>peneiração</b>, a areia (grãos pequenos) passa pela peneira e as pedras ficam retidas.'},
+  why:'Pense no tamanho dos grãos.'},
+ {n:'Água e areia',ok:{fil:'Certo! Na <b>filtração</b>, a água passa pelo papel de filtro e a areia (sólido que não se dissolve) fica retida.',dec:'Também funciona! A areia é mais densa e vai para o fundo (<b>decantação</b>); depois tiramos a água com cuidado. Muitas vezes decantamos e depois filtramos.'},
+  why:'A areia não se dissolve na água.'},
+ {n:'Água e óleo',ok:{dec:'Certo! No <b>funil de separação</b>, o óleo (menos denso) fica em cima. Abrimos a torneira e a água sai primeiro.'},
+  why:'São dois líquidos que não se misturam.'},
+ {n:'Água e sal',ok:{eva:'Certo, se você quer o <b>sal</b>: a água evapora e o sal fica (é assim nas salinas). Mas a água se perde.',ds:'Certo, e você recupera os dois! Na <b>destilação simples</b>, a água evapora, é resfriada no condensador e volta a ser líquida. O sal fica no balão.'},
+  why:'O sal está dissolvido: não dá para filtrar.'},
+ {n:'Água e álcool',ok:{df:'Certo! Os dois são líquidos que se misturam, mas fervem em temperaturas diferentes (álcool ≈ 78 °C, água 100 °C). A <b>destilação fracionada</b> separa os dois.'},
+  why:'Dois líquidos misturados, com pontos de ebulição diferentes.'},
+ {n:'Areia e limalha de ferro',ok:{mag:'Certo! O <b>ímã</b> atrai a limalha de ferro e a areia fica.'},
+  why:'Um dos materiais é atraído por ímã.'},
+ {n:'Areia e serragem',ok:{flo:'Certo! Na <b>flotação</b>, colocamos água: a serragem (menos densa) boia e a areia afunda.'},
+  why:'Pense no que boia na água.'}];
+const $=x=>document.getElementById(x);let cur=-1;const done=new Set();
+$('mixes').innerHTML=MIX.map((m,i)=>`<button data-i="${i}">${m.n}</button>`).join('');
+$('mets').innerHTML=Object.entries(MET).map(([k,v])=>`<button data-k="${k}" disabled>${v}</button>`).join('');
+function sc(){$('score').textContent=done.size+' de '+MIX.length+' resolvidas';}
+document.querySelectorAll('#mixes button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;
+ document.querySelectorAll('#mixes button').forEach(x=>x.classList.toggle('on',x===b));
+ $('mixName').textContent=MIX[cur].n;$('fb').innerHTML='';
+ document.querySelectorAll('#mets button').forEach(x=>{x.disabled=false;x.classList.remove('ok');});});
+document.querySelectorAll('#mets button').forEach(b=>b.onclick=()=>{if(cur<0)return;const m=MIX[cur],k=b.dataset.k;
+ if(m.ok[k]){b.classList.add('ok');$('fb').innerHTML=`<div class="msg ok">${m.ok[k]}</div>`;
+  if(!done.has(cur)){done.add(cur);document.querySelector(`#mixes button[data-i="${cur}"]`).classList.add('ok');}sc();
+  if(done.size===MIX.length)$('fb').insertAdjacentHTML('beforeend','<div class="msg info">Você resolveu todas as misturas! 🎉</div>');}
+ else $('fb').innerHTML=`<div class="msg bad">A <b>${MET[k].toLowerCase()}</b> não serve aqui. Dica: ${m.why}</div>`;});
+sc();
+</script>
+</body>
+</html>
