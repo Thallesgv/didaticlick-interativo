@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>De onde vêm os elementos químicos? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Astronomia 9º ano</div><h1>De onde vêm os elementos químicos?</h1></header>
+<main>
+
+<style>
+.pt{display:grid;grid-template-columns:repeat(18,minmax(0,1fr));gap:2px;margin-top:6px}
+.pt div{aspect-ratio:1;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:clamp(6px,1.9vw,12px);font-weight:600;color:#fff;cursor:pointer;user-select:none;overflow:hidden;min-width:0}
+.pt div.gap{background:transparent;cursor:default}.pt div.dim{opacity:.18}.pt div.sel{outline:3px solid var(--navy);outline-offset:1px}
+.leg{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.leg button{font-size:12px;padding:6px 8px;border:2px solid transparent;color:#fff}.leg button.off{opacity:.35}
+</style>
+<div class="card">
+<p class="muted" style="margin:0 0 6px">Cada cor mostra onde o elemento foi fabricado. Toque num elemento para saber mais, ou toque numa origem para destacar os elementos dela.</p>
+<div class="leg" id="leg"></div>
+<div class="pt" id="pt"></div>
+<div class="msg info" id="info" style="margin-top:12px">Toque num elemento.</div>
+<p class="muted" style="margin:8px 0 0">Mostramos só a origem principal de cada elemento, de forma simplificada. Muitos elementos vêm de mais de um processo.</p>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Quais elementos já existiam antes da primeira estrela?</li>
+<li>Toque no ouro e na platina. De onde eles vêm?</li>
+<li>Toque em “Feito pelo ser humano”. Em que parte da tabela ficam esses elementos? Por que você acha que isso acontece?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script src="../data/elementos.js"></script>
+<script>
+const $=x=>document.getElementById(x);let only=null,sel=null;
+const grid=Array(10*18).fill(null);ELEM.forEach(e=>{grid[e[4]*18+e[5]]=e;});
+function render(){
+ $('pt').innerHTML=grid.map((e,i)=>{if(!e){const r=Math.floor(i/18),c=i%18;if(r===7)return '<div class="gap" style="aspect-ratio:3"></div>'.repeat(0)+'<div class="gap"></div>';if((r===5||r===6)&&c===2)return `<div class="gap" style="color:var(--gray);font-size:clamp(5px,1.5vw,9px);line-height:1;text-align:center">${r===5?'57<br>71':'89<br>103'}</div>`;return '<div class="gap"></div>';}
+  const [z,s,n,o]=e;return `<div data-z="${z}" class="${only&&only!==o?'dim':''} ${sel===z?'sel':''}" style="background:${ELCAT[o][1]}" title="${n}">${s}</div>`}).join('');
+ document.querySelectorAll('#pt div[data-z]').forEach(d=>d.onclick=()=>{sel=+d.dataset.z;const [z,s,n,o]=ELEM[sel-1];
+  $('info').innerHTML=`<b style="font-size:17px">${n} (${s})</b> · número atômico ${z}<br><span style="display:inline-block;margin:4px 0;padding:2px 8px;border-radius:8px;color:#fff;background:${ELCAT[o][1]}">${ELCAT[o][0]}</span><br>${ELCAT[o][2]}`;render();});
+ $('leg').innerHTML=Object.entries(ELCAT).map(([k,v])=>`<button data-k="${k}" class="${only&&only!==k?'off':''}" style="background:${v[1]}">${v[0]}</button>`).join('');
+ document.querySelectorAll('#leg button').forEach(b=>b.onclick=()=>{only=only===b.dataset.k?null:b.dataset.k;render();});}
+render();
+</script>
+</body></html>

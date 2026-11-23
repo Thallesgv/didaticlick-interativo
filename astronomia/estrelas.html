@@ -44,8 +44,8 @@ big:[
 ["Protoestrela","O gás se contrai e esquenta muito rapidamente.","#F08A4B",55,"star"],
 ["Sequência principal (azul)","Uma estrela muito grande e quente, de cor azulada. Ela gasta o combustível muito depressa: vive só alguns milhões de anos, bem menos que o Sol.","#7FB3FF",75,"star","poucos milhões de anos"],
 ["Supergigante vermelha","Ela incha tanto que pode ficar maior que a órbita de Marte. No núcleo, forma elementos cada vez mais pesados, até o ferro.","#E2553C",165,"star"],
-["Supernova","O núcleo desaba e a estrela explode. Por algumas semanas, pode brilhar tanto quanto uma galáxia inteira. A explosão espalha pelo espaço elementos como ferro, ouro e cálcio.","#FFF1B8",150,"sn"],
-["Estrela de nêutrons ou buraco negro","Sobra um núcleo minúsculo e densíssimo: uma estrela de nêutrons (cerca de 20 km de diâmetro). Se a estrela era ainda maior, sobra um buraco negro, de onde nem a luz escapa.","#9FB4FF",10,"bh"]]};
+["Supernova","O núcleo desaba e a estrela explode. Por algumas semanas, pode brilhar tanto quanto uma galáxia inteira. A explosão espalha pelo espaço elementos fabricados pela estrela, como oxigênio, silício, cálcio e ferro.","#FFF1B8",150,"sn"],
+["Estrela de nêutrons ou buraco negro","Sobra um núcleo minúsculo e densíssimo: uma estrela de nêutrons (cerca de 20 km de diâmetro). Se a estrela era ainda maior, sobra um buraco negro, de onde nem a luz escapa. Quando duas estrelas de nêutrons colidem, formam-se elementos como o ouro e a platina.","#9FB4FF",10,"bh"]]};
 let path='sol',i=0;const cv=document.getElementById('cv'),c=cv.getContext('2d'),$=x=>document.getElementById(x);
 const seed=[...Array(120)].map(()=>[Math.random()*800,Math.random()*340,Math.random()]);
 function draw(){const [n,t,col,r,kind,dur]=P[path][i];c.fillStyle='#050B24';c.fillRect(0,0,800,340);
