@@ -1,4 +1,4 @@
-// Figuras da apostila Produtos Notáveis (MatematiClick · DidatiClick).
+// Figuras da apostila Produtos Notáveis (DidatiClick).
 // A mesma biblioteca desenha as figuras do PDF (via node) e as páginas interativas do site.
 (function (root) {
   const NAVY = "#0E2354", ORANGE = "#F7821F", BLUE = "#2457D6", GREEN = "#15803D", RED = "#B91C1C", GRAY = "#6B7280";
