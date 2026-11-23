@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bits, bytes e letras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Sistemas de numeração</div><h1 id="title">Bits, bytes e letras</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-pal" class="on">Palavra em bits</button><button id="tab-byte">Monte um byte</button><button id="tab-desafio">Desafio</button></div>
+<div class="card" id="pn-pal"><label class="l">Digite uma palavra (sem acento)</label><input type="text" id="w" maxlength="12" autocomplete="off" spellcheck="false"><div id="wout" style="margin-top:8px"></div></div>
+<div class="card hide" id="pn-byte"><p class="muted" style="margin-top:0">Toque nas lâmpadas para acender (1) ou apagar (0).</p><div id="lamps"></div><div id="bout"></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dfig"></div><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Cada 0 ou 1 é um <b>bit</b>. Oito bits formam um <b>byte</b>, que guarda um número de 0 a 255 (são 2<sup>8</sup> = 256 possibilidades). As casas valem 128, 64, 32, 16, 8, 4, 2 e 1. No código ASCII, criado em 1963, cada letra tem um número: A = 65, B = 66, …, Z = 90; as minúsculas começam em a = 97.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+const PV=[128,64,32,16,8,4,2,1];
+const bits=n=>PV.map(v=>n&v?1:0);
+function lampSVG(n,clic){const b=bits(n);let s='<svg viewBox="0 0 336 78" style="width:100%">';
+ b.forEach((x,i)=>{const cx=21+i*42;s+=`<text x="${cx}" y="12" font-size="11" font-weight="700" fill="#6B7280" text-anchor="middle" font-family="Poppins,sans-serif">${PV[i]}</text>`;
+ s+=`<g ${clic?`data-i="${i}" style="cursor:pointer"`:''}><circle cx="${cx}" cy="36" r="16" fill="${x?'#FBBF24':'#E5E7EB'}" stroke="${x?'#F7821F':'#9CA3AF'}" stroke-width="2.5"/>${x?`<circle cx="${cx}" cy="36" r="22" fill="#FBBF24" opacity=".25"/>`:''}</g>`;
+ s+=`<text x="${cx}" y="74" font-size="15" font-weight="700" fill="#0E2354" text-anchor="middle" font-family="Poppins,sans-serif">${x}</text>`;});return s+'</svg>';}
+const soma=n=>{const p=PV.filter(v=>n&v);return p.length?p.join(' + ')+' = '+n:'0';};
+const ch=n=>n>=33&&n<=126?String.fromCharCode(n):(n===32?'espaço':'');
+function pal(){const t=$('w').value;let h='';
+ for(const c of t){const k=c.charCodeAt(0);
+  if(k>127){h+=`<div class="msg bad">“${c}” não está na tabela ASCII de 1 byte. Letras com acento e ç usam 2 bytes nos computadores de hoje. Tente sem acento.</div>`;continue;}
+  h+=`<div style="border-bottom:1px solid #E5E7EB;padding:6px 0"><div class="row" style="align-items:center"><div class="big" style="width:60px;margin:0">${c===' '?'␣':c}</div><div style="flex:1;font-size:14px">código <b>${k}</b> = ${soma(k)}<br><b style="letter-spacing:2px;color:var(--orange)">${bits(k).join('')}</b></div></div>${lampSVG(k)}</div>`;}
+ $('wout').innerHTML=h||'<p class="muted">Digite uma palavra.</p>';}
+$('w').oninput=pal;$('w').value=q.get('w')||'ENZO';pal();
+let by=P('n',77,0,255);
+function byte(){$('lamps').innerHTML=lampSVG(by,true);$('lamps').querySelectorAll('g[data-i]').forEach(g=>g.onclick=()=>{by^=PV[+g.dataset.i];byte();});
+ const c=ch(by);$('bout').innerHTML=`<div class="big" style="font-size:19px">${soma(by)}</div><p style="text-align:center;margin:4px 0">${c?`No código ASCII, ${by} é <b class="k" style="font-size:20px">${c}</b>`:'Este número não é uma letra no código ASCII.'}</p>`;}
+byte();
+let tipo,alvo,ac=0,tt=0,feito=false,db=0;
+function desafio(){feito=false;msg('dm','');tipo=rnd(0,1);alvo=rnd(65,90);
+ if(tipo===0){$('dq').textContent='Que letra está guardada neste byte?';$('dfig').innerHTML=lampSVG(alvo);$('dbody').innerHTML='<p class="muted" style="margin:4px 0">Dica: A = 65, B = 66, C = 67…</p><input type="text" id="resp" maxlength="1" autocomplete="off" autocapitalize="characters">';}
+ else{db=0;$('dq').innerHTML=`Acenda as lâmpadas para guardar a letra <span class="k">${String.fromCharCode(alvo)}</span> (código ${alvo})`;$('dbody').innerHTML='';dl();}}
+function dl(){$('dfig').innerHTML=lampSVG(db,true);$('dfig').querySelectorAll('g[data-i]').forEach(g=>g.onclick=()=>{if(feito)return;db^=PV[+g.dataset.i];dl();});}
+$('ok').onclick=()=>{if(feito)return;const ex=`${String.fromCharCode(alvo)}: ${soma(alvo)}, em bits ${bits(alvo).join('')}`;
+ if(tipo===0){const v=($('resp').value||'').trim().toUpperCase();if(!v){msg('dm','Escreva a letra antes do OK.','info');return;}tt++;feito=true;
+  if(v===String.fromCharCode(alvo)){ac++;msg('dm','Certo! '+ex,'ok');}else msg('dm','Ainda não. '+ex,'bad');}
+ else{if(!db){msg('dm','Acenda as lâmpadas primeiro.','info');return;}tt++;feito=true;
+  if(db===alvo){ac++;msg('dm','Certo! '+ex,'ok');}else msg('dm',`Ainda não. Suas lâmpadas valem ${db}. ${ex}`,'bad');}
+ $('placar').textContent=`Acertos: ${ac} de ${tt}`;};
+$('novo').onclick=desafio;tabs(['pal','byte','desafio'],t=>{if(t==='desafio')desafio();});
+
+</script>
+</body>
+</html>

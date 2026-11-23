@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O átomo e a luz · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px}
+.els{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.els button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-size:14px;padding:8px 4px}
+.els button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.spec{height:34px;border-radius:6px;position:relative;margin-top:6px;background:#111}
+.spec i{position:absolute;top:0;bottom:0;width:3px}
+.scale{display:flex;justify-content:space-between;font-size:11px;color:var(--gray)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1>O átomo e a luz: o teste de chama</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Escolha um elemento e leve um pouco de um sal dele à chama. Veja a cor e o que acontece com os elétrons.</p>
+<div class="els" id="els"></div>
+<canvas id="cv" width="420" height="260" style="margin-top:10px;background:#0E2354"></canvas>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>A "impressão digital" de luz</h2>
+<p style="margin:0 0 4px">Passando a luz da chama por um prisma, ela se separa em <b>linhas de cores</b>. Cada elemento tem as suas linhas, sempre nas mesmas posições: é o <b>espectro de emissão</b>.</p>
+<div class="spec" id="spec"></div>
+<div class="scale"><span>violeta (400 nm)</span><span>verde</span><span>vermelho (700 nm)</span></div>
+<p class="muted" style="margin:6px 0 0">Linhas principais, em posições aproximadas. É assim que os astrônomos descobrem do que as estrelas são feitas.</p>
+</div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Por que o elétron precisa receber energia antes de emitir luz?</li>
+<li>Por que cada elemento tem uma cor de chama diferente?</li>
+<li>Que elemento você usaria para fazer fogos de artifício vermelhos? E verdes?</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+// [símbolo, nome, cor da chama, nome da cor, linhas do espectro (nm), camadas]
+const E=[['Li','lítio','#E0163A','vermelho-carmim',[671,610],[2,1]],['Na','sódio','#FFC21A','amarelo-alaranjado',[589],[2,8,1]],['K','potássio','#C58CF0','lilás',[766,404],[2,8,8,1]],['Ca','cálcio','#FF6A2A','vermelho-alaranjado',[622,554,616],[2,8,8,2]],
+ ['Sr','estrôncio','#FF2020','vermelho intenso',[650,606,461],[2,8,18,8,2]],['Ba','bário','#B8E04A','verde-amarelado',[554,524,514],[2,8,18,18,8,2]],['Cu','cobre','#22D3B0','verde-azulado',[522,511,465],[2,8,18,1]],['H','hidrogênio','#E85A9A','rosa (lâmpada de gás)',[656,486,434,410],[1]]];
+const $=x=>document.getElementById(x);let cur=1,t=0,phase=0,ph=null;
+$('els').innerHTML=E.map((e,i)=>`<button data-i="${i}">${e[0]} · ${e[1]}</button>`).join('');
+document.querySelectorAll('#els button').forEach(b=>b.onclick=()=>{cur=+b.dataset.i;t=0;upd();});
+function wl2rgb(w){let r=0,g=0,b=0;if(w<440){r=-(w-440)/60;b=1}else if(w<490){g=(w-440)/50;b=1}else if(w<510){g=1;b=-(w-510)/20}else if(w<580){r=(w-510)/70;g=1}else if(w<645){r=1;g=-(w-645)/65}else r=1;return `rgb(${r*255|0},${g*255|0},${b*255|0})`;}
+function upd(){const e=E[cur];document.querySelectorAll('#els button').forEach(b=>b.classList.toggle('on',+b.dataset.i===cur));
+ $('spec').innerHTML=e[4].map(w=>`<i style="left:${(w-400)/(780-400)*100}%;background:${wl2rgb(w)};box-shadow:0 0 6px ${wl2rgb(w)}"></i>`).join('');
+ $('msg').innerHTML=`<b>${e[1][0].toUpperCase()+e[1].slice(1)}: chama ${e[3]}.</b> O calor da chama dá energia aos elétrons, que <b>saltam</b> para uma camada mais externa. Logo depois, eles <b>voltam</b> para a camada de origem e devolvem essa energia como <b>luz</b>. A cor depende do tamanho do salto, que é diferente em cada elemento.`+(e[0]==='H'?' (O hidrogênio é um gás: a cor rosa aparece numa lâmpada de descarga, e não na chama comum.)':'');}
+const cv=$('cv'),c=cv.getContext('2d');
+function draw(){t++;const e=E[cur];c.clearRect(0,0,420,260);c.fillStyle='#0E2354';c.fillRect(0,0,420,260);
+ // bico de Bunsen e chama
+ c.fillStyle='#8A94A6';c.fillRect(70,200,24,50);c.fillRect(56,244,52,8);
+ const fl=(k,col,w,h)=>{c.fillStyle=col;c.beginPath();c.moveTo(82-w,200);c.quadraticCurveTo(82-w*1.2,200-h*.5+Math.sin(t/6+k)*4,82+Math.sin(t/5+k)*5,200-h);c.quadraticCurveTo(82+w*1.2,200-h*.5+Math.cos(t/6+k)*4,82+w,200);c.fill();};
+ c.globalAlpha=.85;fl(0,e[2],30,150);c.globalAlpha=1;fl(1,'rgba(255,255,255,.35)',12,70);fl(2,'rgba(80,120,255,.8)',10,30);
+ // fio com a amostra
+ c.strokeStyle='#C3CBD9';c.lineWidth=2;c.beginPath();c.moveTo(0,120);c.lineTo(76,118);c.stroke();c.fillStyle='#fff';c.beginPath();c.arc(78,118,4,0,7);c.fill();
+ // modelo de Bohr (camada de valência e a seguinte)
+ const cx=290,cy=130,R1=50,R2=90;c.strokeStyle='rgba(255,255,255,.35)';c.lineWidth=1.5;
+ [R1,R2].forEach(r=>{c.beginPath();c.arc(cx,cy,r,0,7);c.stroke();});
+ c.fillStyle='#F7821F';c.beginPath();c.arc(cx,cy,14,0,7);c.fill();c.fillStyle='#fff';c.font='600 11px Poppins,sans-serif';c.textAlign='center';c.fillText(e[0],cx,cy+4);
+ c.fillStyle='rgba(255,255,255,.7)';c.font='10px Poppins,sans-serif';c.fillText('camada de valência',cx,cy+R1+14);c.fillText('camada mais externa (excitado)',cx,cy-R2-6);
+ const cyc=t%160;let r,a=-.9;
+ if(cyc<40){r=R1;}else if(cyc<60){r=R1+(R2-R1)*(cyc-40)/20;}else if(cyc<100){r=R2;}else if(cyc<120){r=R2-(R2-R1)*(cyc-100)/20;}else r=R1;
+ // energia chegando
+ if(cyc>=25&&cyc<45){c.strokeStyle='#FFD36B';c.lineWidth=2;c.beginPath();for(let x=150;x<cx-R1+10-((45-cyc)*3);x+=4)c.lineTo(x,cy+Math.sin(x/5)*5);c.stroke();c.fillStyle='#FFD36B';c.fillText('energia (calor)',190,cy+24);}
+ // fóton saindo
+ if(cyc>=115){const d=(cyc-115)*4;const col=wl2rgb(e[4][0]);c.strokeStyle=col;c.lineWidth=3;c.beginPath();for(let x=0;x<40;x+=3)c.lineTo(cx+R1*Math.cos(a)+d+x,cy+R1*Math.sin(a)-d*.5+Math.sin((x+d)/4)*5);c.stroke();c.fillStyle=col;c.fillText('luz',cx+R1*Math.cos(a)+d+30,cy+R1*Math.sin(a)-d*.5-10);}
+ c.fillStyle='#4FA3FF';c.beginPath();c.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),7,0,7);c.fill();
+ c.fillStyle='#fff';c.font='600 12px Poppins,sans-serif';c.textAlign='left';
+ c.fillText(cyc<45?'1. o elétron recebe energia':cyc<100?'2. salta para uma camada mais externa':'3. volta e emite luz',190,248);
+ requestAnimationFrame(draw);}
+upd();draw();
+</script>
+</body>
+</html>
