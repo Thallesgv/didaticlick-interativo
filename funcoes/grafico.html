@@ -40,7 +40,7 @@ const CFG={
  geral:{title:'Parábola na forma geral',P:[['a',-3,3,.25,1],['b',-8,8,.5,-2],['c',-8,8,.5,-3]],C:[['raizes','Marcar as raízes',1],['vert','Marcar o vértice',1],['canon','Mostrar a forma canônica',0],['tab','Mostrar tabela',0]],hint:'f(x) = ax² + bx + c. Veja o vértice e as raízes mudarem.'}};
 const cfg=CFG[T];document.title=cfg.title+' · DidatiClick';$('title').textContent=cfg.title;$('hint').textContent=cfg.hint;
 const V={};cfg.P.forEach(([k,mi,ma,st,d])=>{V[k]=Q.get(k)!==null?+Q.get(k):d;
- $('sliders').insertAdjacentHTML('beforeend',`<div class="sl"><b>${k}</b><input type="range" id="s_${k}" min="${mi}" max="${ma}" step="${st}" value="${V[k]}"><span id="v_${k}"></span></div>`);});
+ $('sliders').insertAdjacentHTML('beforeend',`<div class="sl"><b>${k.replace(/^([xy])v$/,"$1<sub>v</sub>")}</b><input type="range" id="s_${k}" min="${mi}" max="${ma}" step="${st}" value="${V[k]}"><span id="v_${k}"></span></div>`);});
 const C={};cfg.C.forEach(([k,l,d])=>{C[k]=Q.get(k)!==null?Q.get(k)==='1':!!d;$('checks').insertAdjacentHTML('beforeend',`<label class="ck"><input type="checkbox" id="c_${k}" ${C[k]?'checked':''}> ${l}</label>`);});
 if(!cfg.P.length&&cfg.C.length===1)$('sliders').innerHTML='';
 let A={x:+(Q.get('ax')??-2),y:+(Q.get('ay')??-1)},B={x:+(Q.get('bx')??2),y:+(Q.get('by')??3)};
@@ -77,14 +77,14 @@ function render(){cfg.P.forEach(([k])=>{V[k]=+$('s_'+k).value;$('v_'+k).textCont
   const rts=D<0?[]:D===0?[h]:[(-b-Math.sqrt(D))/(2*a),(-b+Math.sqrt(D))/(2*a)].sort((u,v)=>u-v);
   if(C.raizes)rts.forEach((r,i)=>g+=dot(r,0,'#B91C1C','x'+(rts.length>1?(i?'₂':'₁'):'')+' = '+nf(r),i?-9:16));
   if(T==='can'){info.push(`<span class="k">a = ${nf(a)}:</span> `+(a>0?'concavidade para <b>cima</b>; o vértice é ponto de <b>mínimo</b>.':'concavidade para <b>baixo</b>; o vértice é ponto de <b>máximo</b>.')+(Math.abs(a)>1?' |a| > 1 deixa a parábola mais fechada.':Math.abs(a)<1?' |a| < 1 deixa a parábola mais aberta.':''));
-   info.push(`<span class="k">xv = ${nf(h)}:</span> a parábola anda na horizontal; o eixo de simetria é a reta x = ${nf(h)}.`);
-   info.push(`<span class="k">yv = ${nf(k)}:</span> a parábola anda na vertical; o valor ${a>0?'mínimo':'máximo'} da função é ${nf(k)}.`);
-   if(C.geral)info.push(`<span class="k">Forma geral:</span> f(x) = ${poly(a,b,c)} &nbsp;(b = −2a·xv = ${nf(b)}; c = a·xv² + yv = ${nf(c)})`);}
+   info.push(`<span class="k">x<sub>v</sub> = ${nf(h)}:</span> a parábola anda na horizontal; o eixo de simetria é a reta x = ${nf(h)}.`);
+   info.push(`<span class="k">y<sub>v</sub> = ${nf(k)}:</span> a parábola anda na vertical; o valor ${a>0?'mínimo':'máximo'} da função é ${nf(k)}.`);
+   if(C.geral)info.push(`<span class="k">Forma geral:</span> f(x) = ${poly(a,b,c)} &nbsp;(b = −2a·x<sub>v</sub> = ${nf(b)}; c = a·x<sub>v</sub>² + y<sub>v</sub> = ${nf(c)})`);}
   else{info.push(`<span class="k">Δ = b² − 4ac = ${nf(D)}:</span> `+(D>0?'duas raízes reais diferentes (a parábola corta o eixo x em 2 pontos).':D===0?'uma raiz real dupla (a parábola toca o eixo x no vértice).':'nenhuma raiz real (a parábola não toca o eixo x).'));
-   info.push(`<span class="k">Vértice:</span> xv = −b/(2a) = ${nf(h)} e yv = −Δ/(4a) = ${nf(k)}.`);
+   info.push(`<span class="k">Vértice:</span> x<sub>v</sub> = −b/(2a) = ${nf(h)} e y<sub>v</sub> = −Δ/(4a) = ${nf(k)}.`);
    info.push(`<span class="k">c = ${nf(c)}:</span> a parábola corta o eixo y no ponto (0, ${nf(c)}).`);
    if(C.canon)info.push(`<span class="k">Forma canônica:</span> f(x) = ${can(a,h,k)}`);}
-  if(C.raizes)info.push(`<span class="k">Raízes:</span> `+(rts.length?rts.map(nf).join(' e '):'não há raízes reais')+(T==='can'&&rts.length?` (de a(x − xv)² + yv = 0 vem x = xv ± √(−yv/a))`:''));}
+  if(C.raizes)info.push(`<span class="k">Raízes:</span> `+(rts.length?rts.map(nf).join(' e '):'não há raízes reais')+(T==='can'&&rts.length?` (de a(x − x<sub>v</sub>)² + y<sub>v</sub> = 0 vem x = x<sub>v</sub> ± √(−y<sub>v</sub>/a))`:''));}
  $('svg').innerHTML=g;$('lei').textContent=lei;$('info').innerHTML=info.map(s=>'<div>'+s+'</div>').join('');
  $('tabCard').hidden=!C.tab;if(C.tab)$('tab').innerHTML=table(f);}
 document.querySelectorAll('input').forEach(i=>i.oninput=render);
