@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crivo de Eratóstenes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:200px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.step3{display:inline-flex;align-items:center;gap:6px}.step3 button{width:42px;padding:8px 0}.step3 b{min-width:40px;text-align:center;font-size:20px;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+table.t td.l{text-align:left}
+.sim{color:var(--ok);font-weight:700}.nao{color:var(--bad);font-weight:700}
+.chips span{display:inline-block;border-radius:8px;padding:2px 9px;margin:3px;font-weight:600;background:#EEF3FF;color:var(--navy)}
+.chips span.g{background:#DCFCE7;color:var(--ok)}.chips span.o{background:var(--peach);color:#C2560C}
+.hide{display:none}
+.grid{display:grid;gap:3px}
+.grid button{padding:0;height:36px;font-size:14px;font-weight:600;border-radius:7px;background:#fff;color:var(--navy);border:1.5px solid #D7DEEA;position:relative}
+.grid button.p{color:#fff;border-color:transparent}
+.grid button.x{color:#B6BCC6;background:#F3F4F6}
+.grid button.x::after{content:"";position:absolute;left:18%;right:18%;top:50%;border-top:2.4px solid var(--c,#9CA3AF);transform:rotate(-38deg)}
+.grid button.u{color:#B6BCC6;background:#F3F4F6}
+.tog{display:flex;flex-wrap:wrap;gap:6px}.tog button{min-width:48px;background:#fff;color:var(--navy);border:2px solid var(--navy)}.tog button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.lamp{display:flex;gap:28px;justify-content:center;align-items:flex-end;margin:6px 0}
+.lamp div{text-align:center;font-size:13px;color:var(--gray)}
+.lamp i{display:block;width:62px;height:62px;border-radius:50%;margin:0 auto 6px;background:#E5E7EB;border:3px solid #D7DEEA;transition:background .15s}
+.lamp i.a{background:var(--blue);border-color:var(--blue);box-shadow:0 0 18px var(--blue)}
+.lamp i.b{background:var(--orange);border-color:var(--orange);box-shadow:0 0 18px var(--orange)}
+.log{font-size:14px;max-height:170px;overflow:auto;background:#F5F7FB;border-radius:10px;padding:8px 10px;margin-top:8px}
+</style>
+<script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Múltiplos, divisores e fatoração</div><h1 id="title">Crivo de Eratóstenes</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Crivo</button><button id="tab-desafio">É primo?</button></div>
+<div id="pn-livre"><div class="card"><div id="m"></div><div class="grid" id="g" style="margin-top:10px"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="passo">Próximo passo</button><button class="alt" id="zera">Recomeçar</button></div>
+<p class="placar" id="cont" style="margin:8px 0 0"></p></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Como funciona</h2><p style="margin:0">1. Risque o 1: ele não é primo.<br>2. O menor número livre é primo: toque nele. Seus múltiplos são riscados.<br>3. Repita. Quando o quadrado do próximo livre passar do último número (11 × 11 = 121 &gt; 100), todos os livres que sobraram são primos.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(300,Math.min(620,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function stepper(id,v,lo,hi,cb){const el=$(id);el.innerHTML=`<button class="alt">−</button><b>${v}</b><button>+</button>`;const [m,,p]=el.children;
+ const set=x=>{v=Math.max(lo,Math.min(hi,x));el.children[1].textContent=v;cb(v);};m.onclick=()=>set(v-1);p.onclick=()=>set(v+1);return {get:()=>v,set};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+
+const N=P('N',100,30,150);let ps=[],um=false,fim=false;
+const cor=i=>MD.PAL[i%MD.PAL.length];
+function estado(){const m={};if(um)m[1]={t:'u'};ps.forEach((p,i)=>{m[p]={t:'p',c:cor(i)};for(let k=2*p;k<=N;k+=p)if(!m[k])m[k]={t:'x',c:cor(i),p};});return m;}
+function livre(m){for(let n=2;n<=N;n++)if(!m[n])return n;return 0;}
+function draw(){const m=estado();$('g').style.gridTemplateColumns='repeat(10,1fr)';
+ $('g').innerHTML=Array.from({length:N},(_,i)=>{const n=i+1,e=m[n];return `<button data-n="${n}" class="${e?e.t:''}" style="${e&&e.t==='p'?'background:'+e.c:''}${e&&e.t==='x'?';--c:'+e.c:''}">${n}</button>`;}).join('');
+ $('g').querySelectorAll('button').forEach(b=>b.onclick=()=>toca(+b.dataset.n));
+ $('cont').textContent=`Primos encontrados: ${ps.length}`;
+ const L=livre(m);
+ if(!um)msg('m','Comece riscando o <b>1</b>: ele não é primo nem composto.','info');
+ else if(fim)msg('m',`Pronto! Até ${N} há <b>${ps.length} primos</b>. Os riscados são compostos.`,'ok');
+ else if(L*L>N)msg('m',`O próximo livre é ${L}, e ${L} × ${L} = ${L*L} já passa de ${N}. Todos os livres que sobraram são primos! Toque em “Próximo passo”.`,'ok');
+ else msg('m',`O menor número livre é <b>${L}</b>: ele é primo. Toque nele para riscar os seus múltiplos.`,'info');}
+function toca(n){const m=estado();if(fim)return;
+ if(!um){if(n===1){um=true;draw();}else msg('m','Primeiro risque o 1.','bad');return;}
+ const e=m[n];if(e&&e.t==='x'){msg('m',`${n} já foi riscado: é múltiplo de ${e.p} (${n} = ${e.p} × ${n/e.p}).`,'bad');return;}
+ if(e)return;const L=livre(m);
+ if(n!==L){msg('m',`Toque no <b>menor</b> número livre, que é o ${L}.`,'bad');return;}
+ if(L*L>N){circula();return;}ps.push(n);draw();}
+function circula(){const m=estado();for(let n=2;n<=N;n++)if(!m[n])ps.push(n);fim=true;draw();}
+$('passo').onclick=()=>{if(!um){um=true;draw();return;}if(fim)return;const L=livre(estado());if(L*L>N)circula();else{ps.push(L);draw();}};
+$('zera').onclick=()=>{ps=[];um=false;fim=false;draw();};
+let alvo,feito,esc;
+function desafio(){feito=false;esc=null;msg('dm','');alvo=Math.random()<.45?pick([53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199]):pick([51,57,87,91,111,119,133,143,161,169,187,203,209,217,221,51,77,63,99,121]);
+ $('dq').innerHTML=`O número <span class="k">${alvo}</span> é primo ou composto?`;
+ $('dbody').innerHTML='<div class="tog"><button data-v="1">Primo</button><button data-v="0">Composto</button></div>';
+ $('dbody').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(feito)return;esc=+b.dataset.v;$('dbody').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});}
+$('ok').onclick=()=>{if(feito)return;if(esc===null){msg('dm','Escolha uma resposta antes do OK.','info');return;}feito=true;const pr=MD.primo(alvo),ok=(esc===1)===pr;placar(ok);
+ let ex='';if(pr){const tst=[];for(let p=2;p*p<=alvo;p++)if(MD.primo(p))tst.push(`${alvo} ÷ ${p} = ${Math.floor(alvo/p)}, resto ${alvo%p}`);let p=2;while(p*p<=alvo)p++;while(!MD.primo(p))p++;ex=tst.join('<br>')+`<br>O próximo primo é ${p}, e ${p} × ${p} = ${p*p} passa de ${alvo}: ${alvo} é <b>primo</b>.`;}
+ else{const f=MD.fatores(alvo)[0];ex=`${alvo} = ${f} × ${alvo/f}: é <b>composto</b>.`;}
+ msg('dm',(ok?'Certo! ':'Ainda não. ')+ex,ok?'ok':'bad');};
+$('novo').onclick=desafio;tabs(['livre','desafio'],t=>{if(t==='desafio')desafio();});
+draw();
+
+</script>
+</body>
+</html>
