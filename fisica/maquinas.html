@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Máquinas simples: rampa, roldanas e alavanca · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física 9º ano</div><h1>Máquinas simples: rampa, roldanas e alavanca</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="tabs"><button class="alt on" data-t="rampa">Rampa</button><button class="alt" data-t="roldanas">Roldanas</button><button class="alt" data-t="alavanca">Alavanca</button></div>
+<div class="card">
+<canvas id="cv" width="800" height="480"></canvas>
+<div id="ctl"></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0" id="think"></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d'),G=10;let tab='rampa',S={ang:30,m:10,mu:0.2,n:1,P:1000,fx:200};
+const nf=(x,d=1)=>(+x).toLocaleString('pt-BR',{maximumFractionDigits:d});
+function arrow(x1,y1,x2,y2,col,lab){c.strokeStyle=col;c.fillStyle=col;c.lineWidth=4;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();const a=Math.atan2(y2-y1,x2-x1);
+ c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-14*Math.cos(a-0.4),y2-14*Math.sin(a-0.4));c.lineTo(x2-14*Math.cos(a+0.4),y2-14*Math.sin(a+0.4));c.fill();c.lineWidth=1;
+ if(lab){c.font='600 19px Poppins,sans-serif';c.textAlign='left';c.fillText(lab,x2+8,y2+6);}}
+function slider(id,lab,min,max,step,val,unit){return `<label style="font-size:14px;display:block;margin:8px 0">${lab}: <b id="l${id}">${nf(val,2)} ${unit}</b><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}" style="width:100%" data-u="${unit}"></label>`;}
+function setTab(t){tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+ if(t==='rampa'){$('ctl').innerHTML=slider('ang','Inclinação da rampa',0,60,1,S.ang,'°')+slider('m','Massa da caixa',1,50,1,S.m,'kg')+slider('mu','Coeficiente de atrito',0,0.8,0.05,S.mu,'');
+  $('think').innerHTML='<li>Deixe o atrito em zero. A partir de que ângulo a caixa escorrega?</li><li>Com atrito 0,4, aumente o ângulo devagar. Em que ângulo a caixa começa a descer?</li><li>A massa muda o ângulo em que a caixa começa a escorregar? E a aceleração?</li>';}
+ else if(t==='roldanas'){$('ctl').innerHTML=`<div class="row" style="margin:8px 0">${[0,1,2,3].map(n=>`<button class="alt ${n===S.n?'on':''}" data-n="${n}">${n} móve${n===1?'l':'is'}</button>`).join('')}</div>`+slider('P','Peso da carga',100,2000,100,S.P,'N');
+  $('think').innerHTML='<li>Com uma roldana só fixa (0 móveis), a força diminui? Para que ela serve então?</li><li>Cada roldana móvel a mais faz o quê com a força? E com a quantidade de corda puxada?</li><li>Multiplique a força pela corda puxada. O que você percebe?</li>';
+  document.querySelectorAll('#ctl button[data-n]').forEach(b=>b.onclick=()=>{S.n=+b.dataset.n;setTab('roldanas');});}
+ else{$('ctl').innerHTML=slider('fx','Posição do apoio (distância até a carga)',40,400,10,S.fx,'cm');
+  $('think').innerHTML='<li>Aproxime o apoio da carga. A força necessária aumenta ou diminui?</li><li>Em que posição a força é igual ao peso da carga?</li><li>Por que um pé de cabra comprido facilita arrancar um prego?</li>';}
+ document.querySelectorAll('#ctl input').forEach(i=>i.oninput=()=>{S[i.id]=+i.value;$('l'+i.id).textContent=nf(+i.value,2)+' '+i.dataset.u;draw();});draw();}
+function draw(){c.clearRect(0,0,800,480);c.fillStyle='#F5F7FB';c.fillRect(0,0,800,480);c.textAlign='left';
+ if(tab==='rampa'){const th=S.ang*Math.PI/180,P=S.m*G,Pt=P*Math.sin(th),N=P*Math.cos(th),Fm=S.mu*N,ox=80,oy=420,L=600;
+  c.fillStyle='#C9D3E3';c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+L*Math.cos(th),oy);c.lineTo(ox+L*Math.cos(th),oy-L*Math.sin(th));c.closePath();c.fill();
+  c.strokeStyle='#0E2354';c.lineWidth=2;c.beginPath();c.moveTo(ox,oy);c.lineTo(ox+L*Math.cos(th),oy-L*Math.sin(th));c.stroke();c.lineWidth=1;
+  c.fillStyle='#0E2354';c.font='18px Poppins,sans-serif';c.fillText(S.ang+'°',ox+70,oy-12);
+  const s=L*0.55,bx=ox+s*Math.cos(th),by=oy-s*Math.sin(th);c.save();c.translate(bx,by);c.rotate(-th);c.fillStyle='#2457D6';c.fillRect(-35,-60,70,60);c.restore();
+  const cx=bx-30*Math.sin(th),cy=by-30*Math.cos(th),k=2.2;arrow(cx,cy,cx,cy+P*k,'#B91C1C','P');
+  arrow(cx,cy,cx-N*k*Math.sin(th),cy-N*k*Math.cos(th),'#15803D','N');
+  arrow(cx,cy,cx-Pt*k*Math.cos(th),cy+Pt*k*Math.sin(th),'#F7821F','P∥');
+  const slide=Pt>Fm+1e-9,Fat=slide?Fm:Pt;if(Fat>0.01)arrow(cx,cy,cx+Fat*k*Math.cos(th),cy-Fat*k*Math.sin(th),'#6B7280','Fat');
+  const a=slide?(Pt-Fm)/S.m:0;
+  $('msg').innerHTML=`Peso: <b>${nf(P)} N</b> · componente ao longo da rampa (P·sen θ): <b>${nf(Pt)} N</b> · normal (P·cos θ): <b>${nf(N)} N</b> · atrito máximo (μ·N): <b>${nf(Fm)} N</b><br>`+(slide?`A caixa <b>escorrega</b> com aceleração de <b>${nf(a,2)} m/s²</b>.`:`A caixa fica <b>parada</b>: o atrito equilibra a componente do peso.`)+` Para empurrá-la rampa acima sem atrito, bastaria uma força de ${nf(Pt)} N, menor que o peso.`;}
+ else if(tab==='roldanas'){const n=S.n,F=S.P/Math.pow(2,n),corda=Math.pow(2,n),R=24,CE=40;
+  c.fillStyle='#8C99AE';c.fillRect(120,CE-14,560,14);const rope=(x1,y1,x2,y2)=>{c.strokeStyle='#B45309';c.lineWidth=3;c.beginPath();c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();};
+  const pul=(x,y,fixed)=>{c.fillStyle='#fff';c.strokeStyle=fixed?'#0E2354':'#2457D6';c.lineWidth=4;c.beginPath();c.arc(x,y,R,0,7);c.fill();c.stroke();c.fillStyle=c.strokeStyle;c.beginPath();c.arc(x,y,4,0,7);c.fill();};
+  const xs=[],ys=[];for(let i=0;i<n;i++){xs.push(260+i*R*2);ys.push(330-i*75);}
+  let loadX,loadY;
+  if(n===0){const fx=360,fy=110;rope(fx,CE,fx,fy);rope(fx-R,fy,fx-R,330);rope(fx+R,fy,fx+R,350);pul(fx,fy,true);loadX=fx-R;loadY=330;arrow(fx+R,350,fx+R,420,'#F7821F','F = '+nf(F)+' N');}
+  else{for(let i=0;i<n;i++){rope(xs[i]-R,CE,xs[i]-R,ys[i]);if(i<n-1)rope(xs[i]+R,ys[i],xs[i]+R,ys[i+1]+R);}
+   const fx=xs[n-1]+2*R,fy=ys[n-1]-95;rope(fx,CE,fx,fy);rope(xs[n-1]+R,ys[n-1],fx-R,fy);rope(fx+R,fy,fx+R,360);
+   for(let i=0;i<n;i++){if(i>0)rope(xs[i],ys[i]+R,xs[i],ys[i]+R);pul(xs[i],ys[i],false);}pul(fx,fy,true);loadX=xs[0];loadY=ys[0]+R;arrow(fx+R,360,fx+R,425,'#F7821F','F = '+nf(F)+' N');
+   c.fillStyle='#2457D6';c.font='16px Poppins,sans-serif';c.textAlign='left';c.fillText('roldanas móveis (azuis)',20,470);}
+  rope(loadX,loadY,loadX,loadY+40);c.fillStyle='#0E2354';c.fillRect(loadX-45,loadY+40,90,60);c.fillStyle='#fff';c.font='600 18px Poppins,sans-serif';c.textAlign='center';c.fillText(nf(S.P)+' N',loadX,loadY+77);
+  c.fillStyle='#0E2354';c.font='16px Poppins,sans-serif';c.textAlign='right';c.fillText('roldana fixa (escura)',780,470);
+  $('msg').innerHTML=`Com <b>${n}</b> roldana${n===1?'':'s'} móve${n===1?'l':'is'}: força necessária = P ÷ 2${'<sup>'+n+'</sup>'} = <b>${nf(F)} N</b>. Para subir a carga 1 m, é preciso puxar <b>${corda} m</b> de corda.<br>Força × corda = ${nf(F*corda)} N·m, sempre igual ao peso × 1 m: a máquina troca força por distância, mas o trabalho é o mesmo.`;}
+ else{const L=500,ox=150,oy=300,d1=S.fx,d2=L-d1,P=600,F=P*d1/d2;c.fillStyle='#8C99AE';c.fillRect(0,oy+60,800,8);
+  const px=ox+d1;c.fillStyle='#0E2354';c.beginPath();c.moveTo(px,oy+8);c.lineTo(px-30,oy+60);c.lineTo(px+30,oy+60);c.closePath();c.fill();
+  c.fillStyle='#B45309';c.fillRect(ox,oy-4,L,12);c.fillStyle='#2457D6';c.fillRect(ox-30,oy-74,60,70);c.fillStyle='#fff';c.font='600 17px Poppins,sans-serif';c.textAlign='center';c.fillText('600 N',ox,oy-34);
+  arrow(ox+L,oy-140,ox+L,oy-8,'#F7821F','F = '+nf(F)+' N');c.fillStyle='#0E2354';c.font='17px Poppins,sans-serif';c.textAlign='center';
+  c.fillText('d₁ = '+d1+' cm',ox+d1/2,oy+95);c.fillText('d₂ = '+d2+' cm',px+d2/2,oy+95);c.fillText('apoio',px,oy+120);
+  $('msg').innerHTML=`F₁ · d₁ = F₂ · d₂ → 600 · ${d1} = F · ${d2} → <b>F = ${nf(F)} N</b>. `+(F<P?'Com o apoio perto da carga, a força fica <b>menor</b> que o peso.':F>P?'Com o apoio perto de quem empurra, a força fica <b>maior</b> que o peso.':'Com o apoio no meio, a força é igual ao peso.');}}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));setTab('rampa');if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>
