@@ -49,7 +49,7 @@ table.t td.l{text-align:left}
 <div id="res"></div></div>
 <div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
 <div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
-<div class="card"><h2>Por que funciona?</h2><p style="margin:0"><b>2, 5 e 10:</b> toda dezena é múltiplo de 2, 5 e 10, então só o último algarismo decide.<br><b>4:</b> toda centena é múltiplo de 4 (100 = 4 × 25), então só os dois últimos algarismos decidem.<br><b>3 e 9:</b> 10 = 9 + 1, 100 = 99 + 1, 1 000 = 999 + 1… Cada peça deixa sobrar 1, e as sobras somam os algarismos.<br><b>6:</b> 6 = 2 × 3, então precisa passar nos dois testes.</p></div>
+<div class="card"><h2>Por que funciona?</h2><p style="margin:0"><b>2, 5 e 10:</b> toda dezena é múltiplo de 2, 5 e 10, então só o último algarismo decide.<br><b>4:</b> toda centena é múltiplo de 4 (100 = 4 × 25), então só os dois últimos algarismos decidem.<br><b>3 e 9:</b> 10 = 9 + 1, 100 = 99 + 1, 1 000 = 999 + 1… Cada peça deixa sobrar 1, e as sobras somam os algarismos.<br><b>6:</b> 6 = 2 × 3, então precisa passar nos dois testes.<br><b>7:</b> há várias maneiras. Aqui: retire a unidade, multiplique por 5 e some com o resto (2 401 → 240 + 5 = 245 → 24 + 25 = 49). Funciona porque 5 × o número = um múltiplo de 49 + o resultado do truque, e multiplicar por 5 não muda se ele é da tabuada do 7.<br><b>11:</b> 10 = 11 − 1, 100 = 99 + 1, 1 000 = 1 001 − 1…: as casas alternam entre “falta 1” e “sobra 1”, por isso as somas das casas ímpares e pares se descontam.</p></div>
 
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
@@ -63,11 +63,16 @@ function stepper(id,v,lo,hi,cb){const el=$(id);el.innerHTML=`<button class="alt"
  const set=x=>{v=Math.max(lo,Math.min(hi,x));el.children[1].textContent=v;cb(v);};m.onclick=()=>set(v-1);p.onclick=()=>set(v+1);return {get:()=>v,set};}
 let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
 
-const DS=[2,3,4,5,6,9,10];
+const DS=[2,3,4,5,6,7,9,10,11];
+function sete(n){let v=n,h=[];while(v>70){const a=Math.floor(v/10),b=v%10,w=a+5*b;h.push(`${MD.fmt(a)} + 5 × ${b} = ${MD.fmt(w)}`);v=w;}
+ return (h.length?h.join('; ')+'; ':'')+`${v} ${v%7?'não é':'é'} da tabuada do 7`;}
+function onze(n){const d=String(n).split('').reverse().map(Number);const im=d.filter((_,i)=>i%2===0),pa=d.filter((_,i)=>i%2===1);const si=im.reduce((a,c)=>a+c,0),sp=pa.reduce((a,c)=>a+c,0);
+ return `casas ímpares ${im.join(' + ')} = ${si}; pares ${pa.length?pa.join(' + '):'0'} = ${sp}; diferença ${Math.abs(si-sp)}${Math.abs(si-sp)%11?', não é 0 nem múltiplo de 11':Math.abs(si-sp)?', múltiplo de 11':''}`;}
 function teste(n){const s=String(n),u=+s.slice(-1),d2=+s.slice(-2),soma=s.split('').reduce((a,c)=>a+ +c,0),sm=s.split('').join(' + ');
  return {2:[n%2===0,`termina em ${u}`+(n%2?': é ímpar':': é par')],5:[n%5===0,`termina em ${u}`],10:[n%10===0,`termina em ${u}`],
   4:[n%4===0,s.length>1?`${String(d2).padStart(2,'0')} ${d2%4?'não é':'é'} múltiplo de 4`:`${n} ${n%4?'não é':'é'} múltiplo de 4`],
   3:[n%3===0,`${sm} = ${soma}, ${soma%3?'não é':'é'} múltiplo de 3`],9:[n%9===0,`${sm} = ${soma}, ${soma%9?'não é':'é'} múltiplo de 9`],
+  7:[n%7===0,sete(n)],11:[n%11===0,onze(n)],
   6:[n%6===0,`${n%2?'não é par':'é par'} e ${n%3?'não passa':'passa'} no teste do 3`]};}
 function show(){const n=parseInt($('n').value);if(isNaN(n)||n<1){$('res').innerHTML='';return;}const T=teste(n);
  $('res').innerHTML='<table class="t"><tr><th>por</th><th>?</th><th>por quê</th><th>conferindo</th></tr>'+DS.map(d=>`<tr><td><b>${d}</b></td><td class="${T[d][0]?'sim':'nao'}">${T[d][0]?'sim':'não'}</td><td class="l">${T[d][1]}</td><td>${MD.fmt(n)} ÷ ${d} = ${MD.fmt(Math.floor(n/d))}, resto ${n%d}</td></tr>`).join('')+'</table>';}
