@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cartões mágicos binários · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Cartões mágicos binários</h1></header>
+<main>
+
+<div class="card" id="intro"><p style="margin:0">Pense num número de <b>1 a <span id="max"></span></b> e guarde segredo. Para cada cartão, diga se o seu número <b>está</b> nele. Depois toque em OK e o site adivinha.</p></div>
+<div id="cards"></div>
+<div class="card"><div class="row"><button class="or" id="ok">OK, adivinhe!</button><button class="alt" id="rec">Recomeçar</button></div><div id="m"></div></div>
+<div class="card hide" id="como"><h2>Como funciona?</h2><div id="exp"></div></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+const K=P('c',5,4,6),MAX=2**K-1;$('max').textContent=MAX;let r=Array(K).fill(null),feito=false;
+function cards(){$('cards').innerHTML=[...Array(K).keys()].map(k=>{const v=2**k,ns=[];for(let i=1;i<=MAX;i++)if(i&v)ns.push(i);
+ return `<div class="card"><h2>Cartão ${k+1}</h2><div style="display:grid;grid-template-columns:repeat(8,1fr);gap:4px;font-weight:600;color:var(--navy);text-align:center;font-size:15px">${ns.map((x,i)=>`<div style="background:${i===0?'#FDE9D8':'#F5F7FB'};border-radius:6px;padding:4px 0">${x}</div>`).join('')}</div>
+ <div class="row" style="margin-top:8px"><button class="${r[k]===true?'':'alt'}" data-k="${k}" data-v="1">Está aqui</button><button class="${r[k]===false?'':'alt'}" data-k="${k}" data-v="0">Não está</button></div></div>`;}).join('');
+ $('cards').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(feito)return;r[+b.dataset.k]=b.dataset.v==='1';cards();});}
+$('ok').onclick=()=>{if(r.some(x=>x===null)){msg('m',`Responda todos os cartões primeiro (faltam ${r.filter(x=>x===null).length}).`,'info');return;}
+ const n=r.reduce((s,x,k)=>s+(x?2**k:0),0);if(!n){msg('m','Seu número não está em nenhum cartão? Então ele não está entre 1 e '+MAX+'. Recomece!','bad');return;}feito=true;
+ msg('m',`Seu número é <b style="font-size:22px">${n}</b>!`,'ok');$('como').classList.remove('hide');
+ const bits=[...Array(K).keys()].reverse().map(k=>r[k]?1:0);
+ $('exp').innerHTML=`<p style="margin-top:0">O primeiro número de cada cartão é uma potência de 2: <b>${[...Array(K).keys()].map(k=>2**k).join(', ')}</b>. Todo número pode ser escrito, de um jeito só, como soma dessas potências sem repetir nenhuma. O site somou o primeiro número dos cartões em que você disse “está aqui”:</p>
+ <div class="big" style="font-size:19px">${[...Array(K).keys()].filter(k=>r[k]).map(k=>2**k).join(' + ')} = ${n}</div>
+ <p>Isso é o número escrito na <b>base 2</b>: está (1) ou não está (0) em cada cartão, do maior para o menor:</p>
+ <table class="t"><tr>${[...Array(K).keys()].reverse().map(k=>`<th>${2**k}</th>`).join('')}</tr><tr>${bits.map(x=>`<td><b>${x}</b></td>`).join('')}</tr></table>
+ <div class="big" style="font-size:19px;margin-top:8px">${n} = (${bits.join('').replace(/^0+/,'')})₂</div><p class="muted">É assim que o computador guarda números: cada cartão é um “liga ou desliga”, o <b>bit</b>.</p>`;};
+$('rec').onclick=()=>{r=Array(K).fill(null);feito=false;msg('m','');$('como').classList.add('hide');cards();scrollTo(0,0);};cards();
+
+</script>
+</body>
+</html>
