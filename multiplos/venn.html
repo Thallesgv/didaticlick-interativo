@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MMC e MDC no diagrama de Venn · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:200px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.step3{display:inline-flex;align-items:center;gap:6px}.step3 button{width:42px;padding:8px 0}.step3 b{min-width:40px;text-align:center;font-size:20px;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+table.t td.l{text-align:left}
+.sim{color:var(--ok);font-weight:700}.nao{color:var(--bad);font-weight:700}
+.chips span{display:inline-block;border-radius:8px;padding:2px 9px;margin:3px;font-weight:600;background:#EEF3FF;color:var(--navy)}
+.chips span.g{background:#DCFCE7;color:var(--ok)}.chips span.o{background:var(--peach);color:#C2560C}
+.hide{display:none}
+.grid{display:grid;gap:3px}
+.grid button{padding:0;height:36px;font-size:14px;font-weight:600;border-radius:7px;background:#fff;color:var(--navy);border:1.5px solid #D7DEEA;position:relative}
+.grid button.p{color:#fff;border-color:transparent}
+.grid button.x{color:#B6BCC6;background:#F3F4F6}
+.grid button.x::after{content:"";position:absolute;left:18%;right:18%;top:50%;border-top:2.4px solid var(--c,#9CA3AF);transform:rotate(-38deg)}
+.grid button.u{color:#B6BCC6;background:#F3F4F6}
+.tog{display:flex;flex-wrap:wrap;gap:6px}.tog button{min-width:48px;background:#fff;color:var(--navy);border:2px solid var(--navy)}.tog button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.lamp{display:flex;gap:28px;justify-content:center;align-items:flex-end;margin:6px 0}
+.lamp div{text-align:center;font-size:13px;color:var(--gray)}
+.lamp i{display:block;width:62px;height:62px;border-radius:50%;margin:0 auto 6px;background:#E5E7EB;border:3px solid #D7DEEA;transition:background .15s}
+.lamp i.a{background:var(--blue);border-color:var(--blue);box-shadow:0 0 18px var(--blue)}
+.lamp i.b{background:var(--orange);border-color:var(--orange);box-shadow:0 0 18px var(--orange)}
+.log{font-size:14px;max-height:170px;overflow:auto;background:#F5F7FB;border-radius:10px;padding:8px 10px;margin-top:8px}
+</style>
+<script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Múltiplos, divisores e fatoração</div><h1 id="title">MMC e MDC no diagrama de Venn</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Montar</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre"><div class="card"><div class="row" style="gap:18px"><div><label class="l" style="color:var(--blue)">Número azul</label><span class="step3" id="sa"></span></div>
+<div><label class="l" style="color:var(--orange)">Número laranja</label><span class="step3" id="sb"></span></div></div>
+<p style="margin:10px 0 4px">Fatores primos de cada número. Toque num fator azul e depois num fator <b>igual</b> laranja: o par vai para a interseção.</p>
+<div class="tog" id="fa"></div><div class="tog" id="fb" style="margin-top:6px"></div>
+<div class="fig" style="margin-top:10px" id="fig"></div><div id="m"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="okv">OK, terminei</button><button class="alt" id="zera">Recomeçar</button></div><div id="res"></div></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Na <b>interseção</b> ficam os fatores comuns: o produto deles é o <b>mdc</b>. Pegando <b>um representante de cada</b> fator do diagrama (a interseção uma vez só, mais o que está fora), o produto é o <b>mmc</b>. E sempre: <b>mmc × mdc = produto dos dois números</b>.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(300,Math.min(620,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function stepper(id,v,lo,hi,cb){const el=$(id);el.innerHTML=`<button class="alt">−</button><b>${v}</b><button>+</button>`;const [m,,p]=el.children;
+ const set=x=>{v=Math.max(lo,Math.min(hi,x));el.children[1].textContent=v;cb(v);};m.onclick=()=>set(v-1);p.onclick=()=>set(v+1);return {get:()=>v,set};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+
+let a=P('a',24,2,999),b=P('b',36,2,999),A,B,I,sel=null,fim=false;
+const prod=v=>v.length?v.reduce((x,y)=>x*y,1):1,lst=v=>v.length?v.join(' × '):'nada';
+function zera(){A=MD.fatores(a);B=MD.fatores(b);I=[];sel=null;fim=false;$('res').innerHTML='';draw();}
+function draw(){
+ $('fa').innerHTML=A.map((p,i)=>`<button data-i="${i}" style="border-color:var(--blue);${sel===i?'background:var(--blue);color:#fff':'color:var(--blue)'}">${p}</button>`).join('')||'<span class="muted">sem fatores fora</span>';
+ $('fb').innerHTML=B.map((p,i)=>`<button data-i="${i}" style="border-color:var(--orange);color:#C2560C">${p}</button>`).join('')||'<span class="muted">sem fatores fora</span>';
+ $('fa').querySelectorAll('button').forEach(x=>x.onclick=()=>{if(fim)return;sel=+x.dataset.i;msg('m',`Agora toque num ${A[sel]} laranja.`,'info');draw();});
+ $('fb').querySelectorAll('button').forEach(x=>x.onclick=()=>{if(fim)return;const j=+x.dataset.i;if(sel===null){msg('m','Toque primeiro num fator azul.','info');return;}
+  if(A[sel]!==B[j]){msg('m',`${A[sel]} e ${B[j]} são diferentes: só fatores iguais vão para a interseção.`,'bad');return;}
+  I.push(A[sel]);A.splice(sel,1);B.splice(j,1);sel=null;msg('m','');draw();});
+ $('fig').innerHTML=MD.venn(a,b,{partes:{A,I,B},w:Math.min(420,innerWidth-70)});}
+$('okv').onclick=()=>{if(fim)return;const falta=A.some(p=>B.includes(p));
+ if(falta){msg('m',`Ainda há fator comum fora da interseção: o ${A.find(p=>B.includes(p))} aparece nos dois.`,'bad');return;}
+ fim=true;const d=prod(I),mm=prod(A)*d*prod(B);msg('m','Pronto! Não sobrou nenhum fator comum do lado de fora.','ok');
+ $('res').innerHTML=`<div class="msg ok"><b>mdc(${a}, ${b})</b> = interseção = ${lst(I)} = <b>${d}</b><br><b>mmc(${a}, ${b})</b> = um representante de cada = ${[lst(A),I.length?'('+lst(I)+')':'',lst(B)].filter(x=>x&&x!=='nada').join(' × ')} = <b>${MD.fmt(mm)}</b><br>Confira: mmc × mdc = ${MD.fmt(mm)} × ${d} = ${MD.fmt(mm*d)} = ${a} × ${b}</div>`;};
+$('zera').onclick=zera;
+stepper('sa',a,2,999,v=>{a=v;zera();});stepper('sb',b,2,999,v=>{b=v;zera();});
+let alvo,feito;
+function desafio(){feito=false;msg('dm','');let x,y;do{const g=pick([2,3,4,5,6,8,9,10,12]);x=g*rnd(1,6);y=g*rnd(2,7);}while(x===y||x<4);alvo=[x,y];
+ $('dq').innerHTML=`Quanto valem o mdc e o mmc de <span class="k">${x}</span> e <span class="k">${y}</span>?`;
+ $('dbody').innerHTML='<div class="row"><div><label class="l">mdc</label><input type="number" id="r1" inputmode="numeric" style="max-width:120px"></div><div><label class="l">mmc</label><input type="number" id="r2" inputmode="numeric" style="max-width:120px"></div></div>';}
+$('ok').onclick=()=>{if(feito)return;const u=parseInt($('r1').value),v=parseInt($('r2').value);if(isNaN(u)||isNaN(v)){msg('dm','Preencha o mdc e o mmc antes do OK.','info');return;}feito=true;
+ const [x,y]=alvo,pt=MD.partes(x,y),d=MD.mdc(x,y),mm=MD.mmc(x,y),ok=u===d&&v===mm;placar(ok);
+ msg('dm',(ok?'Certo! ':'Ainda não. ')+`${x} = ${MD.fatores(x).join(' × ')} e ${y} = ${MD.fatores(y).join(' × ')}.<br>Interseção: ${lst(pt.I)}, então mdc = <b>${d}</b>.<br>Um representante de cada: ${[...pt.A,...pt.I,...pt.B].join(' × ')} = <b>${mm}</b> = mmc.`,ok?'ok':'bad');};
+$('novo').onclick=desafio;tabs(['livre','desafio'],t=>{if(t==='desafio')desafio();});
+zera();
+
+</script>
+</body>
+</html>

@@ -93,7 +93,8 @@
     rows.forEach((rw, i) => {
       const y = 4 + i * rh + rh * .68;
       rw.v.forEach((v, j) => g += t(k > 1 ? 8 + j * cw + cw / 2 : 8 + cw - 4, y, v, 13.5, rw.div && k > 1 && !rw.div[j] ? GY : NAVY, k > 1 ? 'middle' : 'end', rw.div && k > 1 && !rw.div[j] ? 500 : 600));
-      if (rw.p) g += t(k * cw + 22, y, rw.p, 13.5, OR, 'start');
+      if (rw.p && o.comum && rw.div.every(Boolean)) g += `<circle cx="${k * cw + 26}" cy="${y - 4.5}" r="10" fill="none" stroke="${GR}" stroke-width="2"/>`;
+      if (rw.p) g += t(k * cw + (o.comum ? 26 : 22), y, rw.p, 13.5, OR, o.comum ? 'middle' : 'start');
     });
     g += `<line x1="${k * cw + 14}" y1="2" x2="${k * cw + 14}" y2="${H - 2}" stroke="${NAVY}" stroke-width="2"/>`;
     return g + '</svg>';
@@ -154,6 +155,24 @@
     return g + '</svg>';
   }
 
-  const MD = { NAVY, OR, BL, GR, RD, GY, PAL, fmt, divisores, primo, fatores, potencias, fatoracao, sup, mdc, mmc, grade, crivo, crivoEstado, arvore, arvorePadrao, divsuc, linha, euclides, fitas };
+  // Diagrama de Venn dos fatores primos: o que é comum fica na interseção.
+  function partes(a, b) {
+    const fa = fatores(a), fb = fatores(b).slice(), I = [], A = [];
+    fa.forEach(p => { const k = fb.indexOf(p); if (k >= 0) { I.push(p); fb.splice(k, 1); } else A.push(p); });
+    return { A, I, B: fb };
+  }
+  function venn(a, b, o = {}) {
+    const P = o.partes || partes(a, b), W = 360, H = 230, r = 92, c1 = 128, c2 = 232, cy = 128;
+    let g = `<svg viewBox="0 0 ${W} ${H}" width="${o.w || W}" xmlns="http://www.w3.org/2000/svg">`;
+    g += `<circle cx="${c1}" cy="${cy}" r="${r}" fill="${BL}" fill-opacity=".12" stroke="${BL}" stroke-width="2.4"/>`;
+    g += `<circle cx="${c2}" cy="${cy}" r="${r}" fill="${OR}" fill-opacity=".12" stroke="${OR}" stroke-width="2.4"/>`;
+    g += t(c1 - 40, 22, o.la || ('fatores de ' + a), 13, BL) + t(c2 + 40, 22, o.lb || ('fatores de ' + b), 13, OR);
+    const put = (arr, x0, cor) => { const n = arr.length, per = 3, rows = Math.ceil(n / per) || 1;
+      arr.forEach((v, i) => { const rI = Math.floor(i / per), m = Math.min(per, n - rI * per), x = x0 + (i % per - (m - 1) / 2) * 25, y = cy + (rI - (rows - 1) / 2) * 30 + 6;
+        g += `<circle cx="${x}" cy="${y - 5}" r="11.5" fill="#fff" stroke="${cor}" stroke-width="1.6"/>` + t(x, y, v, String(v).length > 2 ? 10 : 13, cor); }); };
+    put(P.A, c1 - 46, BL); put(P.I, (c1 + c2) / 2, GR); put(P.B, c2 + 46, OR);
+    return g + '</svg>';
+  }
+  const MD = { NAVY, OR, BL, GR, RD, GY, PAL, fmt, divisores, primo, fatores, potencias, fatoracao, sup, mdc, mmc, grade, crivo, crivoEstado, arvore, arvorePadrao, divsuc, linha, euclides, fitas, partes, venn };
   if (typeof module !== 'undefined' && module.exports) module.exports = MD; else root.MD = MD;
 })(typeof window !== 'undefined' ? window : this);
