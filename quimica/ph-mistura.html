@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Misture e meça o pH · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+canvas{width:100%;height:auto;display:block}
+.liq{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.liq select{width:100%;font-family:inherit;font-size:15px;padding:8px;border-radius:10px;border:2px solid #D7DEEA;color:var(--navy);background:#fff}
+.liq label{font-size:13px;color:var(--gray)}
+input[type=range]{width:100%}
+.ph{font-size:30px;font-weight:700;text-align:center;margin:4px 0}
+.row button{flex:1}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1 id="h1">Misture e meça o pH</h1></header>
+<main>
+<div class="tabs"><button id="tM">Misture e meça o pH</button><button id="tD">Diluir com segurança</button></div>
+
+<section id="sM">
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Escolha dois líquidos e a quantidade de cada um. O medidor mostra o pH da mistura.</p>
+<div class="liq">
+<div><label>Líquido A</label><select id="a"></select><input type="range" id="va" min="0" max="100" value="50"><div class="muted" id="vaT"></div></div>
+<div><label>Líquido B</label><select id="b"></select><input type="range" id="vb" min="0" max="100" value="0"><div class="muted" id="vbT"></div></div>
+</div>
+<canvas id="cv" width="420" height="230"></canvas>
+<div class="ph" id="ph"></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>O pH enquanto você acrescenta o líquido B</h2>
+<canvas id="gr" width="420" height="200"></canvas>
+<p class="muted" style="margin:4px 0 0">Mantendo o líquido A fixo, o gráfico mostra o pH da mistura para cada quantidade do líquido B. O ponto laranja é a mistura atual.</p></div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Misture café e leite. O pH da mistura fica maior, menor ou entre os dois?</li>
+<li>Coloque 50 mL de ácido clorídrico diluído e vá acrescentando soda cáustica diluída. O pH sobe devagar ou dá um salto? Onde fica o salto?</li>
+<li>Misture limão com sabão. Mesmo com 100 mL de sabão, a mistura continua ácida. Por quê? Agora troque o sabão pela soda cáustica diluída.</li>
+</ol>
+<p class="muted" style="margin:8px 0 0">Os valores são aproximados. Alguns líquidos de verdade, como o leite, o café e o limão, resistem à mudança de pH, e por isso a mistura real pode dar um valor diferente. <b>Atenção:</b> nunca misture produtos de limpeza em casa: alguns, como a água sanitária com ácidos, liberam gases tóxicos.</p></div>
+</section>
+
+<section id="sD" hidden>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Precisamos diluir um ácido concentrado (como o sulfúrico, da bateria de carro). Ao se misturar com a água, ele libera <b>muito calor</b>. A ordem importa! Escolha como fazer:</p>
+<div class="row"><button id="dA" class="alt">Água no ácido</button><button id="dB" class="or">Ácido na água, aos poucos</button></div>
+<canvas id="cd" width="420" height="260"></canvas>
+<div class="msg info" id="dmsg">Toque num dos botões para começar.</div>
+</div>
+<div class="card"><h2>A regra</h2>
+<p style="margin:0">Coloque sempre o <b>ácido na água</b>, devagar e mexendo, nunca a água no ácido. Use luvas e óculos de proteção.</p></div>
+</section>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=x=>document.getElementById(x);
+// ---------- abas ----------
+function tab(m){$('sM').hidden=m!=='M';$('sD').hidden=m!=='D';$('tM').classList.toggle('on',m==='M');$('tD').classList.toggle('on',m==='D');
+ $('h1').textContent=m==='M'?'Misture e meça o pH':'Diluir com segurança';}
+$('tM').onclick=()=>tab('M');$('tD').onclick=()=>tab('D');
+tab(new URLSearchParams(location.search).get('modo')==='diluir'?'D':'M');
+// ---------- mistura ----------
+const L=[['ácido clorídrico diluído',1.0],['limão',2.2],['vinagre',2.8],['refrigerante',3.0],['café',5.0],['leite',6.5],['água pura',7.0],['bicarbonato (em água)',8.3],['sabão',10.0],['leite de magnésia',10.5],['soda cáustica diluída',13.0]];
+const opt=L.map(([n,p],i)=>`<option value="${i}">${n} (pH ${String(p).replace('.',',')})</option>`).join('');
+$('a').innerHTML=opt;$('b').innerHTML=opt;$('a').value=0;$('b').value=10;
+const COL=['#E2231A','#EE4B23','#F5822A','#F9A825','#F6D72E','#B9D433','#6CBF45','#3BAF5D','#2BA59F','#2F8DCB','#3A6CB8','#3F4FA5','#4B3994','#5B2B87','#4A1E6E'];
+const net=p=>Math.pow(10,-p)-Math.pow(10,p-14); // [H+] − [OH−], em mol/L
+function phMix(pa,va,pb,vb){const V=va+vb;if(!V)return null;const n=(net(pa)*va+net(pb)*vb)/V;const h=(n+Math.sqrt(n*n+4e-14))/2;return -Math.log10(h);}
+const fmt=x=>x.toFixed(1).replace('.',',');
+const cv=$('cv'),c=cv.getContext('2d'),gr=$('gr'),g=gr.getContext('2d');
+function colOf(p){const i=Math.max(0,Math.min(14,p));const k=Math.floor(i),f=i-k;return COL[Math.min(14,k+(f>.5?1:0))];}
+function upd(){const A=L[+$('a').value],B=L[+$('b').value],va=+$('va').value,vb=+$('vb').value;
+ $('vaT').textContent=va+' mL';$('vbT').textContent=vb+' mL';
+ const p=phMix(A[1],va,B[1],vb);
+ // copo
+ c.clearRect(0,0,420,230);const x0=150,x1=270,yb=210,h=(va+vb)/200*150;
+ if(p!==null){c.fillStyle=colOf(p);c.globalAlpha=.75;c.fillRect(x0,yb-h,x1-x0,h);c.globalAlpha=1;}
+ c.strokeStyle='#0E2354';c.lineWidth=4;c.beginPath();c.moveTo(x0-4,40);c.lineTo(x0-4,yb+4);c.lineTo(x1+4,yb+4);c.lineTo(x1+4,40);c.stroke();
+ c.fillStyle='#6B7280';c.font='12px Poppins,sans-serif';c.textAlign='right';[50,100,150,200].forEach(v=>{const y=yb-v/200*150;c.fillRect(x1-14,y,14,1.5);c.fillText(v+' mL',x0-10,y+4);});
+ // escala lateral
+ for(let i=0;i<15;i++){c.fillStyle=COL[i];c.fillRect(320,195-i*11,24,11);}
+ c.fillStyle='#0E2354';c.textAlign='left';c.font='11px Poppins,sans-serif';c.fillText('14',350,48);c.fillText('7',350,124);c.fillText('0',350,202);
+ if(p!==null){const y=200-p*11;c.beginPath();c.moveTo(316,y);c.lineTo(306,y-6);c.lineTo(306,y+6);c.fill();}
+ if(p===null){$('ph').textContent='pH —';$('ph').style.color='#6B7280';$('msg').innerHTML='O copo está vazio. Coloque algum líquido.';}
+ else{$('ph').textContent='pH '+fmt(p);$('ph').style.color=colOf(p);
+  const t=p<6.5?'ácida':p>7.5?'básica':'praticamente neutra';
+  let m=`A mistura está <b>${t}</b>.`;
+  const ac=x=>x<7,ba=x=>x>7;
+  if(va&&vb&&((ac(A[1])&&ba(B[1]))||(ba(A[1])&&ac(B[1])))){
+   m+=` Você misturou um ácido com uma base: o H<sup>+</sup> do ácido e o OH<sup>−</sup> da base formam água. É a <b>neutralização</b>. `+(Math.abs(p-7)<1?'As quantidades estão quase equilibradas: um neutralizou o outro.':p<7?'Ainda sobra ácido: acrescente mais base.':'Agora sobra base: passou do ponto neutro.');}
+  else if(va&&vb&&A[1]!==B[1])m+=' Os dois líquidos estão do mesmo lado da escala: o pH da mistura fica <b>entre</b> os dois valores, mais perto do mais ácido (ou mais básico).';
+  else if(va&&vb)m+=' Os dois líquidos são iguais: o pH não muda.';
+  $('msg').innerHTML=m;}
+ // gráfico pH × volume de B
+ const Lf=40,Rt=410,T=10,Bt=170,X=v=>Lf+(Rt-Lf)*v/100,Y=q=>Bt-(Bt-T)*q/14;
+ g.clearRect(0,0,420,200);g.strokeStyle='#E5E9F2';g.fillStyle='#6B7280';g.font='11px Poppins,sans-serif';g.textAlign='right';
+ [0,7,14].forEach(q=>{g.beginPath();g.moveTo(Lf,Y(q));g.lineTo(Rt,Y(q));g.stroke();g.fillText(q,Lf-5,Y(q)+4);});
+ g.textAlign='center';[0,50,100].forEach(v=>g.fillText(v,X(v),186));g.textAlign='right';g.fillText('mL do líquido B →',Rt,199);
+ g.strokeStyle='#2457D6';g.lineWidth=3;g.beginPath();let st=false;
+ for(let v=0;v<=100;v+=0.5){const q=phMix(A[1],va,B[1],v);if(q===null)continue;st?g.lineTo(X(v),Y(q)):g.moveTo(X(v),Y(q));st=true;}g.stroke();
+ if(p!==null){g.fillStyle='#F7821F';g.beginPath();g.arc(X(vb),Y(p),6,0,7);g.fill();}}
+['a','b','va','vb'].forEach(i=>$(i).oninput=upd);upd();
+// ---------- diluição ----------
+const cd=$('cd'),d=cd.getContext('2d');let mode=null,t=0,drops=[];
+function dil(m){mode=m;t=0;drops=[];}
+$('dA').onclick=()=>dil('A');$('dB').onclick=()=>dil('B');
+function frame(){d.clearRect(0,0,420,260);
+ // termômetro
+ const T=mode==='A'?Math.min(120,25+t*1.6):mode==='B'?Math.min(38,25+t*0.12):25;
+ d.fillStyle='#fff';d.strokeStyle='#0E2354';d.lineWidth=2;d.fillRect(370,30,18,180);d.strokeRect(370,30,18,180);
+ const h=(T-20)/110*170;d.fillStyle=T>90?'#E2231A':'#F7821F';d.fillRect(373,207-h,12,h);
+ d.beginPath();d.arc(379,222,13,0,7);d.fill();d.fillStyle='#0E2354';d.font='600 13px Poppins,sans-serif';d.textAlign='center';d.fillText(Math.round(T)+' °C',379,252);
+ // copo
+ const x0=110,x1=290,yb=230;
+ let lev,col;
+ if(mode==='A'){lev=60;col='rgba(200,170,60,.75)';}else{lev=120;col='rgba(120,180,245,.6)';}
+ if(mode===null){lev=0;}
+ d.fillStyle=col||'#fff';d.fillRect(x0,yb-lev,x1-x0,lev);
+ d.strokeStyle='#0E2354';d.lineWidth=4;d.beginPath();d.moveTo(x0-4,70);d.lineTo(x0-4,yb+4);d.lineTo(x1+4,yb+4);d.lineTo(x1+4,70);d.stroke();
+ d.font='12px Poppins,sans-serif';d.fillStyle='#0E2354';
+ if(mode){d.fillText(mode==='A'?'ácido concentrado':'muita água',200,yb-8);
+  // frasco que derrama
+  d.save();d.translate(250,30);d.rotate(.7);d.fillStyle=mode==='A'?'rgba(120,180,245,.8)':'rgba(200,170,60,.9)';d.fillRect(-14,-30,28,46);d.strokeStyle='#0E2354';d.lineWidth=2;d.strokeRect(-14,-30,28,46);d.restore();
+  d.fillText(mode==='A'?'água':'ácido',290,22);
+  if(t<140){for(let k=0;k<3;k++)drops.push({x:226+Math.random()*4,y:52,vy:2+Math.random(),c:mode==='A'?'#78B4F5':'#C8AA3C'});}
+  drops.forEach(p=>{p.y+=p.vy;p.vy+=0.15;});
+  drops=drops.filter(p=>p.y<yb-lev);
+  drops.forEach(p=>{d.fillStyle=p.c;d.beginPath();d.arc(p.x,p.y,3,0,7);d.fill();});
+  if(mode==='A'&&t>25){ // fervura e respingos
+   for(let k=0;k<14;k++){const a=(t*7+k*40)%360*Math.PI/180;const r=((t*3+k*13)%80);
+    d.fillStyle=k%2?'rgba(200,170,60,.9)':'rgba(255,255,255,.95)';d.beginPath();d.arc(200+Math.cos(a)*r*1.4,yb-lev-Math.abs(Math.sin(a))*r*1.3,4,0,7);d.fill();}
+   d.fillStyle='rgba(170,170,180,.35)';for(let k=0;k<5;k++){d.beginPath();d.arc(170+k*16,yb-lev-40-((t*2+k*20)%60),12,0,7);d.fill();}}
+  if(mode==='B'&&t>20){d.fillStyle='rgba(200,170,60,.25)';d.fillRect(x0,yb-lev,x1-x0,lev);}
+  t++;
+  $('dmsg').className='msg '+(mode==='A'?(t>25?'bad':'info'):(t>60?'ok':'info'));
+  $('dmsg').innerHTML=mode==='A'
+   ?(t>25?'<b>Perigo!</b> A pouca água que caiu sobre o ácido absorveu todo o calor liberado, <b>ferveu na hora</b> e espirrou, jogando ácido para fora do copo. Isso pode causar queimaduras graves na pele e nos olhos.':'A água começa a cair sobre o ácido concentrado...')
+   :(t>60?'<b>Jeito certo.</b> Cada gota de ácido cai numa grande quantidade de água, que absorve o calor sem ferver. A mistura só fica morna e nada espirra.':'O ácido cai aos poucos na água, mexendo sempre...');}
+ requestAnimationFrame(frame);}
+frame();
+</script>
+</body>
+</html>
