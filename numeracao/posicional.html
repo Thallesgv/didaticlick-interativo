@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Babilônios e maias · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Sistemas de numeração</div><h1 id="title">Babilônios e maias</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-bab" class="on">Babilônico (base 60)</button><button id="tab-maia">Maia (base 20)</button></div>
+<div class="card"><div class="tabs" style="margin-bottom:6px"><button id="tab-ver" class="on">Ver um número</button><button id="tab-des">Desafio</button></div>
+<div id="pn-ver"><label class="l">Digite um número</label><input type="number" id="n" min="0" inputmode="numeric">
+<p class="muted" style="margin:8px 0 4px">Ou monte casa por casa:</p><div id="casas"></div></div>
+<div id="pn-des" class="hide"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Que número é este?</h2>
+<label class="l">Sua resposta no nosso sistema</label><input type="number" id="resp" inputmode="numeric"><div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div></div>
+<div class="card"><div class="fig" id="fig"></div><div id="conta" style="margin-top:8px"></div></div>
+<div class="card"><h2 id="lt">Lembre</h2><p id="lembre" style="margin:0"></p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+let sis=q.get('s')==='maia'?'maia':'bab',modo='ver',ds=[1,2,5],alvo=0,ac=0,tt=0,feito=false;
+const B=()=>sis==='bab'?60:20;
+const toN=d=>d.reduce((s,x)=>s*B()+x,0);
+const dig=n=>sis==='bab'?SN.bDigits(n):SN.mDigits(n);
+function casas(){const nm=sis==='bab'?['unidades (× 1)','sessentenas (× 60)','× 3 600','× 216 000']:['unidades (× 1)','vintenas (× 20)','× 400','× 8 000','× 160 000'];
+ $('casas').innerHTML=ds.map((d,i)=>{const pos=ds.length-1-i;return `<div class="row" style="align-items:center;margin:4px 0"><div style="flex:1;font-size:14px"><b>${nm[pos]||'× '+SN.fmt(B()**pos)}</b></div><div class="step3"><button class="alt" data-i="${i}" data-d="-1">−</button><span>${d}</span><button data-i="${i}" data-d="1">+</button></div></div>`;}).join('')+
+ `<div class="row" style="margin-top:6px"><button class="alt" id="mais">+ casa à esquerda</button>${ds.length>1?'<button class="alt" id="menos">− casa</button>':''}</div>`;
+ $('casas').querySelectorAll('.step3 button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;let v=ds[i]+ +b.dataset.d;if(v<0)v=0;
+  if(v>=B()){msg('conta',`Numa casa cabem só ${B()-1}. Com ${B()} na mesma casa, trocamos por 1 na casa da esquerda.`,'info');v=B()-1;}
+  ds[i]=v;sync();});
+ $('mais').onclick=()=>{ds.unshift(1);sync();};if($('menos'))$('menos').onclick=()=>{ds.shift();if(!ds.length)ds=[0];sync();};}
+function draw(d,show){const o={digits:d,rotulos:show,cores:show,zero:sis==='bab'};
+ $('fig').innerHTML=sis==='bab'?SN.babilonico(0,Object.assign(o,{scale:1.8})):SN.maia(0,Object.assign(o,{scale:1.3}));}
+function sync(){draw(ds,true);$('n').value=toN(ds);const L=ds.length;
+ $('conta').innerHTML=`<div class="big" style="font-size:19px">`+ds.map((d,i)=>`${d} × ${SN.fmt(B()**(L-1-i))}`).join(' + ')+` = <span class="k">${SN.fmt(toN(ds))}</span></div>`;casas();}
+function lembre(){$('lt').textContent=sis==='bab'?'Como os babilônios escreviam':'Como os maias escreviam';
+ $('lembre').innerHTML=sis==='bab'?'Só dois símbolos: o <b>prego</b> vale 1 e a <b>asna</b> (o canto) vale 10. Com eles se escreve de 1 a 59. Depois, a <b>posição</b> manda: cada casa à esquerda vale 60 vezes mais. No começo não havia zero: deixava-se um espaço. Mais tarde (c. 300 a.C.) passaram a usar dois pregos inclinados para marcar a casa vazia.':
+ 'Três símbolos: o <b>ponto</b> vale 1, a <b>barra</b> vale 5 e a <b>concha</b> é o zero. Com pontos e barras se escreve de 0 a 19. Os números são lidos <b>de cima para baixo</b>: a casa de baixo vale 1, a de cima vale 20, a seguinte 400… Cada casa vale 20 vezes a de baixo.';}
+function desafio(){feito=false;msg('dm','');$('resp').value='';const f=[[sis==='bab'?61:21,sis==='bab'?3599:399],[sis==='bab'?3600:400,sis==='bab'?20000:7999]][tt<3?0:1];
+ alvo=rnd(f[0],f[1]);draw(dig(alvo),false);$('conta').innerHTML='';}
+$('ok').onclick=()=>{if(feito)return;const r=parseInt($('resp').value);if(isNaN(r)){msg('dm','Digite sua resposta.','info');return;}tt++;feito=true;const d=dig(alvo),L=d.length;
+ const ex=d.map((x,i)=>`${x} × ${SN.fmt(B()**(L-1-i))}`).join(' + ')+` = ${SN.fmt(alvo)}`;
+ if(r===alvo){ac++;msg('dm','Certo! '+ex,'ok');}else msg('dm','Ainda não. '+ex,'bad');draw(d,true);$('placar').textContent=`Acertos: ${ac} de ${tt}`;};
+$('novo').onclick=desafio;
+$('n').oninput=()=>{let n=parseInt($('n').value);if(isNaN(n)||n<0)return;n=Math.min(n,sis==='bab'?12959999:3199999);ds=dig(n);draw(ds,true);const L=ds.length;
+ $('conta').innerHTML=`<div class="big" style="font-size:19px">`+ds.map((d,i)=>`${d} × ${SN.fmt(B()**(L-1-i))}`).join(' + ')+` = <span class="k">${SN.fmt(n)}</span></div>`;casas();};
+function setSis(s){sis=s;$('tab-bab').classList.toggle('on',s==='bab');$('tab-maia').classList.toggle('on',s==='maia');lembre();
+ if(modo==='ver'){const ini=q.get('s')==='maia'?'maia':'bab';ds=dig(s===ini&&q.get('n')?P('n',0,0,s==='bab'?12959999:3199999):(s==='bab'?3725:2026));sync();}else desafio();}
+$('tab-bab').onclick=()=>setSis('bab');$('tab-maia').onclick=()=>setSis('maia');
+tabs(['ver','des'],t=>{modo=t;if(t==='des')desafio();else sync();});
+setSis(sis);
+
+</script>
+</body>
+</html>

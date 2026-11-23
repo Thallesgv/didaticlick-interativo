@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escreva como um escriba egípcio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Sistemas de numeração</div><h1 id="title">Escreva como um escriba egípcio</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Montar</button><button id="tab-desafio">Desafio</button></div>
+<div class="card"><div class="fig" id="fig"></div><div class="big" id="valor"></div><div id="m"></div></div>
+<div id="pn-livre"></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card" id="palcard"><h2>Os sete símbolos</h2><p class="muted" style="margin-top:0">Toque em + e − para colocar ou tirar símbolos. A ordem não muda o valor: o sistema é <b>aditivo</b>.</p><div class="pal" id="pal"></div>
+<div class="row" style="margin-top:10px"><button class="alt" id="zera">Apagar tudo</button></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Cada símbolo vale sempre a mesma coisa, em qualquer lugar. Dez símbolos iguais são trocados por um só símbolo do valor seguinte: é o <b>agrupamento de 10 em 10</b>. Por isso nunca aparecem mais de 9 símbolos iguais.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+const E=SN.EG;let c=[0,0,0,0,0,0,0],modo='livre',tipo=0,alvo=0,ac=0,tt=0,feito=false;
+const n0=P('n',1214,0,9999999);c=SN.egCounts(n0);
+const val=()=>c.reduce((s,k,i)=>s+k*10**i,0);
+function pal(){$('pal').innerHTML=E.map((s,i)=>`<div style="text-align:center">${SN.egSimbolo(i,0,36)}</div><div class="nm"><b>${SN.fmt(s.v)}</b> · ${s.nome}</div><div class="step3"><button class="alt" data-i="${i}" data-d="-1">−</button><span>${c[i]}</span><button data-i="${i}" data-d="1">+</button></div>`).join('');
+ $('pal').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,d=+b.dataset.d;c[i]=Math.max(0,c[i]+d);draw();});}
+function draw(){const any=c.some(k=>k);$('fig').innerHTML=any?SN.egSVG(c,{maxRow:6,scale:1.6}):'<span class="muted">Nenhum símbolo ainda</span>';
+ const v=val();$('valor').innerHTML=(modo==='desafio'&&tipo===0&&!feito)?'':(modo==='desafio'&&tipo===1)?'':`Valor: <span class="k">${SN.fmt(v)}</span>`;
+ const i=c.findIndex((k,j)=>k>=10&&j<6);
+ if(i>=0&&!(modo==='desafio'&&tipo===1)){$('m').innerHTML=`<div class="msg info">Há ${c[i]} ${E[i].plural}. Um escriba trocaria 10 deles por 1 ${E[i+1].nome}. <button class="or" id="troca" style="margin-top:6px">Trocar 10 por 1</button></div>`;$('troca').onclick=()=>{c[i]-=10;c[i+1]++;draw();};}else $('m').innerHTML='';
+ $('palcard').classList.toggle('hide',modo==='desafio'&&tipo===1);pal();}
+function desafio(){feito=false;msg('dm','');tipo=rnd(0,1);
+ const faixa=[[11,99],[101,999],[1001,9999],[10001,99999],[100001,2999999]][Math.min(4,Math.floor(tt/2))];alvo=rnd(faixa[0],faixa[1]);
+ if(tipo===0){c=[0,0,0,0,0,0,0];$('dq').innerHTML=`Escreva <span class="k">${SN.fmt(alvo)}</span> em hieróglifos`;$('dbody').innerHTML='<p class="muted" style="margin:0">Monte com os botões + e − do quadro dos símbolos e toque em OK.</p>';}
+ else{c=SN.egCounts(alvo);$('dq').textContent='Que número o escriba escreveu?';$('dbody').innerHTML='<label class="l">Sua resposta</label><input type="number" id="resp" inputmode="numeric">';}
+ draw();}
+$('ok').onclick=()=>{if(feito)return;
+ if(tipo===0){const v=val();if(!c.some(k=>k)){msg('dm','Coloque os símbolos primeiro.','info');return;}
+  tt++;feito=true;const certo=SN.egCounts(alvo).every((k,i)=>k===c[i]);
+  if(certo){ac++;msg('dm',`Certo! ${SN.fmt(alvo)} = `+c.map((k,i)=>k?`${k} × ${SN.fmt(10**i)}`:'').filter(Boolean).reverse().join(' + '),'ok');}
+  else if(v===alvo)msg('dm','O valor está certo, mas há 10 ou mais símbolos iguais. Faça as trocas: o escriba nunca deixava 10 símbolos iguais.','bad');
+  else msg('dm',`Ainda não. Seus símbolos valem ${SN.fmt(v)}. O certo seria: `+SN.egCounts(alvo).map((k,i)=>k?`${k} ${k>1?E[i].plural:E[i].nome}`:'').filter(Boolean).reverse().join(', ')+'.','bad');}
+ else{const r=parseInt($('resp').value);if(isNaN(r)){msg('dm','Digite um número.','info');return;}tt++;feito=true;
+  if(r===alvo){ac++;msg('dm',`Certo! `+c.map((k,i)=>k?`${k} × ${SN.fmt(10**i)}`:'').filter(Boolean).reverse().join(' + ')+` = ${SN.fmt(alvo)}`,'ok');}
+  else msg('dm',`Ainda não. Conte cada tipo de símbolo: `+c.map((k,i)=>k?`${k} × ${SN.fmt(10**i)}`:'').filter(Boolean).reverse().join(' + ')+` = ${SN.fmt(alvo)}.`,'bad');}
+ $('placar').textContent=`Acertos: ${ac} de ${tt}`;draw();};
+$('novo').onclick=desafio;$('zera').onclick=()=>{c=[0,0,0,0,0,0,0];draw();};
+tabs(['livre','desafio'],t=>{modo=t;if(t==='desafio')desafio();else{c=SN.egCounts(n0);draw();}});
+draw();
+
+</script>
+</body>
+</html>

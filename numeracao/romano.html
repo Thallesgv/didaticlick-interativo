@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Algarismos romanos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Sistemas de numeração</div><h1 id="title">Algarismos romanos</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-para" class="on">Número → romano</button><button id="tab-de">Romano → número</button><button id="tab-desafio">Desafio</button></div>
+<div class="card" id="pn-para"><label class="l">Digite um número de 1 a 3 999 999</label><input type="number" id="n" min="1" max="3999999" inputmode="numeric">
+<div class="big" id="rom" style="font-family:'DejaVu Serif',Georgia,serif;letter-spacing:2px;margin-top:10px"></div><div id="passos"></div></div>
+<div class="card hide" id="pn-de"><label class="l">Digite um numeral romano</label><input type="text" id="r" autocapitalize="characters" autocomplete="off" spellcheck="false">
+<div id="rres" style="margin-top:8px"></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2>
+<input type="text" id="resp" autocomplete="off" spellcheck="false"><div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>As regras</h2>
+<p style="margin:0 0 6px"><b>I = 1 · V = 5 · X = 10 · L = 50 · C = 100 · D = 500 · M = 1&nbsp;000</b></p>
+<p style="margin:0">1. Símbolos iguais ou menores à direita <b>somam</b>: XV = 15, CC = 200.<br>2. I, X, C e M repetem no máximo <b>3 vezes</b>; V, L e D nunca se repetem.<br>3. Um símbolo menor <b>à esquerda</b> de um maior <b>subtrai</b>, mas só nestes casos: IV, IX, XL, XC, CD e CM.<br>4. Um <b>traço em cima</b> multiplica por 1&nbsp;000: <span style="text-decoration:overline">V</span> = 5&nbsp;000.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+function para(){const n=parseInt($('n').value);if(isNaN(n)||n<1||n>3999999){$('rom').textContent='';$('passos').innerHTML='<p class="muted">Os romanos não tinham símbolo para o zero.</p>';return;}
+ $('rom').innerHTML=SN.romanoHTML(n);const g=SN.romanoGrande(n);let h='';
+ if(g.barra){h+=`<div class="msg info">Com o traço em cima, <span style="text-decoration:overline">${g.barra}</span> vale ${SN.fmt(Math.floor(n/1000))} × 1 000 = ${SN.fmt(Math.floor(n/1000)*1000)}.</div>`;}
+ const p=SN.romanoPassos(n%(g.barra?1000:1e9));if(p.length)h+='<table class="t"><tr><th>pedaço</th><th>vale</th></tr>'+p.map(([s,v])=>`<tr><td><b>${s}</b></td><td>${SN.fmt(v)}${s.length===2?' ('+SN.fmt(v+{I:1,X:10,C:100}[s[0]])+' − '+{I:1,X:10,C:100}[s[0]]+')':''}</td></tr>`).join('')+'</table>';
+ $('passos').innerHTML=h;}
+function de(){const t=$('r').value;if(!t.trim()){$('rres').innerHTML='';return;}const r=SN.lerRomano(t);
+ if(r.ok)$('rres').innerHTML=`<div class="big">${t.toUpperCase()} = <span class="k">${SN.fmt(r.valor)}</span></div><div class="msg ok">`+r.passos.map(([s,v,sub])=>sub?`${s} = ${SN.fmt(v)}`:`${s} = ${SN.fmt(v)}`).join(' · ')+'</div>';
+ else $('rres').innerHTML=`<div class="msg bad">${r.erro}</div>`;}
+$('n').oninput=para;$('r').oninput=de;$('n').value=P('n',2026,1,3999999);para();
+let tipo,alvo,ac=0,tt=0,feito=false;
+function desafio(){feito=false;msg('dm','');$('resp').value='';tipo=rnd(0,1);alvo=rnd(tt<3?4:40,tt<3?49:3999);
+ if(tipo===0){$('dq').innerHTML=`Escreva <span class="k">${SN.fmt(alvo)}</span> em algarismos romanos`;$('resp').setAttribute('inputmode','text');$('resp').autocapitalize='characters';}
+ else{$('dq').innerHTML=`Quanto vale <span class="k" style="font-family:Georgia,serif">${SN.romano(alvo)}</span>?`;$('resp').setAttribute('inputmode','numeric');}}
+$('ok').onclick=()=>{if(feito)return;const v=$('resp').value.trim();if(!v){msg('dm','Escreva sua resposta antes do OK.','info');return;}tt++;feito=true;
+ if(tipo===0){const r=SN.lerRomano(v);if(r.ok&&r.valor===alvo){ac++;msg('dm',`Certo! ${SN.romanoPassos(alvo).map(([s,x])=>s).join(' + ')}`,'ok');}
+  else msg('dm',`Ainda não. ${r.ok?'Você escreveu '+SN.fmt(r.valor)+'.':r.erro} O certo é <b>${SN.romano(alvo)}</b> = `+SN.romanoPassos(alvo).map(([s,x])=>`${s} (${x})`).join(' + ')+'.','bad');}
+ else{const r=parseInt(v);if(r===alvo){ac++;msg('dm','Certo! '+SN.romanoPassos(alvo).map(([s,x])=>`${s} = ${x}`).join(' · '),'ok');}
+  else msg('dm',`Ainda não. ${SN.romano(alvo)} = `+SN.romanoPassos(alvo).map(([s,x])=>`${s} (${x})`).join(' + ')+` = ${SN.fmt(alvo)}.`,'bad');}
+ $('placar').textContent=`Acertos: ${ac} de ${tt}`;};
+$('novo').onclick=desafio;
+tabs(['para','de','desafio'],t=>{if(t==='desafio')desafio();});
+if(q.get('r')){$('tab-de').click();$('r').value=q.get('r');de();}
+
+</script>
+</body>
+</html>
