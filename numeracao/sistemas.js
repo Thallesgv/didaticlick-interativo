@@ -1,4 +1,4 @@
-// Biblioteca comum dos sistemas de numeração (DidatiClick · MatematiClick).
+// Biblioteca comum dos sistemas de numeração (DidatiClick).
 // Usada pelas páginas da pasta numeracao/ e pelo gerador da apostila (via node), para que
 // as figuras do papel e as da tela sejam idênticas.
 (function (root) {
