@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fichas: inteiros com cores · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;color:var(--navy);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lbl{font-size:13px;color:var(--gray);margin:0 0 2px}
+.log{list-style:none;padding:0;margin:6px 0 0}
+.log li{padding:6px 0;border-bottom:1px dashed #D7DEEA;font-size:15px}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:13px;font-weight:600}
+.tag.ok{background:#DCFCE7;color:var(--ok)}.tag.bad{background:#FEE2E2;color:var(--bad)}.tag.info{background:#EEF3FF;color:var(--blue)}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-weight:600}
+.chips button.sel{border-color:var(--orange);background:#FFF3E6}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Conjuntos numéricos</div><h1 id="title">Fichas: inteiros com cores</h1></header>
+<main>
+
+<div class="card"><p class="muted" id="lead" style="margin:0 0 6px"></p><svg class="fig" id="svg" viewBox="0 0 340 120"></svg>
+<div class="eq" id="eq"></div><div id="msg"></div>
+<div class="row" id="btns" style="margin-top:8px"></div></div>
+<div class="card"><h2>Escolha os números</h2>
+<div class="sl"><b id="la">1º número</b><input type="range" id="a" min="-10" max="10"><span id="av"></span></div>
+<div class="sl"><b id="lb">2º número</b><input type="range" id="b" min="-10" max="10"><span id="bv"></span></div>
+<div class="row"><button class="alt" id="rs">Recomeçar</button></div></div>
+<div class="card"><h2>Como funciona</h2><p style="margin:0" id="obs"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C',GY='#6B7280',PU='#7A4BB5';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="${o.f||'Poppins,sans-serif'}">${s}</text>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const F=(p,q2=1)=>{if(q2<0){p=-p;q2=-q2;}const g=gcd(p,q2);return [p/g,q2/g];};
+const fs=f=>(f[1]===1?String(f[0]):f[0]+'/'+f[1]).replace(/-/g,'−');
+
+const modo=q.get('modo')||'soma';let pos,neg,feito,alvo,info;const sg=v=>(v>0?'+':v<0?'−':'')+Math.abs(v);const pr=v=>v<0?`(${sg(v)})`:sg(v);
+const TT={soma:'Fichas: adição de inteiros',sub:'Fichas: subtração de inteiros',mult:'Fichas: multiplicação de inteiros'};$('title').textContent=TT[modo]||TT.soma;document.title=$('title').textContent+' · DidatiClick';
+const OB={soma:'Cada ficha azul vale +1 e cada vermelha vale −1. Uma azul e uma vermelha juntas formam um par nulo (valem 0) e podem sair da mesa sem mudar o valor. O que sobra depois de tirar todos os pares é o resultado.',
+ sub:'Subtrair é tirar fichas da mesa. Se não há fichas suficientes da cor que precisa sair, coloque pares nulos (isso não muda o valor) e depois tire. Repare: tirar 5 azuis dá o mesmo que colocar 5 vermelhas. Por isso a − b = a + (−b).',
+ mult:'Se o 1º número é positivo, colocamos grupos na mesa. Se é negativo, retiramos grupos: começamos com pares nulos (a mesa vale zero) e retiramos os grupos. Retirar grupos de vermelhas deixa azuis: menos vezes menos dá mais.'};
+$('obs').textContent=OB[modo]||OB.soma;
+if(modo==='mult'){$('la').textContent='nº de grupos';$('lb').textContent='cada grupo';$('a').min=-5;$('a').max=5;$('b').min=-5;$('b').max=5;}
+$('a').value=P('a',modo==='sub'?2:modo==='mult'?-3:5,-10,10);$('b').value=P('b',modo==='sub'?5:modo==='mult'?-2:-3,-10,10);
+function reset(){const a=+$('a').value,b=+$('b').value;$('av').textContent=sg(a);$('bv').textContent=sg(b);
+ if(modo==='soma'){pos=Math.max(a,0)+Math.max(b,0);neg=Math.max(-a,0)+Math.max(-b,0);alvo=a+b;info=`${pr(a)} + ${pr(b)}`;$('lead').textContent='Colocamos na mesa as fichas dos dois números. Tire os pares nulos até não sobrar nenhum.';}
+ if(modo==='sub'){pos=Math.max(a,0);neg=Math.max(-a,0);feito=0;alvo=a-b;info=`${pr(a)} − ${pr(b)}`;$('lead').textContent=b===0?'Subtrair zero não tira nada.':`Na mesa está o ${sg(a)}. Precisamos tirar ${Math.abs(b)} ficha(s) ${b>0?'azul(is)':'vermelha(s)'}.`;}
+ if(modo==='mult'){pos=0;neg=0;feito=0;alvo=a*b;info=`${pr(a)} × ${pr(b)}`;if(a<0){pos=neg=Math.abs(a*b);}
+  $('lead').textContent=a>=0?`Coloque ${a} grupo(s) de ${sg(b)} na mesa.`:`A mesa começa com ${Math.abs(a*b)} pares nulos (vale zero). Retire ${-a} grupo(s) de ${sg(b)}.`;}
+ draw();}
+function chips(){const W=340,r=13,gap=30,per=10;let g='',rowsP=Math.ceil(pos/per)||0,rowsN=Math.ceil(neg/per)||0;const pairs=Math.min(pos,neg);
+ const ch=(x,y,s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${s>0?BL:RD}"/>`+T(x,y+6,s>0?'+':'−',{c:'#fff',s:18});
+ let y=22;for(let i=0;i<pos;i++)g+=ch(20+(i%per)*gap,y+Math.floor(i/per)*32,1);const yN=y+Math.max(rowsP,1)*32+6;
+ for(let i=0;i<neg;i++)g+=ch(20+(i%per)*gap,yN+Math.floor(i/per)*32,-1);
+ if(pairs&&rowsP<=1&&rowsN<=1)for(let i=0;i<pairs;i++)g=`<rect x="${20+i*gap-r-3}" y="${y-r-3}" width="${2*r+6}" height="${yN-y+2*r+6}" rx="${r+3}" fill="#FFF3E6" stroke="${OR}" stroke-dasharray="4 3"/>`+g;
+ const H=yN+Math.max(rowsN,1)*32;$('svg').setAttribute('viewBox',`0 0 ${W} ${H}`);$('svg').innerHTML=g||T(170,40,'mesa vazia (vale 0)',{c:GY});}
+function btn(t,f,cls='or'){const b=document.createElement('button');b.className=cls;b.textContent=t;b.onclick=f;$('btns').appendChild(b);}
+function draw(){chips();$('btns').innerHTML='';const val=pos-neg;$('eq').innerHTML=`${info} &nbsp;·&nbsp; mesa: <span style="color:${BL}">${pos} azul(is)</span>, <span style="color:${RD}">${neg} vermelha(s)</span>`;
+ const a=+$('a').value,b=+$('b').value;let fim=false;
+ if(modo==='soma'){if(pos&&neg)btn('Tirar um par nulo',()=>{pos--;neg--;draw();});if(pos&&neg)btn('Tirar todos os pares',()=>{const k=Math.min(pos,neg);pos-=k;neg-=k;draw();},'alt');fim=!(pos&&neg);}
+ if(modo==='sub'){const falta=Math.abs(b)-feito,cor=b>0?'azul':'vermelha',tem=b>0?pos:neg;
+  if(falta>0){if(tem>0)btn(`Tirar 1 ficha ${cor}`,()=>{if(b>0)pos--;else neg--;feito++;draw();});else btn('Colocar 1 par nulo',()=>{pos++;neg++;draw();});
+   $('msg').innerHTML=`<div class="msg info">${tem>0?'':'Não há ficha '+cor+' para tirar. Coloque um par nulo. '}Faltam tirar ${falta}.</div>`;}
+  else{if(pos&&neg)btn('Tirar os pares nulos que sobraram',()=>{const k=Math.min(pos,neg);pos-=k;neg-=k;draw();},'alt');fim=!(pos&&neg);}}
+ if(modo==='mult'){const n=Math.abs(a);if(feito<n){if(a>0)btn(`Colocar um grupo de ${sg(b)}`,()=>{if(b>0)pos+=b;else neg-=b;feito++;draw();});else btn(`Retirar um grupo de ${sg(b)}`,()=>{if(b>0)pos-=b;else neg+=b;feito++;draw();});
+   $('msg').innerHTML=`<div class="msg info">${a>0?'Colocados':'Retirados'}: ${feito} de ${n} grupo(s).</div>`;}
+  else{if(pos&&neg)btn('Tirar os pares nulos',()=>{const k=Math.min(pos,neg);pos-=k;neg-=k;draw();},'alt');fim=!(pos&&neg);}}
+ if(fim)$('msg').innerHTML=`<div class="msg ok">Sobrou só uma cor: ${info} = <b>${sg(val)}</b>${val===alvo?'':' (confira os passos)'}.</div>`;else if(modo==='soma')$('msg').innerHTML=`<div class="msg info">Ainda há ${Math.min(pos,neg)} par(es) nulo(s) na mesa.</div>`;}
+['a','b'].forEach(i=>$(i).oninput=reset);$('rs').onclick=reset;reset();
+</script>
+</body>
+</html>
