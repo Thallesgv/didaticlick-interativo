@@ -12,6 +12,7 @@
 .side h3{margin:0 0 6px;font-size:13px;color:var(--gray);font-weight:600;text-align:center}
 .side .row button{flex:1 1 40%;padding:8px 4px;font-size:14px}
 .both .row button{flex:1 1 30%}
+.both .row.div button{flex:1 1 20%}
 #hist{font-size:13px;color:var(--gray);margin:8px 0 0;padding-left:18px}
 .tabs{display:flex;gap:6px;margin-bottom:10px}
 .tabs button{flex:1}
@@ -35,11 +36,12 @@ label{font-size:14px}
   <div class="row">
     <button data-b="u-1">− 1 nos dois</button>
     <button data-b="x-1">− x nos dois</button>
-    <button data-b="div">÷ nos dois</button>
     <button data-b="u+1" class="alt">+ 1 nos dois</button>
     <button data-b="x+1" class="alt">+ x nos dois</button>
     <button data-b="undo" class="alt">↶ Desfazer</button>
   </div>
+  <p class="muted" style="margin:10px 0 4px">Dividir os dois pratos em partes iguais:</p>
+  <div class="row div"><button data-b="d2">÷ 2</button><button data-b="d3">÷ 3</button><button data-b="d4">÷ 4</button><button data-b="d5">÷ 5</button></div>
   <ol id="hist"></ol>
 </div>
 
@@ -128,9 +130,8 @@ document.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{const [s,k,d]=b.
   hist.push((+d>0?'Coloquei ':'Tirei ')+(k==='x'?'uma caixa x':'um peso 1')+' só no prato '+(s==='L'?'esquerdo':'direito'));render();});
 document.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{const t=b.dataset.b;
   if(t==='undo'){if(!stack.length)return;[S,hist]=JSON.parse(stack.pop());render();return;}
-  if(t==='div'){const g=[S.L.x,S.L.u,S.R.x,S.R.u].reduce((a,c)=>{const G=(p,q)=>q?G(q,p%q):p;return G(a,c)},0);
-    const n=+prompt('Dividir os dois lados por quanto? (os pesos de cada prato precisam se repartir em partes iguais)', g>1?g:2);
-    if(!n||n<2)return; if([S.L.x,S.L.u,S.R.x,S.R.u].some(v=>v%n)){$('msg').className='msg bad';$('msg').textContent='Não dá para repartir tudo em '+n+' partes iguais. Tente outro número.';return;}
+  if(t[0]==='d'){const n=+t.slice(1);
+    if([S.L.x,S.L.u,S.R.x,S.R.u].some(v=>v%n)){$('msg').className='msg bad';$('msg').textContent='Não dá para repartir os dois pratos em '+n+' partes iguais. Tente outro número.';return;}
     push();['L','R'].forEach(s=>{S[s].x/=n;S[s].u/=n});hist.push('Dividi os dois lados por '+n+' (propriedade multiplicativa)');render();return;}
   const k=t[0],d=t.slice(1)==='+1'?1:-1;if(d<0&&(!S.L[k]||!S.R[k]))return;push();S.L[k]+=d;S.R[k]+=d;
   hist.push((d>0?'Coloquei ':'Tirei ')+(k==='x'?'uma caixa x':'um peso 1')+' nos dois lados (propriedade aditiva)');render();});
