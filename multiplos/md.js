@@ -1,4 +1,4 @@
-// Biblioteca da apostila Múltiplos, divisores e fatoração (DidatiClick · MatematiClick).
+// Biblioteca da apostila Múltiplos, divisores e fatoração (DidatiClick).
 // Desenha as mesmas figuras no site e no PDF (o PDF chama estas funções pelo node).
 (function (root) {
   const NAVY = '#0E2354', OR = '#F7821F', BL = '#2457D6', GR = '#15803D', RD = '#B91C1C', GY = '#6B7280', LG = '#D7DEEA';
