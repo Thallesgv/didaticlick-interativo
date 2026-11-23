@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador da conta de luz · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física 9º ano</div><h1>Simulador da conta de luz</h1></header>
+<main>
+
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Escolha quantas horas por dia cada aparelho fica ligado. Veja o consumo do mês em kWh e quanto ele custa.</p>
+<label>Preço do kWh (veja na sua conta): R$ <input type="number" id="tar" value="1.00" step="0.05" min="0" style="width:80px;font:inherit;padding:4px;border:2px solid #D7DEEA;border-radius:8px"></label>
+<table class="t"><thead><tr><th>Aparelho</th><th>Potência</th><th>Horas por dia</th><th>kWh/mês</th></tr></thead><tbody id="tb"></tbody></table>
+</div>
+<div class="card" style="text-align:center">
+<div class="muted">Consumo no mês (30 dias)</div><div class="big" id="kwh" style="font-size:30px"></div>
+<div class="muted" style="margin-top:6px">Custo estimado</div><div class="big" id="rs" style="font-size:30px;color:var(--orange)"></div>
+<canvas id="cv" width="800" height="300" style="margin-top:10px"></canvas>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Qual aparelho mais pesa na conta? Por quê?</li>
+<li>Diminua o banho de 30 para 15 minutos por dia. Quanto você economiza por mês?</li>
+<li>Troque a lâmpada incandescente pela de LED (mesmas horas). Quanto muda?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const AP=[["Chuveiro elétrico",5500,0.5],["Geladeira (média)",150,10],["Lâmpada LED",9,5],["Lâmpada incandescente",60,0],["Televisão",100,4],["Computador",200,2],["Ferro de passar",1000,0.3],["Carregador de celular",5,3],["Ar-condicionado",1000,0],["Micro-ondas",1200,0.2]];
+const $=x=>document.getElementById(x);
+$('tb').innerHTML=AP.map(([n,p,h],i)=>`<tr><td>${n}</td><td>${p.toLocaleString('pt-BR')} W</td><td><input type="range" min="0" max="24" step="0.25" value="${h}" data-i="${i}" style="width:100%"><span id="h${i}"></span></td><td id="k${i}"></td></tr>`).join('');
+const cols=['#F7821F','#2457D6','#15803D','#B91C1C','#7C6BD6','#4FC1C9','#F7B731','#9AA7BC','#0E2354','#E2553C'];
+function fmtH(h){const m=Math.round(h*60);return m<60?m+' min':(Math.floor(m/60)+' h'+(m%60?' '+(m%60)+' min':''));}
+function calc(){const tar=+$('tar').value||0;let tot=0;const ks=[];
+ document.querySelectorAll('#tb input').forEach(r=>{const i=+r.dataset.i,h=+r.value,k=AP[i][1]*h*30/1000;ks.push(k);tot+=k;$('h'+i).textContent=' '+fmtH(h);$('k'+i).textContent=k.toLocaleString('pt-BR',{maximumFractionDigits:1});});
+ $('kwh').textContent=tot.toLocaleString('pt-BR',{maximumFractionDigits:1})+' kWh';$('rs').textContent='R$ '+(tot*tar).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+ const c=$('cv').getContext('2d');c.clearRect(0,0,800,300);const max=Math.max(...ks,1);const order=ks.map((k,i)=>[k,i]).filter(x=>x[0]>0).sort((a,b)=>b[0]-a[0]);
+ c.font='18px Poppins,sans-serif';order.forEach(([k,i],j)=>{const y=10+j*29;if(y>280)return;c.fillStyle='#1F2937';c.textAlign='right';c.fillText(AP[i][0],250,y+18);c.fillStyle=cols[i];c.fillRect(260,y+2,(k/max)*480,22);c.fillStyle='#1F2937';c.textAlign='left';c.fillText(Math.round(k/tot*100)+'%',266+(k/max)*480,y+19);});}
+document.querySelectorAll('#tb input').forEach(r=>r.oninput=calc);$('tar').oninput=calc;calc();if(document.fonts)document.fonts.ready.then(calc);
+</script>
+</body></html>

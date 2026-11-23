@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aquecendo a água: do gelo ao vapor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física 9º ano</div><h1>Aquecendo a água: do gelo ao vapor</h1></header>
+<main>
+
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Um bloco de gelo a −20 °C vai ao fogo. Escolha a massa e a chama e veja a temperatura subir, parar e subir de novo.</p>
+<label>Massa: <b id="lm"></b><input type="range" id="m" min="100" max="1000" step="100" value="200"></label>
+<div class="tabs" id="fogo"><button class="alt" data-p="50">Fogo baixo</button><button class="alt on" data-p="100">Fogo médio</button><button class="alt" data-p="200">Fogo alto</button></div>
+<canvas id="cv" width="800" height="440"></canvas>
+<div class="row" style="margin-top:10px"><button id="play" class="or">▶ Aquecer</button><button id="reset" class="alt">↺ Recomeçar</button></div>
+<div class="read" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;margin-top:10px">
+ <div style="background:var(--bg);border-radius:10px;padding:6px;font-size:13px;color:var(--gray)">temperatura<b id="rT" style="display:block;font-size:18px;color:var(--navy)"></b></div>
+ <div style="background:var(--bg);border-radius:10px;padding:6px;font-size:13px;color:var(--gray)">calor recebido<b id="rQ" style="display:block;font-size:18px;color:var(--navy)"></b></div>
+ <div style="background:var(--bg);border-radius:10px;padding:6px;font-size:13px;color:var(--gray)">tempo<b id="rt" style="display:block;font-size:18px;color:var(--navy)"></b></div></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Durante a fusão e a ebulição, o fogo continua aceso, mas a temperatura não sobe. Para onde vai a energia?</li>
+<li>Qual patamar é mais longo: o da fusão ou o da ebulição? O que isso diz sobre a energia necessária em cada um?</li>
+<li>Dobre a massa. O que acontece com o tempo total? E com as temperaturas dos patamares?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const CG=0.5,CA=1,CV=0.48,LF=80,LV=540,T0=-20,T1=120;let m=200,P=100,Q=0,run=false,last=0;
+function seg(){return[["gelo esquentando",m*CG*(0-T0)],["fusão (gelo + água)",m*LF],["água esquentando",m*CA*100],["ebulição (água + vapor)",m*LV],["vapor esquentando",m*CV*(T1-100)]];}
+function Qtot(){return seg().reduce((a,s)=>a+s[1],0);}
+function state(q){const S=seg();let acc=0;for(let i=0;i<5;i++){const [n,qq]=S[i];if(q<=acc+qq||i===4){const f=Math.min(1,(q-acc)/qq);let T;
+ if(i===0)T=T0+f*(0-T0);else if(i===1)T=0;else if(i===2)T=f*100;else if(i===3)T=100;else T=100+f*(T1-100);return{i,n,f,T};}acc+=qq;}}
+const COL=['#7FB3FF','#9FD0E8','#2E7BD6','#C9D3E3','#9AA7BC'];
+function draw(){const L=60,R=520,Tp=20,B=400,Qm=Qtot();c.clearRect(0,0,800,440);
+ const X=q=>L+q/Qm*(R-L),Y=T=>B-(T-(-30))/(130-(-30))*(B-Tp);
+ c.strokeStyle='#E5E9F2';c.fillStyle='#6B7280';c.font='18px Poppins,sans-serif';c.textAlign='right';
+ for(let T=-20;T<=120;T+=20){c.beginPath();c.moveTo(L,Y(T));c.lineTo(R,Y(T));c.stroke();c.fillText(T+'',L-6,Y(T)+6);}
+ c.strokeStyle='#0E2354';c.lineWidth=2;c.beginPath();c.moveTo(L,Tp);c.lineTo(L,B);c.lineTo(R,B);c.stroke();c.lineWidth=1;
+ c.fillStyle='#0E2354';c.textAlign='left';c.fillText('T (°C)',L+6,Tp+16);c.textAlign='right';c.fillText('calor recebido →',R,B+28);
+ // curva completa clarinha
+ c.strokeStyle='rgba(36,87,214,.18)';c.lineWidth=4;c.beginPath();for(let k=0;k<=400;k++){const q=Qm*k/400,s=state(q);k?c.lineTo(X(q),Y(s.T)):c.moveTo(X(q),Y(s.T));}c.stroke();
+ c.strokeStyle='#2457D6';c.lineWidth=4;c.beginPath();for(let k=0;k<=400;k++){const q=Math.min(Q,Qm*k/400),s=state(q);k?c.lineTo(X(q),Y(s.T)):c.moveTo(X(q),Y(s.T));if(Qm*k/400>Q)break;}c.stroke();c.lineWidth=1;
+ const s=state(Q);c.fillStyle='#F7821F';c.beginPath();c.arc(X(Q),Y(s.T),8,0,7);c.fill();
+ // recipiente
+ const bx=600,by=120,bw=160,bh=240;c.strokeStyle='#0E2354';c.lineWidth=3;c.beginPath();c.moveTo(bx,by);c.lineTo(bx,by+bh);c.lineTo(bx+bw,by+bh);c.lineTo(bx+bw,by);c.stroke();c.lineWidth=1;
+ const liq=s.i===0?0:s.i===1?s.f:s.i===2?1:s.i===3?1-s.f:0,ice=s.i===0?1:s.i===1?1-s.f:0,vap=s.i>=3?(s.i===3?s.f:1):0;
+ if(liq>0){c.fillStyle='rgba(46,123,214,.55)';c.fillRect(bx+3,by+bh-3-120*liq,bw-6,120*liq);}
+ if(ice>0){c.fillStyle='rgba(191,227,255,.95)';c.strokeStyle='#7FB3FF';const sz=30+40*ice;c.fillRect(bx+bw/2-sz/2,by+bh-6-sz-(liq>0?120*liq*.3:0),sz,sz);c.strokeRect(bx+bw/2-sz/2,by+bh-6-sz-(liq>0?120*liq*.3:0),sz,sz);}
+ if(vap>0){c.fillStyle=`rgba(154,167,188,${.25+.5*vap})`;for(let k=0;k<14;k++){const a=k*2.1+Q/300;c.beginPath();c.arc(bx+20+((k*37+Q/20)%(bw-40)),by-20-((k*23+Q/8)%55),10+(k%3)*4,0,7);c.fill();}}
+ c.fillStyle='#F7821F';for(let k=0;k<5;k++){c.beginPath();c.moveTo(bx+20+k*30,by+bh+40);c.quadraticCurveTo(bx+32+k*30,by+bh+5-(P/10),bx+44+k*30,by+bh+40);c.fill();}
+ c.fillStyle='#0E2354';c.font='600 17px Poppins,sans-serif';c.textAlign='center';c.fillText(s.n,bx+bw/2-10,32);
+ $('rT').textContent=s.T.toFixed(0).replace('-','−')+' °C';$('rQ').textContent=Math.round(Q).toLocaleString('pt-BR')+' cal';$('rt').textContent=Math.round(Q/P)+' s';
+ const msg=[`O gelo recebe calor e sua temperatura sobe até 0 °C. Calor sensível: Q = m · c · Δt (c do gelo = 0,5 cal/g°C).`,
+  `<b>Fusão:</b> a temperatura fica parada em 0 °C. Todo o calor é usado para desfazer a organização do gelo. Calor latente: Q = m · L (L = 80 cal/g).`,
+  `A água líquida esquenta de 0 °C a 100 °C. Calor sensível com c = 1 cal/g°C.`,
+  `<b>Ebulição:</b> a temperatura fica parada em 100 °C (ao nível do mar). O calor é usado para separar as partículas e formar vapor. Q = m · L, com L = 540 cal/g: o patamar mais longo!`,
+  `O vapor esquenta acima de 100 °C (c do vapor ≈ 0,48 cal/g°C).`];$('msg').innerHTML=msg[s.i];}
+function loop(ts){if(!run)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;Q=Math.min(Qtot(),Q+Qtot()/14*dt);if(Q>=Qtot()){run=false;$('play').textContent='▶ Aquecer';}draw();if(run)requestAnimationFrame(loop);}
+$('play').onclick=()=>{if(Q>=Qtot())Q=0;run=!run;$('play').textContent=run?'⏸ Pausar':'▶ Continuar';if(run){last=performance.now();requestAnimationFrame(loop);}};
+$('reset').onclick=()=>{run=false;Q=0;$('play').textContent='▶ Aquecer';draw();};
+$('m').oninput=e=>{m=+e.target.value;$('lm').textContent=m+' g';Q=0;run=false;$('play').textContent='▶ Aquecer';draw();};
+document.querySelectorAll('#fogo button').forEach(b=>b.onclick=()=>{P=+b.dataset.p;document.querySelectorAll('#fogo button').forEach(x=>x.classList.toggle('on',x===b));draw();});
+$('lm').textContent=m+' g';draw();if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>
