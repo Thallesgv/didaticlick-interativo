@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As marés · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física</div><h1>As marés</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Vista de cima do Polo Norte (fora de escala, marés muito exageradas). A Lua e o Sol puxam a água dos oceanos e formam dois “bojos”. Gire a Terra e veja a maré subir e descer na cidade marcada.</p>
+<canvas id="cv" width="800" height="520"></canvas>
+<label style="font-size:14px;display:block;margin:8px 0">Posição da Lua na órbita: <b id="lm"></b><input type="range" id="m" min="0" max="360" step="5" value="0" style="width:100%"></label>
+<div class="row"><button id="play" class="or">▶ Girar a Terra (1 dia)</button><button class="alt" data-m="180">Lua nova</button><button class="alt" data-m="270">Quarto crescente</button><button class="alt" data-m="0">Lua cheia</button><button class="alt" data-m="90">Quarto minguante</button></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Gire a Terra durante um dia. Quantas marés altas a cidade tem?</li>
+<li>Compare a altura dos bojos na lua nova e no quarto crescente. Quando as marés são maiores?</li>
+<li>Por que há um bojo também do lado oposto à Lua?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const EX=420,EY=270,RE=95;let moon=0,city=0,run=false,last=0,hist=[];
+const AM=34,AS=16; // amplitude (px, exagerada): Sol ≈ 46% da Lua
+function water(phi){const tm=moon*Math.PI/180,ts=Math.PI;return RE+18+AM*Math.cos(2*(phi-tm))+AS*Math.cos(2*(phi-ts));}
+function draw(){c.clearRect(0,0,800,520);c.fillStyle='#050B24';c.fillRect(0,0,800,520);
+ // Sol à esquerda
+ const g=c.createRadialGradient(-20,EY,10,-20,EY,120);g.addColorStop(0,'#FFF3B0');g.addColorStop(.5,'#F7B731');g.addColorStop(1,'rgba(247,183,49,0)');c.fillStyle=g;c.fillRect(0,0,140,520);
+ c.fillStyle='#fff';c.font='600 18px Poppins,sans-serif';c.textAlign='left';c.fillText('Sol',14,40);
+ c.strokeStyle='rgba(255,241,184,.25)';for(let k=0;k<6;k++){c.beginPath();c.moveTo(110,100+k*64);c.lineTo(230,100+k*64);c.stroke();}
+ // órbita da Lua
+ c.strokeStyle='rgba(255,255,255,.2)';c.setLineDash([4,6]);c.beginPath();c.arc(EX,EY,215,0,7);c.stroke();c.setLineDash([]);
+ // água
+ c.fillStyle='rgba(46,123,214,.75)';c.beginPath();for(let i=0;i<=180;i++){const p=i/180*2*Math.PI,r=water(p);const x=EX+r*Math.cos(p),y=EY-r*Math.sin(p);i?c.lineTo(x,y):c.moveTo(x,y);}c.fill();
+ c.fillStyle='#3FA36B';c.beginPath();c.arc(EX,EY,RE,0,7);c.fill();c.fillStyle='#2E6B3F';c.beginPath();c.arc(EX,EY,10,0,7);c.fill();
+ // cidade
+ const pc=city,cx=EX+(RE)*Math.cos(pc),cy=EY-(RE)*Math.sin(pc);c.fillStyle='#F7821F';c.beginPath();c.arc(cx,cy,9,0,7);c.fill();
+ // Lua
+ const tm=moon*Math.PI/180,mx=EX+215*Math.cos(tm),my=EY-215*Math.sin(tm);c.fillStyle='#C9D3E3';c.beginPath();c.arc(mx,my,22,0,7);c.fill();
+ c.fillStyle='#050B24';c.beginPath();c.arc(mx,my,22,-Math.PI/2,Math.PI/2,false);c.fill();c.fillStyle='#fff';c.fillText('Lua',mx+26,my+6);
+ // medidor
+ const lvl=water(pc)-RE,min=18-AM-AS,max=18+AM+AS,f=(lvl-min)/(max-min);c.fillStyle='rgba(255,255,255,.9)';c.beginPath();c.roundRect(680,330,105,170,12);c.fill();
+ c.fillStyle='#0E2354';c.font='600 15px Poppins,sans-serif';c.textAlign='center';c.fillText('maré na',732,352);c.fillText('cidade',732,370);
+ c.fillStyle='#D7DEEA';c.fillRect(715,380,34,100);c.fillStyle='#2457D6';c.fillRect(715,480-100*f,34,100*f);c.fillStyle='#0E2354';c.fillText(f>0.66?'alta':f<0.34?'baixa':'média',732,496);
+ // texto
+ const ang=((moon%360)+360)%360,viva=[0,180].some(a=>Math.abs(ang-a)<25||Math.abs(ang-a)>335),morta=[90,270].some(a=>Math.abs(ang-a)<25);
+ $('lm').textContent=ang<25||ang>335?'lua cheia':Math.abs(ang-90)<25?'quarto minguante':Math.abs(ang-180)<25?'lua nova':Math.abs(ang-270)<25?'quarto crescente':ang+'°';
+ $('msg').innerHTML=(viva?'<b>Sizígia (marés vivas):</b> Sol, Terra e Lua alinhados. Os bojos da Lua e do Sol se somam: marés altas mais altas e baixas mais baixas.':morta?'<b>Quadratura (marés mortas):</b> Sol e Lua formam um ângulo reto com a Terra. Os efeitos se compensam em parte: a diferença entre maré alta e baixa é menor.':'A Lua puxa mais forte o lado da Terra mais perto dela e mais fraco o lado mais longe. Por isso a água forma dois bojos: um voltado para a Lua e outro do lado oposto.')+' Gire a Terra: a cidade passa pelos dois bojos, então tem <b>duas marés altas e duas baixas por dia</b>.';}
+function loop(ts){if(!run)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;city+=dt*2*Math.PI/8;moon+=dt*(360/8)/27.3;$('m').value=Math.round(moon%360);
+ if(city>=2*Math.PI*(1+1/27.3)){run=false;city=city%(2*Math.PI);$('play').textContent='▶ Girar a Terra (1 dia)';}draw();if(run)requestAnimationFrame(loop);}
+$('play').onclick=()=>{if(run)return;city=0;run=true;last=performance.now();$('play').textContent='girando...';requestAnimationFrame(loop);};
+$('m').oninput=e=>{moon=+e.target.value;draw();};document.querySelectorAll('button[data-m]').forEach(b=>b.onclick=()=>{moon=+b.dataset.m;$('m').value=moon;draw();});
+draw();if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>
