@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dilatação térmica · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física</div><h1>Dilatação térmica</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="tabs"><button class="alt on" data-t="barra">Barras</button><button class="alt" data-t="chapa">Chapa com furo</button><button class="alt" data-t="lamina">Lâmina bimetálica</button></div>
+<div class="card">
+<canvas id="cv" width="800" height="420"></canvas>
+<label style="font-size:14px;display:block;margin:8px 0">Aquecimento (variação de temperatura): <b id="lT"></b><input type="range" id="T" min="0" max="300" step="5" value="0" style="width:100%"></label>
+<div id="ctl"></div>
+<div class="msg info" id="msg"></div>
+<p class="muted" style="margin:8px 0 0">As deformações no desenho estão <b>muito exageradas</b> para dar para ver. Os números mostram os valores reais.</p>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0" id="think"></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const MAT={"Alumínio":[24e-6,'#9AA7BC'],"Cobre":[17e-6,'#C46A3A'],"Aço":[12e-6,'#5B6B80'],"Vidro comum":[9e-6,'#7FD3E3'],"Vidro pirex":[3e-6,'#B9E3EC']};
+let tab='barra',dT=0,m1='Alumínio',m2='Aço',mc='Alumínio';const EX=40;
+const nf=(x,d=2)=>(+x).toLocaleString('pt-BR',{maximumFractionDigits:d});
+function sel(id,val){return `<select id="${id}" style="font:inherit;padding:6px;border-radius:8px;border:2px solid #D7DEEA">${Object.keys(MAT).map(k=>`<option ${k===val?'selected':''}>${k}</option>`).join('')}</select>`;}
+function setTab(t){tab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+ if(t==='barra'){$('ctl').innerHTML=`<div class="row" style="align-items:center">Barra de cima: ${sel('s1',m1)} Barra de baixo: ${sel('s2',m2)}</div>`;
+  $('think').innerHTML='<li>Qual material dilata mais: alumínio ou aço?</li><li>Dobre o aquecimento. O que acontece com o aumento de comprimento?</li><li>Por que as pontes têm juntas de dilatação?</li>';}
+ else if(t==='chapa'){$('ctl').innerHTML=`<div class="row" style="align-items:center">Material da chapa: ${sel('s3',mc)}</div>`;
+  $('think').innerHTML='<li>Quando a chapa esquenta, o furo aumenta ou diminui?</li><li>Compare o aumento percentual da área com o do comprimento. Quantas vezes maior ele é?</li><li>Como isso ajuda a soltar uma tampa de metal presa num pote de vidro?</li>';}
+ else{$('ctl').innerHTML=`<div class="row" style="align-items:center">Lâmina de cima: ${sel('s1',m1)} Lâmina de baixo: ${sel('s2',m2)}</div>`;
+  $('think').innerHTML='<li>Para que lado a lâmina curva? Qual material fica do lado de fora da curva?</li><li>O que acontece se as duas lâminas forem do mesmo material?</li><li>Como uma lâmina assim pode ligar e desligar um ferro de passar sozinha?</li>';}
+ ['s1','s2','s3'].forEach(k=>{const e=$(k);if(e)e.onchange=()=>{if(k==='s1')m1=e.value;if(k==='s2')m2=e.value;if(k==='s3')mc=e.value;draw();};});draw();}
+function draw(){c.clearRect(0,0,800,420);c.fillStyle='#F5F7FB';c.fillRect(0,0,800,420);$('lT').textContent=dT+' °C';const heat=dT/300;
+ c.fillStyle='#0E2354';c.font='18px Poppins,sans-serif';c.textAlign='left';
+ if(tab==='barra'){const L0=400,x0=40;[[m1,110],[m2,250]].forEach(([m,y])=>{const a=MAT[m][0],dL=1*a*dT,Ld=L0*(1+a*dT*EX);
+   c.fillStyle='#E5E9F2';c.fillRect(x0,y-30,L0,60);c.fillStyle=MAT[m][1];c.fillRect(x0,y-22,Ld,44);
+   if(heat>0){c.fillStyle=`rgba(247,130,31,${heat*.35})`;c.fillRect(x0,y-22,Ld,44);}
+   c.strokeStyle='#B91C1C';c.setLineDash([5,4]);c.beginPath();c.moveTo(x0+L0,y-40);c.lineTo(x0+L0,y+40);c.stroke();c.setLineDash([]);
+   c.fillStyle='#0E2354';c.fillText(m+': barra de 1 m',x0,y-38);c.fillText('ΔL = '+nf(dL*1000,2)+' mm',x0+L0+40,y-38);});
+  const a1=MAT[m1][0],a2=MAT[m2][0];$('msg').innerHTML=`ΔL = L₀ · α · Δt. Para 1 m aquecido em ${dT} °C: ${m1} (α = ${nf(a1*1e6,0)}×10<sup>−6</sup>/°C) estica <b>${nf(a1*dT*1000,2)} mm</b>; ${m2} (α = ${nf(a2*1e6,0)}×10<sup>−6</sup>/°C) estica <b>${nf(a2*dT*1000,2)} mm</b>. A linha vermelha marca o tamanho original.`;}
+ else if(tab==='chapa'){const a=MAT[mc][0],k=1+a*dT*EX,cx=400,cy=210,W=300*k,H=240*k,r=60*k;
+  c.strokeStyle='#B91C1C';c.setLineDash([5,4]);c.strokeRect(cx-150,cy-120,300,240);c.beginPath();c.arc(cx,cy,60,0,7);c.stroke();c.setLineDash([]);
+  c.fillStyle=MAT[mc][1];c.fillRect(cx-W/2,cy-H/2,W,H);if(heat>0){c.fillStyle=`rgba(247,130,31,${heat*.35})`;c.fillRect(cx-W/2,cy-H/2,W,H);}
+  c.fillStyle='#F5F7FB';c.beginPath();c.arc(cx,cy,r,0,7);c.fill();c.strokeStyle='#B91C1C';c.setLineDash([5,4]);c.beginPath();c.arc(cx,cy,60,0,7);c.stroke();c.setLineDash([]);
+  c.fillStyle='#0E2354';c.textAlign='center';c.fillText('furo',cx,cy+6);const b=2*a;
+  $('msg').innerHTML=`ΔA = A₀ · β · Δt, com β = 2α = ${nf(b*1e6,0)}×10<sup>−6</sup>/°C. Uma chapa de 1 m² de ${mc.toLowerCase()} aquecida em ${dT} °C ganha <b>${nf(b*dT*1e4,2)} cm²</b>. O <b>furo também aumenta</b>, como se fosse feito do mesmo material: a chapa inteira se “amplia”.`;}
+ else{const a1=MAT[m1][0],a2=MAT[m2][0],k=(a1-a2)*dT*0.38,L=480,x0=170,y0=200,th=14;
+  const P=(sv,off)=>{const ph=k*sv;let x,y;if(Math.abs(k)<1e-9){x=x0+sv;y=y0;}else{x=x0+Math.sin(ph)/k;y=y0+(1-Math.cos(ph))/k;}return[x-Math.sin(ph)*off,y+Math.cos(ph)*off];};
+  const band=(o1,o2,col)=>{c.fillStyle=col;c.beginPath();for(let i=0;i<=60;i++){const[x,y]=P(i/60*L,o1);i?c.lineTo(x,y):c.moveTo(x,y);}for(let i=60;i>=0;i--){const[x,y]=P(i/60*L,o2);c.lineTo(x,y);}c.closePath();c.fill();};
+  band(-th,0,MAT[m1][1]);band(0,th,MAT[m2][1]);c.fillStyle='#0E2354';c.fillRect(x0-40,y0-40,40,80);
+  c.fillStyle='#0E2354';c.textAlign='left';c.fillText(m1+' (em cima)',x0,140);c.fillText(m2+' (embaixo)',x0,270);
+  const msg=a1===a2?'Os dois materiais dilatam igual: a lâmina não curva.':`O ${a1>a2?m1.toLowerCase()+' (em cima)':m2.toLowerCase()+' (embaixo)'} dilata mais e fica do lado de <b>fora</b> da curva, então a lâmina se curva para o lado ${a1>a2?'de baixo':'de cima'}.`;
+  $('msg').innerHTML=`Duas lâminas de metais diferentes, coladas. ${dT===0?'Aqueça para ver o que acontece.':msg} É o princípio dos termostatos: a lâmina curva, abre o contato e desliga o aparelho.`;}}
+$('T').oninput=e=>{dT=+e.target.value;draw();};document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));setTab('barra');if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>

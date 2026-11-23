@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meia-vida · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block}
+.iso{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.iso button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-size:13px;padding:8px 4px}
+.iso button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.read{display:flex;justify-content:space-between;font-weight:600;color:var(--navy);margin:8px 0}
+.row button{flex:1}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Química</div><h1>Meia-vida: o átomo que se transforma</h1></header>
+<main>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Uma amostra tem 400 núcleos radioativos. Escolha o isótopo e deixe o tempo passar.</p>
+<div class="iso" id="iso"></div>
+<canvas id="cv" width="420" height="210" style="margin-top:10px"></canvas>
+<div class="read"><span>Tempo: <span id="t"></span></span><span>Restam: <span id="n"></span></span></div>
+<div class="row"><button id="go" class="or">▶ Passar o tempo</button><button id="pa" class="alt">Pausar</button><button id="re" class="alt">Recomeçar</button></div>
+<div class="msg info" id="msg"></div>
+</div>
+<div class="card"><h2>Quantos núcleos restam?</h2>
+<canvas id="gr" width="420" height="200"></canvas>
+<p class="muted" style="margin:4px 0 0">A linha cinza é a previsão: a cada meia-vida, a quantidade cai pela metade. A laranja é a sua amostra. Como a desintegração é um processo ao acaso, a amostra oscila um pouco em volta da previsão.</p></div>
+<div class="card"><h2>Para pensar</h2>
+<ol style="padding-left:20px;margin:0">
+<li>Depois de 1 meia-vida, quantos núcleos restam? E depois de 2? E de 3?</li>
+<li>Depois de 2 meias-vidas a amostra acaba? Por quê?</li>
+<li>Por que o iodo-131 pode ser usado em exames, mas o césio-137 de Goiânia ainda é perigoso hoje?</li>
+</ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+// [nome, meia-vida, unidade, emissão, produto, uso]
+const I=[['Iodo-131',8,'dias','β','xenônio-131','Usado na medicina, em exames e no tratamento da tireoide. Como a meia-vida é curta, some do corpo em poucas semanas.'],
+ ['Césio-137',30,'anos','β','bário-137','Usado em aparelhos de radioterapia. Foi o isótopo do acidente de Goiânia (1987): o local ainda é monitorado.'],
+ ['Carbono-14',5730,'anos','β','nitrogênio-14','Usado para descobrir a idade de fósseis, múmias e objetos antigos de até cerca de 50 mil anos.'],
+ ['Urânio-238',4.5,'bilhões de anos','α','tório-234','Existe desde a formação da Terra. Metade do urânio-238 que havia no início ainda está aqui.']];
+const $=x=>document.getElementById(x);const N0=400;let k=0,hv=0,run=false,alive=[],hist=[];
+$('iso').innerHTML=I.map((x,i)=>`<button data-i="${i}">${x[0]}</button>`).join('');
+document.querySelectorAll('#iso button').forEach(b=>b.onclick=()=>{k=+b.dataset.i;reset();});
+function reset(){hv=0;run=false;alive=Array(N0).fill(1);hist=[[0,N0]];document.querySelectorAll('#iso button').forEach(b=>b.classList.toggle('on',+b.dataset.i===k));txt();}
+const fmt=x=>(Math.round(x*10)/10).toString().replace('.',',');
+function txt(){const it=I[k],n=alive.reduce((a,b)=>a+b,0);
+ $('t').textContent=fmt(hv*it[1])+' '+it[2]+' ('+fmt(hv)+' meia'+(hv>=2?'s-vidas':'-vida')+')';$('n').textContent=n+' de '+N0;
+ $('msg').innerHTML=`<b>${it[0]}</b>: meia-vida de <b>${String(it[1]).replace('.',',')} ${it[2]}</b>. Cada núcleo emite uma partícula ${it[3]} e vira <b>${it[4]}</b> (outro elemento!). ${it[5]}`;}
+const cv=$('cv'),c=cv.getContext('2d'),gr=$('gr'),g=gr.getContext('2d');
+function draw(){
+ if(run){const dt=0.02;hv+=dt;const p=1-Math.pow(0.5,dt);for(let i=0;i<N0;i++)if(alive[i]&&Math.random()<p)alive[i]=0;
+  hist.push([hv,alive.reduce((a,b)=>a+b,0)]);txt();if(hv>=5)run=false;}
+ c.clearRect(0,0,420,210);
+ for(let i=0;i<N0;i++){const x=10+(i%25)*16.4,y=10+Math.floor(i/25)*12.4;c.fillStyle=alive[i]?'#F7821F':'#C3CBD9';c.beginPath();c.arc(x+6,y+5,5,0,7);c.fill();}
+ c.fillStyle='#0E2354';c.font='11px Poppins,sans-serif';c.textAlign='left';c.fillText('● radioativo   ',10,206);c.fillStyle='#9AA5B8';c.fillText('● já se transformou',100,206);
+ // gráfico
+ const L=44,R=410,T=12,B=170,X=h=>L+(R-L)*h/5,Y=n=>B-(B-T)*n/N0;
+ g.clearRect(0,0,420,200);g.font='11px Poppins,sans-serif';g.fillStyle='#6B7280';
+ [0,1,2,3,4,5].forEach(h=>{g.strokeStyle='#E5E9F2';g.beginPath();g.moveTo(X(h),T);g.lineTo(X(h),B);g.stroke();g.textAlign='center';g.fillText(h,X(h),186);});
+ [400,200,100,50].forEach(n=>{g.strokeStyle='#E5E9F2';g.beginPath();g.moveTo(L,Y(n));g.lineTo(R,Y(n));g.stroke();g.textAlign='right';g.fillText(n,L-4,Y(n)+4);});
+ g.textAlign='right';g.fillText('meias-vidas →',R,199);
+ g.strokeStyle='#9AA5B8';g.lineWidth=2;g.setLineDash([5,4]);g.beginPath();for(let h=0;h<=5;h+=.05)g.lineTo(X(h),Y(N0*Math.pow(.5,h)));g.stroke();g.setLineDash([]);
+ g.strokeStyle='#F7821F';g.lineWidth=3;g.beginPath();hist.forEach(([h,n],i)=>i?g.lineTo(X(h),Y(n)):g.moveTo(X(h),Y(n)));g.stroke();
+ requestAnimationFrame(draw);}
+$('go').onclick=()=>{if(hv>=5)reset();run=true;};$('pa').onclick=()=>run=false;$('re').onclick=reset;
+reset();draw();
+</script>
+</body>
+</html>
