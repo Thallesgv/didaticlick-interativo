@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terremotos e o interior da Terra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física</div><h1>Terremotos e o interior da Terra</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Um terremoto acontece no topo da Terra (estrela). Veja as ondas sísmicas atravessando o planeta e chegando às estações do outro lado. Escolha que ondas mostrar.</p>
+<div class="row" style="margin-bottom:8px"><button class="alt on" data-w="P">Ondas P</button><button class="alt" data-w="S">Ondas S</button><button class="alt" data-w="PS">As duas</button></div>
+<canvas id="cv" width="800" height="760"></canvas>
+<div class="row" style="margin-top:10px"><button id="go" class="or">💥 Provocar o terremoto</button><button id="cam" class="alt">Mostrar as camadas</button></div>
+<div class="msg info" id="msg"></div>
+<p class="muted" style="margin:8px 0 0">Esquema simplificado: na realidade as ondas fazem curvas, porque mudam de velocidade com a profundidade.</p>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>As ondas S chegam a todas as estações? Onde elas não chegam?</li>
+<li>Por que as ondas S não atravessam o núcleo externo? O que isso revela sobre ele?</li>
+<li>As ondas P também têm uma “zona de sombra”. Por que ela existe, se as ondas P atravessam líquidos?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const CX=400,CY=390,R=330,RC=0.545*R,RI=0.19*R;let mode='P',t=0,run=false,last=0,layers=false,done=false;
+const surf=d=>{const a=(90-d)*Math.PI/180;return[CX+R*Math.cos(a),CY-R*Math.sin(a)];}; // d = distância angular a partir do epicentro (graus), lado direito
+const F=surf(0);
+function path(d,wave){// retorna lista de pontos do raio até a estação a d graus, ou null/parcial
+ const end=surf(d);const half=d/2*Math.PI/180;const closest=R*Math.cos(half);
+ if(d<104)return{pts:[F,end],arrive:true};
+ // entra no núcleo: ponto de entrada na reta F-end onde |p-C|=RC
+ const ex=end[0]-F[0],ey=end[1]-F[1],L=Math.hypot(ex,ey),ux=ex/L,uy=ey/L;const fx=F[0]-CX,fy=F[1]-CY,b=fx*ux+fy*uy,cc=fx*fx+fy*fy-RC*RC,disc=b*b-cc;
+ const s=-b-Math.sqrt(Math.max(0,disc));const entry=[F[0]+ux*s,F[1]+uy*s];
+ if(wave==='S')return{pts:[F,entry],arrive:false};
+ const d2=140+(d-104)*(40/76),exit=surf(d2);return{pts:[F,entry,exit],arrive:true,d:d2};}
+function draw(){c.clearRect(0,0,800,760);c.fillStyle='#F5F7FB';c.fillRect(0,0,800,760);
+ const g=(r,col)=>{c.fillStyle=col;c.beginPath();c.arc(CX,CY,r,0,7);c.fill();};
+ g(R,layers?'#E8A46C':'#C9A27A');if(layers){g(R*0.995,'#E8A46C');}g(RC,layers?'#F2C14E':'#B9935F');g(RI,layers?'#F7E27E':'#B9935F');
+ if(!layers){c.fillStyle='#B9935F';c.beginPath();c.arc(CX,CY,RC,0,7);c.fill();c.fillStyle='rgba(0,0,0,.05)';c.beginPath();c.arc(CX,CY,RC,0,7);c.fill();c.fillStyle='#fff';c.font='600 20px Poppins,sans-serif';c.textAlign='center';c.fillText('?',CX,CY+8);}
+ else{c.fillStyle='#0E2354';c.font='600 17px Poppins,sans-serif';c.textAlign='center';c.fillText('manto (sólido)',CX-170,CY-60);c.fillText('núcleo externo',CX,CY-RC+45);c.fillText('(líquido)',CX,CY-RC+66);c.fillText('núcleo',CX,CY-6);c.fillText('interno',CX,CY+14);c.fillText('(sólido)',CX,CY+34);c.font='14px Poppins,sans-serif';c.textAlign='left';c.fillText('crosta: a casca fina por fora',20,40);}
+ // zonas de sombra
+ c.lineWidth=12;c.lineCap='butt';const arc=(d1,d2,col)=>{c.strokeStyle=col;for(const sg of [1,-1]){c.beginPath();const a1=(90-sg*d1)*Math.PI/180,a2=(90-sg*d2)*Math.PI/180;c.arc(CX,CY,R+8,-a1,-a2,sg<0);c.stroke();}};
+ if(done){if(mode!=='P')arc(104,180,'rgba(37,87,214,.45)');if(mode!=='S')arc(104,140,'rgba(226,85,60,.55)');}
+ c.lineWidth=1;
+ // raios (dos dois lados: simetria)
+ const frac=Math.min(1,t/3);const waves=mode==='PS'?['P','S']:[mode];
+ for(const w of waves){const speed=w==='P'?1:0.6,f=Math.min(1,t/3*speed/ (w==='P'?1:1)),col=w==='P'?'#E2553C':'#2457D6';
+  for(let d=10;d<=180;d+=10){const p=path(d,w);for(const sg of [1,-1]){const pts=p.pts.map(([x,y])=>[CX+sg*(x-CX),y]);
+    let tot=0;for(let i=1;i<pts.length;i++)tot+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);let rem=tot*Math.min(1,t*speed/3);
+    c.strokeStyle=col;c.globalAlpha=.75;c.lineWidth=2;c.setLineDash(w==='S'?[6,4]:[]);c.beginPath();c.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length&&rem>0;i++){const sl=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]),k=Math.min(1,rem/sl);c.lineTo(pts[i-1][0]+(pts[i][0]-pts[i-1][0])*k,pts[i-1][1]+(pts[i][1]-pts[i-1][1])*k);rem-=sl;}
+    c.stroke();c.setLineDash([]);c.globalAlpha=1;}}}
+ // estações
+ for(let d=20;d<=180;d+=20)for(const sg of [1,-1]){if(d===180&&sg<0)continue;const[x,y]=surf(d);const xx=CX+sg*(x-CX);c.fillStyle='#0E2354';c.beginPath();c.arc(xx,y,6,0,7);c.fill();}
+ // epicentro
+ c.fillStyle='#F7821F';c.font='34px serif';c.textAlign='center';c.textBaseline='middle';c.fillText('✸',F[0],F[1]-4);c.textBaseline='alphabetic';
+ if(done){c.font='600 16px Poppins,sans-serif';c.textAlign='left';let y=730;
+  if(mode!=='S'){c.fillStyle='#E2553C';c.fillRect(20,y-12,18,12);c.fillStyle='#1F2937';c.fillText('zona de sombra das ondas P (104° a 140°)',46,y);y-=24;}
+  if(mode!=='P'){c.fillStyle='#2457D6';c.fillRect(20,y-12,18,12);c.fillStyle='#1F2937';c.fillText('zona de sombra das ondas S (além de 104°)',46,y);}}}
+function msg(){$('msg').innerHTML=!done?'Aperte o botão para provocar o terremoto e acompanhe as ondas.':
+ mode==='S'?'<b>Ondas S</b> são transversais e <b>não atravessam líquidos</b>. Elas param no núcleo externo e não chegam a nenhuma estação além de 104° do terremoto. Essa grande “sombra” mostrou que o <b>núcleo externo é líquido</b>.':
+ mode==='P'?'<b>Ondas P</b> são longitudinais e atravessam sólidos e líquidos. Mas, ao entrar no núcleo, elas mudam de velocidade e se desviam (refração), deixando uma faixa sem ondas entre 104° e 140°: a <b>zona de sombra das ondas P</b>.':
+ 'Compare as duas: as ondas P (vermelhas) chegam antes e atravessam o núcleo; as S (azuis) param nele. Pelas sombras de cada uma, os cientistas descobriram o tamanho e o estado do núcleo sem nunca ir até lá.';}
+function loop(ts){if(!run)return;t+=(ts-last)/1000;last=ts;if(t>=5.2){t=5.2;run=false;done=true;msg();}draw();if(run)requestAnimationFrame(loop);}
+$('go').onclick=()=>{t=0;done=false;run=true;last=performance.now();msg();requestAnimationFrame(loop);};
+$('cam').onclick=()=>{layers=!layers;$('cam').classList.toggle('on',layers);draw();};
+document.querySelectorAll('button[data-w]').forEach(b=>b.onclick=()=>{mode=b.dataset.w;document.querySelectorAll('button[data-w]').forEach(x=>x.classList.toggle('on',x===b));draw();msg();});
+draw();msg();if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>

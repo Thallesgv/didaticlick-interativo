@@ -20,7 +20,7 @@ pre{font-family:ui-monospace,Menlo,monospace;font-size:20px;line-height:1.25;col
 </style>
 </head>
 <body>
-<header><div class="brand">Didati<b>Click</b> · Química 9º ano</div><h1>Quem se liga com quem?</h1></header>
+<header><div class="brand">Didati<b>Click</b> · Química</div><h1>Quem se liga com quem?</h1></header>
 <main>
 <div class="card">
 <p class="leg" style="margin:0 0 4px"><span style="color:#8A4B0F">■</span> metais &nbsp; <span style="color:var(--blue)">■</span> ametais e hidrogênio</p>
@@ -42,7 +42,7 @@ const COV={'H|H':['H₂','H — H'],'N|N':['N₂','N ≡ N'],'O|O':['O₂','O = 
  'C|H':['CH₄','    H\n    |\nH — C — H\n    |\n    H'],'H|N':['NH₃','H — N — H\n    |\n    H'],'H|O':['H₂O','H — O — H'],'F|H':['HF','H — F'],'Cl|H':['HCl','H — Cl'],
  'C|O':['CO₂','O = C = O'],'C|F':['CF₄','    F\n    |\nF — C — F\n    |\n    F'],'C|Cl':['CCl₄','     Cl\n     |\nCl — C — Cl\n     |\n     Cl'],
  'F|N':['NF₃','F — N — F\n    |\n    F'],'Cl|N':['NCl₃','Cl — N — Cl\n     |\n     Cl'],'F|O':['OF₂','F — O — F'],'Cl|O':['Cl₂O','Cl — O — Cl'],'Cl|F':['ClF','Cl — F']};
-const FORA={'C|C':'O carbono sozinho forma o grafite e o diamante, que são redes enormes de átomos, e não moléculas pequenas.','C|N':'Carbono e nitrogênio formam compostos mais complexos, que ficam para o Ensino Médio.','N|O':'Nitrogênio e oxigênio formam vários óxidos diferentes (NO, NO₂, N₂O...). Fica para o Ensino Médio.'};
+const FORA={'C|C':'O carbono sozinho forma o grafite e o diamante, que são redes enormes de átomos, e não moléculas pequenas.','C|N':'Carbono e nitrogênio formam compostos mais complexos, que ficam para estudos mais avançados.','N|O':'Nitrogênio e oxigênio formam vários óxidos diferentes (NO, NO₂, N₂O...). Fica para estudos mais avançados.'};
 const sub=n=>n===1?'':String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[c]).join('');
 const supq=q=>(Math.abs(q)>1?String(Math.abs(q)).split('').map(c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).join(''):'')+(q>0?'⁺':'⁻');
 const gcd=(a,b)=>b?gcd(b,a%b):a;
@@ -54,7 +54,7 @@ function ficha(s){const e=EL[s];return `<b>${s}</b> (${e.n}): ${e.v} elétron${e
 function res(){const A=EL[a],B=EL[b];let h=`<p style="margin:0 0 8px">${ficha(a)}<br>${a!==b?ficha(b):''}</p>`;
  if(A.m&&B.m){h+=`<div class="res"><span class="tp me">Ligação metálica</span><div class="f">${a===b?a:a+' + '+b}</div></div><div class="msg info">Entre metais, os elétrons da última camada ficam "soltos", formando um <b>mar de elétrons</b> que mantém os cátions unidos. ${a===b?'É assim no metal puro.':'A mistura de metais é uma <b>liga metálica</b>.'} Por isso os metais conduzem eletricidade.</div>`;}
  else if(A.m||B.m){const [M,X]=A.m?[a,b]:[b,a],qm=EL[M].q,qx=EL[X].q;
-  if(X==='C'){h+='<div class="msg info">Metais com carbono formam compostos especiais (carbetos), que não estudamos no 9º ano. Tente outro par.</div>';}
+  if(X==='C'){h+='<div class="msg info">Metais com carbono formam compostos especiais (carbetos), que ficam para estudos mais avançados. Tente outro par.</div>';}
   else{let nm=Math.abs(qx),nx=qm;const g=gcd(nm,nx);nm/=g;nx/=g;
   h+=`<div class="res"><span class="tp i">Ligação iônica</span><div class="f">${M}${sub(nm)}${X}${sub(nx)}</div></div>
   <div class="msg info">O ${EL[M].n} <b>perde</b> ${qm} elétron${qm>1?'s':''} (vira ${M}${supq(qm)}) e o ${EL[X].n} <b>ganha</b> ${-qx} (vira ${X}${supq(qx)}). As cargas opostas se atraem.<br>
@@ -63,7 +63,7 @@ function res(){const A=EL[a],B=EL[b];let h=`<p style="margin:0 0 8px">${ficha(a)
  else{const key=[a,b].sort().join('|');
   if(COV[key]){const [f,e]=COV[key];h+=`<div class="res"><span class="tp c">Ligação covalente</span><div class="f">${f}</div></div><pre>${e}</pre>
    <div class="msg info">Ametais não perdem elétrons: eles <b>compartilham</b> pares de elétrons. Cada traço é um par compartilhado. ${a!==b||'HNOFCl'.includes(a)?`O ${EL[a].n} faz ${EL[a].val} ligaç${EL[a].val>1?'ões':'ão'}${a!==b?` e o ${EL[b].n} faz ${EL[b].val}`:''}.`:''}</div>`;}
-  else h+=`<div class="msg info">${FORA[key]||'Combinação fora do 9º ano.'} Tente outro par.</div>`;}
+  else h+=`<div class="msg info">${FORA[key]||'Combinação para estudos mais avançados.'} Tente outro par.</div>`;}
  $('out').innerHTML=h;}
 pick('pA',()=>a,s=>a=s);pick('pB',()=>b,s=>b=s);mark();res();
 </script>

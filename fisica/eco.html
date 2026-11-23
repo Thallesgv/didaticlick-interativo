@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eco e ecolocalização · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Física</div><h1>Eco e ecolocalização</h1></header>
+<main>
+
+<style>.row button.on{background:var(--orange);color:#fff;border-color:var(--orange)}</style>
+<div class="tabs"><button class="alt on" data-t="morcego">Morcego</button><button class="alt" data-t="grito">Grito no paredão</button><button class="alt" data-t="sonar">Sonar do navio</button></div>
+<div class="card">
+<canvas id="cv" width="800" height="420"></canvas>
+<label style="font-size:14px;display:block;margin:8px 0">Distância até o obstáculo: <b id="ld"></b><input type="range" id="d" style="width:100%"></label>
+<div class="row"><button id="emit" class="or">🔊 Emitir o som</button></div>
+<div class="msg info" id="msg"></div>
+<p class="muted" style="margin:8px 0 0">A animação está em câmera lenta. Os tempos mostrados são os reais.</p>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0" id="think"></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const $=x=>document.getElementById(x),cv=$('cv'),c=cv.getContext('2d');
+const M={morcego:{v:340,min:0.5,max:20,step:0.5,val:5,unit:'m',meio:'ar',alvo:'inseto',em:'morcego'},
+ grito:{v:340,min:2,max:200,step:1,val:50,unit:'m',meio:'ar',alvo:'paredão',em:'pessoa'},
+ sonar:{v:1500,min:50,max:3000,step:50,val:600,unit:'m',meio:'água',alvo:'fundo do mar',em:'navio'}};
+let tab='morcego',d=5,t=0,run=false,last=0,res=null;
+const X0=90,X1=740;const px=()=>X0+(X1-X0)*(d/M[tab].max);
+function setTab(k){tab=k;const m=M[k];document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===k));
+ const s=$('d');s.min=m.min;s.max=m.max;s.step=m.step;s.value=m.val;d=m.val;run=false;t=0;res=null;
+ $('think').innerHTML=k==='morcego'?'<li>Aproxime o inseto. O eco volta mais rápido ou mais devagar?</li><li>Por que o morcego usa ultrassom, e não um som que ouvimos?</li><li>Como o morcego “sabe” que o inseto se aproximou?</li>':
+  k==='grito'?'<li>A partir de que distância você consegue ouvir o eco separado do grito?</li><li>Coloque o paredão a 10 m. O que acontece?</li><li>Por que teatros e cinemas têm paredes que absorvem o som?</li>':
+  '<li>Compare: o mesmo tempo de eco, no ar e na água, indica a mesma distância?</li><li>Se o eco voltou em 2 s, qual é a profundidade?</li><li>Por que o sonar usa ultrassom?</li>';
+ lab();draw();msg();}
+function lab(){$('ld').textContent=d.toLocaleString('pt-BR')+' '+M[tab].unit;}
+function tt(){return 2*d/M[tab].v;}
+function msg(){const m=M[tab],T=tt();if(!res){$('msg').innerHTML=`Aperte <b>Emitir</b>: o som viaja pelo ${m.meio} a ${m.v.toLocaleString('pt-BR')} m/s, bate no ${m.alvo} e volta.`;return;}
+ let s=`O eco voltou em <b>${T.toLocaleString('pt-BR',{maximumFractionDigits:T<1?3:2})} s</b>. Distância = v · t ÷ 2 = ${m.v.toLocaleString('pt-BR')} · ${T.toLocaleString('pt-BR',{maximumFractionDigits:3})} ÷ 2 = <b>${d.toLocaleString('pt-BR')} m</b>.`;
+ if(tab==='grito')s+=T<0.1?' <br><b>Menos de 0,1 s:</b> o ouvido não separa o eco do grito. O som parece só “prolongado”: é a <b>reverberação</b>. Para ouvir eco, o paredão precisa estar a mais de cerca de 17 m.':' <br><b>Mais de 0,1 s:</b> você ouve o eco separado do grito.';
+ if(tab==='morcego')s+=' O morcego faz essa “conta” sem pensar: pela demora e pela direção do eco, ele sabe onde está o inseto, mesmo no escuro total.';
+ if(tab==='sonar')s+=' Na água o som é mais rápido que no ar (1 500 m/s contra 340 m/s), e o sonar usa ultrassom para medir a profundidade e achar cardumes.';$('msg').innerHTML=s;}
+function draw(){c.clearRect(0,0,800,420);const m=M[tab],P=px(),y=200;
+ c.fillStyle=tab==='sonar'?'#1E4E8C':tab==='morcego'?'#0B1430':'#EAF2FF';c.fillRect(0,0,800,420);
+ if(tab==='sonar'){c.fillStyle='#BFD9F2';c.fillRect(0,0,800,60);c.fillStyle='#8C6D4F';c.fillRect(0,395,800,25);}
+ // emissor
+ c.font='44px serif';c.textAlign='center';c.textBaseline='middle';
+ const ex=tab==='sonar'?X0:X0,ey=tab==='sonar'?50:y;c.fillText(tab==='morcego'?'🦇':tab==='grito'?'🧍':'🚢',ex,ey);
+ // alvo
+ if(tab==='sonar'){/* fundo: profundidade no eixo vertical */}
+ else if(tab==='grito'){c.fillStyle='#8C99AE';c.fillRect(P,40,40,340);}else{c.fillText('🦟',P,y);}
+ c.textBaseline='alphabetic';
+ // ondas
+ const T=tt(),scale=2.6/Math.max(T,0.002);// animação ~2,6 s
+ const tr=t/scale; // tempo real decorrido
+ const dist=tab==='sonar'?(395-60):(P-ex);const r1=Math.min(tr/(T/2),1)*dist;
+ c.strokeStyle=tab==='grito'?'#2457D6':'#FDE9D8';c.lineWidth=3;
+ if(run||res){if(tab==='sonar'){const yy=60+r1;c.beginPath();c.arc(ex,60,Math.max(1,r1),0.15*Math.PI,0.85*Math.PI);c.stroke();}
+  else{for(let k=0;k<3;k++){const rr=r1-k*12;if(rr>0){c.beginPath();c.arc(ex,ey,rr,-0.35,0.35);c.stroke();}}}
+  if(tr>T/2){const r2=Math.min((tr-T/2)/(T/2),1)*dist;c.strokeStyle='#F7821F';
+   if(tab==='sonar'){c.beginPath();c.arc(ex,395,Math.max(1,r2),1.15*Math.PI,1.85*Math.PI);c.stroke();}
+   else{for(let k=0;k<3;k++){const rr=r2-k*12;if(rr>0){c.beginPath();c.arc(P,ey,rr,Math.PI-0.35,Math.PI+0.35);c.stroke();}}}}}
+ c.lineWidth=1;c.font='600 18px Poppins,sans-serif';c.textAlign='left';c.fillStyle=tab==='grito'?'#0E2354':'#fff';
+ c.fillText('tempo: '+(Math.min(tr,T)).toLocaleString('pt-BR',{maximumFractionDigits:3})+' s',20,tab==='sonar'?95:30);
+ c.font='15px Poppins,sans-serif';c.fillText('som indo',20,tab==='sonar'?120:400);c.fillStyle='#F7821F';c.fillText('eco voltando',110,tab==='sonar'?120:400);
+ if(tab==='sonar'){c.fillStyle='#fff';c.textAlign='right';c.fillText('profundidade: '+d.toLocaleString('pt-BR')+' m',780,385);}}
+function loop(ts){if(!run)return;t+=(ts-last)/1000;last=ts;const T=tt(),scale=2.6/Math.max(T,0.002);if(t/scale>=T){t=T*scale;run=false;res=true;msg();}draw();if(run)requestAnimationFrame(loop);}
+$('emit').onclick=()=>{t=0;res=null;run=true;last=performance.now();msg();requestAnimationFrame(loop);};
+$('d').oninput=e=>{d=+e.target.value;lab();run=false;res=null;t=0;draw();msg();};
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.t));setTab('morcego');if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>
