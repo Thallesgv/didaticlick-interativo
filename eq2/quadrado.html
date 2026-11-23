@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Completar o quadrado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+#svg{width:100%;height:auto;display:block}
+.sl{display:grid;grid-template-columns:50px 1fr 40px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:16px}.sl span{font-weight:600;color:var(--orange);text-align:right}
+.st{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0}.st small{display:block;font-size:13px;font-weight:400;color:var(--gray)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1>Completar o quadrado</h1></header>
+<main>
+<div class="card"><div class="eq" id="eq"></div><svg id="svg" viewBox="0 0 360 320"></svg>
+<div class="row" style="margin-top:8px"><button id="go" class="or">Completar o quadrado</button><button id="back" class="alt">Voltar</button></div></div>
+<div class="card"><h2>Escolha a equação x² + bx = c</h2>
+<div class="sl"><b>b</b><input type="range" id="b" min="2" max="12" step="2" value="6"><span id="bl"></span></div>
+<div class="sl"><b>c</b><input type="range" id="c" min="0" max="60" step="1" value="16"><span id="cl"></span></div></div>
+<div class="card"><h2>Passo a passo</h2><div id="steps"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+if(q.get('b'))$('b').value=q.get('b');if(q.get('c'))$('c').value=q.get('c');
+let done=false;const nf=v=>{v=Math.round(v*1000)/1000;return (v<0?'−':'')+String(Math.abs(v)).replace('.',',')};
+function render(){const b=+$('b').value,c=+$('c').value,h=b/2;$('bl').textContent=b;$('cl').textContent=c;
+ $('eq').textContent=done?`(x + ${h})² = ${c+h*h}`:`x² + ${b}x = ${c}`;
+ const X=7,s=Math.min(240/(X+h),34),ox=60,oy=40,xs=X*s,hs=h*s;
+ let g=`<rect x="${ox}" y="${oy}" width="${xs}" height="${xs}" fill="#2457D6"/><text x="${ox+xs/2}" y="${oy+xs/2+8}" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">x²</text>`;
+ g+=`<rect x="${ox+xs}" y="${oy}" width="${hs}" height="${xs}" fill="#F7821F" stroke="#fff" stroke-width="2"/><text x="${ox+xs+hs/2}" y="${oy+xs/2+6}" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">${h}x</text>`;
+ g+=`<rect x="${ox}" y="${oy+xs}" width="${xs}" height="${hs}" fill="#F7821F" stroke="#fff" stroke-width="2"/><text x="${ox+xs/2}" y="${oy+xs+hs/2+6}" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">${h}x</text>`;
+ g+=done?`<rect x="${ox+xs}" y="${oy+xs}" width="${hs}" height="${hs}" fill="#0E2354" stroke="#fff" stroke-width="2"/><text x="${ox+xs+hs/2}" y="${oy+xs+hs/2+6}" font-size="14" font-weight="700" fill="#fff" text-anchor="middle">${h*h}</text>`
+        :`<rect x="${ox+xs}" y="${oy+xs}" width="${hs}" height="${hs}" fill="none" stroke="#B91C1C" stroke-width="2" stroke-dasharray="5 4"/><text x="${ox+xs+hs/2}" y="${oy+xs+hs/2+6}" font-size="18" font-weight="700" fill="#B91C1C" text-anchor="middle">?</text>`;
+ g+=`<text x="${ox+xs/2}" y="${oy-8}" font-size="15" font-weight="700" fill="#F7821F" text-anchor="middle">x</text><text x="${ox+xs+hs/2}" y="${oy-8}" font-size="15" font-weight="700" fill="#F7821F" text-anchor="middle">${h}</text>`;
+ g+=`<text x="${ox-8}" y="${oy+xs/2+5}" font-size="15" font-weight="700" fill="#F7821F" text-anchor="end">x</text><text x="${ox-8}" y="${oy+xs+hs/2+5}" font-size="15" font-weight="700" fill="#F7821F" text-anchor="end">${h}</text>`;
+ if(done)g+=`<rect x="${ox}" y="${oy}" width="${xs+hs}" height="${xs+hs}" fill="none" stroke="#15803D" stroke-width="4"/>`;
+ $('svg').setAttribute('viewBox',`0 0 360 ${oy+xs+hs+20}`);$('svg').innerHTML=g;
+ const r=c+h*h,sq=Math.sqrt(r),ok=Number.isInteger(sq);
+ let st=`<div class="st">x² + ${b}x = ${c}<small>As peças azul e laranjas formam um quadrado incompleto: falta o canto de lado ${h}.</small></div>`;
+ if(done){st+=`<div class="st">x² + ${b}x + ${h*h} = ${c} + ${h*h}<small>Somamos ${h}² = ${h*h} aos dois membros (propriedade aditiva) e o quadrado fica completo.</small></div>`;
+  st+=`<div class="st">(x + ${h})² = ${r}<small>O quadrado completo tem lado x + ${h}.</small></div>`;
+  st+=`<div class="st">x + ${h} = ${ok?sq:'√'+r} &nbsp;ou&nbsp; x + ${h} = −${ok?sq:'√'+r}<small>Dois números têm quadrado ${r}: um positivo e um negativo.</small></div>`;
+  st+=ok?`<div class="st">x = ${nf(sq-h)} &nbsp;ou&nbsp; x = ${nf(-sq-h)}<small>Tiramos ${h} dos dois membros. Confira trocando na equação inicial!</small></div>`
+        :`<div class="st">x = −${h} + √${r} ≈ ${nf(sq-h)} &nbsp;ou&nbsp; x = −${h} − √${r} ≈ ${nf(-sq-h)}<small>Aqui a raiz não é exata. Tente outro c para ter raízes inteiras.</small></div>`;}
+ else st+=`<p class="muted" style="margin:6px 0 0">Toque em “Completar o quadrado”.</p>`;
+ $('steps').innerHTML=st;}
+$('go').onclick=()=>{done=true;render()};$('back').onclick=()=>{done=false;render()};
+$('b').oninput=$('c').oninput=()=>{done=false;render()};render();
+</script>
+</body>
+</html>
