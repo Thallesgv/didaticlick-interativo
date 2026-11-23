@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gráfico interativo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+#svg{width:100%;height:auto;display:block;touch-action:none;background:#fff;border-radius:10px}
+.sl{display:grid;grid-template-columns:64px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:16px}.sl span{font-weight:600;color:var(--orange);text-align:right}
+.lei{font-size:21px;font-weight:600;color:var(--navy);text-align:center;margin:2px 0 8px}
+.info div{margin:3px 0}.info .k{color:var(--orange);font-weight:700}
+label.ck{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:15px;text-align:center}td,th{border:1px solid #D7DEEA;padding:4px}th{background:#EEF3FF;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1 id="title">Gráfico interativo</h1></header>
+<main>
+<div class="card"><div class="lei" id="lei"></div><svg id="svg" viewBox="0 0 400 400"></svg>
+<p class="muted" id="hint" style="margin:6px 0 0"></p></div>
+<div class="card" id="ctrl"><h2>Controles</h2><div id="sliders"></div><div id="checks"></div></div>
+<div class="card"><h2>O que observar</h2><div class="info" id="info"></div></div>
+<div class="card" id="tabCard" hidden><h2>Tabela</h2><div id="tab"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · @didaticlick</footer>
+<script>
+const Q=new URLSearchParams(location.search);const T=Q.get('tipo')||'afim';const $=i=>document.getElementById(i);
+const R=+(Q.get('r')||10);const SZ=400,sc=SZ/(2*R);const X=x=>SZ/2+x*sc,Y=y=>SZ/2-y*sc;
+const nf=v=>{v=Math.round(v*100)/100;return (v<0?'−':'')+String(Math.abs(v)).replace('.',',')};
+const np=v=>v<0?'('+nf(v)+')':nf(v);
+const co=a=>a===1?'':a===-1?'−':nf(a);
+const poly=(a,b,c)=>co(a)+'x²'+(b?(b===1?' + x':b===-1?' − x':sg(b)+'x'):'')+(c?sg(c):'');
+const can=(a,h,k)=>co(a)+(h?'(x'+sg(-h)+')²':'x²')+(k?sg(k):'');
+const sg=(v,first)=>{if(first)return nf(v);return v<0?' − '+nf(-v):' + '+nf(v)};
+const CFG={
+ afim:{title:'Função afim: f(x) = ax + b',P:[['a',-5,5,.5,2],['b',-8,8,1,1]],C:[['tab','Mostrar tabela',0],['zero','Marcar o zero da função',1],['sinal','Mostrar o sinal (f > 0 e f < 0)',0]],hint:'Mexa em a e em b. Repare o que muda na reta.'},
+ '2p':{title:'Reta por dois pontos',P:[],C:[['tab','Mostrar tabela',0]],hint:'Arraste os pontos A e B. A lei da função é calculada na hora.'},
+ can:{title:'Parábola na forma canônica',P:[['a',-3,3,.25,1],['xv',-6,6,.5,0],['yv',-8,8,.5,0]],C:[['ghost','Mostrar y = x² (referência)',1],['geral','Mostrar a forma geral',0],['raizes','Marcar as raízes',0],['tab','Mostrar tabela',0]],hint:'f(x) = a(x − xv)² + yv. Mexa em um controle de cada vez.'},
+ geral:{title:'Parábola na forma geral',P:[['a',-3,3,.25,1],['b',-8,8,.5,-2],['c',-8,8,.5,-3]],C:[['raizes','Marcar as raízes',1],['vert','Marcar o vértice',1],['canon','Mostrar a forma canônica',0],['tab','Mostrar tabela',0]],hint:'f(x) = ax² + bx + c. Veja o vértice e as raízes mudarem.'}};
+const cfg=CFG[T];document.title=cfg.title+' · DidatiClick';$('title').textContent=cfg.title;$('hint').textContent=cfg.hint;
+const V={};cfg.P.forEach(([k,mi,ma,st,d])=>{V[k]=Q.get(k)!==null?+Q.get(k):d;
+ $('sliders').insertAdjacentHTML('beforeend',`<div class="sl"><b>${k}</b><input type="range" id="s_${k}" min="${mi}" max="${ma}" step="${st}" value="${V[k]}"><span id="v_${k}"></span></div>`);});
+const C={};cfg.C.forEach(([k,l,d])=>{C[k]=Q.get(k)!==null?Q.get(k)==='1':!!d;$('checks').insertAdjacentHTML('beforeend',`<label class="ck"><input type="checkbox" id="c_${k}" ${C[k]?'checked':''}> ${l}</label>`);});
+if(!cfg.P.length&&cfg.C.length===1)$('sliders').innerHTML='';
+let A={x:+(Q.get('ax')??-2),y:+(Q.get('ay')??-1)},B={x:+(Q.get('bx')??2),y:+(Q.get('by')??3)};
+function grid(){let g='';for(let i=-R;i<=R;i++){g+=`<line x1="${X(i)}" y1="0" x2="${X(i)}" y2="${SZ}" stroke="#EEF1F6"/><line x1="0" y1="${Y(i)}" x2="${SZ}" y2="${Y(i)}" stroke="#EEF1F6"/>`;}
+ g+=`<line x1="0" y1="${Y(0)}" x2="${SZ}" y2="${Y(0)}" stroke="#6B7280" stroke-width="1.5"/><line x1="${X(0)}" y1="0" x2="${X(0)}" y2="${SZ}" stroke="#6B7280" stroke-width="1.5"/>`;
+ const st=R>10?5:2;for(let i=-R+st;i<R;i+=st){if(!i)continue;g+=`<text x="${X(i)}" y="${Y(0)+14}" font-size="10" fill="#6B7280" text-anchor="middle">${i}</text><text x="${X(0)-4}" y="${Y(i)+3}" font-size="10" fill="#6B7280" text-anchor="end">${i}</text>`;}
+ return g+`<text x="${SZ-6}" y="${Y(0)-6}" font-size="13" fill="#6B7280" text-anchor="end" font-style="italic">x</text><text x="${X(0)+6}" y="12" font-size="13" fill="#6B7280" font-style="italic">y</text>`;}
+function curve(f,col,w,dash){let d='';for(let px=0;px<=SZ;px+=2){const x=(px-SZ/2)/sc,y=f(x);if(!isFinite(y))continue;const py=Math.max(-50,Math.min(SZ+50,Y(y)));d+=(d?'L':'M')+px+','+py.toFixed(1);}return `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" ${dash?'stroke-dasharray="6 5"':''}/>`;}
+const dot=(x,y,c,l,dy=-9)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5.5" fill="${c}" stroke="#fff" stroke-width="2"/>`+(l?`<text x="${X(x)+7}" y="${Y(y)+dy}" font-size="12" font-weight="700" fill="${c}">${l}</text>`:'');
+function table(f){const xs=[-3,-2,-1,0,1,2,3];return `<table><tr><th>x</th>${xs.map(x=>`<td>${nf(x)}</td>`).join('')}</tr><tr><th>f(x)</th>${xs.map(x=>`<td>${nf(f(x))}</td>`).join('')}</tr></table>`;}
+function render(){cfg.P.forEach(([k])=>{V[k]=+$('s_'+k).value;$('v_'+k).textContent=nf(V[k]);});cfg.C.forEach(([k])=>C[k]=$('c_'+k).checked);
+ let g=grid(),lei='',info=[],f;
+ if(T==='afim'||T==='2p'){let a,b;
+  if(T==='afim'){a=V.a;b=V.b;}else{if(A.x===B.x)B.x+=1;a=(B.y-A.y)/(B.x-A.x);b=A.y-a*A.x;}
+  f=x=>a*x+b;lei='f(x) = '+(a===0?nf(b):(a===1?'':a===-1?'−':nf(a))+'x'+(b?sg(b):''));
+  if(C.sinal&&a!==0){const z=-b/a;g+=`<rect x="${a>0?X(z):0}" y="${Y(0)-6}" width="${a>0?SZ-X(z):X(z)}" height="12" fill="#15803D" fill-opacity=".25"/><rect x="${a>0?0:X(z)}" y="${Y(0)-6}" width="${a>0?X(z):SZ-X(z)}" height="12" fill="#B91C1C" fill-opacity=".25"/>`;}
+  g+=curve(f,'#2457D6',3.5);g+=dot(0,b,'#0E2354','(0, '+nf(b)+')');
+  if(T==='2p'){g+=dot(A.x,A.y,'#F7821F','A')+dot(B.x,B.y,'#F7821F','B');
+   g+=`<line x1="${X(A.x)}" y1="${Y(A.y)}" x2="${X(B.x)}" y2="${Y(A.y)}" stroke="#F7821F" stroke-dasharray="4 3"/><line x1="${X(B.x)}" y1="${Y(A.y)}" x2="${X(B.x)}" y2="${Y(B.y)}" stroke="#F7821F" stroke-dasharray="4 3"/>`;
+   info.push(`<span class="k">Taxa de variação:</span> a = Δy/Δx = (${nf(B.y)} − ${np(A.y)}) / (${nf(B.x)} − ${np(A.x)}) = ${nf(B.y-A.y)}/${nf(B.x-A.x)} = <b>${nf(a)}</b>`);
+   info.push(`<span class="k">Coeficiente linear:</span> b = ${nf(A.y)} − ${np(a)} · ${np(A.x)} = <b>${nf(b)}</b> (onde a reta corta o eixo y)`);}
+  else{info.push(`<span class="k">a = ${nf(a)}:</span> `+(a>0?'a reta <b>sobe</b> (função crescente). A cada 1 passo para a direita, y aumenta '+nf(a)+'.':a<0?'a reta <b>desce</b> (função decrescente). A cada 1 passo para a direita, y diminui '+nf(-a)+'.':'a reta é horizontal (função constante).'));
+   info.push(`<span class="k">b = ${nf(b)}:</span> a reta corta o eixo y no ponto (0, ${nf(b)}).`);}
+  if(a!==0){const z=-b/a;if(C.zero!==false&&(T==='2p'||C.zero))g+=dot(z,0,'#B91C1C','zero',16);info.push(`<span class="k">Zero da função:</span> ax + b = 0 → x = −b/a = <b>${nf(z)}</b>`+(C.sinal?`. f(x) > 0 para x ${a>0?'>':'<'} ${nf(z)} e f(x) < 0 para x ${a>0?'<':'>'} ${nf(z)}.`:''));}}
+ else{let a,b,c,h,k;
+  if(T==='can'){a=V.a||0.25;h=V.xv;k=V.yv;b=-2*a*h;c=a*h*h+k;
+   lei='f(x) = '+can(a,h,k);}
+  else{a=V.a||0.25;b=V.b;c=V.c;h=-b/(2*a);k=c-b*b/(4*a);
+   lei='f(x) = '+poly(a,b,c);}
+  f=x=>a*x*x+b*x+c;const D=b*b-4*a*c;
+  if(C.ghost)g+=curve(x=>x*x,'#9CA3AF',2,1);
+  g+=`<line x1="${X(h)}" y1="0" x2="${X(h)}" y2="${SZ}" stroke="#F7821F" stroke-dasharray="5 4"/>`;
+  g+=curve(f,'#2457D6',3.5);if(T==='can'||C.vert)g+=dot(h,k,'#F7821F','V('+nf(h)+'; '+nf(k)+')',k>=0&&a<0?-9:18);
+  const rts=D<0?[]:D===0?[h]:[(-b-Math.sqrt(D))/(2*a),(-b+Math.sqrt(D))/(2*a)].sort((u,v)=>u-v);
+  if(C.raizes)rts.forEach((r,i)=>g+=dot(r,0,'#B91C1C','x'+(rts.length>1?(i?'₂':'₁'):'')+' = '+nf(r),i?-9:16));
+  if(T==='can'){info.push(`<span class="k">a = ${nf(a)}:</span> `+(a>0?'concavidade para <b>cima</b>; o vértice é ponto de <b>mínimo</b>.':'concavidade para <b>baixo</b>; o vértice é ponto de <b>máximo</b>.')+(Math.abs(a)>1?' |a| > 1 deixa a parábola mais fechada.':Math.abs(a)<1?' |a| < 1 deixa a parábola mais aberta.':''));
+   info.push(`<span class="k">xv = ${nf(h)}:</span> a parábola anda na horizontal; o eixo de simetria é a reta x = ${nf(h)}.`);
+   info.push(`<span class="k">yv = ${nf(k)}:</span> a parábola anda na vertical; o valor ${a>0?'mínimo':'máximo'} da função é ${nf(k)}.`);
+   if(C.geral)info.push(`<span class="k">Forma geral:</span> f(x) = ${poly(a,b,c)} &nbsp;(b = −2a·xv = ${nf(b)}; c = a·xv² + yv = ${nf(c)})`);}
+  else{info.push(`<span class="k">Δ = b² − 4ac = ${nf(D)}:</span> `+(D>0?'duas raízes reais diferentes (a parábola corta o eixo x em 2 pontos).':D===0?'uma raiz real dupla (a parábola toca o eixo x no vértice).':'nenhuma raiz real (a parábola não toca o eixo x).'));
+   info.push(`<span class="k">Vértice:</span> xv = −b/(2a) = ${nf(h)} e yv = −Δ/(4a) = ${nf(k)}.`);
+   info.push(`<span class="k">c = ${nf(c)}:</span> a parábola corta o eixo y no ponto (0, ${nf(c)}).`);
+   if(C.canon)info.push(`<span class="k">Forma canônica:</span> f(x) = ${can(a,h,k)}`);}
+  if(C.raizes)info.push(`<span class="k">Raízes:</span> `+(rts.length?rts.map(nf).join(' e '):'não há raízes reais')+(T==='can'&&rts.length?` (de a(x − xv)² + yv = 0 vem x = xv ± √(−yv/a))`:''));}
+ $('svg').innerHTML=g;$('lei').textContent=lei;$('info').innerHTML=info.map(s=>'<div>'+s+'</div>').join('');
+ $('tabCard').hidden=!C.tab;if(C.tab)$('tab').innerHTML=table(f);}
+document.querySelectorAll('input').forEach(i=>i.oninput=render);
+if(T==='2p'){let drag=null;const svg=$('svg');const pt=e=>{const r=svg.getBoundingClientRect();return{x:Math.round(((e.clientX-r.left)/r.width*SZ-SZ/2)/sc),y:Math.round((SZ/2-(e.clientY-r.top)/r.height*SZ)/sc)}};
+ svg.onpointerdown=e=>{const p=pt(e);const dA=Math.hypot(p.x-A.x,p.y-A.y),dB=Math.hypot(p.x-B.x,p.y-B.y);drag=dA<=dB?A:B;svg.setPointerCapture(e.pointerId);svg.onpointermove(e);};
+ svg.onpointermove=e=>{if(!drag)return;const p=pt(e);p.x=Math.max(-R+1,Math.min(R-1,p.x));p.y=Math.max(-R+1,Math.min(R-1,p.y));const o=drag===A?B:A;if(p.x===o.x)return;drag.x=p.x;drag.y=p.y;render();};
+ svg.onpointerup=()=>drag=null;}
+render();
+</script>
+</body>
+</html>
