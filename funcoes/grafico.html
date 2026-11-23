@@ -15,7 +15,7 @@ table{border-collapse:collapse;width:100%;font-size:15px;text-align:center}td,th
 </style>
 </head>
 <body>
-<header><div class="brand">Didati<b>Click</b> · MatematiClick</div><h1 id="title">Gráfico interativo</h1></header>
+<header><div class="brand">Didati<b>Click</b> · Matemática</div><h1 id="title">Gráfico interativo</h1></header>
 <main>
 <div class="card"><div class="lei" id="lei"></div><svg id="svg" viewBox="0 0 400 400"></svg>
 <p class="muted" id="hint" style="margin:6px 0 0"></p></div>
@@ -65,10 +65,14 @@ function render(){cfg.P.forEach(([k])=>{V[k]=+$('s_'+k).value;$('v_'+k).textCont
   else{info.push(`<span class="k">a = ${nf(a)}:</span> `+(a>0?'a reta <b>sobe</b> (função crescente). A cada 1 passo para a direita, y aumenta '+nf(a)+'.':a<0?'a reta <b>desce</b> (função decrescente). A cada 1 passo para a direita, y diminui '+nf(-a)+'.':'a reta é horizontal (função constante).'));
    info.push(`<span class="k">b = ${nf(b)}:</span> a reta corta o eixo y no ponto (0, ${nf(b)}).`);}
   if(a!==0){const z=-b/a;if(C.zero!==false&&(T==='2p'||C.zero))g+=dot(z,0,'#B91C1C','zero',16);info.push(`<span class="k">Zero da função:</span> ax + b = 0 → x = −b/a = <b>${nf(z)}</b>`+(C.sinal?`. f(x) > 0 para x ${a>0?'>':'<'} ${nf(z)} e f(x) < 0 para x ${a>0?'<':'>'} ${nf(z)}.`:''));}}
- else{let a,b,c,h,k;
-  if(T==='can'){a=V.a||0.25;h=V.d;k=V.e;b=-2*a*h;c=a*h*h+k;
+ else{if(V.a===0){let f0,lei0,txt;
+  if(T==='can'){const k0=V.e;f0=x=>k0;lei0='f(x) = '+nf(k0);txt=`Com a = 0, o termo a(x − <i>d</i>)² some e sobra f(x) = ${nf(k0)}: o gráfico vira uma <b>reta horizontal</b>, não uma parábola. Por isso, numa função do 2º grau, <b>a ≠ 0</b>.`;}
+  else{const b0=V.b,c0=V.c;f0=x=>b0*x+c0;lei0='f(x) = '+(b0?((b0===1?'':b0===-1?'−':nf(b0))+'x'+(c0?sg(c0):'')):nf(c0));txt=`Com a = 0, o termo ax² some e sobra f(x) = bx + c: o gráfico vira uma <b>reta</b>, não uma parábola. Por isso, numa função do 2º grau, <b>a ≠ 0</b>.`;}
+  g+=curve(f0,'#B91C1C',3.5);$('svg').innerHTML=g;$('lei').textContent=lei0;$('info').innerHTML='<div><span class="k">a = 0:</span> '+txt+'</div>';$('tabCard').hidden=!C.tab;if(C.tab)$('tab').innerHTML=table(f0);return;}
+ let a,b,c,h,k;
+  if(T==='can'){a=V.a;h=V.d;k=V.e;b=-2*a*h;c=a*h*h+k;
    lei='f(x) = '+can(a,h,k);}
-  else{a=V.a||0.25;b=V.b;c=V.c;h=-b/(2*a);k=c-b*b/(4*a);
+  else{a=V.a;b=V.b;c=V.c;h=-b/(2*a);k=c-b*b/(4*a);
    lei='f(x) = '+poly(a,b,c);}
   f=x=>a*x*x+b*x+c;const D=b*b-4*a*c;
   if(C.ghost)g+=curve(x=>x*x,'#9CA3AF',2,1);

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ábaco de pinos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Ábaco de pinos</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Explorar</button><button id="tab-desafio">Desafio</button></div>
+<div class="card"><svg id="svg" viewBox="0 0 360 250" style="width:100%"></svg>
+<div id="btns" style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin:4px 0 0 6%;width:92%"></div><div id="m"></div></div>
+<div class="card" id="pn-livre"><div class="big" id="num"></div><p id="ext" style="text-align:center;margin:0 0 8px;color:var(--navy)"></p><div id="tab"></div>
+<div class="row" style="margin-top:10px"><button class="alt" id="zera">Zerar o ábaco</button></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Cada pino é uma <b>ordem</b>. Uma conta no pino das unidades vale 1; no das dezenas vale 10; no das centenas, 100… Um pino aguenta no máximo 9 contas: com 10, trocamos tudo por <b>1 conta no pino da esquerda</b>. Pino vazio é o <b>zero</b>.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+const NM=['U','D','C','UM','DM','CM'],NL=['unidades','dezenas','centenas','unidades de milhar','dezenas de milhar','centenas de milhar'];
+let a=[0,0,0,0,0,0],modo='livre',tipo=0,alvo=0,ac=0,tt=0,feito=false;
+function set(n){a=NM.map((_,i)=>Math.floor(n/10**i)%10);}
+set(P('n',30405,0,999999));
+const val=()=>a.reduce((s,k,i)=>s+Math.min(k,10)*10**i,0);
+function draw(){let s='';const cor=['#0E2354','#F7821F','#2457D6','#15803D','#7A4BB5','#B91C1C'];
+ s+='<rect x="8" y="214" width="344" height="16" rx="5" fill="#8A5A12"/>';
+ for(let p=0;p<6;p++){const x=330-p*56;s+=`<line x1="${x}" y1="20" x2="${x}" y2="214" stroke="#6B7280" stroke-width="4" stroke-linecap="round"/>`;
+  for(let k=0;k<a[p];k++)s+=`<rect x="${x-20}" y="${200-k*17}" width="40" height="14" rx="7" fill="${a[p]>=10?'#B91C1C':cor[p]}" stroke="#fff" stroke-width="1.5"/>`;
+  s+=`<text x="${x}" y="246" font-size="13" font-weight="700" fill="${cor[p]}" text-anchor="middle" font-family="Poppins,sans-serif">${NM[p]}</text>`;}
+ $('svg').innerHTML=s;
+ $('btns').innerHTML=[5,4,3,2,1,0].map(p=>`<div style="display:flex;flex-direction:column;gap:4px"><button data-p="${p}" data-d="1" style="padding:8px 0">+</button><button class="alt" data-p="${p}" data-d="-1" style="padding:6px 0">−</button></div>`).join('');
+ $('btns').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(modo==='desafio'&&tipo===1)return;const p=+b.dataset.p;a[p]=Math.max(0,Math.min(10,a[p]+ +b.dataset.d));draw();});
+ const i=a.findIndex(k=>k>=10);
+ if(i>=0){if(i<5){$('m').innerHTML=`<div class="msg info">O pino das ${NL[i]} tem 10 contas! Troque as 10 por 1 conta no pino das ${NL[i+1]}. <button class="or" id="tr" style="margin-top:6px">Trocar 10 por 1</button></div>`;$('tr').onclick=()=>{a[i]-=10;a[i+1]++;draw();};}
+  else{$('m').innerHTML='<div class="msg bad">Este ábaco só vai até a centena de milhar.</div>';a[5]=9;}}else $('m').innerHTML='';
+ if(modo==='livre')info();}
+function info(){const n=val();$('num').innerHTML=`<span class="k">${SN.fmt(n)}</span>`;$('ext').textContent=SN.extenso(n);
+ const L=Math.max(1,String(n).length);let h='<table class="t"><tr><th>algarismo<br>(valor absoluto)</th><th>ordem</th><th>valor relativo</th></tr>';
+ for(let p=L-1;p>=0;p--){const d=a[p];h+=`<tr><td><b>${d}</b></td><td>${NL[p]}</td><td>${d} × ${SN.fmt(10**p)} = <b>${SN.fmt(d*10**p)}</b></td></tr>`;}
+ $('tab').innerHTML=h+'</table>';}
+function desafio(){feito=false;msg('dm','');tipo=rnd(0,1);const f=[[100,999],[1000,9999],[10000,99999],[100000,999999]][Math.min(3,Math.floor(tt/2))];
+ alvo=rnd(f[0],f[1]);if(Math.random()<.6){const s=String(alvo).split('');s[rnd(1,s.length-1)]='0';alvo=+s.join('');}
+ if(tipo===0){a=[0,0,0,0,0,0];$('dq').innerHTML=`Represente no ábaco: <span class="k">${SN.extenso(alvo)}</span>`;$('dbody').innerHTML='<p class="muted" style="margin:0">Use os botões + e − embaixo dos pinos e toque em OK.</p>';}
+ else{set(alvo);$('dq').textContent='Que número está no ábaco?';$('dbody').innerHTML='<input type="number" id="resp" inputmode="numeric">';}
+ draw();}
+$('ok').onclick=()=>{if(feito)return;let r;if(tipo===0){r=val();if(!r){msg('dm','Coloque as contas primeiro.','info');return;}}else{r=parseInt($('resp').value);if(isNaN(r)){msg('dm','Digite sua resposta.','info');return;}}
+ tt++;feito=true;const dec=String(alvo).split('').map((d,i,s)=>`${d} × ${SN.fmt(10**(s.length-1-i))}`).join(' + ');
+ if(r===alvo&&a.every(k=>k<10)){ac++;msg('dm',`Certo! ${SN.fmt(alvo)} = ${dec}`,'ok');}
+ else if(r===alvo)msg('dm','O valor está certo, mas algum pino ficou com 10 contas. Faça a troca!','bad');
+ else msg('dm',`Ainda não. ${SN.fmt(alvo)} = ${dec}. Os zeros são pinos vazios.`,'bad');
+ $('placar').textContent=`Acertos: ${ac} de ${tt}`;};
+$('novo').onclick=desafio;$('zera').onclick=()=>{a=[0,0,0,0,0,0];draw();};
+tabs(['livre','desafio'],t=>{modo=t;if(t==='desafio')desafio();else{set(P('n',30405,0,999999));draw();}});
+draw();
+
+</script>
+</body>
+</html>

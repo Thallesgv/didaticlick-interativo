@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O maior pedaço possível · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:200px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.step3{display:inline-flex;align-items:center;gap:6px}.step3 button{width:42px;padding:8px 0}.step3 b{min-width:40px;text-align:center;font-size:20px;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+table.t td.l{text-align:left}
+.sim{color:var(--ok);font-weight:700}.nao{color:var(--bad);font-weight:700}
+.chips span{display:inline-block;border-radius:8px;padding:2px 9px;margin:3px;font-weight:600;background:#EEF3FF;color:var(--navy)}
+.chips span.g{background:#DCFCE7;color:var(--ok)}.chips span.o{background:var(--peach);color:#C2560C}
+.hide{display:none}
+.grid{display:grid;gap:3px}
+.grid button{padding:0;height:36px;font-size:14px;font-weight:600;border-radius:7px;background:#fff;color:var(--navy);border:1.5px solid #D7DEEA;position:relative}
+.grid button.p{color:#fff;border-color:transparent}
+.grid button.x{color:#B6BCC6;background:#F3F4F6}
+.grid button.x::after{content:"";position:absolute;left:18%;right:18%;top:50%;border-top:2.4px solid var(--c,#9CA3AF);transform:rotate(-38deg)}
+.grid button.u{color:#B6BCC6;background:#F3F4F6}
+.tog{display:flex;flex-wrap:wrap;gap:6px}.tog button{min-width:48px;background:#fff;color:var(--navy);border:2px solid var(--navy)}.tog button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.lamp{display:flex;gap:28px;justify-content:center;align-items:flex-end;margin:6px 0}
+.lamp div{text-align:center;font-size:13px;color:var(--gray)}
+.lamp i{display:block;width:62px;height:62px;border-radius:50%;margin:0 auto 6px;background:#E5E7EB;border:3px solid #D7DEEA;transition:background .15s}
+.lamp i.a{background:var(--blue);border-color:var(--blue);box-shadow:0 0 18px var(--blue)}
+.lamp i.b{background:var(--orange);border-color:var(--orange);box-shadow:0 0 18px var(--orange)}
+.log{font-size:14px;max-height:170px;overflow:auto;background:#F5F7FB;border-radius:10px;padding:8px 10px;margin-top:8px}
+</style>
+<script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Múltiplos, divisores e fatoração</div><h1 id="title">O maior pedaço possível</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Fitas</button><button id="tab-euc">Euclides</button><button id="tab-desafio">Desafio</button></div>
+<div class="card" id="pn-livre"><div class="row" style="gap:18px"><div><label class="l" style="color:var(--blue)">Fita azul (cm)</label><span class="step3" id="sa"></span></div>
+<div><label class="l" style="color:var(--orange)">Fita laranja (cm)</label><span class="step3" id="sb"></span></div>
+<div><label class="l">Tamanho do pedaço</label><span class="step3" id="sp"></span></div></div>
+<div class="fig" style="margin-top:10px" id="fig"></div><div id="m"></div>
+<p style="margin:10px 0 0"><b>Tamanhos que servem nas duas:</b></p><div class="chips" id="serv"></div><div id="fim"></div></div>
+<div class="card hide" id="pn-euc"><p class="muted" style="margin-top:0">Corte o retângulo no maior quadrado possível; depois corte o que sobrou do mesmo jeito. O lado do último quadrado é o mdc.</p>
+<div class="fig" id="efig"></div><div id="etx"></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">O pedaço só serve nas duas fitas se for <b>divisor</b> dos dois comprimentos. O maior deles é o <b>máximo divisor comum (mdc)</b>. Quando o mdc é 1, os números são <b>primos entre si</b>.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(300,Math.min(620,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function stepper(id,v,lo,hi,cb){const el=$(id);el.innerHTML=`<button class="alt">−</button><b>${v}</b><button>+</button>`;const [m,,p]=el.children;
+ const set=x=>{v=Math.max(lo,Math.min(hi,x));el.children[1].textContent=v;cb(v);};m.onclick=()=>set(v-1);p.onclick=()=>set(v+1);return {get:()=>v,set};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+
+let a=P('a',24,2,60),b=P('b',36,2,60),p=1,serv=new Set();
+function draw(){$('fig').innerHTML=MD.fitas([a,b],p,{W:WW()});const ra=a%p,rb=b%p;
+ if(!ra&&!rb){serv.add(p);msg('m',`Pedaços de ${p} cm servem nas duas: ${a/p} pedaços azuis e ${b/p} laranja. ${p} é <b>divisor comum</b> de ${a} e ${b}.`,'ok');}
+ else msg('m',`Não serve: ${ra?`na azul sobram ${ra} cm`:''}${ra&&rb?' e ':''}${rb?`na laranja sobram ${rb} cm`:''}.`,'bad');
+ const C=MD.divisores(a).filter(d=>b%d===0),M=MD.mdc(a,b);
+ $('serv').innerHTML=[...serv].sort((x,y)=>x-y).map(d=>`<span class="${d===M?'o':'g'}">${d}</span>`).join('')||'<span class="muted">nenhum ainda</span>';
+ $('fim').innerHTML=serv.has(M)?`<div class="msg ok">O maior pedaço possível é de <b>${M} cm</b>: mdc(${a}, ${b}) = ${M}.${serv.size<C.length?' Ainda há outros divisores comuns menores para achar.':' Você achou todos os divisores comuns: '+C.join(', ')+'.'}</div>`:'';
+ euc();}
+function euc(){$('efig').innerHTML=MD.euclides(a,b,{px:300,w:Math.min(560,320)});const ps=MD.euclides(a,b,{passos:true});
+ $('etx').innerHTML='<div class="msg ok">'+ps.map(([x,y,n,r])=>`${x} = ${n} × ${y} + ${r}`).join('<br>')+`<br>mdc(${a}, ${b}) = <b>${MD.mdc(a,b)}</b></div>`;}
+const sp=stepper("sp",1,1,60,v=>{p=v;draw();});
+stepper('sa',a,2,60,v=>{a=v;serv=new Set();sp.set(1);});stepper('sb',b,2,60,v=>{b=v;serv=new Set();sp.set(1);});
+let alvo,feito;
+const CTX=[(x,y)=>`Helena tem duas fitas, de ${x} cm e de ${y} cm. Quer cortar as duas em pedaços iguais, os maiores possíveis, sem sobrar fita. Qual o tamanho de cada pedaço, em cm?`,
+ (x,y)=>`Pedro tem ${x} balas de morango e ${y} de uva. Quer montar o maior número possível de saquinhos iguais, sem sobrar bala. Quantos saquinhos ele monta?`,
+ (x,y)=>`Uma turma tem ${x} meninas e ${y} meninos. A professora quer formar o maior número possível de grupos, todos com a mesma quantidade de meninas e de meninos. Quantos grupos?`,
+ (x,y)=>`Um piso retangular de ${x} dm por ${y} dm vai ser coberto com lajotas quadradas iguais, as maiores possíveis, sem cortar nenhuma. Qual o lado de cada lajota, em dm?`];
+function desafio(){feito=false;msg('dm','');let x,y,g;do{g=rnd(2,12);x=g*rnd(1,7);y=g*rnd(2,9);}while(x===y||x<6||y%x===0);alvo=[x,y];
+ $('dq').textContent='Qual é o maior possível?';$('dbody').innerHTML=`<p style="margin:0 0 8px">${pick(CTX)(x,y)}</p><input type="number" id="resp" inputmode="numeric">`;}
+$('ok').onclick=()=>{if(feito)return;const v=parseInt($('resp').value);if(isNaN(v)){msg('dm','Digite um número antes do OK.','info');return;}feito=true;const [x,y]=alvo,M=MD.mdc(x,y),ok=v===M;placar(ok);
+ msg('dm',(ok?'Certo! ':'Ainda não. ')+`Divisores de ${x}: ${MD.divisores(x).join(', ')}<br>Divisores de ${y}: ${MD.divisores(y).join(', ')}<br>mdc(${x}, ${y}) = <b>${M}</b>.`,ok?'ok':'bad');};
+$('novo').onclick=desafio;tabs(['livre','euc','desafio'],t=>{if(t==='desafio')desafio();});
+draw();
+
+</script>
+</body>
+</html>

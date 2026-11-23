@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Árvore de fatores · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:6px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:60px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:200px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.step3{display:inline-flex;align-items:center;gap:6px}.step3 button{width:42px;padding:8px 0}.step3 b{min-width:40px;text-align:center;font-size:20px;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+table.t td.l{text-align:left}
+.sim{color:var(--ok);font-weight:700}.nao{color:var(--bad);font-weight:700}
+.chips span{display:inline-block;border-radius:8px;padding:2px 9px;margin:3px;font-weight:600;background:#EEF3FF;color:var(--navy)}
+.chips span.g{background:#DCFCE7;color:var(--ok)}.chips span.o{background:var(--peach);color:#C2560C}
+.hide{display:none}
+.grid{display:grid;gap:3px}
+.grid button{padding:0;height:36px;font-size:14px;font-weight:600;border-radius:7px;background:#fff;color:var(--navy);border:1.5px solid #D7DEEA;position:relative}
+.grid button.p{color:#fff;border-color:transparent}
+.grid button.x{color:#B6BCC6;background:#F3F4F6}
+.grid button.x::after{content:"";position:absolute;left:18%;right:18%;top:50%;border-top:2.4px solid var(--c,#9CA3AF);transform:rotate(-38deg)}
+.grid button.u{color:#B6BCC6;background:#F3F4F6}
+.tog{display:flex;flex-wrap:wrap;gap:6px}.tog button{min-width:48px;background:#fff;color:var(--navy);border:2px solid var(--navy)}.tog button.on{background:var(--orange);border-color:var(--orange);color:#fff}
+.lamp{display:flex;gap:28px;justify-content:center;align-items:flex-end;margin:6px 0}
+.lamp div{text-align:center;font-size:13px;color:var(--gray)}
+.lamp i{display:block;width:62px;height:62px;border-radius:50%;margin:0 auto 6px;background:#E5E7EB;border:3px solid #D7DEEA;transition:background .15s}
+.lamp i.a{background:var(--blue);border-color:var(--blue);box-shadow:0 0 18px var(--blue)}
+.lamp i.b{background:var(--orange);border-color:var(--orange);box-shadow:0 0 18px var(--orange)}
+.log{font-size:14px;max-height:170px;overflow:auto;background:#F5F7FB;border-radius:10px;padding:8px 10px;margin-top:8px}
+</style>
+<script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Múltiplos, divisores e fatoração</div><h1 id="title">Árvore de fatores</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Árvore</button><button id="tab-dp">Divisões sucessivas</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre"><div class="card"><div class="row" style="align-items:flex-end"><div style="flex:1"><label class="l">Número para fatorar (de 4 a 9 999)</label><input type="number" id="n" inputmode="numeric"></div><button class="alt" id="ir">Começar</button></div>
+<div class="fig" style="margin-top:10px" id="fig"></div><div id="m"></div><div id="ops" style="margin-top:8px"></div>
+<div class="row" style="margin-top:10px"><button class="alt" id="zera">Recomeçar a árvore</button></div></div></div>
+<div class="card hide" id="pn-dp"><p class="muted" style="margin-top:0">Divida sempre pelo menor primo que dá divisão exata, até chegar ao 1.</p><div class="fig" id="dpfig"></div><div id="dptx"></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><div id="dbody"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Os números em <b style="color:var(--orange)">laranja</b> são primos: não dá para desmontar mais. Os de borda <b style="color:var(--bad)">tracejada</b> ainda são compostos. Por qualquer caminho, os primos no fim são sempre os mesmos: é o <b>Teorema Fundamental da Aritmética</b>.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(300,Math.min(620,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function stepper(id,v,lo,hi,cb){const el=$(id);el.innerHTML=`<button class="alt">−</button><b>${v}</b><button>+</button>`;const [m,,p]=el.children;
+ const set=x=>{v=Math.max(lo,Math.min(hi,x));el.children[1].textContent=v;cb(v);};m.onclick=()=>set(v-1);p.onclick=()=>set(v+1);return {get:()=>v,set};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+
+let n=P('n',60,4,9999),raiz;
+const novo=v=>({n:v,k:null});
+const arr=nd=>nd.k?[nd.n,arr(nd.k[0]),arr(nd.k[1])]:nd.n;
+function folhas(nd,a=[]){if(nd.k){folhas(nd.k[0],a);folhas(nd.k[1],a);}else a.push(nd);return a;}
+function draw(){$('fig').innerHTML=MD.arvore(arr(raiz),{w:Math.min(640,Math.max(160,folhas(raiz).length*60))});
+ const fs=folhas(raiz),comp=fs.filter(f=>!MD.primo(f.n));
+ if(!comp.length){const ps=fs.map(f=>f.n).sort((a,b)=>a-b);msg('m',`Todos os galhos terminaram em primos: ${MD.fmt(raiz.n)} = ${ps.join(' × ')} = <b>${MD.fatoracao(raiz.n,true)}</b>`,'ok');$('ops').innerHTML='';return;}
+ msg('m','Escolha como desmontar um número composto:','info');
+ $('ops').innerHTML=comp.map((f,i)=>{const pares=[];for(let a=2;a*a<=f.n;a++)if(f.n%a===0)pares.push([a,f.n/a]);
+  return `<div style="margin:6px 0"><b>${MD.fmt(f.n)}</b> = `+pares.map(([a,b])=>`<button class="alt" style="margin:3px;padding:6px 10px" data-i="${i}" data-a="${a}">${a} × ${b}</button>`).join('')+'</div>';}).join('');
+ $('ops').querySelectorAll('button').forEach(b=>b.onclick=()=>{const f=comp[+b.dataset.i],a=+b.dataset.a;f.k=[novo(a),novo(f.n/a)];draw();});}
+function dp(){$('dpfig').innerHTML=MD.divsuc(n,{w:170});let v=n,h=[];while(v>1){const p=MD.fatores(v)[0];h.push(`${MD.fmt(v)} ÷ ${p} = ${MD.fmt(v/p)}`);v/=p;}
+ $('dptx').innerHTML=`<div class="msg ok">${h.join('<br>')}<br>${MD.fmt(n)} = <b>${MD.fatoracao(n,true)}</b></div>`;}
+function comeca(){n=Math.max(4,Math.min(9999,parseInt($('n').value)||60));$('n').value=n;raiz=novo(n);
+ if(MD.primo(n)){$('fig').innerHTML=MD.arvore(n);msg('m',`${n} é primo: não dá para desmontar. Escolha um número composto.`,'bad');$('ops').innerHTML='';}else draw();dp();}
+$('ir').onclick=comeca;$('zera').onclick=comeca;$('n').onkeydown=e=>{if(e.key==='Enter')comeca();};$('n').value=n;
+let alvo,feito;
+function desafio(){feito=false;msg('dm','');const ps=[2,2,2,3,3,5,5,7,11];let v=1,k=rnd(2,4);for(let i=0;i<k;i++)v*=pick(ps);while(v<20)v*=pick([2,3,5]);alvo=v;
+ $('dq').innerHTML=`Que número tem a forma fatorada <span class="k">${MD.fatoracao(alvo,true)}</span>?`;$('dbody').innerHTML='<input type="number" id="resp" inputmode="numeric">';}
+$('ok').onclick=()=>{if(feito)return;const v=parseInt($('resp').value);if(isNaN(v)){msg('dm','Digite um número antes do OK.','info');return;}feito=true;const ok=v===alvo;placar(ok);
+ const fx=MD.fatores(alvo).join(' × '),fh=MD.fatoracao(alvo,true);msg('dm',(ok?'Certo! ':'Ainda não. ')+(fh===fx?'':fh+' = ')+`${fx} = <b>${MD.fmt(alvo)}</b>`,ok?'ok':'bad');};
+$('novo').onclick=desafio;tabs(['livre','dp','desafio'],t=>{if(t==='desafio')desafio();});
+comeca();
+
+</script>
+</body>
+</html>

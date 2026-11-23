@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O quadrado da soma e da diferença · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:118px 1fr 34px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+label.ck{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:6px}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:4px 0;line-height:1.6}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .r{color:var(--bad)}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:70px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.dq{font-size:21px;font-weight:600;color:var(--navy);line-height:2.1}
+</style>
+<script src="pn.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos notáveis</div><h1 id="title">O quadrado da soma e da diferença</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Montar</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre">
+<div class="card"><div class="row"><button id="m-soma">(a + b)²</button><button id="m-dif" class="alt">(a − b)²</button></div>
+<div class="fig" style="margin-top:10px" id="fig"></div>
+<div class="sl" id="sa"><b>a</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>b</b><input type="range"><span></span></div>
+<div class="sl" id="sep"><b>Separar as peças</b><input type="range"><span></span></div>
+<label class="ck" id="lfx"><input type="checkbox" id="fx"> Mostrar as duas faixas que tiramos</label>
+<label class="ck"><input type="checkbox" id="let" checked> Mostrar letras (desmarque para ver os números)</label></div>
+<div class="card"><h2>A conta</h2><div id="conta"></div></div>
+</div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Complete os quadrinhos</h2><div class="dq" id="dq"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0" id="lembre"></p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const WW=()=>Math.max(280,Math.min(560,innerWidth-70));const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const sg=v=>v<0?'−'+(-v):String(v);
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,step){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=step||1;i.value=v;
+ const show=()=>{s.textContent=step&&step<1?'':i.value;};show();i.oninput=()=>{show();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;show();},el:i};}
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio com campos numéricos e botão OK (só conta depois do OK)
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha todos os quadrinhos e toque em OK.','info');return;}
+  const vals=ins.map(x=>parseInt(x.value.replace('−','-')));const ok=cur.res.every((r,i)=>r===vals[i]);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=cur.res[i]===vals[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=()=>'<input class="n" inputmode="numeric">';
+
+let modo=q.get('modo')==='dif'?'dif':'soma';
+const A=slider('sa',P('a',5,2,10),2,10,draw),B=slider('sb',P('b',3,1,6),1,6,draw),S=slider('sep',0,0,1,draw,0.05);
+$('fx').onchange=draw;$('let').onchange=draw;
+function setModo(m){modo=m;$('m-soma').className=m==='soma'?'':'alt';$('m-dif').className=m==='dif'?'':'alt';
+ $('sep').classList.toggle('hide',m!=='soma');$('lfx').classList.toggle('hide',m!=='dif');
+ $('lembre').innerHTML=m==='soma'?'<b>(a + b)² = a² + 2ab + b²</b>: o quadrado do primeiro, mais duas vezes o primeiro pelo segundo, mais o quadrado do segundo. As duas peças laranja são iguais: por isso aparece o <b>2ab</b>.'
+ :'<b>(a − b)² = a² − 2ab + b²</b>: do quadrado a² tiramos duas faixas de área ab. Mas o cantinho b² foi tirado duas vezes, então precisamos <b>devolver</b> um b².';draw();}
+$('m-soma').onclick=()=>setModo('soma');$('m-dif').onclick=()=>setModo('dif');
+function draw(){let a=A.get(),b=B.get();const L=$('let').checked;
+ if(modo==='dif'&&b>=a){b=a-1;B.set(b);}
+ const s=Math.min(30,Math.floor((WW()-90)/(modo==='soma'?a+b+1:a)));
+ const o=L?{la:'a',lb:'b',s}:{s};
+ if(modo==='soma'){$('fig').innerHTML=PN.quad(a,b,{...o,sep:S.get(),total:S.get()<.05});
+  $('conta').innerHTML=`<div class="res">(${a} + ${b})² = ${a+b}² = <span class="g">${(a+b)**2}</span></div>
+  <div class="res"><span style="color:var(--blue)">${a*a}</span> + <span class="k">${a*b}</span> + <span class="k">${a*b}</span> + <span style="color:var(--navy)">${b*b}</span> = <span class="g">${(a+b)**2}</span> ✓</div>
+  <div class="res r" style="font-size:15px">Cuidado: ${a}² + ${b}² = ${a*a+b*b}. Faltariam as duas peças laranja: 2 · ${a} · ${b} = ${2*a*b}.</div>`;}
+ else{$('fig').innerHTML=PN.dif(a,b,{...o,faixas:$('fx').checked,dupla:1});
+  $('conta').innerHTML=`<div class="res">(${a} − ${b})² = ${a-b}² = <span class="g">${(a-b)**2}</span></div>
+  <div class="res"><span style="color:var(--blue)">${a*a}</span> − <span class="k">${a*b}</span> − <span class="k">${a*b}</span> + <span style="color:var(--navy)">${b*b}</span> = <span class="g">${(a-b)**2}</span> ✓</div>
+  <div class="res r" style="font-size:15px">Cuidado: ${a}² − ${b}² = ${a*a-b*b}, não ${(a-b)**2}.</div>`;}}
+setModo(modo);
+tabs(['livre','desafio']);
+desafio(()=>{const k=rnd(2,9),m=pick(['soma','dif']),c=rnd(1,3);const X=c===1?'x':c+'x';
+ const r=[2*c*k,k*k];const sinal=m==='soma'?'+':'−';
+ const first=c===1?'x²':(c*c)+'x²';
+ return {html:`(${X} ${sinal} ${k})² = ${first} ${sinal} ${box()}x + ${box()}`,res:r,
+  exp:`(${X} ${sinal} ${k})² = ${first} ${sinal} ${2*c*k}x + ${k*k}. O termo do meio é 2 · ${X} · ${k} = ${2*c*k}x, e o último é ${k}² = ${k*k}${m==='dif'?' (sempre positivo)':''}.`};});
+
+</script>
+</body>
+</html>
