@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Onde mora este número? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:120px 1fr 52px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;color:var(--navy);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.lbl{font-size:13px;color:var(--gray);margin:0 0 2px}
+.log{list-style:none;padding:0;margin:6px 0 0}
+.log li{padding:6px 0;border-bottom:1px dashed #D7DEEA;font-size:15px}
+.tag{display:inline-block;border-radius:8px;padding:1px 8px;font-size:13px;font-weight:600}
+.tag.ok{background:#DCFCE7;color:var(--ok)}.tag.bad{background:#FEE2E2;color:var(--bad)}.tag.info{background:#EEF3FF;color:var(--blue)}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;font-weight:600}
+.chips button.sel{border-color:var(--orange);background:#FFF3E6}
+#svg text{pointer-events:none}</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Conjuntos numéricos</div><h1 id="title">Onde mora este número?</h1></header>
+<main>
+
+<div class="card"><p class="muted" style="margin:0 0 6px">Toque na região do diagrama onde o número fica (o menor conjunto a que ele pertence). Depois toque em <b>OK</b> para registrar.</p>
+<div class="big" id="num" style="font-size:30px"></div>
+<svg class="fig" id="svg" viewBox="0 0 400 250"></svg>
+<div class="row" style="margin-top:6px"><button class="or" id="ok" disabled>OK, registrar</button><button class="alt" id="nx" hidden>Próximo número</button></div><div id="msg"></div></div>
+<div class="card"><h2>Placar</h2><p style="margin:0" id="sc"></p><div class="row" style="margin-top:8px"><button class="alt" id="nv">Trocar o nível</button></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C',GY='#6B7280',PU='#7A4BB5';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="${o.f||'Poppins,sans-serif'}">${s}</text>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+const F=(p,q2=1)=>{if(q2<0){p=-p;q2=-q2;}const g=gcd(p,q2);return [p/g,q2/g];};
+const fs=f=>(f[1]===1?String(f[0]):f[0]+'/'+f[1]).replace(/-/g,'−');
+
+let nivel=q.get('nivel')==='2'?2:1;
+const L1=[['7','N','7 é natural (e por isso também é inteiro, racional e real).'],['0','N','O zero é natural.'],['−4','Z','−4 é inteiro negativo: não é natural.'],['3/5','Q','3/5 é uma fração de inteiros que não dá inteiro.'],['−2,5','Q','−2,5 = −5/2: racional.'],['0,333…','Q','Dízima periódica: é 1/3, racional.'],['√2','I','2 não é quadrado perfeito: √2 é irracional.'],['π','I','π é irracional: decimal infinito sem período.'],['√16','N','√16 = 4: natural.'],['−√9','Z','−√9 = −3: inteiro.'],['1,010010001…','I','Infinito e sem bloco que se repete: irracional.'],['12/4','N','12/4 = 3: natural, apesar de estar escrito como fração.'],['−1/8','Q','Fração negativa que não dá inteiro: racional.'],['√5','I','5 não é quadrado perfeito: irracional.'],['−100','Z','Inteiro negativo.']];
+const L2=[['√(9/4)','Q','√(9/4) = 3/2: racional.'],['−√7','I','√7 é irracional, e o oposto de um irracional também é.'],['0,999…','N','0,999… = 1: natural!'],['(√2)²','N','(√2)² = 2: natural.'],['√2 + 1','I','Racional mais irracional é irracional.'],['2π','I','Racional (≠ 0) vezes irracional é irracional.'],['√12 ÷ √3','N','√12 ÷ √3 = √4 = 2.'],['22/7','Q','22/7 é racional; é só uma aproximação de π.'],['3,1416','Q','Decimal finito: 31416/10000, racional.'],['√1,44','Q','√1,44 = 1,2: racional.'],['(−2)³','Z','(−2)³ = −8: inteiro.'],['10⁻¹','Q','10⁻¹ = 1/10 = 0,1.'],['√8 × √2','N','√16 = 4.'],['0,1212…','Q','Dízima periódica: 12/99 = 4/33.']];
+const NM={N:'ℕ (naturais)',Z:'ℤ, fora de ℕ (inteiros negativos)',Q:'ℚ, fora de ℤ (racionais não inteiros)',I:'𝕀 (irracionais)'};
+const BOX={R:[6,6,388,238],Q:[16,32,260,202],Z:[26,74,170,150],N:[36,120,90,94],I:[282,32,102,202]};
+let lista,cur,sel=null,ac=0,tot=0;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function svg(show){let g='';const fills={R:'#EEF3FF',Q:'#DCE6FF',Z:'#C9D8FF',N:'#B3C8FF',I:'#FFF7EF'};
+ for(const k of ['R','Q','Z','N','I']){const [x,y,w,h]=BOX[k];const on=sel===k,right=show&&cur[1]===k;
+  g+=`<rect data-k="${k}" x="${x}" y="${y}" width="${w}" height="${h}" rx="16" fill="${right?'#BBF7D0':on?'#FFD8B0':fills[k]}" stroke="${on||right?(right?GR:OR):k==='I'?OR:NAVY}" stroke-width="${on||right?3.5:1.6}" ${k==='I'&&!on&&!right?'stroke-dasharray="6 4"':''} style="cursor:pointer"/>`;
+  g+=T(x+14,y+26,{R:'ℝ',Q:'ℚ',Z:'ℤ',N:'ℕ',I:'𝕀'}[k],{s:22,f:'DejaVu Serif,Georgia,serif'});}
+ g+=T(333,74,'irracionais',{s:10,c:GY,w:600});$('svg').innerHTML=g;
+ $('svg').querySelectorAll('rect').forEach(r=>r.onclick=e=>{e.stopPropagation();if(!$('nx').hidden)return;const k=r.dataset.k;if(k==='R')return;sel=k;$('ok').disabled=false;$('ok').textContent='OK, registrar: '+NM[k];svg(false);});}
+function novo(){if(!lista.length)lista=shuffle(nivel===2?L2:L1);cur=lista.pop();sel=null;$('num').textContent=cur[0];$('ok').disabled=true;$('ok').textContent='OK, registrar';$('nx').hidden=true;$('ok').hidden=false;$('msg').innerHTML='';svg(false);}
+$('ok').onclick=()=>{if(!sel)return;tot++;const okk=sel===cur[1];if(okk)ac++;$('msg').innerHTML=`<div class="msg ${okk?'ok':'bad'}">${okk?'Certo!':'Ainda não. O lugar dele é '+NM[cur[1]]+'.'} ${cur[2]}</div>`;$('ok').hidden=true;$('nx').hidden=false;svg(true);sc();};
+$('nx').onclick=novo;
+function sc(){$('sc').textContent=`Nível ${nivel} · registrados: ${tot} · acertos: ${ac}`;}
+$('nv').onclick=()=>{nivel=nivel===1?2:1;lista=[];ac=0;tot=0;sc();novo();};
+lista=[];sc();novo();
+</script>
+</body>
+</html>
