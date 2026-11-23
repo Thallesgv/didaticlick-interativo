@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Área e volume: os zeros de cada casa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">Área e volume: os zeros de cada casa</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-area" class="on">Área</button><button id="tab-volume">Volume</button><button id="tab-hectare">Are e hectare</button><button id="tab-comparar">Aumentar e diminuir</button></div>
+<div id="pn-area"><div class="card">
+<p class="muted">Um controle muda o lado do quadrado; o outro muda a unidade em que medimos esse mesmo lado.</p>
+<div class="sl" id="an"><b>Lado</b><input type="range"><span></span></div>
+<div class="sl" id="au"><b>Unidade</b><input type="range"><span></span></div>
+<div class="fig" id="af"></div><div class="res" id="ar"></div></div></div>
+<div id="pn-volume" class="hide"><div class="card">
+<p class="muted">Um controle muda a aresta do cubo; o outro muda a unidade em que medimos essa mesma aresta.</p>
+<div class="sl" id="vn"><b>Aresta</b><input type="range"><span></span></div>
+<div class="sl" id="vu"><b>Unidade</b><input type="range"><span></span></div>
+<div class="fig" id="vf"></div><div class="res" id="vr"></div></div></div>
+<div id="pn-hectare" class="hide"><div class="card">
+<p class="muted">Cada quadradinho da malha é 1 are: um quadrado de 10 m × 10 m = 100 m². O contorno laranja é 1 hectare: 100 m × 100 m.</p>
+<div class="sl" id="hc"><b>Comprimento</b><input type="range"><span></span></div>
+<div class="sl" id="hl"><b>Largura</b><input type="range"><span></span></div>
+<div class="fig" id="hf"></div><div class="res" id="hr"></div></div></div>
+<div id="pn-comparar" class="hide"><div class="card">
+<p class="muted">Mexa no controle: o segmento, o lado do quadrado e a aresta do cubo mudam juntos. Veja quantas peças de 1 cabem em cada um.</p>
+<div class="sl" id="ck"><b>Tamanho</b><input type="range"><span></span></div>
+<div class="fig" id="cf" style="flex-wrap:wrap;gap:14px;align-items:flex-end"></div><div class="res" id="cr"></div></div></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const U=['km','hm','dam','m','dm','cm','mm'];
+// texto do número com os zeros acrescentados em destaque
+function zz(base,extra){return base+(extra>0?`<span class="z">${'0'.repeat(extra)}</span>`:'');}
+function lado(n,k){return k>=3?zz(String(n),k-3):F(n/Math.pow(10,3-k));}
+function area(){const n=AN.get(),k=AU.get(),u=U[k];const W0=Math.min(W(),360),s=W0-40;
+ const cells=n*Math.pow(10,k-3);const grid=cells>=1&&cells<=60;
+ let b=`<svg viewBox="0 0 ${W0} ${W0}" width="${W0}" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="20" width="${s}" height="${s}" fill="#EEF3FF" stroke="${UM.NAVY}" stroke-width="2.4"/>`;
+ if(grid){for(let i=1;i<cells;i++){const p=30+i*s/cells,p2=20+i*s/cells;b+=`<line x1="${p}" y1="20" x2="${p}" y2="${20+s}" stroke="${UM.BL}" stroke-opacity=".45"/><line x1="30" y1="${p2}" x2="${30+s}" y2="${p2}" stroke="${UM.BL}" stroke-opacity=".45"/>`;}
+  b+=`<rect x="30" y="20" width="${s/cells}" height="${s/cells}" fill="${UM.OR}"/>`;}
+ else if(cells>60)b+=`<rect x="30" y="20" width="${s}" height="${s}" fill="${UM.BL}" fill-opacity=".25"/><text x="${30+s/2}" y="${20+s/2}" text-anchor="middle" font-size="14" font-weight="700" fill="${UM.NAVY}" font-family="Poppins">quadradinhos de 1 ${u}² pequenos demais</text><text x="${30+s/2}" y="${40+s/2}" text-anchor="middle" font-size="14" font-weight="700" fill="${UM.NAVY}" font-family="Poppins">para desenhar!</text>`;
+ b+='</svg>';$('af').innerHTML=b;
+ const L=lado(n,k),A=k>=3?zz(String(n*n),2*(k-3)):F(n*n/Math.pow(100,3-k));
+ $('ar').innerHTML=`Em metros: ${n} m × ${n} m = <span class="k">${n*n} m²</span><br>Em ${u}: ${L} ${u} × ${L} ${u} = <span class="k">${A} ${u}²</span>`+
+ (k!==3?`<br><span class="muted" style="font-size:14px">${k>3?`Andamos ${k-3} casa${k-3>1?'s':''} para baixo: o lado ganhou ${k-3} zero${k-3>1?'s':''} e a área ganhou ${2*(k-3)}. Cada casa, <b>dois zeros</b>!`:`Andamos ${3-k} casa${3-k>1?'s':''} para cima: a área se divide por ${F(Math.pow(100,3-k))}.`}</span>`:'');}
+function vol(){const n=VN.get(),k=VU.get(),u=U[k];const cells=n*Math.pow(10,k-3);
+ $('vf').innerHTML=cells>=1&&cells<=20?UM.cubo(cells,{a:Math.min(W(),360)/1.7,lado:`${lado(n,k).replace(/<[^>]+>/g,'')} ${u}`}):UM.cubo(1,{a:Math.min(W(),360)/1.7,lado:`${n} m`})+(cells>20?'<p class="muted">Cubinhos pequenos demais para desenhar!</p>':'');
+ const L=lado(n,k),V=k>=3?zz(String(n*n*n),3*(k-3)):F(n*n*n/Math.pow(1000,3-k));
+ $('vr').innerHTML=`Em metros: ${n} m × ${n} m × ${n} m = <span class="k">${n*n*n} m³</span><br>Em ${u}: ${L} × ${L} × ${L} = <span class="k">${V} ${u}³</span>`+
+ (k!==3?`<br><span class="muted" style="font-size:14px">${k>3?`Andamos ${k-3} casa${k-3>1?'s':''}: a aresta ganhou ${k-3} zero${k-3>1?'s':''} e o volume ganhou ${3*(k-3)}. Cada casa, <b>três zeros</b>!`:`Andamos ${3-k} casa${3-k>1?'s':''} para cima: o volume se divide por ${F(Math.pow(1000,3-k))}.`}</span>`:'')+
+ (n*n*n<=10&&k===4?`<br><span class="g" style="color:var(--ok)">E como 1 dm³ = 1 L: cabem ${F(n*n*n*1000)} litros!</span>`:(k===3?`<br><span style="color:var(--ok)">Cabem ${F(n*n*n*1000)} litros (1 m³ = 1 000 L).</span>`:''));}
+function hect(){const c=HC.get()*10,l=HL.get()*10,W0=Math.min(W(),380),s=(W0-40)/200;
+ let b=`<svg viewBox="0 0 ${W0} ${W0}" width="${W0}" xmlns="http://www.w3.org/2000/svg">`;
+ for(let i=0;i<c/10;i++)for(let j=0;j<l/10;j++)b+=`<rect x="${30+i*10*s}" y="${20+j*10*s}" width="${10*s}" height="${10*s}" fill="#DCE6FF" stroke="${UM.BL}" stroke-opacity=".6"/>`;
+ b+=`<rect x="30" y="20" width="${100*s}" height="${100*s}" fill="none" stroke="${UM.OR}" stroke-width="3"/><text x="${30+50*s}" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="${UM.OR}" font-family="Poppins">1 ha = 100 m × 100 m</text></svg>`;
+ $('hf').innerHTML=b;const a=c*l;
+ $('hr').innerHTML=`${c} m × ${l} m = <span class="k">${F(a)} m²</span><br>= <span class="k">${F(a/100)} ares</span> (cada are tem 100 m²)<br>= <span class="k">${F(a/10000)} hectare${a===10000?'':'s'}</span> (hect + are = 100 ares)`;}
+const AN=slider('an',1,1,10,area,v=>v+' m'),AU=slider('au',4,0,6,area,v=>U[v]);
+const VN=slider('vn',1,1,5,vol,v=>v+' m'),VU=slider('vu',4,0,6,vol,v=>U[v]);
+const HC=slider('hc',10,1,20,hect,v=>v*10+' m'),HL=slider('hl',10,1,20,hect,v=>v*10+' m');
+function comp(){const k=CK.get(),u=Math.min(W(),360)/6.2;
+ let seg=`<svg viewBox="0 0 ${5*u+10} 40" width="${5*u+10}" xmlns="http://www.w3.org/2000/svg">`;for(let i=0;i<k;i++)seg+=`<rect x="${5+i*u}" y="12" width="${u}" height="16" fill="${i?'#EEF3FF':UM.OR}" stroke="${UM.NAVY}"/>`;seg+='</svg>';
+ let sq=`<svg viewBox="0 0 ${k*u/1.6+10} ${k*u/1.6+10}" width="${k*u/1.6+10}" xmlns="http://www.w3.org/2000/svg">`;const v=u/1.6;for(let i=0;i<k;i++)for(let j=0;j<k;j++)sq+=`<rect x="${5+i*v}" y="${5+j*v}" width="${v}" height="${v}" fill="${i||j?'#EEF3FF':UM.OR}" stroke="${UM.NAVY}"/>`;sq+='</svg>';
+ const cb=UM.cubo(k,{a:k*u/1.6,lado:' '});
+ $('cf').innerHTML=`<div style="text-align:center">${seg}<div class="muted">segmento</div></div><div style="text-align:center">${sq}<div class="muted">quadrado</div></div><div style="text-align:center">${cb}<div class="muted">cubo</div></div>`;
+ $('cr').innerHTML=`Segmento: <span class="k">${k}</span> pedaço${k>1?'s':''} &nbsp;·&nbsp; Quadrado: ${k} × ${k} = <span class="k">${k*k}</span> &nbsp;·&nbsp; Cubo: ${k} × ${k} × ${k} = <span class="k">${k*k*k}</span>`+
+ (k>1?`<br><span class="muted" style="font-size:14px">O lado ficou ${k} vezes maior, mas a área ficou ${k*k} vezes maior e o volume, ${k*k*k} vezes maior. Ao contrário, diminuindo o lado ${k} vezes, a área fica ${k*k} vezes menor e o volume, ${k*k*k} vezes menor.</span>`:'');}
+const CK=slider('ck',2,1,5,comp,v=>'× '+v);
+tabs(['area','volume','hectare','comparar']);const md=q.get('modo');if(['volume','hectare','comparar'].includes(md))$('tab-'+md).click();
+area();vol();hect();comp();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A escadinha das unidades · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">A escadinha das unidades</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Converter</button><button id="tab-desafio">Desafio</button></div>
+<div class="row" style="margin-bottom:10px" id="gs"></div>
+<div id="pn-livre"><div class="card">
+<div class="row" style="align-items:center"><input class="n" id="val" value="3,5" inputmode="decimal"><select id="de"></select><b>para</b><select id="pa"></select></div>
+<div class="fig" style="margin-top:10px" id="fig"></div>
+<div class="res" id="res"></div>
+<div class="fig" style="margin-top:6px" id="qd"></div>
+</div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Converta</h2><div class="dq" id="dq"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const GS={m:'Comprimento',g:'Massa',L:'Capacidade',m2:'Área',m3:'Volume'};
+let g=q.get('g');if(!UM.ESC[g])g='m';
+Object.keys(GS).forEach(k=>{const b=document.createElement('button');b.textContent=GS[k];b.className=k===g?'':'alt';b.onclick=()=>{g=k;[...$('gs').children].forEach(x=>x.className=x===b?'':'alt');fill();draw();};$('gs').appendChild(b);});
+function fill(){const U=UM.ESC[g];['de','pa'].forEach((id,j)=>{$(id).innerHTML=U.map((u,i)=>`<option value="${i}">${u}</option>`).join('');});$('de').value=g==='L'?3:0;$('pa').value=g==='L'?6:3;}
+function draw(){const U=UM.ESC[g],i=+$('de').value,j=+$('pa').value,v=num($('val').value),f=UM.FATOR[UM.POT[g]];
+ $('fig').innerHTML=UM.escada(g,{de:i,para:j,w:W()});
+ if(isNaN(v)){$('res').innerHTML='Digite um número (use vírgula nos decimais).';$('qd').innerHTML='';return;}
+ const d=j-i,r=UM.converte(v,g,i,j);
+ let t=d===0?'Mesma unidade: nada muda.':(d>0?`Desce ${d} degrau${d>1?'s':''}: × ${F(Math.pow(f,d))}`:`Sobe ${-d} degrau${d<-1?'s':''}: ÷ ${F(Math.pow(f,-d))}`);
+ $('res').innerHTML=`${t}<br><span class="k">${F(v)} ${U[i]} = ${F(r)} ${U[j]}</span>`;
+ $('qd').innerHTML=UM.POT[g]===1?UM.quadro(g,F(v).replace(/\s/g,''),i,{virgulaEm:j,w:W()}):'';
+ $('qd').style.display=UM.POT[g]===1?'':'none';}
+['val','de','pa'].forEach(id=>$(id).oninput=draw);fill();draw();
+tabs(['livre','desafio']);
+desafio(()=>{const U=UM.ESC[g],usa=g==='m'?[0,3,5,6]:g==='g'?[0,3,6]:g==='L'?[3,6]:[0,3,4,5,6];
+ const vs=[1,2,3,4,5,6,7,8,9,12,15,25,45,250,3.5,0.4,1.2,0.75];let i,j,v,r;
+ do{i=pick(usa);j=pick(usa);v=pick(vs);r=UM.converte(v,g,i,j);}while(i===j||Math.abs(r)<1e-3||r>1e8);
+ r=Math.round(r*1e9)/1e9;
+ const f=UM.FATOR[UM.POT[g]],d=j-i;
+ return {html:`${F(v)} ${U[i]} = ${box()} ${U[j]}`,res:[r],exp:`${d>0?'Desce':'Sobe'} ${Math.abs(d)} degrau${Math.abs(d)>1?'s':''}: ${d>0?'×':'÷'} ${F(Math.pow(f,Math.abs(d)))}. ${F(v)} ${U[i]} = ${F(r)} ${U[j]}.`};});
+
+</script>
+</body>
+</html>

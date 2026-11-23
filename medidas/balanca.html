@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança de dois pratos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">A balança de dois pratos</h1></header>
+<main>
+
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted">Toque nos pesos para colocá-los no prato da direita (toque de novo em “Tirar” para recomeçar). Quando a balança ficar equilibrada, escreva a massa do objeto e toque em OK.</p>
+<div class="fig" id="fig"></div>
+<div class="row pesos" style="margin-top:10px"><button data-g="1000">1 kg</button><button data-g="500">500 g</button><button data-g="200">200 g</button><button data-g="100">100 g</button><button data-g="50">50 g</button><button class="alt" id="tirar">Tirar</button></div>
+<div class="dq" id="dq" style="margin-top:8px">Massa do objeto: <input class="n" id="rg" inputmode="decimal"> g &nbsp;=&nbsp; <input class="n" id="rk" inputmode="decimal"> kg</div>
+<div class="row"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro objeto</button></div><div id="dm"></div>
+</div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const OB=[['abacaxi','#15803D',70,40],['melão','#65A30D',60,36],['abóbora','#EA580C',70,44],['pacote de café','#7C2D12',50,40],['queijo','#CA8A04',60,30],['melancia','#166534',80,48]];
+let ob,m,pes=[],feito=false;
+function draw(){const s=pes.reduce((a,b)=>a+b,0);$('fig').innerHTML=UM.balanca([{rot:ob[0],cor:ob[1],w:ob[2],h:ob[3],r:16}],pes,m,s,{w:W()});
+ if(!feito)msg('dm',s===0?'':(s===m?'Equilibrou! Agora escreva a massa e toque em OK.':(s<m?'O objeto ainda é mais pesado.':'Passou! Os pesos estão mais pesados.')),s===m?'ok':'info');}
+function novo(){ob=pick(OB);m=pick([350,450,650,800,1250,1350,1550,1700,2150,2400,2850,3100]);pes=[];feito=false;$('rg').value='';$('rk').value='';$('ok').disabled=false;['rg','rk'].forEach(i=>$(i).style.borderColor='');draw();}
+document.querySelectorAll('.pesos button[data-g]').forEach(b=>b.onclick=()=>{if(pes.length<12){pes.push(+b.dataset.g);pes.sort((a,b)=>b-a);draw();}});
+$('tirar').onclick=()=>{pes=[];draw();};$('novo').onclick=novo;
+$('ok').onclick=()=>{if(feito)return;const g=num($('rg').value),k=num($('rk').value);if(isNaN(g)||isNaN(k)){msg('dm','Escreva a massa em gramas e em quilogramas (ex.: 1250 e 1,25).','info');return;}
+ const og=Math.abs(g-m)<1e-9,ok2=Math.abs(k-m/1000)<1e-9;feito=true;$('ok').disabled=true;placar(og&&ok2);$('rg').style.borderColor=og?'var(--ok)':'var(--bad)';$('rk').style.borderColor=ok2?'var(--ok)':'var(--bad)';
+ pes=[];let r=m;[1000,500,200,100,50].forEach(p=>{while(r>=p){pes.push(p);r-=p;}});draw();
+ msg('dm',(og&&ok2?'Certo! ':'Ainda não. ')+`O ${ob[0]} tem ${F(m)} g = ${F(m/1000)} kg (de g para kg, ÷ 1 000).`,og&&ok2?'ok':'bad');};
+novo();
+
+</script>
+</body>
+</html>
