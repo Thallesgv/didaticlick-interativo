@@ -68,7 +68,7 @@ passos:["Abra a tela <b>Terceira lei</b>.","Escolha uma órbita e aperte o play.
 pergunta:"Planetas mais distantes têm órbitas maiores e andam mais devagar, então o período cresce bastante. Quando a órbita dobra, o período fica quase 3 vezes maior (essa é a terceira lei de Kepler)."}
 });
 window.APOSTILAS=Object.assign(window.APOSTILAS||{},{
-"astronomia":{title:"Astronomia",mods:[
+"astronomia":{title:"Física · Astronomia",mods:[
 {t:"Módulo 1 · O Sistema Solar",l:[["Simulador: o Sistema Solar em escala","astronomia/escala.html"],["PhET: Gravidade e Órbitas (com roteiro)","sim.html?id=astronomia-phet-gravidade"],["PhET: Leis de Kepler (com roteiro)","sim.html?id=astronomia-phet-kepler"],["Resolução: exercício 5","resolucao.html?id=astronomia-q1-5"],["Quiz do Módulo 1","quiz.html?id=astronomia-m1"]]},
 {t:"Módulo 2 · Nosso endereço no Universo",l:[["Simulador: viajando na velocidade da luz","astronomia/luz.html"],["Resolução: exercício 5","resolucao.html?id=astronomia-q2-5"],["Quiz do Módulo 2","quiz.html?id=astronomia-m2"]]},
 {t:"Módulo 3 · O céu e as culturas",l:[["Simulador: por que Marte anda para trás?","astronomia/retrogrado.html"],["Quiz do Módulo 3","quiz.html?id=astronomia-m3"]]},
