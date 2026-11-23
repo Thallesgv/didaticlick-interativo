@@ -72,9 +72,9 @@ function draw(){
   tr.pts.forEach((p,j)=>{const sx=frame==='chao'?p.xw-c:p.xw-p.xt+TRS;j?ctx.lineTo(sx,p.y):ctx.moveTo(sx,p.y);});ctx.stroke();ctx.setLineDash([]);});
  // ball
  const b=ballAt(t);ctx.fillStyle='#F7821F';ctx.beginPath();ctx.arc(b.x-c,b.y-6,8,0,7);ctx.fill();
- ctx.fillStyle='#0E2354';ctx.font='600 15px Poppins,sans-serif';
- ctx.fillText(frame==='chao'?'Você está parado na plataforma':'Você está sentado no trem',12,24);
- ctx.font='13px Poppins,sans-serif';ctx.fillText('t = '+t.toFixed(1)+' s',12,44);}
+ ctx.fillStyle='#0E2354';ctx.font='600 24px Poppins,sans-serif';
+ ctx.fillText(frame==='chao'?'Você está parado na plataforma':'Você está sentado no trem',12,32);
+ ctx.font='20px Poppins,sans-serif';ctx.fillText('t = '+t.toFixed(1).replace('.',',')+' s',12,60);}
 function step(ts){if(!running)return;const dt=Math.min(.05,(ts-last)/1000);last=ts;t+=dt;
  if(cur&&t>=tDrop&&t<=cur.tLand+0.03){const b=ballAt(t);cur.pts.push({xw:b.x,y:b.y-6,xt:trainX(t)});}
  draw();

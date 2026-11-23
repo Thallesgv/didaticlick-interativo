@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Por que Marte anda para trás? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Astronomia 9º ano</div><h1>Por que Marte anda para trás?</h1></header>
+<main>
+
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Em cima, a Terra (azul) e Marte (vermelho) girando em volta do Sol. Embaixo, o que vemos daqui: Marte contra as estrelas ao fundo, deixando um rastro.</p>
+<canvas id="cv" width="800" height="640"></canvas>
+<div class="row" style="margin-top:10px"><button id="play" class="or">▶ Iniciar</button><button id="reset" class="alt">↺ Recomeçar</button></div>
+<label>Velocidade da animação<input type="range" id="sp" min="0.5" max="3" step="0.5" value="1.5"></label>
+<div class="msg info" id="msg">Aperte Iniciar e observe o rastro de Marte no céu.</div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Em que momento Marte começa a andar para trás no céu? Onde a Terra está nesse momento?</li>
+<li>Marte realmente muda de sentido na órbita dele?</li>
+<li>Como o modelo heliocêntrico explica esse movimento de forma mais simples que o geocêntrico?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const cv=document.getElementById('cv'),c=cv.getContext('2d'),$=x=>document.getElementById(x);
+const TE=1,TM=1.881,RE=1,RM=1.524,INC=0.06;let t=0,run=false,last=0,trail=[],prevLon=null,retro=false;
+const stars=[...Array(70)].map((_,i)=>[Math.random()*800,440+Math.random()*190,Math.random()*1.5+0.4]);
+function pos(){const ae=2*Math.PI*t/TE+0.2,am=2*Math.PI*t/TM+2.4;return{E:[RE*Math.cos(ae),RE*Math.sin(ae)],M:[RM*Math.cos(am),RM*Math.sin(am)],am};}
+function draw(){const{E,M,am}=pos();c.clearRect(0,0,800,640);
+ c.fillStyle='#0E2354';c.fillRect(0,0,800,420);const S=120,cx=400,cy=210;
+ c.strokeStyle='rgba(255,255,255,.25)';[RE,RM].forEach(r=>{c.beginPath();c.arc(cx,cy,r*S,0,7);c.stroke();});
+ c.fillStyle='#F7B731';c.beginPath();c.arc(cx,cy,14,0,7);c.fill();
+ const ex=cx+E[0]*S,ey=cy-E[1]*S,mx=cx+M[0]*S,my=cy-M[1]*S;
+ c.strokeStyle='rgba(247,130,31,.8)';c.setLineDash([5,5]);c.beginPath();c.moveTo(ex,ey);const k=3;c.lineTo(ex+(mx-ex)*k,ey+(my-ey)*k);c.stroke();c.setLineDash([]);
+ c.fillStyle='#4C8DF6';c.beginPath();c.arc(ex,ey,8,0,7);c.fill();c.fillStyle='#E0603F';c.beginPath();c.arc(mx,my,7,0,7);c.fill();
+ c.fillStyle='#fff';c.font='22px Poppins,sans-serif';c.fillText('Terra',ex+10,ey-8);c.fillText('Marte',mx+10,my-8);c.fillText('Vista de cima (fora de escala)',12,30);
+ // céu
+ c.fillStyle='#081633';c.fillRect(0,425,800,215);stars.forEach(([x,y,r])=>{c.fillStyle='rgba(255,255,255,.8)';c.beginPath();c.arc(x,y,r,0,7);c.fill();});
+ c.fillStyle='#fff';c.fillText('O céu visto da Terra',12,455);
+ trail.forEach((p,i)=>{c.fillStyle=p.r?'#F7821F':'rgba(224,96,63,.75)';c.beginPath();c.arc(p.x,p.y,2.4,0,7);c.fill();});
+ if(trail.length){const p=trail[trail.length-1];c.fillStyle='#E0603F';c.beginPath();c.arc(p.x,p.y,7,0,7);c.fill();}}
+function sky(){const{E,M,am}=pos();const dx=M[0]-E[0],dy=M[1]-E[1],d=Math.hypot(dx,dy);let lon=Math.atan2(dy,dx);
+ if(prevLon!==null){let dl=lon-prevLon;if(dl>Math.PI)dl-=2*Math.PI;if(dl<-Math.PI)dl+=2*Math.PI;retro=dl<0;}prevLon=lon;
+ const lat=INC*Math.sin(am)*RM/d;return{lon,lat,retro};}
+let lon0=null,acc=0,prev=null;
+function addPoint(){const s=sky();if(prev===null){prev=s.lon;}let dl=s.lon-prev;if(dl>Math.PI)dl-=2*Math.PI;if(dl<-Math.PI)dl+=2*Math.PI;acc+=dl;prev=s.lon;
+ const x=780-acc*180/Math.PI*1.6,y=532-s.lat*400;trail.push({x,y,r:s.retro});
+ $('msg').innerHTML=s.retro?'<b>Agora Marte parece andar para trás!</b> A Terra, que está na órbita de dentro e é mais rápida, está ultrapassando Marte.':'Marte avança normalmente no céu (da direita para a esquerda, contra as estrelas).';}
+function loop(ts){if(!run)return;const dt=Math.min(.05,(ts-last)/1000)*0.12*(+$('sp').value);last=ts;t+=dt;addPoint();
+ if(trail.length&&trail[trail.length-1].x<10){run=false;$('play').textContent='▶ Iniciar';}draw();if(run)requestAnimationFrame(loop);}
+$('play').onclick=()=>{run=!run;$('play').textContent=run?'⏸ Pausar':'▶ Continuar';if(run){last=performance.now();requestAnimationFrame(loop);}};
+$('reset').onclick=()=>{run=false;t=0;trail=[];acc=0;prev=null;prevLon=null;$('play').textContent='▶ Iniciar';draw();};
+draw();if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>

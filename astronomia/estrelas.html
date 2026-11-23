@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A vida de uma estrela · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Astronomia 9º ano</div><h1>A vida de uma estrela</h1></header>
+<main>
+
+<div class="card">
+<p class="muted" style="margin:0 0 8px">O destino de uma estrela depende da massa dela. Escolha a estrela e avance pelas etapas.</p>
+<div class="tabs"><button id="bSol" class="alt">Estrela como o Sol</button><button id="bBig" class="alt">Estrela gigante (mais de 8 Sóis)</button></div>
+<canvas id="cv" width="800" height="340"></canvas>
+<div class="row" style="margin-top:10px"><button id="prev" class="alt">‹ Etapa anterior</button><button id="next" class="or">Próxima etapa ›</button></div>
+<div class="card" style="box-shadow:none;background:var(--bg);margin:10px 0 0"><h2 id="nome"></h2><p id="txt" style="margin:0"></p><p class="muted" id="tempo" style="margin:6px 0 0"></p></div>
+<div id="dots" style="text-align:center;margin-top:8px"></div>
+</div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>As duas estrelas começam do mesmo jeito. Em que etapa os caminhos se separam?</li>
+<li>Qual das duas vive mais tempo? Isso te surpreendeu?</li>
+<li>O que vai acontecer com a Terra quando o Sol virar uma gigante vermelha?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const P={sol:[
+["Nebulosa","Uma nuvem enorme de gás (principalmente hidrogênio) e poeira. A gravidade começa a juntar o material num ponto.","#7C6BD6",0,"neb"],
+["Protoestrela","O gás se contrai e esquenta. Ainda não há fusão nuclear: a estrela está “nascendo”.","#F08A4B",40,"star"],
+["Sequência principal","No núcleo, o hidrogênio se funde e vira hélio, liberando muita energia. É a fase mais longa: o Sol está nela há 4,6 bilhões de anos e deve ficar por mais uns 5 bilhões.","#F7C948",55,"star","cerca de 10 bilhões de anos"],
+["Gigante vermelha","O hidrogênio do núcleo acaba. A estrela incha centenas de vezes e esfria por fora. O Sol deve engolir Mercúrio e Vênus, e a Terra ficará quente demais para a vida.","#E2553C",140,"star","cerca de 1 bilhão de anos"],
+["Nebulosa planetária","As camadas de fora se soltam e formam uma bela nuvem colorida. O gás devolvido ao espaço servirá para formar novas estrelas.","#4FC1C9",0,"pn"],
+["Anã branca","Sobra o núcleo: do tamanho da Terra, muito denso e quente. Sem fusão, ele vai esfriando devagar, por bilhões de anos.","#EAF2FF",14,"star"]],
+big:[
+["Nebulosa","Uma nuvem enorme de gás e poeira. Desta vez, a gravidade junta muito mais material.","#7C6BD6",0,"neb"],
+["Protoestrela","O gás se contrai e esquenta muito rapidamente.","#F08A4B",55,"star"],
+["Sequência principal (azul)","Uma estrela muito grande e quente, de cor azulada. Ela gasta o combustível muito depressa: vive só alguns milhões de anos, bem menos que o Sol.","#7FB3FF",75,"star","poucos milhões de anos"],
+["Supergigante vermelha","Ela incha tanto que pode ficar maior que a órbita de Marte. No núcleo, forma elementos cada vez mais pesados, até o ferro.","#E2553C",165,"star"],
+["Supernova","O núcleo desaba e a estrela explode. Por algumas semanas, pode brilhar tanto quanto uma galáxia inteira. A explosão espalha pelo espaço elementos como ferro, ouro e cálcio.","#FFF1B8",150,"sn"],
+["Estrela de nêutrons ou buraco negro","Sobra um núcleo minúsculo e densíssimo: uma estrela de nêutrons (cerca de 20 km de diâmetro). Se a estrela era ainda maior, sobra um buraco negro, de onde nem a luz escapa.","#9FB4FF",10,"bh"]]};
+let path='sol',i=0;const cv=document.getElementById('cv'),c=cv.getContext('2d'),$=x=>document.getElementById(x);
+const seed=[...Array(120)].map(()=>[Math.random()*800,Math.random()*340,Math.random()]);
+function draw(){const [n,t,col,r,kind,dur]=P[path][i];c.fillStyle='#050B24';c.fillRect(0,0,800,340);
+ seed.forEach(([x,y,a])=>{c.fillStyle=`rgba(255,255,255,${a*.6})`;c.fillRect(x,y,1.5,1.5);});const cx=400,cy=170;
+ if(kind==='neb'||kind==='pn'){for(let k=0;k<60;k++){const ang=k*2.4,rr=(kind==='pn'?70:40)+((k*37)%90);c.fillStyle=kind==='pn'?`rgba(79,193,201,${.08+(k%5)*.02})`:`rgba(124,107,214,${.06+(k%4)*.03})`;c.beginPath();c.arc(cx+Math.cos(ang)*rr*.8,cy+Math.sin(ang)*rr*.5,40+(k%7)*6,0,7);c.fill();}
+  if(kind==='pn'){c.fillStyle='#EAF2FF';c.beginPath();c.arc(cx,cy,6,0,7);c.fill();}}
+ else if(kind==='sn'){const g=c.createRadialGradient(cx,cy,5,cx,cy,r);g.addColorStop(0,'#fff');g.addColorStop(.3,col);g.addColorStop(1,'rgba(247,130,31,0)');c.fillStyle=g;c.beginPath();c.arc(cx,cy,r,0,7);c.fill();
+  c.strokeStyle='rgba(255,241,184,.6)';for(let k=0;k<24;k++){const a=k*Math.PI/12;c.beginPath();c.moveTo(cx+Math.cos(a)*30,cy+Math.sin(a)*30);c.lineTo(cx+Math.cos(a)*(r+30),cy+Math.sin(a)*(r+30));c.stroke();}}
+ else if(kind==='bh'){c.strokeStyle='#F7821F';c.lineWidth=6;c.beginPath();c.ellipse(cx,cy,70,18,0,0,7);c.stroke();c.fillStyle='#000';c.beginPath();c.arc(cx,cy,26,0,7);c.fill();c.lineWidth=1;c.fillStyle=col;c.beginPath();c.arc(cx+160,cy,r/2,0,7);c.fill();c.fillStyle='#fff';c.font='20px Poppins,sans-serif';c.textAlign='center';c.fillText('buraco negro',cx,cy+60);c.fillText('estrela de nêutrons',cx+160,cy+30);}
+ else{const g=c.createRadialGradient(cx,cy,r*.1,cx,cy,r*1.4);g.addColorStop(0,'#fff');g.addColorStop(.35,col);g.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=g;c.beginPath();c.arc(cx,cy,r*1.4,0,7);c.fill();}
+ c.fillStyle='#fff';c.font='600 24px Poppins,sans-serif';c.textAlign='left';c.fillText((i+1)+'/'+P[path].length+' · '+n,14,34);
+ $('nome').textContent=n;$('txt').textContent=t;$('tempo').textContent=dur?'Duração: '+dur+'.':'';
+ $('prev').disabled=i===0;$('next').disabled=i===P[path].length-1;
+ $('dots').innerHTML=P[path].map((_,k)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:5px;margin:0 3px;background:${k===i?'#F7821F':'#D7DEEA'}"></span>`).join('');}
+function setPath(p){path=p;i=0;$('bSol').classList.toggle('on',p==='sol');$('bBig').classList.toggle('on',p==='big');draw();}
+$('bSol').onclick=()=>setPath('sol');$('bBig').onclick=()=>setPath('big');$('prev').onclick=()=>{if(i>0){i--;draw();}};$('next').onclick=()=>{if(i<P[path].length-1){i++;draw();}};
+setPath('sol');if(document.fonts)document.fonts.ready.then(draw);
+</script>
+</body></html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O Sistema Solar em escala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+canvas{width:100%;height:auto;display:block;border-radius:10px;touch-action:manipulation}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}.tabs button{flex:1 1 30%;padding:8px 6px;font-size:14px}.tabs button.on{background:var(--orange);color:#fff;border-color:var(--orange)}
+label{font-size:14px;display:block;margin:8px 0}input[type=range]{width:100%}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th,table.t td{padding:6px 4px;border-bottom:1px solid #EEF1F6;text-align:left}table.t th{color:var(--gray);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Astronomia 9º ano</div><h1>O Sistema Solar em escala</h1></header>
+<main>
+
+<div class="card">
+<p class="muted" style="margin:0 0 8px">Imagine o Sol do tamanho de uma bola. Escolha a bola e veja o tamanho dos planetas e a distância a que eles ficariam.</p>
+<div class="tabs" id="balls"></div>
+<p style="margin:4px 0" id="esc"></p>
+</div>
+<div class="card"><h2>Os tamanhos</h2><canvas id="cv" width="800" height="190"></canvas><p class="muted" id="tamNote" style="margin:6px 0 0"></p></div>
+<div class="card"><h2>A maquete</h2>
+<table class="t"><thead><tr><th>Astro</th><th>Tamanho na maquete</th><th>Distância do Sol</th><th>A pé (5 km/h)</th></tr></thead><tbody id="tb"></tbody></table>
+<p class="muted" style="margin:8px 0 0">Tamanho = diâmetro. Distâncias médias.</p></div>
+<div class="card"><h2>Para pensar</h2><ol style="padding-left:20px;margin:0">
+<li>Com o Sol do tamanho de uma bola de futebol, a Terra caberia na palma da mão? E a que distância ela ficaria?</li>
+<li>Por que os livros quase nunca desenham tamanhos e distâncias na mesma escala?</li>
+<li>O que ocupa mais lugar no Sistema Solar: os astros ou o espaço vazio?</li></ol></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+
+<script>
+const AST=[["Sol",1392000,0,"#F7B731"],["Mercúrio",4879,0.39,"#9AA0A6"],["Vênus",12104,0.72,"#E8C07D"],["Terra",12742,1,"#2E7BD6"],["Marte",6779,1.52,"#C8553D"],["Júpiter",139820,5.2,"#D9A066"],["Saturno",116460,9.54,"#E3C88E"],["Urano",50724,19.2,"#7FD3E3"],["Netuno",49244,30.1,"#3D63D6"]];
+const UA=149600000; // km
+const BALLS=[["bola de gude",1.4],["laranja",8],["bola de 14 cm",13.92],["bola de futebol",22],["bola de pilates",65],["Sol de 1,4 m",139.2]];
+let sun=13.92;const $=x=>document.getElementById(x);
+const fL=cm=>cm<1?(cm*10).toLocaleString('pt-BR',{maximumFractionDigits:2})+' mm':cm<100?cm.toLocaleString('pt-BR',{maximumFractionDigits:1})+' cm':(cm/100).toLocaleString('pt-BR',{maximumFractionDigits:2})+' m';
+const fD=m=>m<1000?Math.round(m).toLocaleString('pt-BR')+' m':(m/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' km';
+const fT=h=>h<1/60?Math.max(1,Math.round(h*3600))+' s':h<1?Math.round(h*60)+' min':h<24?h.toLocaleString('pt-BR',{maximumFractionDigits:1})+' h':(h/24).toLocaleString('pt-BR',{maximumFractionDigits:1})+' dias';
+function render(){const k=sun/1392000; // cm por km
+ const den=1392000*100000/sun; $('esc').innerHTML='Escala: 1 cm na maquete = <b>'+Math.round(1/k).toLocaleString('pt-BR')+' km</b> de verdade (1 : '+(den>=1e9?(den/1e9).toLocaleString('pt-BR',{maximumFractionDigits:1})+' bilhões':(den/1e6).toLocaleString('pt-BR',{maximumFractionDigits:0})+' milhões')+').';
+ $('tb').innerHTML=AST.map(([n,d,a])=>{const dist=a*UA*k/100;return `<tr><td><b>${n}</b></td><td>${fL(d*k)}</td><td>${a?fD(dist):'—'}</td><td>${a?fT(dist/5000):'—'}</td></tr>`}).join('');
+ const c=$('cv').getContext('2d');c.clearRect(0,0,800,190);c.fillStyle='#0E2354';c.fillRect(0,0,800,190);
+ const R=1392000/2,px=600/1392000*1.0; // Sol cortado: só um arco
+ c.fillStyle='#F7B731';c.beginPath();c.arc(-560,95,600,0,7);c.fill();
+ let x=70;c.font='20px Poppins,sans-serif';c.textAlign='center';
+ AST.slice(1).forEach(([n,d,,col])=>{const r=Math.max(1.2,d*px*0.5*1.0*1.2/1.2*1);const rr=d/1392000*600;x+=Math.max(rr,8)+14;c.fillStyle=col;c.beginPath();c.arc(x,95,Math.max(rr,1.5),0,7);c.fill();c.fillStyle='#fff';c.fillText(n.slice(0,3),x,180);x+=Math.max(rr,8)+14;});
+ $('tamNote').textContent='Tamanhos na mesma escala (o Sol aparece cortado à esquerda: ele é 109 vezes mais largo que a Terra). As distâncias aqui NÃO estão em escala: veja a tabela.';}
+$('balls').innerHTML=BALLS.map(([n,v])=>`<button class="alt" data-v="${v}">${n}</button>`).join('');
+document.querySelectorAll('#balls button').forEach(b=>b.onclick=()=>{sun=+b.dataset.v;document.querySelectorAll('#balls button').forEach(x=>x.classList.toggle('on',x===b));render();});
+document.querySelector('#balls button[data-v="13.92"]').click();if(document.fonts)document.fonts.ready.then(render);
+</script>
+</body></html>
