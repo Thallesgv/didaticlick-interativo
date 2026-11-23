@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Média: nivelar as torres · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Média: nivelar as torres</h1></header>
+<main>
+
+<div class="card"><p class="muted" style="margin:0 0 6px">Toque numa torre para pegar o cubo do topo e toque em outra para colocá-lo lá. Deixe todas da mesma altura.</p>
+<svg class="fig" id="svg" viewBox="0 0 360 260"></svg><div id="msg"></div></div>
+<div class="card"><div class="res" id="res"></div><div class="row" style="margin-top:8px"><button class="or" id="auto">Mostrar a média</button><button class="alt" id="reset">Recomeçar</button><button class="alt" id="novo">Novo exemplo</button></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0">Mudando cubos de lugar, o total não muda. Quando todas as torres ficam iguais, cada uma tem a <b>média</b>: o total repartido igualmente. Por isso <b>média = soma ÷ quantidade</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+let V0=(q.get('v')||'3,7,5,1').split(',').map(x=>Math.max(0,Math.min(12,parseInt(x)||0))).slice(0,6);if(V0.length<2)V0=[3,7,5,1];
+let V,held=-1,moves=0,line=false;const NM=['A','B','C','D','E','F'];
+function init(){V=V0.slice();held=-1;moves=0;line=false;draw();}
+function draw(){const n=V.length,w=360/n,s=16,base=230,tot=V.reduce((a,b)=>a+b,0),m=tot/n;let g='';
+ V.forEach((v,i)=>{const x=i*w+w/2-18;g+=`<rect x="${i*w+2}" y="0" width="${w-4}" height="${base+28}" fill="${held===i?'#FDE9D8':'transparent'}" data-i="${i}"/>`;
+  for(let k=0;k<v;k++)g+=`<rect x="${x}" y="${base-(k+1)*s}" width="36" height="${s-2}" rx="3" fill="${line&&k>=Math.floor(m)?OR:BL}" pointer-events="none"/>`;
+  g+=T(i*w+w/2,base+18,NM[i]+' · '+v,{s:12})});
+ if(line)g+=`<line x1="0" y1="${base-m*s}" x2="360" y2="${base-m*s}" stroke="${RD}" stroke-width="2" stroke-dasharray="6 4"/>`+T(356,base-m*s-5,'média '+fmtd(m),{a:'end',s:12,c:RD});
+ $('svg').innerHTML=g;$('svg').querySelectorAll('rect[data-i]').forEach(e=>e.onclick=()=>tap(+e.dataset.i));
+ $('res').innerHTML=`soma ${V0.join(' + ')} = ${tot} &nbsp;·&nbsp; ${n} torres`+(line?` &nbsp;·&nbsp; média = ${tot} ÷ ${n} = <span class="k">${fmtd(m)}</span>`:'');
+ const eq=V.every(x=>x===V[0]);$('msg').innerHTML=eq?`<div class="msg ok">Niveladas! Cada torre tem ${V[0]}. A média é ${tot} ÷ ${n} = ${V[0]}. Você moveu ${moves} cubo(s).</div>`:held>=0?`<div class="msg info">Cubo na mão (da torre ${NM[held]}). Toque na torre que vai recebê-lo.</div>`:(tot%n?`<div class="msg info">${tot} não se divide igualmente por ${n}: as torres nunca ficam exatamente iguais. A média é ${fmtd(m)}.</div>`:'');}
+const fmtd=x=>Number.isInteger(x)?x:x.toFixed(2).replace('.',',');
+function tap(i){if(held<0){if(V[i]>0)held=i;}else{if(i!==held){V[held]--;V[i]++;moves++;}held=-1;}draw();}
+$('auto').onclick=()=>{line=!line;$('auto').textContent=line?'Esconder a média':'Mostrar a média';draw();};
+$('reset').onclick=init;$('novo').onclick=()=>{const n=3+Math.floor(Math.random()*3),m=2+Math.floor(Math.random()*5);let a=Array(n).fill(m);for(let t=0;t<8;t++){const i=Math.floor(Math.random()*n),j=Math.floor(Math.random()*n);if(a[i]>0&&a[j]<12){a[i]--;a[j]++;}}V0=a;init();};
+init();
+</script>
+</body>
+</html>

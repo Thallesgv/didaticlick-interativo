@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Repartir em partes iguais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Repartir em partes iguais</h1></header>
+<main>
+
+<div class="card"><p class="muted" id="lead" style="margin:0 0 6px"></p><svg class="fig" id="svg" viewBox="0 0 360 240"></svg><div id="msg"></div></div>
+<div class="card"><div class="row" id="btns"><button class="or" id="go"></button><button id="all">Fazer tudo</button><button class="alt" id="reset">Recomeçar</button></div>
+<div class="sl" style="margin-top:10px"><b>quantidade</b><input type="range" id="n" min="1" max="60"><span id="nv"></span></div>
+<div class="sl"><b id="lk"></b><input type="range" id="k" min="2" max="10"><span id="kv"></span></div></div>
+<div class="card" id="rq" hidden><h2>E o resto?</h2><div id="rqs"></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0" id="obs"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+const modo=q.get('modo')==='medir'?'medir':'repartir';let pile,plates,groups;
+$('n').value=P('n',modo==='medir'?23:23,1,60);$('k').value=P('k',modo==='medir'?5:4,2,10);
+if(modo==='medir'){$('title').textContent='Medir: quantas vezes cabe';document.title='Medir · DidatiClick';$('lk').textContent='tamanho do grupo';$('go').textContent='Formar mais um grupo';
+ $('lead').textContent='Forme grupos do mesmo tamanho até não dar mais. Quantos grupos? Sobra alguém?';$('obs').innerHTML='Aqui sabemos o <b>tamanho de cada grupo</b> e perguntamos <b>quantos grupos</b> cabem. É a mesma conta de repartir (dividendo ÷ divisor), com outra pergunta.';}
+else{$('lk').textContent='pratos';$('go').textContent='Dar uma rodada';$('lead').textContent='Distribua as balas igualmente: uma para cada prato, rodada por rodada, enquanto der para todos.';
+ $('obs').innerHTML='Aqui sabemos <b>quantos grupos</b> (pratos) e perguntamos <b>quanto fica em cada um</b>. O que sobra é o resto, que é sempre menor que o número de pratos.';}
+function init(){const n=+$('n').value,k=+$('k').value;$('nv').textContent=n;$('kv').textContent=k;pile=n;plates=Array(k).fill(0);groups=0;$('rq').hidden=true;draw();}
+function step(){const k=+$('k').value;if(pile<k)return false;pile-=k;if(modo==='medir')groups++;else plates=plates.map(x=>x+1);return true;}
+function draw(){const n=+$('n').value,k=+$('k').value;let g='',H;
+ const chip=(x,y,c)=>`<circle cx="${x}" cy="${y}" r="6" fill="${c}"/>`;
+ if(modo==='repartir'){const cols=Math.min(k,5),w=360/cols,rows=Math.ceil(k/cols);H=rows*90+60+Math.ceil(Math.max(pile,1)/24)*14+30;
+  plates.forEach((v,i)=>{const cx=w*(i%cols)+w/2,cy=50+Math.floor(i/cols)*90;g+=`<ellipse cx="${cx}" cy="${cy}" rx="${w/2-6}" ry="34" fill="#EEF3FF" stroke="${NAVY}" stroke-width="1.5"/>`;
+   for(let j=0;j<v;j++)g+=chip(cx+((j%4)-1.5)*14,cy-20+Math.floor(j/4)*14,OR);g+=T(cx,cy+48,v,{s:12});});
+  for(let j=0;j<pile;j++)g+=chip(12+(j%24)*14,H-40+Math.floor(j/24)*14,pile<k?RD:BL);g+=T(4,H-52,pile<k&&pile?'sobra (resto)':'monte',{a:'start',s:11,c:pile<k?RD:'#6B7280'});}
+ else{const per=Math.max(1,Math.floor(340/(k*13+14)));H=Math.ceil(groups/per)*44+80;
+  for(let i=0;i<groups;i++){const x=6+(i%per)*(k*13+14),y=14+Math.floor(i/per)*44;g+=`<rect x="${x}" y="${y}" width="${k*13+6}" height="24" rx="12" fill="none" stroke="${NAVY}" stroke-width="1.5"/>`;for(let j=0;j<k;j++)g+=chip(x+9+j*13,y+12,BL);g+=T(x+(k*13+6)/2,y+36,(i+1)+'º',{s:9,c:'#6B7280'});}
+  const y0=H-40;for(let j=0;j<pile;j++)g+=chip(12+(j%24)*14,y0+Math.floor(j/24)*14,pile<k?RD:OR);g+=T(4,y0-12,pile<k&&pile?'sobra (resto)':'ainda sem grupo',{a:'start',s:11,c:pile<k?RD:'#6B7280'});}
+ $('svg').setAttribute('viewBox',`0 0 360 ${H+10}`);$('svg').innerHTML=g;
+ const fim=pile<k,qq=Math.floor(n/k),r=n%k;$('go').disabled=fim;$('all').disabled=fim;
+ if(!fim){$('msg').innerHTML=`<div class="msg info">${modo==='medir'?`${groups} grupo(s) formados.`:`Cada prato tem ${plates[0]}.`} Ainda restam ${pile}.</div>`;return;}
+ $('msg').innerHTML=`<div class="msg ok">${modo==='medir'?`Cabem ${qq} grupos de ${k}`:`Cada prato ficou com ${qq}`}${r?` e sobram ${r}`:' e não sobra nada'}. ${n} ÷ ${k} = ${qq}${r?` e resto ${r}`:''}. Prova: ${k} × ${qq}${r?` + ${r}`:''} = ${n}.</div>`;
+ if(r){$('rq').hidden=false;$('rqs').innerHTML=modo==='medir'?`<p style="margin:0 0 6px">A resposta depende da pergunta:</p><div class="msg info"><b>Quantos grupos completos?</b> ${qq}. O resto é descartado.</div><div class="msg info"><b>Quantos grupos são necessários para caber todos?</b> ${qq+1}. Arredondamos para cima.</div><div class="msg info"><b>Quantos ficam de fora?</b> ${r}. O resto é a resposta.</div>`:`<div class="msg info">O resto (${r}) é menor que o número de pratos (${k}): não dá para dar mais uma rodada sem que alguém fique de fora.</div>`;}}
+$('go').onclick=()=>{step();draw();};$('all').onclick=()=>{const t=setInterval(()=>{if(!step())clearInterval(t);draw();},250);};
+$('reset').onclick=init;$('n').oninput=init;$('k').oninput=init;init();
+</script>
+</body>
+</html>

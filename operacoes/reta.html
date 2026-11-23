@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reta numérica · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Reta numérica</h1></header>
+<main>
+
+<div class="card"><p class="muted" id="lead" style="margin:0 0 4px"></p><div class="big" id="pos"></div>
+<svg class="fig" id="svg" viewBox="0 0 360 150"></svg><div id="msg"></div></div>
+<div class="card" id="ctrl"><h2>Dê os saltos</h2><div class="row" id="btns"></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="undo">Desfazer</button><button class="alt" id="reset">Recomeçar</button></div></div>
+<div class="card" id="sliders" hidden><h2>Mexa nos saltos</h2>
+<div class="sl"><b id="l1"></b><input type="range" id="s1"><span id="v1"></span></div>
+<div class="sl"><b id="l2"></b><input type="range" id="s2"><span id="v2"></span></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0" id="obs"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+const modo=q.get('modo')||'soma';let jumps=[];
+let a,b,lo,hi,start,target,dir;
+const conf={soma:['Adição: saltos para a frente','Some o número a partir do ponto azul, dando saltos para a direita.','Decompor o número em dezenas e unidades (ou completar a dezena) facilita a conta de cabeça. Acrescentar é andar para a direita.'],
+ sub:['Subtração: saltos para trás','Tire o número dando saltos para a esquerda.','Retirar é andar para a esquerda. Tire primeiro as dezenas e depois as unidades, ou desça até uma dezena redonda.'],
+ completar:['Quanto falta?','Saia do ponto azul e chegue ao ponto verde contando para a frente. A soma dos saltos é o que falta.','Completar (quanto falta) se resolve com subtração, mas é mais fácil contando para a frente, como o troco no caixa.'],
+ saltos:['Multiplicação: saltos iguais','Partindo do zero, dê saltos todos do mesmo tamanho.','Cada salto é uma parcela igual. n saltos de tamanho s levam ao número n × s.'],
+ medir:['Divisão: quantas vezes cabe?','Partindo do zero, dê saltos até não caber mais nenhum antes do ponto vermelho.','O número de saltos é o quociente. O pedaço que falta para chegar ao ponto vermelho é o resto.']}[modo];
+$('title').textContent=conf[0];document.title=conf[0]+' · DidatiClick';$('lead').textContent=conf[1];$('obs').textContent=conf[2];
+function setup(){
+ if(modo==='soma'){a=P('a',38,0,9000);b=P('b',25,1,999);start=a;target=a+b;dir=1;}
+ else if(modo==='sub'){a=P('a',52,1,9999);b=P('b',17,1,a);start=a;target=a-b;dir=-1;}
+ else if(modo==='completar'){a=P('a',385,0,9000);b=P('b',650,a+1,9999);start=a;target=b;dir=1;}
+ else if(modo==='medir'){a=P('t',23,2,100);b=P('s',5,1,20);start=0;target=a;dir=1;}
+ else {start=0;}
+ jumps=[];}
+function cur(){return jumps.reduce((s,j)=>s+j,start);}
+function range(){let pts=[start,cur(),target??0];if(modo==='saltos'){const s=+$('s1').value,n=+$('s2').value;pts=[0,s*n];}
+ let mn=Math.min(...pts),mx=Math.max(...pts);let span=mx-mn||10;const st=[1,2,5,10,20,50,100,200,500,1000].find(x=>span/x<=12);
+ lo=Math.floor(mn/st)*st;hi=Math.ceil(mx/st)*st;if(hi===lo)hi=lo+st;if(modo==='medir'){hi=Math.ceil((a+b)/st)*st;}return st;}
+function draw(){const st=range(),W=340,ox=10,X=v=>ox+(v-lo)*W/(hi-lo),base=95;let s=`<line x1="4" y1="${base}" x2="356" y2="${base}" stroke="${NAVY}" stroke-width="2"/>`;
+ const minor=st>=10&&(hi-lo)/(st/ (st>=100?10:st>=10?10:1))<=120?st/10:null;
+ if(minor&&minor>=1)for(let v=lo;v<=hi;v+=minor)s+=`<line x1="${X(v)}" y1="${base-3}" x2="${X(v)}" y2="${base+3}" stroke="#9CA3AF"/>`;
+ for(let v=lo;v<=hi;v+=st)s+=`<line x1="${X(v)}" y1="${base-7}" x2="${X(v)}" y2="${base+7}" stroke="${NAVY}" stroke-width="1.6"/>`+T(X(v),base+22,fmt(v),{s:10,w:500,c:'#6B7280'});
+ let p=start,list=jumps;if(modo==='saltos'){const sz=+$('s1').value,n=+$('s2').value;list=Array(n).fill(sz);p=0;}
+ list.forEach(j=>{const x0=X(p),x1=X(p+j),m=(x0+x1)/2,h=Math.min(40,8+Math.abs(x1-x0)*.4),up=j>0,c=up?OR:RD;
+  s+=up?`<path d="M${x0},${base-2} Q${m},${base-2*h} ${x1},${base-2}" fill="none" stroke="${c}" stroke-width="2.4"/>`+T(m,base-h-4,(j>0?'+':'−')+fmt(Math.abs(j)),{s:11,c}):`<path d="M${x0},${base+2} Q${m},${base+2*h} ${x1},${base+2}" fill="none" stroke="${c}" stroke-width="2.4"/>`+T(m,base+h+16,'−'+fmt(Math.abs(j)),{s:11,c});p+=j;});
+ if(modo!=='saltos'){s+=`<circle cx="${X(start)}" cy="${base}" r="6" fill="${BL}" stroke="#fff" stroke-width="2"/>`;
+  if(modo==='completar'||modo==='medir')s+=`<circle cx="${X(target)}" cy="${base}" r="6" fill="${modo==='medir'?RD:GR}" stroke="#fff" stroke-width="2"/>`+T(X(target),base-12,fmt(target),{s:11,c:modo==='medir'?RD:GR});
+  s+=`<circle cx="${X(cur())}" cy="${base}" r="4" fill="${NAVY}"/>`;}
+ $('svg').innerHTML=s;msg();}
+function msg(){const c=cur(),tot=jumps.reduce((s,j)=>s+Math.abs(j),0);let pos='',m='';
+ if(modo==='soma'){pos=`${fmt(a)} + ${fmt(b)}`;const f=b-tot;m=f>0?`<div class="msg info">Você já somou ${fmt(tot)}. Faltam ${fmt(f)} para somar ${fmt(b)}.</div>`:f===0?`<div class="msg ok">Chegou! ${fmt(a)} + ${fmt(b)} = ${fmt(c)}</div>`:`<div class="msg bad">Passou: você somou ${fmt(tot)}, mais do que ${fmt(b)}. Desfaça um salto.</div>`;}
+ if(modo==='sub'){pos=`${fmt(a)} − ${fmt(b)}`;const f=b-tot;m=f>0?`<div class="msg info">Você já tirou ${fmt(tot)}. Faltam ${fmt(f)} para tirar ${fmt(b)}.</div>`:f===0?`<div class="msg ok">Chegou! ${fmt(a)} − ${fmt(b)} = ${fmt(c)}</div>`:`<div class="msg bad">Passou: você tirou ${fmt(tot)}, mais do que ${fmt(b)}. Desfaça um salto.</div>`;}
+ if(modo==='completar'){pos=`De ${fmt(a)} até ${fmt(b)}: quanto falta?`;m=c<b?`<div class="msg info">Você está em ${fmt(c)}. Saltos até agora: ${fmt(tot)}.</div>`:c===b?`<div class="msg ok">Chegou! Faltavam ${jumps.map(fmt).join(' + ')} = ${fmt(tot)}. É o mesmo que ${fmt(b)} − ${fmt(a)} = ${fmt(b-a)}.</div>`:`<div class="msg bad">Passou do ${fmt(b)}. Desfaça um salto.</div>`;}
+ if(modo==='medir'){pos=`Quantos saltos de ${b} cabem até ${a}?`;const n=jumps.length,nx=c+b;m=nx<=a?`<div class="msg info">${n} salto(s) até agora. Ainda cabe mais um.</div>`:`<div class="msg ok">Não cabe mais nenhum! Cabem ${n} saltos e faltam ${a-c} para chegar. ${a} ÷ ${b} = ${n} e resto ${a-c}.</div>`;}
+ if(modo==='saltos'){const sz=+$('s1').value,n=+$('s2').value;$('v1').textContent=sz;$('v2').textContent=n;pos=`${n} × ${sz} = ${fmt(n*sz)}`;m=`<div class="msg info">${Array(n).fill(sz).join(' + ')} = ${fmt(n*sz)}</div>`;}
+ $('pos').textContent=pos;$('msg').innerHTML=m;}
+function btns(){let l=[];if(modo==='soma'||modo==='completar'){const mx=modo==='soma'?b:b-a;l=[1,10,100,1000].filter(x=>x<=Math.max(mx,1));}
+ if(modo==='sub')l=[-1,-10,-100,-1000].filter(x=>-x<=b);
+ if(modo==='medir')l=[b];
+ $('btns').innerHTML=l.map(x=>`<button class="${x>0?'or':''}" data-j="${x}">${modo==='medir'?'Mais um salto de '+x:(x>0?'+':'−')+fmt(Math.abs(x))}</button>`).join('');
+ $('btns').querySelectorAll('button').forEach(e=>e.onclick=()=>{const j=+e.dataset.j;if(modo==='medir'&&cur()+j>a)return;jumps.push(j);draw();});}
+if(modo==='saltos'){$('ctrl').hidden=true;$('sliders').hidden=false;$('l1').textContent='tamanho do salto';$('l2').textContent='número de saltos';
+ $('s1').min=1;$('s1').max=20;$('s1').value=P('s',6,1,20);$('s2').min=1;$('s2').max=12;$('s2').value=P('n',5,1,12);$('s1').oninput=$('s2').oninput=draw;}
+$('undo').onclick=()=>{jumps.pop();draw();};$('reset').onclick=()=>{jumps=[];draw();};
+setup();btns();draw();
+</script>
+</body>
+</html>

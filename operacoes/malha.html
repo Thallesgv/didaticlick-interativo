@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Disposição retangular · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Disposição retangular</h1></header>
+<main>
+
+<div class="card"><svg class="fig" id="svg" viewBox="0 0 360 260"></svg><div class="res" id="res"></div><div id="msg"></div></div>
+<div class="card"><h2>Mexa na malha</h2>
+<div class="sl"><b>linhas</b><input type="range" id="l" min="1" max="15"><span id="lv"></span></div>
+<div class="sl"><b>colunas</b><input type="range" id="c" min="1" max="20"><span id="cv"></span></div>
+<div class="sl"><b>cortar depois da coluna</b><input type="range" id="d" min="0" max="20"><span id="dv"></span></div>
+<div class="row" style="margin-top:8px"><button class="or" id="rot">Girar a malha</button></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0">Girando a malha, linhas viram colunas e o total não muda: <b>a × b = b × a</b>. Cortando a malha em dois retângulos, o total é a soma das duas partes: <b>a × (b + c) = a × b + a × c</b>. É assim que fazemos contas grandes de cabeça.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+$('l').value=P('l',4,1,15);$('c').value=P('c',7,1,20);$('d').value=P('d',0,0,20);
+$('rot').onclick=()=>{const L=$('l').value,C=$('c').value;$('c').value=Math.min(20,L);$('l').value=Math.min(15,C);$('d').value=0;draw();};
+['l','c','d'].forEach(i=>$(i).oninput=draw);
+function draw(){const L=+$('l').value,C=+$('c').value;let d=+$('d').value;if(d>=C)d=0;$('d').max=C-1;$('d').value=d;
+ $('lv').textContent=L;$('cv').textContent=C;$('dv').textContent=d||'—';
+ const s=Math.min(320/C,220/L,26),ox=(360-C*s)/2,oy=26;let g='';
+ for(let i=0;i<L;i++)for(let j=0;j<C;j++)g+=`<rect x="${ox+j*s+1}" y="${oy+i*s+1}" width="${s-2}" height="${s-2}" rx="3" fill="${d&&j>=d?OR:BL}"/>`;
+ if(d)g+=`<line x1="${ox+d*s}" y1="${oy-4}" x2="${ox+d*s}" y2="${oy+L*s+4}" stroke="${NAVY}" stroke-width="2" stroke-dasharray="5 3"/>`;
+ g+=T(ox+C*s/2,18,C+' colunas',{s:12,c:OR})+`<text x="${ox-8}" y="${oy+L*s/2}" font-size="12" font-weight="700" fill="${OR}" text-anchor="middle" font-family="Poppins" transform="rotate(-90 ${ox-8} ${oy+L*s/2})">${L} linhas</text>`;
+ $('svg').setAttribute('viewBox',`0 0 360 ${oy+L*s+10}`);$('svg').innerHTML=g;
+ $('res').innerHTML=`${L} × ${C} = <span class="k">${L*C}</span>`;
+ $('msg').innerHTML=d?`<div class="msg info">${L} × ${C} = ${L} × ${d} + ${L} × ${C-d} = ${L*d} + ${L*(C-d)} = ${L*C}</div>`:`<div class="msg info">${L} linhas de ${C}: ${Array(L).fill(C).join(' + ')} = ${L*C}</div>`;}
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Material dourado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Material dourado</h1></header>
+<main>
+
+<div class="card"><div class="big" id="conta"></div><p class="muted" id="lead" style="margin:0"></p></div>
+<div class="card"><svg class="fig" id="svg" viewBox="0 0 360 260"></svg><div id="msg"></div></div>
+<div class="card"><h2 id="acao">Ações</h2><div class="row" id="btns"></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="reset">Recomeçar</button></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">O cubinho vale 1, a barra vale 10 (dez cubinhos) e a placa vale 100 (dez barras). Trocar 10 peças por 1 maior é o “vai um”; desmanchar 1 peça em 10 menores é o “empresta um”.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+const op=q.get('op')==='sub'?'sub':'soma';let A=P('a',op==='sub'?503:358,1,999),B=P('b',op==='sub'?178:276,1,999);if(op==='sub'&&B>A)B=A;
+const dg=n=>[Math.floor(n/100),Math.floor(n/10)%10,n%10];let st,need,done,joined,mil;
+function init(){mil=0;if(op==='soma'){st={A:dg(A),B:dg(B)};joined=false;}else{st=dg(A);need=dg(B);done=[false,false,false];}msg('');render();}
+const nm=['placas','barras','cubinhos'];
+function pieces(cnt,y0,lbl){let s=T(4,y0+10,lbl,{a:'start',s:11,c:'#6B7280'});const xs=[10,150,250];
+ for(let k=0;k<3;k++){const n=cnt[k];for(let i=0;i<n;i++){
+  if(k===0){const x=xs[0]+(i%4)*32+Math.floor(i/4)*3,y=y0+16+Math.floor(i/4)*6;s+=`<rect x="${x}" y="${y}" width="28" height="28" fill="#F9C68E" stroke="#B4610E"/>`+`<path d="M${x+7},${y}v28M${x+14},${y}v28M${x+21},${y}v28M${x},${y+7}h28M${x},${y+14}h28M${x},${y+21}h28" stroke="#B4610E" stroke-width=".5"/>`;}
+  else if(k===1){const x=xs[1]+(i%12)*7.5,y=y0+16+Math.floor(i/12)*32;s+=`<rect x="${x}" y="${y}" width="5" height="28" fill="#F9C68E" stroke="#B4610E" stroke-width=".8"/>`;}
+  else{const x=xs[2]+(i%10)*9,y=y0+16+Math.floor(i/10)*9;s+=`<rect x="${x}" y="${y}" width="7" height="7" fill="#F9C68E" stroke="#B4610E" stroke-width=".8"/>`;}}
+  s+=T(xs[k]+(k===0?60:k===1?44:44),y0+80,`${n} ${nm[k]}`,{s:11,c:n>=10?RD:NAVY});}
+ return s;}
+function render(){let s='',h;
+ s+=T(70,14,'CENTENAS',{s:10,c:OR})+T(195,14,'DEZENAS',{s:10,c:OR})+T(295,14,'UNIDADES',{s:10,c:OR})+'<line x1="140" y1="4" x2="140" y2="256" stroke="#E5E7EB"/><line x1="242" y1="4" x2="242" y2="256" stroke="#E5E7EB"/>';
+ if(op==='soma'){if(!joined){s+=pieces(st.A,22,'1ª parcela: '+A)+pieces(st.B,130,'2ª parcela: '+B);h=240;}else{s+=pieces(st.A,22,'juntos'+(mil?` (+ ${mil} milhar)`:''));h=120;}}
+ else{s+=pieces(st,22,'o que temos');s+=T(180,130,`Retirar: ${need[0]} placas, ${need[1]} barras e ${need[2]} cubinhos`,{s:12,c:RD});h=150;}
+ $('svg').setAttribute('viewBox',`0 0 360 ${h}`);$('svg').innerHTML=s;
+ $('conta').textContent=op==='soma'?`${A} + ${B}`:`${A} − ${B}`;
+ $('lead').textContent=op==='soma'?'Junte as peças das duas parcelas. Sempre que uma coluna tiver 10 ou mais peças, troque 10 delas por 1 peça da coluna da esquerda.':'Retire as peças do subtraendo. Quando não houver peças suficientes numa coluna, desmanche 1 peça da coluna da esquerda em 10 menores.';
+ btns();}
+function btns(){let l=[];
+ if(op==='soma'){if(!joined)l.push(['Juntar as peças',()=>{st.A=st.A.map((v,i)=>v+st.B[i]);joined=true;msg('Agora veja se alguma coluna tem 10 ou mais peças.');render();check();}]);
+  else{if(st.A[2]>=10)l.push(['Trocar 10 cubinhos por 1 barra',()=>{st.A[2]-=10;st.A[1]++;msg('Vai um! 10 unidades viraram 1 dezena.');render();check();}]);
+   if(st.A[1]>=10)l.push(['Trocar 10 barras por 1 placa',()=>{st.A[1]-=10;st.A[0]++;msg('Vai um! 10 dezenas viraram 1 centena.');render();check();}]);
+   if(st.A[0]>=10)l.push(['Trocar 10 placas por 1 milhar',()=>{st.A[0]-=10;mil++;msg('10 centenas formam 1 milhar.');render();check();}]);}}
+ else{[2,1,0].forEach(k=>{if(!done[k]&&need[k]>0)l.push([`Retirar ${need[k]} ${nm[k]}`,()=>{if(st[k]<need[k]){msg(`Não há ${nm[k]} suficientes. Desmanche 1 peça da coluna da esquerda.`,'bad');return;}st[k]-=need[k];done[k]=true;msg(`Pronto: ${need[k]} ${nm[k]} retirados.`);render();check();}]);});
+  if(st[1]>0)l.push(['Desmanchar 1 barra em 10 cubinhos',()=>{st[1]--;st[2]+=10;msg('Empresta um: 1 dezena virou 10 unidades.');render();}]);
+  if(st[0]>0)l.push(['Desmanchar 1 placa em 10 barras',()=>{st[0]--;st[1]+=10;msg('Empresta um: 1 centena virou 10 dezenas.');render();}]);}
+ $('btns').innerHTML='';l.forEach(([t,f],i)=>{const e=document.createElement('button');e.textContent=t;e.className=i===0?'or':'';e.onclick=f;$('btns').appendChild(e);});}
+function check(){if(op==='soma'){if(joined&&st.A.every(v=>v<10)){const r=mil*1000+st.A[0]*100+st.A[1]*10+st.A[2];msg(`Pronto! Nenhuma coluna passa de 9. ${A} + ${B} = ${r}`,'ok');}}
+ else if(need.every((v,k)=>v===0||done[k])){const r=st[0]*100+st[1]*10+st[2];msg(`Pronto! Sobraram ${st[0]} placas, ${st[1]} barras e ${st[2]} cubinhos. ${A} − ${B} = ${r}. Prova real: ${r} + ${B} = ${r+B}.`,'ok');}}
+function msg(t,c){$('msg').innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+$('reset').onclick=init;init();
+</script>
+</body>
+</html>

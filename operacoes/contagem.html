@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contagem: combinações · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Contagem: combinações</h1></header>
+<main>
+
+<div class="card"><h2>Escolha quantas peças de cada tipo</h2>
+<div class="sl"><b>camisetas</b><input type="range" id="a" min="1" max="5"><span id="av"></span></div>
+<div class="sl"><b>calças</b><input type="range" id="b" min="1" max="4"><span id="bv"></span></div>
+<div class="sl"><b>bonés</b><input type="range" id="c" min="0" max="3"><span id="cv"></span></div>
+<p class="muted" style="margin:4px 0 0">Bonés em 0: a combinação é só camiseta e calça.</p></div>
+<div class="card"><h2>Árvore de possibilidades</h2><svg class="fig" id="svg" viewBox="0 0 360 200"></svg><div class="res" id="res"></div></div>
+<div class="card"><h2>Monte um visual</h2><p class="muted" style="margin:0 0 6px">Toque nas peças para escolher. Cada visual diferente encontrado fica marcado.</p><div id="pick"></div><div id="found" class="msg info"></div></div>
+<div class="card"><h2>Princípio multiplicativo</h2><p style="margin:0">Para <b>cada</b> camiseta há todas as calças: são grupos iguais. Por isso o número de combinações é o produto: camisetas × calças (× bonés).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+const CA=[['azul','#2457D6'],['branca','#9CA3AF'],['preta','#111827'],['vermelha','#DC2626'],['verde','#15803D']],
+ CL=[['jeans','#1E3A8A'],['bermuda','#B45309'],['saia','#9333EA'],['moletom','#6B7280']],BO=[['boné azul','#0EA5E9'],['boné laranja','#F7821F'],['boné preto','#000']];
+$('a').value=P('a',3,1,5);$('b').value=P('b',2,1,4);$('c').value=P('c',0,0,3);let sel=[null,null,null],seen=new Set();
+['a','b','c'].forEach(i=>$(i).oninput=()=>{seen=new Set();sel=[null,null,null];draw();});
+function draw(){const a=+$('a').value,b=+$('b').value,c=+$('c').value;$('av').textContent=a;$('bv').textContent=b;$('cv').textContent=c;
+ const leaves=a*b*(c||1),rh=Math.max(14,Math.min(26,300/leaves)),H=leaves*rh+20;let g='';const yl=k=>14+k*rh+rh/2;
+ for(let i=0;i<a;i++){const pa=b*(c||1),ya=(yl(i*pa)+yl(i*pa+pa-1))/2;g+=`<line x1="8" y1="${H/2}" x2="52" y2="${ya}" stroke="#9CA3AF"/>`+T(80,ya+4,CA[i][0],{s:11,c:CA[i][1]});
+  for(let j=0;j<b;j++){const pb=c||1,base=i*pa+j*pb,yb=(yl(base)+yl(base+pb-1))/2;g+=`<line x1="108" y1="${ya}" x2="140" y2="${yb}" stroke="#9CA3AF"/>`+T(170,yb+4,CL[j][0],{s:11,c:CL[j][1]});
+   if(c){for(let k=0;k<c;k++){g+=`<line x1="200" y1="${yb}" x2="230" y2="${yl(base+k)}" stroke="#9CA3AF"/>`+T(275,yl(base+k)+4,BO[k][0],{s:10,c:BO[k][1]});}}}}
+ g+=`<circle cx="8" cy="${H/2}" r="4" fill="${NAVY}"/>`;$('svg').setAttribute('viewBox',`0 0 360 ${H}`);$('svg').innerHTML=g;
+ $('res').innerHTML=c?`${a} × ${b} × ${c} = <span class="k">${leaves}</span> visuais`:`${a} × ${b} = <span class="k">${leaves}</span> visuais`;
+ const grp=(arr,n,ix)=>`<div class="row" style="margin:4px 0">`+arr.slice(0,n).map((x,i)=>`<button class="${sel[ix]===i?'or':'alt'}" data-g="${ix}" data-i="${i}" style="padding:6px 10px;font-size:13px">${x[0]}</button>`).join('')+`</div>`;
+ $('pick').innerHTML=grp(CA,a,0)+grp(CL,b,1)+(c?grp(BO,c,2):'');
+ $('pick').querySelectorAll('button').forEach(e=>e.onclick=()=>{sel[+e.dataset.g]=+e.dataset.i;const ok=sel[0]!==null&&sel[1]!==null&&(!c||sel[2]!==null);if(ok)seen.add(sel.slice(0,c?3:2).join('-'));draw();});
+ const ok=sel[0]!==null&&sel[1]!==null&&(!c||sel[2]!==null);
+ $('found').innerHTML=(ok?`Visual: <b>${CA[sel[0]][0]} + ${CL[sel[1]][0]}${c?' + '+BO[sel[2]][0]:''}</b>. `:'')+`Você já encontrou ${seen.size} de ${leaves} visuais.`+(seen.size===leaves?' <b>Todos!</b>':'');}
+draw();
+</script>
+</body>
+</html>

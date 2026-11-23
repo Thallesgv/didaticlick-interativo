@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Modelo de barras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg.fig{width:100%;height:auto;display:block;touch-action:manipulation}
+.sl{display:grid;grid-template-columns:110px 1fr 44px;align-items:center;gap:8px;margin:6px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;margin:6px 0;color:var(--navy);font-weight:600}
+.big{font-size:22px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · MatematiClick · Operações</div><h1 id="title">Modelo de barras</h1></header>
+<main>
+
+<div class="card"><p class="muted" id="lead" style="margin:0 0 6px"></p><svg class="fig" id="svg" viewBox="0 0 360 170"></svg>
+<div class="res" id="res"></div><div id="extra"></div></div>
+<div class="card"><h2>Mexa nos valores</h2>
+<div class="sl"><b id="la">A</b><input type="range" id="a" min="1" max="60"><span id="av"></span></div>
+<div class="sl"><b id="lb">B</b><input type="range" id="b" min="1" max="60"><span id="bv"></span></div>
+<div class="row" style="margin-top:8px"><button class="or" id="rev">Mostrar a resposta</button></div></div>
+<div class="card"><h2>Repare</h2><p style="margin:0" id="obs"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const q=new URLSearchParams(location.search);const $=i=>document.getElementById(i);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const fmt=n=>n.toLocaleString('pt-BR');
+const NAVY='#0E2354',OR='#F7821F',BL='#2457D6',GR='#15803D',RD='#B91C1C';
+const T=(x,y,s,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||13}" font-weight="${o.w||700}" fill="${o.c||NAVY}" text-anchor="${o.a||'middle'}" font-family="Poppins,sans-serif">${s}</text>`;
+
+const modo=q.get('modo')||'juntar';let show=false;
+const cfg={
+ juntar:{t:'Juntar: parte + parte = todo',la:'1ª parte',lb:'2ª parte',a:14,b:17,lead:'Duas partes que existem ao mesmo tempo. Quantos são ao todo?',obs:'As barras ficam lado a lado e a chave abraça as duas: o todo é a soma das partes. Mude as partes e veja o todo mudar.'},
+ separar:{t:'Separar: todo − parte = outra parte',la:'todo',lb:'parte conhecida',a:30,b:18,lead:'Conhecemos o todo e uma das partes. Quanto é a outra parte?',obs:'Nada sai: o todo só é visto em dois pedaços. Por isso todo − parte = outra parte, e parte + parte = todo (a prova real).'},
+ comparar:{t:'Comparar: quanto a mais?',la:'1ª quantidade',lb:'2ª quantidade',a:52,b:34,lead:'Duas quantidades lado a lado. Quanto uma tem a mais do que a outra?',obs:'As barras começam no mesmo ponto. A diferença é o pedaço que sobra na barra maior. A mesma conta responde “quanto a mais”, “quanto a menos” e “quanto falta para alcançar”.'},
+ vezes:{t:'Quantas vezes: o dobro, o triplo…',la:'quantidade',lb:'número de vezes',a:4,b:3,lead:'Uma barra repetida várias vezes. Quanto dá?',obs:'“3 vezes 4” é a barra de 4 repetida 3 vezes. Isso é diferente de “3 a mais”, que acrescenta só um pedaço de 3.'},
+ razao:{t:'Razão: quantas vezes cabe?',la:'quantidade maior',lb:'quantidade menor',a:12,b:4,lead:'Quantas vezes a barra menor cabe na maior?',obs:'Comparar pela divisão é ver quantas vezes uma barra cabe na outra. Se não cabe um número inteiro de vezes, sobra um pedaço: o resto.'}}[modo]||null;
+const C=cfg;$('title').textContent=C.t;document.title=C.t+' · DidatiClick';$('la').textContent=C.la;$('lb').textContent=C.lb;$('lead').textContent=C.lead;$('obs').textContent=C.obs;
+if(modo==='vezes'){$('b').max=6;$('a').max=15;}
+if(modo==='razao'){$('b').max=20;}
+$('a').value=P('a',C.a,1,60);$('b').value=P('b',C.b,1,60);
+$('rev').onclick=()=>{show=!show;$('rev').textContent=show?'Esconder a resposta':'Mostrar a resposta';draw();};
+['a','b'].forEach(i=>$(i).oninput=()=>{show=false;$('rev').textContent='Mostrar a resposta';draw();});
+function bar(x,y,w,h,c,txt,dash){return dash?`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#fff" stroke="${RD}" stroke-width="2" stroke-dasharray="6 4"/>`+T(x+w/2,y+h/2+5,txt,{c:RD}):`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${c}" stroke="#fff" stroke-width="2"/>`+(w>22?T(x+w/2,y+h/2+5,txt,{c:'#fff',s:12}):'');}
+function brace(x0,x1,y,up,txt){const d=up?-1:1,m=(x0+x1)/2;return `<path d="M${x0},${y} q0,${d*8} 8,${d*8} L${m-8},${y+d*8} q8,0 8,${d*8} q0,${-d*8} 8,${-d*8} L${x1-8},${y+d*8} q8,0 8,${-d*8}" fill="none" stroke="${OR}" stroke-width="2"/>`+T(m,up?y-22:y+34,txt,{c:OR});}
+function draw(){let a=+$('a').value,b=+$('b').value;
+ if(modo==='separar'&&b>a){b=a;$('b').value=a;}
+ $('av').textContent=a;$('bv').textContent=b;
+ let s='',r='',ox=20,W=320,H=170;
+ if(modo==='juntar'){const k=W/(a+b);s+=bar(ox,70,a*k,40,BL,a)+bar(ox+a*k,70,b*k,40,OR,b)+brace(ox,ox+W,64,true,show?`todo: ${a+b}`:'todo: ?');r=show?`${a} + ${b} = ${a+b}`:`${a} + ${b} = ?`;}
+ if(modo==='separar'){const k=W/a;s+=bar(ox,70,b*k,40,OR,b)+(a-b>0?bar(ox+b*k,70,(a-b)*k,40,BL,show?a-b:'?',!show):'')+brace(ox,ox+W,64,true,`todo: ${a}`);r=show?`${a} − ${b} = ${a-b}`:`${a} − ${b} = ?`;}
+ if(modo==='comparar'){const mx=Math.max(a,b),k=W/mx,d=Math.abs(a-b);H=190;
+  s+=T(ox+2,32,'1ª',{a:'start',s:11,c:'#6B7280'})+bar(ox,38,a*k,36,BL,a)+T(ox+2,100,'2ª',{a:'start',s:11,c:'#6B7280'})+bar(ox,106,b*k,36,OR,b);
+  if(d>0){const y=a>b?106:38,x0=ox+Math.min(a,b)*k;s+=bar(x0,y,d*k,36,'',show?d:'?',true);s+=brace(x0,ox+Math.max(a,b)*k,a>b?146:78,false,'diferença');}
+  r=d===0?'As duas barras são iguais: diferença 0.':(show?`${Math.max(a,b)} − ${Math.min(a,b)} = ${d}`:`${Math.max(a,b)} − ${Math.min(a,b)} = ?`);
+  $('extra').innerHTML=show&&d?`<div class="msg info">A ${a>b?'1ª':'2ª'} tem ${d} a mais. A ${a>b?'2ª':'1ª'} tem ${d} a menos e precisa de ${d} para alcançar a outra.</div>`:'';}
+ if(modo==='vezes'){const k=W/(a*b);H=150;s+=T(ox,30,'1 vez',{a:'start',s:11,c:'#6B7280'})+bar(ox,36,a*k,32,BL,a);s+=T(ox,92,b+' vezes',{a:'start',s:11,c:'#6B7280'});for(let i=0;i<b;i++)s+=bar(ox+i*a*k,98,a*k,32,OR,a);r=show?`${b} × ${a} = ${a*b}`:`${b} × ${a} = ?`;
+  $('extra').innerHTML=show?`<div class="msg info">${b} vezes ${a} dá ${a*b}. Já ${b} a mais do que ${a} daria só ${a+b}.</div>`:'';}
+ if(modo==='razao'){const mx=Math.max(a,b),mn=Math.min(a,b),k=W/mx,qq=Math.floor(mx/mn),rr=mx%mn;H=160;
+  s+=bar(ox,30,mx*k,34,BL,mx);for(let i=0;i<qq;i++)s+=bar(ox+i*mn*k,96,mn*k,34,OR,show?(i+1)+'ª':mn);if(rr)s+=bar(ox+qq*mn*k,96,rr*k,34,'',show?'resto '+rr:'?',true);
+  r=show?(rr?`${mx} ÷ ${mn} = ${qq} e resto ${rr}`:`${mx} ÷ ${mn} = ${qq}: cabe ${qq} vezes`):`${mx} ÷ ${mn} = ?`;
+  const g=(x,y)=>y?g(y,x%y):x,m=g(mx,mn);$('extra').innerHTML=show?`<div class="msg info">Razão ${mx} : ${mn}${m>1?` = ${mx/m} : ${mn/m} (dividindo os dois por ${m})`:''}.</div>`:'';}
+ $('svg').setAttribute('viewBox',`0 0 360 ${H}`);$('svg').innerHTML=s;$('res').innerHTML=r;}
+draw();
+</script>
+</body>
+</html>
