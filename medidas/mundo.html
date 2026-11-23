@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unidades pelo mundo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">Unidades pelo mundo</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Conversor</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre"><div class="card">
+<div class="row" style="align-items:center"><input class="n" id="val" value="50" inputmode="decimal"><select id="tp"></select></div>
+<div class="res" id="res"></div><div class="fig" id="fig" style="margin-top:8px"></div></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Converta (arredonde para 1 casa decimal)</h2><div class="dq" id="dq"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const C=[['polegadas → cm',v=>v*2.54,'× 2,54'],['cm → polegadas',v=>v/2.54,'÷ 2,54'],['pés → m',v=>v*0.3048,'× 0,3048'],['milhas → km',v=>v*1.609,'× 1,609'],['km → milhas',v=>v/1.609,'÷ 1,609'],['libras → kg',v=>v*0.454,'× 0,454'],['galões → L',v=>v*3.785,'× 3,785'],['°C → °F',v=>v*1.8+32,'× 1,8 + 32'],['°F → °C',v=>(v-32)/1.8,'− 32, depois ÷ 1,8']];
+C.forEach((c,i)=>{const e=document.createElement('option');e.value=i;e.textContent=c[0];$('tp').appendChild(e);});
+function draw(){const v=num($('val').value),c=C[+$('tp').value];if(isNaN(v)){$('res').textContent='Digite um número.';return;}
+ const r=Math.round(c[1](v)*100)/100;const [a,b]=c[0].split(' → ');$('res').innerHTML=`${F(v)} ${a} ${c[2]} = <span class="k">${F(r)} ${b}</span>`;
+ $('fig').innerHTML=c[0].startsWith('polegadas')&&v>0&&v<200?UM.tv(F(v),{w:Math.min(W(),340)}):(c[0].includes('°')?UM.termometros(Math.max(-20,Math.min(105,c[0].startsWith('°C')?v:(v-32)/1.8)),{w:Math.min(W(),300)}):'');}
+['val','tp'].forEach(id=>$(id).oninput=draw);draw();
+tabs(['livre','desafio']);
+desafio(()=>{const i=pick([0,2,3,5,6,7,8]),c=C[i],[a,b]=c[0].split(' → ');const v=i===7?pick([0,10,20,25,30,35,40,100]):i===8?pick([32,50,68,86,104,212]):pick([2,5,10,12,20,32,40,50,65,100]);
+ const r=Math.round(c[1](v)*10)/10;return {html:`${F(v)} ${a} = ${box()} ${b}`,res:[r],tol:0.051/Math.max(1,Math.abs(r)),exp:`${F(v)} ${c[2]} ≈ ${F(r)} ${b}.`};});
+
+</script>
+</body>
+</html>

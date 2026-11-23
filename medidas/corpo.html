@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Medir com o palmo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">Medir com o palmo</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-livre" class="on">Medir</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-livre"><div class="card">
+<p class="muted">Escolha o objeto. Cada pessoa mede com o próprio palmo. O objeto é o mesmo; os números mudam!</p>
+<div class="row"><select id="obj"></select></div>
+<div class="fig" style="margin-top:10px" id="fig"></div>
+<div class="res" id="res"></div>
+<p class="muted">Quanto maior o palmo, menos vezes ele cabe. Por isso o mundo precisou de uma unidade padrão, igual para todos: o metro.</p>
+</div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Quantos palmos?</h2><div class="dq" id="dq"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const P=[{nome:'Sophia',palmo:18,cor:UM.OR},{nome:'Angelo',palmo:21,cor:UM.BL},{nome:'Laura',palmo:16,cor:UM.GR},{nome:'Arthur',palmo:24,cor:'#7A4BB5'}];
+const O=[['mesa',126],['porta',210],['lousa',336],['janela',144],['cama',192]];
+O.forEach((o,i)=>{const e=document.createElement('option');e.value=i;e.textContent=`${o[0]} (${o[1]} cm)`;$('obj').appendChild(e);});
+function draw(){const [n,c]=O[+$('obj').value];$('fig').innerHTML=UM.palmos(c,P,{w:W(),rot:n});
+ $('res').innerHTML=P.map(p=>{const k=Math.floor(c/p.palmo),s=c-k*p.palmo;return `<span style="color:${p.cor}">${p.nome}</span> (palmo de ${p.palmo} cm): <span class="k">${k}${s?' palmos e um pedaço':' palmos'}</span>`;}).join('<br>');}
+$('obj').onchange=draw;draw();
+tabs(['livre','desafio']);
+desafio(()=>{const p=pick(P),k=rnd(4,14),c=p.palmo*k,o=pick(['mesa','corda','tapete','prateleira','varal']);
+ return {html:`A ${o} mede <b>${c} cm</b>. O palmo de ${p.nome} mede <b>${p.palmo} cm</b>.<br>Quantos palmos de ${p.nome} cabem na ${o}? ${box('s')} palmos`,res:[k],exp:`${c} ÷ ${p.palmo} = ${k} palmos.`};});
+
+</script>
+</body>
+</html>
