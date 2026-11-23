@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Máquina de agrupar em qualquer base · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.big{font-size:24px;font-weight:700;color:var(--navy);text-align:center;margin:4px 0}
+.k{color:var(--orange)}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;min-height:70px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+input[type=number],input[type=text]{font-family:inherit;font-size:18px;padding:8px 10px;border:2px solid #D7DEEA;border-radius:10px;width:100%;max-width:240px}
+label.l{display:block;font-weight:600;color:var(--navy);margin:8px 0 4px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.pal{display:grid;grid-template-columns:52px 1fr auto;gap:6px 10px;align-items:center}
+.pal .nm{font-size:14px}.pal .nm b{color:var(--navy)}
+.step3{display:flex;align-items:center;gap:6px}.step3 button{width:40px;padding:8px 0}.step3 span{min-width:26px;text-align:center;font-weight:700;color:var(--navy)}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.hide{display:none}
+</style>
+<script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Máquina de agrupar em qualquer base</h1></header>
+<main>
+
+<div class="tabs"><button id="tab-maq" class="on">Agrupar</button><button id="tab-conv">Para a base 10</button><button id="tab-desafio">Desafio</button></div>
+<div id="pn-maq">
+<div class="card"><div class="row"><div style="flex:1;min-width:130px"><label class="l">Quantidade</label><input type="number" id="n" min="1" max="200" inputmode="numeric"></div>
+<div style="flex:1;min-width:130px"><label class="l">Base (agrupar de quantos em quantos)</label><input type="number" id="b" min="2" max="10" inputmode="numeric"></div></div></div>
+<div class="card"><svg id="svg" viewBox="0 0 360 220" style="width:100%"></svg><div class="row" style="margin-top:6px"><button class="or" id="agr">Agrupar</button><button class="alt" id="rec">Recomeçar</button></div><div id="m"></div></div></div>
+<div class="card hide" id="pn-conv"><div class="row"><div style="flex:1;min-width:130px"><label class="l">Número escrito na base</label><input type="text" id="cn" inputmode="numeric" autocomplete="off"></div>
+<div style="flex:1;min-width:130px"><label class="l">Base</label><input type="number" id="cb" min="2" max="10" inputmode="numeric"></div></div><div id="cres" style="margin-top:8px"></div></div>
+<div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2 id="dq"></h2><input type="text" id="resp" inputmode="numeric" autocomplete="off">
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div></div>
+<div class="card"><h2>Lembre</h2><p style="margin:0">Na base <i>b</i>, juntamos <i>b</i> unidades num <b>grupo</b>, <i>b</i> grupos num <b>grupão</b>, e assim por diante. Cada casa vale <i>b</i> vezes a casa da direita. Por isso, na base <i>b</i>, só usamos os algarismos de 0 até <i>b</i> − 1. Na base 2 (binária), só 0 e 1.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const P=(k,d,lo,hi)=>{let v=parseInt(q.get(k));if(isNaN(v))v=d;return Math.max(lo,Math.min(hi,v));};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+
+let n=P('n',23,1,200),b=P('b',5,2,10),col=[n,0,0,0,0,0,0,0];
+const cores=['#0E2354','#F7821F','#2457D6','#15803D','#7A4BB5','#B91C1C','#8A5A12','#0E2354'];
+const sub=s=>String(s).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+function ncols(){let k=1,v=b;while(v<=n){k++;v*=b;}return Math.max(k,2);}
+function draw(){const K=ncols(),W=360,cw=W/K;let s='';
+ for(let j=0;j<K;j++){const p=K-1-j,x0=j*cw;s+=`<rect x="${x0+3}" y="22" width="${cw-6}" height="170" rx="10" fill="#F5F7FB" stroke="#D7DEEA"/>`;
+  s+=`<text x="${x0+cw/2}" y="15" font-size="11" font-weight="700" fill="${cores[p]}" text-anchor="middle" font-family="Poppins,sans-serif">vale ${SN.fmt(b**p)}</text>`;
+  const k=col[p];const r=Math.max(1.6,Math.min(9,Math.sqrt((cw-14)*150/(k||1))/2-1.5));const per=Math.max(1,Math.floor((cw-14)/(2*r+3)));
+  for(let i=0;i<k;i++){const cx=x0+10+r+(i%per)*(2*r+3),cy=30+r+Math.floor(i/per)*(2*r+3);if(cy<190)s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${k>=b?'#B91C1C':cores[p]}"/>`;}
+  s+=`<text x="${x0+cw/2}" y="212" font-size="20" font-weight="700" fill="${k>=b?'#B91C1C':'#0E2354'}" text-anchor="middle" font-family="Poppins,sans-serif">${k}</text>`;}
+ $('svg').innerHTML=s;const pr=col.findIndex(k=>k>=b);$('agr').disabled=pr<0;
+ if(pr<0){const d=SN.emBase(n,b);$('m').innerHTML=`<div class="msg ok">Pronto! Nenhuma casa tem ${b} ou mais. ${n} na base 10 = <b>(${d.join('')})${sub(b)}</b> na base ${b}.<br>Confira: ${d.map((x,i)=>`${x} × ${SN.fmt(b**(d.length-1-i))}`).join(' + ')} = ${n}</div>`;}
+ else $('m').innerHTML=`<div class="msg info">A casa que vale ${SN.fmt(b**pr)} tem ${col[pr]} bolinhas. Toque em Agrupar: cada ${b} bolinhas viram 1 na casa da esquerda.</div>`;}
+$('agr').onclick=()=>{const p=col.findIndex(k=>k>=b);if(p<0)return;const g=Math.floor(col[p]/b);col[p]-=g*b;col[p+1]+=g;draw();};
+function rec(){n=Math.max(1,Math.min(200,parseInt($('n').value)||1));b=Math.max(2,Math.min(10,parseInt($('b').value)||2));col=[n,0,0,0,0,0,0,0,0];draw();}
+$('rec').onclick=rec;$('n').onchange=rec;$('b').onchange=rec;$('n').value=n;$('b').value=b;draw();
+function conv(){const t=$('cn').value.trim(),bb=parseInt($('cb').value);if(!t||isNaN(bb)||bb<2||bb>10){$('cres').innerHTML='';return;}
+ if(!/^[0-9]+$/.test(t)){$('cres').innerHTML='<div class="msg bad">Use só algarismos.</div>';return;}
+ const bad=t.split('').find(c=>+c>=bb);if(bad!==undefined){$('cres').innerHTML=`<div class="msg bad">Na base ${bb} só existem os algarismos de 0 a ${bb-1}. O ${bad} não pode aparecer.</div>`;return;}
+ const d=t.split('').map(Number),L=d.length,v=d.reduce((s,x)=>s*bb+x,0);
+ $('cres').innerHTML=`<div class="big" style="font-size:19px">(${t})${sub(bb)} = `+d.map((x,i)=>`${x} × ${SN.fmt(bb**(L-1-i))}`).join(' + ')+` = <span class="k">${SN.fmt(v)}</span></div>`;}
+$('cn').oninput=conv;$('cb').oninput=conv;$('cn').value='1011';$('cb').value=2;conv();
+let tipo,alvo,ab,ac=0,tt=0,feito=false;
+function desafio(){feito=false;msg('dm','');$('resp').value='';tipo=rnd(0,1);ab=[2,5,3,4,8,2][rnd(0,5)];alvo=rnd(ab===2?5:6,ab===2?31:ab**3-1);
+ $('dq').innerHTML=tipo===0?`Escreva <span class="k">${alvo}</span> na base ${ab}`:`Quanto vale <span class="k">(${SN.emBase(alvo,ab).join('')})${sub(ab)}</span> na base 10?`;}
+$('ok').onclick=()=>{if(feito)return;const v=$('resp').value.trim();if(!v){msg('dm','Escreva sua resposta antes do OK.','info');return;}tt++;feito=true;
+ const d=SN.emBase(alvo,ab),L=d.length,ex=`(${d.join('')})${sub(ab)} = `+d.map((x,i)=>`${x} × ${SN.fmt(ab**(L-1-i))}`).join(' + ')+` = ${alvo}`;
+ const ok=tipo===0?v.replace(/^0+/,'')===d.join(''):parseInt(v)===alvo;if(ok){ac++;msg('dm','Certo! '+ex,'ok');}else msg('dm','Ainda não. '+ex,'bad');
+ $('placar').textContent=`Acertos: ${ac} de ${tt}`;};
+$('novo').onclick=desafio;tabs(['maq','conv','desafio'],t=>{if(t==='desafio')desafio();});
+
+</script>
+</body>
+</html>
