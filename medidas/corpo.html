@@ -66,7 +66,7 @@ function desafio(gerar){let cur,feito=false;
  $('novo').onclick=novo;novo();}
 const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
 
-const P=[{nome:'Sophia',palmo:18,cor:UM.OR},{nome:'Angelo',palmo:21,cor:UM.BL},{nome:'Laura',palmo:16,cor:UM.GR},{nome:'Arthur',palmo:24,cor:'#7A4BB5'}];
+const P=[{nome:'Sophia',palmo:18,cor:UM.OR},{nome:'Angelo',palmo:21,cor:UM.BL},{nome:'Duda',palmo:16,cor:UM.GR},{nome:'Arthur',palmo:24,cor:'#7A4BB5'}];
 const O=[['mesa',126],['porta',210],['lousa',336],['janela',144],['cama',192]];
 O.forEach((o,i)=>{const e=document.createElement('option');e.value=i;e.textContent=`${o[0]} (${o[1]} cm)`;$('obj').appendChild(e);});
 function draw(){const [n,c]=O[+$('obj').value];$('fig').innerHTML=UM.palmos(c,P,{w:W(),rot:n});
