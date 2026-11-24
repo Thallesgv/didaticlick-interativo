@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Espalhamento: amplitude, desvios e caixa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.vals .v{display:flex;align-items:center;gap:2px;border:2px solid #D7DEEA;border-radius:10px;padding:2px}
+.vals .v button{padding:4px 9px;font-size:16px;background:#fff;color:var(--navy);border:0}
+.vals .v b{min-width:30px;text-align:center;color:var(--navy)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:20px;color:var(--navy)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tabs button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:7px 10px;font-size:14px}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>Espalhamento: amplitude, desvios e caixa</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Duas turmas, cinco notas cada. Mude as notas e compare a amplitude, o desvio médio, o desvio padrão e o diagrama de caixa das duas.</p><div class="muted" style="font-weight:600;color:#2457D6">Turma A</div><div class="vals" id="va"></div>
+<div class="muted" style="font-weight:600;color:#7A4BB5">Turma B</div><div class="vals" id="vb"></div>
+<div class="fig" id="fig"></div><table class="t" id="tb"></table><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+function colunas(rot,val,o){o=o||{};const W=340,H=210,x0=34,y0=180,top=16,vmin=o.vmin||0,mx=o.vmax||Math.max(1,...val)*1.15,n=val.length,sl=(W-x0-6)/n,bw=sl*.62;let g='';
+ const st=o.passo||Math.max(1,Math.ceil((mx-vmin)/5));for(let v=vmin;v<=mx+1e-9;v+=st){const y=y0-(v-vmin)/(mx-vmin)*(y0-top);g+=`<line x1="${x0}" y1="${y}" x2="${W-4}" y2="${y}" stroke="#E5E9F2"/>`+T(x0-4,y+4,f2(v),{a:'end',c:'#6B7280',w:500,fs:10});}
+ val.forEach((v,i)=>{const x=x0+sl*i+(sl-bw)/2,h=Math.max(0,(v-vmin)/(mx-vmin)*(y0-top));g+=`<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="2" fill="${(o.cores||CORES)[i%6]}"/>`+T(x+bw/2,y0-h-4,f2(v))+T(x+bw/2,y0+14,rot[i],{w:500});});
+ g+=`<line x1="${x0}" y1="${top-6}" x2="${x0}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/><line x1="${x0}" y1="${y0}" x2="${W-4}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/>`;
+ return `<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;}
+
+let A=[6,7,7,7,8],B=[2,5,8,10,10];
+const med=a=>a.reduce((s,x)=>s+x,0)/a.length,mdn=s=>{const n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
+const q5=a=>{const s=[...a].sort((x,y)=>x-y),n=s.length,h=Math.floor(n/2);return [s[0],mdn(s.slice(0,h)),mdn(s),mdn(s.slice(n-h)),s[n-1]];};
+const dm=a=>{const m=med(a);return a.reduce((s,x)=>s+Math.abs(x-m),0)/a.length;},dp=a=>{const m=med(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/a.length);};
+function vals(id,arr){$(id).innerHTML=arr.map((x,i)=>`<div class="v"><button data-i="${i}" data-d="-1">−</button><b>${x}</b><button data-i="${i}" data-d="1">+</button></div>`).join('');
+ $(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;arr[i]=Math.max(0,Math.min(10,arr[i]+ +b.dataset.d));draw();});}
+function draw(){vals('va',A);vals('vb',B);const W=340,x0=70,x1=W-14,X=v=>x0+v/10*(x1-x0);let g='';
+ for(let v=0;v<=10;v++)g+=`<line x1="${X(v)}" y1="8" x2="${X(v)}" y2="118" stroke="#E5E9F2"/>`+T(X(v),134,v,{fs:10,c:'#6B7280',w:500});
+ [[A,'Turma A','#2457D6',40],[B,'Turma B','#7A4BB5',92]].forEach(([a,n,c,y])=>{const [mn,q1,md,q3,mx]=q5(a);g+=T(x0-8,y+4,n,{a:'end'});
+  g+=`<line x1="${X(mn)}" y1="${y}" x2="${X(mx)}" y2="${y}" stroke="${c}" stroke-width="2"/><line x1="${X(mn)}" y1="${y-8}" x2="${X(mn)}" y2="${y+8}" stroke="${c}" stroke-width="2"/><line x1="${X(mx)}" y1="${y-8}" x2="${X(mx)}" y2="${y+8}" stroke="${c}" stroke-width="2"/>`;
+  g+=`<rect x="${X(q1)}" y="${y-13}" width="${Math.max(2,X(q3)-X(q1))}" height="26" rx="3" fill="${c}" fill-opacity=".22" stroke="${c}" stroke-width="2"/><line x1="${X(md)}" y1="${y-13}" x2="${X(md)}" y2="${y+13}" stroke="#0E2354" stroke-width="3"/>`;
+  g+=`<polygon points="${X(med(a))},${y+16} ${X(med(a))-5},${y+24} ${X(med(a))+5},${y+24}" fill="#F7821F"/>`;});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 142" width="${W}">${g}</svg>`;
+ const L=a=>[f2(med(a)),Math.max(...a)-Math.min(...a),f2(dm(a)),f2(dp(a))];
+ $('tb').innerHTML='<tr><th></th><th>Média</th><th>Amplitude</th><th>Desvio médio</th><th>Desvio padrão</th></tr>'+[['A',A],['B',B]].map(([n,a])=>`<tr><td>${n}</td>${L(a).map(x=>`<td>${x}</td>`).join('')}</tr>`).join('');
+ const r=dp(A)<dp(B)?'A':(dp(B)<dp(A)?'B':null);$('nt').innerHTML=(r?`A Turma <b>${r}</b> é a mais homogênea (menor desvio padrão).`:'As duas turmas têm o mesmo espalhamento.')+' O triângulo laranja marca a média; o traço escuro na caixa, a mediana.';}
+draw();
+
+</script>
+</body>
+</html>

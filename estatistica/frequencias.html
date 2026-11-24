@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Faça a sua pesquisa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.vals .v{display:flex;align-items:center;gap:2px;border:2px solid #D7DEEA;border-radius:10px;padding:2px}
+.vals .v button{padding:4px 9px;font-size:16px;background:#fff;color:var(--navy);border:0}
+.vals .v b{min-width:30px;text-align:center;color:var(--navy)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:20px;color:var(--navy)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tabs button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:7px 10px;font-size:14px}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>Faça a sua pesquisa</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha um tema, toque nas respostas para registrar os votos da sua turma e veja a tabela de frequências (absoluta, relativa e acumulada) e o gráfico se montarem sozinhos.</p><div class="tabs" id="tm"></div>
+<div class="chips" id="bt" style="margin:8px 0"></div>
+<div class="row"><button class="alt" id="desf">Desfazer</button><button class="alt" id="zer">Zerar</button></div>
+<table class="t" id="tb"></table><div class="fig" id="fig"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+function colunas(rot,val,o){o=o||{};const W=340,H=210,x0=34,y0=180,top=16,vmin=o.vmin||0,mx=o.vmax||Math.max(1,...val)*1.15,n=val.length,sl=(W-x0-6)/n,bw=sl*.62;let g='';
+ const st=o.passo||Math.max(1,Math.ceil((mx-vmin)/5));for(let v=vmin;v<=mx+1e-9;v+=st){const y=y0-(v-vmin)/(mx-vmin)*(y0-top);g+=`<line x1="${x0}" y1="${y}" x2="${W-4}" y2="${y}" stroke="#E5E9F2"/>`+T(x0-4,y+4,f2(v),{a:'end',c:'#6B7280',w:500,fs:10});}
+ val.forEach((v,i)=>{const x=x0+sl*i+(sl-bw)/2,h=Math.max(0,(v-vmin)/(mx-vmin)*(y0-top));g+=`<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="2" fill="${(o.cores||CORES)[i%6]}"/>`+T(x+bw/2,y0-h-4,f2(v))+T(x+bw/2,y0+14,rot[i],{w:500});});
+ g+=`<line x1="${x0}" y1="${top-6}" x2="${x0}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/><line x1="${x0}" y1="${y0}" x2="${W-4}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/>`;
+ return `<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;}
+
+const TEMAS=[['Passeio',['Zoológico','Museu','Praia','Cinema']],['Irmãos',['0','1','2','3','4 ou mais']],['Esporte',['Futebol','Vôlei','Natação','Basquete','Outro']],['Tamanho da camisa',['PP','P','M','G','GG']]];
+let t=0,f=[],hist=[];
+function tm(){$('tm').innerHTML=TEMAS.map((x,i)=>`<button data-v="${i}" class="${i===t?'on':''}">${x[0]}</button>`).join('');$('tm').querySelectorAll('button').forEach(b=>b.onclick=()=>{t=+b.dataset.v;zero();tm();});}
+function zero(){f=TEMAS[t][1].map(()=>0);hist=[];draw();}
+function draw(){const c=TEMAS[t][1],N=f.reduce((s,x)=>s+x,0);
+ $('bt').innerHTML=c.map((x,i)=>`<button data-i="${i}">+ ${x}</button>`).join('');$('bt').querySelectorAll('button').forEach(b=>b.onclick=()=>{f[+b.dataset.i]++;hist.push(+b.dataset.i);draw();});
+ let fa=0;$('tb').innerHTML='<tr><th>Resposta</th><th>f</th><th>fr</th><th>fa</th></tr>'+c.map((x,i)=>{fa+=f[i];return `<tr><td>${x}</td><td>${f[i]}</td><td>${N?f2(100*f[i]/N)+'%':'–'}</td><td>${fa}</td></tr>`;}).join('')+`<tr><td><b>Total</b></td><td><b>${N}</b></td><td><b>${N?'100%':'–'}</b></td><td></td></tr>`;
+ $('fig').innerHTML=colunas(c,f,{passo:Math.max(1,Math.ceil(Math.max(...f,1)/5))});}
+$('desf').onclick=()=>{if(hist.length){f[hist.pop()]--;draw();}};$('zer').onclick=zero;
+tm();zero();
+
+</script>
+</body>
+</html>
