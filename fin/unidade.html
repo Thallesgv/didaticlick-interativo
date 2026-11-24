@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detetive do preço por unidade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Detetive do preço por unidade</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque na embalagem que sai <b>mais barata por unidade</b>. Divida o preço pela quantidade de cada uma. Cuidado: a maior nem sempre ganha!</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div><div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="ch"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro produto</button></div><div id="dm"></div></div>
+<div class="card hide" id="rs"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const PRODS=[['🧃 Suco','L',[[1,'1 L'],[2,'2 L'],[3,'3 L']]],['🍚 Arroz','kg',[[1,'1 kg'],[2,'2 kg'],[5,'5 kg']]],['🧻 Papel higiênico','rolo',[[4,'4 rolos'],[12,'12 rolos'],[16,'16 rolos']]],
+ ['🥤 Refrigerante','lata',[[1,'1 lata'],[6,'6 latas'],[12,'12 latas']]],['🧼 Sabão em pó','kg',[[1,'1 kg'],[2,'2 kg'],[4,'4 kg']]],['🍪 Biscoito','pacote',[[1,'1 pacote'],[3,'3 pacotes'],[5,'5 pacotes']]]];
+let sel=-1;
+function sortear(){const [n,u,qs]=pick(PRODS);const base=pick([2,3,4,5,6,8]);
+ const ps=qs.map(([q,r])=>{const f=pick([0.8,0.85,0.9,0.95,1,1.05,1.1,1.2]);return {q,r,p:Math.round(q*base*f*2)/2};});
+ const pu=ps.map(x=>x.p/x.q);const mn=Math.min(...pu);if(pu.filter(x=>Math.abs(x-mn)<1e-9).length>1)return sortear();return {n,u,ps};}
+function chips(q,cls){$('ch').innerHTML=q.ps.map((x,i)=>`<button data-i="${i}" class="${cls?cls[i]:(i===sel?'on':'')}">${x.r}<br><b>${R$(x.p)}</b>${cls?'<br><small>'+R$(x.p/x.q)+' por '+q.u+'</small>':''}</button>`).join('');
+ $('ch').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;sel=+b.dataset.i;chips(q);});}
+D.ciclo({livros:[{n:'🧼 Sabão em pó',u:'kg',ps:[{q:1,r:'1 kg',p:12},{q:3,r:'3 kg',p:39}]}],sortear,
+ montar(q){sel=-1;$('dq').innerHTML=`${q.n}: qual embalagem compensa mais?`;chips(q);},
+ conferir(q){if(sel<0){msg('dm','Toque numa embalagem.','info');return null;}const pu=q.ps.map(x=>x.p/x.q),best=pu.indexOf(Math.min(...pu));
+  chips(q,q.ps.map((x,i)=>i===best?'okk':(i===sel?'bad':'')));return {ok:sel===best,exp:'Preço por '+q.u+': '+q.ps.map(x=>`${x.r} → ${R$(x.p/x.q)}`).join('; ')+'.'};}});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A bola de neve dos juros · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">A bola de neve dos juros</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0" id="sub"></p>
+<div class="sl" id="s1"><b>Valor inicial</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Taxa por período</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Períodos</b><input type="range"><span></span></div>
+<div class="sl" id="s4"><b>Depósito por período</b><input type="range"><span></span></div>
+<div class="row"><button class="alt" id="un">Período: mês</button></div>
+<div class="kpi"><div>Juros simples<b id="k1"></b></div><div class="o">Juros compostos<b id="k2"></b></div><div>Diferença<b id="k3"></b></div></div>
+<div class="fig" id="fig"></div><p class="muted" id="obs" style="margin:0"></p></div>
+<div class="card"><h2>Tabela período a período</h2><div style="overflow-x:auto"><table class="t" id="tb"></table></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const div=Q.get('modo')==='divida';let un='mês';
+$('sub').innerHTML=div?'Uma <b>dívida</b> que ninguém paga cresce com juros compostos: juros sobre juros. Veja a bola de neve, por exemplo, no rotativo do cartão.':'Compare os <b>juros simples</b> (sempre sobre o valor inicial) com os <b>compostos</b> (juros sobre juros). Mexa nos controles.';
+if(div){$('s4').classList.add('hide');}
+const a=SL('s1',100,10000,100,+(Q.get('c')||1000),draw,R0),b=SL('s2',0.5,20,0.5,+(Q.get('i')||(div?10:10)),draw,v=>pct(v)),c=SL('s3',1,60,1,+(Q.get('t')||(div?12:20)),draw),d=SL('s4',0,500,10,0,draw,R0);
+$('un').onclick=()=>{un=un==='mês'?'ano':'mês';$('un').textContent='Período: '+un;draw();};
+function draw(){const C=a.get(),i=b.get()/100,n=c.get(),dep=div?0:d.get();const vs=[C],vc=[C];let s=C,k=C;
+ for(let t=1;t<=n;t++){s=s+C*i+dep;k=k*(1+i)+dep;vs.push(s);vc.push(k);}
+ $('k1').textContent=R0(s);$('k2').textContent=R0(k);$('k3').textContent=R0(k-s);
+ $('fig').innerHTML=grafico([{v:vs,cor:'#2457D6',nome:'simples'},{v:vc,cor:'#F7821F',nome:'compostos'}],{rotX:t=>t});
+ const dob=Math.log(2)/Math.log(1+i);$('obs').innerHTML=`Pela regra do 72, a ${pct(b.get())} ao ${un} o valor dobra em cerca de ${fmt(Math.round(72/b.get()*10)/10)} ${un==='mês'?'meses':'anos'} (conta exata: ${fmt(Math.round(dob*10)/10)}).`+(div?' Por isso dívida cara se paga primeiro!':'');
+ let h='<tr><th>'+un+'</th><th>simples</th><th>compostos</th></tr>';for(let t=0;t<=n;t+=n>24?Math.ceil(n/24):1)h+=`<tr><td>${t}</td><td>${R$(vs[t])}</td><td>${R$(vc[t])}</td></tr>`;$('tb').innerHTML=h;}
+draw();
+</script>
+
+</body>
+</html>

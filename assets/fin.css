@@ -1,0 +1,42 @@
+/* Educação Financeira · complementos de estilo das páginas da pasta fin/ */
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:1fr 92px;align-items:center;gap:2px 8px;margin:10px 0}
+.sl b{grid-column:1/-1}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%;accent-color:#F7821F}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:9px 12px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:8px 0}
+.kpi div{background:var(--bg);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--gray)}
+.kpi b{display:block;font-size:18px;color:var(--navy)}
+.kpi .o b{color:var(--orange)}
+.carta{background:#fff;border:2px solid #D7DEEA;border-radius:16px;padding:18px;font-size:17px;font-weight:500;color:var(--navy);min-height:90px;display:flex;align-items:center;justify-content:center;text-align:center;margin:8px 0}
+.carta.chat{justify-content:flex-start;text-align:left;background:#E7F7E1;border-color:#BFE3B4;border-radius:4px 16px 16px 16px;font-size:15px;font-weight:400;color:#111}
+.carta.chat small{display:block;color:#6B7280;font-size:12px;margin-bottom:4px}
+.baldes{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.baldes button{padding:14px 8px;font-weight:600}
+.barra{height:12px;background:#E5E7EB;border-radius:8px;overflow:hidden}.barra i{display:block;height:100%;background:var(--orange);transition:width .4s}
+.status{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.status span{background:var(--bg);border-radius:20px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--navy)}
+.hist{font-size:16px;line-height:1.6}
+.ops button{display:block;width:100%;text-align:left;margin:8px 0;background:#fff;color:var(--navy);border:2px solid var(--navy);font-weight:500}
+.ops button:hover{background:#EEF3FF}
+.lista{list-style:none;padding:0;margin:6px 0}
+.lista li{background:#fff;border:2px solid #D7DEEA;border-radius:10px;padding:10px 12px;margin:6px 0;cursor:pointer;font-weight:500;color:var(--navy)}
+.lista li.on{border-color:var(--navy);background:#EEF3FF}
+.lista li.okk{border-color:var(--ok);background:#DCFCE7}.lista li.bad{border-color:var(--bad);background:#FEE2E2}
+.lista li b{color:var(--orange);margin-right:8px}

@@ -1,0 +1,28 @@
+<!--T: Promoção relâmpago-->
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Faça a conta de cabeça antes que a barra acabe! Use os atalhos: 10% é dividir por 10, 5% é a metade de 10%, 25% é dividir por 4.</p>
+<div class="barra"><i id="tempo" style="width:100%;background:#B91C1C"></i></div>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div><div id="area"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Próxima</button></div><div id="dm"></div>
+<p class="muted" id="rec" style="margin-bottom:0"></p></div>
+<div class="card hide" id="rs"></div>
+<script>
+const PROD=['🎧 Fone','👟 Tênis','🎒 Mochila','📚 Livro','🧢 Boné','⌚ Relógio','🎮 Controle','🛹 Skate','🎸 Violão','📱 Capinha'];
+const modo=Q.get('modo')||'mix';let tm,t0,seq=0,melhor=0;
+function relogio(){clearInterval(tm);t0=Date.now();tm=setInterval(()=>{const r=Math.max(0,1-(Date.now()-t0)/25000);$('tempo').style.width=(r*100)+'%';if(r<=0)clearInterval(tm);},100);}
+function sort(){const tipo=modo==='mix'?pick(['desc','desc','aum','qual']):modo;
+ const P=pick([40,60,80,120,150,200,240,300,360,400,500,800]),p=pick([5,10,15,20,25,30,40,50]);
+ if(tipo==='qual'){const t=pick([20,40,50,80,200]),pp=pick([10,20,25,30,40,50,75]);return {tipo,t,parte:t*pp/100,r:pp};}
+ if(tipo==='aum')return {tipo,P,p:pick([5,10,20,25,50]),it:pick(PROD)};
+ return {tipo,P,p,it:pick(PROD)};}
+D.ciclo({livros:[{tipo:'desc',P:200,p:30,it:'🎧 Fone'}],sortear:sort,
+ montar(q){relogio();
+  if(q.tipo==='qual'){$('dq').innerHTML=`Num jogo de <span class="k">${q.t}</span> partidas, o time venceu <span class="k">${fmt(q.parte)}</span>. Que porcentagem das partidas ele venceu?`;$('area').innerHTML='<div class="ask">'+box('r1',90)+' %</div>';}
+  else{const d=q.tipo==='desc';$('dq').innerHTML=`${q.it} de <span class="k">${R$(q.P)}</span> ${d?'com <span class="k">'+q.p+'% de desconto</span>':'com <span class="k">aumento de '+q.p+'%</span>'}. Qual o novo preço?`;$('area').innerHTML='<div class="ask">R$ '+box('r1',110)+'</div>';}},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;clearInterval(tm);const seg=Math.round((Date.now()-t0)/1000);let ok,exp;
+  if(q.tipo==='qual'){ok=Math.abs(v[0]-q.r)<0.01;exp=`${fmt(q.parte)} ÷ ${q.t} = ${fmt(q.r/100)} = ${q.r}%.`;}
+  else{const x=q.P*q.p/100,f=q.tipo==='desc'?q.P-x:q.P+x;ok=Math.abs(v[0]-f)<0.01;exp=`${q.p}% de ${fmt(q.P)} = ${R$(x)}. ${q.tipo==='desc'?'Com desconto':'Com aumento'}: ${R$(f)}.`;}
+  D.marcar(['r1'],[ok]);seq=ok?seq+1:0;melhor=Math.max(melhor,seq);$('rec').textContent=`Você levou ${seg} s. Sequência de acertos: ${seq} (recorde: ${melhor}).`;
+  return {ok,exp:exp+(ok&&seg<=25?' E dentro do tempo da promoção! ⚡':'')};},res:false});
+</script>

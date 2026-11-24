@@ -1,0 +1,30 @@
+<!--T: Jogo de classificar-->
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div class="barra"><i id="prog" style="width:0"></i></div>
+<div id="carta" class="carta"></div>
+<div class="baldes" id="baldes"></div>
+<div id="dm"></div>
+<div class="row" style="margin-top:10px"><button class="or hide" id="prox">Próxima carta ›</button></div>
+</div>
+<div class="card hide" id="fim"></div>
+<script>
+const C=(FIN.cls||{})[Q.get('id')];
+if(!C){$('title').textContent='Jogo não encontrado';}
+else{
+ document.title=C.title+' · DidatiClick';$('title').textContent=C.title;$('sub').innerHTML=C.sub;
+ let cartas,i,ac,erros;
+ function inicio(){cartas=shuffle(C.itens);i=0;ac=0;erros=[];$('fim').classList.add('hide');mostra();}
+ function mostra(){const c=cartas[i];$('prog').style.width=(100*i/cartas.length)+'%';
+  $('carta').className='carta'+(C.chat?' chat':'');$('carta').innerHTML=(C.chat&&c[3]?'<div><small>'+c[3]+'</small>'+c[0]+'</div>':c[0]);
+  $('baldes').innerHTML=C.baldes.map((b,k)=>`<button data-k="${k}" style="background:${b[1]||CORES_FIN[k]}">${b[0]}</button>`).join('');
+  $('baldes').querySelectorAll('button').forEach(b=>b.onclick=()=>resp(+b.dataset.k));msg('dm','');$('prox').classList.add('hide');}
+ function resp(k){const c=cartas[i];$('baldes').querySelectorAll('button').forEach(b=>{b.disabled=true;if(+b.dataset.k===c[1])b.disabled=false;});
+  const ok=k===c[1];if(ok)ac++;else erros.push(c);$('placar').textContent=`Acertos: ${ac} de ${i+1}`;
+  msg('dm',(ok?'Certo! ':'Era <b>'+C.baldes[c[1]][0]+'</b>. ')+(c[2]||''),ok?'ok':'bad');
+  i++;if(i<cartas.length){$('prox').classList.remove('hide');}else fim();}
+ function fim(){$('prog').style.width='100%';$('fim').classList.remove('hide');
+  $('fim').innerHTML=`<h2>Resultado: ${ac} de ${cartas.length}</h2><p>${ac===cartas.length?'Perfeito! Você não caiu em nenhuma pegadinha.':ac>=cartas.length*0.7?'Muito bom! Revise as cartas que errou.':'Releia o módulo da apostila e jogue de novo.'}</p>`+
+  (C.fim?`<div class="msg info">${C.fim}</div>`:'')+`<div class="row" style="margin-top:10px"><button class="or" id="de">Jogar de novo</button></div>`;$('de').onclick=()=>{$('placar').textContent='Acertos: 0 de 0';inicio();scrollTo(0,0);};}
+ $('prox').onclick=mostra;inicio();}
+</script>

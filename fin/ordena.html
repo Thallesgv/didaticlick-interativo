@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ponha em ordem · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Ponha em ordem</h1></header>
+<main>
+<div class="card"><p class="muted" id="sub" style="margin-top:0"></p>
+<div class="ask" id="ext"></div>
+<ul class="lista" id="ls"></ul>
+<div class="row"><button class="or" id="ok">Conferir</button><button class="alt" id="lim">Recomeçar</button></div><div id="dm"></div></div>
+<div class="card hide" id="exp"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const O=(FIN.ord||{})[Q.get('id')];
+if(!O){$('title').textContent='Atividade não encontrada';}
+else{document.title=O.title+' · DidatiClick';$('title').textContent=O.title;$('sub').innerHTML=O.sub+' Toque nos itens na ordem certa; toque de novo para desfazer.';
+ $('ext').innerHTML=`<span class="k">▲ ${O.de}</span>&nbsp;&nbsp;…&nbsp;&nbsp;<span class="k">${O.ate} ▼</span>`;
+ let ordem=[],mix=[],feito=false;
+ function monta(cls){$('ls').innerHTML=mix.map(k=>{const p=ordem.indexOf(k);return `<li data-k="${k}" class="${cls?cls[k]:(p>=0?'on':'')}">${p>=0?'<b>'+(p+1)+'º</b>':''}${O.itens[k][0]}</li>`;}).join('');
+  $('ls').querySelectorAll('li').forEach(li=>li.onclick=()=>{if(feito)return;const k=+li.dataset.k;ordem=ordem.includes(k)?ordem.filter(x=>x!==k):ordem.concat(k);monta();});}
+ function ini(){ordem=[];feito=false;mix=shuffle(O.itens.map((_,k)=>k));$('exp').classList.add('hide');$('ok').disabled=false;msg('dm','');monta();}
+ $('ok').onclick=()=>{if(ordem.length<O.itens.length){msg('dm','Toque em todos os itens, do primeiro ao último.','info');return;}
+  feito=true;$('ok').disabled=true;const cls={};let n=0;ordem.forEach((k,p)=>{cls[k]=k===p?'okk':'bad';if(k===p)n++;});monta(cls);
+  msg('dm',n===O.itens.length?'Certo! Ordem perfeita.':`Você acertou a posição de ${n} de ${O.itens.length}. Veja a ordem certa abaixo.`,n===O.itens.length?'ok':'bad');
+  $('exp').classList.remove('hide');$('exp').innerHTML='<h2>A ordem certa</h2><ul class="lista">'+O.itens.map((it,k)=>`<li class="okk"><b>${k+1}º</b>${it[0]}<br><span class="muted">${it[1]||''}</span></li>`).join('')+'</ul>';};
+ $('lim').onclick=ini;ini();}
+</script>
+
+</body>
+</html>
