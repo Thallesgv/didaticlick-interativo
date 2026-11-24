@@ -10,7 +10,7 @@ svg{max-width:100%;height:auto}
 .tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
 .tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
 .tabs button.on{background:var(--navy);color:#fff}
-.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl{display:grid;grid-template-columns:120px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
 .sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
 .res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
 .res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
@@ -30,6 +30,7 @@ select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DE
 
 <div class="tabs"><button id="tab-livre" class="on">Conversor</button><button id="tab-desafio">Desafio</button></div>
 <div id="pn-livre"><div class="card">
+<p class="muted">Escolha a hora em que algo começa (por exemplo, um filme) e quanto tempo ele dura. Os relógios mostram o início e o fim, e a conta aparece embaixo.</p>
 <div class="row" style="align-items:center"><input class="n" id="val" value="50" inputmode="decimal"><select id="tp"></select></div>
 <div class="res" id="res"></div><div class="fig" id="fig" style="margin-top:8px"></div></div></div>
 <div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>Converta (arredonde para 1 casa decimal)</h2><div class="dq" id="dq"></div>

@@ -10,7 +10,7 @@ svg{max-width:100%;height:auto}
 .tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
 .tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
 .tabs button.on{background:var(--navy);color:#fff}
-.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl{display:grid;grid-template-columns:120px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
 .sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
 .res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
 .res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
@@ -30,10 +30,11 @@ select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DE
 
 <div class="tabs"><button id="tab-livre" class="on">Explorar</button><button id="tab-desafio">Desafio</button></div>
 <div id="pn-livre"><div class="card">
-<div class="sl" id="ih"><b>Começa (h)</b><input type="range"><span></span></div>
-<div class="sl" id="im"><b>Começa (min)</b><input type="range"><span></span></div>
-<div class="sl" id="dh"><b>Dura (h)</b><input type="range"><span></span></div>
-<div class="sl" id="dm2"><b>Dura (min)</b><input type="range"><span></span></div>
+<p class="muted">Escolha a hora em que algo começa (por exemplo, um filme) e quanto tempo ele dura. Os relógios mostram o início e o fim, e a conta aparece embaixo.</p>
+<div class="sl" id="ih"><b>Início: horas</b><input type="range"><span></span></div>
+<div class="sl" id="im"><b>Início: minutos</b><input type="range"><span></span></div>
+<div class="sl" id="dh"><b>Duração: horas</b><input type="range"><span></span></div>
+<div class="sl" id="dm2"><b>Duração: minutos</b><input type="range"><span></span></div>
 <div class="row" style="justify-content:space-around"><div id="c1"></div><div id="c2"></div></div>
 <div class="res" id="res"></div></div></div>
 <div class="card hide" id="pn-desafio"><div class="placar" id="placar">Acertos: 0 de 0</div><h2>A que horas termina?</h2><div class="dq" id="dq"></div>
