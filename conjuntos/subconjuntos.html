@@ -46,7 +46,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 <script>
 
 const C=(Q.get('c')||'Z').toUpperCase();
-const L={N:'ℕ',Z:'ℤ',Q:'ℚ',R:'ℝ'};
+const L={N:'ℕ',Z:'ℤ',Q:'ℚ',I:'𝕀',R:'ℝ'};
 const nt=(l,s,g)=>`<span class="cj">${l}${s?'<sup>*</sup>':''}${g?'<sub>'+g+'</sub>':''}</span>`;
 const isq=n=>Number.isInteger(Math.sqrt(n));const prim=n=>{if(n<2)return false;for(let d=2;d*d<=n;d++)if(n%d===0)return false;return true;};
 const sinal=L[C]?C:'Z';
@@ -55,12 +55,14 @@ const OPS={
  N:[{k:'s',h:nt('ℕ',1),f:x=>x.v!==0},{k:'par',h:'pares',f:x=>x.v%2===0},{k:'imp',h:'ímpares',f:x=>x.v%2===1},{k:'pr',h:'primos',f:x=>prim(x.v)},{k:'qd',h:'quadrados perfeitos',f:x=>isq(x.v)}],
  Z:[{k:'s',h:nt('ℤ',1),f:x=>x.v!==0},{k:'p',h:nt('ℤ',0,'+'),f:x=>x.v>=0},{k:'m',h:nt('ℤ',0,'−'),f:x=>x.v<=0},{k:'sp',h:nt('ℤ',1,'+'),f:x=>x.v>0},{k:'sm',h:nt('ℤ',1,'−'),f:x=>x.v<0}],
  Q:padrao('ℚ').concat([{k:'z',h:nt('ℤ'),f:x=>x.i},{k:'n',h:nt('ℕ'),f:x=>x.i&&x.v>=0}]),
+ I:[{k:'ir',h:nt('𝕀'),f:x=>!x.r},{k:'ip',h:nt('𝕀',0,'+'),f:x=>!x.r&&x.v>0},{k:'im',h:nt('𝕀',0,'−'),f:x=>!x.r&&x.v<0},{k:'q',h:nt('ℚ'),f:x=>x.r},{k:'re',h:nt('ℝ'),f:x=>true}],
  R:padrao('ℝ').concat([{k:'q',h:nt('ℚ'),f:x=>x.r},{k:'ir',h:nt('𝕀'),f:x=>!x.r}])}[sinal];
 const I=v=>({t:sg(v),v,i:true,r:true});
 const Fq=(n,d,dec)=>{const v=n/d;return {t:dec?sg(v).replace('.',','):(n<0?'−':'')+Math.abs(n)+'/'+d,v,i:Number.isInteger(v),r:true};};
 const LIV={N:[I(0),I(2),I(9),I(15)],Z:[I(-3),I(0),I(5)],Q:[Fq(-3,4),I(0),Fq(5,2,1),I(-6)],
+ I:[{t:'√2',v:Math.SQRT2,r:false},{t:'−π',v:-Math.PI,r:false},I(0),Fq(3,4),{t:'−√9',v:-3,r:true,dica:'√9 = 3: −√9 = −3 é racional!'}],
  R:[{t:'√2',v:Math.SQRT2,r:false},{t:'−π',v:-Math.PI,r:false},I(0),Fq(3,4),I(-5)]}[sinal];
-const RES={N:'naturais-q5-6',Z:'inteiros-q6-6',Q:'racionais-q5-6',R:'reais-q5-6'}[sinal];
+const RES={N:'naturais-q5-6',Z:'inteiros-q6-6',Q:'racionais-q5-6',I:'irracionais-q5-6',R:'reais-q5-6'}[sinal];
 $('rs').className='card hide';$('rs').innerHTML=`<p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=${RES}">Abrir a resolução comentada</a></p>`;
 $('title').innerHTML='Classifique nos subconjuntos de '+nt(L[sinal]);
 function sortear(){
@@ -79,7 +81,7 @@ D.ciclo({livros:LIV,sortear,
   $('dq').innerHTML=`A quais conjuntos o número <span class="k">${q.t}</span> pertence?`;draw();},
  conferir(q){if(!sel.size){msg('dm','Toque em pelo menos um conjunto e depois em OK.','info');return null;}const certo=OPS.filter(o=>o.f(q)).map(o=>o.k),ok=certo.length===sel.size&&certo.every(k=>sel.has(k));draw();
   const lista=OPS.filter(o=>o.f(q)).map(o=>o.h).join(', ')||'nenhum destes';
-  return {ok,exp:`${q.t} pertence a: <b>${lista}</b>.${q.dica?' '+q.dica:''}${q.v===0?' O zero fica nos conjuntos com + e com −, mas sai de todo conjunto com asterisco.':''}`};},
+  return {ok,exp:`${q.t} pertence a: <b>${lista}</b>.${q.dica?' '+q.dica:''}${q.v===0?(sinal==='I'?' O zero é racional (0 = 0/1), por isso não está em 𝕀, nem em 𝕀₊ nem em 𝕀₋.':' O zero fica nos conjuntos com + e com −, mas sai de todo conjunto com asterisco.'):''}`};},
  res:true});
 
 </script>
