@@ -1,0 +1,16 @@
+<!--T: O FGC protege quanto?-->
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O FGC devolve até <b>R$ 250 mil por CPF em cada instituição</b> se um banco quebrar. Veja onde está o dinheiro e calcule quanto volta.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div><div class="dq" id="dq"></div><div class="fig" id="fig"></div><div id="area"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outra família</button></div><div id="dm"></div></div>
+<div class="card hide" id="rs"></div>
+<script>
+const BANCOS=['Banco Arara','Banco Ipê','Coop. Sabiá','Banco Jatobá','Banco Tucano'];
+function bar(q,show){let g='',mx=Math.max(...q.v,250);q.v.forEach((v,i)=>{const y=12+i*38,w=250*v/mx,c=Math.min(v,250);g+=TX(4,y+16,q.b[i],{a:'start',fs:11})+`<rect x="100" y="${y}" width="${w}" height="22" rx="4" fill="#CBD5E1"/>`+(show?`<rect x="100" y="${y}" width="${250*c/mx}" height="22" rx="4" fill="#15803D"/>`:'')+TX(104+w,y+15,v+' mil',{a:'start',fs:10});});
+ g+=`<line x1="${100+250*250/mx}" y1="4" x2="${100+250*250/mx}" y2="${12+q.v.length*38}" stroke="#F7821F" stroke-dasharray="4 3"/>`+TX(100+250*250/mx,q.v.length*38+22,'limite 250 mil',{fs:9,c:'#F7821F'});return SVG(400,q.v.length*38+28,g);}
+D.ciclo({livros:[{b:['Banco X','Banco Y'],v:[180,120]}],
+ sortear(){const n=rnd(1,3),b=shuffle(BANCOS).slice(0,n);return {b,v:b.map(()=>pick([50,100,150,200,250,300,400,500]))};},
+ montar(q){$('dq').innerHTML='Uma pessoa tem dinheiro em CDB e poupança nestes bancos, e <span class="k">todos quebraram</span>. Quanto o FGC devolve?';$('fig').innerHTML=bar(q);$('area').innerHTML='<div class="ask">R$ '+box('r1',90)+' mil</div>';},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const t=q.v.reduce((s,x)=>s+Math.min(x,250),0),ok=Math.abs(v[0]-t)<0.01;D.marcar(['r1'],[ok]);$('fig').innerHTML=bar(q,true);
+  return {ok,exp:q.v.map((x,i)=>`${q.b[i]}: ${Math.min(x,250)} mil`).join(' + ')+` = <b>${t} mil</b>.`+(q.v.some(x=>x>250)?' O que passa de 250 mil num mesmo banco não é coberto: por isso vale dividir entre instituições.':'')};}});
+</script>

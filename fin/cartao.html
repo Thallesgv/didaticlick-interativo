@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A fatura do cartão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">A fatura do cartão</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">A fatura chegou: <b>R$ 1.000</b>. Todo mês você escolhe quanto pagar. O que não for pago entra no <b>rotativo</b>, com juros de <b>12% ao mês</b>, e você ainda gasta R$ 200 novos no cartão por mês. Consegue zerar em 6 meses?</p>
+<div class="kpi"><div>Mês<b id="k0"></b></div><div class="o">Fatura do mês<b id="k1"></b></div><div>Já pagou de juros<b id="k2"></b></div></div>
+<div class="row"><button id="b1">Pagar só o mínimo (15%)</button><button class="alt" id="b2">Pagar metade</button><button class="or" id="b3">Pagar tudo</button></div>
+<div class="fig" id="fig"></div><div id="dm"></div><div class="row"><button class="alt hide" id="de">Tentar de novo</button></div></div>
+<div class="card"><h2>Por que é tão caro?</h2><p style="margin:0">O rotativo cobra juros compostos altíssimos: a 12% ao mês, uma dívida dobra em uns 6 meses (regra do 72). Desde 2024, a lei limita juros e encargos do rotativo a 100% da dívida original, mas ainda assim ela pode dobrar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+let m,fat,juros,hist,pagos;
+function ini(){m=1;fat=1000;juros=0;hist=[1000];pagos=0;$('de').classList.add('hide');['b1','b2','b3'].forEach(x=>$(x).disabled=false);msg('dm','');tela();}
+function tela(){$('k0').textContent=m+' de 6';$('k1').textContent=R$(fat);$('k2').textContent=R$(juros);
+ $('fig').innerHTML=grafico([{v:hist,cor:'#B91C1C',nome:'fatura',pontos:1}],{rotX:i=>'mês '+(i+1)});}
+function paga(f){const p=Math.round(fat*f*100)/100;pagos+=p;const resto=fat-p,j=resto*0.12;juros+=j;
+ if(m===6){fat=resto+j;fim();return;}
+ fat=Math.round((resto+j+200)*100)/100;m++;hist.push(fat);tela();
+ msg('dm',resto>0?`Você pagou ${R$(p)}. Os ${R$(resto)} que ficaram geraram ${R$(j)} de juros.`:`Você pagou tudo: zero de juros este mês. Os R$ 200 são só as compras novas.`,resto>0?'bad':'ok');}
+function fim(zerou){['b1','b2','b3'].forEach(x=>$(x).disabled=true);$('de').classList.remove('hide');tela();
+ msg('dm',`Em 6 meses você pagou ${R$(pagos)}, dos quais ${R$(juros)} foram só juros.`+(juros<1?' Perfeito: cartão usado do jeito certo, sem pagar um centavo de juros!':' Pagando a fatura toda, os juros seriam zero.'),juros<1?'ok':'bad');}
+$('b1').onclick=()=>paga(0.15);$('b2').onclick=()=>paga(0.5);$('b3').onclick=()=>paga(1);$('de').onclick=ini;ini();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Você no Copom · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Você no Copom</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Você preside o Copom. A meta de inflação é <b>3% ao ano</b> (pode variar entre 1,5% e 4,5%). A cada reunião, leia a notícia e decida a Selic. Juros mais altos freiam a inflação, mas demais esfriam a economia e aumentam o desemprego.</p>
+<div class="kpi"><div>Reunião<b id="k0"></b></div><div class="o">Inflação (12 meses)<b id="k1"></b></div><div>Selic<b id="k2"></b></div><div>Desemprego<b id="k3"></b></div></div>
+<div class="msg info" id="news"></div>
+<div class="row" style="margin-top:10px"><button id="sobe">Subir 0,5</button><button class="alt" id="mantem">Manter</button><button class="or" id="desce">Cortar 0,5</button></div>
+<div class="fig" id="fig"></div><div id="dm"></div><div class="row"><button class="alt hide" id="de">Jogar de novo</button></div></div>
+<div class="card"><h2>Como funciona</h2><p style="margin:0">O Copom se reúne <b>8 vezes por ano</b>. A Selic alta encarece o crédito, as pessoas compram menos a prazo e os preços sobem mais devagar. O efeito leva meses para aparecer, como no jogo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const NEWS=[['A seca encareceu os alimentos.',0.6],['O preço do petróleo caiu no mundo.',-0.5],['As vendas do comércio dispararam.',0.4],['Safra recorde de grãos.',-0.4],['Conta de luz sobe com bandeira vermelha.',0.5],['O dólar caiu.',-0.3],['Nada de novo: economia estável.',0],['Empresas reajustam preços com custos maiores.',0.4]];
+let r,inf,sel,des,hi,hs,neu,np;
+function ini(){r=1;inf=6;sel=10.5;des=8;hi=[inf];hs=[sel];np=[];neu=pick(NEWS);$('de').classList.add('hide');['sobe','mantem','desce'].forEach(x=>$(x).disabled=false);msg('dm','');tela();}
+function tela(){$('k0').textContent=r+' de 8';$('k1').textContent=pct(inf);$('k2').textContent=pct(sel);$('k3').textContent=pct(des);$('k1').style.color=inf>4.5||inf<1.5?'#B91C1C':'#15803D';
+ $('news').innerHTML='📰 '+neu[0];
+ $('fig').innerHTML=grafico([{v:hi,cor:'#F7821F',nome:'inflação',pontos:1},{v:hs,cor:'#0E2354',nome:'Selic',pontos:1}],{fy:v=>pct(v,0),max:16,rotX:i=>'R'+(i+1),extra:(sx,sy)=>`<rect x="48" y="${sy(4.5)}" width="282" height="${sy(1.5)-sy(4.5)}" fill="#15803D" fill-opacity=".08"/>`});}
+function jogar(d){sel=Math.max(2,sel+d);const real=sel-inf;inf=Math.max(0,inf+neu[1]-0.35*(real-5)+ (Math.random()-0.5)*0.3);des=Math.max(4,des+0.25*(real-5));inf=Math.round(inf*10)/10;des=Math.round(des*10)/10;
+ hi.push(inf);hs.push(sel);r++;neu=pick(NEWS);
+ if(r>8){r=8;tela();['sobe','mantem','desce'].forEach(x=>$(x).disabled=true);$('de').classList.remove('hide');
+  const ok=inf>=1.5&&inf<=4.5;msg('dm',ok?(des<=9?`Missão cumprida! Inflação de ${pct(inf)}, dentro da meta, sem estragar o emprego.`:`Inflação na meta (${pct(inf)}), mas o desemprego subiu para ${pct(des)}: o remédio foi forte demais.`):`Fim do ano com inflação de ${pct(inf)}, fora do intervalo da meta. O presidente do Copom teria que escrever uma carta explicando por quê!`,ok?'ok':'bad');}
+ else tela();}
+$('sobe').onclick=()=>jogar(0.5);$('mantem').onclick=()=>jogar(0);$('desce').onclick=()=>jogar(-0.5);$('de').onclick=ini;ini();
+</script>
+
+</body>
+</html>

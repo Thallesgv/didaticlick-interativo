@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Regra do 72 · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Regra do 72</h1></header>
+<main>
+<div class="card"><h2>Corrida para dobrar</h2><p class="muted" style="margin-top:0">Escolha a taxa e veja, ano a ano, quando R$ 1.000 vira R$ 2.000 com juros compostos. Compare com a conta rápida 72 ÷ taxa.</p>
+<div class="sl" id="s1"><b>Taxa de juros por período</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Regra do 72<b id="k1"></b></div><div>Conta exata<b id="k2"></b></div></div><div class="fig" id="fig"></div></div>
+<div class="card"><h2>Desafio</h2><div class="placar" id="placar">Acertos: 0 de 0</div><div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div><div id="area"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outra</button></div><div id="dm"></div></div>
+<div class="card hide" id="rs"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const s=SL('s1',1,24,1,8,draw,v=>v+'%');
+function draw(){const i=s.get()/100;const v=[1000];while(v[v.length-1]<2000&&v.length<80)v.push(v[v.length-1]*(1+i));
+ $('k1').textContent=fmt(Math.round(72/s.get()*10)/10)+' períodos';$('k2').textContent=fmt(Math.round(Math.log(2)/Math.log(1+i)*10)/10)+' períodos';
+ $('fig').innerHTML=grafico([{v,cor:'#F7821F',pontos:v.length<30},{v:v.map(()=>2000),cor:'#0E2354',tr:1,lw:2}],{max:2200});}
+draw();
+D.ciclo({livros:[{t:12,tipo:'dobra'}],
+ sortear(){return pick([{t:pick([2,3,4,6,8,9,12,18,24,36]),tipo:'dobra'},{t:pick([2,3,4,6,8,9,12]),tipo:'taxa'}]);},
+ montar(q){if(q.tipo==='dobra'){$('dq').innerHTML=`A <span class="k">${q.t}% ao ano</span>, em quantos anos o dinheiro dobra, pela regra do 72?`;$('area').innerHTML='<div class="ask">'+box('r1',80)+' anos</div>';}
+  else{$('dq').innerHTML=`Uma dívida dobrou em <span class="k">${72/q.t} meses</span>. Pela regra do 72, qual a taxa de juros ao mês?`;$('area').innerHTML='<div class="ask">'+box('r1',80)+' % ao mês</div>';}},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const r=q.tipo==='dobra'?72/q.t:q.t,ok=Math.abs(v[0]-r)<0.06;D.marcar(['r1'],[ok]);
+  return {ok,exp:q.tipo==='dobra'?`72 ÷ ${q.t} = ${fmt(r)} anos.`:`72 ÷ ${72/q.t} = ${q.t}% ao mês.`};}});
+</script>
+
+</body>
+</html>
