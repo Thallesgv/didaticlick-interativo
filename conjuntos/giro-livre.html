@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiplique por i · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números Complexos</div><h1>Multiplique por i</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha um ponto z = a + bi e toque em “× i”. Cada multiplicação por i gira o ponto 90° no sentido anti-horário, em torno da origem.</p><div class="sl" id="a"><b>parte real a</b><input type="range"><span></span></div><div class="sl" id="b"><b>parte imaginária b</b><input type="range"><span></span></div><div class="row"><button class="or" id="gi">× i</button><button class="alt" id="zr">Recomeçar</button></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const s=v=>String(v).replace('-','−');
+const cz=(a,b)=>{a=+a.toFixed(2);b=+b.toFixed(2);if(!b)return s(a);const bi=(Math.abs(b)===1?'':s(Math.abs(b)).replace('−',''))+'i';return a?`${s(a)} ${b<0?'−':'+'} ${bi}`:(b<0?'−':'')+bi;};
+function plano(R,o){o=o||{};const W=o.w||300,c=W/2,u=(W/2-18)/R;const X=v=>c+v*u,Y=v=>c-v*u;let g='';
+ const st=Math.ceil(R/6);for(let k=-R;k<=R;k++){if(k%st)continue;g+=`<line x1="${X(k)}" y1="${Y(-R)}" x2="${X(k)}" y2="${Y(R)}" stroke="#EEF1F6"/><line x1="${X(-R)}" y1="${Y(k)}" x2="${X(R)}" y2="${Y(k)}" stroke="#EEF1F6"/>`;}
+ g+=`<line x1="6" y1="${c}" x2="${W-6}" y2="${c}" stroke="#0E2354" stroke-width="1.5"/><line x1="${c}" y1="6" x2="${c}" y2="${W-6}" stroke="#0E2354" stroke-width="1.5"/>`+T(W-10,c-6,'Re',{fs:10,a:'end'})+T(c+6,14,'Im',{fs:10,a:'start'});
+ for(let k=-R;k<=R;k++)if(k&&k%st===0)g+=T(X(k),c+13,s(k),{fs:8,w:500,c:'#6B7280'})+T(c-5,Y(k)+3,s(k)+'i',{fs:8,w:500,a:'end',c:'#6B7280'});
+ (o.vec||[]).forEach(([x0,y0,x1,y1,cor,tr])=>{g+=`<line x1="${X(x0)}" y1="${Y(y0)}" x2="${X(x1)}" y2="${Y(y1)}" stroke="${cor}" stroke-width="2.5" ${tr?'stroke-dasharray="5 4"':''} marker-end="url(#ar${cor.slice(1)})"/>`;});
+ (o.pts||[]).forEach(([x,y,lab,cor])=>{g+=`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${cor}"/>`+(lab?T(X(x)+(x<0||x>R*0.4?-8:8),Y(y)-8,lab,{fs:11,c:cor,a:x<0||x>R*0.4?'end':'start',w:700}):'');});
+ const cores=[...new Set((o.vec||[]).map(v=>v[4]))];const defs=cores.map(cr=>`<marker id="ar${cr.slice(1)}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${cr}"/></marker>`).join('');
+ return `<svg viewBox="0 0 ${W} ${W}" width="${W}"><defs>${defs}</defs>${o.extra?o.extra(X,Y):''}${g}</svg>`;}
+
+let P=[];const A=D.sl('a',-4,4,1,+Q.get('a')||3,()=>{P=[];draw();}),B=D.sl('b',-4,4,1,+Q.get('b')||1,()=>{P=[];draw();});const COR=['#2457D6','#F7821F','#DC2626','#7A4BB5','#2457D6'];
+function draw(){if(!P.length)P=[[A.get(),B.get()]];const pts=P.map(([x,y],i)=>[x,y,i===0?'z':'z·i'+(i>1?['','','²','³','⁴'][i]:''),COR[i%5]]);
+ $('fig').innerHTML=plano(5,{pts,vec:P.map(([x,y],i)=>[0,0,x,y,COR[i%5]])});const [x,y]=P[P.length-1];
+ $('nt').innerHTML=P.length===1?`z = ${cz(x,y)}. Toque em “× i”.`:`(${cz(...P[P.length-2])}) × i = ${cz(x,y)}. Repare: (a + bi) × i = −b + ai: a parte real e a imaginária trocam de lugar e uma troca de sinal. ${P.length===5?'Quatro giros de 90°: voltamos ao começo, porque i⁴ = 1.':''}`;$('gi').disabled=P.length>=5;}
+$('gi').onclick=()=>{const [x,y]=P[P.length-1];P.push([-y,x]);draw();};$('zr').onclick=()=>{P=[];draw();};draw();
+
+</script>
+</body>
+</html>

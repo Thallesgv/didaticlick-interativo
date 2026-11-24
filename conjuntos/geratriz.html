@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ache a geratriz · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números Racionais</div><h1>Ache a geratriz</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Digite o período (a parte que se repete) de uma dízima 0,ppp… e, se quiser, a parte que vem antes dele. A página faz as contas da geratriz.</p><div class="ask">0, <input class="n" id="a" style="width:80px" placeholder="antes" inputmode="numeric"> <input class="n" id="p" style="width:90px" placeholder="período" inputmode="numeric"> …</div><div class="dq" id="dz" style="text-align:center"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+$('p').value=Q.get('p')||'12';
+function draw(){const a=$('a').value.replace(/\D/g,'').slice(0,3),p=$('p').value.replace(/\D/g,'').slice(0,4);if(!p){$('nt').textContent='Digite o período.';$('dz').textContent='';return;}
+ const k=a.length,m=p.length,dz='0,'+a+(p+p+p).slice(0,Math.max(6,m*3))+'…';$('dz').textContent=dz;
+ const num=+(a+p)-(+a||0),den=+('9'.repeat(m)+'0'.repeat(k)),g=gcd(num,den);
+ const L=[`x = ${dz}`];if(k)L.push(`10${k>1?'^'+k:''}·x = ${a},${(p+p+p).slice(0,6)}… (o período encosta na vírgula)`);
+ L.push(`${'1'+'0'.repeat(k+m)}·x = ${a}${p},${(p+p+p).slice(0,6)}… (anda um período inteiro)`);L.push(`subtraindo, as caudas iguais somem: ${'9'.repeat(m)+'0'.repeat(k)}·x = ${num}`);
+ L.push(`x = ${num}/${den}${g>1?` = <b>${num/g}/${den/g}</b>`:''}`);
+ $('nt').innerHTML=L.map(l=>`<div>${l}</div>`).join('')+`<div style="margin-top:4px">Confira: ${num/g} ÷ ${den/g} = ${(num/den).toFixed(8).replace('.',',')}…</div>`;}
+$('a').oninput=draw;$('p').oninput=draw;draw();
+
+</script>
+</body>
+</html>
