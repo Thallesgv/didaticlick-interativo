@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina da função · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Função do 1º grau</div><h1 id="title">A máquina da função</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">A máquina faz sempre a mesma conta f(x) = ax + b. Olhe as entradas e saídas, descubra a e b e preveja f(10).</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="flex-direction:column"></div><div class="ask" id="tst">Testar a entrada <input class="n" id="ent" style="width:70px"> <button class="alt" id="bt">Pôr na máquina</button> <span class="muted" id="rest"></span></div><div class="ask">a = <input class="n" id="r1" style="width:60px"> b = <input class="n" id="r2" style="width:60px"> f(10) = <input class="n" id="r3" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao1-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">a é quanto a saída muda quando a entrada aumenta 1. Compare as duas saídas e divida pela diferença das entradas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const lei=(a,b)=>`${a===1?'':a===-1?'−':sg(a).replace('.',',')}x${b?(b>0?' + '+sg(b).replace('.',','):' − '+sg(-b).replace('.',',')):''}`;
+let cur,tab=[],testes=0;
+function draw(){$('fig').innerHTML=`<svg viewBox="0 0 300 90" width="300"><rect x="100" y="10" width="100" height="60" rx="12" fill="#0E2354"/><text x="150" y="46" text-anchor="middle" font-size="16" font-weight="700" fill="#F7821F" font-family="Poppins">ax + b</text>
+ <path d="M20,40 L95,40" stroke="#2457D6" stroke-width="3" marker-end="url(#m)"/><path d="M205,40 L280,40" stroke="#15803D" stroke-width="3"/><text x="40" y="30" font-size="12" font-family="Poppins">x</text><text x="250" y="30" font-size="12" font-family="Poppins">f(x)</text></svg>
+ <table class="t" style="max-width:300px"><tr><th>x</th>${tab.map(r=>`<td>${sg(r[0])}</td>`).join('')}</tr><tr><th>f(x)</th>${tab.map(r=>`<td><b>${sg(r[1])}</b></td>`).join('')}</tr></table>`;
+ $('rest').textContent=cur.max?`(pode testar mais ${cur.max-testes})`:'';$('tst').classList.toggle('hide',!cur.max);}
+$('bt').onclick=()=>{if(D.feito||testes>=cur.max)return;const x=num($('ent').value);if(isNaN(x))return;testes++;tab.push([x,cur.a*x+cur.b]);$('ent').value='';draw();};
+D.ciclo({
+ livros:[{a:3,b:2,t:[[1,5],[3,11]],max:0}],
+ sortear(){const a=pick([-3,-2,2,3,4,5]),b=rnd(-6,8),x1=rnd(1,3),x2=x1+rnd(1,3);return {a,b,t:[[x1,a*x1+b],[x2,a*x2+b]],max:rnd(0,1)};},
+ montar(q){cur=q;tab=q.t.slice();testes=0;['r1','r2','r3'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Uma função <span class="k">f(x) = ax + b</span> tem ${q.t.map(([x,y])=>`f(${x}) = ${sg(y)}`).join(' e ')}. Encontre a e b e calcule <span class="k">f(10)</span>.`;draw();},
+ conferir(q){const v=D.ler(['r1','r2','r3']);if(!v)return null;const ok=[v[0]===q.a,v[1]===q.b,v[2]===10*q.a+q.b];D.marcar(['r1','r2','r3'],ok);const [[x1,y1],[x2,y2]]=q.t;
+  return {ok:ok.every(x=>x),exp:`De x = ${x1} para x = ${x2}, a saída mudou ${sg(y2-y1)} em ${x2-x1} passo${x2-x1>1?'s':''}: a = ${sg(y2-y1)} ÷ ${x2-x1} = <b>${sg(q.a)}</b>. Então b = ${sg(y1)} − ${sg(q.a)} · ${x1} = <b>${sg(q.b)}</b>, e f(10) = <b>${sg(10*q.a+q.b)}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perímetro e área da figura · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Polinômios</div><h1 id="title">Perímetro e área da figura</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude o x para ver a figura crescer. Some os lados do contorno (eles se acendem em laranja) e as áreas das partes.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>x</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask">Perímetro = <input class="n" id="r1" inputmode="numeric" style="width:60px"> x &nbsp; Área = <input class="n" id="r2" inputmode="numeric" style="width:60px"> x²</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=polinomios-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Para o perímetro, ande em volta da figura e some cada lado. Para a área, some as áreas das partes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;
+function draw(){const q=cur,x=SX.get(),s=Math.min(18,230/(q.a*x)),u=x*s;const X0=30,Y0=20+q.c*u;
+ const pts=[[0,0],[q.a,0],[q.a,-q.b],[0,-q.b]];// retângulo a por b (em x), base em y=0
+ let g=`<rect x="${X0}" y="${Y0}" width="${q.a*u}" height="${q.b*u}" fill="#DBEAFE" stroke="#2457D6"/><rect x="${X0+(q.dir?(q.a-q.c)*u:0)}" y="${Y0-q.c*u}" width="${q.c*u}" height="${q.c*u}" fill="#FDE9D8" stroke="#F7821F"/>`;
+ g+=`<text x="${X0+q.a*u/2}" y="${Y0+q.b*u+16}" text-anchor="middle" font-size="12" font-family="Poppins" fill="#0E2354">${q.a}x</text><text x="${X0+q.a*u+6}" y="${Y0+q.b*u/2+4}" font-size="12" font-family="Poppins" fill="#0E2354">${q.b===1?'':q.b}x</text>`;
+ g+=`<text x="${X0+(q.dir?(q.a-q.c/2)*u:q.c*u/2)}" y="${Y0-q.c*u-6}" text-anchor="middle" font-size="12" font-family="Poppins" fill="#F7821F">${q.c===1?'':q.c}x</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${q.a*u+80} ${Y0+q.b*u+30}" width="${Math.min(340,q.a*u+80)}">${g}</svg><div class="muted" style="margin-left:8px">x = ${x}: perímetro ${(2*(q.a+q.b)+2*q.c)*x}, área ${(q.a*q.b+q.c*q.c)*x*x}</div>`;}
+D.ciclo({
+ livros:[{a:3,b:1,c:1,dir:false}],
+ sortear(){const a=rnd(2,5),b=rnd(1,2),c=rnd(1,Math.min(2,a-1));return {a,b,c,dir:!!rnd(0,1)};},
+ montar(q){cur=q;SX=D.sl('sx',1,5,1,2,draw);['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`A figura é um retângulo de <span class="k">${q.a}x por ${q.b===1?'':q.b}x</span> com um quadrado de lado <span class="k">${q.c===1?'':q.c}x</span> em cima, no canto ${q.dir?'direito':'esquerdo'}. Calcule o perímetro e a área.`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const P=2*(q.a+q.b)+2*q.c,A=q.a*q.b+q.c*q.c,ok=[v[0]===P,v[1]===A];D.marcar(['r1','r2'],ok);
+  return {ok:ok[0]&&ok[1],exp:`Perímetro: o contorno do retângulo (${2*(q.a+q.b)}x) mais os dois lados de pé do quadrado (${2*q.c}x); o lado de cima do quadrado só substitui um pedaço igual do retângulo. Total <b>${P}x</b>. Área: ${q.a*q.b}x² + ${q.c*q.c}x² = <b>${A}x²</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A barra do dinheiro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Equação do 1º grau</div><h1 id="title">A barra do dinheiro</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">A barra é todo o dinheiro. Pinte o 1º gasto; depois, do que sobrou, pinte o 2º gasto. O que ficar sem cor é o que restou.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="ferr"></div>
+<div class="fig" id="fig"></div><div class="ask" id="st"></div>
+<div class="ask">Eu tinha R$ <input class="n" id="r1" inputmode="numeric" style="width:110px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=eq1-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O “quarto do que sobrou” é um quarto do pedaço que restou, não do dinheiro todo. Pinte primeiro o terço e reparta o que sobrar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,pint=[],ferr=0;const COR=['#2457D6','#F7821F'];
+function draw(){const q=cur,n=q.n,W=340,w=(W-20)/n;let g='';
+ for(let i=0;i<n;i++)g+=`<rect data-t="${i}" x="${10+i*w}" y="10" width="${w-2}" height="46" rx="4" fill="${pint[i]===undefined?'#E5E7EB':COR[pint[i]]}" style="cursor:pointer"/>`;
+ g+=`<text x="10" y="74" font-size="11" font-family="Poppins" fill="#6B7280">a barra é todo o dinheiro, em ${n} partes iguais</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 80" width="${W}">${g}</svg>`;D.tap($('fig'),i=>{if(D.feito)return;pint[i]=pint[i]===ferr?undefined:ferr;draw();});
+ const c=k=>pint.filter(x=>x===k).length,sob=n-c(0)-c(1);
+ $('st').innerHTML=`${q.nomes[0]}: ${c(0)} partes · ${q.nomes[1]}: ${c(1)} partes · sobra: <b>${sob}</b> partes = R$ ${q.sobra}`+(c(0)===q.p0&&c(1)===q.p1?` <span style="color:var(--ok)">✓ pintura certa: cada parte vale R$ ${q.sobra} ÷ ${sob}</span>`:'');
+ $('ferr').innerHTML=q.nomes.map((t,i)=>`<button data-i="${i}" class="${i===ferr?'on':''}" style="border-color:${COR[i]}">Pintar: ${t}</button>`).join('');
+ $('ferr').querySelectorAll('button').forEach(b=>b.onclick=()=>{ferr=+b.dataset.i;draw();});}
+D.ciclo({
+ livros:[{n:12,p0:4,p1:2,sobra:60,total:120,nomes:['1º gasto','2º gasto'],txt:'Gastei <span class="k">um terço</span> do meu dinheiro e depois <span class="k">um quarto do que sobrou</span>. Fiquei com <span class="k">R$ 60,00</span>. Quanto eu tinha?',exp:'Em 12 partes: 1/3 = 4 partes; sobram 8; 1/4 delas = 2; ficam 6 partes = R$ 60. Cada parte vale R$ 10: total <b>R$ 120,00</b>.'}],
+ sortear:function(){const a=pick([2,3,4,5]),b=pick([2,3,4,5]),n=a*b,p0=b,rest=n-p0,p1=rest/b,sb=rest-p1,parte=pick([2,3,5,10]),tot=n*parte;
+ return {n,p0,p1,sobra:sb*parte,total:tot,nomes:['1º gasto','2º gasto'],txt:`Gastei <span class="k">1/${a}</span> do meu dinheiro e depois <span class="k">1/${b} do que sobrou</span>. Fiquei com <span class="k">R$ ${sb*parte},00</span>. Quanto eu tinha?`,
+ exp:`Em ${n} partes: 1/${a} = ${p0} partes; sobram ${rest}; 1/${b} delas = ${p1}; ficam ${sb} partes = R$ ${sb*parte}. Cada parte vale R$ ${parte}: total <b>R$ ${tot},00</b>.`};},
+ montar(q){cur=q;pint=[];ferr=0;$('r1').value='';$('r1').style.borderColor='';$('dq').innerHTML=q.txt;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===q.total;D.marcar(['r1'],[ok]);pint=Array.from({length:q.n},(_,i)=>i<q.p0?0:i<q.p0+q.p1?1:undefined);draw();
+  return {ok,exp:q.exp};},
+ res:true});
+
+</script>
+</body>
+</html>

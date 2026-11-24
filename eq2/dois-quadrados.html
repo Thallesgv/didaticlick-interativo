@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dois quadrados, uma soma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Equação do 2º grau</div><h1 id="title">Dois quadrados, uma soma</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude o x: os dois quadrados mudam de tamanho e a soma das áreas aparece embaixo. Ache os dois valores de x que dão a soma pedida.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>x</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask" id="st"></div><div class="ask">x₁ = <input class="n" id="r1" style="width:70px"> x₂ = <input class="n" id="r2" style="width:70px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=eq2-q2-5">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Desenvolva os dois quadrados, junte tudo de um lado e resolva a equação do 2º grau. O controle ajuda a conferir.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;const ls=a=>a===0?'x':`x ${a>0?'+ '+a:'− '+(-a)}`;
+function draw(){const q=cur,x=SX.get(),l1=x+q.a,l2=x+q.b,t=l1*l1+l2*l2,s=Math.min(24,270/Math.max(1,Math.abs(l1)+Math.abs(l2)));let g='';
+ g+=`<rect x="20" y="20" width="${Math.abs(l1)*s}" height="${Math.abs(l1)*s}" fill="#DBEAFE" stroke="#2457D6"/><rect x="${40+Math.abs(l1)*s}" y="20" width="${Math.abs(l2)*s}" height="${Math.abs(l2)*s}" fill="#FDE9D8" stroke="#F7821F"/>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 330 ${Math.max(40,Math.max(Math.abs(l1),Math.abs(l2))*s+30)}" width="330">${g}</svg>`;
+ $('st').innerHTML=`(${sg(l1)})² + (${sg(l2)})² = ${l1*l1} + ${l2*l2} = <b style="color:${t===q.c?'var(--ok)':'var(--navy)'}">${t}</b> ${t===q.c?'✓':''}`;}
+D.ciclo({
+ livros:[{a:-1,b:2,c:17}],
+ sortear(){for(;;){const a=rnd(-4,3),b=a+rnd(1,5),r=rnd(-6,6),c=(r+a)**2+(r+b)**2;const o=-(a+b)-r;if(o!==r&&Math.abs(o)<=12&&c<=200)return {a,b,c};}},
+ montar(q){cur=q;SX=D.sl('sx',-12,12,1,0,draw);['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Resolva <span class="k">(${ls(q.a)})² + (${ls(q.b)})² = ${q.c}</span>.`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const s=[];for(let x=-30;x<=30;x++)if((x+q.a)**2+(x+q.b)**2===q.c)s.push(x);const ok=s.length===2&&s.every(t=>v.includes(t))&&v[0]!==v[1];D.marcar(['r1','r2'],v.map(t=>s.includes(t)));
+  const B=2*(q.a+q.b),C=q.a*q.a+q.b*q.b-q.c;
+  return {ok,exp:`Desenvolvendo: 2x² ${B>=0?'+ '+B:'− '+(-B)}x ${C>=0?'+ '+C:'− '+(-C)} = 0, ou x² ${B/2===1?'+ ':B/2===-1?'− ':B/2>=0?'+ '+B/2:'− '+(-B/2)}x ${C/2>=0?'+ '+C/2:'− '+(-C/2)} = 0. Raízes: <b>${s.map(sg).join(' e ')}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

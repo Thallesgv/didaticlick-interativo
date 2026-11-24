@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transforme a igualdade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Propriedades da igualdade</div><h1 id="title">Transforme a igualdade</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nas operações: cada uma é feita nos <b>dois lados</b> ao mesmo tempo, então a igualdade continua verdadeira. Chegue à expressão pedida sem descobrir o x.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="eq" style="font-size:26px;font-weight:700;color:var(--navy)"></div><div class="chips" id="ops"></div><div class="row" style="margin-top:6px"><button class="alt" id="volta">Recomeçar</button></div><div class="muted" id="hist"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=igualdade-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">4x − 1 = 19 → somando 6 nos dois lados, 4x + 5 = 25. Dobrando os dois lados, 8x − 2 = 38. Não precisa saber quanto vale x.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,a,b,r,h=[];const ex=(a,b)=>`${a===1?'':a===-1?'−':sg(a)}x${b?(b>0?' + '+b:' − '+(-b)):''}`;
+const OPS=[['+1',1,0],['−1',-1,0],['+2',2,0],['+3',3,0],['+6',6,0],['−6',-6,0],['× 2',0,2],['× 3',0,3],['÷ 2',0,.5]];
+function draw(){$('eq').innerHTML=`${ex(a,b)} = ${sg(r)}`;$('hist').textContent=h.length?'Feito: '+h.join(', '):'';
+ $('ops').innerHTML=OPS.map((o,i)=>`<button data-i="${i}">${o[0]}</button>`).join('');
+ $('ops').querySelectorAll('button').forEach(bt=>bt.onclick=()=>{if(D.feito)return;const o=OPS[+bt.dataset.i];if(o[2]){a*=o[2];b*=o[2];r*=o[2];}else{b+=o[1];r+=o[1];}h.push(o[0]);draw();});}
+$('volta').onclick=()=>{if(!D.feito){a=cur.a;b=cur.b;r=cur.r;h=[];draw();}};
+D.ciclo({
+ livros:[{a:4,b:-1,r:19,ta:4,tb:5},{a:4,b:-1,r:19,ta:8,tb:-2},{a:4,b:-1,r:19,ta:4,tb:0}],
+ sortear(){const a0=rnd(2,5),x=rnd(1,6),b0=rnd(-5,5)||1,m=pick([1,2,3]);return {a:a0,b:b0,r:a0*x+b0,ta:a0*m,tb:pick([-3,-2,-1,1,2,3,4,6])};},
+ montar(q){cur=q;a=q.a;b=q.b;r=q.r;h=[];$('dq').innerHTML=`Se <span class="k">${ex(q.a,q.b)} = ${sg(q.r)}</span>, quanto vale <span class="k">${ex(q.ta,q.tb)}</span>? Sem descobrir o x!`;draw();},
+ conferir(q){const ok=a===q.ta&&b===q.tb,m=q.ta/q.a,val=(q.r-q.b)*m+q.tb;
+  const pas=[];if(m!==1)pas.push(`multiplique os dois lados por ${m}: ${ex(q.a*m,q.b*m)} = ${sg(q.r*m)}`);const dd=q.tb-q.b*m;if(dd)pas.push(`${dd>0?'some '+dd:'subtraia '+(-dd)} nos dois lados`);
+  return {ok,exp:`Um caminho: ${pas.join('; depois ')}. Resultado: <b>${ex(q.ta,q.tb)} = ${sg(val)}</b>.${ok?'':' Faltou chegar exatamente à expressão pedida.'}`};},
+ res:true});
+
+</script>
+</body>
+</html>
