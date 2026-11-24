@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>(a + b)² e a² + b² · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos Notáveis</div><h1>(a + b)² e a² + b²</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Mude a e b. O quadrado grande tem lado a + b. Somando só a² e b² (os quadrados azul e verde), ficam faltando os dois retângulos laranja, de área ab cada.</p><div class="sl" id="a"><b>a</b><input type="range"><span></span></div><div class="sl" id="b"><b>b</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="res" id="rs"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+function qd(a,b,u,cols){let g='';const A=a*u,B=b*u;const C=cols||['#2457D6','#F7821F','#F7821F','#15803D'];
+ g+=`<rect x="10" y="10" width="${A}" height="${A}" fill="${C[0]}" opacity=".85"/><rect x="${10+A}" y="10" width="${B}" height="${A}" fill="${C[1]}" opacity=".85"/><rect x="10" y="${10+A}" width="${A}" height="${B}" fill="${C[2]}" opacity=".85"/><rect x="${10+A}" y="${10+A}" width="${B}" height="${B}" fill="${C[3]}" opacity=".85"/>`;
+ g+=T(10+A/2,14+A/2,'a²',{c:'#fff',fs:13})+T(10+A+B/2,14+A/2,'ab',{c:'#fff',fs:12})+T(10+A/2,14+A+B/2,'ab',{c:'#fff',fs:12})+T(10+A+B/2,14+A+B/2,'b²',{c:'#fff',fs:12});return g;}
+
+const A=D.sl('a',1,9,1,+Q.get('a')||3,draw),B=D.sl('b',1,9,1,+Q.get('b')||4,draw);
+function draw(){const a=A.get(),b=B.get(),u=200/(a+b);$('fig').innerHTML=svg(220,220,qd(a,b,u));
+ $('rs').innerHTML=`<div>(a + b)²<b>${(a+b)**2}</b></div><div>a² + b²<b>${a*a+b*b}</b></div><div>faltam 2ab<b>${2*a*b}</b></div>`;
+ $('nt').innerHTML=`(${a} + ${b})² = ${a+b}² = ${(a+b)**2}, mas ${a}² + ${b}² = ${a*a} + ${b*b} = ${a*a+b*b}. A diferença é 2 × ${a} × ${b} = <b>${2*a*b}</b>: os dois retângulos. Por isso (a + b)² = a² + 2ab + b².`;}draw();
+
+</script>
+</body>
+</html>

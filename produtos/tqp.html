@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>É trinômio quadrado perfeito? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos Notáveis</div><h1>É trinômio quadrado perfeito?</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha b e c em x² + bx + c. As peças são o quadrado x², duas faixas de (b/2)x e o canto c. O trinômio é quadrado perfeito quando o canto é exatamente (b/2)².</p><div class="sl" id="b"><b>b</b><input type="range"><span></span></div><div class="sl" id="c"><b>c</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const B=D.sl('b',2,16,2,+Q.get('b')||10,draw),C=D.sl('c',0,80,1,+Q.get('c')||16,draw);
+function draw(){const b=B.get(),c=C.get(),h=b/2,x=6,u=200/(x+h),X=x*u,H=h*u,need=h*h;
+ let g=`<rect x="10" y="10" width="${X}" height="${X}" fill="#2457D6" opacity=".85"/><rect x="${10+X}" y="10" width="${H}" height="${X}" fill="#F7821F" opacity=".85"/><rect x="10" y="${10+X}" width="${X}" height="${H}" fill="#F7821F" opacity=".85"/>`;
+ const cs=Math.sqrt(Math.min(c,need)/need);g+=`<rect x="${10+X}" y="${10+X}" width="${H}" height="${H}" fill="none" stroke="#15803D" stroke-dasharray="4 3"/><rect x="${10+X}" y="${10+X}" width="${H*cs}" height="${H*cs}" fill="#15803D" opacity=".85"/>`;
+ g+=T(10+X/2,14+X/2,'x²',{c:'#fff',fs:13})+T(10+X+H/2,14+X/2,h+'x',{c:'#fff',fs:12})+T(10+X/2,14+X+H/2,h+'x',{c:'#fff',fs:12});
+ $('fig').innerHTML=svg(230,230,g);
+ $('nt').innerHTML=c===need?`<b>Sim!</b> x² + ${b}x + ${c} = (x + ${h})²: o canto ${c} = ${h}² fecha o quadrado.`:`<b>Não.</b> Para fechar o quadrado, o canto teria de ser (${b} ÷ 2)² = ${need}, mas c = ${c}${c>need?': sobra '+(c-need):': falta '+(need-c)}. (x² + ${b}x + ${need} = (x + ${h})².)`;}draw();
+
+</script>
+</body>
+</html>

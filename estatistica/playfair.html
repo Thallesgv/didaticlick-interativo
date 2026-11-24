@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tabela ou gráfico? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>Tabela ou gráfico?</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Vendas de pipoca na cantina, mês a mês. Os números são os mesmos nas três formas. Toque para trocar.</p><div class="row"><button class="alt on" id="b0">Tabela</button><button class="alt" id="b1">Barras</button><button class="alt" id="b2">Linha</button></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const M=['fev','mar','abr','mai','jun','ago','set','out','nov'],V=[120,135,128,150,210,95,140,160,175];let m=0;
+function draw(){[0,1,2].forEach(i=>$('b'+i).classList.toggle('on',i===m));const W=330,H=180,sx=i=>40+i*(W-60)/(V.length-1),sy=v=>H-30-v/220*(H-50);
+ if(m===0)$('fig').innerHTML='<table class="t"><tr><th>mês</th>'+M.map(x=>`<th>${x}</th>`).join('')+'</tr><tr><td>pacotes</td>'+V.map(v=>`<td>${v}</td>`).join('')+'</tr></table>';
+ else{let g=`<line x1="30" y1="${H-30}" x2="${W}" y2="${H-30}" stroke="#0E2354"/><line x1="30" y1="10" x2="30" y2="${H-30}" stroke="#0E2354"/>`;for(let v=0;v<=200;v+=50)g+=T(26,sy(v)+3,v,{fs:8,a:'end',w:500});
+  M.forEach((x,i)=>g+=T(sx(i),H-14,x,{fs:9,w:500}));if(m===1)V.forEach((v,i)=>g+=`<rect x="${sx(i)-11}" y="${sy(v)}" width="22" height="${H-30-sy(v)}" fill="${v===210?'#F7821F':'#2457D6'}"/>`);
+  else g+=`<polyline points="${V.map((v,i)=>sx(i)+','+sy(v)).join(' ')}" fill="none" stroke="#2457D6" stroke-width="2.5"/>`+V.map((v,i)=>`<circle cx="${sx(i)}" cy="${sy(v)}" r="4" fill="${v===210?'#F7821F':'#2457D6'}"/>`).join('');
+  $('fig').innerHTML=svg(W,H,g);}
+ $('nt').innerHTML=m===0?'Na tabela, cada número está certo, mas é preciso ler um por um para achar o maior.':m===1?'Nas barras, o pico de junho (festa junina!) salta aos olhos. Barras são boas para comparar categorias.':'Na linha, aparece a tendência: as vendas sobem ao longo do ano, com o pico em junho e a queda nas férias de julho. Linhas são boas para mostrar mudança no tempo.';}
+[0,1,2].forEach(i=>$('b'+i).onclick=()=>{m=i;draw();});draw();
+
+</script>
+</body>
+</html>
