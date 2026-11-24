@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Confira o código de barras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números naturais</div><h1 id="title">Confira o código de barras</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Multiplique os 12 primeiros algarismos, alternando, por 1 e por 3. Some tudo e veja quanto falta para o próximo múltiplo de 10: esse é o dígito verificador.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="cod" style="flex-direction:column;gap:6px"></div>
+<div class="ask">Soma dos produtos: <input class="n" id="s" inputmode="numeric" style="width:90px"> &nbsp; dígito verificador: <input class="n" id="d" inputmode="numeric" style="width:60px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=naturais-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Exemplo: se a soma deu 135, o próximo múltiplo de 10 é 140 e o dígito é 5. Se a soma já for múltiplo de 10 (como 120), o dígito é 0.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;
+function chk(g){let s=0;g.forEach((x,k)=>s+=x*(k%2?3:1));return [s,(10-s%10)%10];}
+function draw(show){const g=cur.g,[s,d]=chk(g);
+ let bars='';const all=g.concat([show?d:'?']);let x=6;all.forEach((v,k)=>{const n=(typeof v==='number'?v:5);for(let j=0;j<4;j++){const w=((n+j+k)%3)+1;if(j%2===0)bars+=`<rect x="${x}" y="6" width="${w*1.6}" height="56" fill="#0E2354"/>`;x+=w*1.6+1;}});
+ const W=x+6;let h=`<svg viewBox="0 0 ${W} 70" width="${Math.min(W*1.6,340)}">${bars}</svg>`;
+ h+='<table class="tb" style="border-collapse:collapse;font-size:15px;text-align:center"><tr>'+g.map(v=>`<td style="border:1px solid #D7DEEA;padding:3px 6px;font-weight:700">${v}</td>`).join('')+`<td style="border:2px solid #F7821F;padding:3px 6px;font-weight:700;color:#F7821F">${show?d:'?'}</td></tr><tr>`+g.map((v,k)=>`<td style="color:#6B7280;font-size:12px">×${k%2?3:1}</td>`).join('')+'<td></td></tr>'+(show?'<tr>'+g.map((v,k)=>`<td style="color:#2457D6;font-size:12px">${v*(k%2?3:1)}</td>`).join('')+'<td></td></tr>':'')+'</table>';
+ $('cod').innerHTML=h;}
+D.ciclo({
+ livros:[{g:[7,8,9,4,5,6,1,2,3,0,0,8]}],
+ sortear(){const g=[7,8,pick([9,9,9,0])];if(g[2]===0)g[1]=9;while(g.length<12)g.push(rnd(0,9));return {g};},
+ montar(q){cur=q;['s','d'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('dq').innerHTML='Qual é o dígito verificador deste código?';draw(false);},
+ conferir(q){const v=D.ler(['s','d']);if(!v)return null;const [s,d]=chk(q.g),ok=v[0]===s&&v[1]===d;D.marcar(['s','d'],[v[0]===s,v[1]===d]);setTimeout(()=>draw(true),0);
+  return {ok,exp:`Soma: ${q.g.map((x,k)=>x*(k%2?3:1)).join(' + ')} = <b>${s}</b>. O próximo múltiplo de 10 é ${s%10?s+10-s%10:s}, então falta <b>${d}</b>. Código completo: ${q.g.join('')}${d}.`};},
+ res:true});
+
+</script>
+</body>
+</html>
