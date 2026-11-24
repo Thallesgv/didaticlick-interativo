@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As três fases do jogo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Adição</div><h1 id="title">As três fases do jogo</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">As barras mostram as fases: a 2ª é a 1ª com um pedaço a mais, e a 3ª é a 1ª e a 2ª juntas. Calcule cada fase e o total.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">2ª fase: <input class="n" id="r1" inputmode="numeric" style="width:80px"> 3ª fase: <input class="n" id="r2" inputmode="numeric" style="width:80px"></div><div class="ask">Total: <input class="n" id="r3" inputmode="numeric" style="width:90px"> pontos</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=adicao-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Resolva em etapas, uma fase de cada vez. A 3ª fase depende das duas primeiras, então ela vem por último.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const bar=(x,y,w,h,cor,t,tc)=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${h}" rx="4" fill="${cor}" stroke="#0E2354" stroke-width="1"/>`+(t!==undefined&&w>14?`<text x="${x+w/2}" y="${y+h/2+4}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="${tc||'#fff'}">${t}</text>`:'');
+
+let cur,ver=false;
+function draw(){const q=cur,b=q.a+q.d,s=270/(q.a+b);let g='';const T=(y,t)=>`<text x="2" y="${y}" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${t}</text>`;
+ g+=T(30,'1ª')+bar(40,14,q.a*s,24,'#2457D6',q.a);
+ g+=T(68,'2ª')+bar(40,52,q.a*s,24,'#2457D6',q.a)+bar(40+q.a*s,52,q.d*s,24,'#F7821F',q.d);
+ g+=T(106,'3ª')+bar(40,90,q.a*s,24,'#2457D6',q.a)+bar(40+q.a*s,90,b*s,24,'#93C5FD',ver?b:'2ª fase','#0E2354');
+ $('fig').innerHTML=`<svg viewBox="0 0 330 124" width="330">${g}</svg>`;}
+D.ciclo({
+ livros:[{a:245,d:38}],
+ sortear(){return {a:rnd(10,40)*5,d:rnd(11,60)};},
+ montar(q){cur=q;ver=false;['r1','r2','r3'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Num jogo, Lucas fez <span class="k">${q.a} pontos</span> na 1ª fase. Na 2ª, fez <span class="k">${q.d} a mais</span> do que na 1ª. Na 3ª, fez tantos pontos quanto nas duas primeiras juntas. Quantos pontos fez no total?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2','r3']);if(!v)return null;const b=q.a+q.d,c=q.a+b,t=q.a+b+c,ok=[v[0]===b,v[1]===c,v[2]===t];D.marcar(['r1','r2','r3'],ok);ver=true;draw();
+  return {ok:ok.every(x=>x),exp:`2ª fase: ${q.a} + ${q.d} = <b>${b}</b>. 3ª fase: ${q.a} + ${b} = <b>${c}</b>. Total: ${q.a} + ${b} + ${c} = <b>${fmt(t)}</b> pontos.`};},
+ res:true});
+
+</script>
+</body>
+</html>

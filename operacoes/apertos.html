@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os apertos de mão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Multiplicação</div><h1 id="title">Os apertos de mão</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque em dois amigos para ligar um aperto de mão (toque de novo na linha para desfazer). Ligue todos e conte.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask" id="st"></div><div class="ask">Apertos de mão: <input class="n" id="r1" inputmode="numeric" style="width:70px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplicacao-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Conte quantas mãos cada um aperta e multiplique pelo número de amigos. Depois lembre que cada aperto envolve duas pessoas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+let cur,E,sel;
+function draw(){const q=cur,n=q.n,R=110,cx=170,cy=135,P=Array.from({length:n},(_,i)=>[cx+R*Math.sin(2*Math.PI*i/n),cy-R*Math.cos(2*Math.PI*i/n)]);let g='';
+ E.forEach(k=>{const [i,j]=k.split('-').map(Number);g+=`<line data-e="${k}" x1="${P[i][0]}" y1="${P[i][1]}" x2="${P[j][0]}" y2="${P[j][1]}" stroke="#F7821F" stroke-width="4" style="cursor:pointer"/>`;});
+ P.forEach(([x,y],i)=>g+=`<g data-p="${i}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="20" fill="${sel===i?'#F7821F':'#2457D6'}" stroke="#fff" stroke-width="3"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#fff">${q.nm[i]}</text></g>`);
+ $('fig').innerHTML=`<svg viewBox="0 0 340 270" width="320">${g}</svg>`;$('st').innerHTML=`Linhas desenhadas: <b>${E.size}</b>`;
+ $('fig').querySelectorAll('[data-p]').forEach(el=>el.onclick=()=>{if(D.feito)return;const i=+el.dataset.p;if(sel===null)sel=i;else if(sel===i)sel=null;else{E.add(Math.min(sel,i)+'-'+Math.max(sel,i));sel=null;}draw();});
+ $('fig').querySelectorAll('[data-e]').forEach(el=>el.onclick=()=>{if(!D.feito){E.delete(el.dataset.e);draw();}});}
+D.ciclo({
+ livros:[{n:5,nm:['Ana','Bia','Caio','Davi','Lia']}],
+ sortear(){const n=rnd(3,8);return {n,nm:shuffle(NOMES).slice(0,n)};},
+ montar(q){cur=q;E=new Set();sel=null;$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`<span class="k">${q.n} amigos</span> se encontram e cada um aperta a mão de cada um dos outros uma única vez. Quantos apertos de mão acontecem?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const t=q.n*(q.n-1)/2,ok=v[0]===t;D.marcar(['r1'],[ok]);for(let i=0;i<q.n;i++)for(let j=i+1;j<q.n;j++)E.add(i+'-'+j);sel=null;draw();
+  return {ok,exp:`Cada um aperta ${q.n-1} mãos: ${q.n} × ${q.n-1} = ${q.n*(q.n-1)}. Mas assim cada aperto é contado duas vezes (${q.nm[0]} com ${q.nm[1]} e ${q.nm[1]} com ${q.nm[0]}): ${q.n*(q.n-1)} ÷ 2 = <b>${t}</b> apertos.`};},
+ res:true});
+
+</script>
+</body>
+</html>

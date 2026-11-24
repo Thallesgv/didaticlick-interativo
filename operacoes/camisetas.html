@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O preço das camisetas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Multiplicação</div><h1 id="title">O preço das camisetas</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Preencha a tabela: primeiro descubra o preço de uma camiseta, depois multiplique. As setas mostram a operação de cada passo.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplicacao-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Achar o preço de uma camiseta é dividir. Depois, para qualquer quantidade, é só multiplicar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;
+function draw(){const q=cur;const col=(q2,pr,id)=>`<td style="font-weight:700">${q2}</td>`;
+ $('fig').innerHTML=`<table class="t" style="max-width:330px"><tr><th>camisetas</th><td style="font-weight:700">${q.n}</td><td style="font-weight:700">1</td><td style="font-weight:700">${q.a}</td><td style="font-weight:700">${q.b}</td></tr>
+ <tr><th>preço (R$)</th><td style="font-weight:700">${q.p}</td><td><input class="n" id="r1" inputmode="numeric" style="width:58px"></td><td><input class="n" id="r2" inputmode="numeric" style="width:64px"></td><td><input class="n" id="r3" inputmode="numeric" style="width:64px"></td></tr>
+ <tr><td></td><td colspan="2" style="color:#F7821F;font-weight:700">÷ ${q.n} →</td><td style="color:#F7821F;font-weight:700">× ${q.a}</td><td style="color:#F7821F;font-weight:700">× ${q.b}</td></tr></table>`;}
+D.ciclo({
+ livros:[{n:3,p:75,a:7,b:12}],
+ sortear(){const n=rnd(2,6),u=rnd(8,45),b=n*rnd(2,5);let a=rnd(2,9);while(a===n||a===b)a++;return {n,p:n*u,a,b};},
+ montar(q){cur=q;$('dq').innerHTML=`<span class="k">${q.n} camisetas</span> iguais custam <span class="k">R$ ${q.p},00</span>. Quanto custam <span class="k">${q.a}</span> camisetas? E <span class="k">${q.b}</span>?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2','r3']);if(!v)return null;const u=q.p/q.n,ok=[v[0]===u,v[1]===u*q.a,v[2]===u*q.b];D.marcar(['r1','r2','r3'],ok);
+  return {ok:ok.every(x=>x),exp:`Uma camiseta: ${q.p} ÷ ${q.n} = <b>R$ ${u},00</b>. ${q.a} camisetas: ${q.a} × ${u} = <b>R$ ${u*q.a},00</b>. ${q.b} camisetas: ${q.b} × ${u} = <b>R$ ${u*q.b},00</b> (ou ${q.b/q.n} × ${q.p}, porque ${q.b} são ${q.b/q.n} vezes ${q.n}).`};},
+ res:true});
+
+</script>
+</body>
+</html>

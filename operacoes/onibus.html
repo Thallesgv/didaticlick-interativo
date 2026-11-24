@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desfazendo a viagem do ônibus · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Subtração</div><h1 id="title">Desfazendo a viagem do ônibus</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Sabemos como o ônibus chegou. Toque em “voltar um ponto” para desfazer a viagem: quem desceu (em vermelho) volta para dentro do ônibus. O último passo, até o terminal, é com você.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="row"><button class="alt" id="volta">voltar um ponto</button></div><div class="ask">Passageiros ao sair do terminal: <input class="n" id="r1" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=subtracao-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Desfazer uma subtração é somar. Comece do fim e volte ponto por ponto, devolvendo quem desceu.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,k;
+function draw(){const q=cur,n=q.d.length,W=340,dx=(W-60)/(n+1);let g=`<line x1="20" y1="70" x2="${W-20}" y2="70" stroke="#94A3B8" stroke-width="6" stroke-linecap="round"/>`;
+ const nomes=['terminal'].concat(q.d.map((_,i)=>(i+1)+'º ponto')).concat([(n+1)+'º ponto']);
+ const vals=[];let v=q.f;vals[n+1]=v;for(let i=n;i>=1;i--){v+=q.d[i-1];vals[i]=v;}vals[0]=vals[1];
+ for(let i=0;i<=n;i++){const x=30+i*dx;g+=`<circle cx="${x}" cy="70" r="7" fill="#fff" stroke="#0E2354" stroke-width="2"/><text x="${x}" y="96" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${nomes[i]}</text>`;
+  if(i>0)g+=`<text x="${x}" y="116" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#B91C1C">−${q.d[i-1]}</text>`;}
+ const xf=30+(n+1)*dx;g+=`<circle cx="${xf}" cy="70" r="7" fill="#0E2354"/><text x="${xf}" y="96" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${nomes[n+1]}</text>`;
+ const pos=n+1-k,xb=30+pos*dx;g+=`<rect x="${xb-24}" y="34" width="48" height="26" rx="6" fill="#F7821F"/><circle cx="${xb-12}" cy="62" r="4" fill="#0E2354"/><circle cx="${xb+12}" cy="62" r="4" fill="#0E2354"/><text x="${xb}" y="52" text-anchor="middle" font-size="13" font-weight="700" font-family="Poppins" fill="#fff">${vals[pos]}</text><text x="${xb}" y="26" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${pos===0?'saiu com':'chegou com'}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 124" width="${W}">${g}</svg>`;$('volta').disabled=!D.feito&&k>=q.d.length-1;}
+$('volta').onclick=()=>{if(!D.feito&&k<cur.d.length-1){k++;draw();}};
+D.ciclo({
+ livros:[{d:[12,9],f:23}],
+ sortear(){const n=rnd(2,3);return {d:Array.from({length:n},()=>rnd(3,15)),f:rnd(5,30)};},
+ montar(q){cur=q;k=0;$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Um ônibus saiu do terminal. ${q.d.map((d,i)=>`No ${i+1}º ponto desceram <span class="k">${d}</span>`).join('; ')}. Ninguém subiu, e ele chegou ao ${q.d.length+1}º ponto com <span class="k">${q.f} passageiros</span>. Com quantos saiu do terminal?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const t=q.f+q.d.reduce((a,b)=>a+b,0),ok=v[0]===t;D.marcar(['r1'],[ok]);k=q.d.length+1;draw();
+  return {ok,exp:`Fazendo o caminho de volta, quem desceu volta: ${q.f} + ${q.d.slice().reverse().join(' + ')} = <b>${t}</b>. Confere: ${t} − ${q.d.join(' − ')} = ${q.f}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

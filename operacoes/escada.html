@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os passos na escada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Divisão</div><h1 id="title">Os passos na escada</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Cada quadradinho é um degrau. Toque nos botões para mostrar onde cada um pisa: os degraus em comum ficam verdes.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="bt"></div><div class="fig" id="fig"></div><div class="ask"><span id="n1"></span> <input class="n" id="r1" inputmode="numeric" style="width:64px"></div><div class="ask"><span id="n2"></span> <input class="n" id="r2" inputmode="numeric" style="width:64px"></div><div class="ask">Degraus em que os dois pisam: <input class="n" id="r3" inputmode="numeric" style="width:64px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=divisao-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Quantos passos cabem na escada é uma divisão. Os degraus em comum aparecem de tempos em tempos: de quanto em quanto?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+let cur,sa,sb;
+function draw(){const q=cur,per=24,s=13;let g='';
+ for(let k=1;k<=q.N;k++){const i=(k-1)%per,j=Math.floor((k-1)/per),x=8+i*s,y=8+j*(s+6);const A=sa&&k%q.a===0,B=sb&&k%q.b===0;
+  g+=`<rect x="${x}" y="${y}" width="${s-1}" height="${s}" fill="${A&&B?'#15803D':A?'#F7821F':B?'#2457D6':'#F1F5F9'}" stroke="#CBD5E1" stroke-width=".6"/>`;if(k%per===0||k===q.N)g+=`<text x="${x+s+3}" y="${y+10}" font-size="9" font-family="Poppins" fill="#6B7280">${k}</text>`;}
+ const rows=Math.ceil(q.N/per);$('fig').innerHTML=`<svg viewBox="0 0 ${per*s+40} ${rows*(s+6)+10}" width="340">${g}</svg>`;
+ $('bt').innerHTML=`<button data-w="a" class="${sa?'on':''}" style="${sa?'background:#F7821F;border-color:#F7821F':''}">${q.n[0]}: de ${q.a} em ${q.a}</button><button data-w="b" class="${sb?'on':''}" style="${sb?'background:#2457D6;border-color:#2457D6':''}">${q.n[1]}: de ${q.b} em ${q.b}</button>`;
+ $('bt').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.w==='a')sa=!sa;else sb=!sb;draw();});}
+D.ciclo({
+ livros:[{N:96,a:3,b:4,n:['Ana','Beto']}],
+ sortear(){for(;;){const a=rnd(2,6),b=rnd(a+1,8),l=a*b/gcd(a,b);if(l===b)continue;const N=l*rnd(2,Math.floor(120/l));if(N>=24&&N<=120)return {N,a,b,n:shuffle(NOMES).slice(0,2)};}},
+ montar(q){cur=q;sa=false;sb=false;$('n1').textContent='Passos de '+q.n[0]+':';$('n2').textContent='Passos de '+q.n[1]+':';['r1','r2','r3'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Uma escada tem <span class="k">${q.N} degraus</span>. ${q.n[0]} sobe de <span class="k">${q.a} em ${q.a}</span> degraus e ${q.n[1]}, de <span class="k">${q.b} em ${q.b}</span>. Quantos passos cada um dá até o topo? Em quantos degraus os dois pisam?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2','r3']);if(!v)return null;const l=q.a*q.b/gcd(q.a,q.b),ok=[v[0]===q.N/q.a,v[1]===q.N/q.b,v[2]===Math.floor(q.N/l)];D.marcar(['r1','r2','r3'],ok);sa=sb=true;draw();
+  return {ok:ok.every(x=>x),exp:`${q.n[0]}: ${q.N} ÷ ${q.a} = <b>${q.N/q.a}</b> passos. ${q.n[1]}: ${q.N} ÷ ${q.b} = <b>${q.N/q.b}</b> passos. Os dois pisam nos múltiplos de ${q.a} e de ${q.b}, que vão de ${l} em ${l}: ${q.N} ÷ ${l} = <b>${Math.floor(q.N/l)}</b> degraus.`};},
+ res:true});
+
+</script>
+</body>
+</html>

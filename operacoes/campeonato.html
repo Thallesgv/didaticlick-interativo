@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chega aos pontos do título? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Subtração</div><h1 id="title">Chega aos pontos do título?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude as vitórias e os empates nos jogos que faltam. A barra mostra os pontos do time e a linha da meta.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sv"><b>vitórias</b><input type="range"><span></span></div><div class="sl" id="se"><b>empates</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask">a) Faltam <input class="n" id="r1" inputmode="numeric" style="width:70px"> pontos.</div><div class="ask" id="pb"></div><div class="ask" id="pc"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=subtracao-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Primeiro ache quanto falta para a meta (uma subtração). Depois compare cada combinação de vitórias e empates com o que falta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const bar=(x,y,w,h,cor,t,tc)=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${h}" rx="4" fill="${cor}" stroke="#0E2354" stroke-width="1"/>`+(t!==undefined&&w>14?`<text x="${x+w/2}" y="${y+h/2+4}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="${tc||'#fff'}">${t}</text>`:'');
+
+let cur,SV,SE,rb,rc;
+function draw(){const q=cur,V=SV.get(),E=Math.min(SE.get(),q.j-V),P=q.p+3*V+E,s=280/(q.N+3*q.j*0.4+10),c=P>=q.N;let g='';
+ g+=bar(10,30,q.p*s,30,'#2457D6',q.p)+bar(10+q.p*s,30,3*V*s,30,'#15803D',3*V||'')+bar(10+(q.p+3*V)*s,30,E*s,30,'#F7821F',E||'');
+ g+=`<line x1="${10+q.N*s}" y1="18" x2="${10+q.N*s}" y2="72" stroke="#B91C1C" stroke-width="2" stroke-dasharray="4 3"/><text x="${10+q.N*s}" y="14" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#B91C1C">meta ${q.N}</text>`;
+ g+=`<text x="10" y="90" font-size="12" font-family="Poppins" fill="${c?'#15803D':'#0E2354'}">${q.p} + ${V} × 3 + ${E} = ${P} pontos ${c?'✓ chegou':'(ainda não)'}</text><text x="10" y="106" font-size="11" font-family="Poppins" fill="#6B7280">${V} vitória${V===1?'':'s'}, ${E} empate${E===1?'':'s'}, ${q.j-V-E} derrota${q.j-V-E===1?'':'s'}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 330 112" width="330">${g}</svg>`;
+ const ch=(id,t,val,set)=>{$(id).innerHTML=`${t} <span class="chips">${['sim','não'].map((x,i)=>`<button data-v="${1-i}" class="${val===1-i?'on':''}">${x}</button>`).join('')}</span>`;$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{if(!D.feito){set(+b.dataset.v);draw();}});};
+ ch('pb',`b) Com ${q.b[0]} vitórias e ${q.b[1]} empate${q.b[1]===1?'':'s'}, chega?`,rb,v=>rb=v);ch('pc',`c) Com ${q.c[0]} vitórias e ${q.c[1]} empate${q.c[1]===1?'':'s'}, chega?`,rc,v=>rc=v);}
+D.ciclo({
+ livros:[{N:70,p:52,j:7,b:[5,2],c:[6,1]}],
+ sortear(){for(;;){const j=rnd(5,9),p=rnd(30,60),f=rnd(8,2*j+2),N=p+f;const b=[rnd(1,j-1),0];b[1]=rnd(0,j-b[0]);const c=[rnd(1,j-1),0];c[1]=rnd(0,j-c[0]);
+  const ch=x=>3*x[0]+x[1]>=f;if(ch(b)!==ch(c)&&(b[0]!==c[0]||b[1]!==c[1]))return {N,p,j,b,c};}},
+ montar(q){cur=q;rb=null;rc=null;SV=D.sl('sv',0,q.j,1,0,draw);SE=D.sl('se',0,q.j,1,0,draw);$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Um time precisa de <span class="k">${q.N} pontos</span> para ser campeão. Tem <span class="k">${q.p}</span> e ainda vai jogar <span class="k">${q.j} jogos</span>. Vitória vale 3 pontos e empate, 1.`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;if(rb==null||rc==null){msg('dm','Responda sim ou não nos itens b e c.','info');return null;}
+  const f=q.N-q.p,pb=3*q.b[0]+q.b[1],pc=3*q.c[0]+q.c[1],ok=[v[0]===f,rb===+(pb>=f),rc===+(pc>=f)];D.marcar(['r1'],[ok[0]]);SV.set(q.c[0]);SE.set(q.c[1]);draw();
+  return {ok:ok.every(x=>x),exp:`a) ${q.N} − ${q.p} = <b>${f}</b> pontos. b) ${q.b[0]} × 3 + ${q.b[1]} = ${pb}: <b>${pb>=f?'sim':'não'}</b>${pb<f?', falta'+(f-pb>1?'m ':' ')+(f-pb):''}. c) ${q.c[0]} × 3 + ${q.c[1]} = ${pc}: <b>${pc>=f?'sim':'não'}</b>${pc<f?', falta'+(f-pc>1?'m ':' ')+(f-pc):''}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

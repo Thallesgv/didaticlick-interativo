@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Medindo no mapa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Divisão</div><h1 id="title">Medindo no mapa</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Arraste a régua para medir a distância entre as cidades no mapa. Depois use a escala para achar a distância real.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>régua</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask">1 cm no mapa = <input class="n" id="r1" style="width:70px"> km</div><div class="ask">Distância real: <input class="n" id="r2" style="width:80px"> km</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=divisao-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Escala 1 : 200 000 quer dizer que 1 cm no mapa vale 200 000 cm de verdade. Para passar de cm para km, divida por 100 000.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;const cm=24;
+function draw(){const q=cur,x0=SX.get(),A=30,B=30+q.d*cm;let g=`<rect x="4" y="4" width="332" height="96" rx="10" fill="#ECFDF5" stroke="#A7F3D0"/><path d="M10,80 Q90,20 170,60 T330,40" stroke="#BFDBFE" stroke-width="10" fill="none"/>`;
+ g+=`<circle cx="${A}" cy="40" r="6" fill="#B91C1C"/><text x="${A}" y="28" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#0E2354">${q.c[0]}</text><circle cx="${B}" cy="40" r="6" fill="#B91C1C"/><text x="${B}" y="28" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#0E2354">${q.c[1]}</text>`;
+ const rx=A+x0*cm/10-cm*0;g+=`<g transform="translate(${A-6+x0},0)"><rect x="0" y="48" width="${13*cm+12}" height="26" fill="#FEF3C7" stroke="#D97706" opacity=".92"/>`;
+ for(let i=0;i<=13;i++)g+=`<line x1="${6+i*cm}" y1="48" x2="${6+i*cm}" y2="${i%1===0?60:54}" stroke="#78350F"/><text x="${6+i*cm}" y="71" text-anchor="middle" font-size="9" font-family="Poppins" fill="#78350F">${i}</text>`;
+ for(let i=0;i<13;i++)g+=`<line x1="${6+i*cm+cm/2}" y1="48" x2="${6+i*cm+cm/2}" y2="54" stroke="#78350F"/>`;
+ g+=`</g><text x="12" y="96" font-size="11" font-family="Poppins" fill="#0E2354">escala 1 : ${fmt(q.e)}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 340 104" width="340">${g}</svg>`;}
+D.ciclo({
+ livros:[{e:200000,d:7,c:['Sol Nascente','Vila Nova']}],
+ sortear(){const e=pick([50000,100000,200000,250000,500000,1000000]),d=rnd(2,12);return {e,d,c:shuffle(['Rio Claro','Pedra Alta','Bom Jardim','Lagoa Seca','Serra Azul','Campo Belo']).slice(0,2)};},
+ montar(q){cur=q;SX=D.sl('sx',-60,40,1,-40,draw,v=>'');['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Um mapa tem escala <span class="k">1 : ${fmt(q.e)}</span>. Meça no mapa a distância entre <span class="k">${q.c[0]}</span> e <span class="k">${q.c[1]}</span>. Qual é a distância real, em quilômetros?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const k=q.e/100000,t=k*q.d,ok=[Math.abs(v[0]-k)<1e-9,Math.abs(v[1]-t)<1e-9];D.marcar(['r1','r2'],ok);SX.set(0);draw();
+  return {ok:ok[0]&&ok[1],exp:`A distância no mapa é ${q.d} cm. 1 cm vale ${fmt(q.e)} cm = ${fmt(q.e/100)} m = <b>${fmt(k)} km</b>. Então ${q.d} cm valem ${q.d} × ${fmt(k)} = <b>${fmt(t)} km</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

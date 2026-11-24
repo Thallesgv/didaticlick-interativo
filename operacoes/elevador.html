@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O elevador · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Adição</div><h1 id="title">O elevador</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nos botões de subida na ordem: o elevador sobe e os saltos aparecem ao lado do prédio. Depois responda.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="chips" id="bt"></div><div class="ask">Andar em que parou: <input class="n" id="r1" inputmode="numeric" style="width:70px"></div><div class="ask">Andares subidos ao todo: <input class="n" id="r2" inputmode="numeric" style="width:70px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=adicao-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Cada subida é um acréscimo. O andar final é o de partida mais todas as subidas; o total subido é só a soma das subidas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,pos,usados;
+function draw(){const q=cur,N=q.s+q.u.reduce((a,b)=>a+b,0)+3,h=Math.min(16,300/(N+1)),H=(N+1)*h+20;let g='';
+ for(let k=0;k<=N;k++){const y=H-10-(k+1)*h;g+=`<rect x="90" y="${y}" width="70" height="${h}" fill="${k===pos?'#FDE9D8':'#F1F5F9'}" stroke="#CBD5E1"/>`;if(k%(h<12?2:1)===0)g+=`<text x="84" y="${y+h-3}" text-anchor="end" font-size="${Math.min(11,h)}" font-family="Poppins" fill="#6B7280">${k===0?'T':k+'º'}</text>`;}
+ g+=`<rect x="104" y="${H-10-(pos+1)*h+1}" width="42" height="${h-2}" rx="3" fill="#F7821F"/>`;
+ let a=q.s,x=176;usados.forEach(i=>{const b=a+q.u[i],y1=H-10-(a+.5)*h,y2=H-10-(b+.5)*h;g+=`<path d="M168,${y1} Q${x+30},${(y1+y2)/2} 168,${y2}" fill="none" stroke="#2457D6" stroke-width="2" marker-end="url(#ar)"/><text x="${x+26}" y="${(y1+y2)/2+4}" font-size="12" font-weight="700" font-family="Poppins" fill="#2457D6">+${q.u[i]}</text>`;a=b;x+=40;});
+ $('fig').innerHTML=`<svg viewBox="0 0 340 ${H}" width="340"><defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#2457D6"/></marker></defs>${g}</svg>`;
+ $('bt').innerHTML=q.u.map((u,i)=>`<button data-i="${i}" class="${usados.includes(i)?'on':''}">sobe ${u}</button>`).join('')+'<button data-i="-1">recomeçar</button>';
+ $('bt').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const i=+b.dataset.i;if(i<0){usados=[];pos=q.s;}else if(!usados.includes(i)&&i===usados.length){usados.push(i);pos+=q.u[i];}draw();});}
+D.ciclo({
+ livros:[{s:3,u:[7,5]}],
+ sortear(){const n=rnd(2,3);return {s:rnd(0,6),u:Array.from({length:n},()=>rnd(2,8))};},
+ montar(q){cur=q;pos=q.s;usados=[];['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Um elevador estava no <span class="k">${q.s===0?'térreo':q.s+'º andar'}</span>. Subiu ${q.u.map(u=>`<span class="k">${u} andares</span>`).join(' e depois mais ')}. Em que andar parou? Quantos andares subiu ao todo?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const t=q.u.reduce((a,b)=>a+b,0),f=q.s+t,ok=[v[0]===f,v[1]===t];D.marcar(['r1','r2'],ok);usados=q.u.map((_,i)=>i);pos=f;draw();
+  return {ok:ok[0]&&ok[1],exp:`${q.s} + ${q.u.join(' + ')} = <b>${f}</b>: parou no ${f}º andar. Subiu ${q.u.join(' + ')} = <b>${t}</b> andares. Subidas seguidas valem uma subida só da soma delas.`};},
+ res:true});
+
+</script>
+</body>
+</html>

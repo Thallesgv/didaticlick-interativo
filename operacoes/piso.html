@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O piso com borda azul · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Multiplicação</div><h1 id="title">O piso com borda azul</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude as medidas do piso para ver como a borda e o miolo mudam. No desafio, conte com multiplicações, não uma a uma.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">Brancas: <input class="n" id="r1" inputmode="numeric" style="width:80px"> Azuis: <input class="n" id="r2" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplicacao-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O miolo tem 2 lajotas a menos em cada direção (uma de cada lado). Total menos miolo dá a borda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,ver=false;
+function draw(){const q=cur,s=Math.min(300/q.c,200/q.l);let g='';
+ for(let i=0;i<q.c;i++)for(let j=0;j<q.l;j++){const b=i===0||j===0||i===q.c-1||j===q.l-1;g+=`<rect x="${10+i*s}" y="${10+j*s}" width="${s}" height="${s}" fill="${b?'#2457D6':'#fff'}" stroke="#CBD5E1" stroke-width=".7"/>`;}
+ if(ver)g+=`<rect x="${10+s}" y="${10+s}" width="${(q.c-2)*s}" height="${(q.l-2)*s}" fill="none" stroke="#F7821F" stroke-width="3"/><text x="${10+q.c*s/2}" y="${14+q.l*s/2}" text-anchor="middle" font-size="14" font-weight="700" font-family="Poppins" fill="#F7821F">${q.c-2} × ${q.l-2}</text>`;
+ g+=`<text x="${10+q.c*s/2}" y="${q.l*s+26}" text-anchor="middle" font-size="12" font-family="Poppins" fill="#0E2354">${q.c} lajotas</text><text x="${q.c*s+16}" y="${10+q.l*s/2}" font-size="12" font-family="Poppins" fill="#0E2354">${q.l}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${q.c*s+40} ${q.l*s+34}" width="${Math.min(340,q.c*s+40)}">${g}</svg>`;}
+D.ciclo({
+ livros:[{c:18,l:12}],
+ sortear(){const c=rnd(6,20),l=rnd(4,Math.min(c,14));return {c,l};},
+ montar(q){cur=q;ver=false;['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Um piso retangular tem <span class="k">${q.c} lajotas de comprimento</span> e <span class="k">${q.l} de largura</span>. As da borda são azuis e as outras, brancas. Quantas são brancas e quantas são azuis?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const T=q.c*q.l,b=(q.c-2)*(q.l-2),a=T-b,ok=[v[0]===b,v[1]===a];D.marcar(['r1','r2'],ok);ver=true;draw();
+  return {ok:ok[0]&&ok[1],exp:`Total: ${q.c} × ${q.l} = ${T}. Brancas (o miolo, sem a borda dos dois lados): ${q.c-2} × ${q.l-2} = <b>${b}</b>. Azuis: ${T} − ${b} = <b>${a}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

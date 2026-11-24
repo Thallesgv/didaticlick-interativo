@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carros e motos no estacionamento · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Multiplicação</div><h1 id="title">Carros e motos no estacionamento</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude o número de carros: o resto dos veículos são motos. As rodas são contadas na hora. Ache a combinação que dá o total de rodas.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>carros</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask" id="st"></div><div class="ask">Carros: <input class="n" id="r1" inputmode="numeric" style="width:70px"> Motos: <input class="n" id="r2" inputmode="numeric" style="width:70px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplicacao-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Comece imaginando que todos são motos. Cada troca de moto por carro acrescenta 2 rodas: quantas trocas faltam?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;
+const carro=(x,y)=>`<rect x="${x}" y="${y+4}" width="30" height="12" rx="3" fill="#2457D6"/><rect x="${x+6}" y="${y}" width="16" height="8" rx="2" fill="#93C5FD"/><circle cx="${x+5}" cy="${y+17}" r="3.5" fill="#0E2354"/><circle cx="${x+12}" cy="${y+17}" r="3.5" fill="#0E2354"/><circle cx="${x+18}" cy="${y+17}" r="3.5" fill="#0E2354"/><circle cx="${x+25}" cy="${y+17}" r="3.5" fill="#0E2354"/>`;
+const moto=(x,y)=>`<path d="M${x+6},${y+14} L${x+14},${y+6} L${x+22},${y+14}" stroke="#F7821F" stroke-width="3" fill="none"/><circle cx="${x+6}" cy="${y+16}" r="4.5" fill="none" stroke="#0E2354" stroke-width="2"/><circle cx="${x+24}" cy="${y+16}" r="4.5" fill="none" stroke="#0E2354" stroke-width="2"/>`;
+function draw(){const q=cur,c=SX.get(),m=q.v-c,r=4*c+2*m,ok=r===q.r;let g='';
+ for(let i=0;i<q.v;i++){const x=8+(i%8)*40,y=8+Math.floor(i/8)*28;g+=i<c?carro(x,y):moto(x,y);}
+ $('fig').innerHTML=`<svg viewBox="0 0 330 ${16+Math.ceil(q.v/8)*28}" width="330">${g}</svg>`;
+ $('st').innerHTML=`${c} × 4 + ${m} × 2 = <b style="color:${ok?'var(--ok)':'var(--navy)'}">${r}</b> rodas ${ok?'✓':'(quero '+q.r+')'}`;}
+D.ciclo({
+ livros:[{v:12,r:40}],
+ sortear(){const v=rnd(8,22),c=rnd(1,v-1);return {v,r:4*c+2*(v-c)};},
+ montar(q){cur=q;SX=D.sl('sx',0,q.v,1,0,draw);['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Num estacionamento há <span class="k">${q.v} veículos</span>, entre carros e motos. Contando as rodas, são <span class="k">${q.r}</span>. Quantos são os carros e quantas são as motos?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const c=(q.r-2*q.v)/2,ok=[v[0]===c,v[1]===q.v-c];D.marcar(['r1','r2'],ok);SX.set(c);draw();
+  return {ok:ok[0]&&ok[1],exp:`Se todos fossem motos: ${q.v} × 2 = ${2*q.v} rodas. Cada carro no lugar de uma moto acrescenta 2 rodas. Faltam ${q.r} − ${2*q.v} = ${q.r-2*q.v}, ou seja, <b>${c} carros</b> e <b>${q.v-c} motos</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

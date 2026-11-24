@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gols nos dois turnos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Adição</div><h1 id="title">Gols nos dois turnos</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Arraste o controle para montar a barra do 2º turno. Ela tem a barra do 1º turno e mais um pedaço. Depois some as duas barras.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>2º turno</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask">Gols no 2º turno: <input class="n" id="r1" inputmode="numeric" style="width:80px"></div><div class="ask">Gols no campeonato: <input class="n" id="r2" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=adicao-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Desenhe as barras: a do 2º turno é igual à do 1º com um pedaço a mais. Primeiro descubra o 2º turno, depois some os dois.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const bar=(x,y,w,h,cor,t,tc)=>`<rect x="${x}" y="${y}" width="${Math.max(0,w)}" height="${h}" rx="4" fill="${cor}" stroke="#0E2354" stroke-width="1"/>`+(t!==undefined&&w>14?`<text x="${x+w/2}" y="${y+h/2+4}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="${tc||'#fff'}">${t}</text>`:'');
+
+let cur,SX;
+function draw(){const q=cur,v=SX.get(),s=260/(2*q.a+q.d+10),c=v===q.a+q.d;let g='';
+ g+=`<text x="4" y="30" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">1º</text>`+bar(30,14,q.a*s,24,'#2457D6',q.a);
+ g+=`<text x="4" y="72" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">2º</text>`+bar(30,56,Math.min(v,q.a)*s,24,'#2457D6',v>=q.a?q.a:v)+(v>q.a?bar(30+q.a*s,56,(v-q.a)*s,24,c?'#15803D':'#F7821F',v-q.a):'');
+ g+=`<text x="${36+Math.max(v,q.a)*s}" y="74" font-size="12" ${'font-family="Poppins"'} fill="${c?'#15803D':'#6B7280'}">${v} ${c?'✓':''}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 340 96" width="340">${g}</svg>`;}
+D.ciclo({
+ livros:[{a:23,d:9}],
+ sortear(){return {a:rnd(12,40),d:rnd(3,15)};},
+ montar(q){cur=q;SX=D.sl('sx',0,q.a+q.d+12,1,0,draw);['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`No 1º turno, um time marcou <span class="k">${q.a} gols</span>. No 2º turno, marcou <span class="k">${q.d} gols a mais</span> do que no 1º. Quantos gols marcou no campeonato inteiro?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const b=q.a+q.d,t=q.a+b,ok=[v[0]===b,v[1]===t];D.marcar(['r1','r2'],ok);SX.set(b);draw();
+  return {ok:ok[0]&&ok[1],exp:`2º turno: ${q.a} + ${q.d} = <b>${b}</b> gols. Campeonato: ${q.a} + ${b} = <b>${t}</b> gols. Cuidado: “${q.d} a mais” não é o total do 2º turno.`};},
+ res:true});
+
+</script>
+</body>
+</html>
