@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As pilhas de figurinhas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Divisão</div><h1 id="title">As pilhas de figurinhas</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude o total de figurinhas. A página arruma em pilhas dos dois tamanhos e mostra o que sobra. Ache o total que deixa as duas sobras pedidas.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>figurinhas</b><input type="range"><span></span></div><div class="fig" id="fig" style="flex-direction:column"></div><div class="ask">Total de figurinhas: <input class="n" id="r1" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=divisao-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Liste os números que dão a primeira sobra (eles vão de tantos em tantos) e teste cada um na segunda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+let cur,SX;
+function pil(n,k,ra,cor){const p=Math.floor(n/k),r=n%k,ok=r===ra;let g='';for(let i=0;i<p;i++)for(let j=0;j<k;j++)g+=`<rect x="${6+i*22}" y="${60-j*6}" width="18" height="5" rx="1" fill="${cor}"/>`;
+ for(let j=0;j<r;j++)g+=`<rect x="${6+p*22+6}" y="${60-j*6}" width="18" height="5" rx="1" fill="${ok?'#15803D':'#B91C1C'}"/>`;
+ return `<svg viewBox="0 0 340 92" width="330">${g}<text x="6" y="84" font-size="12" font-family="Poppins" fill="#0E2354">pilhas de ${k}: ${p} pilha${p===1?'':'s'}, sobra${r===1?'':'m'} <tspan font-weight="700" fill="${ok?'#15803D':'#B91C1C'}">${r}</tspan> ${ok?'✓':'(quero '+ra+')'}</text></svg>`;}
+function draw(){const q=cur,n=SX.get();$('fig').innerHTML=pil(n,q.a,q.ra,'#2457D6')+pil(n,q.b,q.rb,'#F7821F');}
+D.ciclo({
+ livros:[{a:6,ra:4,b:5,rb:3,L:40,nm:'Davi'}],
+ sortear(){const [a,b]=pick([[6,5],[4,7],[5,7],[3,8],[4,5],[6,7],[3,5]]),n=rnd(Math.max(a,b)+1,a*b-1);if(n%a===0||n%b===0)return this.sortear();return {a,ra:n%a,b,rb:n%b,L:a*b,nm:pick(NOMES)};},
+ montar(q){cur=q;SX=D.sl('sx',1,q.L-1,1,1,draw);$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Arrumando as figurinhas em pilhas de <span class="k">${q.a}</span>, ${q.nm} vê que sobra${q.ra===1?'':'m'} <span class="k">${q.ra}</span>. Em pilhas de <span class="k">${q.b}</span>, sobra${q.rb===1?'':'m'} <span class="k">${q.rb}</span>. Ele tem menos de <span class="k">${q.L}</span> figurinhas. Quantas são?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;let n=0;for(let x=1;x<q.L;x++)if(x%q.a===q.ra&&x%q.b===q.rb){n=x;break;}const ok=v[0]===n;D.marcar(['r1'],[ok]);SX.set(n);draw();
+  const L=[];for(let x=q.ra;x<q.L;x+=q.a)if(x>0)L.push(x);
+  return {ok,exp:`Os que deixam resto ${q.ra} na divisão por ${q.a}: ${L.join(', ')}. Desses, o único que deixa resto ${q.rb} na divisão por ${q.b} é <b>${n}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

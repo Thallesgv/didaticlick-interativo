@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta das idades · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Subtração</div><h1 id="title">A reta das idades</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Escolha uma pessoa e toque na reta para marcar a idade dela. Os saltos aparecem entre as idades. Depois compare.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="who"></div><div class="fig" id="fig"></div><div class="ask" id="pg"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=subtracao-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na reta, “a menos” é um salto para a esquerda e “a mais”, para a direita. A diferença entre duas idades é a distância entre elas na reta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+let cur,sel,mk;
+function draw(){const q=cur,cor={};cor[q.a]='#2457D6';if(mk.b!=null)cor[mk.b]=mk.b===q.a-q.m?'#F7821F':'#B91C1C';if(mk.c!=null)cor[mk.c]=mk.c===q.a-q.m+q.p?'#15803D':'#B91C1C';
+ $('fig').innerHTML=D.reta({min:0,max:30,w:360,h:90,y:52,cor,rot:k=>k%5===0?k:'',extra:(sx,y)=>{let s='';const arc=(a,b,t,c)=>`<path d="M${sx(a)},${y-8} Q${(sx(a)+sx(b))/2},${y-48} ${sx(b)},${y-8}" fill="none" stroke="${c}" stroke-width="2"/><text x="${(sx(a)+sx(b))/2}" y="${y-30}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="${c}">${t}</text>`;
+  if(mk.b!=null)s+=arc(q.a,mk.b,(mk.b-q.a>=0?'+':'−')+Math.abs(mk.b-q.a),'#F7821F');if(mk.b!=null&&mk.c!=null)s+=arc(mk.b,mk.c,(mk.c-mk.b>=0?'+':'−')+Math.abs(mk.c-mk.b),'#15803D');return s;}});
+ D.tap($('fig'),k=>{if(D.feito)return;mk[sel]=k;draw();});
+ $('who').innerHTML=`<button disabled style="border-color:#2457D6;color:#2457D6">${q.n[0]}: ${q.a}</button>`+['b','c'].map((w,i)=>`<button data-w="${w}" class="${sel===w?'on':''}">marcar ${q.n[i+1]}${mk[w]!=null?': '+mk[w]:''}</button>`).join('');
+ $('who').querySelectorAll('[data-w]').forEach(b=>b.onclick=()=>{sel=b.dataset.w;draw();});}
+D.ciclo({
+ livros:[{n:['Caio','Beto','Ana'],a:14,m:5,p:12}],
+ sortear(){const n=shuffle(NOMES).slice(0,3),a=rnd(10,20),m=rnd(2,8),p=rnd(m+1,Math.min(16,30-a+m));return {n,a,m,p};},
+ montar(q){cur=q;sel='b';mk={b:null,c:null};$('pg').innerHTML=`${q.n[2]} tem <input class="n" id="r1" inputmode="numeric" style="width:70px"> anos a mais do que ${q.n[0]}.`;
+  $('dq').innerHTML=`${q.n[0]} tem <span class="k">${q.a} anos</span>. ${q.n[1]} tem <span class="k">${q.m} anos a menos</span> do que ${q.n[0]}, e ${q.n[2]} tem <span class="k">${q.p} anos a mais</span> do que ${q.n[1]}. Quantos anos ${q.n[2]} tem a mais do que ${q.n[0]}?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const b=q.a-q.m,c=b+q.p,ok=v[0]===c-q.a;D.marcar(['r1'],[ok]);mk={b,c};draw();
+  return {ok,exp:`${q.n[1]}: ${q.a} − ${q.m} = ${b} anos. ${q.n[2]}: ${b} + ${q.p} = ${c} anos. Diferença: ${c} − ${q.a} = <b>${c-q.a}</b>. Atalho: −${q.m} e depois +${q.p} dá +${q.p-q.m}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

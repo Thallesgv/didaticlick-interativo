@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O maior resto possível · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Divisão</div><h1 id="title">O maior resto possível</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Os pontos estão em grupos do tamanho do divisor. Mude o resto: veja o que acontece quando ele fica do tamanho do divisor.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>resto</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask" id="st"></div><div class="ask">Maior resto: <input class="n" id="r1" inputmode="numeric" style="width:70px"> Dividendo: <input class="n" id="r2" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=divisao-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Se o resto chegasse ao tamanho do divisor, daria para formar mais um grupo. Então ele para um antes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;
+function draw(){const q=cur,r=SX.get(),k=r>=q.d;let g='';const cols=Math.min(q.q,8),w=Math.min(36,300/cols);
+ for(let i=0;i<q.q;i++){const x=10+(i%cols)*w,y=8+Math.floor(i/cols)*(Math.ceil(q.d/3)*8+12);g+=`<rect x="${x}" y="${y}" width="${w-4}" height="${Math.ceil(q.d/3)*8+4}" rx="4" fill="#DBEAFE" stroke="#2457D6"/>`;
+  for(let j=0;j<q.d;j++)g+=`<circle cx="${x+6+(j%3)*((w-12)/2.4)}" cy="${y+6+Math.floor(j/3)*8}" r="2.6" fill="#2457D6"/>`;}
+ const rows=Math.ceil(q.q/cols),y0=14+rows*(Math.ceil(q.d/3)*8+12);
+ g+=`<text x="10" y="${y0}" font-size="11" font-family="Poppins" fill="#6B7280">resto:</text>`;for(let j=0;j<r;j++)g+=`<circle cx="${56+j*12}" cy="${y0-4}" r="4" fill="${k?'#B91C1C':'#F7821F'}"/>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 330 ${y0+12}" width="330">${g}</svg>`;
+ $('st').innerHTML=k?`<span style="color:var(--bad)">Com resto ${r}, dá para formar mais um grupo de ${q.d}: o quociente viraria ${q.q+1}.</span>`:`${q.d} × ${q.q} + ${r} = <b>${q.d*q.q+r}</b>`;}
+D.ciclo({
+ livros:[{d:7,q:15}],
+ sortear(){return {d:rnd(3,9),q:rnd(4,20)};},
+ montar(q){cur=q;SX=D.sl('sx',0,q.d+1,1,0,draw);['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Numa divisão, o divisor é <span class="k">${q.d}</span>, o quociente é <span class="k">${q.q}</span> e o resto é o maior possível. Qual é o dividendo?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const r=q.d-1,n=q.d*q.q+r,ok=[v[0]===r,v[1]===n];D.marcar(['r1','r2'],ok);SX.set(r);draw();
+  return {ok:ok[0]&&ok[1],exp:`O resto é sempre menor que o divisor, então o maior é <b>${r}</b>. Dividendo = divisor × quociente + resto = ${q.d} × ${q.q} + ${r} = <b>${n}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>
