@@ -262,18 +262,17 @@
 
   // ---------------- termômetros ----------------
   function termometros(c = 37, opt = {}) {
-    const W = 310, H = 260, top = 20, bot = 220; let b = '';
+    const W = 410, H = 260, top = 20, bot = 220; let b = '';
     const yC = v => bot - (v + 20) * (bot - top) / 130; // escala de −20 a 110 °C
-    [[110, 'Celsius', v => v, [-20, 0, 20, 37, 40, 60, 80, 100]], [220, 'Fahrenheit', v => v * 1.8 + 32, [-4, 32, 68, 98.6, 104, 140, 176, 212]]].forEach(([x, nome, f, marks], i) => {
+    [[115, 'Celsius (°C)', v => v], [225, 'Fahrenheit (°F)', v => v * 1.8 + 32], [335, 'Kelvin (K)', v => v + 273]].forEach(([x, nome, f]) => {
       b += `<rect x="${x - 9}" y="${top - 6}" width="18" height="${bot - top + 10}" rx="9" fill="#fff" stroke="${NAVY}" stroke-width="2"/><circle cx="${x}" cy="${bot + 14}" r="15" fill="${RD}"/>`;
       b += `<rect x="${x - 4}" y="${yC(c).toFixed(1)}" width="8" height="${(bot + 4 - yC(c)).toFixed(1)}" fill="${RD}"/>`;
-      [-20, 0, 20, 37, 40, 60, 80, 100].forEach((v, k) => { const y = yC(v); const lab = fmt(Math.round(f(v) * 10) / 10);
-        if (v === 37 || v === 40) return;
+      [-20, 0, 20, 40, 60, 80, 100].forEach(v => { const y = yC(v); const lab = fmt(Math.round(f(v) * 10) / 10);
         b += `<line x1="${x + 9}" y1="${y.toFixed(1)}" x2="${x + 17}" y2="${y.toFixed(1)}" stroke="${NAVY}" stroke-width="1.4"/>` + T(x + 21, (y + 4).toFixed(1), lab, 10.5, GY, 600, 'start'); });
-      b += T(x, bot + 46, nome, 12.5, NAVY);
+      b += T(x, bot + 46, nome, 12, NAVY);
     });
-    b += `<line x1="100" y1="${yC(c).toFixed(1)}" x2="265" y2="${yC(c).toFixed(1)}" stroke="${OR}" stroke-width="1.6" stroke-dasharray="5 4"/>`;
-    b += T(170, yC(c) - 6, `${fmt(c)} °C = ${fmt(Math.round((c * 1.8 + 32) * 10) / 10)} °F`, 11.5, OR);
+    b += `<line x1="100" y1="${yC(c).toFixed(1)}" x2="375" y2="${yC(c).toFixed(1)}" stroke="${OR}" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+    b += T(225, yC(c) - 6, `${fmt(c)} °C = ${fmt(Math.round((c * 1.8 + 32) * 10) / 10)} °F = ${fmt(c + 273)} K`, 11.5, OR);
     b += T(92, yC(0) + 4, 'gelo', 10.5, BL, 600, 'end') + T(92, yC(100) + 4, 'água ferve', 10.5, RD, 600, 'end');
     return svg(W + 10, H + 26, b, opt.w);
   }
