@@ -43,7 +43,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const FEM=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela'];const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique'];
+const FEM=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela'];const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur,SX;
 function draw(){const q=cur,x=SX.get(),N=q.notas.concat([x]),m=N.reduce((a,b)=>a+b,0)/N.length,h=16;let g='';
  N.forEach((v,i)=>{const X=30+i*58;g+=`<rect x="${X}" y="${180-v*h}" width="40" height="${v*h}" fill="${i<N.length-1?'#2457D6':'#93C5FD'}" rx="3"/><text x="${X+20}" y="${174-v*h}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${fmt(v)}</text><text x="${X+20}" y="196" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${i+1}ª prova</text>`;});

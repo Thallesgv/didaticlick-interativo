@@ -45,7 +45,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 <script>
 
 const PT=[{t:'−√2',v:-Math.SQRT2},{t:'π',v:Math.PI},{t:'√3',v:Math.sqrt(3)},{t:'−√5',v:-Math.sqrt(5)},{t:'√10',v:Math.sqrt(10)},{t:'−π',v:-Math.PI},{t:'5/2',v:2.5},{t:'−3/4',v:-0.75},{t:'√7',v:Math.sqrt(7)},{t:'−1',v:-1},{t:'2',v:2},{t:'π/2',v:Math.PI/2},{t:'−√8',v:-Math.sqrt(8)}];
-const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique'];
+const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur;
 function draw(){const q=cur,lo=Math.min(q.a.v,q.b.v),hi=Math.max(q.a.v,q.b.v),mn=Math.floor(lo)-1,mx=Math.ceil(hi)+1;
  $('fig').innerHTML=D.reta({min:mn,max:mx,w:360,h:96,y:58,extra:(sx,y)=>[[q.a,q.na,'#F7821F'],[q.b,q.nb,'#2457D6']].map(([p,n,c])=>`<circle cx="${sx(p.v)}" cy="${y}" r="7" fill="${c}"/><text x="${sx(p.v)}" y="${y-16}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="${c}">${n}: ${p.t}</text>`).join('')});}

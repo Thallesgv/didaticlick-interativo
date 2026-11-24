@@ -43,7 +43,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique'];
+const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur,sel,mk;
 function draw(){const q=cur,cor={};cor[q.a]='#2457D6';if(mk.b!=null)cor[mk.b]=mk.b===q.a-q.m?'#F7821F':'#B91C1C';if(mk.c!=null)cor[mk.c]=mk.c===q.a-q.m+q.p?'#15803D':'#B91C1C';
  $('fig').innerHTML=D.reta({min:0,max:30,w:360,h:90,y:52,cor,rot:k=>k%5===0?k:'',extra:(sx,y)=>{let s='';const arc=(a,b,t,c)=>`<path d="M${sx(a)},${y-8} Q${(sx(a)+sx(b))/2},${y-48} ${sx(b)},${y-8}" fill="none" stroke="${c}" stroke-width="2"/><text x="${(sx(a)+sx(b))/2}" y="${y-30}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="${c}">${t}</text>`;

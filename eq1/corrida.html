@@ -51,7 +51,7 @@ function rec(q,show){const L=(a,b,c)=>`<div style="display:flex;justify-content:
  $('rec').innerHTML=`<div style="background:#0E2354;color:#fff;border-radius:10px 10px 0 0;padding:8px 12px;font-weight:700">Recibo da viagem · ${q.nome}</div><div style="border:2px solid #0E2354;border-top:0;border-radius:0 0 10px 10px;padding:6px 12px">`+
  L('Tarifa base',R(q.b))+L(`Tempo: ${q.min} min × ${R(q.m)}`,R(q.m*q.min))+L(`Distância: ${show?fmt(q.x):'?'} km × ${R(q.k)}`,show?R(q.k*q.x):'?','#F7821F')+
  `<div style="display:flex;justify-content:space-between;padding:7px 0 2px;font-size:17px"><b>Total</b><b>${R(q.tot)}</b></div></div>`;}
-const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique'];
+const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 D.ciclo({
  livros:[{nome:'Isabelle',b:5,k:1.6,m:0.4,min:25,x:10,tot:31}],
  sortear(){const b=pick([4,5,6,7]),k=pick([1.5,1.6,1.8,2,2.2,2.5]),m=pick([0.3,0.4,0.5]),min=rnd(2,8)*5,x=rnd(3,20);return {nome:pick(NOMES),b,k,m,min,x,tot:Math.round((b+k*x+m*min)*100)/100};},

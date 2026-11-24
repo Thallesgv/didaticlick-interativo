@@ -63,7 +63,7 @@ D.ciclo({
  livros:[{nome:'Ângela',din:150,it:[['Arroz',38],['Carne',52],['Café',27],['Frutas',19]]}],
  sortear(){const n=pick([3,4,4,5]),nomes=[...PROD].sort(()=>Math.random()-.5).slice(0,n);
   const it=nomes.map(p=>{let v;do v=rnd(8,69);while(v%10===5);return [p,v];});const tot=it.reduce((s,p)=>s+p[1],0);
-  let din=Math.round((tot+rnd(-15,20))/10)*10;if(din===tot)din+=10;return {nome:pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique']),din,it};},
+  let din=Math.round((tot+rnd(-15,20))/10)*10;if(din===tot)din+=10;return {nome:pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard']),din,it};},
  montar(q){cur=q;esc=null;chips();if(anim){clearInterval(anim);anim=null;}['e','t'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});
   $('dq').innerHTML=`${q.nome} tem <span class="k">${R(q.din)}</span>. Quanto vai dar a compra?`;caixa(q,0,false);},
  conferir(q){if(esc===null){msg('dm','Diga se o dinheiro dá.','info');return null;}const v=D.ler(['e','t']);if(!v)return null;
