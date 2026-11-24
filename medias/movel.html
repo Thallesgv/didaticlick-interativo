@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Média móvel · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Médias</div><h1>Média móvel</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">As vendas de picolés de cada dia (toque nos botões para mudar). A linha laranja é a média dos últimos dias; mude o tamanho da janela e veja a linha ficar mais lisa.</p><div class="sl" id="jn"><b>Janela</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="row" id="bt"></div><div class="row" style="margin-top:6px"><button class="alt" id="sr">Sortear vendas</button></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Duda','Manu','Miguel','Sophia'];
+const MA=a=>a.reduce((s,x)=>s+x,0)/a.length, MG=a=>Math.pow(a.reduce((s,x)=>s*x,1),1/a.length),
+ MH=a=>a.length/a.reduce((s,x)=>s+1/x,0), MQ=a=>Math.sqrt(a.reduce((s,x)=>s+x*x,0)/a.length);
+let AC=null;function tom(freqs,dur){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime;
+ freqs.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+  const s=t0+i*(dur||.7);g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.25,s+.03);g.gain.exponentialRampToValueAtTime(.001,s+(dur||.7)*1.4);o.start(s);o.stop(s+(dur||.7)*1.5);});}catch(e){}}
+
+
+let V=[12,15,9,18,21,15,24,20,27,19,30,26],dia=['1','2','3','4','5','6','7','8','9','10','11','12'];const J=D.sl('jn',1,6,1,3,draw,v=>v+(v>1?' dias':' dia'));
+function draw(){const j=J.get(),n=V.length,W=340,H=210,x0=30,y0=180,top=14,mx=Math.max(...V)*1.15,X=i=>x0+10+i*(W-x0-20)/(n-1),Y=v=>y0-v/mx*(y0-top);let g='';
+ for(let v=0;v<=mx;v+=5)g+=`<line x1="${x0}" y1="${Y(v)}" x2="${W}" y2="${Y(v)}" stroke="#E5E9F2"/>`+T(x0-4,Y(v)+4,v,{a:'end',fs:9,c:'#6B7280'});
+ g+=`<polyline points="${V.map((v,i)=>X(i)+','+Y(v)).join(' ')}" fill="none" stroke="#2457D6" stroke-opacity=".5" stroke-width="2"/>`;V.forEach((v,i)=>g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3.5" fill="#2457D6"/>`+T(X(i),y0+14,dia[i],{fs:9,c:'#6B7280'}));
+ const mm=[];for(let i=j-1;i<n;i++)mm.push([i,MA(V.slice(i-j+1,i+1))]);
+ g+=`<polyline points="${mm.map(([i,v])=>X(i)+','+Y(v)).join(' ')}" fill="none" stroke="#F7821F" stroke-width="3"/>`;mm.forEach(([i,v])=>g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="3.5" fill="#F7821F"/>`);
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+ $('bt').innerHTML=V.map((v,i)=>`<span style="display:inline-flex;align-items:center;gap:2px;border:1px solid #D7DEEA;border-radius:8px;padding:2px"><button class="alt" style="padding:2px 6px" data-i="${i}" data-d="-1">−</button><b style="min-width:22px;text-align:center">${v}</b><button class="alt" style="padding:2px 6px" data-i="${i}" data-d="1">+</button></span>`).join('');
+ $('bt').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;V[i]=Math.max(0,V[i]+ +b.dataset.d);draw();});}
+$('sr').onclick=()=>{V=V.map((_,i)=>Math.max(0,10+i*1.5+rnd(-8,8))|0);draw();};
+draw();
+
+</script>
+</body>
+</html>
