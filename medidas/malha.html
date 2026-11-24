@@ -106,7 +106,7 @@ const AN=slider('an',1,1,10,area,v=>v+' m'),AU=slider('au',4,0,6,area,v=>U[v]);
 const VN=slider('vn',1,1,5,vol,v=>v+' m'),VU=slider('vu',4,0,6,vol,v=>U[v]);
 const HC=slider('hc',10,1,20,hect,v=>v*10+' m'),HL=slider('hl',10,1,20,hect,v=>v*10+' m');
 function comp(){const k=CK.get(),u=Math.min(W(),360)/6.2;
- let seg=`<svg viewBox="0 0 ${5*u+10} 40" width="${5*u+10}" xmlns="http://www.w3.org/2000/svg">`;for(let i=0;i<k;i++)seg+=`<rect x="${5+i*u}" y="12" width="${u}" height="16" fill="${i?'#EEF3FF':UM.OR}" stroke="${UM.NAVY}"/>`;seg+='</svg>';
+ let seg=`<svg viewBox="0 0 ${5*u+10} 40" width="${5*u+10}" xmlns="http://www.w3.org/2000/svg">`;seg+=`<rect x="5" y="17" width="${k*u}" height="7" fill="#111"/><rect x="5" y="17" width="${u}" height="7" fill="${UM.OR}"/>`;for(let i=0;i<=k;i++)seg+=`<line x1="${5+i*u}" y1="11" x2="${5+i*u}" y2="30" stroke="${UM.OR}" stroke-width="2"/>`;seg+='</svg>';
  let sq=`<svg viewBox="0 0 ${k*u/1.6+10} ${k*u/1.6+10}" width="${k*u/1.6+10}" xmlns="http://www.w3.org/2000/svg">`;const v=u/1.6;for(let i=0;i<k;i++)for(let j=0;j<k;j++)sq+=`<rect x="${5+i*v}" y="${5+j*v}" width="${v}" height="${v}" fill="${i||j?'#EEF3FF':UM.OR}" stroke="${UM.NAVY}"/>`;sq+='</svg>';
  const cb=UM.cubo(k,{a:k*u/1.6,lado:' '});
  $('cf').innerHTML=`<div style="text-align:center">${seg}<div class="muted">segmento</div></div><div style="text-align:center">${sq}<div class="muted">quadrado</div></div><div style="text-align:center">${cb}<div class="muted">cubo</div></div>`;
