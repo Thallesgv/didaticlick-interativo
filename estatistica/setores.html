@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o gráfico de setores · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">Monte o gráfico de setores</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Digite o ângulo de cada setor. O gráfico vai se desenhando enquanto você digita. Lembre: o círculo inteiro, 360°, é o total.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><table class="t" id="tb"></table>
+<div class="fig" id="fig"></div><div class="muted" id="sm" style="text-align:center"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=estatistica-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Ângulo = frequência relativa × 360°. Um atalho: divida 360° pelo total para saber quanto vale cada resposta, e multiplique pela frequência.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+let cur;
+function draw(){const cx=110,cy=110,r=95;let a=-Math.PI/2,g=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#F5F7FB" stroke="#D7DEEA"/>`,s=0;
+ cur.c.forEach((c,i)=>{const v=num($('a'+i).value);if(!(v>0))return;s+=v;const da=Math.min(v,360)*Math.PI/180,b=a+da,x0=cx+r*Math.cos(a),y0=cy+r*Math.sin(a),x1=cx+r*Math.cos(b),y1=cy+r*Math.sin(b);
+  g+=v>=359.99?`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${CORES[i]}"/>`:`<path d="M${cx},${cy} L${x0},${y0} A${r},${r} 0 ${da>Math.PI?1:0},1 ${x1},${y1} Z" fill="${CORES[i]}" stroke="#fff" stroke-width="2"/>`;a=b;});
+ $('fig').innerHTML=`<svg viewBox="0 0 220 220" width="220">${g}</svg>`;$('sm').innerHTML=`Soma dos ângulos: <b style="color:${Math.abs(s-360)<.01?'var(--ok)':'var(--navy)'}">${fmt1(s)}°</b> de 360°`;}
+D.ciclo({
+ livros:[{c:[['A pé',10],['Ônibus',14],['Carro',12],['Bicicleta',4]],tema:'Como os 40 colegas da Manu vão para a escola'}],
+ sortear(){const T=pick([20,24,30,36,40,45,60,72,90]),tm=pick([['Fruta preferida',['Banana','Maçã','Uva','Manga']],['Meio de transporte',['A pé','Ônibus','Carro','Bicicleta']],['Gênero de filme',['Comédia','Ação','Animação','Terror']]]);
+  let f=[1,1,1,1];for(let k=4;k<T;k++)f[rnd(0,3)]++;return {c:tm[1].map((n,i)=>[n,f[i]]),tema:`${tm[0]}: ${T} pessoas`};},
+ montar(q){cur=q;const T=q.c.reduce((s,x)=>s+x[1],0);
+  $('dq').innerHTML=`${q.tema}. Total: <span class="k">${T}</span>.`;
+  $('tb').innerHTML='<tr><th></th><th>Resposta</th><th>f</th><th>ângulo (°)</th></tr>'+q.c.map((c,i)=>`<tr><td><span style="display:inline-block;width:14px;height:14px;border-radius:3px;background:${CORES[i]}"></span></td><td>${c[0]}</td><td>${c[1]}</td><td>${box('a'+i,72)}</td></tr>`).join('');
+  q.c.forEach((c,i)=>$('a'+i).oninput=draw);draw();},
+ conferir(q){const ids=q.c.map((c,i)=>'a'+i),v=D.ler(ids);if(!v)return null;const T=q.c.reduce((s,x)=>s+x[1],0);
+  const oks=q.c.map((c,i)=>perto(v[i],360*c[1]/T,0.05));D.marcar(ids,oks);
+  return {ok:oks.every(Boolean),exp:`Cada resposta vale 360° ÷ ${T} = ${fmt1(360/T)}°. `+q.c.map(c=>`${c[0]}: ${c[1]} × ${fmt1(360/T)}° = ${fmt1(360*c[1]/T)}°`).join(' · ')};},
+ res:true});
+
+</script>
+</body>
+</html>

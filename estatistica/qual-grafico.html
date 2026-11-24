@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qual é o melhor gráfico? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">Qual é o melhor gráfico?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Leia a pesquisa sorteada, escolha o gráfico que melhor mostra os dados e aperte OK. Depois vem a explicação.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="ask" style="display:block"><span class="chips" id="cl" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px"></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div id="rs" class="hide"></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Pergunte: tem tempo? (linhas) São partes de um todo? (setores) São dois grupos? (agrupadas) São medidas em classes? (histograma) É um cartaz? (pictograma) Senão, colunas ou barras.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+const GA=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela'],GO=['Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique'];
+const TIPOS=['Colunas ou barras','Barras agrupadas','Linhas','Setores','Pictograma','Histograma'];
+const ic=i=>{const b='#2457D6',o='#F7821F',l='#0E2354';const S=[
+ `<rect x="4" y="12" width="5" height="12" fill="${b}"/><rect x="12" y="5" width="5" height="19" fill="${b}"/><rect x="20" y="9" width="5" height="15" fill="${b}"/>`,
+ `<rect x="2" y="10" width="4" height="14" fill="${b}"/><rect x="6" y="14" width="4" height="10" fill="${o}"/><rect x="14" y="6" width="4" height="18" fill="${b}"/><rect x="18" y="12" width="4" height="12" fill="${o}"/>`,
+ `<polyline points="2,20 9,14 15,16 22,6 27,9" fill="none" stroke="${b}" stroke-width="2.5"/>`,
+ `<circle cx="14" cy="14" r="10" fill="${b}"/><path d="M14 14 L14 4 A10 10 0 0 1 23.5 17 Z" fill="${o}"/>`,
+ `<circle cx="6" cy="8" r="3.5" fill="${o}"/><circle cx="14" cy="8" r="3.5" fill="${o}"/><circle cx="22" cy="8" r="3.5" fill="${o}"/><circle cx="6" cy="19" r="3.5" fill="${o}"/><circle cx="14" cy="19" r="3.5" fill="${o}"/>`,
+ `<rect x="3" y="15" width="5" height="9" fill="${b}"/><rect x="8" y="7" width="5" height="17" fill="${b}"/><rect x="13" y="4" width="5" height="20" fill="${b}"/><rect x="18" y="11" width="5" height="13" fill="${b}"/>`][i];
+ return `<svg viewBox="0 0 28 26" width="28" height="26" style="vertical-align:middle;margin-right:6px"><line x1="1" y1="24.5" x2="27" y2="24.5" stroke="${l}"/>${S}</svg>`;};
+const POR=['comparar <b>quantidades de categorias</b>: cada categoria vira uma coluna, e a mais alta salta aos olhos.',
+ 'comparar <b>dois ou mais grupos</b> nas mesmas categorias: as barras de cada grupo ficam lado a lado.',
+ 'mostrar a <b>evolução ao longo do tempo</b>: uma das variáveis é o tempo (horas, dias, meses, anos), e a linha mostra subidas, descidas e tendências.',
+ 'mostrar <b>as partes de um todo</b>: as fatias somam 100% e são poucas.',
+ '<b>chamar a atenção</b> num cartaz ou jornal, com números redondos e poucas categorias.',
+ 'ver <b>como se espalham</b> dados medidos (quantitativos contínuos) agrupados em <b>classes</b>.'];
+const SIT=[
+ [2,'{a} anotou a temperatura da cidade a cada hora, das 6h às 22h, e quer ver quando esquentou e quando esfriou.'],
+ [2,'{o} quer mostrar como o número de alunos da escola mudou de 2015 a 2025.'],
+ [2,'O peso de um bebê, medido todo mês durante o primeiro ano de vida.'],
+ [2,'Quantos seguidores o canal de {a} tinha no fim de cada semana do semestre.'],
+ [2,'O preço do quilo do tomate em cada mês do ano.'],
+ [0,'{o} perguntou aos 30 colegas o esporte preferido (futebol, vôlei, basquete, natação) e quer ver qual ganhou.'],
+ [0,'A população dos 8 estados mais populosos do Brasil, para comparar uns com os outros.'],
+ [0,'Quantos gols cada jogador do time de {o} marcou no campeonato.'],
+ [0,'Quantos alunos faltaram em cada dia da semana passada (segunda a sexta), para ver o dia com mais faltas.'],
+ [1,'A fruta preferida da turma, com os votos das meninas e os dos meninos lado a lado.'],
+ [1,'As notas de Matemática e de Português de {a}, {o} e mais três colegas, para comparar as duas matérias.'],
+ [1,'As medalhas de ouro, de prata e de bronze de 4 países numa olimpíada.'],
+ [1,'Quantos alunos de cada turma vão de ônibus e quantos vão a pé, comparando os dois grupos turma por turma.'],
+ [3,'Como os 40 colegas de {a} vão para a escola (a pé, ônibus, carro, bicicleta), mostrando a parte de cada meio no total.'],
+ [3,'Como uma família divide o salário do mês: aluguel, comida, transporte e lazer (as partes somam 100%).'],
+ [3,'A composição do ar: 78% de nitrogênio, 21% de oxigênio e 1% de outros gases.'],
+ [3,'Que parte do dia de {o} vai para dormir, estudar, brincar e o resto (as partes somam 24 horas).'],
+ [4,'Num cartaz para o mural, {a} quer mostrar quantas árvores cada turma plantou: 10, 20, 30 e 15.'],
+ [4,'Uma reportagem de jornal quer mostrar, com desenhos de malas, quantos milhões de turistas visitaram 4 cidades.'],
+ [4,'Um folheto da cantina quer chamar a atenção para os lanches mais vendidos: 50 sanduíches, 30 pastéis e 20 tapiocas.'],
+ [5,'{o} mediu a altura dos 40 colegas e quer ver em quais faixas (140 a 145 cm, 145 a 150 cm…) eles se concentram.'],
+ [5,'O tempo, em minutos, que 50 alunos levam de casa até a escola, agrupado de 10 em 10 minutos.'],
+ [5,'A massa de 60 melancias da feira, agrupada em classes de 1 kg.'],
+ [5,'As idades dos 200 moradores de um prédio, agrupadas em faixas de 10 anos.']];
+let cur,esc=null,ult=-1;
+function clb(fim){$('cl').innerHTML=TIPOS.map((n,i)=>{let c=esc===i?'on':'';if(fim){c=i===cur.r?'okk':(i===esc?'bad':'');}
+ return `<button data-v="${i}" class="${c}" style="text-align:left;display:flex;align-items:center">${ic(i)}${n}</button>`;}).join('');
+ $('cl').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;clb();}});}
+D.ciclo({
+ livros:[],
+ sortear(){let k;do{k=rnd(0,SIT.length-1);}while(k===ult);ult=k;const [r,t]=SIT[k];return {r,t:t.replace('{a}',pick(GA)).replace('{o}',pick(GO))};},
+ montar(q){cur=q;esc=null;$('dq').innerHTML=q.t;clb(false);},
+ conferir(q){if(esc===null){msg('dm','Escolha um gráfico.','info');return null;}clb(true);
+  const ok=esc===q.r;let exp=`<b>${TIPOS[q.r]}</b>: o melhor para ${POR[q.r]}`;
+  if(!ok)exp+=` Já o que você escolheu (${TIPOS[esc].toLowerCase()}) serve para ${POR[esc]}`;
+  return {ok,exp};}});
+
+</script>
+</body>
+</html>

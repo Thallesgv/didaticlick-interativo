@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A tábua de vida de Graunt · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">A tábua de vida de Graunt</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Em 1662, John Graunt estimou quantos de cada 100 bebês chegavam a cada idade. Leia as colunas e responda. As colunas destacadas são as que a pergunta usa.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask" id="pq"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=estatistica-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Para saber quantos morreram entre duas idades, subtraia: os que chegaram à primeira idade menos os que chegaram à segunda. Como a tábua é “de cada 100”, o número de pessoas já é a porcentagem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+const G=[[0,100],[6,64],[16,40],[26,25],[36,16],[46,10],[56,6],[66,3],[76,1]];
+const viv=a=>G.find(g=>g[0]===a)[1];
+function draw(hl){const W=340,H=200,x0=30,y0=170,top=14,sl=(W-x0-6)/G.length,bw=sl*.66;let g='';
+ for(let v=0;v<=100;v+=20){const y=y0-v/100*(y0-top);g+=`<line x1="${x0}" y1="${y}" x2="${W-4}" y2="${y}" stroke="#E5E9F2"/><text x="${x0-4}" y="${y+4}" font-size="10" text-anchor="end" fill="#6B7280" font-family="Poppins">${v}</text>`;}
+ G.forEach(([a,v],i)=>{const x=x0+sl*i+(sl-bw)/2,h=v/100*(y0-top),on=hl.includes(a);
+  g+=`<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="2" fill="${on?'#F7821F':'#2457D6'}" opacity="${on?1:.55}"/><text x="${x+bw/2}" y="${y0-h-4}" font-size="11" font-weight="700" text-anchor="middle" fill="#0E2354" font-family="Poppins">${v}</text><text x="${x+bw/2}" y="${y0+14}" font-size="11" text-anchor="middle" fill="#0E2354" font-family="Poppins">${a}</text>`;});
+ g+=`<text x="${(x0+W)/2}" y="${H-2}" font-size="11" text-anchor="middle" fill="#6B7280" font-family="Poppins">idade (anos)</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;}
+const ID=G.map(g=>g[0]);
+D.ciclo({
+ livros:[{t:'m',a:0,b:6},{t:'m',a:16,b:26},{t:'c',a:16}],
+ sortear(){if(rnd(0,2)===0)return {t:'c',a:pick(ID.slice(1))};let i=rnd(0,ID.length-2),j=rnd(i+1,Math.min(ID.length-1,i+3));return {t:'m',a:ID[i],b:ID[j]};},
+ montar(q){if(q.t==='m'){draw([q.a,q.b]);$('dq').innerHTML=`De cada 100 nascidos, quantos morriam <span class="k">${q.a===0?'antes dos '+q.b+' anos':'entre os '+q.a+' e os '+q.b+' anos'}</span>?`;
+   $('pq').innerHTML='Resposta: '+box('r1',80)+' pessoas';}
+  else{draw([q.a]);$('dq').innerHTML=`Que porcentagem dos nascidos chegava aos <span class="k">${q.a} anos</span>?`;$('pq').innerHTML='Resposta: '+box('r1',80)+' %';}},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;
+  const c=q.t==='m'?viv(q.a)-viv(q.b):viv(q.a),ok=v[0]===c;D.marcar(['r1'],[ok]);
+  return {ok,exp:q.t==='m'?`${q.a===0?'Nasciam 100':'Chegavam '+viv(q.a)+' aos '+q.a+' anos'} e ${viv(q.b)} aos ${q.b}: morreram ${viv(q.a)} − ${viv(q.b)} = <b>${c}</b>.`:`${c} de cada 100 chegavam aos ${q.a} anos: <b>${c}%</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

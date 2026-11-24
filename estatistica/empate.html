@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Empate técnico ou não? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">Empate técnico ou não?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Calcule a faixa de cada candidato (porcentagem menos e mais a margem de erro) e decida. Depois do OK, as faixas aparecem no gráfico.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<table class="t"><tr><th></th><th>de (%)</th><th>até (%)</th></tr>
+<tr><td id="na"></td><td><input class="n" id="r1" inputmode="decimal" style="width:64px"></td><td><input class="n" id="r2" inputmode="decimal" style="width:64px"></td></tr>
+<tr><td id="nb"></td><td><input class="n" id="r3" inputmode="decimal" style="width:64px"></td><td><input class="n" id="r4" inputmode="decimal" style="width:64px"></td></tr></table>
+<div class="ask">Resultado: <span class="chips" id="cl"></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=estatistica-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Faixa = porcentagem − margem até porcentagem + margem. Se a faixa de um encosta ou passa por cima da do outro, é empate técnico.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+let cur,esc=null;
+const OP=q=>['Empate técnico',q.na+' à frente',q.nb+' à frente'];
+function draw(fx){const W=340,x0=90,x1=W-12,lo=Math.floor((Math.min(cur.a,cur.b)-cur.m-4)/5)*5,hi=Math.ceil((Math.max(cur.a,cur.b)+cur.m+4)/5)*5,X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);let g='';
+ for(let v=lo;v<=hi;v+=5)g+=`<line x1="${X(v)}" y1="10" x2="${X(v)}" y2="96" stroke="#E5E9F2"/><text x="${X(v)}" y="112" font-size="10" text-anchor="middle" fill="#6B7280" font-family="Poppins">${v}%</text>`;
+ [[cur.na,cur.a,36,'#2457D6'],[cur.nb,cur.b,76,'#F7821F']].forEach(([n,p,y,c])=>{g+=`<text x="${x0-8}" y="${y+4}" font-size="12" font-weight="700" text-anchor="end" fill="#0E2354" font-family="Poppins">${n}</text>`;
+  if(fx)g+=`<rect x="${X(p-cur.m)}" y="${y-9}" width="${X(p+cur.m)-X(p-cur.m)}" height="18" rx="9" fill="${c}" fill-opacity=".25" stroke="${c}"/>`;
+  g+=`<circle cx="${X(p)}" cy="${y}" r="6" fill="${c}"/><text x="${X(p)}" y="${y-13}" font-size="11" font-weight="700" text-anchor="middle" fill="${c}" font-family="Poppins">${p}%</text>`;});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 118" width="${W}">${g}</svg>`;}
+function clb(){$('cl').innerHTML=OP(cur).map((n,i)=>`<button data-v="${i}" class="${esc===i?'on':''}">${n}</button>`).join('');$('cl').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;clb();}});}
+D.ciclo({
+ livros:[{a:42,b:38,m:3,na:'Candidata A',nb:'Candidato B'},{a:47,b:39,m:2,na:'Candidata A',nb:'Candidato B'}],
+ sortear(){const m=pick([2,2,3,3,4]),a=rnd(25,50),b=a+pick([-1,1])*rnd(1,12);const nm=shuffle(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela']),nn=shuffle(['Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique']);return {a,b,m,na:nm[0],nb:nn[0]};},
+ montar(q){cur=q;esc=null;['r1','r2','r3','r4'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('na').textContent=q.na;$('nb').textContent=q.nb;
+  $('dq').innerHTML=`${q.na}: <span class="k">${q.a}%</span> · ${q.nb}: <span class="k">${q.b}%</span> · margem de erro: <span class="k">${q.m} pontos</span>`;draw(false);clb();},
+ conferir(q){const v=D.ler(['r1','r2','r3','r4']);if(!v)return null;if(esc===null){msg('dm','Escolha o resultado.','info');return null;}
+  const c=[q.a-q.m,q.a+q.m,q.b-q.m,q.b+q.m],oks=c.map((x,i)=>v[i]===x);D.marcar(['r1','r2','r3','r4'],oks);
+  const cruza=c[0]<=c[3]&&c[2]<=c[1],res=cruza?0:(q.a>q.b?1:2);draw(true);
+  return {ok:oks.every(Boolean)&&esc===res,exp:`${q.na}: de ${c[0]}% a ${c[1]}%. ${q.nb}: de ${c[2]}% a ${c[3]}%. ${cruza?'As faixas se cruzam: <b>empate técnico</b>.':'As faixas não se cruzam: <b>'+OP(q)[res]+'</b>.'}`};},
+ res:true});
+
+</script>
+</body>
+</html>

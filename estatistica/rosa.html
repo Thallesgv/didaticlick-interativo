@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A rosa de Nightingale · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.vals .v{display:flex;align-items:center;gap:2px;border:2px solid #D7DEEA;border-radius:10px;padding:2px}
+.vals .v button{padding:4px 9px;font-size:16px;background:#fff;color:var(--navy);border:0}
+.vals .v b{min-width:30px;text-align:center;color:var(--navy)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:20px;color:var(--navy)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tabs button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:7px 10px;font-size:14px}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>A rosa de Nightingale</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Florence Nightingale queria convencer o governo de que a maioria dos soldados morria de doenças evitáveis. Compare a rosa com um gráfico de colunas dos mesmos dados (valores ilustrativos, mês a mês) e veja o efeito da reforma sanitária.</p><div class="tabs" id="tp"><button data-v="0" class="on">Rosa</button><button data-v="1">Colunas</button></div>
+<div class="sl" id="sm"><b>Reforma no mês</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+function colunas(rot,val,o){o=o||{};const W=340,H=210,x0=34,y0=180,top=16,vmin=o.vmin||0,mx=o.vmax||Math.max(1,...val)*1.15,n=val.length,sl=(W-x0-6)/n,bw=sl*.62;let g='';
+ const st=o.passo||Math.max(1,Math.ceil((mx-vmin)/5));for(let v=vmin;v<=mx+1e-9;v+=st){const y=y0-(v-vmin)/(mx-vmin)*(y0-top);g+=`<line x1="${x0}" y1="${y}" x2="${W-4}" y2="${y}" stroke="#E5E9F2"/>`+T(x0-4,y+4,f2(v),{a:'end',c:'#6B7280',w:500,fs:10});}
+ val.forEach((v,i)=>{const x=x0+sl*i+(sl-bw)/2,h=Math.max(0,(v-vmin)/(mx-vmin)*(y0-top));g+=`<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="2" fill="${(o.cores||CORES)[i%6]}"/>`+T(x+bw/2,y0-h-4,f2(v))+T(x+bw/2,y0+14,rot[i],{w:500});});
+ g+=`<line x1="${x0}" y1="${top-6}" x2="${x0}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/><line x1="${x0}" y1="${y0}" x2="${W-4}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/>`;
+ return `<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;}
+
+const MES=['abr','mai','jun','jul','ago','set','out','nov','dez','jan','fev','mar'];
+const D0=[40,48,56,70,82,90,86,74,62,52,44,38],FE=[14,18,20,24,26,22,20,18,16,14,12,12];
+let tipo=0;const R=D.sl('sm',1,12,1,12,draw,v=>v===12?'sem reforma':MES[v]);
+function dados(){const r=R.get();return D0.map((v,i)=>i>=r&&r<12?Math.max(FE[i],Math.round(v*Math.pow(.6,i-r+1))):v);}
+function draw(){const d=dados();let g='';
+ if(tipo===0){const cx=170,cy=150;for(let i=0;i<12;i++){const a0=-Math.PI/2+i*Math.PI/6,a1=a0+Math.PI/6;
+   [[d[i]*1.4,'#5B8DEF'],[FE[i]*1.4,'#F28B82']].forEach(([r,c])=>{g+=`<path d="M${cx},${cy} L${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)} A${r},${r} 0 0,1 ${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} Z" fill="${c}" stroke="#fff"/>`;});
+   const am=(a0+a1)/2;g+=T(cx+138*Math.cos(am),cy+138*Math.sin(am)+4,MES[i],{fs:10,c:'#6B7280'});}
+  $('fig').innerHTML=`<svg viewBox="0 0 340 300" width="340">${g}</svg>`;}
+ else{const W=340,x0=30,y0=200,sl=(W-x0)/12;for(let i=0;i<12;i++){const x=x0+sl*i;g+=`<rect x="${x+2}" y="${y0-d[i]*1.6}" width="${sl/2-2}" height="${d[i]*1.6}" fill="#5B8DEF"/><rect x="${x+sl/2}" y="${y0-FE[i]*1.6}" width="${sl/2-2}" height="${FE[i]*1.6}" fill="#F28B82"/>`+T(x+sl/2,y0+14,MES[i],{fs:9,c:'#6B7280'});}
+  g+=`<line x1="${x0}" y1="${y0}" x2="${W}" y2="${y0}" stroke="#0E2354"/>`;$('fig').innerHTML=`<svg viewBox="0 0 340 220" width="340">${g}</svg>`;}
+ const sd=d.reduce((s,x)=>s+x,0),sf=FE.reduce((s,x)=>s+x,0);
+ $('nt').innerHTML=`Azul: doenças evitáveis (${sd}). Vermelho: ferimentos (${sf}). As doenças são <b>${f2(sd/sf)} vezes</b> os ferimentos. ${tipo===0?'Na rosa, a área de cada pétala cresce muito mais depressa que o número, e o azul “engole” tudo: foi isso que impressionou o governo.':'Nas colunas, a comparação mês a mês fica mais exata.'}`;}
+$('tp').querySelectorAll('button').forEach(b=>b.onclick=()=>{tipo=+b.dataset.v;$('tp').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));draw();});
+draw();
+
+</script>
+</body>
+</html>

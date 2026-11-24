@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simule uma pesquisa eleitoral · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.vals .v{display:flex;align-items:center;gap:2px;border:2px solid #D7DEEA;border-radius:10px;padding:2px}
+.vals .v button{padding:4px 9px;font-size:16px;background:#fff;color:var(--navy);border:0}
+.vals .v b{min-width:30px;text-align:center;color:var(--navy)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:20px;color:var(--navy)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tabs button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:7px 10px;font-size:14px}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>Simule uma pesquisa eleitoral</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Numa cidade, 42% dos eleitores votam na candidata A, mas o instituto não sabe disso: ele sorteia uma amostra. Escolha o tamanho da amostra, faça várias pesquisas e veja quanto os resultados variam.</p><div class="sl" id="sn"><b>Entrevistados</b><input type="range"><span></span></div>
+<div class="row"><button class="or" id="um">Fazer 1 pesquisa</button><button class="alt" id="cem">Fazer 100</button><button class="alt" id="lim">Limpar</button></div>
+<div class="res"><div>Última pesquisa<b id="ul">–</b></div><div>Margem de erro aproximada<b id="me"></b></div><div>Pesquisas feitas<b id="nn">0</b></div></div>
+<div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+function colunas(rot,val,o){o=o||{};const W=340,H=210,x0=34,y0=180,top=16,vmin=o.vmin||0,mx=o.vmax||Math.max(1,...val)*1.15,n=val.length,sl=(W-x0-6)/n,bw=sl*.62;let g='';
+ const st=o.passo||Math.max(1,Math.ceil((mx-vmin)/5));for(let v=vmin;v<=mx+1e-9;v+=st){const y=y0-(v-vmin)/(mx-vmin)*(y0-top);g+=`<line x1="${x0}" y1="${y}" x2="${W-4}" y2="${y}" stroke="#E5E9F2"/>`+T(x0-4,y+4,f2(v),{a:'end',c:'#6B7280',w:500,fs:10});}
+ val.forEach((v,i)=>{const x=x0+sl*i+(sl-bw)/2,h=Math.max(0,(v-vmin)/(mx-vmin)*(y0-top));g+=`<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="2" fill="${(o.cores||CORES)[i%6]}"/>`+T(x+bw/2,y0-h-4,f2(v))+T(x+bw/2,y0+14,rot[i],{w:500});});
+ g+=`<line x1="${x0}" y1="${top-6}" x2="${x0}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/><line x1="${x0}" y1="${y0}" x2="${W-4}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/>`;
+ return `<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;}
+
+const P=0.42,NS=[50,100,200,400,800,1000,1500,2000,3000];let res=[];
+const S=D.sl('sn',0,NS.length-1,1,3,()=>{res=[];draw();},i=>NS[i]);
+function pesquisa(){const n=NS[S.get()];let k=0;for(let i=0;i<n;i++)if(Math.random()<P)k++;return 100*k/n;}
+function draw(){const n=NS[S.get()],me=100/Math.sqrt(n);$('me').textContent='± '+f2(me)+' pontos';$('nn').textContent=res.length;$('ul').textContent=res.length?f2(res[res.length-1])+'%':'–';
+ const W=340,x0=16,x1=W-16,X=v=>x0+(v-20)/(64-20)*(x1-x0),b=150;let g='',c={};
+ res.forEach(r=>{const k=Math.round(r);c[k]=(c[k]||0)+1;});const mx=Math.max(1,...Object.values(c));
+ Object.entries(c).forEach(([k,f])=>{const h=f/mx*120;g+=`<rect x="${X(+k-.5)}" y="${b-h}" width="${X(1)-X(0)-1}" height="${h}" fill="#2457D6" fill-opacity=".8"/>`;});
+ g+=`<rect x="${X(42-me)}" y="10" width="${X(42+me)-X(42-me)}" height="${b-10}" fill="#F7821F" fill-opacity=".12"/><line x1="${X(42)}" y1="6" x2="${X(42)}" y2="${b}" stroke="#F7821F" stroke-width="2" stroke-dasharray="5 4"/>`+T(X(42),20,'valor real 42%',{c:'#C2560C',fs:10});
+ g+=`<line x1="${x0}" y1="${b}" x2="${x1}" y2="${b}" stroke="#0E2354"/>`;for(let v=20;v<=64;v+=4)g+=T(X(v),b+14,v+'%',{fs:9,c:'#6B7280',w:500});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 170" width="${W}">${g}</svg>`;
+ const dentro=res.filter(r=>Math.abs(r-42)<=me).length;
+ $('nt').innerHTML=res.length?`Das ${res.length} pesquisas, <b>${dentro}</b> (${f2(100*dentro/res.length)}%) ficaram dentro da faixa laranja, 42% ± ${f2(me)}. Amostras maiores dão resultados mais juntos, mas para reduzir a margem pela metade é preciso entrevistar 4 vezes mais gente.`:'Faça pesquisas para ver os resultados se espalharem em torno do valor real.';}
+$('um').onclick=()=>{res.push(pesquisa());draw();};$('cem').onclick=()=>{for(let i=0;i<100;i++)res.push(pesquisa());draw();};$('lim').onclick=()=>{res=[];draw();};
+draw();
+
+</script>
+</body>
+</html>
