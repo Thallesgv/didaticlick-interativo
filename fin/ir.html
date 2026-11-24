@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A escada do imposto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">A escada do imposto</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Na maioria das aplicações de renda fixa, o Imposto de Renda incide só sobre o <b>lucro</b> e cai conforme o tempo: é a <b>tabela regressiva</b>. Mexa no tempo e veja o imposto descer a escada.</p>
+<div class="sl" id="s1"><b>Lucro da aplicação</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Dias aplicado</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Alíquota<b id="k1"></b></div><div>Imposto<b id="k2"></b></div><div class="o">Lucro líquido<b id="k3"></b></div></div>
+<p class="muted" style="margin:0">Poupança, LCI e LCA são isentas de IR para pessoas físicas. As regras podem mudar por lei: confira as vigentes antes de investir.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const FX=[[180,22.5,'até 180 dias'],[360,20,'181 a 360'],[720,17.5,'361 a 720'],[1e9,15,'mais de 720']];
+const a=SL('s1',100,5000,100,1000,draw,R0),b=SL('s2',30,1080,10,100,draw,v=>v+' dias');
+function draw(){const d=b.get(),k=FX.findIndex(f=>d<=f[0]),al=FX[k][1],L=a.get(),im=L*al/100;
+ let g='';FX.forEach((f,i)=>{const h=40+f[1]*5,x=20+i*80,on=i===k;g+=`<rect x="${x}" y="${170-h}" width="70" height="${h}" rx="6" fill="${on?'#F7821F':'#CBD5E1'}"/>`+TX(x+35,160-h+0,pct(f[1]),{fs:13,c:on?'#F7821F':'#6B7280'})+TX(x+35,185,f[2],{fs:9,c:'#6B7280',w:500});});
+ $('fig').innerHTML=SVG(340,195,g);$('k1').textContent=pct(al);$('k2').textContent=R$(im);$('k3').textContent=R$(L-im);}
+draw();
+</script>
+
+</body>
+</html>

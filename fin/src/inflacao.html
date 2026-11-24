@@ -1,0 +1,19 @@
+<!--T: O carrinho que encolhe-->
+<div class="card"><p class="muted" style="margin-top:0">Com R$ 100 hoje você enche este carrinho. Escolha a inflação por ano e avance no tempo: veja o que os mesmos R$ 100 compram depois.</p>
+<div class="sl" id="s1"><b>Inflação por ano</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Anos que passam</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>O carrinho custa<b id="k1"></b></div><div class="o">R$ 100 compram<b id="k2"></b></div><div>Poder de compra perdido<b id="k3"></b></div></div>
+<p class="muted" id="obs" style="margin:0"></p></div>
+<div class="card"><h2>Você sabia?</h2><p style="margin:0">Em 1993, a inflação no Brasil passou de <b>2.000% no ano</b>. Ponha a inflação no máximo e veja: em poucos meses o dinheiro quase não comprava nada. Foi para acabar com isso que veio o <b>Plano Real</b>, em 1994.</p></div>
+<script>
+const ITENS=['🍞','🥛','🍌','🍚','🧀','🍎','🥚','🧃','🍪','☕'];
+const a=SL('s1',0,100,0.5,+(Q.get('i')||5),draw,v=>pct(v)),b=SL('s2',0,30,1,+(Q.get('t')||10),draw,v=>v+' anos');
+function draw(){const f=Math.pow(1+a.get()/100,b.get()),cab=10/f,n=Math.floor(cab+1e-9);
+ let g=`<path d="M20,40 L50,40 L75,130 L300,130 L325,60 L60,60" fill="none" stroke="#0E2354" stroke-width="4" stroke-linejoin="round"/><circle cx="100" cy="150" r="10" fill="#0E2354"/><circle cx="280" cy="150" r="10" fill="#0E2354"/>`;
+ ITENS.forEach((e,i)=>{const x=80+(i%5)*46,y=i<5?118:88;g+=`<text x="${x}" y="${y}" font-size="30" opacity="${i<n?1:(i<cab?0.45:0.08)}">${e}</text>`;});
+ $('fig').innerHTML=SVG(340,165,g);
+ $('k1').textContent=R$(100*f);$('k2').textContent=fmt(Math.round(cab*10)/10)+' de 10 itens';$('k3').textContent=pct(100*(1-1/f),0);
+ $('obs').textContent=b.get()?`O carrinho que custava R$ 100 passa a custar ${R$(100*f)}. A conta é juros compostos: 100 × (1 + ${fmt(a.get())}%)^${b.get()}.`:'Arraste os anos para frente.';}
+draw();
+</script>

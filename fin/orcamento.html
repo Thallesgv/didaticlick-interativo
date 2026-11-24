@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o orçamento · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Monte o orçamento</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0" id="sub"></p>
+<div id="sls"></div>
+<div class="kpi"><div>Renda<b id="k0"></b></div><div>Gastos + guardar<b id="k1"></b></div><div class="o">Saldo<b id="k2"></b></div></div>
+<div class="fig" id="fig"></div><div id="dm"></div></div>
+<div class="card"><h2>E se acontecer um imprevisto?</h2><p class="muted" style="margin-top:0">Sorteie um imprevisto e veja se o seu orçamento aguenta.</p>
+<div class="row"><button class="or" id="imp">Sortear imprevisto</button></div><div id="im"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const M=Q.get('modo')==='mesada'?{sub:'Você recebe a mesada e decide para onde vai cada real. Tente separar uns 20% para guardar e não deixar o saldo negativo.',renda:[50,400,10,150],
+ cats:[['Lanches','N',60],['Transporte','N',20],['Recarga do celular','D',20],['Lazer e passeios','D',30],['Presentes','D',0],['Guardar','G',20]],
+ imp:[['Aniversário surpresa de um amigo: presente',30],['A capinha do celular quebrou',25],['Passeio da escola',40],['Perdeu o fone',60]]}
+:{sub:'Você cuida do orçamento de uma família. Ajuste cada gasto. A regra 50-30-20 sugere 50% para necessidades, 30% para desejos e 20% para guardar.',renda:[1500,10000,100,4000],
+ cats:[['Moradia (aluguel, condomínio)','N',1200],['Mercado','N',800],['Contas (luz, água, internet)','N',350],['Transporte','N',300],['Lazer e restaurantes','D',500],['Compras e assinaturas','D',300],['Guardar e investir','G',300]],
+ imp:[['A geladeira quebrou',900],['Conta de luz veio alta',150],['Remédio inesperado',120],['Conserto do carro',700],['Óculos novos',400]]};
+$('sub').textContent=M.sub;
+$('sls').innerHTML=`<div class="sl" id="r"><b>Renda do mês</b><input type="range"><span></span></div>`+M.cats.map((c,k)=>`<div class="sl" id="c${k}"><b>${c[0]}</b><input type="range"><span></span></div>`).join('');
+const R=SL('r',M.renda[0],M.renda[1],M.renda[2],M.renda[3],draw,R0);
+const S=M.cats.map((c,k)=>SL('c'+k,0,M.renda[1]/2,M.renda[2]/2,c[2],draw,R0));
+function tot(){const t={N:0,D:0,G:0};M.cats.forEach((c,k)=>t[c[1]]+=S[k].get());return t;}
+function draw(){const t=tot(),r=R.get(),g=t.N+t.D+t.G,s=r-g;
+ $('k0').textContent=R0(r);$('k1').textContent=R0(g);$('k2').textContent=R0(s);$('k2').style.color=s<0?'#B91C1C':'';
+ $('fig').innerHTML=pizza([{v:t.N,cor:'#0E2354',nome:'Necessidades '+R0(t.N)},{v:t.D,cor:'#F7821F',nome:'Desejos '+R0(t.D)},{v:t.G,cor:'#15803D',nome:'Guardar '+R0(t.G)},{v:Math.max(s,0),cor:'#CBD5E1',nome:'Sem destino '+R0(Math.max(s,0))}]);
+ const pg=r?100*t.G/r:0;let m;
+ if(s<0)m=['bad',`<b>Déficit de ${R0(-s)}</b>: está saindo mais do que entra. Corte desejos ou aumente a renda.`];
+ else if(pg>=20)m=['ok',`Muito bom! Você guarda ${pct(pg,0)} da renda.`+(s>0?` E ainda sobram ${R0(s)} sem destino: que tal guardar também?`:'')];
+ else m=['info',`Saldo positivo, mas você guarda só ${pct(pg,0)} da renda. A meta da regra 50-30-20 é 20%.`];
+ msg('dm',m[1],m[0]);}
+draw();
+$('imp').onclick=()=>{const [n,v]=pick(M.imp),t=tot(),s=R.get()-(t.N+t.D+t.G),res=t.G+Math.max(s,0);
+ msg('im',`<b>${n}: ${R0(v)}</b>. `+(res>=v?`Ufa! O que você guardou (${R0(res)}) cobre o imprevisto. É para isso que serve a reserva.`:`O que você guardou (${R0(res)}) não cobre. Faltariam ${R0(v-res)}: daria dívida ou corte em outras contas.`),res>=v?'ok':'bad');};
+</script>
+
+</body>
+</html>

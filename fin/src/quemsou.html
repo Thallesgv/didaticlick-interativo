@@ -1,0 +1,34 @@
+<!--T: Quem sou eu?-->
+<div class="card"><div class="placar" id="placar">Pontos: 0</div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div class="barra"><i id="prog" style="width:0"></i></div>
+<div id="dicas"></div>
+<div class="row" style="margin:8px 0"><button class="alt" id="mais">Mais uma dica (vale menos)</button></div>
+<div class="chips" id="ops"></div>
+<div id="dm"></div>
+<div class="row" style="margin-top:10px"><button class="or hide" id="prox">Próximo ›</button></div>
+</div>
+<div class="card hide" id="fim"></div>
+<script>
+const W=FIN.quem[Q.get('id')];
+if(!W){$('title').textContent='Jogo não encontrado';}
+else{document.title=W.title+' · DidatiClick';$('title').textContent=W.title;
+ $('sub').innerHTML=(W.sub||'Adivinhe pelas dicas.')+' Quanto menos dicas você usar, mais pontos: 3, 2 ou 1.';
+ let cs,i,nd,pts,feito;
+ function inicio(){cs=shuffle(W.cartas);i=0;pts=0;$('fim').classList.add('hide');mostra();}
+ function mostra(){const c=cs[i];nd=1;feito=false;msg('dm','');$('prox').classList.add('hide');$('prog').style.width=(100*i/cs.length)+'%';
+  const ops=shuffle([c.r].concat(c.ops||shuffle(cs.filter(x=>x!==c).map(x=>x.r)).slice(0,3)));
+  $('ops').innerHTML=ops.map(o=>`<button data-o="${o}">${o}</button>`).join('');
+  $('ops').querySelectorAll('button').forEach(b=>b.onclick=()=>resp(b));dicas();}
+ function dicas(){const c=cs[i];$('dicas').innerHTML=c.dicas.slice(0,nd).map((d,k)=>`<div class="dica"><b>Dica ${k+1}:</b> ${d}</div>`).join('');
+  $('mais').disabled=feito||nd>=c.dicas.length;}
+ function resp(b){if(feito)return;feito=true;const c=cs[i],ok=b.dataset.o===c.r,g=ok?Math.max(1,4-nd):0;pts+=g;
+  $('ops').querySelectorAll('button').forEach(x=>{x.disabled=true;if(x.dataset.o===c.r)x.className='okk';});if(!ok)b.className='bad';
+  nd=c.dicas.length;dicas();$('placar').textContent='Pontos: '+pts;
+  msg('dm',(ok?`Certo! +${g} ponto${g>1?'s':''}. `:`Era <b>${c.r}</b>. `)+(c.fim||''),ok?'ok':'bad');
+  i++;if(i<cs.length)$('prox').classList.remove('hide');else fim();}
+ function fim(){$('prog').style.width='100%';$('fim').classList.remove('hide');const mx=3*cs.length;
+  $('fim').innerHTML=`<h2>${pts} de ${mx} pontos</h2><p>${pts>=mx*0.8?'Detetive do dinheiro! 🕵️':pts>=mx*0.5?'Muito bom!':'Releia a apostila e tente de novo.'}</p><div class="row"><button class="or" id="de">Jogar de novo</button></div>`;
+  $('de').onclick=()=>{$('placar').textContent='Pontos: 0';inicio();scrollTo(0,0);};}
+ $('mais').onclick=()=>{nd++;dicas();};$('prox').onclick=mostra;inicio();}
+</script>

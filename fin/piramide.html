@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A pirâmide que desaba · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">A pirâmide que desaba</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Numa pirâmide financeira, cada pessoa precisa trazer novas pessoas para receber o "lucro". Escolha quantas cada um precisa trazer e adicione níveis. Até quando a conta fecha?</p>
+<div class="sl" id="s1"><b>Cada pessoa traz</b><input type="range"><span></span></div>
+<div class="row"><button class="or" id="mais">+ 1 nível</button><button class="alt" id="zera">Recomeçar</button></div>
+<div class="fig" id="fig"></div><div id="dm"></div></div>
+<div class="card"><h2>Por que sempre desaba</h2><p style="margin:0">O dinheiro que paga os primeiros vem dos que entram depois, não de um negócio de verdade. Quando faltam pessoas novas, os pagamentos param e <b>quem entrou por último perde</b>, que é a maioria. Pirâmide financeira é crime no Brasil.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const POP=213e6,MUN=8.1e9;let n=1;const s=SL('s1',2,10,1,5,()=>{n=1;draw();},v=>v+' pessoas');
+function draw(){const k=s.get();let g='',tot=0;const nv=[];for(let i=1;i<=n;i++){const q=Math.pow(k,i);nv.push(q);tot+=q;}
+ const vis=nv.slice(-9),off=nv.length-vis.length;vis.forEach((q,j)=>{const i=off+j,w=Math.min(320,20+300*Math.log10(q+1)/Math.log10(Math.pow(k,Math.max(n,3))+1)),y=10+j*26,cor=q>POP?'#B91C1C':(i===n-1?'#F7821F':'#0E2354');
+  g+=`<rect x="${170-w/2}" y="${y}" width="${w}" height="22" rx="4" fill="${cor}"/>`+TX(170,y+15,'nível '+(i+1)+': '+fmt(Math.round(q)),{fs:11,c:'#fff'});});
+ $('fig').innerHTML=SVG(340,vis.length*26+12,g);
+ const ult=nv[n-1];msg('dm',ult>MUN?`No nível ${n} seriam ${fmt(Math.round(ult))} pessoas: mais que a população do <b>planeta</b>! 🌍💥`:ult>POP?`No nível ${n} seriam ${fmt(Math.round(ult))} pessoas: mais que toda a população do Brasil (cerca de 213 milhões). A pirâmide <b>desabou</b>.`:`Total na pirâmide: ${fmt(Math.round(tot))} pessoas. Só o último nível (${fmt(Math.round(ult))}) ainda não recebeu nada: é ${pct(100*ult/tot,0)} de todos.`,ult>POP?'bad':'info');}
+$('mais').onclick=()=>{if(n<20)n++;draw();};$('zera').onclick=()=>{n=1;draw();};draw();
+</script>
+
+</body>
+</html>

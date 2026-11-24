@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escolha o seu caminho · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Escolha o seu caminho</h1></header>
+<main>
+<div class="card"><div class="status" id="st"></div><div class="hist" id="tx"></div><div class="ops" id="ops"></div></div>
+<div class="card hide" id="lic"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const H=(FIN.av||{})[Q.get('id')];
+if(!H){$('title').textContent='História não encontrada';}
+else{document.title=H.title+' · DidatiClick';$('title').textContent=H.title;
+ let v,trilha;
+ function stat(){$('st').innerHTML=Object.keys(H.vars).map(k=>`<span>${H.vars[k][0]} ${H.vars[k][2]?H.vars[k][2](v[k]):v[k]}</span>`).join('');}
+ function vai(id){const n=H.nos[id];trilha.push(id);stat();
+  $('tx').innerHTML=(typeof n.t==='function'?n.t(v):n.t);
+  if(n.fim){$('ops').innerHTML='';$('lic').classList.remove('hide');
+   $('lic').innerHTML=`<h2>${n.fim}</h2><p style="margin:0">${n.lic||''}</p><div class="row" style="margin-top:10px"><button class="or" id="de">Jogar de novo e escolher diferente</button></div>`;$('de').onclick=ini;return;}
+  $('ops').innerHTML=n.ops.map((o,k)=>`<button data-k="${k}">${o[0]}</button>`).join('');
+  $('ops').querySelectorAll('button').forEach(b=>b.onclick=()=>{const o=n.ops[+b.dataset.k];if(o[2])Object.keys(o[2]).forEach(k=>v[k]+=o[2][k]);
+   let prox=typeof o[1]==='function'?o[1](v):o[1];vai(prox);scrollTo(0,0);});}
+ function ini(){v={};Object.keys(H.vars).forEach(k=>v[k]=H.vars[k][1]);trilha=[];$('lic').classList.add('hide');vai('ini');}
+ ini();}
+</script>
+
+</body>
+</html>

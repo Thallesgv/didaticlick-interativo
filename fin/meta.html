@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cofrinho da meta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">O cofrinho da meta</h1></header>
+<main>
+<div class="card"><h2>Monte o seu plano</h2>
+<div class="sl" id="s1"><b>Preço da meta</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Já tenho</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Guardo por mês</b><input type="range"><span></span></div>
+<div class="sl" id="s4"><b>Rendimento ao mês</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Chego lá em<b id="k1"></b></div><div>Total que eu guardei<b id="k2"></b></div><div>Ganho com juros<b id="k3"></b></div></div>
+<div class="fig" id="fig"></div><p class="muted" id="obs" style="margin:0"></p></div>
+<div class="card"><h2>Missão</h2><div class="placar" id="placar">Acertos: 0 de 0</div><div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div><div id="area"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outra missão</button></div><div id="dm"></div></div>
+<div class="card hide" id="rs"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const p0=+(Q.get('preco')||900),m0=+(Q.get('mes')||100);
+const a=SL('s1',50,3000,10,p0,draw,R0),b=SL('s2',0,1000,10,0,draw,R0),c=SL('s3',10,500,5,m0,draw,R0),d=SL('s4',0,1.5,0.1,0,draw,v=>pct(v));
+function draw(){const P=a.get(),J=d.get()/100;let s=b.get(),m=0,dep=s;const v=[s];
+ while(s<P&&m<120){s=s*(1+J)+c.get();dep+=c.get();m++;v.push(s);}
+ $('k1').textContent=m>=120?'mais de 10 anos':m+(m===1?' mês':' meses');$('k2').textContent=R0(dep);$('k3').textContent=R0(Math.max(0,s-dep));
+ $('fig').innerHTML=grafico([{v,cor:'#F7821F',nome:'no cofrinho',pontos:v.length<26},{v:v.map(()=>P),cor:'#0E2354',nome:'meta',tr:1,lw:2}],{rotX:i=>i+'m',max:Math.max(P,v[v.length-1])*1.1});
+ $('obs').textContent=J>0?'Com rendimento, cada mês os juros entram no cofrinho e também passam a render.':'Mexa no rendimento para ver os juros ajudando a chegar antes.';}
+draw();
+const ITENS=[['um fone',240],['uma bicicleta',900],['um tênis',360],['um videogame',2400],['uma mochila',180],['um violão',600],['um patinete',480],['uma câmera',1200]];
+D.ciclo({livros:[{it:'uma bicicleta',P:900,M:6}],
+ sortear(){const [it,P]=pick(ITENS);const ds=[2,3,4,5,6,8,10,12].filter(m=>P%m===0);return {it,P,M:pick(ds)};},
+ montar(q){$('dq').innerHTML=`Para comprar <span class="k">${q.it}</span> de <span class="k">${R0(q.P)}</span> em <span class="k">${q.M} meses</span>, quanto guardar por mês?`;$('area').innerHTML='<div class="ask">R$ '+box('r1',110)+' por mês</div>';},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const ok=Math.abs(v[0]-q.P/q.M)<0.01;D.marcar(['r1'],[ok]);return {ok,exp:`${R0(q.P)} ÷ ${q.M} = ${R0(q.P/q.M)} por mês.`};}});
+</script>
+
+</body>
+</html>

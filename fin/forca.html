@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Forca do dinheiro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Forca do dinheiro</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Palavras: 0 de 0</div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div class="vidas" id="vidas"></div>
+<div class="dica" id="dica"></div>
+<div class="palavra" id="pal"></div>
+<div class="teclado" id="tec"></div>
+<div id="dm"></div>
+<div class="row" style="margin-top:10px"><button class="or hide" id="prox">Próxima palavra ›</button></div>
+</div>
+<div class="card hide" id="fim"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const F=FIN.forca[Q.get('id')];
+const tira=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase();
+if(!F){$('title').textContent='Jogo não encontrado';}
+else{document.title=F.title+' · DidatiClick';$('title').textContent=F.title;
+ $('sub').innerHTML=(F.sub||'Descubra a palavra pela dica.')+' Você pode errar 6 letras.';
+ let lista,i,ac,chutes,erros;
+ function inicio(){lista=shuffle(F.palavras);i=0;ac=0;$('fim').classList.add('hide');nova();}
+ function nova(){chutes=new Set();erros=0;msg('dm','');$('prox').classList.add('hide');
+  $('dica').innerHTML='<b>Dica:</b> '+lista[i][1];
+  $('tec').innerHTML='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l=>`<button data-l="${l}">${l}</button>`).join('');
+  $('tec').querySelectorAll('button').forEach(b=>b.onclick=()=>chuta(b.dataset.l));desenha();}
+ function desenha(){const w=lista[i][0];
+  $('pal').innerHTML=w.split('').map(c=>c===' '||c==='-'?`<span class="sp">${c==='-'?'-':''}</span>`:`<span>${chutes.has(tira(c))?c.toUpperCase():''}</span>`).join('');
+  $('vidas').textContent='❤️'.repeat(6-erros)+'🤍'.repeat(erros);
+  $('placar').textContent=`Palavras: ${ac} de ${lista.length}`;}
+ function chuta(l){if(chutes.has(l))return;chutes.add(l);const w=tira(lista[i][0]);const b=$('tec').querySelector(`[data-l="${l}"]`);b.disabled=true;
+  if(w.includes(l))b.className='okk';else{b.className='bad';erros++;}
+  desenha();const ganhou=w.split('').every(c=>!/[A-Z]/.test(c)||chutes.has(c));
+  if(ganhou||erros>=6){if(ganhou)ac++;$('tec').querySelectorAll('button').forEach(x=>x.disabled=true);
+   chutes=new Set(w);desenha();
+   msg('dm',(ganhou?'Acertou! ':'A palavra era <b>'+lista[i][0].toUpperCase()+'</b>. ')+(lista[i][2]||''),ganhou?'ok':'bad');
+   i++;if(i<lista.length)$('prox').classList.remove('hide');else fim();}}
+ function fim(){$('placar').textContent=`Palavras: ${ac} de ${lista.length}`;$('fim').classList.remove('hide');
+  $('fim').innerHTML=`<h2>Você descobriu ${ac} de ${lista.length} palavras</h2><p>${ac===lista.length?'Dicionário ambulante!':'Releia os verbetes da apostila e tente de novo.'}</p><div class="row"><button class="or" id="de">Jogar de novo</button></div>`;
+  $('de').onclick=()=>{inicio();scrollTo(0,0);};}
+ document.addEventListener('keydown',e=>{const l=tira(e.key||'');if(/^[A-Z]$/.test(l)&&$('tec').querySelector(`[data-l="${l}"]`)&&!$('tec').querySelector(`[data-l="${l}"]`).disabled)chuta(l);});
+ $('prox').onclick=nova;inicio();}
+</script>
+
+</body>
+</html>

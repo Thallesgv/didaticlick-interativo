@@ -1,0 +1,38 @@
+<!--T: Mercadinho-->
+<div class="card"><div class="placar" id="placar"></div>
+<p>A família te mandou ao mercado com <b id="orc"></b> e esta lista. Para cada item, escolha a embalagem. Todas dão a quantidade da lista, mas o preço total muda. Faça as contas de cabeça!</p>
+<div id="lista"></div>
+<div class="kpi"><div>Gasto até agora<b id="tot">R$ 0,00</b></div><div class="o">Sobra<b id="sob"></b></div></div>
+<div class="row"><button class="or" id="ok">Passar no caixa</button><button class="alt" id="nv">Nova lista</button></div>
+<div id="dm"></div></div>
+<div class="card hide" id="exp"></div>
+<script>
+const IT=[
+ {n:'Arroz',q:'5 kg',o:[['5 pacotes de 1 kg a R$ 6,20',31],['1 pacote de 5 kg por R$ 24,90',24.9],['2 pacotes de 2 kg (R$ 11,50) + 1 de 1 kg (R$ 6,20)',29.2]]},
+ {n:'Feijão',q:'2 kg',o:[['2 pacotes de 1 kg a R$ 8,40',16.8],['Promoção "leve 2, pague R$ 15,90"',15.9]]},
+ {n:'Leite',q:'6 litros',o:[['6 caixas de 1 L a R$ 5,29',31.74],['Fardo com 6 caixas por R$ 28,50',28.5]]},
+ {n:'Papel higiênico',q:'12 rolos',o:[['3 pacotes de 4 rolos a R$ 7,90',23.7],['1 pacote de 12 rolos por R$ 19,90',19.9],['Leve 3 pacotes de 4, pague 2 (R$ 7,90 cada)',15.8]]},
+ {n:'Sabonete',q:'4 unidades',o:[['4 unidades a R$ 2,49',9.96],['Caixa com 4 por R$ 8,90',8.9]]},
+ {n:'Óleo',q:'2 garrafas',o:[['2 garrafas de 900 mL a R$ 7,99',15.98],['Leve 2 com 20% de desconto na segunda',14.38]]},
+ {n:'Café',q:'1 kg',o:[['2 pacotes de 500 g a R$ 17,90',35.8],['1 pacote de 1 kg por R$ 33,90',33.9]]},
+ {n:'Macarrão',q:'2 kg',o:[['4 pacotes de 500 g a R$ 4,50',18],['2 pacotes de 1 kg a R$ 8,20',16.4]]}];
+let L,esc,orc,tent;
+function nova(){L=shuffle(IT).slice(0,5).map(x=>({...x,o:shuffle(x.o)}));esc=L.map(()=>-1);
+ const best=L.reduce((s,x)=>s+Math.min(...x.o.map(o=>o[1])),0);orc=Math.ceil(best+2);tent=false;
+ $('orc').textContent=R$(orc);$('exp').classList.add('hide');msg('dm','');$('ok').disabled=false;mostra();}
+function mostra(){$('lista').innerHTML=L.map((x,i)=>`<p style="margin:10px 0 4px"><b>${x.n}</b> <span class="muted">· preciso de ${x.q}</span></p><div class="chips">`+
+ x.o.map((o,k)=>`<button data-i="${i}" data-k="${k}" class="${esc[i]===k?'on':''}">${o[0]}</button>`).join('')+'</div>').join('')+
+ `<p style="margin:12px 0 4px"><b>No caixa…</b> <span class="muted">· fora da lista</span></p><div class="chips"><button id="ch" class="${tent?'on':''}">🍫 Chocolate da fila do caixa, R$ 6,50</button></div>`;
+ $('lista').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{esc[+b.dataset.i]=+b.dataset.k;mostra();});
+ $('ch').onclick=()=>{tent=!tent;mostra();};
+ const t=gasto();$('tot').textContent=R$(t);$('sob').textContent=R$(orc-t);$('sob').style.color=orc-t<0?'var(--bad)':'';
+ $('placar').textContent=`Itens escolhidos: ${esc.filter(e=>e>=0).length} de ${L.length}`;}
+const gasto=()=>L.reduce((s,x,i)=>s+(esc[i]>=0?x.o[esc[i]][1]:0),0)+(tent?6.5:0);
+$('ok').onclick=()=>{if(esc.includes(-1)){msg('dm','Escolha uma opção para cada item da lista.','info');return;}
+ const t=gasto(),best=L.reduce((s,x)=>s+Math.min(...x.o.map(o=>o[1])),0),ok=t<=orc;$('ok').disabled=true;
+ msg('dm',ok?`Compra feita! Você gastou ${R$(t)} e sobraram ${R$(orc-t)}. ${Math.abs(t-best)<0.01?'Escolheu a opção mais barata em tudo! 🏆':''}`:`O dinheiro não deu: faltaram ${R$(t-orc)}. Veja abaixo onde dava para economizar.`,ok?'ok':'bad');
+ $('exp').classList.remove('hide');$('exp').innerHTML='<h2>A conta de cada item</h2>'+L.map((x,i)=>{const m=Math.min(...x.o.map(o=>o[1]));return `<p><b>${x.n}</b><br>`+x.o.map((o,k)=>`<span style="color:${o[1]===m?'var(--ok)':'inherit'}">${k===esc[i]?'➜ ':''}${o[0]}: <b>${R$(o[1])}</b>${o[1]===m?' ✓ mais barato':''}</span>`).join('<br>')+'</p>';}).join('')+
+ (tent?'<div class="msg info">O chocolate do caixa fica ali de propósito: é a compra por impulso. Às vezes vale, mas foi uma escolha, não uma necessidade da lista.</div>':'')+
+ `<p class="muted">O menor gasto possível era ${R$(best)}. Dica: embalagem maior e “leve 3, pague 2” costumam sair mais barato por unidade, mas só valem se você for usar tudo.</p>`;};
+$('nv').onclick=nova;nova();
+</script>

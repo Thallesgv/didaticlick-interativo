@@ -1,0 +1,19 @@
+<!--T: Não ponha todos os ovos na mesma cesta-->
+<div class="card"><p class="muted" style="margin-top:0">Você tem <b>R$ 1.000</b> para investir por 10 anos. Divida entre as opções e aperte <b>Simular 10 anos</b>. Os anos são sorteados: às vezes a bolsa sobe muito, às vezes cai. Simule várias vezes e compare.</p>
+<div class="sl" id="a"><b>🏭 Ação de uma única empresa</b><input type="range"><span></span></div>
+<div class="sl" id="b"><b>🧺 ETF do Ibovespa (dezenas de empresas)</b><input type="range"><span></span></div>
+<div class="sl" id="c"><b>🏛️ Tesouro Selic (renda fixa)</b><input type="range"><span></span></div>
+<p class="muted" id="soma"></p>
+<div class="row"><button class="or" id="go">Simular 10 anos</button></div>
+<div class="fig" id="fig"></div><div id="dm"></div></div>
+<div class="card"><h2>O que observar</h2><p style="margin:0">Uma empresa só pode multiplicar o dinheiro ou quase zerar. O ETF espalha o risco por muitas empresas. A renda fixa cresce devagar e quase sem sustos. Misturar os três é <b>diversificar</b>.</p></div>
+<script>
+const A=SL('a',0,100,10,30,ajuste,v=>v+'%'),B=SL('b',0,100,10,40,ajuste,v=>v+'%'),C=SL('c',0,100,10,30,ajuste,v=>v+'%');
+function ajuste(){const t=A.get()+B.get()+C.get();$('soma').textContent=t===100?'Total: 100% ✔':'A soma precisa dar 100% (agora: '+t+'%).';$('go').disabled=t!==100;}
+function gauss(){return Math.sqrt(-2*Math.log(Math.random()||1e-9))*Math.cos(2*Math.PI*Math.random());}
+$('go').onclick=()=>{const va=[A.get()*10],vb=[B.get()*10],vc=[C.get()*10],tot=[1000];const quebra=Math.random()<0.15;
+ for(let t=1;t<=10;t++){const mk=0.08+0.22*gauss(),em=mk+0.30*gauss();va.push(Math.max(0,va[t-1]*(1+(quebra&&t===rnd(3,9)?-0.9:em))));vb.push(vb[t-1]*(1+mk));vc.push(vc[t-1]*1.09);tot.push(va[t]+vb[t]+vc[t]);}
+ $('fig').innerHTML=grafico([{v:va,cor:'#B91C1C',nome:'empresa'},{v:vb,cor:'#2457D6',nome:'ETF'},{v:vc,cor:'#15803D',nome:'Tesouro'},{v:tot,cor:'#F7821F',nome:'carteira',lw:4}],{rotX:t=>'a'+t});
+ msg('dm',`Depois de 10 anos, a carteira toda vale <b>${R0(tot[10])}</b>. Empresa: ${R0(va[10])} · ETF: ${R0(vb[10])} · Tesouro: ${R0(vc[10])}.`+(va[10]<va[0]*0.3&&A.get()>0?' A empresa foi mal: ainda bem que nem tudo estava nela!':''),'info');};
+ajuste();
+</script>

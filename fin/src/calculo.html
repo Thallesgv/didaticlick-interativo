@@ -1,0 +1,52 @@
+<!--T: Contas de cabeça-->
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div class="row" id="modos"><button class="or" id="m1">Treino (sem tempo)</button><button id="m2">⏱ Contra o relógio (60 s)</button></div>
+<div id="jogo" class="hide">
+<div class="big hide" id="rel">60</div>
+<div class="dq" id="dq"></div>
+<div class="ask"><span id="pre">R$</span><input class="n" id="r" inputmode="decimal" autocomplete="off" style="width:130px"><button class="or" id="ok">OK</button></div>
+<div id="dm"></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="pula">Próxima ›</button></div>
+</div></div>
+<div class="card hide" id="fim"></div>
+<script>
+const T=Q.get('tipo')||'misto';
+const NOMES={troco:'Troco de cabeça',pct:'Porcentagem de cabeça',desconto:'Descontos de cabeça',aumento:'Aumentos de cabeça',juros:'Juros de cabeça',dobra:'Regra do 72',unidade:'Preço por unidade',estimativa:'Estimar a conta do mercado',lucro:'Lucro da barraca',sucessivo:'Descontos sucessivos',misto:'Contas de cabeça: tudo misturado'};
+const c2=v=>Math.round(v*100)/100, m=v=>R$(v);
+const GER={
+ troco(){const v=c2(rnd(150,4800)/100),nota=v<10?10:v<20?20:v<50?50:100;return{q:`Você compra algo de <b>${m(v)}</b> e paga com uma nota de <b>${m(nota)}</b>. Qual é o troco?`,r:c2(nota-v),t:`Complete até o próximo real e depois até ${m(nota)}: ${m(v)} → ${m(Math.ceil(v))} → ${m(nota)}.`};},
+ pct(){const p=pick([10,10,5,1,20,25,50,15]),b=p===1?rnd(2,30)*100:p===25||p===50?rnd(2,40)*4:rnd(2,60)*10;
+  const t={10:'10%: tire o último zero (divida por 10).',5:'5% é a metade de 10%.',1:'1%: divida por 100.',20:'20% é o dobro de 10%.',25:'25% é a quarta parte: metade da metade.',50:'50% é a metade.',15:'15% = 10% + 5% (10% e mais a metade disso).'}[p];
+  return{q:`Quanto é <b>${p}% de ${m(b)}</b>?`,r:c2(b*p/100),t};},
+ desconto(){const p=pick([10,20,25,50,30,5]),b=rnd(3,40)*10;return{q:`Um tênis de <b>${m(b)}</b> está com <b>${p}% de desconto</b>. Quanto você paga?`,r:c2(b*(100-p)/100),t:`Calcule ${p}% de ${m(b)} = ${m(b*p/100)} e tire do preço. Ou faça direto ${100-p}% de ${m(b)}.`};},
+ aumento(){const p=pick([10,20,5,50,25]),b=rnd(2,40)*10;return{q:`A conta de luz de <b>${m(b)}</b> subiu <b>${p}%</b>. Qual é o novo valor?`,r:c2(b*(100+p)/100),t:`${p}% de ${m(b)} = ${m(b*p/100)}; some ao valor antigo.`};},
+ juros(){const c=rnd(1,10)*100,i=pick([1,2,3,5,10]),t=rnd(2,6);return{q:`Empréstimo de <b>${m(c)}</b> a <b>${i}% ao mês</b> em juros simples. Quanto de <b>juros</b> em <b>${t} meses</b>?`,r:c*i/100*t,t:`${i}% de ${m(c)} = ${m(c*i/100)} por mês; vezes ${t} meses.`};},
+ dobra(){const i=pick([2,3,4,6,8,9,12,18,24,36]);return{q:`Um investimento rende <b>${i}% ao ano</b> (juros compostos). Pela regra do 72, em <b>quantos anos</b> o dinheiro dobra, aproximadamente?`,r:72/i,pre:'anos',t:`Divida 72 pela taxa: 72 ÷ ${i} = ${72/i}.`};},
+ unidade(){const it=pick([['kg de arroz','kg',[2,5]],['litro de suco','L',[2,3,4]],['rolo de papel','rolos',[4,8,12]],['sabonete','sabonetes',[3,4,6]]]),n=pick(it[2]),u=c2(rnd(4,30)/2);
+  return{q:`Um pacote com <b>${n} ${it[1]}</b> custa <b>${m(u*n)}</b>. Quanto custa cada ${it[0]}?`,r:u,t:`Divida o preço por ${n}: ${m(u*n)} ÷ ${n} = ${m(u)}.`};},
+ estimativa(){const its=[['arroz',[1990,2490]],['feijão',[690,990]],['leite',[449,599]],['café',[1490,1990]],['pão',[790,1190]],['banana',[490,890]],['ovos',[1290,1690]]];
+  const e=shuffle(its).slice(0,4).map(([n,[a,b]])=>[n,rnd(a,b)/100]);const s=e.reduce((x,y)=>x+y[1],0);
+  return{q:'Some <b>de cabeça, aproximando</b> cada preço para o real mais próximo: '+e.map(([n,v])=>`${n} ${m(v)}`).join(' + ')+'. Qual é o total, mais ou menos? (vale errar até R$ 2)',r:Math.round(s),tol:2,t:`Arredondando: ${e.map(([n,v])=>Math.round(v)).join(' + ')} = ${e.reduce((x,y)=>x+Math.round(y[1]),0)}. O total exato é ${m(s)}.`};},
+ lucro(){const q=rnd(2,8)*10,p=pick([2,2.5,3,4,5]),c=pick([0.8,1,1.2,1.5,2]);if(c>=p)return GER.lucro();
+  return{q:`Lia vendeu <b>${q} brigadeiros</b> a <b>${m(p)}</b> cada. Cada um custou <b>${m(c)}</b> para fazer. Qual foi o lucro?`,r:c2(q*(p-c)),t:`Lucro por brigadeiro: ${m(p)} − ${m(c)} = ${m(p-c)}; vezes ${q}.`};},
+ sucessivo(){const b=rnd(2,20)*100,a=pick([10,20,50]),c=pick([10,20,50]);return{q:`Uma TV de <b>${m(b)}</b> teve <b>${a}% de desconto</b> e, depois, mais <b>${c}% de desconto</b> sobre o novo preço. Qual é o preço final?`,r:c2(b*(100-a)/100*(100-c)/100),t:`Primeiro: ${m(b)} − ${a}% = ${m(b*(100-a)/100)}. Depois: − ${c}% = ${m(b*(100-a)/100*(100-c)/100)}. Note que não é ${a+c}% de desconto!`};}
+};
+const tipos=T==='misto'?Object.keys(GER):[T];
+document.title=(NOMES[T]||NOMES.misto)+' · DidatiClick';$('title').textContent=NOMES[T]||NOMES.misto;
+$('sub').innerHTML='Faça a conta de cabeça (ou no papel) e digite a resposta. Use vírgula para os centavos.';
+let cur,ac=0,tt=0,crono=null,tempo=0,rel=false,feito=false;
+function nova(){cur=GER[pick(tipos)]();feito=false;$('dq').innerHTML=cur.q;$('pre').textContent=cur.pre?'':'R$';$('r').value='';$('r').placeholder=cur.pre||'';msg('dm','');$('ok').disabled=false;$('r').focus();}
+function placar(){$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+$('ok').onclick=()=>{if(feito)return;const v=num($('r').value);if(isNaN(v)){msg('dm','Digite um número (vírgula para centavos).','info');return;}
+ feito=true;$('ok').disabled=true;tt++;const ok=Math.abs(v-cur.r)<=(cur.tol||0.005)+1e-9;if(ok)ac++;placar();
+ msg('dm',(ok?'Certo! ':`A resposta é <b>${cur.pre?fmt(Math.round(cur.r*100)/100)+' '+cur.pre:m(cur.r)}</b>. `)+'<br><span style="font-weight:400">Truque: '+cur.t+'</span>',ok?'ok':'bad');
+ if(rel)setTimeout(()=>{if(tempo>0)nova();},ok?600:2200);};
+$('r').onkeydown=e=>{if(e.key==='Enter'){if(feito)nova();else $('ok').click();}};
+$('pula').onclick=nova;
+function comeca(r){rel=r;ac=0;tt=0;placar();$('jogo').classList.remove('hide');$('fim').classList.add('hide');$('rel').classList.toggle('hide',!r);$('pula').classList.toggle('hide',r);
+ clearInterval(crono);if(r){tempo=60;$('rel').textContent=tempo;crono=setInterval(()=>{tempo--;$('rel').textContent=tempo;if(tempo<=0){clearInterval(crono);fim();}},1000);}nova();}
+function fim(){$('jogo').classList.add('hide');const k='fin-rec-'+T,rec=+(LS.get(k)||0);if(ac>rec)LS.set(k,ac);
+ $('fim').classList.remove('hide');$('fim').innerHTML=`<h2>${ac} acerto${ac===1?'':'s'} em 60 segundos</h2><p>${ac>rec?'🏆 Novo recorde neste aparelho!':'Seu recorde neste aparelho: '+rec+'.'}</p><div class="row"><button class="or" id="de">Jogar de novo</button></div>`;$('de').onclick=()=>comeca(true);}
+$('m1').onclick=()=>comeca(false);$('m2').onclick=()=>comeca(true);
+</script>

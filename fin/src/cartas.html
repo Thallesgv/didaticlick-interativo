@@ -1,0 +1,20 @@
+<!--T: Baralho de cartas-->
+<div class="card"><div class="placar" id="placar"></div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div id="carta" class="carta" style="flex-direction:column;min-height:150px"></div>
+<div class="row"><button class="or" id="tira">Tirar uma carta</button><button class="alt" id="emb">Embaralhar tudo</button></div>
+</div>
+<div class="card hide" id="dicas"></div>
+<script>
+const B=FIN.cartas[Q.get('id')];
+if(!B){$('title').textContent='Baralho não encontrado';}
+else{document.title=B.title+' · DidatiClick';$('title').textContent=B.title;$('sub').innerHTML=B.sub||'';
+ if(B.como){$('dicas').classList.remove('hide');$('dicas').innerHTML='<h2>Como usar</h2>'+B.como;}
+ let monte,n;
+ function emb(){monte=shuffle(B.cartas);n=0;$('carta').innerHTML=`<div class="big">🂠</div><div class="muted">${monte.length} cartas no monte</div>`;cont();}
+ function cont(){$('placar').textContent=`Carta ${n} de ${monte.length}`;$('tira').disabled=n>=monte.length;}
+ $('tira').onclick=()=>{const c=monte[n++];
+  $('carta').innerHTML=(c[2]?`<div style="font-size:34px">${c[2]}</div>`:'')+`<div style="color:var(--orange);font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase">${c[0]}</div><div style="margin-top:6px">${c[1]}</div>`+
+   (c[3]?`<details style="margin-top:10px;font-size:14px;font-weight:400"><summary style="cursor:pointer;color:var(--blue)">Ver comentário</summary>${c[3]}</details>`:'');cont();};
+ $('emb').onclick=emb;emb();}
+</script>

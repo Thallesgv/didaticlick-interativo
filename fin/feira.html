@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Feira de trocas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Feira de trocas</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Você chegou à feira com um item e quer outro. Ninguém usa dinheiro: só vale <b>trocar</b>. Toque numa pessoa para trocar com ela, mas ela só aceita se você tiver o que ela <b>quer</b>.</p>
+<div class="kpi"><div>Você tem<b id="tem"></b></div><div class="o">Você quer<b id="quer"></b></div><div>Trocas feitas<b id="nt">0</b></div></div>
+<div id="pes" class="baldes"></div><div id="dm"></div>
+<div class="row" style="margin-top:10px"><button class="alt" id="novo">Outra feira</button><button class="or hide" id="din">E se existisse dinheiro?</button></div></div>
+<div class="card hide" id="moral"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const ITENS=['🐟 peixe','🌽 milho','🧂 sal','🪓 machado','🧶 tecido','🍯 mel','🥚 ovos','🐐 cabra','🏺 pote de barro','🧺 cesto','🥾 sandálias','🪵 lenha'];
+const GENTE=['Ana','Bento','Caio','Duda','Iara','Jaci','Lia','Moacir','Nina','Raoni','Teca','Ubiratã'];
+let tem,alvo,pess,nt,tent;
+function nova(){const it=shuffle(ITENS),n=rnd(3,4);const cad=it.slice(0,n+1);tem=cad[0];alvo=cad[n];nt=0;tent=0;
+ pess=[];for(let k=0;k<n;k++)pess.push({n:'',tem:cad[k+1],quer:cad[k]});
+ const resto=it.slice(n+1);for(let k=0;k<3;k++)pess.push({n:'',tem:resto[k],quer:pick(resto.slice(3))});
+ const nomes=shuffle(GENTE);pess=shuffle(pess);pess.forEach((p,k)=>p.n=nomes[k]);desenha();msg('dm','');$('din').classList.add('hide');$('moral').classList.add('hide');}
+function desenha(){$('tem').textContent=tem;$('quer').textContent=alvo;$('nt').textContent=nt;
+ $('pes').innerHTML=pess.map((p,k)=>`<button data-k="${k}" class="alt" style="text-align:left;font-size:13px"><b>${p.n}</b><br>tem: ${p.tem}<br>quer: ${p.quer}</button>`).join('');
+ $('pes').querySelectorAll('button').forEach(b=>b.onclick=()=>troca(+b.dataset.k));}
+function troca(k){const p=pess[k];tent++;
+ if(tem===alvo)return;
+ if(p.quer!==tem){msg('dm',`${p.n} não quer ${tem}. Essa é a <b>dupla coincidência de vontades</b>: a troca só sai se cada um quiser o que o outro tem.`,'bad');return;}
+ const meu=tem;tem=p.tem;p.tem=meu;p.quer='(nada, já trocou)';nt++;desenha();
+ if(tem===alvo){msg('dm',`Conseguiu! Foram <b>${nt} trocas</b> e ${tent} tentativas para chegar ao ${alvo}.`,'ok');$('din').classList.remove('hide');}
+ else msg('dm',`Trocou com ${p.n}. Agora você tem ${tem}. Quem quer isso?`,'info');}
+$('din').onclick=()=>{$('moral').classList.remove('hide');$('moral').innerHTML=`<h2>Com dinheiro, seria assim</h2><p>Você vende o seu item para <b>qualquer</b> pessoa que queira e, com o dinheiro, compra o ${alvo} de quem tem. <b>Duas operações</b>, em vez de ${nt} trocas e ${tent} tentativas.</p><p style="margin:0">É por isso que o dinheiro foi inventado: ele é aceito por todos (<b>meio de troca</b>) e mede o valor de tudo na mesma escala (<b>unidade de medida</b>).</p>`;$('moral').scrollIntoView({behavior:'smooth'});};
+$('novo').onclick=nova;nova();
+</script>
+
+</body>
+</html>
