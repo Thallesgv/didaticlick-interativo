@@ -32,6 +32,8 @@ input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px 
 <div class="card"><p class="muted" style="margin:0 0 6px" id="lead"></p><svg class="fig" id="svg" viewBox="0 0 340 90"></svg><div class="res" id="cerca"></div>
 <div class="grid2"><input class="num" id="g" inputmode="decimal" placeholder="seu palpite, ex.: 1,4"><button class="or" id="ok">OK, testar e registrar</button></div><div id="msg"></div>
 <ul class="log" id="log"></ul></div>
+<div class="card"><h2>Atalho: a fórmula dos babilônios</h2><p style="margin:0 0 8px">√N ≈ (N + Q) ÷ (2√Q), com Q = o quadrado perfeito mais próximo de N. Cada toque faz uma rodada, usando o último resultado como nova raiz de Q.</p>
+<div class="row"><button class="alt" id="fo">Usar a fórmula (1 rodada)</button></div><div id="fmsg"></div><ul class="log" id="flog"></ul></div>
 <div class="card"><h2>Repare</h2><p style="margin:0">Cada tentativa aperta o cerco: se o quadrado do palpite passa do número, a raiz está abaixo; se fica abaixo, a raiz está acima. Você pode chegar tão perto quanto quiser, mas o decimal de uma raiz irracional nunca termina e nunca se repete.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
@@ -49,7 +51,14 @@ let n,lo,hi,tent=[];
 function start(){n=Math.max(2,Math.min(999,parseInt($('n').value)||2));$('n').value=n;const k=Math.floor(Math.sqrt(n));
  if(k*k===n){$('lead').innerHTML=`${n} é quadrado perfeito: √${n} = ${k}, um número natural. Escolha outro número para cercar uma raiz irracional.`;lo=k;hi=k;}
  else{lo=k;hi=k+1;$('lead').innerHTML=`Como ${k}² = ${k*k} &lt; ${n} &lt; ${(k+1)**2} = ${k+1}², sabemos que √${n} está entre ${k} e ${k+1}. Dê palpites com casas decimais para cercá-la.`;}
- tent=[];$('log').innerHTML='';$('msg').innerHTML='';draw();}
+ tent=[];$('log').innerHTML='';$('msg').innerHTML='';rq=Math.round(Math.sqrt(n));rod=0;$('flog').innerHTML='';$('fmsg').innerHTML='';draw();}
+let rq,rod=0;
+$('fo').onclick=()=>{if(lo===hi){$('fmsg').innerHTML='<div class="msg info">Esse número é quadrado perfeito: a raiz já é exata.</div>';return;}if(rod>=5)return;
+ rod++;const Q=rq*rq,x=(n+Q)/(2*rq),e=x-Math.sqrt(n);
+ $('flog').innerHTML+=`<li>Rodada ${rod}: Q = ${f(rq)}² = ${f(Q)} → (${n} + ${f(Q)}) ÷ (2 × ${f(rq)}) = <b>${f(x)}</b></li>`;
+ if(x<hi)hi=x;if(n/x>lo)lo=n/x;tent.push({g:x,over:true});
+ $('fmsg').innerHTML=`<div class="msg ${e<0.001?'ok':'info'}">A calculadora diz √${n} = ${Math.sqrt(n).toLocaleString('pt-BR',{maximumFractionDigits:9})}… Erro desta rodada: ${e<1e-9?'menos de 0,000000001':e.toLocaleString('pt-BR',{maximumSignificantDigits:2})}.${rod===1?' Compare com quantas tentativas você precisou!':''}</div>`;
+ rq=x;draw();};
 const f=x=>x.toLocaleString('pt-BR',{maximumFractionDigits:6});
 function draw(){const a=Math.floor(lo),b=Math.ceil(hi)===a?a+1:Math.ceil(hi);const X=v=>20+(v-a)/(b-a)*300;let g=`<line x1="10" y1="50" x2="330" y2="50" stroke="${NAVY}" stroke-width="2"/>`;
  for(let i=0;i<=10;i++){const v=a+(b-a)*i/10;g+=`<line x1="${X(v)}" y1="${i%10?46:42}" x2="${X(v)}" y2="${i%10?54:58}" stroke="${NAVY}"/>`;}g+=T(X(a),74,a,{c:GY})+T(X(b),74,b,{c:GY});
