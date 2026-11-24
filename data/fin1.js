@@ -114,4 +114,3 @@ Object.assign(window.RES,{
 ["Sem juros, seriam 24 depósitos de R$ 50.","24 × 50 = R$ 1.200"],["Com juros compostos, cada depósito rende pelo tempo que fica guardado: o primeiro rende 23 meses, o último quase nada.","Os primeiros depósitos rendem mais."],
 ["A Calculadora do Cidadão faz a conta exata. Informe: 24 meses, 0,8% ao mês, depósito de R$ 50.","Cerca de R$ 1.320"],["Juros = total − depósitos.","1.320 − 1.200 ≈ R$ 120"]],ans:"Resposta: cerca de R$ 1.320, dos quais uns R$ 120 são juros."}
 });
-window.APOSTILAS["fin1"]={title:"Educação Financeira · Nível 1 · Iniciante",mods:[]};

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jogo da memória · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Jogo da memória</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Jogadas: 0</div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div class="mem" id="mem"></div>
+<div id="dm"></div>
+</div>
+<div class="card hide" id="fim"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const M=FIN.mem[Q.get('id')];
+if(!M){$('title').textContent='Jogo não encontrado';}
+else{document.title=M.title+' · DidatiClick';$('title').textContent=M.title;
+ $('sub').innerHTML=(M.sub||'Encontre os pares.')+' Toque em duas cartas: se formarem par, ficam viradas.';
+ let cartas,abertas,pares,jog,trava;
+ function inicio(){const ps=shuffle(M.pares).slice(0,M.n||8);cartas=shuffle(ps.flatMap((p,k)=>[{k,t:p[0],a:1,x:p[2]},{k,t:p[1],a:0,x:p[2]}]));
+  abertas=[];pares=new Set();jog=0;trava=false;$('fim').classList.add('hide');msg('dm','');desenha();}
+ function desenha(){$('placar').textContent=`Jogadas: ${jog} · pares: ${pares.size} de ${cartas.length/2}`;
+  $('mem').innerHTML=cartas.map((c,i)=>{const up=abertas.includes(i)||pares.has(c.k);return `<button data-i="${i}" class="${pares.has(c.k)?'par':up?'up'+(c.a?'':' b'):''}">${up?c.t:'?'}</button>`;}).join('');
+  $('mem').querySelectorAll('button').forEach(b=>b.onclick=()=>vira(+b.dataset.i));}
+ function vira(i){if(trava||abertas.includes(i)||pares.has(cartas[i].k))return;abertas.push(i);desenha();
+  if(abertas.length===2){jog++;const [a,b]=abertas.map(j=>cartas[j]);
+   if(a.k===b.k){pares.add(a.k);abertas=[];desenha();msg('dm','Par! '+(a.x||''),'ok');if(pares.size===cartas.length/2)fim();}
+   else{trava=true;setTimeout(()=>{abertas=[];trava=false;desenha();},1300);}}}
+ function fim(){$('fim').classList.remove('hide');const n=cartas.length/2;
+  $('fim').innerHTML=`<h2>Todos os pares em ${jog} jogadas!</h2><p>${jog<=n+3?'Memória de elefante! 🐘':jog<=2*n?'Muito bem!':'Jogue de novo e tente usar menos jogadas.'}</p><div class="row"><button class="or" id="de">Jogar de novo</button></div>`;
+  $('de').onclick=()=>{inicio();scrollTo(0,0);};}
+ inicio();}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rumo à meta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Rumo à meta</h1></header>
+<main>
+<div class="card" id="cfg"><h2>Rumo à meta · o jogo de tabuleiro</h2>
+<p>Cada jogador começa com <b>R$ 50 na carteira</b> e o <b>cofrinho vazio</b>. A meta é chegar ao fim com <b>R$ 300 guardados</b> (cofrinho) para comprar uma bicicleta. Vence quem terminar com o maior patrimônio (carteira + cofrinho + R$ 10 por estrela ⭐ de diversão).</p>
+<p class="muted">💼 ganho · 🐷 guardar no cofrinho · 💹 o cofrinho rende 10% · ⚠️ imprevisto · 🛍️ tentação · 🕵️ golpe ou não? · ❓ pergunta</p>
+<b>Quantos jogadores?</b><div class="chips" id="nj" style="margin:6px 0 10px"></div>
+<button class="or" id="go">Começar</button></div>
+<div class="card hide" id="mesa"><div class="jog" id="jog"></div><div class="fig" id="tab"></div>
+<div class="row" style="align-items:center"><div class="dado" id="dado">🎲</div><button class="or" id="rola">Rolar o dado</button></div>
+<div id="ev"></div></div>
+<div class="card hide" id="fim"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const SEQ='GTPQIGSPRTIGQPSRTGIPQSRTGIPQSR',EMO={G:'💼',T:'🛍️',P:'🐷',Q:'❓',I:'⚠️',S:'🕵️',R:'💹'};
+const GAN=[['Mesada do mês!',30],['Você ajudou a vizinha a passear com o cachorro.',20],['Vendeu o videogame antigo.',40],['Presente de aniversário da avó.',30],['Fez brigadeiros e vendeu no intervalo.',25]];
+const IMP=[['O celular caiu e a tela trincou.',40],['Perdeu o casaco no passeio e precisa de outro.',30],['A bicicleta furou o pneu.',15],['Esqueceu o livro e teve de comprar outro.',25],['Multa da biblioteca por atraso.',5],['A mochila rasgou.',35]];
+const TEN=[['Lançou o jogo novo que todo mundo está jogando.',60],['Lanche no shopping com os amigos.',20],['Tênis da moda em promoção.',50],['Ingresso de cinema com pipoca.',25],['Figurinhas do álbum da Copa.',15],['Fone de ouvido colorido.',35]];
+const GOL=[['Mensagem: "Você ganhou um iPhone! Pague só o frete de R$ 19,90 pelo link."',1,'Prêmio que você não pediu + link + pagamento antecipado = golpe.'],
+ ['O banco liga e pede a senha do cartão para "cancelar uma compra".',1,'Banco nunca pede senha por telefone.'],
+ ['Sua tia, na mesma conversa de sempre, pede para você lembrar de levar o bolo no domingo.',0,'Nada de dinheiro, link ou pressa: conversa normal.'],
+ ['"Invista R$ 100 e receba R$ 1.000 em uma semana, garantido!"',1,'Retorno alto e garantido é sinal de golpe ou pirâmide.'],
+ ['O app oficial do seu banco mostra um Pix que você mesmo fez ontem.',0,'É só o extrato de uma transação sua.'],
+ ['Perfil novo com a foto do seu primo pede R$ 300 "urgente" por Pix.',1,'Golpe do falso parente: ligue para a pessoa antes.'],
+ ['A loja conhecida dá 10% de desconto para pagamento no Pix, no próprio caixa.',0,'Desconto comum para pagamento à vista.']];
+const QUI=[['10% de R$ 80 é:',['R$ 8','R$ 10','R$ 0,80'],0,'Tire o último zero.'],['Uma necessidade é:',['comer','o jogo novo','a 5ª camiseta de time'],0,'Necessidade é o que precisamos para viver bem.'],
+ ['Juros sobre juros chamam-se:',['juros compostos','juros simples','inflação'],0,'Os juros se acumulam sobre o montante.'],['A inflação faz o dinheiro:',['comprar menos','comprar mais','render juros'],0,'Os preços sobem e o mesmo dinheiro compra menos.'],
+ ['Reserva de emergência serve para:',['imprevistos','comprar desejos','fazer apostas'],0,'Dinheiro guardado para quando algo dá errado.'],['Quem define a meta da Selic é:',['o Copom','a B3','o IBGE'],0,'Comitê de Política Monetária do Banco Central.'],
+ ['Pagar só o mínimo do cartão leva a:',['juros do rotativo, muito altos','desconto','nada'],0,'O rotativo tem dos juros mais altos do país.'],['Um orçamento compara:',['receitas e despesas','só despesas','só desejos'],0,'O que entra e o que sai.']];
+const COR=['#0E2354','#F7821F','#15803D','#7A4BB5'];
+let NJ=2,J=[],vez=0,ocupado=false;
+$('nj').innerHTML=[1,2,3,4].map(n=>`<button data-n="${n}" class="${n===2?'on':''}">${n}</button>`).join('');
+$('nj').querySelectorAll('button').forEach(b=>b.onclick=()=>{NJ=+b.dataset.n;$('nj').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
+const W=8,CS=44,pos=k=>{const r=Math.floor(k/W),c=r%2?W-1-k%W:k%W;return[c*CS+2,r*CS+2];};
+function desenha(){let g='';for(let k=0;k<32;k++){const[x,y]=pos(k),t=k===0?'🏁':k===31?'🚲':EMO[SEQ[k-1]];
+  g+=`<rect x="${x}" y="${y}" width="${CS-4}" height="${CS-4}" rx="7" fill="${k===0||k===31?'#FDE9D8':'#fff'}" stroke="#D7DEEA" stroke-width="1.5"/>`+TX(x+7,y+11,k,{fs:8,c:'#9CA3AF',a:'start',w:500})+`<text x="${x+20}" y="${y+29}" font-size="17" text-anchor="middle">${t}</text>`;}
+ J.forEach((j,i)=>{const[x,y]=pos(j.p);g+=`<circle cx="${x+8+i*8}" cy="${y+34}" r="5.5" fill="${COR[i]}" stroke="#fff" stroke-width="1.5"/>`;});
+ $('tab').innerHTML=SVG(W*CS,4*CS,g);
+ $('jog').innerHTML=J.map((j,i)=>`<span class="${i===vez?'vez':''}" style="background:${COR[i]}">${j.n}: 👛 ${R0(j.c)} · 🐷 ${R0(j.k)}${j.e?' · '+'⭐'.repeat(j.e):''}${j.p>=31?' ✓':''}</span>`).join('');}
+function ev(h,bts){$('ev').innerHTML=`<div class="carta" style="flex-direction:column;font-size:15px">${h}</div>`+(bts?`<div class="chips">${bts.map((b,k)=>`<button data-k="${k}">${b[0]}</button>`).join('')}</div>`:'');
+ if(bts)$('ev').querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{$('ev').querySelectorAll('.chips button').forEach(x=>x.disabled=true);bts[+b.dataset.k][1](b);});}
+function paga(j,v){let txt='';if(j.c>=v){j.c-=v;}else{const f=v-j.c;j.c=0;if(j.k>=f){j.k-=f;txt=' A carteira não deu: saiu '+R0(f)+' do cofrinho.';}else{const d=f-j.k;j.k=0;const jr=Math.round(d*0.5);j.c=-(d+jr);txt=` Nem o cofrinho deu: você pegou ${R0(d)} emprestado e vai pagar ${R0(jr)} de juros (fica com ${R0(-(d+jr))} na carteira).`;}}return txt;}
+function proximo(){ocupado=false;desenha();if(J.every(j=>j.p>=31))return fim();do{vez=(vez+1)%J.length;}while(J[vez].p>=31);desenha();$('rola').disabled=false;$('rola').textContent='Vez de '+J[vez].n+': rolar o dado';}
+function cont(h){ev(h,[['Passar a vez ›',proximo]]);}
+function casa(j){const t=SEQ[j.p-1];
+ if(j.p>=31){j.p=31;return cont(`🚲 <b>${j.n} chegou!</b> Cofrinho: ${R0(j.k)} ${j.k>=300?'— meta da bicicleta batida! 🎉':'— faltou para a meta de R$ 300.'}`);}
+ if(t==='G'){const g=pick(GAN);j.c+=g[1];cont(`💼 ${g[0]} <b>+${R0(g[1])}</b> na carteira.`);}
+ else if(t==='I'){const g=pick(IMP);const x=paga(j,g[1]);cont(`⚠️ Imprevisto! ${g[0]} Custa <b>${R0(g[1])}</b>.${x}${x?'<br><small>Ter dinheiro guardado é o que salva nessas horas.</small>':''}`);}
+ else if(t==='P'){const ops=[0,20,40,60].filter(v=>v<=Math.max(0,j.c));ev(`🐷 Casa do cofrinho! Você tem <b>${R0(j.c)}</b> na carteira. Quanto quer guardar?`,ops.map(v=>[v?R0(v):'Nada agora',()=>{j.c-=v;j.k+=v;cont(v?`Guardou ${R0(v)}. Cofrinho: <b>${R0(j.k)}</b>.`:'Tudo bem. Mas lembre: a meta é R$ 300 no cofrinho.');}]));}
+ else if(t==='R'){const r=Math.round(j.k*0.1);j.k+=r;cont(`💹 Rendimento! O cofrinho (investido) rendeu 10%: <b>+${R0(r)}</b>.${j.k?'':' Pena: 10% de zero é zero. Guarde nas casas 🐷!'}`);}
+ else if(t==='T'){const g=pick(TEN);ev(`🛍️ Tentação! ${g[0]} Custa <b>${R0(g[1])}</b> e vale 1 ⭐ (R$ 10 no placar final). Compra?`,[['Compro',()=>{const x=paga(j,g[1]);j.e++;cont('Aproveite! ⭐'+x);}],['Resisto',()=>cont('Dinheiro preservado. Desejos podem esperar.')]]);}
+ else if(t==='S'){const g=pick(GOL);const r=k=>{const ok=k===g[1];if(ok)j.c+=10;else paga(j,40);cont((ok?'✅ Isso! +R$ 10 pela esperteza. ':'❌ Errou: perdeu R$ 40. ')+g[2]);};ev(`🕵️ Golpe ou não? ${g[0]}`,[['É golpe!',()=>r(1)],['É seguro',()=>r(0)]]);}
+ else if(t==='Q'){const g=pick(QUI),o=shuffle(g[1].map((x,k)=>[x,k]));ev(`❓ ${g[0]}`,o.map(([x,k])=>[x,()=>{const ok=k===g[2];if(ok)j.c+=15;cont((ok?'✅ Certo! +R$ 15. ':'❌ Não. ')+g[3]);}]));}}
+$('rola').onclick=()=>{if(ocupado)return;ocupado=true;$('rola').disabled=true;const d=rnd(1,6);$('dado').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][d-1];const j=J[vez];j.p=Math.min(31,j.p+d);desenha();casa(j);};
+$('go').onclick=()=>{J=Array.from({length:NJ},(_,i)=>({n:NJ===1?'Você':'Jogador '+(i+1),p:0,c:50,k:0,e:0}));vez=0;$('cfg').classList.add('hide');$('mesa').classList.remove('hide');$('fim').classList.add('hide');$('ev').innerHTML='';desenha();$('rola').disabled=false;$('rola').textContent='Vez de '+J[0].n+': rolar o dado';};
+function fim(){const r=J.map(j=>({...j,t:j.c+j.k+10*j.e})).sort((a,b)=>b.t-a.t);$('rola').disabled=true;$('fim').classList.remove('hide');
+ $('fim').innerHTML='<h2>Fim de jogo!</h2>'+r.map((j,i)=>`<p><b>${i+1}º ${j.n}</b>: ${R0(j.t)} (carteira ${R0(j.c)}, cofrinho ${R0(j.k)}, ${j.e} ⭐) ${j.k>=300?'🚲 bateu a meta!':''}</p>`).join('')+
+ '<div class="msg info">Repare: quem guardou cedo ganhou mais nas casas 💹, porque o rendimento é sobre o que já está no cofrinho. E quem tinha reserva sofreu menos com os imprevistos.</div><div class="row" style="margin-top:10px"><button class="or" id="de">Jogar de novo</button></div>';
+ $('de').onclick=()=>{$('mesa').classList.add('hide');$('fim').classList.add('hide');$('cfg').classList.remove('hide');scrollTo(0,0);};}
+</script>
+
+</body>
+</html>

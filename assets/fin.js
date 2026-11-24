@@ -1,5 +1,7 @@
 // DidatiClick · Educação Financeira: utilidades comuns das páginas interativas (pasta fin/).
 window.FIN = window.FIN || { cls: {}, ord: {}, av: {} };
+['forca', 'mem', 'quem', 'caca', 'cartas'].forEach(k => FIN[k] = FIN[k] || {});
+const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
 const R$ = (v, c) => 'R$ ' + (c === 0 ? fmt(Math.round(v)) : Number(v).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'));
 const R0 = v => 'R$ ' + String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const pct = (v, d) => (Math.round(v * Math.pow(10, d || 1)) / Math.pow(10, d || 1)).toString().replace('.', ',') + '%';

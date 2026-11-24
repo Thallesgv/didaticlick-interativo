@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Minha barraca na feira · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Minha barraca na feira</h1></header>
+<main>
+<div class="card"><h2>Escolha o produto</h2><div class="chips" id="prod"></div>
+<p class="muted" id="desc"></p>
+<div class="sl" id="sp"><b>Preço de venda de cada unidade</b><input type="range"><span></span></div>
+<div class="kpi"><div>Vendas estimadas<b id="kq"></b></div><div>Receita (entra)<b id="kr"></b></div><div>Custo total (sai)<b id="kc"></b></div><div class="o">Lucro<b id="kl"></b></div></div>
+<div class="fig" id="g"></div>
+<p class="muted">Preço baixo vende muito, mas sobra pouco em cada unidade. Preço alto sobra mais em cada unidade, mas vende pouco. O lucro máximo fica no meio do caminho.</p></div>
+<div class="card"><h2>Missões</h2><div id="mis"></div>
+<div class="ask hide" id="pe">Quantas unidades, no mínimo, você precisa vender só para pagar o custo fixo? <input class="n" id="r" inputmode="numeric" style="width:90px"><button class="or" id="ok">OK</button></div>
+<div id="dm"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const P={brigadeiro:{n:'Brigadeiro',e:'🍫',cv:0.9,cf:30,a:150,b:40,pmax:3.5,t:'Ingredientes e forminha: R$ 0,90 por brigadeiro. Custo fixo: R$ 30 (panela emprestada, embalagens e cartaz).'},
+ limonada:{n:'Limonada',e:'🍋',cv:1.2,cf:40,a:130,b:25,pmax:5,t:'Limão, açúcar, gelo e copo: R$ 1,20 por copo. Custo fixo: R$ 40 (garrafa térmica alugada e cartaz).'},
+ pulseira:{n:'Pulseira',e:'📿',cv:2.5,cf:20,a:64,b:6,pmax:10,t:'Miçangas e fio: R$ 2,50 por pulseira. Custo fixo: R$ 20 (alicate e mostruário).'}};
+let k=Q.get('p')||'brigadeiro',sp,feito=[false,false,false];
+const qd=(o,p)=>Math.max(0,Math.round(o.a-o.b*p)),luc=(o,p)=>qd(o,p)*(p-o.cv)-o.cf;
+$('prod').innerHTML=Object.entries(P).map(([c,o])=>`<button data-k="${c}">${o.e} ${o.n}</button>`).join('');
+$('prod').querySelectorAll('button').forEach(b=>b.onclick=()=>{k=b.dataset.k;feito=[false,false,false];ini();});
+function ini(){const o=P[k];$('prod').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));$('desc').innerHTML=o.t;
+ sp=SL('sp',o.cv,o.pmax,0.1,o.cv+0.1,atu,v=>R$(v));msg('dm','');$('pe').classList.add('hide');atu();}
+function atu(){const o=P[k],p=sp.get(),q=qd(o,p),r=q*p,c=o.cf+q*o.cv,l=r-c;
+ $('kq').textContent=q+' un.';$('kr').textContent=R$(r);$('kc').textContent=R$(c);$('kl').textContent=R$(l);$('kl').style.color=l<0?'var(--bad)':'var(--ok)';
+ const ps=[];for(let x=o.cv;x<=o.pmax+1e-9;x+=0.1)ps.push(Math.round(x*10)/10);
+ const v=ps.map(x=>luc(o,x)),mn=Math.min(...v,0),mx=Math.max(...v)*1.15;
+ $('g').innerHTML=grafico([{v,cor:'#F7821F',nome:'lucro conforme o preço'}],{min:mn,max:mx,rotX:i=>R$(ps[i]).replace('R$ ',''),
+  extra:(sx,sy)=>{const i=Math.round((p-o.cv)/0.1);return `<line x1="${sx(0)}" y1="${sy(0)}" x2="${sx(ps.length-1)}" y2="${sy(0)}" stroke="#0E2354" stroke-dasharray="4 3"/><circle cx="${sx(i)}" cy="${sy(luc(o,p))}" r="6" fill="#0E2354"/>`;}});
+ if(!feito[0]&&l>0){feito[0]=true;msg('dm','✅ Missão 1 cumprida: com '+R$(p)+' a barraca dá lucro!','ok');}
+ const best=ps.reduce((a,b)=>luc(o,b)>luc(o,a)?b:a);
+ if(feito[0]&&!feito[1]&&Math.abs(luc(o,p)-luc(o,best))<=Math.max(2,0.03*luc(o,best))){feito[1]=true;msg('dm',`✅ Missão 2 cumprida: lucro máximo, de cerca de ${R$(luc(o,best))}, perto de ${R$(best)}.`,'ok');$('pe').classList.remove('hide');}
+ if(feito[1]&&!feito[2]){$('pe').classList.remove('hide');}
+ mis();}
+function mis(){const t=['Encontre um preço que dê <b>lucro</b> (lucro maior que zero).','Encontre o preço que dá o <b>maior lucro</b> possível.','Com o preço escolhido, descubra o <b>ponto de equilíbrio</b>.'];
+ $('mis').innerHTML='<ul class="lista">'+t.map((x,i)=>`<li class="${feito[i]?'okk':''}" style="cursor:default">${feito[i]?'✅':'⬜'} ${x}</li>`).join('')+'</ul>';}
+$('ok').onclick=()=>{const o=P[k],p=sp.get(),m=p-o.cv;if(m<=0){msg('dm','Com esse preço, você não ganha nada em cada unidade: nunca paga o custo fixo! Suba o preço.','bad');return;}
+ const c=Math.ceil(o.cf/m-1e-9),v=num($('r').value);if(isNaN(v)){msg('dm','Digite um número inteiro.','info');return;}
+ const ok=v===c;if(ok){feito[2]=true;mis();}
+ msg('dm',(ok?'✅ Missão 3 cumprida! ':'Ainda não. ')+`Em cada unidade sobram ${R$(p)} − ${R$(o.cv)} = ${R$(m)} (a margem). Custo fixo ÷ margem = ${R$(o.cf)} ÷ ${R$(m)} ≈ ${fmt(Math.round(o.cf/m*100)/100)}: são <b>${c} unidades</b>. Só a partir daí começa o lucro.`,ok?'ok':'bad');};
+ini();
+</script>
+
+</body>
+</html>

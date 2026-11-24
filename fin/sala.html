@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ferramentas da sala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Ferramentas da sala</h1></header>
+<main>
+<div class="card"><h2>🏆 Placar das equipes</h2><div class="chips" id="neq" style="margin-bottom:8px"></div><div id="eqs"></div></div>
+<div class="card"><h2>⏱ Cronômetro</h2><div class="big" id="cr">3:00</div>
+<div class="chips" id="tps"></div><div class="row" style="margin-top:8px"><button class="or" id="ini">Iniciar</button><button class="alt" id="zer">Zerar</button></div></div>
+<div class="card"><h2>🎲 Sorteio</h2><div class="ask">Sortear um número de 1 a <input class="n" id="mx" value="30" inputmode="numeric" style="width:70px"> <label><input type="checkbox" id="sr" checked> sem repetir</label></div>
+<div class="big" id="sn">–</div><div class="row"><button class="or" id="sor">Sortear</button><button class="alt" id="rz">Recomeçar</button></div><p class="muted" id="ja"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const CE=['#0E2354','#F7821F','#15803D','#7A4BB5','#2457D6','#B91C1C'];let NE=4,P=[0,0,0,0,0,0];
+$('neq').innerHTML=[2,3,4,5,6].map(n=>`<button data-n="${n}" class="${n===4?'on':''}">${n} equipes</button>`).join('');
+$('neq').querySelectorAll('button').forEach(b=>b.onclick=()=>{NE=+b.dataset.n;$('neq').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));eq();});
+function eq(){$('eqs').innerHTML=Array.from({length:NE},(_,i)=>`<div style="display:flex;align-items:center;gap:8px;margin:6px 0"><span style="background:${CE[i]};color:#fff;border-radius:8px;padding:6px 10px;font-weight:700;min-width:96px">Equipe ${i+1}</span><button class="alt" data-e="${i}" data-v="-1">−</button><b style="font-size:26px;min-width:44px;text-align:center;color:var(--navy)">${P[i]}</b><button data-e="${i}" data-v="1">+1</button><button class="or" data-e="${i}" data-v="5">+5</button></div>`).join('');
+ $('eqs').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{P[+b.dataset.e]+=+b.dataset.v;eq();});}
+eq();
+let T=180,R=180,cr=null;const mm=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+$('tps').innerHTML=[60,120,180,300,600].map(s=>`<button data-s="${s}" class="${s===180?'on':''}">${mm(s)}</button>`).join('');
+$('tps').querySelectorAll('button').forEach(b=>b.onclick=()=>{clearInterval(cr);cr=null;T=R=+b.dataset.s;$('cr').textContent=mm(R);$('ini').textContent='Iniciar';$('tps').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
+$('ini').onclick=()=>{if(cr){clearInterval(cr);cr=null;$('ini').textContent='Continuar';return;}$('ini').textContent='Pausar';cr=setInterval(()=>{R--;$('cr').textContent=mm(Math.max(R,0));$('cr').style.color=R<=10?'var(--bad)':'';if(R<=0){clearInterval(cr);cr=null;$('cr').textContent='Tempo! ⏰';$('ini').textContent='Iniciar';R=T;}},1000);};
+$('zer').onclick=()=>{clearInterval(cr);cr=null;R=T;$('cr').textContent=mm(R);$('cr').style.color='';$('ini').textContent='Iniciar';};
+let ja=[];$('sor').onclick=()=>{const m=Math.max(1,+$('mx').value||30),liv=Array.from({length:m},(_,i)=>i+1).filter(x=>!$('sr').checked||!ja.includes(x));
+ if(!liv.length){$('sn').textContent='Fim!';return;}const x=pick(liv);ja.push(x);$('sn').textContent=x;$('ja').textContent='Já saíram: '+ja.join(', ');};
+$('rz').onclick=()=>{ja=[];$('sn').textContent='–';$('ja').textContent='';};
+</script>
+
+</body>
+</html>

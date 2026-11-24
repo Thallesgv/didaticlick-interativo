@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Baralho de cartas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script><script src="../data/findc.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Baralho de cartas</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar"></div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div id="carta" class="carta" style="flex-direction:column;min-height:150px"></div>
+<div class="row"><button class="or" id="tira">Tirar uma carta</button><button class="alt" id="emb">Embaralhar tudo</button></div>
+</div>
+<div class="card hide" id="dicas"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const B=FIN.cartas[Q.get('id')];
+if(!B){$('title').textContent='Baralho não encontrado';}
+else{document.title=B.title+' · DidatiClick';$('title').textContent=B.title;$('sub').innerHTML=B.sub||'';
+ if(B.como){$('dicas').classList.remove('hide');$('dicas').innerHTML='<h2>Como usar</h2>'+B.como;}
+ let monte,n;
+ function emb(){monte=shuffle(B.cartas);n=0;$('carta').innerHTML=`<div class="big">🂠</div><div class="muted">${monte.length} cartas no monte</div>`;cont();}
+ function cont(){$('placar').textContent=`Carta ${n} de ${monte.length}`;$('tira').disabled=n>=monte.length;}
+ $('tira').onclick=()=>{const c=monte[n++];
+  $('carta').innerHTML=(c[2]?`<div style="font-size:34px">${c[2]}</div>`:'')+`<div style="color:var(--orange);font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase">${c[0]}</div><div style="margin-top:6px">${c[1]}</div>`+
+   (c[3]?`<details style="margin-top:10px;font-size:14px;font-weight:400"><summary style="cursor:pointer;color:var(--blue)">Ver comentário</summary>${c[3]}</details>`:'');cont();};
+ $('emb').onclick=emb;emb();}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!--T: Caça-palavras-->
+<div class="card"><div class="placar" id="placar"></div>
+<p class="muted" id="sub" style="margin-top:0"></p>
+<div class="pal" id="pal"></div>
+<div class="grade" id="grade"></div>
+<div id="dm"></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="novo">Nova grade</button></div>
+</div>
+<div class="card hide" id="fim"></div>
+<script>
+const CP=FIN.caca[Q.get('id')];
+const tira=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/[^A-Z]/g,'');
+if(!CP){$('title').textContent='Jogo não encontrado';}
+else{document.title=CP.title+' · DidatiClick';$('title').textContent=CP.title;
+ $('sub').innerHTML=(CP.sub||'')+' Toque na primeira e na última letra de cada palavra. Elas podem estar na horizontal, na vertical ou na diagonal.';
+ const N=CP.n||12;let G,pos,achou,sel;
+ function gera(){const ws=CP.palavras.map(w=>[w,tira(w)]).sort((a,b)=>b[1].length-a[1].length);
+  for(let t=0;t<200;t++){G=Array.from({length:N},()=>Array(N).fill(''));pos={};let ok=true;
+   for(const [w,s] of ws){let fez=false;
+    for(let k=0;k<300&&!fez;k++){const d=pick([[0,1],[1,0],[1,1],[-1,1]]),r=rnd(0,N-1),c=rnd(0,N-1),r2=r+d[0]*(s.length-1),c2=c+d[1]*(s.length-1);
+     if(r2<0||r2>=N||c2>=N)continue;let pode=true;for(let j=0;j<s.length;j++){const x=G[r+d[0]*j][c+d[1]*j];if(x&&x!==s[j]){pode=false;break;}}
+     if(!pode)continue;for(let j=0;j<s.length;j++)G[r+d[0]*j][c+d[1]*j]=s[j];pos[w]=[r,c,r2,c2];fez=true;}
+    if(!fez){ok=false;break;}}
+   if(ok)break;}
+  const AB='ABCDEFGHIJLMNOPRSTUV';G=G.map(l=>l.map(x=>x||AB[rnd(0,AB.length-1)]));achou=new Set();sel=null;msg('dm','');$('fim').classList.add('hide');desenha();}
+ function cel(w){const [r,c,r2,c2]=pos[w],n=Math.max(Math.abs(r2-r),Math.abs(c2-c)),dr=Math.sign(r2-r),dc=Math.sign(c2-c);return Array.from({length:n+1},(_,j)=>(r+dr*j)*N+(c+dc*j));}
+ function desenha(){const f=new Set([...achou].flatMap(cel));
+  $('grade').style.gridTemplateColumns=`repeat(${N},1fr)`;
+  $('grade').innerHTML=G.flat().map((x,k)=>`<b data-k="${k}" class="${sel===k?'s':f.has(k)?'f':''}">${x}</b>`).join('');
+  $('grade').querySelectorAll('b').forEach(b=>b.onclick=()=>toca(+b.dataset.k));
+  $('pal').innerHTML=CP.palavras.map(w=>`<span class="${achou.has(w)?'f':''}">${w.toUpperCase()}</span>`).join('');
+  $('placar').textContent=`Encontradas: ${achou.size} de ${CP.palavras.length}`;}
+ function toca(k){if(sel===null){sel=k;desenha();return;}
+  const a=[Math.floor(sel/N),sel%N],b=[Math.floor(k/N),k%N];sel=null;
+  const w=CP.palavras.find(w=>!achou.has(w)&&((pos[w][0]===a[0]&&pos[w][1]===a[1]&&pos[w][2]===b[0]&&pos[w][3]===b[1])||(pos[w][0]===b[0]&&pos[w][1]===b[1]&&pos[w][2]===a[0]&&pos[w][3]===a[1])));
+  if(w){achou.add(w);msg('dm','<b>'+w.toUpperCase()+'</b>: '+((CP.def||{})[w]||'achou!'),'ok');}else msg('dm','Não é uma das palavras. Toque na primeira e na última letra.','info');
+  desenha();if(achou.size===CP.palavras.length){$('fim').classList.remove('hide');$('fim').innerHTML='<h2>Você achou todas! 🎉</h2><p>Toque em “Nova grade” para jogar com as letras em outros lugares.</p>';}}
+ $('novo').onclick=gera;gera();}
+</script>
