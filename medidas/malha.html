@@ -35,7 +35,7 @@ select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DE
 <div class="sl" id="au"><b>Unidade</b><input type="range"><span></span></div>
 <div class="fig" id="af"></div><div class="res" id="ar"></div></div></div>
 <div id="pn-volume" class="hide"><div class="card">
-<p class="muted">Um controle muda a aresta do cubo; o outro muda a unidade em que medimos essa mesma aresta.</p>
+<p class="muted">Um controle muda a aresta do cubo; o outro muda a unidade em que medimos essa mesma aresta. Lembre: 1 m³ = 1 kL, 1 dm³ = 1 L, 1 cm³ = 1 mL.</p>
 <div class="sl" id="vn"><b>Aresta</b><input type="range"><span></span></div>
 <div class="sl" id="vu"><b>Unidade</b><input type="range"><span></span></div>
 <div class="fig" id="vf"></div><div class="res" id="vr"></div></div></div>
@@ -95,7 +95,7 @@ function vol(){const n=VN.get(),k=VU.get(),u=U[k];const cells=n*Math.pow(10,k-3)
  const L=lado(n,k),V=k>=3?zz(String(n*n*n),3*(k-3)):F(n*n*n/Math.pow(1000,3-k));
  $('vr').innerHTML=`Em metros: ${n} m × ${n} m × ${n} m = <span class="k">${n*n*n} m³</span><br>Em ${u}: ${L} × ${L} × ${L} = <span class="k">${V} ${u}³</span>`+
  (k!==3?`<br><span class="muted" style="font-size:14px">${k>3?`Andamos ${k-3} casa${k-3>1?'s':''}: a aresta ganhou ${k-3} zero${k-3>1?'s':''} e o volume ganhou ${3*(k-3)}. Cada casa, <b>três zeros</b>!`:`Andamos ${3-k} casa${3-k>1?'s':''} para cima: o volume se divide por ${F(Math.pow(1000,3-k))}.`}</span>`:'')+
- (n*n*n<=10&&k===4?`<br><span class="g" style="color:var(--ok)">E como 1 dm³ = 1 L: cabem ${F(n*n*n*1000)} litros!</span>`:(k===3?`<br><span style="color:var(--ok)">Cabem ${F(n*n*n*1000)} litros (1 m³ = 1 000 L).</span>`:''));}
+ (n*n*n<=10&&k===4?`<br><span class="g" style="color:var(--ok)">E como 1 dm³ = 1 L: cabem ${F(n*n*n*1000)} litros!</span>`:(k===3?`<br><span style="color:var(--ok)">Cabem ${F(n*n*n)} kL = ${F(n*n*n*1000)} litros (1 m³ = 1 kL).</span>`:(k===5?`<br><span style="color:var(--ok)">E como 1 cm³ = 1 mL: cabem ${F(n*n*n*1000000)} mL!</span>`:'')));}
 function hect(){const c=HC.get()*10,l=HL.get()*10,W0=Math.min(W(),380),s=(W0-40)/200;
  let b=`<svg viewBox="0 0 ${W0} ${W0}" width="${W0}" xmlns="http://www.w3.org/2000/svg">`;
  for(let i=0;i<c/10;i++)for(let j=0;j<l/10;j++)b+=`<rect x="${30+i*10*s}" y="${20+j*10*s}" width="${10*s}" height="${10*s}" fill="#DCE6FF" stroke="${UM.BL}" stroke-opacity=".6"/>`;
