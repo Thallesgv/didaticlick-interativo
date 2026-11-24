@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O conjunto é fechado? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números naturais</div><h1 id="title">O conjunto é fechado?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nas casas da tabela para fazer as contas. Se algum resultado escapar do conjunto, ele fica vermelho. Depois responda: o conjunto é fechado para a operação?</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask">O conjunto é fechado? <span class="chips" id="sn"><button data-v="1">Sim</button><button data-v="0">Não</button></span></div>
+<div class="row"><button class="alt" id="todas">Mostrar todas as contas</button></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=naturais-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Para mostrar que <b>não</b> é fechado, basta um exemplo que escapa. Para dizer que <b>é</b> fechado, todas as contas precisam ficar dentro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,ab=new Set(),esc=null;
+const op=(a,b)=>cur.op==='+'?a+b:a*b;
+function draw(){const S=cur.S,T=cur.mostra||S;let h=`<table class="t" style="max-width:${60+T.length*52}px"><tr><th>${cur.op==='+'?'+':'×'}</th>${T.map(b=>`<th>${b}</th>`).join('')}</tr>`;
+ T.forEach((a,i)=>{h+=`<tr><th>${a}</th>`+T.map((b,j)=>{const k=i+'_'+j,v=op(a,b),fora=!cur.pert(v);
+  return `<td data-k="${k}" style="cursor:pointer;font-weight:700;${ab.has(k)?(fora?'background:#FEE2E2;color:var(--bad)':'background:#DCFCE7;color:var(--ok)'):'color:#CBD5E1'}">${ab.has(k)?v:'?'}</td>`;}).join('')+'</tr>';});
+ $('fig').innerHTML=h+'</table>';$('fig').querySelectorAll('td[data-k]').forEach(td=>td.onclick=()=>{ab.add(td.dataset.k);draw();});
+ $('sn').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;draw();}};});}
+$('todas').onclick=()=>{const T=cur.mostra||cur.S;T.forEach((a,i)=>T.forEach((b,j)=>ab.add(i+'_'+j)));draw();};
+const ALG=[0,1,2,3,4,5,6,7,8,9];
+const C={
+ z1x:{S:[0,1],op:'×',nome:'A = {0, 1}',pert:v=>v===0||v===1},
+ z1p:{S:[0,1],op:'+',nome:'A = {0, 1}',pert:v=>v===0||v===1},
+ algp:{S:ALG,op:'+',nome:'o conjunto dos algarismos {0, 1, 2, …, 9}',pert:v=>v<=9},
+ algx:{S:ALG.slice(0,6),mostra:[0,1,2,3,4,5],op:'×',nome:'o conjunto dos algarismos {0, 1, …, 9}',pert:v=>v<=9},
+ parp:{S:[0,2,4,6],op:'+',nome:'o conjunto dos números pares {0, 2, 4, 6, …}',pert:v=>v%2===0,inf:true},
+ parx:{S:[0,2,4,6],op:'×',nome:'o conjunto dos números pares {0, 2, 4, 6, …}',pert:v=>v%2===0,inf:true},
+ impp:{S:[1,3,5,7],op:'+',nome:'o conjunto dos números ímpares {1, 3, 5, 7, …}',pert:v=>v%2===1,inf:true},
+ impx:{S:[1,3,5,7],op:'×',nome:'o conjunto dos números ímpares {1, 3, 5, 7, …}',pert:v=>v%2===1,inf:true},
+ um:{S:[1],op:'×',nome:'B = {1}',pert:v=>v===1},
+ z0:{S:[0],op:'+',nome:'C = {0}',pert:v=>v===0},
+ z12:{S:[0,1,2],op:'×',nome:'D = {0, 1, 2}',pert:v=>v<=2}};
+const resp=c=>{const T=c.S;return T.every(a=>T.every(b=>c.pert(c.op==='+'?a+b:a*b)));};
+D.ciclo({
+ livros:[C.z1x,C.z1p,C.algp],
+ sortear(){return pick([C.parp,C.parx,C.impp,C.impx,C.um,C.z0,C.z12,C.algx]);},
+ montar(q){cur=q;ab=new Set();esc=null;$('dq').innerHTML=`${q.nome[0].toUpperCase()+q.nome.slice(1)} é fechado para a <span class="k">${q.op==='+'?'adição':'multiplicação'}</span>?`+(q.inf?' <span class="muted">(a tabela mostra só alguns elementos)</span>':'');draw();},
+ conferir(q){if(esc===null){msg('dm','Escolha Sim ou Não.','info');return null;}const r=resp(q),ok=esc===(r?1:0);
+  let ce='';if(!r){const T=q.S;outer:for(const a of T)for(const b of T){const v=q.op==='+'?a+b:a*b;if(!q.pert(v)){ce=`${a} ${q.op} ${b} = ${v}, que não está no conjunto`;ab.add(T.indexOf(a)+'_'+T.indexOf(b));break outer;}}}
+  draw();
+  return {ok,exp:r?`Sim: ${q.op==='+'?'somando':'multiplicando'} quaisquer dois elementos, o resultado continua no conjunto${q.inf?(q.op==='+'?' (par + par é sempre par)':(q.S[0]?' (ímpar × ímpar é sempre ímpar)':' (par × qualquer número é par)')):''}. Ele é <b>fechado</b>.`
+   :`Não: ${ce}. Basta <b>um</b> resultado escapar para o conjunto não ser fechado.`};},
+ res:true});
+
+</script>
+</body>
+</html>

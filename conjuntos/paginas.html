@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantos algarismos para numerar o livro? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números naturais</div><h1 id="title">Quantos algarismos para numerar o livro?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Folheie o livro no controle: o contador mostra quantos algarismos já foram escritos até aquela página. Depois da página 99 o contador some, e a conta é com você.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl"><b>Página</b><input type="range" id="sl" min="1"><span id="sv"></span></div>
+<div class="fig" id="fig"></div>
+<div class="ask" id="cont"></div>
+<div id="tab"><table class="t"><tr><th>Faixa</th><th>Páginas</th><th>Algarismos por página</th></tr>
+<tr><td>1 a 9</td><td><input class="n" id="p1" inputmode="numeric" style="width:70px"></td><td>1</td></tr>
+<tr><td>10 a 99</td><td><input class="n" id="p2" inputmode="numeric" style="width:70px"></td><td>2</td></tr>
+<tr id="l3"><td id="f3">100 a …</td><td><input class="n" id="p3" inputmode="numeric" style="width:70px"></td><td>3</td></tr></table></div>
+<div class="ask">Total de algarismos: <input class="n" id="r1" inputmode="numeric" style="width:110px"></div>
+<div class="ask hide" id="inv">Páginas do livro: <input class="n" id="r2" inputmode="numeric" style="width:110px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=naturais-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Separe por faixas: as páginas de 1 algarismo (1 a 9), as de 2 (10 a 99) e as de 3 (100 em diante). Conte quantas páginas há em cada faixa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;const alg=p=>{let t=0;for(let k=1;k<=p;k++)t+=String(k).length;return t;};
+function draw(){const p=+$('sl').value;$('sv').textContent=p;
+ $('fig').innerHTML=`<svg viewBox="0 0 260 120" width="260"><rect x="20" y="10" width="105" height="100" rx="6" fill="#FFF" stroke="#0E2354" stroke-width="2"/><rect x="135" y="10" width="105" height="100" rx="6" fill="#FFF" stroke="#0E2354" stroke-width="2"/>
+ <line x1="130" y1="10" x2="130" y2="110" stroke="#0E2354" stroke-width="3"/>${[30,45,60,75].map(y=>`<line x1="34" y1="${y}" x2="110" y2="${y}" stroke="#D7DEEA" stroke-width="5"/><line x1="150" y1="${y}" x2="226" y2="${y}" stroke="#D7DEEA" stroke-width="5"/>`).join('')}
+ <text x="187" y="100" text-anchor="middle" font-size="18" font-weight="700" font-family="Poppins" fill="#F7821F">${p}</text></svg>`;
+ $('cont').innerHTML=p<=99||D.feito?`Até a página ${p}: <span class="k">${alg(p)}</span> algarismos`:`Até a página ${p}: <span class="k">?</span> (agora é com você)`;}
+$('sl').oninput=draw;
+D.ciclo({
+ livros:[{N:150}],
+ sortear(){return rnd(0,2)?{N:rnd(105,600)}:{inv:true,N:rnd(105,400)};},
+ montar(q){cur=q;$('sl').max=q.inv?99:q.N;$('sl').value=1;['p1','p2','p3','r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('tab').classList.toggle('hide',!!q.inv);$('inv').classList.toggle('hide',!q.inv);$('r1').parentNode.classList.toggle('hide',!!q.inv);$('f3').textContent='100 a '+q.N;
+  $('dq').innerHTML=q.inv?`Para numerar as páginas de um livro, começando do 1, foram escritos <span class="k">${fmt(alg(q.N))}</span> algarismos. Quantas páginas tem o livro?`
+   :`Para numerar as páginas de um livro de <span class="k">${q.N}</span> páginas, começando do 1, quantos algarismos são escritos ao todo?`;draw();},
+ conferir(q){const t=alg(q.N),p3=q.N-99;
+  const ex=`1 a 9: 9 páginas × 1 = 9; 10 a 99: 90 páginas × 2 = 180; 100 a ${q.N}: ${p3} páginas × 3 = ${3*p3}. Total: 9 + 180 + ${3*p3} = <b>${t}</b> algarismos.`;
+  if(q.inv){const v=D.ler(['r2']);if(!v)return null;const ok=v[0]===q.N;D.marcar(['r2'],[ok]);
+   return {ok,exp:`Até a página 99 são 9 + 180 = 189 algarismos. Sobram ${t} − 189 = ${t-189}, que dão ${t-189} ÷ 3 = ${p3} páginas de 3 algarismos. O livro tem 99 + ${p3} = <b>${q.N}</b> páginas.`};}
+  const v=D.ler(['p1','p2','p3','r1']);if(!v)return null;const ok=[v[0]===9,v[1]===90,v[2]===p3,v[3]===t];D.marcar(['p1','p2','p3','r1'],ok);draw();
+  return {ok:ok[3]&&ok[2],exp:ex};},
+ res:true});
+
+</script>
+</body>
+</html>

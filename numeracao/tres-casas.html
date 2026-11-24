@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O maior número com três casas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">O maior número com três casas</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Use + e − em cada casa (nas bases grandes, ±10 anda mais rápido). Embaixo aparece o número escrito no sistema e o valor dele no nosso.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="sis"><button data-b="10">Nosso (base 10)</button><button data-b="20">Maia (base 20)</button><button data-b="60">Babilônico (base 60)</button></div>
+<div id="casas" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px"></div>
+<div class="fig" id="fig" style="min-height:90px"></div>
+<div class="ask">Valor: <span class="k" id="vv"></span></div>
+<div class="ask hide" id="perg">Sua resposta: <input class="n" id="r1" inputmode="numeric" style="width:130px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=numeracao-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Em cada casa cabe no máximo a base menos 1: 9 no nosso sistema, 19 no maia e 59 no babilônico.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let B=10,d=[0,0,0],cur;const NM={10:'nosso sistema',20:'sistema maia',60:'sistema babilônico'};
+const val=()=>d[0]*B*B+d[1]*B+d[2];
+function draw(){document.querySelectorAll('#sis button').forEach(b=>b.classList.toggle('on',+b.dataset.b===B));
+ const nome=['casa do '+SN.fmt(B*B),'casa do '+B,'casa do 1'];
+ $('casas').innerHTML=d.map((x,i)=>`<div style="border:2px solid #E5E7EB;border-radius:10px;padding:6px;text-align:center"><div class="muted">${nome[i]}</div><div style="font-size:22px;font-weight:700;color:var(--navy)">${x}</div><div class="row" style="justify-content:center;gap:4px">${B>10?`<button class="alt" data-i="${i}" data-s="-10" style="padding:6px 6px;font-size:13px">−10</button>`:''}<button class="alt" data-i="${i}" data-s="-1" style="padding:6px 10px">−</button><button data-i="${i}" data-s="1" style="padding:6px 10px">+</button>${B>10?`<button data-i="${i}" data-s="10" style="padding:6px 6px;font-size:13px">+10</button>`:''}</div></div>`).join('');
+ $('casas').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito||cur.tipo==='ler')return;const i=+b.dataset.i;d[i]=Math.min(B-1,Math.max(0,d[i]+ +b.dataset.s));draw();});
+ const v=val(),dd=d[0]?d:(d[1]?d.slice(1):[d[2]]);
+ $('fig').innerHTML=B===10?`<span style="font-size:34px;font-weight:700;color:var(--navy)">${v}</span>`:B===20?SN.maia(v,{digits:dd,rotulos:true,cores:true}):SN.babilonico(v,{digits:dd,rotulos:true,cores:true});
+ $('vv').textContent=(cur&&cur.tipo==='ler'&&!D.feito)?'?':SN.fmt(v);}
+
+D.ciclo({
+ livros:[{tipo:'maior',B:20},{tipo:'maior',B:60}],
+ sortear(){const b=pick([20,60]);return rnd(0,1)?{tipo:'escrever',B:b,n:rnd(b+1,b*b*3)}:{tipo:'ler',B:b,n:rnd(b+1,b*b*3)};},
+ montar(q){cur=q;B=q.B;d=[0,0,0];$('perg').classList.toggle('hide',q.tipo==='escrever');$('r1').value='';$('r1').style.borderColor='';
+  if(q.tipo==='maior')$('dq').innerHTML=`Qual é o maior número que dá para escrever com só <span class="k">3 casas</span> no ${NM[B]}? Monte e escreva o valor.`;
+  if(q.tipo==='escrever')$('dq').innerHTML=`Escreva <span class="k">${SN.fmt(q.n)}</span> no ${NM[B]} usando as casas.`;
+  if(q.tipo==='ler'){const e=SN.emBase(q.n,B);while(e.length<3)e.unshift(0);d=e;$('dq').innerHTML=`Que número do nosso sistema está escrito aqui, no ${NM[B]}?`;}
+  draw();},
+ conferir(q){if(q.tipo==='escrever'){const ok=val()===q.n;const e=SN.emBase(q.n,B);
+   return {ok,exp:`${SN.fmt(q.n)} = ${e.map((x,i)=>x+' × '+SN.fmt(B**(e.length-1-i))).join(' + ')}.`};}
+  const v=D.ler(['r1']);if(!v)return null;const m=q.tipo==='maior'?B**3-1:q.n,ok=v[0]===m;D.marcar(['r1'],[ok]);
+  if(q.tipo==='maior'){d=[B-1,B-1,B-1];draw();return {ok,exp:`Com ${B-1} em cada casa: ${B-1} × ${SN.fmt(B*B)} + ${B-1} × ${B} + ${B-1} = <b>${SN.fmt(m)}</b>. Somando 1, vira ${SN.fmt(B**3)} = ${B} × ${B} × ${B}, o “1 seguido de três zeros” da base ${B}. No nosso sistema seria 999.`};}
+  draw();return {ok,exp:`${d.map((x,i)=>x+' × '+SN.fmt(B**(2-i))).join(' + ')} = <b>${SN.fmt(m)}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantos símbolos o escriba usa? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Quantos símbolos o escriba usa?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Cada símbolo egípcio vale 1, 10, 100, 1 000… Toque em + e − para montar o número. O contador mostra quantos símbolos você usou.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask" id="info"></div>
+<div id="pal"></div>
+<div class="ask hide" id="perg">Sua resposta: <input class="n" id="r1" inputmode="numeric" style="width:110px"> símbolos</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=numeracao-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Em 325 o escriba desenha 3 cordas, 2 calcanhares e 5 traços: 3 + 2 + 5 = 10 símbolos. A quantidade de símbolos é sempre a soma dos algarismos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const E=SN.EG;let c=[0,0,0,0,0,0,0],cur=null;
+const val=()=>c.reduce((s,k,i)=>s+k*10**i,0), tot=()=>c.reduce((a,b)=>a+b,0);
+function menor(S){let n=0,k=0;while(S>9){n+=9*10**k;S-=9;k++;}return n+S*10**k;}
+function draw(){const esconde=cur&&cur.tipo==='conta'&&!D.feito;
+ $('fig').innerHTML=esconde?'<span class="muted">O desenho aparece depois do OK.</span>':(tot()?SN.egSVG(c,{maxRow:6,scale:1.5}):'<span class="muted">Nenhum símbolo ainda</span>');
+ $('info').innerHTML=esconde?'':`Símbolos: <span class="k">${tot()}</span> &nbsp;·&nbsp; Valor: <span class="k">${SN.fmt(val())}</span>`;
+ $('pal').innerHTML=cur&&cur.tipo==='conta'?'':'<div class="chips" style="gap:8px">'+E.slice(0,5).map((s,i)=>`<div style="display:flex;align-items:center;gap:4px;border:2px solid #E5E7EB;border-radius:10px;padding:4px 6px">${SN.egSimbolo(i,0,30)}<span style="font-size:12px;color:var(--gray)">${SN.fmt(s.v)}</span><button class="alt" data-i="${i}" data-d="-1" style="min-width:34px;padding:6px">−</button><b style="min-width:16px;text-align:center;color:var(--navy)">${c[i]}</b><button data-i="${i}" data-d="1" style="min-width:34px;padding:6px">+</button></div>`).join('')+'</div>';
+ $('pal').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const i=+b.dataset.i,d=+b.dataset.d;
+  if(d>0&&c[i]>=9){msg('dm','O escriba nunca usa 10 símbolos iguais: dez deles viram um símbolo do valor seguinte.','info');return;}
+  c[i]=Math.max(0,c[i]+d);msg('dm','');draw();});}
+D.ciclo({
+ livros:[{tipo:'menor',S:20}],
+ sortear(){return rnd(0,2)?{tipo:'menor',S:pick([7,10,12,15,18,19,21,23,25,27,28,30,32])}:{tipo:'conta',n:rnd(1000,99999)};},
+ montar(q){cur=q;c=[0,0,0,0,0,0,0];$('perg').classList.toggle('hide',q.tipo!=='conta');
+  if(q.tipo==='menor')$('dq').innerHTML=`Monte o <span class="k">menor</span> número que precisa de exatamente <span class="k">${q.S} símbolos</span> egípcios.`;
+  else{$('dq').innerHTML=`Sem ver o desenho, diga quantos símbolos o escriba usa para escrever <span class="k">${SN.fmt(q.n)}</span>.`;c=SN.egCounts(q.n);$('r1').value='';}
+  draw();},
+ conferir(q){
+  if(q.tipo==='menor'){if(!tot()){msg('dm','Monte um número com os botões + e toque em OK.','info');return null;}
+   const m=menor(q.S),ok=val()===m&&tot()===q.S,dg=String(m).split('').join(' + ');
+   const ex=`O menor é <b>${SN.fmt(m)}</b>: ${dg} = ${q.S} símbolos. A quantidade de símbolos é a soma dos algarismos; para o número ser pequeno, use poucas casas: 9 nas casas de baixo e o resto na casa mais alta.`;
+   if(!ok&&tot()!==q.S)return {ok:false,exp:`Você usou ${tot()} símbolo${tot()>1?'s':''}, e o pedido era ${q.S}. `+ex};
+   if(!ok){c=SN.egCounts(m);draw();}return {ok,exp:ex};}
+  const v=D.ler(['r1']);if(!v)return null;const s=String(q.n).split('').reduce((a,b)=>a+ +b,0),ok=v[0]===s;D.marcar(['r1'],[ok]);
+  return {ok,exp:`${SN.fmt(q.n)} → ${String(q.n).split('').join(' + ')} = <b>${s}</b> símbolos: cada algarismo diz quantos símbolos daquele valor o escriba desenha.`};},
+ depois(){draw();},res:true});
+
+</script>
+</body>
+</html>

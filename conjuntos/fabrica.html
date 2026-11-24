@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fábrica de irracionais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números reais</div><h1 id="title">Fábrica de irracionais</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Escolha duas cartas. A fábrica mostra a conta e o resultado.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="muted">Cartas (toque em duas):</div><div class="chips" id="cs"></div>
+<div class="fig" id="fig" style="font-size:19px;font-weight:600;color:var(--navy);min-height:56px"></div>
+<div class="ask hide" id="pv">O resultado é: <span class="chips" id="cl"><button data-v="0">racional</button><button data-v="1">irracional</button></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=reais-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na soma, as partes irracionais podem se cancelar: (3 − √2) + √2 = 3. No produto, raízes podem formar um quadrado perfeito: √2 × √8 = √16 = 4.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+// soma: r + s√2 + pπ ; produto: (a + b√2)·π^e
+const CS=[{t:'√2',r:0,s:1,p:0},{t:'−√2',r:0,s:-1,p:0},{t:'3 − √2',r:3,s:-1,p:0},{t:'1 + √2',r:1,s:1,p:0},{t:'2√2',r:0,s:2,p:0},{t:'π',r:0,s:0,p:1},{t:'4 − π',r:4,s:0,p:-1},{t:'5',r:5,s:0,p:0}];
+const CP=[{t:'√2',a:0,b:1,e:0},{t:'2√2',a:0,b:2,e:0},{t:'√8',a:0,b:2,e:0},{t:'√2/2',a:0,b:.5,e:0},{t:'√2 + 1',a:1,b:1,e:0},{t:'√2 − 1',a:-1,b:1,e:0},{t:'π',a:1,b:0,e:1},{t:'1/π',a:1,b:0,e:-1},{t:'3',a:3,b:0,e:0}];
+let cur,sel=[],esc=null;const L=()=>cur.op==='+'?CS:CP;
+const irr=c=>cur.op==='+'?(c.s!==0||c.p!==0):(c.b!==0||c.e!==0);
+function res(){const [x,y]=sel.map(i=>L()[i]);if(cur.op==='+'){const r=x.r+y.r,s=x.s+y.s,p=x.p+y.p;
+  const t=[r?sg(r):'',s?(s===1?'√2':s===-1?'−√2':sg(s)+'√2'):'',p?(p===1?'π':p===-1?'−π':sg(p)+'π'):''].filter(Boolean).join(' + ').replace(/\+ −/g,'− ')||'0';return {t,rac:!s&&!p};}
+ const a=x.a*y.a+2*x.b*y.b,b=x.a*y.b+x.b*y.a,e=x.e+y.e;const fx=v=>Number.isInteger(v)?sg(v):sg(v).replace('.',',');
+ let t=[a?fx(a):'',b?(b===1?'√2':fx(b)+'√2'):''].filter(Boolean).join(' + ')||'0';if(a&&b&&e)t='('+t+')';if(e)t=(t==='1'?'':t)+(e===1?'π':e===-1?'/π':'π^'+e);return {t,rac:!b&&!e};}
+function draw(){$('cs').innerHTML=L().map((c,i)=>`<button data-i="${i}" class="${sel.includes(i)?'on':''}">${c.t}</button>`).join('');
+ $('cs').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito||cur.pre)return;const i=+b.dataset.i;if(sel.includes(i))sel=sel.filter(x=>x!==i);else{sel.push(i);if(sel.length>2)sel.shift();}draw();});
+ if(sel.length<2){$('fig').innerHTML='<span class="muted">Escolha duas cartas</span>';}else{const r=res(),[x,y]=sel.map(i=>L()[i]);
+  $('fig').innerHTML=`(${x.t}) ${cur.op==='+'?'+':'×'} (${y.t}) = ${cur.pre&&!D.feito?'?':`<span style="color:${r.rac?'var(--ok)':'var(--bad)'}">${r.t}</span> <span style="font-size:13px">(${r.rac?'racional':'irracional'})</span>`}`;}
+ $('cl').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;draw();}};});}
+D.ciclo({
+ livros:[{op:'+'},{op:'×'}],
+ sortear(){const op=pick(['+','×']);if(rnd(0,1))return {op};const n=op==='+'?CS.length:CP.length;let i,j;do{i=rnd(0,n-1);j=rnd(0,n-1);}while(i===j);return {op,pre:true,par:[i,j]};},
+ montar(q){cur=q;esc=null;sel=q.pre?q.par.slice():[];$('pv').classList.toggle('hide',!q.pre);
+  $('dq').innerHTML=q.pre?`Sem calcular na fábrica, preveja: este ${q.op==='+'?'soma':'produto'} dá um número racional ou irracional?`
+   :`Escolha dois números <span class="k">irracionais diferentes</span> cuja <span class="k">${q.op==='+'?'soma':'produto'}</span> seja <span class="k">racional</span>.`;draw();},
+ conferir(q){if(sel.length<2){msg('dm','Escolha duas cartas.','info');return null;}const r=res(),[x,y]=sel.map(i=>L()[i]);
+  if(q.pre){if(esc===null){msg('dm','Escolha racional ou irracional.','info');return null;}const ok=esc===(r.rac?0:1);draw();return {ok,exp:`(${x.t}) ${q.op==='+'?'+':'×'} (${y.t}) = <b>${r.t}</b>, ${r.rac?'racional':'irracional'}.`};}
+  const ok=irr(x)&&irr(y)&&r.rac&&x.t!==y.t&&!(x.t==='√8'&&y.t==='2√2'||x.t==='2√2'&&y.t==='√8');draw();
+  return {ok,exp:ok?`(${x.t}) ${q.op==='+'?'+':'×'} (${y.t}) = ${r.t}: dois irracionais com ${q.op==='+'?'soma':'produto'} racional.`:`${!irr(x)||!irr(y)?'As duas cartas precisam ser irracionais. ':''}${!r.rac?'O resultado deu irracional. ':''}${x.t===y.t||(x.t==='√8'||x.t==='2√2')&&(y.t==='√8'||y.t==='2√2')?'Os dois números precisam ser diferentes. ':''}Exemplo: ${q.op==='+'?'(3 − √2) + √2 = 3':'√2 × √8 = √16 = 4'}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

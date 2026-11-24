@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O submarino e o helicóptero · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números inteiros</div><h1 id="title">O submarino e o helicóptero</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nos movimentos, na ordem da história, para o submarino andar na régua. Depois responda onde ele parou e a distância até o helicóptero.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="chips" id="mv"></div>
+<div class="ask">Posição final do submarino: <input class="n" id="r1" style="width:90px"> m &nbsp; Distância vertical: <input class="n" id="r2" inputmode="numeric" style="width:90px"> m</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=inteiros-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Abaixo do nível do mar é negativo; acima é positivo. A distância entre duas alturas é a maior menos a menor: subtrair um negativo é somar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,pos,feitos=[];
+function draw(){const q=cur,top=200,bot=-200,H=300,sy=v=>20+(top-v)/(top-bot)*(H-40);
+ let g=`<rect x="0" y="${sy(0)}" width="300" height="${H-sy(0)}" fill="#DBEAFE"/><rect x="0" y="0" width="300" height="${sy(0)}" fill="#F0F9FF"/><line x1="40" y1="${sy(0)}" x2="300" y2="${sy(0)}" stroke="#2457D6" stroke-width="2"/>`;
+ for(let v=-200;v<=200;v+=50)g+=`<line x1="34" y1="${sy(v)}" x2="42" y2="${sy(v)}" stroke="#0E2354"/><text x="30" y="${sy(v)+4}" text-anchor="end" font-size="10" font-family="Poppins" fill="#0E2354">${sg(v)}</text>`;
+ g+=`<text x="296" y="${sy(0)-4}" text-anchor="end" font-size="10" font-family="Poppins" fill="#2457D6">nível do mar (0)</text>`;
+ const hy=sy(q.h);g+=`<g transform="translate(150,${hy})"><ellipse cx="0" cy="0" rx="22" ry="9" fill="#0E2354"/><line x1="-30" y1="-12" x2="30" y2="-12" stroke="#0E2354" stroke-width="3"/><line x1="0" y1="-9" x2="0" y2="-12" stroke="#0E2354" stroke-width="3"/><line x1="18" y1="0" x2="40" y2="-4" stroke="#0E2354" stroke-width="3"/></g>`;
+ const py=sy(pos);g+=`<g transform="translate(150,${py})"><ellipse cx="0" cy="0" rx="28" ry="9" fill="#F7821F"/><rect x="-6" y="-16" width="12" height="9" rx="2" fill="#F7821F"/></g>`;
+ if(D.feito)g+=`<line x1="200" y1="${hy}" x2="200" y2="${py}" stroke="#15803D" stroke-width="2" stroke-dasharray="4 3"/><text x="206" y="${(hy+py)/2}" font-size="12" font-weight="700" font-family="Poppins" fill="#15803D">${q.h-q.fim} m</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 300 ${H}" width="300">${g}</svg>`;
+ $('mv').innerHTML=q.mv.map((m,i)=>`<button data-i="${i}" class="${feitos.includes(i)?'on':''}">${m>0?'subir':'descer'} ${Math.abs(m)} m</button>`).join('');
+ $('mv').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(feitos.includes(i)||D.feito)return;if(i!==feitos.length){msg('dm','Siga a ordem da história.','info');return;}feitos.push(i);pos+=q.mv[i];msg('dm','');draw();});}
+D.ciclo({
+ livros:[{p:-120,mv:[45,-80],h:150}],
+ sortear(){const p=-rnd(4,15)*10,mv=[rnd(2,8)*5,-rnd(3,10)*5];if(rnd(0,1))mv.push(rnd(1,6)*5);const h=rnd(5,18)*10;return {p,mv,h};},
+ montar(q){q.fim=q.p+q.mv.reduce((a,b)=>a+b,0);cur=q;pos=q.p;feitos=[];['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Um submarino estava <span class="k">${-q.p} m abaixo</span> do nível do mar. ${q.mv.map((m,i)=>(i?'Depois ':'Ele ')+(m>0?'subiu ':'desceu ')+Math.abs(m)+' m').join('. ')}. Nesse momento, um helicóptero voa <span class="k">${q.h} m acima</span> do nível do mar, bem em cima dele. Qual é a distância vertical entre os dois?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const d=q.h-q.fim,ok=[v[0]===q.fim,v[1]===d];D.marcar(['r1','r2'],ok);pos=q.fim;feitos=q.mv.map((_,i)=>i);draw();
+  return {ok:ok[1],exp:`${sg(q.p)} ${q.mv.map(m=>m>0?'+ '+m:'− '+(-m)).join(' ')} = <b>${sg(q.fim)}</b> m. Distância: ${q.h} − (${sg(q.fim)}) = ${q.h} + ${-q.fim} = <b>${d} m</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

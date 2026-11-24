@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estacas em volta do terreno · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Múltiplos e divisores</div><h1 id="title">Estacas em volta do terreno</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude a distância entre as estacas. Elas começam num canto e seguem em volta do terreno. Só serve a distância que faz cair uma estaca em cada canto.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl"><b>Distância</b><input type="range" id="sl" min="1"><span id="sv"></span></div>
+<div class="fig" id="fig"></div><div id="st" class="ask"></div>
+<div class="ask">Maior distância: <input class="n" id="r1" inputmode="numeric" style="width:80px"> m &nbsp; Estacas: <input class="n" id="r2" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplos-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Para cair estaca nos cantos, a distância tem que dividir os dois lados: é um divisor comum. A maior possível é o mdc.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;
+function draw(){const a=cur.a,b=cur.b,d=+$('sl').value;$('sv').textContent=d+' m';const W=320,s=(W-40)/a,H=b*s+40,P=2*(a+b);
+ let g=`<rect x="20" y="20" width="${a*s}" height="${b*s}" fill="#ECFDF5" stroke="#15803D" stroke-width="2"/>
+ <text x="${20+a*s/2}" y="14" text-anchor="middle" font-size="11" font-family="Poppins" fill="#0E2354">${a} m</text><text x="${24+a*s}" y="${20+b*s/2}" font-size="11" font-family="Poppins" fill="#0E2354">${b} m</text>`;
+ const pt=t=>t<=a?[20+t*s,20]:t<=a+b?[20+a*s,20+(t-a)*s]:t<=2*a+b?[20+(2*a+b-t)*s,20+b*s]:[20,20+(P-t)*s];
+ let n=0;for(let t=0;t<P;t+=d){const[x,y]=pt(t);g+=`<circle cx="${x}" cy="${y}" r="${Math.max(2,Math.min(4,d*s/3))}" fill="#8A5A12"/>`;n++;}
+ const cantos=[a,a+b,2*a+b].every(c=>c%d===0)&&P%d===0;
+ [[20,20],[20+a*s,20],[20+a*s,20+b*s],[20,20+b*s]].forEach(([x,y],i)=>{const okc=i===0||[a,a+b,2*a+b][i-1]%d===0;g+=`<circle cx="${x}" cy="${y}" r="7" fill="none" stroke="${okc?'#15803D':'#B91C1C'}" stroke-width="2"/>`;});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W+20} ${H}" width="${W+20}">${g}</svg>`;
+ $('st').innerHTML=cantos?`<span style="color:var(--ok)">Cabe certinho: uma estaca em cada canto, ${n} estacas.</span>`:`<span style="color:var(--bad)">Não dá: algum canto ficou sem estaca (${d} não divide ${a%d?a:b}).</span>`;}
+$('sl').oninput=()=>{if(!D.feito)draw();};
+D.ciclo({
+ livros:[{a:120,b:84}],
+ sortear(){let a,b;do{const g=pick([4,5,6,8,9,10,12,15]);a=g*rnd(3,12);b=g*rnd(2,9);}while(a<=b||a>150);return {a,b};},
+ montar(q){cur=q;$('sl').max=q.b;$('sl').value=1;['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Um terreno de <span class="k">${q.a} m</span> por <span class="k">${q.b} m</span> vai ser cercado com estacas à mesma distância, a maior possível, com uma estaca em cada canto. Qual é a distância? Quantas estacas?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const g=MD.mdc(q.a,q.b),n=2*(q.a+q.b)/g,ok1=v[0]===g,ok2=v[1]===n;D.marcar(['r1','r2'],[ok1,ok2]);$('sl').value=g;draw();
+  return {ok:ok1&&ok2,exp:`A distância precisa dividir ${q.a} e ${q.b}: é o mdc(${q.a}, ${q.b}) = <b>${g} m</b>. Perímetro: 2 × (${q.a} + ${q.b}) = ${2*(q.a+q.b)} m; ${2*(q.a+q.b)} ÷ ${g} = <b>${n} estacas</b> (a volta fecha no canto de onde saiu).`};},
+ res:true});
+
+</script>
+</body>
+</html>

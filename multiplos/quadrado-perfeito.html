@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Complete os pares e forme um quadrado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Múltiplos e divisores</div><h1 id="title">Complete os pares e forme um quadrado</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Os fatores primos do número aparecem em pares. Toque nos primos de baixo para acrescentar fatores ao multiplicador até que todo fator tenha um par.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="muted">Acrescentar ao multiplicador:</div><div class="chips" id="pal"></div>
+<div class="row" style="margin-top:6px"><button class="alt" id="lim">Limpar o multiplicador</button></div>
+<div class="ask">Multiplicador: <span class="k" id="mt">1</span> &nbsp;·&nbsp; Quadrado obtido: <input class="n" id="r1" inputmode="numeric" style="width:110px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplos-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Um número é quadrado quando, na fatoração, cada primo aparece um número par de vezes: 144 = 2 × 2 × 2 × 2 × 3 × 3 = 12 × 12.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,ext=[];
+function draw(){const f=MD.fatores(cur.n).map(p=>({p,e:false})).concat(ext.map(p=>({p,e:true})));f.sort((a,b)=>a.p-b.p||a.e-b.e);
+ const grupos={};f.forEach(x=>(grupos[x.p]=grupos[x.p]||[]).push(x));let x=10,s='';const H=90;
+ Object.keys(grupos).forEach(p=>{const g=grupos[p];for(let i=0;i<g.length;i+=2){const par=g.slice(i,i+2),w=par.length*36+6;
+   s+=`<rect x="${x}" y="18" width="${w}" height="44" rx="10" fill="${par.length===2?'#DCFCE7':'#FEE2E2'}" stroke="${par.length===2?'#15803D':'#B91C1C'}" stroke-dasharray="${par.length===2?'':'4 3'}"/>`;
+   par.forEach((t,k)=>{s+=`<circle cx="${x+21+k*36}" cy="40" r="15" fill="${t.e?'#F7821F':'#0E2354'}"/><text x="${x+21+k*36}" y="45" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="Poppins">${t.p}</text>`;});
+   x+=w+8;}});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${Math.max(x,330)} ${H}" width="${Math.max(x,330)}">${s}<text x="10" y="82" font-size="11" fill="#6B7280" font-family="Poppins">azul: fatores de ${cur.n} · laranja: os que você acrescentou</text></svg>`;
+ $('mt').textContent=ext.length?ext.join(' × ')+' = '+ext.reduce((a,b)=>a*b,1):'1';}
+$('pal').innerHTML=[2,3,5,7,11].map(p=>`<button data-p="${p}">+ ${p}</button>`).join('');
+$('pal').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;if(ext.length>=6)return;ext.push(+b.dataset.p);draw();});
+$('lim').onclick=()=>{if(!D.feito){ext=[];draw();}};
+D.ciclo({
+ livros:[{n:72}],
+ sortear(){let n;do{n=pick([2,3,5,7])*pick([2,3,4,9,6,12,18,8,5,10])*pick([1,2,3,5]);}while(Math.sqrt(n)%1===0||n>600||n<8);return {n};},
+ montar(q){cur=q;ext=[];$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Qual é o menor número pelo qual devemos multiplicar <span class="k">${q.n}</span> para obter um número quadrado? Que quadrado é esse?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const m=MD.potencias(q.n).filter(([p,e])=>e%2).reduce((a,[p])=>a*p,1),M=ext.reduce((a,b)=>a*b,1);
+  const okm=M===m,okq=v[0]===q.n*m;D.marcar(['r1'],[okq]);if(!okm){ext=MD.fatores(m);draw();}
+  return {ok:okm&&okq,exp:`${q.n} = ${MD.fatoracao(q.n,true)}. Falta par para ${MD.fatores(m).join(' e ')}: multiplique por <b>${m}</b>. ${q.n} × ${m} = <b>${q.n*m}</b> = ${Math.sqrt(q.n*m)}².`};},
+ res:true});
+
+</script>
+</body>
+</html>

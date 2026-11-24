@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>0,999… e as dízimas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números racionais</div><h1 id="title">0,999… e as dízimas</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque em “+ um 9” e veja, com a lupa, quanto falta para chegar a 1. Nos desafios de dízima, escolha por quanto multiplicar e escreva a fração geratriz.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div id="zoom"><div class="fig" id="fig"></div><div class="row"><button class="alt" id="mais">+ um 9</button><button class="alt" id="zer">Recomeçar</button></div><div class="ask" id="zt"></div></div>
+<div id="ger" class="hide"><div class="chips" id="mul"><button data-m="10">× 10</button><button data-m="100">× 100</button><button data-m="1000">× 1 000</button></div><div class="fig" id="conta" style="flex-direction:column;font-size:17px;color:var(--navy);font-weight:600"></div></div>
+<div class="ask" id="resp"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=racionais-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na geratriz, multiplique por 10 se o período tem 1 algarismo, por 100 se tem 2. Assim as partes depois da vírgula ficam iguais e somem na subtração.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,n9=1,mul=null;
+function zoom(){const W=340;let g=`<line x1="20" y1="40" x2="${W-20}" y2="40" stroke="#0E2354" stroke-width="2"/>`;
+ const x0=20,x1=W-20;g+=`<line x1="${x1}" y1="30" x2="${x1}" y2="50" stroke="#15803D" stroke-width="3"/><text x="${x1}" y="66" text-anchor="middle" font-size="13" font-weight="700" font-family="Poppins" fill="#15803D">1</text>`;
+ const lo='0,'+'9'.repeat(Math.max(0,n9-1));g+=`<text x="${x0}" y="66" font-size="11" font-family="Poppins" fill="#0E2354">${n9>1?lo:'0'}</text><line x1="${x0}" y1="32" x2="${x0}" y2="48" stroke="#0E2354" stroke-width="2"/>`;
+ const xp=x0+(x1-x0)*0.9;g+=`<circle cx="${xp}" cy="40" r="6" fill="#F7821F"/><text x="${xp}" y="22" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#F7821F">0,${'9'.repeat(n9)}</text>`;
+ g+=`<text x="${(xp+x1)/2}" y="84" text-anchor="middle" font-size="11" font-family="Poppins" fill="#B91C1C">falta 0,${'0'.repeat(n9-1)}1</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 92" width="${W}">${g}</svg>`;$('zt').innerHTML=`Lupa: cada 9 a mais aumenta o zoom 10 vezes. Com ${n9} nove${n9>1?'s':''}, a distância até 1 é <b>0,${'0'.repeat(n9-1)}1</b>.`;}
+$('mais').onclick=()=>{if(n9<14){n9++;zoom();}};$('zer').onclick=()=>{n9=1;zoom();};
+function dz(q){return q.ini+(q.per.repeat(Math.ceil(9/q.per.length)))+'…';}
+function conta(){const q=cur;if(!mul){$('conta').innerHTML=`x = ${dz(q)}<br><span class="muted">Escolha por quanto multiplicar.</span>`;return;}
+ const L=q.per.length,ok=mul===10**L,xv=q.val*mul,ip=Math.floor(xv+1e-9);
+ const rep=ok?`${ip},${q.per.repeat(4)}…`:`${(xv).toFixed(6).replace('.',',')}…`;
+ $('conta').innerHTML=`x = ${dz(q)}<br>${fmt(mul)}x = ${rep}<br>`+(ok?`${fmt(mul)}x − x = ${ip} − 0 → ${fmt(mul-1)}x = ${ip}`:`<span style="color:var(--bad)">As partes depois da vírgula não ficaram iguais: a subtração não some com a dízima.</span>`);}
+$('mul').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito||cur.t!=='ger')return;mul=+b.dataset.m;$('mul').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));conta();});
+D.ciclo({
+ livros:[{t:'um3'},{t:'ger',ini:'0,',per:'9',val:1,num:9,den:9}],
+ sortear(){if(rnd(0,2)===0)return {t:'falta',n:rnd(3,8)};const L=rnd(1,2);let per;do{per=String(rnd(L===1?1:10,L===1?8:98)).padStart(L,'0');}while(L===2&&per[0]===per[1]);
+  const den=10**L-1,num=+per;return {t:'ger',ini:'0,',per,val:num/den,num,den};},
+ montar(q){cur=q;mul=null;$('mul').querySelectorAll('button').forEach(x=>x.classList.remove('on'));$('zoom').classList.toggle('hide',q.t==='ger');$('ger').classList.toggle('hide',q.t!=='ger');
+  if(q.t==='um3'){n9=1;zoom();$('dq').innerHTML='Sabemos que <span class="k">1/3 = 0,333…</span>. Multiplicando os dois lados por 3, 3 × 0,333… = 0,999… e 3 × 1/3 = ? Então 0,999… é igual a quê?';$('resp').innerHTML='0,999… = '+box('r1',90);}
+  if(q.t==='falta'){n9=1;zoom();$('dq').innerHTML=`Use a lupa: quanto falta para <span class="k">0,${'9'.repeat(q.n)}</span> chegar a 1?`;$('resp').innerHTML='Falta '+box('r1',150);}
+  if(q.t==='ger'){conta();$('dq').innerHTML=q.per==='9'?'Agora pelo método da geratriz: chame x = 0,999…, escolha por quanto multiplicar e descubra x.':`Encontre a fração geratriz de <span class="k">${dz(q)}</span>`;
+   $('resp').innerHTML=q.per==='9'?'x = '+box('r1',90):'Fração: '+box('r1',70)+' / '+box('r2',70);}
+  document.querySelectorAll('#resp input.n').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});},
+ conferir(q){if(q.t==='um3'){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===1;D.marcar(['r1'],[ok]);return {ok,exp:'3 × 1/3 = 1, e 3 × 0,333… = 0,999…. Então <b>0,999… = 1</b>: são dois jeitos de escrever o mesmo número.'};}
+  if(q.t==='falta'){const v=D.ler(['r1']);if(!v)return null;const ok=Math.abs(v[0]-10**-q.n)<1e-15;D.marcar(['r1'],[ok]);n9=q.n;zoom();
+   return {ok,exp:`Falta <b>0,${'0'.repeat(q.n-1)}1</b>. Com mais noves a distância fica cada vez menor; com infinitos noves não sobra distância nenhuma: 0,999… = 1.`};}
+  if(q.per==='9'){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===1;D.marcar(['r1'],[ok]);mul=10;conta();return {ok,exp:'10x = 9,999…; 10x − x = 9,999… − 0,999… = 9; 9x = 9; <b>x = 1</b>.'};}
+  const v=D.ler(['r1','r2']);if(!v)return null;const ok=v[1]!==0&&v[0]*q.den===v[1]*q.num;D.marcar(['r1','r2'],[ok,ok]);mul=10**q.per.length;conta();const [a,b]=fr(q.num,q.den);
+  return {ok,exp:`O período tem ${q.per.length} algarismo${q.per.length>1?'s':''}: multiplique por ${fmt(10**q.per.length)}. ${fmt(q.den)}x = ${q.num}, x = ${q.num}/${q.den}${a!==q.num?' = <b>'+a+'/'+b+'</b>':''}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

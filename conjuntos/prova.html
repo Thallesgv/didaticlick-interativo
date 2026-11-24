@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Placar da prova · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números inteiros</div><h1 id="title">Placar da prova</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude os acertos e os erros. As questões em branco são o que sobra. O placar mostra a nota na hora.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl"><b>Acertos (+5)</b><input type="range" id="sa" min="0"><span id="va"></span></div>
+<div class="sl"><b>Erros (−2)</b><input type="range" id="se" min="0"><span id="ve"></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="ask hide" id="pa">Pontos de Ana: <input class="n" id="r1" style="width:90px"></div>
+<div class="ask hide" id="imp"><button class="alt" id="bimp">É impossível</button> <span class="muted">(toque se achar que não dá)</span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=inteiros-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Respondendo às 20, cada acerto a mais troca um −2 por um +5: a nota muda de 7 em 7. Comece de 20 erros (−40) e veja quais notas aparecem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,impo=false;
+function draw(){const q=cur,a=+$('sa').value;if(q.todas)$('se').value=q.n-a;const e=+$('se').value;if(a+e>q.n){$('se').value=q.n-a;return draw();}
+ const b=q.n-a-+$('se').value,E=+$('se').value,p=5*a-2*E;$('va').textContent=a;$('ve').textContent=E;
+ const cel=(k,c)=>`<span style="display:inline-block;width:14px;height:14px;border-radius:3px;margin:1px;background:${c}"></span>`;
+ $('fig').innerHTML=`<div>${Array.from({length:q.n},(_,i)=>cel(i,i<a?'#15803D':i<a+E?'#B91C1C':'#E5E7EB')).join('')}</div>
+ <div class="ask" style="justify-content:center">${a} × 5 − ${E} × 2 + ${b} × 0 = <b class="k" style="font-size:22px">${q.ana?'?':sg(p)}</b> pontos</div>`;
+ $('bimp').classList.toggle('on',impo);}
+['sa','se'].forEach(i=>$(i).oninput=()=>{if(!D.feito){impo=false;draw();}});
+$('bimp').onclick=()=>{if(!D.feito){impo=!impo;draw();}};
+function sol(q){for(let a=0;a<=q.n;a++){const e=q.todas?q.n-a:null;if(q.todas){if(5*a-2*e===q.T)return [a,e];}else for(let e2=0;a+e2<=q.n;e2++)if(5*a-2*e2===q.T)return [a,e2];}return null;}
+D.ciclo({
+ livros:[{n:20,ana:true},{n:20,T:0,todas:true}],
+ sortear(){const n=pick([10,12,15,20]),todas=!!rnd(0,1);let T=rnd(-12,40);if(!todas&&T>5*n)T=5*n-3;return {n,T,todas};},
+ montar(q){cur=q;impo=false;$('sa').max=q.n;$('se').max=q.n;$('sa').value=q.ana?12:0;$('se').value=q.ana?6:0;$('pa').classList.toggle('hide',!q.ana);$('imp').classList.toggle('hide',!!q.ana);
+  $('r1').value='';$('r1').style.borderColor='';$('sa').disabled=!!q.ana;$('se').disabled=!!q.ana||!!q.todas;
+  $('dq').innerHTML=q.ana?'Numa prova de 20 questões, cada acerto vale <span class="k">+5</span>, cada erro <span class="k">−2</span> e em branco 0. Ana acertou 12, errou 6 e deixou 2 em branco. Quantos pontos fez?'
+   :`Prova de ${q.n} questões (+5, −2, 0). Faça exatamente <span class="k">${sg(q.T)} pontos</span>${q.todas?', <span class="k">respondendo a todas</span> (nenhuma em branco)':''}. Se não der, toque em “É impossível”.`;draw();},
+ conferir(q){if(q.ana){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===48;D.marcar(['r1'],[ok]);q.ana=false;draw();
+   return {ok,exp:'12 × 5 − 6 × 2 + 2 × 0 = 60 − 12 + 0 = <b>48</b> pontos.'};}
+  const a=+$('sa').value,e=+$('se').value,p=5*a-2*e,s=sol(q);
+  if(impo){const ok=!s;return {ok,exp:ok?(q.todas?`Respondendo a todas, com a acertos, a nota é 5a − 2(${q.n} − a) = 7a − ${2*q.n}. Para dar ${sg(q.T)}, 7a teria que ser ${q.T+2*q.n}, que não é múltiplo de 7: <b>impossível</b>.`:'Nenhuma combinação dá essa nota: <b>impossível</b>.'):`Dá sim: ${s[0]} acertos e ${s[1]} erros → ${5*s[0]} − ${2*s[1]} = ${sg(q.T)}.`};}
+  const okt=!q.todas||a+e===q.n,ok=p===q.T&&okt;
+  if(!ok&&s){$('sa').value=s[0];$('se').value=s[1];draw();}
+  return {ok,exp:ok?`${a} × 5 − ${e} × 2 = ${sg(q.T)}.`:s?`${!okt?'Faltou responder a todas. ':''}Uma solução: ${s[0]} acertos e ${s[1]} erros → ${5*s[0]} − ${2*s[1]} = ${sg(q.T)}.`:'Essa nota é impossível: o certo era tocar em “É impossível”.'};},
+ res:true});
+
+</script>
+</body>
+</html>

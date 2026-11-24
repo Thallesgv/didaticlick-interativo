@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantas vezes aparece o algarismo? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Quantas vezes aparece o algarismo?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Escolha uma centena para ver na tabela: o algarismo procurado fica laranja. Conte casa por casa (unidades, dezenas, centenas) e responda.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="cent"></div>
+<div class="fig" id="fig"></div>
+<div class="ask">Nesta centena: <span class="k" id="nc"></span></div>
+<div class="ask">Sua resposta: <input class="n" id="r1" inputmode="numeric" style="width:110px"> vezes</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=numeracao-q4-8">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Não conte número por número: conte quantas vezes o algarismo aparece nas unidades, depois nas dezenas, depois nas centenas, e some.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,c0=0;const cnt=(s,d)=>s.split('').filter(x=>x===d).length;
+function draw(){const q=cur,ini=c0*100,ns=[];for(let n=Math.max(1,ini);n<Math.min(ini+100,q.N+1);n++)ns.push(n);
+ $('fig').innerHTML='<div style="display:grid;grid-template-columns:repeat(10,1fr);gap:2px;width:100%;max-width:520px;font-size:12px">'+
+  ns.map(n=>`<div style="text-align:center;padding:3px 0;border-radius:4px;background:${String(n).includes(q.d)?'#FFF4EA':'#F8FAFC'}">${String(n).split('').map(x=>x===q.d?`<b style="color:var(--orange)">${x}</b>`:x).join('')}</div>`).join('')+'</div>';
+ $('nc').textContent=`de ${Math.max(1,ini)} a ${Math.min(ini+99,q.N)}: o ${q.d} aparece ${ns.reduce((a,n)=>a+cnt(String(n),q.d),0)} vezes`;
+ const nb=Math.ceil((q.N+1)/100);$('cent').innerHTML=Array.from({length:nb},(_,i)=>`<button data-c="${i}" class="${i===c0?'on':''}">${i?i*100:1}–${Math.min(i*100+99,q.N)}</button>`).join('');
+ $('cent').querySelectorAll('button').forEach(b=>b.onclick=()=>{c0=+b.dataset.c;draw();});}
+D.ciclo({
+ livros:[{d:'0',N:1000}],
+ sortear(){return {d:String(rnd(0,9)),N:pick([100,200,300,500,1000])};},
+ montar(q){cur=q;c0=0;$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Miguel escreveu todos os números de 1 a <span class="k">${SN.fmt(q.N)}</span>. Quantas vezes ele escreveu o algarismo <span class="k">${q.d}</span>?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const pos=[0,0,0,0];
+  for(let n=1;n<=q.N;n++){const s=String(n);for(let i=0;i<s.length;i++)if(s[i]===q.d)pos[s.length-1-i]++;}
+  const t=pos.reduce((a,b)=>a+b,0),ok=v[0]===t;D.marcar(['r1'],[ok]);
+  const nm=['unidades','dezenas','centenas','milhar'];
+  return {ok,exp:`Contando casa por casa: ${pos.map((x,i)=>x?`${x} nas ${nm[i]}`:'').filter(Boolean).join(', ')}. Total: <b>${t}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>
