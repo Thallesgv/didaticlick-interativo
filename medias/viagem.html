@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ida e volta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Médias</div><h1>Ida e volta</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha a distância e as velocidades de ida e de volta. As barras mostram o tempo de cada trecho: o trecho mais lento dura mais e pesa mais na média.</p><div class="sl" id="dd"><b>Distância</b><input type="range"><span></span></div><div class="sl" id="v1"><b>Ida</b><input type="range"><span></span></div><div class="sl" id="v2"><b>Volta</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="res" id="rs"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Duda','Manu','Miguel','Sophia'];
+const MA=a=>a.reduce((s,x)=>s+x,0)/a.length, MG=a=>Math.pow(a.reduce((s,x)=>s*x,1),1/a.length),
+ MH=a=>a.length/a.reduce((s,x)=>s+1/x,0), MQ=a=>Math.sqrt(a.reduce((s,x)=>s+x*x,0)/a.length);
+let AC=null;function tom(freqs,dur){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime;
+ freqs.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+  const s=t0+i*(dur||.7);g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.25,s+.03);g.gain.exponentialRampToValueAtTime(.001,s+(dur||.7)*1.4);o.start(s);o.stop(s+(dur||.7)*1.5);});}catch(e){}}
+
+
+const Dd=D.sl('dd',30,300,10,120,draw,v=>v+' km'),V1=D.sl('v1',10,120,5,60,draw,v=>v+' km/h'),V2=D.sl('v2',10,120,5,40,draw,v=>v+' km/h');
+function draw(){const d=Dd.get(),a=V1.get(),b=V2.get(),t1=d/a,t2=d/b,mh=2*d/(t1+t2),W=340,sc=280/Math.max(t1+t2,1);let g='';
+ g+=`<rect x="20" y="20" width="${t1*sc}" height="26" fill="#2457D6" rx="3"/>`+T(20+t1*sc/2,38,f2(t1)+' h',{c:'#fff',fs:10});
+ g+=`<rect x="${20+t1*sc}" y="20" width="${t2*sc}" height="26" fill="#F7821F" rx="3"/>`+T(20+t1*sc+t2*sc/2,38,f2(t2)+' h',{c:'#fff',fs:10});
+ g+=T(20,64,'tempo total '+f2(t1+t2)+' h',{a:'start',c:'#6B7280'});$('fig').innerHTML=`<svg viewBox="0 0 ${W} 72" width="${W}">${g}</svg>`;
+ $('rs').innerHTML=`<div>distância total<b>${2*d} km</b></div><div>tempo total<b>${f2(t1+t2)} h</b></div><div>velocidade média<b>${f2(mh)} km/h</b></div><div>média aritmética<b>${f2((a+b)/2)} km/h</b></div>`;
+ $('nt').innerHTML=`Velocidade média = ${2*d} ÷ ${f2(t1+t2)} = <b>${f2(mh)} km/h</b>, a média harmônica 2·${a}·${b} ÷ ${a+b}. Ela não depende da distância: mude a distância e confira.`;}
+draw();
+
+</script>
+</body>
+</html>

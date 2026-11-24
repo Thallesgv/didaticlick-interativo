@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As médias no semicírculo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Médias</div><h1 id="title">As médias no semicírculo</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">No semicírculo de Papo, AC = a e CB = b. Calcule o raio (média aritmética), CD (média geométrica) e DE (média harmônica).</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask" id="pq"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=medias-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Raio = (a + b) ÷ 2. CD = √(a · b). Para DE, use a fórmula 2ab ÷ (a + b) ou o atalho DE = CD² ÷ raio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Duda','Manu','Miguel','Sophia'];
+const MA=a=>a.reduce((s,x)=>s+x,0)/a.length, MG=a=>Math.pow(a.reduce((s,x)=>s*x,1),1/a.length),
+ MH=a=>a.length/a.reduce((s,x)=>s+1/x,0), MQ=a=>Math.sqrt(a.reduce((s,x)=>s+x*x,0)/a.length);
+let AC=null;function tom(freqs,dur){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime;
+ freqs.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+  const s=t0+i*(dur||.7);g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.25,s+.03);g.gain.exponentialRampToValueAtTime(.001,s+(dur||.7)*1.4);o.start(s);o.stop(s+(dur||.7)*1.5);});}catch(e){}}
+
+const PP=[[2,8],[4,16],[3,12],[2,18],[5,20],[1,4],[9,16],[6,24],[8,2],[16,4]];
+function draw(a,b,ok){const k=300/(a+b),x0=20,yb=180,r=(a+b)/2*k,ox=x0+r,cx=x0+a*k,mg=Math.sqrt(a*b)*k,Dx=cx,Dy=yb-mg,dx=Dx-ox,dy=Dy-yb,t=((cx-ox)*dx)/(dx*dx+dy*dy),Ex=ox+t*dx,Ey=yb+t*dy;
+ let g=`<path d="M${x0},${yb} A${r},${r} 0 0,1 ${x0+2*r},${yb} Z" fill="#F5F7FB" stroke="#0E2354" stroke-width="1.8"/>`;
+ g+=`<line x1="${ox}" y1="${yb}" x2="${ox}" y2="${yb-r}" stroke="#2457D6" stroke-width="3"/><line x1="${cx}" y1="${yb}" x2="${Dx}" y2="${Dy}" stroke="#15803D" stroke-width="3"/><line x1="${ox}" y1="${yb}" x2="${Dx}" y2="${Dy}" stroke="#9CA3AF" stroke-dasharray="4 3"/><line x1="${cx}" y1="${yb}" x2="${Ex}" y2="${Ey}" stroke="#9CA3AF" stroke-dasharray="4 3"/><line x1="${Dx}" y1="${Dy}" x2="${Ex}" y2="${Ey}" stroke="#F7821F" stroke-width="4"/>`;
+ [[x0,yb,'A',0,15],[x0+2*r,yb,'B',0,15],[cx,yb,'C',0,15],[ox,yb,'O',0,15],[Dx,Dy,'D',-9,-4],[Ex,Ey,'E',9,0],[ox,yb-r,'F',0,-6]].forEach(p=>g+=`<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#0E2354"/>`+T(p[0]+p[3],p[1]+p[4],p[2]));
+ g+=T(x0+a*k/2,yb-5,'a = '+a,{fs:10,c:'#6B7280'})+T((cx+x0+2*r)/2,yb-5,'b = '+b,{fs:10,c:'#6B7280'});
+ $('fig').innerHTML=`<svg viewBox="0 0 340 200" width="340">${g}</svg>`;}
+D.ciclo({
+ livros:[{a:1,b:9}],
+ sortear(){const p=pick(PP);return {a:p[0],b:p[1]};},
+ montar(q){draw(q.a,q.b);$('dq').innerHTML=`AC = <span class="k">${q.a}</span> e CB = <span class="k">${q.b}</span>.`;
+  $('pq').innerHTML='<span style="color:#2457D6">Raio OF:</span> '+box('r1',70)+' <span style="color:#15803D">CD:</span> '+box('r2',70)+' <span style="color:#F7821F">DE:</span> '+box('r3',70);},
+ conferir(q){const v=D.ler(['r1','r2','r3']);if(!v)return null;const c=[MA([q.a,q.b]),MG([q.a,q.b]),MH([q.a,q.b])],oks=c.map((x,i)=>perto(v[i],x));D.marcar(['r1','r2','r3'],oks);
+  return {ok:oks.every(Boolean),exp:`Raio (${q.a} + ${q.b}) ÷ 2 = ${f2(c[0])}; CD = √(${q.a} · ${q.b}) = ${f2(c[1])}; DE = 2 · ${q.a} · ${q.b} ÷ ${q.a+q.b} = ${f2(c[2])}. Ordem: ${f2(c[2])} ≤ ${f2(c[1])} ≤ ${f2(c[0])}, e ${f2(c[1])}² = ${f2(c[0])} × ${f2(c[2])}.`};},
+ res:true});
+
+</script>
+</body>
+</html>
