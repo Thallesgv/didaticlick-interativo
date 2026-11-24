@@ -151,11 +151,11 @@ Object.assign(FIN.cartas,{
  ["Dilema","Você pode comprar um celular hoje em 12 vezes ou esperar 6 meses e pagar à vista com desconto.","📱","Custo total, juros, risco de perder a renda, valor de ter agora."],
  ["Dilema","Sua avó quer pôr as economias num investimento que promete 5% ao mês.","👵","Sinal de golpe: retorno alto e garantido. Como conversar com ela?"]]},
 "perguntas":{title:"Perguntas para o quiz em equipes",sub:"O professor tira uma carta e lê. A equipe que responder certo primeiro marca ponto no placar da sala.",cartas:[
- ["Nível 1","Quanto é 25% de R$ 80?","🧮","R$ 20."],["Nível 1","Cite uma despesa fixa e uma variável de uma família.","🏠","Ex.: aluguel (fixa); luz, mercado (variáveis)."],["Nível 1","O que é escambo?","🔁","Troca direta de mercadorias, sem dinheiro."],
- ["Nível 1","Banco pode pedir sua senha por telefone?","☎️","Nunca."],["Nível 1","Meta SMART: o que quer dizer o T?","🎯","Temporal: ter prazo."],["Nível 2","O que é o Copom?","🏦","Comitê de Política Monetária do Banco Central, que define a meta da Selic."],
- ["Nível 2","R$ 1.000 a 10% ao mês em juros compostos: quanto em 2 meses?","📈","R$ 1.210."],["Nível 2","Qual índice mede a inflação oficial do Brasil?","📊","O IPCA, do IBGE."],["Nível 2","Até quanto o FGC garante por CPF por instituição?","🛡️","R$ 250 mil."],
- ["Nível 3","LCI e LCA pagam imposto de renda para pessoa física?","🏠","Não, são isentas."],["Nível 3","O que é liquidez?","💧","A rapidez para transformar um investimento em dinheiro sem perder valor."],["Nível 3","Qual título do Tesouro é indicado para a reserva de emergência?","🛟","Tesouro Selic."],
- ["Nível 3","O que é diversificar?","🧺","Não pôr todos os ovos na mesma cesta: espalhar o dinheiro em investimentos diferentes."]]},
+ ["Iniciante","Quanto é 25% de R$ 80?","🧮","R$ 20."],["Iniciante","Cite uma despesa fixa e uma variável de uma família.","🏠","Ex.: aluguel (fixa); luz, mercado (variáveis)."],["Iniciante","O que é escambo?","🔁","Troca direta de mercadorias, sem dinheiro."],
+ ["Iniciante","Banco pode pedir sua senha por telefone?","☎️","Nunca."],["Iniciante","Meta SMART: o que quer dizer o T?","🎯","Temporal: ter prazo."],["Intermediário","O que é o Copom?","🏦","Comitê de Política Monetária do Banco Central, que define a meta da Selic."],
+ ["Intermediário","R$ 1.000 a 10% ao mês em juros compostos: quanto em 2 meses?","📈","R$ 1.210."],["Intermediário","Qual índice mede a inflação oficial do Brasil?","📊","O IPCA, do IBGE."],["Intermediário","Até quanto o FGC garante por CPF por instituição?","🛡️","R$ 250 mil."],
+ ["Avançado","LCI e LCA pagam imposto de renda para pessoa física?","🏠","Não, são isentas."],["Avançado","O que é liquidez?","💧","A rapidez para transformar um investimento em dinheiro sem perder valor."],["Avançado","Qual título do Tesouro é indicado para a reserva de emergência?","🛟","Tesouro Selic."],
+ ["Avançado","O que é diversificar?","🧺","Não pôr todos os ovos na mesma cesta: espalhar o dinheiro em investimentos diferentes."]]},
 "ideias":{title:"Desafios de criatividade",sub:"Tire um desafio e, em 5 minutos, invente um negócio que resolva o problema. Diga: quem é o cliente, o que você vende e por quanto.",cartas:[
  ["Problema","Os alunos chegam com fome ao treino depois da aula.","🏃"],["Problema","Os celulares da turma vivem sem bateria na hora da saída.","🔋"],["Problema","Os pais não têm tempo de levar o cachorro para passear.","🐕"],
  ["Problema","Muitos livros didáticos usados ficam parados no fim do ano.","📚"],["Problema","Os idosos do prédio têm dificuldade com o celular.","👵"],["Problema","As garrafas plásticas da festa junina vão para o lixo.","♻️"],
@@ -316,21 +316,21 @@ Object.assign(window.QUIZ,{
 {q:"Preço por unidade serve para:",o:["comparar embalagens diferentes","saber a marca","pagar menos imposto","nada"],a:0,e:"Divida o preço pela quantidade."}]},
 "fingp-m1":{title:"Guia do Professor · Módulo 1 · A série na sala",qs:[
 {q:"Na BNCC, a Educação Financeira aparece como:",o:["tema contemporâneo transversal","disciplina obrigatória separada","só no ensino médio","atividade extraclasse proibida"],a:0,e:"Integra várias áreas, com destaque para Matemática."},
-{q:"A ordem sugerida da série é:",o:["Nível 1, Nível 2, Nível 3, com os complementos em paralelo","só o Nível 3","complementos antes de tudo","qualquer uma sem plano"],a:0,e:"Os complementos aprofundam cada nível."},
+{q:"A ordem sugerida da série é:",o:["Iniciante, Intermediário, Avançado, com os complementos em paralelo","só o Avançado","complementos antes de tudo","qualquer uma sem plano"],a:0,e:"Os complementos aprofundam cada apostila."},
 {q:"Os QR codes de desafio (círculo laranja) levam a:",o:["resoluções passo a passo","respostas sem explicação","vídeos pagos","cadastro"],a:0,e:"Tente antes de escanear."},
 {q:"A OLITEF tem prova de:",o:["20 questões de 5 alternativas, sem calculadora","10 questões abertas","redação","prova oral"],a:0,e:"Formato usado nos exercícios ESTILO OLITEF."},
 {q:"As ferramentas da sala têm:",o:["placar, cronômetro e sorteio","notas dos alunos","chat","cadastro"],a:0,e:"Para jogos em equipe."}]},
-"fingp-m2":{title:"Guia do Professor · Módulo 2 · Aulas do Nível 1",qs:[
+"fingp-m2":{title:"Guia do Professor · Módulo 2 · Aulas do Iniciante",qs:[
 {q:"Uma boa abertura de aula de educação financeira é:",o:["uma pergunta ou dilema do dia a dia","uma lista de definições","uma prova","um vídeo longo"],a:0,e:"Comece pelo cotidiano."},
 {q:"O jogo do escambo (feira) mostra:",o:["a dupla coincidência de desejos","os juros compostos","a Selic","o IR"],a:0,e:"Por que o dinheiro foi inventado."},
 {q:"Na aula de orçamento, o produto final pode ser:",o:["o orçamento de uma família fictícia","uma redação sobre dinheiro","um desenho livre","nada"],a:0,e:"Planilha simples."},
 {q:"Para trabalhar golpes, o recurso mais engajador é:",o:["a história interativa do falso parente","um ditado","a leitura do CDC inteiro","uma lista de leis"],a:0,e:"Decisões com consequências."},
 {q:"Rodas de conversa sobre dinheiro devem:",o:["respeitar a realidade de cada família","expor a renda dos alunos","comparar famílias","julgar escolhas"],a:0,e:"Nunca peça a renda real da família."}]},
-"fingp-m3":{title:"Guia do Professor · Módulo 3 · Aulas dos Níveis 2 e 3",qs:[
+"fingp-m3":{title:"Guia do Professor · Módulo 3 · Aulas do Intermediário e do Avançado",qs:[
 {q:"Para explicar a Selic, o jogo indicado é:",o:["o Copom da turma","o mercadinho","a forca","o caça-palavras"],a:0,e:"A turma decide os juros."},
 {q:"O simulador do cartão mostra:",o:["o efeito do rotativo em 6 meses","o preço do ouro","o PIB","o IR"],a:0,e:"Pagar o mínimo custa caro."},
-{q:"Um bom debate para o Nível 3 é:",o:["apostas on-line e propaganda","a cor das notas","o nome das moedas","o horário da aula"],a:0,e:"Tema atual e polêmico."},
-{q:"No projeto final do Nível 3, o aluno:",o:["monta um plano para uma meta sua","faz uma prova","compra ações de verdade","abre conta em banco"],a:0,e:"Plano com valor, prazo e onde guardar."},
+{q:"Um bom debate para o Avançado é:",o:["apostas on-line e propaganda","a cor das notas","o nome das moedas","o horário da aula"],a:0,e:"Tema atual e polêmico."},
+{q:"No projeto final do Avançado, o aluno:",o:["monta um plano para uma meta sua","faz uma prova","compra ações de verdade","abre conta em banco"],a:0,e:"Plano com valor, prazo e onde guardar."},
 {q:"Cuidado ao falar de investimentos:",o:["não recomendar produtos ou empresas específicas","indicar ações quentes","prometer retorno","pedir dados dos pais"],a:0,e:"Educar, não aconselhar."}]},
 "fingp-m4":{title:"Guia do Professor · Módulo 4 · Projetos e avaliação",qs:[
 {q:"A feira da turma trabalha:",o:["custos, preço, lucro e ética","só matemática pura","só leitura","só artes"],a:0,e:"Projeto completo."},

@@ -1,5 +1,5 @@
 window.QUIZ=window.QUIZ||{};window.RES=window.RES||{};window.APOSTILAS=window.APOSTILAS||{};window.FIN=window.FIN||{cls:{},ord:{},av:{}};
-// Educação Financeira · Nível 2 · Intermediário
+// Educação Financeira · Intermediário
 Object.assign(FIN.cls,{
 "sfn-quem":{title:"Quem faz isso?",sub:"Cada carta descreve uma tarefa do Sistema Financeiro Nacional. Quem é o responsável?",
  baldes:[["CMN","#0E2354"],["Banco Central","#2457D6"],["Copom","#7A4BB5"],["CVM","#0E9AA7"],["Tesouro Nacional","#15803D"],["FGC","#F7821F"]],

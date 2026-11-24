@@ -1,5 +1,5 @@
 window.QUIZ=window.QUIZ||{};window.RES=window.RES||{};window.APOSTILAS=window.APOSTILAS||{};window.FIN=window.FIN||{cls:{},ord:{},av:{}};
-// Educação Financeira · Nível 1 · Iniciante
+// Educação Financeira · Iniciante
 Object.assign(FIN.cls,{
 "desejo-necessidade":{title:"Desejo ou necessidade?",sub:"Para cada carta, decida: é uma necessidade (preciso para viver bem) ou um desejo (seria legal ter)? Pense na situação descrita.",
  baldes:[["Necessidade","#0E2354"],["Desejo","#F7821F"]],
