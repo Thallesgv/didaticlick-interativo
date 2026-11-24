@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Áreas com lados irracionais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números reais</div><h1 id="title">Áreas com lados irracionais</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Os lados do retângulo são números irracionais, mas a área pode ser um número racional. Use a propriedade distributiva e digite a área exata.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">Área = <input class="n" id="r" inputmode="decimal" autocomplete="off" style="width:90px"> cm²</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=reais-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na distributiva, cada termo de um parêntese multiplica cada termo do outro. Lembre que √a × √a = a, e que +a√b − a√b = 0.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;
+function draw(){const q=cur;$('fig').innerHTML=`<svg viewBox="0 0 320 170" width="320"><rect x="60" y="20" width="${q.w}" height="${q.h}" fill="#EEF3FF" stroke="#0E2354" stroke-width="2"/>
+<text x="${60+q.w/2}" y="${20+q.h+22}" text-anchor="middle" font-family="Poppins" font-weight="700" font-size="14" fill="#F7821F">${q.l1}</text>
+<text x="52" y="${20+q.h/2+5}" text-anchor="end" font-family="Poppins" font-weight="700" font-size="14" fill="#2457D6">${q.l2}</text>
+<text x="${60+q.w/2}" y="${20+q.h/2+5}" text-anchor="middle" font-family="Poppins" font-weight="600" font-size="14" fill="#0E2354">área = ?</text></svg>`;}
+const NQ=[2,3,5,6,7,10,11];
+D.ciclo({
+ livros:[{l1:'(√3 + 1) cm',l2:'(√3 − 1) cm',ans:2,w:190,h:90,passos:'(√3 + 1)(√3 − 1) = √3 × √3 − √3 + √3 − 1 = 3 − 1'}],
+ sortear(){const t=rnd(0,2);
+  if(t===0){const b=pick(NQ),a=pick([1,2,3,4].filter(x=>x*x>b));const ans=a*a-b;return {l1:`(${a} + √${b}) cm`,l2:`(${a} − √${b}) cm`,ans,w:200,h:85,passos:`(${a} + √${b})(${a} − √${b}) = ${a*a} − ${a}√${b} + ${a}√${b} − ${b} = ${a*a} − ${b}`};}
+  if(t===1){const pr=pick([[2,8],[3,12],[2,18],[5,20],[3,27],[2,32],[6,24]]);return {l1:`√${pr[1]} cm`,l2:`√${pr[0]} cm`,ans:Math.sqrt(pr[0]*pr[1]),w:200,h:70,passos:`√${pr[1]} × √${pr[0]} = √${pr[0]*pr[1]}`};}
+  const b=pick([2,3,5,7]),m=pick([2,3,4]);return {l1:`${m}√${b} cm`,l2:`${m}√${b} cm`,ans:m*m*b,w:130,h:130,passos:`(${m}√${b})² = ${m}² × (√${b})² = ${m*m} × ${b}`};},
+ montar(q){cur=q;$('r').value='';$('r').style.borderColor='';$('dq').innerHTML=q.l1===q.l2?`Um quadrado tem lado <span class="k">${q.l1}</span>. Qual é a área exata?`:`Um retângulo tem lados <span class="k">${q.l1}</span> e <span class="k">${q.l2}</span>. Qual é a área exata?`;draw();},
+ conferir(q){const v=D.ler(['r']);if(!v)return null;const ok=Math.abs(v[0]-q.ans)<1e-9;D.marcar(['r'],[ok]);
+  return {ok,exp:`${q.passos} = <b>${sg(q.ans)} cm²</b>. Os lados são irracionais, mas a área é racional.`};},
+ res:true});
+
+</script>
+</body>
+</html>

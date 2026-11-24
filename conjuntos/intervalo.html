@@ -39,16 +39,16 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 <div class="ask hide" id="rq">E quantos números reais há nele? <span class="chips" id="cl"><button data-v="0">nenhum</button><button data-v="1">uma quantidade finita</button><button data-v="2">infinitos</button></span></div></div>
 <div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
 </div>
-<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=reais-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=reais-q2-6">Abrir a resolução comentada</a></p></div>
 <div class="card"><h2>Dica</h2><p style="margin:0">Primeiro descubra entre quais inteiros cada ponta fica: 3 &lt; √10 &lt; 4 (porque 9 &lt; 10 &lt; 16), então −√10 fica entre −4 e −3.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 
-let cur,sel=new Set(),esc=null;
+let cur,sel=new Set(),esc=null,cor=null;
 const PT=[{t:'−√10',v:-Math.sqrt(10)},{t:'π',v:Math.PI},{t:'−π',v:-Math.PI},{t:'√2',v:Math.SQRT2},{t:'−√5',v:-Math.sqrt(5)},{t:'√17',v:Math.sqrt(17)},{t:'5/2',v:2.5},{t:'−7/2',v:-3.5},{t:'√20',v:Math.sqrt(20)},{t:'−√2',v:-Math.SQRT2},{t:'−3',v:-3},{t:'2',v:2},{t:'4',v:4},{t:'−1',v:-1}];
 const dentro=(q,k)=>(q.fa?k>=q.a.v:k>q.a.v)&&(q.fb?k<=q.b.v:k<q.b.v);
-function draw(){const q=cur;$('fig').innerHTML=D.reta({min:-6,max:6,w:360,h:96,y:58,sel,extra:(sx,y)=>{const x1=sx(q.a.v),x2=sx(q.b.v);
+function draw(){const q=cur;$('fig').innerHTML=D.reta({min:-6,max:6,w:360,h:96,y:58,sel,cor,extra:(sx,y)=>{const x1=sx(q.a.v),x2=sx(q.b.v);
  return `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#F7821F" stroke-width="7" stroke-opacity=".55"/>`+
  [[x1,q.fa,q.a.t],[x2,q.fb,q.b.t]].map(([x,f,t])=>`<circle cx="${x}" cy="${y-16}" r="5" fill="${f?'#F7821F':'#fff'}" stroke="#F7821F" stroke-width="2.5"/><text x="${x}" y="${y-26}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#F7821F">${t}</text><line x1="${x}" y1="${y-11}" x2="${x}" y2="${y}" stroke="#F7821F" stroke-width="1.5"/>`).join('');}});
  D.tap($('fig'),k=>{if(D.feito)return;sel.has(k)?sel.delete(k):sel.add(k);draw();});$('lst').textContent=sel.size?[...sel].sort((a,b)=>a-b).map(sg).join(', '):'nenhum';
@@ -57,10 +57,12 @@ const nota=q=>`${q.fa?'[':']'}${q.a.t}, ${q.b.t}${q.fb?']':'['}`;
 D.ciclo({
  livros:[{a:PT[0],b:PT[1],fa:false,fb:false,reais:true}],
  sortear(){let a,b;do{a=pick(PT);b=pick(PT);}while(!(b.v-a.v>1.2&&b.v-a.v<9));return {a,b,fa:!!rnd(0,1),fb:!!rnd(0,1)};},
- montar(q){cur=q;sel=new Set();esc=null;$('rq').classList.toggle('hide',!q.reais);$('dq').innerHTML=`Quantos números inteiros há no intervalo <span class="k">${nota(q)}</span>? Toque neles.`;draw();},
+ montar(q){cur=q;sel=new Set();esc=null;cor=null;$('rq').classList.toggle('hide',!q.reais);$('dq').innerHTML=`Quantos números inteiros há no intervalo <span class="k">${nota(q)}</span>? Toque neles.`;draw();},
  conferir(q){if(q.reais&&esc===null){msg('dm','Responda também quantos números reais há no intervalo.','info');return null;}
-  const c=[];for(let k=-6;k<=6;k++)if(dentro(q,k))c.push(k);const ok1=c.length===sel.size&&c.every(k=>sel.has(k)),ok2=!q.reais||esc===2;sel=new Set(c);draw();
-  return {ok:ok1&&ok2,exp:`${[q.a,q.b].filter(p=>!Number.isInteger(p.v)).map(p=>`${p.t} ≈ ${sg(Math.round(p.v*100)/100)}`).join(' e ')}${Number.isInteger(q.a.v)&&Number.isInteger(q.b.v)?'':'. '}Inteiros dentro: <b>${c.map(sg).join(', ')||'nenhum'}</b> (${c.length}).${q.reais?' Já os números reais são <b>infinitos</b>: entre dois números quaisquer sempre cabe outro.':''}`};},
+  const c=[];for(let k=-6;k<=6;k++)if(dentro(q,k))c.push(k);const ok1=c.length===sel.size&&c.every(k=>sel.has(k)),ok2=!q.reais||esc===2;const falt=c.filter(k=>!sel.has(k)),sobr=[...sel].filter(k=>!c.includes(k)).sort((a,b)=>a-b);cor={};falt.forEach(k=>cor[k]='#F7821F');sobr.forEach(k=>cor[k]='#B91C1C');draw();
+  const det=(falt.length?'Faltou marcar: <b>'+falt.map(sg).join(', ')+'</b> (laranja). ':'')+(sobr.length?'Ficou de fora do intervalo: <b>'+sobr.map(sg).join(', ')+'</b> (vermelho). ':'');
+  const pre=(q.reais&&ok1&&!ok2?'Os inteiros estão certos; só faltou a parte dos reais. ':(q.reais&&!ok1&&ok2?'A parte dos reais está certa. ':''))+det;
+  return {ok:ok1&&ok2,exp:pre+`${[q.a,q.b].filter(p=>!Number.isInteger(p.v)).map(p=>`${p.t} ≈ ${sg(Math.round(p.v*100)/100)}`).join(' e ')}${Number.isInteger(q.a.v)&&Number.isInteger(q.b.v)?'':'. '}Inteiros dentro: <b>${c.map(sg).join(', ')||'nenhum'}</b> (${c.length}).${q.reais?' Já os números reais são <b>infinitos</b>: entre dois números quaisquer sempre cabe outro.':''}`};},
  res:true});
 
 </script>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto a roda andou? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números irracionais</div><h1 id="title">Quanto a roda andou?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Em uma volta, a roda anda o comprimento da circunferência: π × diâmetro. Use π ≈ 3,14, calcule uma volta em centímetros e depois a distância total em metros.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask">Uma volta: <input class="n" id="u" inputmode="decimal" style="width:90px"> cm &nbsp; total: <input class="n" id="t" inputmode="decimal" style="width:100px"> m</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=irracionais-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Para passar de centímetros para metros, divida por 100. Exemplo: 21 980 cm = 219,8 m.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,ang=0,tm=null;
+function draw(){const q=cur,R=46,cx=70,cy=72;let g=`<svg viewBox="0 0 340 130" width="340"><line x1="10" y1="${cy+R+2}" x2="330" y2="${cy+R+2}" stroke="#6B7280" stroke-width="2"/>`;
+ const x=cx+(ang/360)*Math.PI*2*R*0.35;g+=`<g transform="translate(${x},${cy}) rotate(${ang})"><circle r="${R}" fill="none" stroke="#0E2354" stroke-width="5"/><circle r="5" fill="#0E2354"/>`;
+ for(let k=0;k<8;k++)g+=`<line x1="0" y1="0" x2="${R*Math.cos(k*Math.PI/4)}" y2="${R*Math.sin(k*Math.PI/4)}" stroke="#9AA6BF"/>`;
+ g+=`<circle cx="${R}" cy="0" r="5" fill="#F7821F"/><line x1="${-R}" y1="0" x2="${R}" y2="0" stroke="#2457D6" stroke-width="2"/></g>`;
+ g+=`<text x="${x}" y="14" font-size="12" font-weight="700" text-anchor="middle" fill="#2457D6">d = ${q.d} cm</text><text x="250" y="40" font-size="13" font-weight="700" text-anchor="middle" fill="#F7821F">${q.n} voltas</text></svg>`;$('fig').innerHTML=g;}
+function anima(){clearInterval(tm);ang=0;tm=setInterval(()=>{ang+=12;if(ang>=360*4){ang=0;}draw();},40);setTimeout(()=>{clearInterval(tm);ang=0;draw();},3000);}
+D.ciclo({
+ livros:[{d:70,n:500}],
+ sortear(){return {d:pick([50,55,60,65,66,70,71,75,80]),n:pick([100,200,250,300,400,500,1000])};},
+ montar(q){cur=q;['u','t'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('dq').innerHTML=`Uma roda de <span class="k">${q.d} cm</span> de diâmetro deu <span class="k">${q.n} voltas</span>. Quantos metros ela andou?`;draw();anima();},
+ conferir(q){const v=D.ler(['u','t']);if(!v)return null;const u=Math.round(3.14*q.d*100)/100,t=u*q.n/100;const ou=Math.abs(v[0]-u)<=0.051,ot=Math.abs(v[1]-t)<=Math.max(1,t*0.005);D.marcar(['u','t'],[ou,ot]);const ok=ou&&ot;
+  return {ok,exp:`Uma volta: 3,14 × ${q.d} = <b>${fmt(u)} cm</b>. Em ${q.n} voltas: ${q.n} × ${fmt(u)} = ${fmt(u*q.n)} cm = <b>${fmt(t)} m</b>${t>=1000?` (cerca de ${fmt(Math.round(t/100)/10)} km)`:''}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -28,6 +28,10 @@ input.num,select{font-family:inherit;font-size:17px;padding:8px 10px;border:2px 
 <header><div class="brand">Didati<b>Click</b> · Conjuntos numéricos</div><h1 id="title">Fichas: inteiros com cores</h1></header>
 <main>
 
+<div class="card" style="border:2px solid var(--orange)"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Desafios</h2><b id="dpl" style="color:var(--navy);font-size:14px">Acertos: 0 de 0</b></div>
+<p class="muted" style="margin:4px 0" id="dnum"></p><div id="dq" style="font-size:17px;font-weight:600;color:var(--navy);line-height:1.5"></div>
+<div class="grid2" style="margin-top:8px"><div><p class="lbl">Resultado</p><input class="num" id="dr" inputmode="numeric" autocomplete="off"></div><div id="dpw"><p class="lbl">Pares nulos que você colocou</p><input class="num" id="dp" inputmode="numeric" autocomplete="off"></div></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="dmesa">Montar na mesa</button><button class="or" id="dok">OK</button><button class="alt" id="dnx">Próximo desafio</button></div><div id="dmsg"></div></div>
 <div class="card"><p class="muted" id="lead" style="margin:0 0 6px"></p><svg class="fig" id="svg" viewBox="0 0 340 120"></svg>
 <div class="eq" id="eq"></div><div id="msg"></div>
 <div class="row" id="btns" style="margin-top:8px"></div></div>
@@ -81,6 +85,28 @@ function draw(){chips();$('btns').innerHTML='';const val=pos-neg;$('eq').innerHT
   else{if(pos&&neg)btn('Tirar os pares nulos',()=>{const k=Math.min(pos,neg);pos-=k;neg-=k;draw();},'alt');fim=!(pos&&neg);}}
  if(fim)$('msg').innerHTML=`<div class="msg ok">Sobrou só uma cor: ${info} = <b>${sg(val)}</b>${val===alvo?'':' (confira os passos)'}.</div>`;else if(modo==='soma')$('msg').innerHTML=`<div class="msg info">Ainda há ${Math.min(pos,neg)} par(es) nulo(s) na mesa.</div>`;}
 ['a','b'].forEach(i=>$(i).oninput=reset);$('rs').onclick=reset;reset();
+const DL={soma:[[5,-3,'Alice ganhou 5 figurinhas e depois perdeu 3.'],[-4,6,'Enzo devia R$ 4 e recebeu R$ 6.'],[-2,-5,null],[7,-7,null],[-6,2,'A temperatura era −6 °C e subiu 2 graus.'],[3,-8,null],[-1,-1,null],[8,-3,'O elevador estava no 8º andar e desceu 3.']],
+ sub:[[5,2,'Alice tinha 5 figurinhas e deu 2 para o Enzo.'],[2,5,'Enzo tem R$ 2 e precisa pagar R$ 5.'],[-3,2,null],[-3,-5,null],[4,-3,'Às 6 h fazia −3 °C e às 14 h, 4 °C. Quantos graus a temperatura subiu? Calcule 4 − (−3).'],[-2,-6,null],[0,4,'A mesa está vazia e é preciso tirar 4 azuis.'],[-5,3,null],[6,-2,null],[-4,-4,'Mariah tinha uma dívida de R$ 4 e alguém perdoou a dívida inteira.']],
+ mult:[[3,-2,'Três dívidas de R$ 2.'],[-3,-2,null],[-2,4,null],[-4,-1,null],[2,3,null],[-1,5,null],[-3,-3,null],[4,-2,null]]};
+let di=0,dac=0,dtt=0,dfeito=false,dcur;const md=DL[modo]?modo:'soma';
+const dpares=(a,b)=>{if(md!=='sub')return 0;const pa=Math.max(a,0),na=Math.max(-a,0);return b>0?Math.max(0,b-pa):Math.max(0,-b-na);};
+const dans=(a,b)=>md==='soma'?a+b:md==='sub'?a-b:a*b;const dop={soma:'+',sub:'−',mult:'×'}[md];
+function dnovo(){dfeito=false;$('dok').disabled=false;$('dmsg').innerHTML='';const L=DL[md];
+ if(di<L.length)dcur=L[di];else{const lim=md==='mult'?5:9;let a,b;do{a=Math.floor(Math.random()*(2*lim+1))-lim;b=Math.floor(Math.random()*(2*lim+1))-lim;}while(b===0||(md==='mult'&&a===0));dcur=[a,b,null];}
+ di++;const [a,b,t]=dcur;$('dnum').textContent=di<=L.length?`Desafio ${di} de ${L.length}`:'Desafio extra (sorteado)';
+ $('dq').innerHTML=(t?t+'<br>':'')+`Calcule com as fichas: <span style="color:var(--orange)">${pr(a)} ${dop} (${sg(b)})</span>`;
+ ['dr','dp'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('dpw').style.display=md==='sub'?'':'none';}
+const dnum=x=>{x=x.trim().replace(/[−–]/g,'-').replace(/^\+/,'');return /^-?\d+$/.test(x)?parseInt(x):NaN;};
+$('dmesa').onclick=()=>{$('a').value=dcur[0];$('b').value=dcur[1];reset();$('svg').scrollIntoView({behavior:'smooth',block:'center'});};
+$('dok').onclick=()=>{if(dfeito)return;const r=dnum($('dr').value),pp=md==='sub'?dnum($('dp').value):0;
+ if(isNaN(r)||(md==='sub'&&isNaN(pp))){$('dmsg').innerHTML='<div class="msg info">Preencha as respostas com números inteiros (use − para negativo) e toque em OK.</div>';return;}
+ const [a,b]=dcur,R=dans(a,b),Pn=dpares(a,b),okr=r===R,okp=pp===Pn,ok=okr&&okp;dfeito=true;$('dok').disabled=true;dtt++;if(ok)dac++;$('dpl').textContent=`Acertos: ${dac} de ${dtt}`;
+ $('dr').style.borderColor=okr?'var(--ok)':'var(--bad)';if(md==='sub')$('dp').style.borderColor=okp?'var(--ok)':'var(--bad)';
+ let ex=`${pr(a)} ${dop} (${sg(b)}) = <b>${sg(R)}</b>.`;
+ if(md==='sub'){const cor=b>0?'azuis':'vermelhas',tem=b>0?Math.max(a,0):Math.max(-a,0);ex+=b===0?'':` Era preciso tirar ${Math.abs(b)} ${cor}; na mesa havia ${tem}${Pn?`, então foi preciso colocar <b>${Pn} par${Pn>1?'es':''} nulo${Pn>1?'s':''}</b>`:', então <b>nenhum par nulo</b> foi necessário'}. Repare: ${pr(a)} − (${sg(b)}) = ${pr(a)} + (${sg(-b)}).`;}
+ if(md==='mult')ex+=a<0?` Retirar ${-a} grupo(s) de ${sg(b)} de uma mesa que vale zero.`:` Colocar ${a} grupo(s) de ${sg(b)}.`;
+ $('dmsg').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo! ':'Ainda não. '}${ex} Toque em “Montar na mesa” para ver com as fichas.</div>`;};
+$('dnx').onclick=dnovo;dnovo();
 </script>
 </body>
 </html>

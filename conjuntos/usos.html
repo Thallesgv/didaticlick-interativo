@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantidade, ordem, medida ou código? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números naturais</div><h1 id="title">Quantidade, ordem, medida ou código?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Leia a frase e descubra o trabalho do número destacado: ele diz quantos (quantidade), em que posição (ordem), quanto mede (medida) ou quem é (código)? Toque na resposta e depois em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" style="flex-direction:column"><div id="fr" style="font-size:22px;line-height:1.5;text-align:center;max-width:420px"></div></div>
+<div class="chips" id="op"><button data-v="q">quantidade</button><button data-v="o">ordem</button><button data-v="m">medida</button><button data-v="c">código</button></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=naturais-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Faça as quatro perguntas: quantos? em que posição? quanto mede? quem é? Se o número vem com unidade (kg, m, minutos, anos), é medida. Se trocar por letras não muda nada, é código.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const NOME={q:'quantidade',o:'ordem',m:'medida',c:'código'},PERG={q:'quantos?',o:'em que posição?',m:'quanto mede?',c:'quem é?'};
+const S=[
+ ['Alice mora no apartamento [302].','c','O número identifica o apartamento. O 3 até indica o 3º andar, mas o 302 inteiro funciona como um nome.'],
+ ['A turma tem [32] alunos.','q','Responde “quantos alunos?”.'],
+ ['Davi pegou o ônibus [175].','c','O ônibus 175 não é “maior” que o 174: o número só identifica a linha.'],
+ ['Hoje é dia [15].','o','O dia 15 é o 15º dia do mês: é uma posição no calendário.'],
+ ['A piscina tem [25 m].','m','Responde “quanto mede?” e vem com unidade (metros).'],
+ ['Mariah ficou em [2º] lugar.','o','Diz a posição na classificação.'],
+ ['O camisa [10] fez o gol.','c','A camisa 10 não vale mais que a 9: o número identifica o jogador.'],
+ ['Miguel tem [2] irmãos.','q','Responde “quantos irmãos?”.'],
+ ['O filme dura [120 minutos].','m','É uma medida de tempo, com unidade.'],
+ ['Davi mora no [5º] andar.','o','Quinto andar: a posição do andar no prédio.'],
+ ['O CEP da escola é [01310-200].','c','O zero à esquerda não pode sair: é código, identifica o endereço.'],
+ ['Enzo tem [12 anos].','m','Idade é uma medida de tempo (em anos).'],
+ ['O livro tem [150] páginas.','q','Responde “quantas páginas?”.'],
+ ['Abra o livro na página [37].','o','A página 37 é a 37ª página: uma posição no livro.'],
+ ['A senha do celular da Duda é [4821].','c','A senha não conta nem mede: identifica (e protege) o acesso.'],
+ ['O pacote de arroz tem [5 kg].','m','Medida de massa, com unidade.'],
+ ['Sophia comprou [3] cadernos.','q','Responde “quantos cadernos?”.'],
+ ['Estamos no século [XXI].','o','Século 21º: uma posição na sequência dos séculos.'],
+ ['Ligue para o número [0800 722 0101].','c','Telefone é código: o zero inicial faz parte dele.'],
+ ['A garrafa tem [2 L] de suco.','m','Medida de capacidade, com unidade (litros).'],
+ ['Angelo foi o [1º] da fila do lanche.','o','Primeiro da fila: posição.'],
+ ['Na festa havia [0] balões estourados.','q','Zero também é quantidade: nenhum balão.'],
+ ['A placa do carro é [BRA2E19].','c','Placa mistura letras e números: código puro.'],
+ ['A viagem até a praia tem [450 km].','m','Distância, com unidade (quilômetros).']];
+const mk=([t,k,e])=>({t,k,e});
+let cur,esc=null;
+function draw(){$('fr').innerHTML=cur.t.replace(/\[(.*?)\]/,'<span style="background:#FFE6CC;color:#C2410C;border-radius:6px;padding:0 6px;font-weight:700">$1</span>');
+ $('op').querySelectorAll('button').forEach(b=>{let c=esc===b.dataset.v?'on':'';if(D.feito)c=b.dataset.v===cur.k?'okk':(esc===b.dataset.v?'bad':'');b.className=c;b.onclick=()=>{if(D.feito)return;esc=b.dataset.v;draw();};});}
+D.ciclo({
+ livros:S.slice(0,6).map(mk),
+ sortear(){return mk(pick(S.slice(6)));},
+ montar(q){cur=q;esc=null;$('dq').innerHTML='Que trabalho faz o número destacado?';draw();},
+ conferir(q){if(esc===null){msg('dm','Toque em quantidade, ordem, medida ou código.','info');return null;}const ok=esc===q.k;setTimeout(draw,0);
+  return {ok,exp:`<b>${NOME[q.k][0].toUpperCase()+NOME[q.k].slice(1)}</b> (responde “${PERG[q.k]}”). ${q.e}`};},
+ res:true});
+
+</script>
+</body>
+</html>
