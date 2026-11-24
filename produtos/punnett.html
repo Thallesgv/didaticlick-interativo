@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o quadro de Punnett · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos notáveis</div><h1 id="title">Monte o quadro de Punnett</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Cada pai passa um dos seus dois alelos. Toque nas casas do quadro para escolher AA, Aa ou aa, como na tabela da distributiva. Depois diga quantas das 4 casas mostram a característica recessiva (só aparece com aa) e toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask">Casas com a característica recessiva: <input class="n" id="n" inputmode="numeric" autocomplete="off" style="width:64px"> de 4</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=produtos-q7-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Cada casa junta a letra da linha com a letra da coluna, como na tabela da distributiva. Escreva a maiúscula primeiro: A com a dá Aa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const T=[['amarela','verde','ervilha'],['lisa','rugosa','ervilha'],['roxa','branca','flor'],['alta','baixa','planta']];
+const G=['AA','Aa','aa'];let cur,cel;
+const filho=(x,y)=>[x,y].sort().join('');
+function draw(){const p1=cur.p1.split(''),p2=cur.p2.split(''),S=64;let g='';
+ g+=`<text x="${S*1.5}" y="16" text-anchor="middle" font-size="13" font-weight="700" font-family="Poppins" fill="#F7821F">pai 2: ${cur.p2}</text><text x="12" y="${S*1.6+22}" font-size="13" font-weight="700" font-family="Poppins" fill="#2457D6" transform="rotate(-90 12 ${S*1.6+22})" text-anchor="middle">pai 1: ${cur.p1}</text>`;
+ p2.forEach((a,j)=>g+=`<rect x="${S+j*S+26}" y="24" width="${S}" height="34" fill="#FDE9D8" stroke="#fff"/><text x="${S+j*S+26+S/2}" y="47" text-anchor="middle" font-size="16" font-weight="700" font-family="Poppins" fill="#C2560C">${a}</text>`);
+ p1.forEach((a,i)=>g+=`<rect x="26" y="${58+i*S}" width="${S}" height="${S}" fill="#EEF3FF" stroke="#fff"/><text x="${26+S/2}" y="${58+i*S+S/2+6}" text-anchor="middle" font-size="16" font-weight="700" font-family="Poppins" fill="#2457D6">${a}</text>`);
+ for(let i=0;i<2;i++)for(let j=0;j<2;j++){const k=i*2+j,v=cel[k],c=filho(p1[i],p2[j]),cor=D.feito?(v===c?'#DCFCE7':'#FEE2E2'):'#fff';
+  g+=`<g data-k="${k}" style="cursor:pointer"><rect x="${26+S+j*S}" y="${58+i*S}" width="${S}" height="${S}" fill="${cor}" stroke="#0E2354" stroke-width="2"/><text x="${26+S+j*S+S/2}" y="${58+i*S+S/2+7}" text-anchor="middle" font-size="19" font-weight="700" font-family="Poppins" fill="#0E2354">${v||'?'}</text>${D.feito&&v!==c?`<text x="${26+S+j*S+S/2}" y="${58+i*S+S-6}" text-anchor="middle" font-size="11" font-family="Poppins" fill="#15803D">${c}</text>`:''}</g>`;}
+ $('fig').innerHTML=`<svg viewBox="0 0 ${26+3*S+6} ${58+2*S+6}" width="${26+3*S+6}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+ $('fig').querySelectorAll('[data-k]').forEach(e=>e.onclick=()=>{if(D.feito)return;const k=+e.dataset.k;cel[k]=G[(G.indexOf(cel[k])+1)%3];draw();});}
+D.ciclo({
+ livros:[{p1:'Aa',p2:'Aa',t:T[0]}],
+ sortear(){const P=[['AA','aa'],['Aa','aa'],['AA','Aa'],['Aa','Aa'],['aa','Aa'],['aa','aa']];const [a,b]=pick(P);return {p1:a,p2:b,t:pick(T)};},
+ montar(q){cur=q;cel=[null,null,null,null];$('n').value='';$('n').style.borderColor='#D7DEEA';
+  $('dq').innerHTML=`Cruzamento <span class="k">${q.p1} × ${q.p2}</span>. A = ${q.t[2]} ${q.t[0]} (domina), a = ${q.t[2]} ${q.t[1]}.`;draw();},
+ conferir(q){if(cel.some(v=>!v)){msg('dm','Toque nas 4 casas do quadro para preencher.','info');return null;}const v=D.ler(['n']);if(!v)return null;
+  const c=[];for(let i=0;i<2;i++)for(let j=0;j<2;j++)c.push(filho(q.p1[i],q.p2[j]));const nr=c.filter(x=>x==='aa').length,okq=cel.every((x,k)=>x===c[k]),okn=v[0]===nr;D.marcar(['n'],[okn]);setTimeout(draw,0);
+  const fr=['0','¼','½','¾','todas'][nr];
+  return {ok:okq&&okn,exp:`O quadro fica ${c.join(', ')}. Só aa mostra ${q.t[2]==='flor'?'a flor':'a '+q.t[2]} ${q.t[1]}: <b>${nr} de 4</b> casas (${fr==='todas'?'todas':fr+' dos filhotes'}). ${q.p1==='Aa'&&q.p2==='Aa'?'É o quadrado da soma: (½A + ½a)² = ¼AA + ½Aa + ¼aa.':''}`};},
+ res:true});
+
+</script>
+</body>
+</html>

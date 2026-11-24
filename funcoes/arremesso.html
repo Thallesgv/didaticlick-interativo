@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O arremesso de basquete · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Funções</div><h1 id="title">O arremesso de basquete</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">A altura da bola segue h(x) = a(x − d)² + e, em metros, com x a distância em metros. Leia o vértice (d, e), calcule a altura da bola quando ela chega à cesta e diga se passa acima do aro (3,05 m). Depois toque em OK e veja o arremesso.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask">Vértice: ( <input class="n" id="d" inputmode="decimal" autocomplete="off" style="width:64px"> , <input class="n" id="e" inputmode="decimal" autocomplete="off" style="width:64px"> )</div>
+<div class="ask">Altura na cesta: <input class="n" id="h" inputmode="decimal" autocomplete="off" style="width:80px"> m</div>
+<div class="ask">Passa acima do aro? <span class="chips" id="pa"><button data-v="1">sim</button><button data-v="0">não</button></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao2-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na forma a(x − d)² + e, o vértice é (d, e): atenção ao sinal de dentro do parêntese. Para a altura na cesta, troque x pela distância da cesta: faça o parêntese, eleve ao quadrado, multiplique por a e some e.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,esc=null,anim=null;const ARO=3.05;
+const H=(q,x)=>q.a*(x-q.d)**2+q.e,r2=v=>Math.round(v*100)/100;
+function chips(){$('pa').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(D.feito)return;esc=+b.dataset.v;chips();};});}
+function quadra(q,t){const W=340,Hh=230,P=26,X1=q.X+1,sx=x=>P+x*(W-P-12)/X1,sy=y=>Hh-24-y*(Hh-40)/5;let g=`<rect x="0" y="${sy(0)}" width="${W}" height="24" fill="#E9D3A8"/>`;
+ for(let y=1;y<=5;y++)g+=`<line x1="${P}" y1="${sy(y)}" x2="${W}" y2="${sy(y)}" stroke="#EEF2F7"/><text x="${P-4}" y="${sy(y)+4}" text-anchor="end" font-size="10" font-family="Poppins" fill="#6B7280">${y}</text>`;
+ for(let x=1;x<=X1;x++)g+=`<text x="${sx(x)}" y="${sy(0)+14}" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${x} m</text>`;
+ g+=`<line x1="${sx(q.X)+4}" y1="${sy(ARO)}" x2="${sx(q.X)+4}" y2="${sy(0)}" stroke="#6B7280" stroke-width="4"/><rect x="${sx(q.X)+4}" y="${sy(ARO+1.2)}" width="5" height="${sy(ARO-0.2)-sy(ARO+1.2)}" fill="#fff" stroke="#0E2354"/><line x1="${sx(q.X)-14}" y1="${sy(ARO)}" x2="${sx(q.X)+4}" y2="${sy(ARO)}" stroke="#F7821F" stroke-width="4"/><text x="${sx(q.X)-16}" y="${sy(ARO)-6}" text-anchor="end" font-size="10" font-weight="700" font-family="Poppins" fill="#F7821F">aro 3,05 m</text>`;
+ g+=`<circle cx="${sx(0)}" cy="${sy(H(q,0))+10}" r="6" fill="#2457D6"/><line x1="${sx(0)}" y1="${sy(H(q,0))+16}" x2="${sx(0)}" y2="${sy(0)}" stroke="#2457D6" stroke-width="3"/>`;
+ if(t>0){let d='';const n=60;for(let i=0;i<=n;i++){const x=q.X*t*i/n;d+=(i?'L':'M')+sx(x).toFixed(1)+','+sy(H(q,x)).toFixed(1);}g+=`<path d="${d}" fill="none" stroke="#2457D6" stroke-width="2.5" stroke-dasharray="5 4"/>`;
+  const x=q.X*t;g+=`<circle cx="${sx(x)}" cy="${sy(H(q,x))}" r="8" fill="#F7821F" stroke="#C2560C" stroke-width="1.5"/>`;
+  if(t>=1){g+=`<circle cx="${sx(q.d)}" cy="${sy(q.e)}" r="4" fill="#15803D"/><text x="${sx(q.d)}" y="${sy(q.e)-8}" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#15803D">(${fmt(q.d)}; ${fmt(q.e)})</text>`;}}
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
+function lance(q){const t0=performance.now();if(anim)cancelAnimationFrame(anim);const st=t=>{const p=Math.min(1,(t-t0)/1400);quadra(q,p);if(p<1)anim=requestAnimationFrame(st);else anim=null;};anim=requestAnimationFrame(st);}
+D.ciclo({
+ livros:[{a:-0.2,d:3,e:4,X:5,quem:'Mikaela'}],
+ sortear(){const a=pick([-0.15,-0.2,-0.25,-0.3]),d=pick([2,2.5,3]),e=pick([3.6,3.8,4,4.2,4.5]),X=pick([4,4.5,5,5.5]);return {a,d,e,X,quem:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela'])};},
+ montar(q){cur=q;esc=null;chips();if(anim){cancelAnimationFrame(anim);anim=null;}['d','e','h'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});
+  $('dq').innerHTML=`Arremesso de ${q.quem}: <span class="k">h(x) = ${fmt(q.a).replace('-','−')}(x − ${fmt(q.d)})² + ${fmt(q.e)}</span>. A cesta está a <span class="k">${fmt(q.X)} m</span>.`;quadra(q,0);},
+ conferir(q){if(esc===null){msg('dm','Diga se a bola passa acima do aro.','info');return null;}const v=D.ler(['d','e','h']);if(!v)return null;const hx=r2(H(q,q.X)),acima=hx>ARO;
+  const oks=[v[0]===q.d,v[1]===q.e,Math.abs(v[2]-hx)<0.006];D.marcar(['d','e','h'],oks);const ok=oks.every(Boolean)&&(esc===1)===acima;lance(q);
+  return {ok,exp:`Vértice (d, e) = <b>(${fmt(q.d)}; ${fmt(q.e)})</b>. Na cesta: h(${fmt(q.X)}) = ${fmt(q.a).replace('-','−')} · (${fmt(q.X)} − ${fmt(q.d)})² + ${fmt(q.e)} = ${fmt(q.a).replace('-','−')} · ${fmt(r2((q.X-q.d)**2))} + ${fmt(q.e)} = <b>${fmt(hx)} m</b>: ${acima?'passa acima':'passa abaixo'} do aro de 3,05 m.`};},
+ res:true});
+
+</script>
+</body>
+</html>
