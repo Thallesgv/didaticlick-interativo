@@ -64,7 +64,7 @@ function desafio(gerar){let cur,feito=false;
 const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
 
 const NS=[1,2,5,10,20,50,100,200,300,500,1000,1500,2000,2500,3000,5000,7500,10000,15000,20000];
-const REF=[[10,'1 cm'],[50,'1 pacote: 5 cm'],[190,'lápis: 19 cm'],[300,'régua: 30 cm'],[750,'mesa: 75 cm'],[1000,'1 metro'],[1600,'Sophia: 1,60 m'],[2100,'porta: 2,10 m']];
+const REF=[[10,'1 cm'],[50,'1 pacote: 5 cm'],[190,'lápis: 19 cm'],[300,'régua: 30 cm'],[750,'mesa: 75 cm'],[1000,'1 metro'],[1600,'Isabelle: 1,60 m'],[2100,'porta: 2,10 m']];
 let n=500;
 function nice(x){const p=Math.pow(10,Math.floor(Math.log10(x)));for(const m of[1,2,5,10])if(m*p>=x)return m*p;}
 function draw(){const h=n*0.1;   // mm

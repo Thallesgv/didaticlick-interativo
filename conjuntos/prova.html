@@ -38,7 +38,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 <div id="area"><div class="sl"><b>Acertos (+5)</b><input type="range" id="sa" min="0"><span id="va"></span></div>
 <div class="sl"><b>Erros (−2)</b><input type="range" id="se" min="0"><span id="ve"></span></div>
 <div class="fig" id="fig" style="flex-direction:column"></div>
-<div class="ask hide" id="pa">Pontos de Ana: <input class="n" id="r1" style="width:90px"></div>
+<div class="ask hide" id="pa">Pontos de Ângela: <input class="n" id="r1" style="width:90px"></div>
 <div class="ask hide" id="imp"><button class="alt" id="bimp">É impossível</button> <span class="muted">(toque se achar que não dá)</span></div></div>
 <div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
 </div>
@@ -63,7 +63,7 @@ D.ciclo({
  sortear(){const n=pick([10,12,15,20]),todas=!!rnd(0,1);let T=rnd(-12,40);if(!todas&&T>5*n)T=5*n-3;return {n,T,todas};},
  montar(q){cur=q;impo=false;$('sa').max=q.n;$('se').max=q.n;$('sa').value=q.ana?12:0;$('se').value=q.ana?6:0;$('pa').classList.toggle('hide',!q.ana);$('imp').classList.toggle('hide',!!q.ana);
   $('r1').value='';$('r1').style.borderColor='';$('sa').disabled=!!q.ana;$('se').disabled=!!q.ana||!!q.todas;
-  $('dq').innerHTML=q.ana?'Numa prova de 20 questões, cada acerto vale <span class="k">+5</span>, cada erro <span class="k">−2</span> e em branco 0. Ana acertou 12, errou 6 e deixou 2 em branco. Quantos pontos fez?'
+  $('dq').innerHTML=q.ana?'Numa prova de 20 questões, cada acerto vale <span class="k">+5</span>, cada erro <span class="k">−2</span> e em branco 0. Ângela acertou 12, errou 6 e deixou 2 em branco. Quantos pontos fez?'
    :`Prova de ${q.n} questões (+5, −2, 0). Faça exatamente <span class="k">${sg(q.T)} pontos</span>${q.todas?', <span class="k">respondendo a todas</span> (nenhuma em branco)':''}. Se não der, toque em “É impossível”.`;draw();},
  conferir(q){if(q.ana){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===48;D.marcar(['r1'],[ok]);q.ana=false;draw();
    return {ok,exp:'12 × 5 − 6 × 2 + 2 × 0 = 60 − 12 + 0 = <b>48</b> pontos.'};}

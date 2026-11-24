@@ -22,7 +22,7 @@ Object.assign(window.QUIZ,{
 {q:"“O triplo de um número menos 4” se escreve:",o:["3(x − 4)","3x − 4","x/3 − 4","4 − 3x"],a:1,e:"Primeiro o triplo, 3x; depois tiramos 4: 3x − 4."},
 {q:"A soma de dois números consecutivos é 51. Quais são eles?",o:["24 e 27","25 e 26","26 e 27","20 e 31"],a:1,e:"x + (x + 1) = 51 → 2x + 1 = 51 → x = 25. Os números são 25 e 26."},
 {q:"Um retângulo tem comprimento 3 cm maior que a largura e perímetro de 30 cm. Quais são as medidas?",o:["6 cm e 9 cm","5 cm e 10 cm","7 cm e 8 cm","6 cm e 12 cm"],a:0,e:"2(x + x + 3) = 30 → 4x + 6 = 30 → x = 6. Medidas: 6 cm e 9 cm."},
-{q:"Pedro tem 5 anos a mais que Bia. Juntos, têm 33 anos. Quantos anos tem Pedro?",o:["14","19","28","38"],a:1,e:"Bia x, Pedro x + 5: 2x + 5 = 33 → x = 14. Pedro tem 19."},
+{q:"Paulo Henrique tem 5 anos a mais que Gaby. Juntos, têm 33 anos. Quantos anos tem Paulo Henrique?",o:["14","19","28","38"],a:1,e:"Gaby x, Paulo Henrique x + 5: 2x + 5 = 33 → x = 14. Paulo Henrique tem 19."},
 {q:"Comprei 3 cadernos iguais e uma caneta de R$ 4,00 e gastei R$ 49,00. Quanto custou cada caderno?",o:["R$ 15,00","R$ 16,33","R$ 13,00","R$ 45,00"],a:0,e:"3x + 4 = 49 → 3x = 45 → x = 15."}]}
 });
 Object.assign(window.RES,{

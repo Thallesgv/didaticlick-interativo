@@ -57,9 +57,9 @@ D.ciclo({
  livros:[{busca:true}],
  sortear(){const x=rnd(0,12),y=rnd(0,10)?rnd(0,12):x;return {prev:true,a:x,b:y};},
  montar(q){cur=q;esc=null;$('prev').classList.toggle('hide',!q.prev);$('qual').classList.toggle('hide',!!q.prev);
-  if(q.busca){a=7;b=3;$('dq').innerHTML='Ana afirmou: “Se a − b e b − a são, os dois, números naturais, então a = b.” Mova a e b até deixar as <span class="k">duas</span> subtrações verdes e toque em OK.';}
+  if(q.busca){a=7;b=3;$('dq').innerHTML='Priscila afirmou: “Se a − b e b − a são, os dois, números naturais, então a = b.” Mova a e b até deixar as <span class="k">duas</span> subtrações verdes e toque em OK.';}
   else{a=q.a;b=q.b;$('dq').innerHTML=`Com a = <span class="k">${a}</span> e b = <span class="k">${b}</span>, quais subtrações dão um número natural?`;}draw();},
- conferir(q){if(q.busca){const ok=a===b;return {ok,exp:ok?'As duas só ficam verdes quando a = b (as duas dão 0). Se a for maior, b − a fica negativo; se b for maior, a − b fica negativo. Ana está certa.':`Com a = ${a} e b = ${b} uma delas é negativa. As duas só ficam naturais quando a = b: Ana está certa.`};}
+ conferir(q){if(q.busca){const ok=a===b;return {ok,exp:ok?'As duas só ficam verdes quando a = b (as duas dão 0). Se a for maior, b − a fica negativo; se b for maior, a − b fica negativo. Priscila está certa.':`Com a = ${a} e b = ${b} uma delas é negativa. As duas só ficam naturais quando a = b: Priscila está certa.`};}
   if(esc===null){msg('dm','Escolha uma das opções.','info');return null;}const r=a===b?2:a>b?0:1,ok=esc===r;draw();
   return {ok,exp:`${a===b?'Como a = b, as duas dão 0, que é natural.':a>b?`Como a é maior, a − b = ${a-b} é natural, mas b − a = −${a-b} não.`:`Como b é maior, b − a = ${b-a} é natural, mas a − b = −${b-a} não.`} Resposta: <b>${OP[r]}</b>.`};},
  res:true});

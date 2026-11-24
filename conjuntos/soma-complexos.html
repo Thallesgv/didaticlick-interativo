@@ -62,7 +62,7 @@ function draw(){const q=cur,s=[q.a+q.c,q.b+q.d];const v=[[0,0,q.a,q.b,'#F7821F']
  const p=[[q.a,q.b,cx(q.a,q.b),'#F7821F']];if(sel)p.push([sel[0],sel[1],'',D.feito?(sel[0]===s[0]&&sel[1]===s[1]?'#15803D':'#B91C1C'):'#0E2354']);if(D.feito)p.push([s[0],s[1],cx(s[0],s[1]),'#0E2354']);
  $('fig').innerHTML=plano({n:6,S:25,tap:!D.feito,pts:p,vecs:v});tapPlano($('fig'),(a,b)=>{sel=[a,b];draw();});}
 D.ciclo({
- livros:[{a:3,b:1,c:1,d:2,ctx:'Miguel anda 3 + i e depois 1 + 2i.'}],
+ livros:[{a:3,b:1,c:1,d:2,ctx:'Gustavo anda 3 + i e depois 1 + 2i.'}],
  sortear(){let a,b,c,d;do{a=rnd(-4,4);b=rnd(-4,4);c=rnd(-4,4);d=rnd(-4,4);}while(Math.abs(a+c)>6||Math.abs(b+d)>6||(c===0&&d===0)||(a===0&&b===0));
   const sub=!rnd(0,2);return sub?{a,b,c,d,sub:true}:{a,b,c,d};},
  montar(q){cur=q;sel=null;const z2=q.sub?cx(-q.c,-q.d):cx(q.c,q.d);

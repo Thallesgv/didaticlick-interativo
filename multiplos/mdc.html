@@ -81,8 +81,8 @@ function euc(){$('efig').innerHTML=MD.euclides(a,b,{px:300,w:Math.min(560,320)})
 const sp=stepper("sp",1,1,60,v=>{p=v;draw();});
 stepper('sa',a,2,60,v=>{a=v;serv=new Set();sp.set(1);});stepper('sb',b,2,60,v=>{b=v;serv=new Set();sp.set(1);});
 let alvo,feito;
-const CTX=[(x,y)=>`Helena tem duas fitas, de ${x} cm e de ${y} cm. Quer cortar as duas em pedaços iguais, os maiores possíveis, sem sobrar fita. Qual o tamanho de cada pedaço, em cm?`,
- (x,y)=>`Pedro tem ${x} balas de morango e ${y} de uva. Quer montar o maior número possível de saquinhos iguais, sem sobrar bala. Quantos saquinhos ele monta?`,
+const CTX=[(x,y)=>`Pietra tem duas fitas, de ${x} cm e de ${y} cm. Quer cortar as duas em pedaços iguais, os maiores possíveis, sem sobrar fita. Qual o tamanho de cada pedaço, em cm?`,
+ (x,y)=>`Ícaro tem ${x} balas de morango e ${y} de uva. Quer montar o maior número possível de saquinhos iguais, sem sobrar bala. Quantos saquinhos ele monta?`,
  (x,y)=>`Uma turma tem ${x} meninas e ${y} meninos. A professora quer formar o maior número possível de grupos, todos com a mesma quantidade de meninas e de meninos. Quantos grupos?`,
  (x,y)=>`Um piso retangular de ${x} dm por ${y} dm vai ser coberto com lajotas quadradas iguais, as maiores possíveis, sem cortar nenhuma. Qual o lado de cada lajota, em dm?`];
 function desafio(){feito=false;msg('dm','');let x,y,g;do{g=rnd(2,12);x=g*rnd(1,7);y=g*rnd(2,9);}while(x===y||x<6||y%x===0);alvo=[x,y];
