@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte com barras Cuisenaire · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="../multiplos/md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números primos</div><h1 id="title">Monte com barras Cuisenaire</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nas barras que, sozinhas, formam um trem do tamanho do número (sem sobrar nem faltar). Depois monte o número só com barras primas: cada toque multiplica mais uma barra.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="muted">1) Barras que formam o número sozinhas:</div><div class="chips" id="bs"></div>
+<div class="muted" style="margin-top:8px">2) Produto de barras primas:</div><div class="chips" id="pp"></div>
+<div class="row" style="margin-top:6px"><button class="alt" id="lim">Limpar o produto</button></div>
+<div class="ask">Produto: <span class="k" id="prod">—</span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=primos-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Toque em uma barra para ver o trem dela embaixo do número: se sobrar um pedaço tracejado, ela não serve. Para o produto, desmonte cada barra até sobrarem só vermelhas, verde-claras, amarelas e pretas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const COR={1:'#FFFFFF',2:'#D62828',3:'#7CC243',4:'#C86DD7',5:'#F6D32D',6:'#1E7B3A',7:'#2B2B2B',8:'#8B5A2B',9:'#2457D6',10:'#F7821F'};
+const NOM={1:'branca',2:'vermelha',3:'verde-clara',4:'lilás',5:'amarela',6:'verde-escura',7:'preta',8:'marrom',9:'azul',10:'laranja'};
+let cur,sel=new Set(),fat=[],ver=0;
+function trem(n,t,y,u){let g='',x=10;const L=[];let r=n;if(t){for(let i=0;i<Math.floor(n/t);i++)L.push(t);if(n%t)L.push(-(n%t));}else{while(r>0){const k=Math.min(10,r);L.push(k);r-=k;}}
+ L.forEach(k=>{const w=Math.abs(k)*u;g+=`<rect x="${x}" y="${y}" width="${w}" height="20" rx="3" fill="${k<0?'#FEE2E2':COR[k]}" stroke="#0E2354" stroke-dasharray="${k<0?'4 3':''}"/>`;
+  if(k>0&&w>=12)g+=`<text x="${x+w/2}" y="${y+14}" text-anchor="middle" font-size="10" font-weight="700" font-family="Poppins" fill="${[2,6,7,8,9].includes(k)?'#fff':'#0E2354'}">${k}</text>`;x+=w;});return g;}
+function draw(){const n=cur.n,u=Math.min(9,320/n);let g=`<text x="10" y="12" font-size="11" font-family="Poppins" fill="#6B7280">o número ${n}</text>`+trem(n,0,16,u);
+ if(ver)g+=`<text x="10" y="54" font-size="11" font-family="Poppins" fill="#6B7280">trem de ${NOM[ver]}s (${ver})</text>`+trem(n,ver,58,u);
+ $('fig').innerHTML=`<svg viewBox="0 0 ${n*u+20} ${ver?84:42}" width="${Math.min(360,n*u+20)}">${g}</svg>`;
+ $('bs').innerHTML=Array.from({length:10},(_,i)=>i+1).map(k=>`<button data-k="${k}" class="${sel.has(k)?'on':''}" style="border-left:10px solid ${COR[k]}">${k}</button>`).join('');
+ $('bs').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const k=+b.dataset.k;ver=k;sel.has(k)?sel.delete(k):sel.add(k);draw();});
+ $('prod').textContent=fat.length?fat.join(' × ')+' = '+fat.reduce((a,b)=>a*b,1):'—';}
+$('pp').innerHTML=[2,3,5,7].map(p=>`<button data-p="${p}" style="border-left:10px solid ${COR[p]}">${p}</button>`).join('')+'<button data-p="11">11</button><button data-p="13">13</button>';
+$('pp').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito||fat.length>=8)return;fat.push(+b.dataset.p);fat.sort((a,b)=>a-b);draw();});
+$('lim').onclick=()=>{if(!D.feito){fat=[];draw();}};
+D.ciclo({
+ livros:[{n:30}],
+ sortear(){return {n:pick([12,13,14,15,16,18,20,21,24,27,28,35,36,40,42,45,48,50,54,56,60,63,70,72,77,80,84,90,11,17,19,23])};},
+ montar(q){cur=q;sel=new Set();fat=[];ver=0;
+  $('dq').innerHTML=`Quais barras, sozinhas, formam um trem do tamanho de <span class="k">${q.n}</span>? E como escrever ${q.n} como produto de barras primas?`;draw();},
+ conferir(q){if(!sel.size||!fat.length){msg('dm','Marque as barras e monte o produto de primos.','info');return null;}
+  const certo=Array.from({length:10},(_,i)=>i+1).filter(k=>q.n%k===0),okb=certo.length===sel.size&&certo.every(k=>sel.has(k));
+  const f=MD.fatores(q.n),okf=f.length===fat.length&&f.every((p,i)=>p===fat[i]);sel=new Set(certo);
+  const ok=okb&&okf;fat=f.slice();draw();
+  return {ok,exp:`Barras que formam ${q.n}: <b>${certo.map(k=>k+' ('+NOM[k]+')').join(', ')}</b>${okb?'':' (sua marcação não bateu)'}. Produto de primos: <b>${q.n} = ${f.join(' × ')}</b>${f.length===1?': o número é primo, só a branca e ele mesmo servem':''}.`};},
+ res:true});
+
+</script>
+</body>
+</html>

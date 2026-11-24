@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estrelas de pontos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="../multiplos/md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números primos</div><h1 id="title">Estrelas de pontos</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Diga por quantos pontos a linha passa antes de voltar ao início. Depois do OK, a estrela é desenhada. Use os controles para explorar outras estrelas.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="ask">A linha passa por <input class="n" id="r1" inputmode="numeric" style="width:70px"> pontos.</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=primos-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Calcule o mdc do número de pontos e do pulo. Se for 1 (primos entre si), a linha passa por todos os pontos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,anim=0;
+function draw(n,k,passos){const R=120,C=140,P=Array.from({length:n},(_,i)=>[C+R*Math.sin(2*Math.PI*i/n),C-R*Math.cos(2*Math.PI*i/n)]);
+ let g=`<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="#E3E8F2"/>`,i=0,pts=[P[0]],vis=new Set([0]);
+ for(let s=0;s<passos;s++){i=(i+k)%n;pts.push(P[i]);vis.add(i);if(i===0)break;}
+ g+=`<polyline points="${pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#2457D6" stroke-width="3" stroke-linejoin="round"/>`;
+ P.forEach((p,j)=>{g+=`<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="${vis.has(j)?'#F7821F':'#fff'}" stroke="#0E2354" stroke-width="2"/><text x="${C+(R+20)*Math.sin(2*Math.PI*j/n)}" y="${C-(R+20)*Math.cos(2*Math.PI*j/n)+4}" text-anchor="middle" font-size="11" font-family="Poppins" fill="#6B7280">${j}</text>`;});
+ $('fig').innerHTML=`<svg viewBox="0 0 280 280" width="280">${g}</svg>`;}
+D.ciclo({
+ livros:[{n:12,k:5},{n:12,k:4}],
+ sortear(){const n=rnd(5,16);return {n,k:rnd(2,n-2)};},
+ montar(q){cur=q;clearInterval(anim);$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Num círculo com <span class="k">${q.n}</span> pontos, ligue de <span class="k">${q.k}</span> em <span class="k">${q.k}</span>. Por quantos pontos a linha passa antes de voltar ao ponto 0?`;draw(q.n,q.k,0);},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const g=MD.mdc(q.n,q.k),t=q.n/g,ok=v[0]===t;D.marcar(['r1'],[ok]);
+  let s=0;clearInterval(anim);anim=setInterval(()=>{s++;draw(q.n,q.k,s);if(s>=t)clearInterval(anim);},350);
+  return {ok,exp:`mdc(${q.n}, ${q.k}) = ${g}, então a linha passa por ${q.n} ÷ ${g} = <b>${t}</b> pontos. ${g===1?'Como '+q.n+' e '+q.k+' são primos entre si, ela passa por todos.':'Como '+q.n+' e '+q.k+' não são primos entre si, ela fecha antes de passar por todos.'}`};},
+ res:true});
+
+</script>
+</body>
+</html>

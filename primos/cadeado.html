@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quebre o cadeado de primos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="../multiplos/md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números primos</div><h1 id="title">Quebre o cadeado de primos</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O cadeado é o produto de dois primos. Use o testador para achar um deles e escreva os dois. Repare como cada cadeado novo dá mais trabalho.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="font-size:22px;font-weight:700;color:var(--navy)"></div>
+<div class="card" style="background:#F8FAFC;margin:8px 0 0"><b style="color:var(--navy)">Testador de divisões</b>
+<div class="ask">Dividir por <input class="n" id="dv" inputmode="numeric" style="width:80px"> <button class="alt" id="tst">Testar</button> <span class="muted" id="nt"></span></div><div id="tr" class="muted"></div></div>
+<div class="ask">Os primos são <input class="n" id="r1" inputmode="numeric" style="width:80px"> × <input class="n" id="r2" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=primos-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Teste os primos em ordem: 2, 3, 5, 7, 11, 13, 17… Não precisa passar da raiz do cadeado: para 391, como 20 × 20 = 400, basta ir até 19.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,nt=0;const P=[];for(let k=2;k<200;k++)if(MD.primo(k))P.push(k);
+$('tst').onclick=()=>{const d=num($('dv').value);if(isNaN(d)||d<2){$('tr').textContent='Escreva um divisor (2 ou mais).';return;}
+ nt++;$('nt').textContent=`(${nt} divisões feitas)`;const q=Math.floor(cur.n/d),r=cur.n%d;$('tr').innerHTML=`${fmt(cur.n)} ÷ ${d} = ${fmt(q)}, resto <b style="color:${r?'var(--bad)':'var(--ok)'}">${r}</b>${r?'':' → abriu!'}`;$('dv').select();};
+$('dv').onkeydown=e=>{if(e.key==='Enter')$('tst').click();};
+D.ciclo({
+ livros:[{n:391},{n:1147}],
+ sortear(){const r=Math.min(P.length-1,10+D.rodada*3);let a=P[rnd(4,r)],b;do{b=P[rnd(4,r)];}while(b===a);return {n:a*b};},
+ montar(q){cur=q;nt=0;$('nt').textContent='';$('tr').textContent='';['r1','r2','dv'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`A chave pública é <span class="k">${fmt(q.n)}</span>. Quais dois primos foram multiplicados?`;$('fig').textContent='🔒 '+fmt(q.n);},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const f=MD.fatores(q.n),ok=v[0]*v[1]===q.n&&MD.primo(v[0])&&MD.primo(v[1]);D.marcar(['r1','r2'],[ok,ok]);
+  if(ok)$('fig').textContent='🔓 '+fmt(q.n)+' = '+f.join(' × ');
+  return {ok,exp:`${fmt(q.n)} = <b>${f.join(' × ')}</b>. Multiplicar levou uma conta; descobrir exigiu testar os primos até ${f[0]} (${P.indexOf(f[0])+1} primos). Com primos de 300 algarismos, nenhum computador consegue a tempo.`};},
+ res:true});
+
+</script>
+</body>
+</html>

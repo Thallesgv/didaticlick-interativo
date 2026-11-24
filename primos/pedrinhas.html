@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lineares ou retangulares? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="../multiplos/md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números primos</div><h1 id="title">Lineares ou retangulares?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude o número de fileiras e veja se as pedrinhas formam um retângulo sem sobrar. Depois diga se o número é linear (primo) ou retangular e, se for retangular, deixe na tela um retângulo com mais de uma fileira.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sf"><b>Fileiras</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><div class="muted" id="inf" style="text-align:center"></div>
+<div class="ask">O número é: <span class="chips" id="cl"><button data-v="1">linear (primo)</button><button data-v="0">retangular (composto)</button></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=primos-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Teste 2, 3, 4, 5… fileiras. Se nenhuma quantidade de fileiras (além de 1) dá certo, o número é primo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,esc=null,F;
+function draw(){const n=cur.n,f=F.get(),c=Math.ceil(n/f),r=n%f,S=Math.min(22,300/Math.max(c,1));let g='';
+ for(let i=0;i<n;i++){const row=i%f,col=Math.floor(i/f);g+=`<circle cx="${10+col*S+S/2}" cy="${10+row*S+S/2}" r="${S*0.4}" fill="${r&&col===c-1?'#F7821F':'#2457D6'}"/>`;}
+ $('fig').innerHTML=`<svg viewBox="0 0 ${20+c*S} ${20+f*S}" width="${Math.min(340,20+c*S)}">${g}</svg>`;
+ $('inf').innerHTML=r?`${f} fileiras: a última coluna fica incompleta (sobram ${r})`:`${f} fileira${f>1?'s':''} de ${n/f}: ${f} × ${n/f} = ${n}`;}
+function clb(){$('cl').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;clb();}};});}
+F=D.sl('sf',1,12,1,1,()=>draw(),v=>v);
+D.ciclo({
+ livros:[{n:21},{n:23},{n:25},{n:27},{n:29}],
+ sortear(){return {n:rnd(10,60)};},
+ montar(q){cur=q;esc=null;clb();F.set(1);
+  $('dq').innerHTML=`Arrume <span class="k">${q.n}</span> pedrinhas. Elas só formam fila (número linear) ou dá para formar um retângulo?`;draw();},
+ conferir(q){if(esc===null){msg('dm','Escolha linear ou retangular.','info');return null;}
+  const pr=MD.primo(q.n),f=F.get(),ret=f>1&&f<q.n&&q.n%f===0;
+  if(esc===0&&!ret&&!pr){msg('dm','Mostre um retângulo na tela: mude as fileiras até não sobrar nada (com mais de uma fileira).','info');return null;}
+  const ok=esc===(pr?1:0)&&(pr||ret);
+  const ds=MD.divisores(q.n).filter(d=>d>1&&d<q.n&&d*d<=q.n).map(d=>`${d} × ${q.n/d}`);
+  return {ok,exp:pr?`${q.n} é primo: só os divisores 1 e ${q.n}, então as pedrinhas só formam fila.`:`${q.n} é composto. Retângulos: ${ds.join(', ')}.`};},
+ res:true});
+
+</script>
+</body>
+</html>
