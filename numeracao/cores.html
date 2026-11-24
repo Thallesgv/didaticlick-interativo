@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a cor: hexadecimal · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">Monte a cor: hexadecimal</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Cada cor da tela tem um código de 6 algarismos na base 16: dois para o vermelho, dois para o verde e dois para o azul. Descubra quanto vale cada par (de 0 a 255). A sua mistura aparece ao lado da cor pedida. Depois toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" style="gap:14px;flex-wrap:wrap">
+<div style="text-align:center"><div id="alvo" style="width:120px;height:80px;border-radius:12px;border:1px solid #D7DEEA"></div><div class="muted" style="font-size:13px;margin-top:4px">cor pedida</div></div>
+<div style="text-align:center"><div id="sua" style="width:120px;height:80px;border-radius:12px;border:1px solid #D7DEEA;background:#fff"></div><div class="muted" style="font-size:13px;margin-top:4px">a sua mistura</div></div>
+</div>
+<div class="ask"><b style="color:#B91C1C;width:80px">vermelho</b><span id="hr" class="k" style="width:34px;font-weight:700"></span> = <input class="n" id="r" inputmode="numeric" autocomplete="off" style="width:90px"></div>
+<div class="ask"><b style="color:#15803D;width:80px">verde</b><span id="hg" class="k" style="width:34px;font-weight:700"></span> = <input class="n" id="g" inputmode="numeric" autocomplete="off" style="width:90px"></div>
+<div class="ask"><b style="color:#2457D6;width:80px">azul</b><span id="hb" class="k" style="width:34px;font-weight:700"></span> = <input class="n" id="b" inputmode="numeric" autocomplete="off" style="width:90px"></div>
+<table class="t" style="max-width:420px;margin:8px auto 0"><tr><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr><tr><td>10</td><td>11</td><td>12</td><td>13</td><td>14</td><td>15</td></tr></table></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=numeracao-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Separe o código de 2 em 2. Em cada par, multiplique o primeiro algarismo por 16 e some o segundo. Letras: A = 10, B = 11, C = 12, D = 13, E = 14, F = 15. Exemplo: 9E = 9 × 16 + 14 = 158.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const HX='0123456789ABCDEF',h2=v=>HX[v>>4]+HX[v&15],dv=c=>HX.indexOf(c);
+let cur;
+function viva(){const v=['r','g','b'].map(i=>{const n=num($(i).value);return isNaN(n)?0:Math.max(0,Math.min(255,Math.round(n)));});$('sua').style.background=`rgb(${v.join(',')})`;}
+['r','g','b'].forEach(i=>$(i).addEventListener('input',viva));
+const conta=p=>`${p} = ${dv(p[0])} × 16 + ${dv(p[1])} = ${dv(p[0])*16+dv(p[1])}`;
+D.ciclo({
+ livros:[{c:[46,158,107],nome:'o verde dos quadros “Onde está hoje”'},{c:[247,130,31],nome:'o laranja da DidatiClick'}],
+ sortear(){return {c:[rnd(0,255),rnd(0,255),rnd(0,255)]};},
+ montar(q){cur=q;const hx=q.c.map(h2);$('dq').innerHTML=`Quanto vale cada par da cor <span class="k">#${hx.join('')}</span>${q.nome?' ('+q.nome+')':''}?`;
+  $('alvo').style.background='#'+hx.join('');['r','g','b'].forEach((i,k)=>{$(i).value='';$(i).style.borderColor='#D7DEEA';$('h'+i).textContent=hx[k];});viva();},
+ conferir(q){const v=D.ler(['r','g','b']);if(!v)return null;const oks=v.map((x,k)=>x===q.c[k]);D.marcar(['r','g','b'],oks);const ok=oks.every(Boolean);
+  return {ok,exp:'Na base 16 as casas valem 16 e 1: '+q.c.map(h2).map(conta).join(' · ')+`. A cor é (${q.c.join(', ')}).`};},
+ res:true});
+
+</script>
+</body>
+</html>
