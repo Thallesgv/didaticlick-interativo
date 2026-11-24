@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Complete o compasso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números racionais</div><h1 id="title">Complete o compasso</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nas figuras para colocá-las no compasso (toque numa figura do compasso para tirar). Quando a soma der exatamente a fração do compasso, toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="chips" id="fg"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=racionais-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Pense em dezesseis avos: semibreve 16/16, mínima 8/16, semínima 4/16, colcheia 2/16, semicolcheia 1/16. Um compasso 4/4 tem 16/16; um 3/4 tem 12/16.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const F=[{n:'semibreve',v:16,s:'𝅝'},{n:'mínima',v:8,s:'𝅗𝅥'},{n:'semínima',v:4,s:'♩'},{n:'colcheia',v:2,s:'♪'},{n:'semicolcheia',v:1,s:'𝅘𝅥𝅯'}];
+const frc=v=>{const g=(a,b)=>b?g(b,a%b):a;if(v===0)return '0';const d=g(v,16);return v===16?'1':(v/d)+'/'+(16/d);};
+let cur,add=[];
+const soma=()=>cur.ja.concat(add).reduce((s,k)=>s+F[k].v,0);
+function draw(){const q=cur,tot=q.t*4,S=soma();
+ const nota=(k,i,fixo)=>`<span data-i="${i}" style="display:inline-flex;flex-direction:column;align-items:center;margin:0 4px;cursor:${fixo?'default':'pointer'}"><span style="font-size:34px;line-height:1.1;color:${fixo?'#0E2354':'#F7821F'}">${F[k].s}</span><span style="font-size:11px;color:#6B7280">${frc(F[k].v)}</span></span>`;
+ $('fig').innerHTML=`<div style="display:flex;align-items:center;gap:8px;border-left:3px solid #0E2354;border-right:3px solid #0E2354;padding:6px 10px;min-height:70px;background:repeating-linear-gradient(#fff 0 9px,#C9D3E6 9px 10px);min-width:240px"><b style="font-size:20px;line-height:1">${q.t}<br>4</b>${q.ja.map((k,i)=>nota(k,-1,1)).join('')}${add.map((k,i)=>nota(k,i,0)).join('')}</div>
+ <div style="margin-top:6px">Soma: <b>${frc(S)}</b> de <b>${frc(tot)}</b>${S>tot?' <span style="color:#B91C1C">(passou!)</span>':''}</div>`;
+ $('fig').querySelectorAll('[data-i]').forEach(e=>{const i=+e.dataset.i;if(i>=0)e.onclick=()=>{if(D.feito)return;add.splice(i,1);draw();};});
+ $('fg').innerHTML=F.map((f,k)=>`<button data-k="${k}"><span style="font-size:22px">${f.s}</span> ${f.n} (${frc(f.v)})</button>`).join('');
+ $('fg').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;add.push(+b.dataset.k);draw();});}
+D.ciclo({
+ livros:[{t:4,ja:[1,3]}],
+ sortear(){const t=pick([2,3,4]);let ja=[],s=0;const n=rnd(1,3);for(let j=0;j<n;j++){const k=pick([1,2,2,3,3,4]);if(s+F[k].v<t*4){ja.push(k);s+=F[k].v;}}if(!ja.length)ja=[2];return {t,ja};},
+ montar(q){cur=q;add=[];$('dq').innerHTML=`O compasso é <span class="k">${q.t}/4</span> e já tem ${(l=>l.length>1?l.slice(0,-1).join(', ')+' e '+l[l.length-1]:l[0])(q.ja.map(k=>F[k].n))}. Complete-o.`;draw();},
+ conferir(q){if(!add.length){msg('dm','Toque em pelo menos uma figura para completar o compasso.','info');return null;}const tot=q.t*4,S=soma(),ja=q.ja.reduce((s,k)=>s+F[k].v,0),ok=S===tot;
+  return {ok,exp:`O compasso ${q.t}/4 vale ${frc(tot)}. Já havia ${q.ja.map(k=>frc(F[k].v)).join(' + ')} = ${frc(ja)}; faltava ${frc(tot)} − ${frc(ja)} = <b>${frc(tot-ja)}</b>. Você colocou ${add.map(k=>frc(F[k].v)).join(' + ')} = ${frc(S-ja)}${ok?': completo!':S>tot?': passou do compasso.':': ainda falta '+frc(tot-S)+'.'}`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Controle de qualidade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números reais</div><h1 id="title">Controle de qualidade</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">A peça é aprovada se a medida estiver no intervalo [medida − tolerância; medida + tolerância], com os extremos incluídos. Toque nas medidas aprovadas e depois em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">Intervalo de aprovação: [ <input class="n" id="a" inputmode="decimal" style="width:80px"> ; <input class="n" id="b" inputmode="decimal" style="width:80px"> ]</div>
+<div class="chips" id="op"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=reais-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Medida ± tolerância: subtraia para achar o menor valor aceito e some para achar o maior. Compare casa por casa: 11,95 é menor que 11,96.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,sel=new Set();const f2=x=>fmt(Math.round(x*1000)/1000);
+function draw(){const q=cur,a=q.m-q.t,b=q.m+q.t,lo=q.m-q.t*2.2,hi=q.m+q.t*2.2,X=v=>20+(v-lo)/(hi-lo)*300;
+ let g=`<svg viewBox="0 0 340 90" width="340"><line x1="10" y1="50" x2="330" y2="50" stroke="#0E2354" stroke-width="2"/>`;
+ if(D.feito)g+=`<line x1="${X(a)}" y1="50" x2="${X(b)}" y2="50" stroke="#15803D" stroke-width="7" stroke-linecap="round"/><circle cx="${X(a)}" cy="50" r="5" fill="#15803D"/><circle cx="${X(b)}" cy="50" r="5" fill="#15803D"/><text x="${X(a)}" y="80" font-size="11" text-anchor="middle" fill="#15803D">${f2(a)}</text><text x="${X(b)}" y="80" font-size="11" text-anchor="middle" fill="#15803D">${f2(b)}</text>`;
+ g+=`<line x1="${X(q.m)}" y1="44" x2="${X(q.m)}" y2="56" stroke="#0E2354" stroke-width="2"/><text x="${X(q.m)}" y="80" font-size="11" text-anchor="middle" fill="#0E2354">${f2(q.m)}</text>`;
+ q.v.forEach((v,i)=>{const ok=v>=a-1e-9&&v<=b+1e-9;const c=D.feito?(ok?'#15803D':'#B91C1C'):(sel.has(i)?'#F7821F':'#6B7280');g+=`<circle cx="${X(Math.max(lo,Math.min(hi,v)))}" cy="${30-(i%2)*12}" r="4" fill="${c}"/>`;});
+ $('fig').innerHTML=g+'</svg>';
+ $('op').innerHTML=q.v.map((v,i)=>{let c=sel.has(i)?'on':'';if(D.feito){const ok=v>=a-1e-9&&v<=b+1e-9;c=ok?'okk':(sel.has(i)?'bad':'');}return `<button data-i="${i}" class="${c}">${f2(v)}</button>`;}).join('');
+ $('op').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const i=+b.dataset.i;sel.has(i)?sel.delete(i):sel.add(i);draw();});}
+D.ciclo({
+ livros:[{m:12,t:0.04,v:[11.95,11.96,12.03,12.05,12.04],u:'mm',p:'eixos'}],
+ sortear(){const P=[['parafusos',8,0.05,'mm'],['eixos',20,0.02,'mm'],['tampas',45,0.1,'mm'],['pacotes de arroz',1000,5,'g'],['garrafas',500,2,'mL'],['comprimidos',250,2.5,'mg']];const [p,m,t,u]=pick(P);
+  const st=t/2;const v=new Set();while(v.size<5){v.add(Math.round((m+st*rnd(-3,3))*1000)/1000);}return {m,t,v:[...v],u,p};},
+ montar(q){cur=q;sel=new Set();['a','b'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('dq').innerHTML=`Uma fábrica faz ${q.p} de <span class="k">${f2(q.m)} ${q.u} ± ${f2(q.t)} ${q.u}</span>. Quais medidas são aprovadas?`;draw();},
+ conferir(q){const v=D.ler(['a','b']);if(!v)return null;const a=q.m-q.t,b=q.m+q.t,oa=Math.abs(v[0]-a)<1e-6,ob=Math.abs(v[1]-b)<1e-6;D.marcar(['a','b'],[oa,ob]);
+  const certo=q.v.map((x,i)=>x>=a-1e-9&&x<=b+1e-9?i:-1).filter(i=>i>=0),ok=oa&&ob&&certo.length===sel.size&&certo.every(i=>sel.has(i));setTimeout(draw,0);
+  return {ok,exp:`Intervalo: [${f2(q.m)} − ${f2(q.t)}; ${f2(q.m)} + ${f2(q.t)}] = <b>[${f2(a)}; ${f2(b)}]</b>. Aprovadas: <b>${certo.map(i=>f2(q.v[i])).join('; ')||'nenhuma'}</b>. Os extremos contam: o intervalo é fechado.`};},
+ res:true});
+
+</script>
+</body>
+</html>

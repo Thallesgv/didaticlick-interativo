@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Some complexos no plano · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números complexos</div><h1 id="title">Some complexos no plano</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Emende a segunda seta na ponta da primeira e toque no ponto de chegada. Depois confira a conta: parte real com real, imaginária com imaginária.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=complexos-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Subtrair um complexo é somar o seu oposto: (4 + 5i) − (1 + 2i) = (4 + 5i) + (−1 − 2i).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const cx=(a,b)=>{const B=Math.abs(b),bi=(B===1?'':fmt(B))+'i';if(b===0)return sg(a);if(a===0)return (b<0?'−':'')+bi;return sg(a)+(b<0?' − ':' + ')+bi;};
+function plano(o){const n=o.n||5,S=o.S||30,P=22,W=2*n*S+2*P,X=a=>P+(a+n)*S,Y=b=>P+(n-b)*S;let g='';
+ for(let k=-n;k<=n;k++){g+=`<line x1="${X(k)}" y1="${Y(-n)}" x2="${X(k)}" y2="${Y(n)}" stroke="#E3E8F2"/><line x1="${X(-n)}" y1="${Y(k)}" x2="${X(n)}" y2="${Y(k)}" stroke="#E3E8F2"/>`;}
+ g+=`<line x1="${X(-n)-6}" y1="${Y(0)}" x2="${X(n)+6}" y2="${Y(0)}" stroke="#0E2354" stroke-width="2"/><line x1="${X(0)}" y1="${Y(-n)+6}" x2="${X(0)}" y2="${Y(n)-6}" stroke="#0E2354" stroke-width="2"/>`;
+ g+=`<text x="${X(n)}" y="${Y(0)-6}" font-size="11" font-weight="700" fill="#0E2354" text-anchor="end" font-family="Poppins">Re</text><text x="${X(0)+6}" y="${Y(n)+4}" font-size="11" font-weight="700" fill="#0E2354" font-family="Poppins">Im</text>`;
+ for(let k=-n;k<=n;k++)if(k){g+=`<text x="${X(k)}" y="${Y(0)+14}" font-size="10" fill="#6B7280" text-anchor="middle" font-family="Poppins">${sg(k)}</text><text x="${X(0)-4}" y="${Y(k)+4}" font-size="10" fill="#6B7280" text-anchor="end" font-family="Poppins">${cx(0,k)}</text>`;}
+ (o.vecs||[]).forEach(([a0,b0,a1,b1,c])=>{const x0=X(a0),y0=Y(b0),x1=X(a1),y1=Y(b1),L=Math.hypot(x1-x0,y1-y0)||1,ux=(x1-x0)/L,uy=(y1-y0)/L;
+  g+=`<line x1="${x0}" y1="${y0}" x2="${x1-ux*7}" y2="${y1-uy*7}" stroke="${c}" stroke-width="3"/><polygon points="${x1},${y1} ${x1-ux*12-uy*6},${y1-uy*12+ux*6} ${x1-ux*12+uy*6},${y1-uy*12-ux*6}" fill="${c}"/>`;});
+ if(o.tap)for(let a=-n;a<=n;a++)for(let b=-n;b<=n;b++)g+=`<circle data-p="${a},${b}" cx="${X(a)}" cy="${Y(b)}" r="11" fill="transparent" style="cursor:pointer"/>`;
+ (o.pts||[]).forEach(([a,b,l,c,oco])=>{g+=`<circle cx="${X(a)}" cy="${Y(b)}" r="7" fill="${oco?'#fff':c}" stroke="${c}" stroke-width="2.5" pointer-events="none"/>`+(l?`<text x="${X(a)+(a>=0?9:-9)}" y="${Y(b)-9}" font-size="12" font-weight="700" fill="${c}" text-anchor="${a>=0?'start':'end'}" font-family="Poppins" pointer-events="none">${l}</text>`:'');});
+ return `<svg viewBox="0 0 ${W} ${W}" width="${Math.min(W,340)}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
+function tapPlano(el,cb){el.querySelectorAll('[data-p]').forEach(c=>c.onclick=()=>{const [a,b]=c.dataset.p.split(',').map(Number);cb(a,b);});}
+
+let cur,sel=null;
+function draw(){const q=cur,s=[q.a+q.c,q.b+q.d];const v=[[0,0,q.a,q.b,'#F7821F']];if(D.feito)v.push([q.a,q.b,s[0],s[1],'#2457D6'],[0,0,s[0],s[1],'#0E2354']);
+ const p=[[q.a,q.b,cx(q.a,q.b),'#F7821F']];if(sel)p.push([sel[0],sel[1],'',D.feito?(sel[0]===s[0]&&sel[1]===s[1]?'#15803D':'#B91C1C'):'#0E2354']);if(D.feito)p.push([s[0],s[1],cx(s[0],s[1]),'#0E2354']);
+ $('fig').innerHTML=plano({n:6,S:25,tap:!D.feito,pts:p,vecs:v});tapPlano($('fig'),(a,b)=>{sel=[a,b];draw();});}
+D.ciclo({
+ livros:[{a:3,b:1,c:1,d:2,ctx:'Miguel anda 3 + i e depois 1 + 2i.'}],
+ sortear(){let a,b,c,d;do{a=rnd(-4,4);b=rnd(-4,4);c=rnd(-4,4);d=rnd(-4,4);}while(Math.abs(a+c)>6||Math.abs(b+d)>6||(c===0&&d===0)||(a===0&&b===0));
+  const sub=!rnd(0,2);return sub?{a,b,c,d,sub:true}:{a,b,c,d};},
+ montar(q){cur=q;sel=null;const z2=q.sub?cx(-q.c,-q.d):cx(q.c,q.d);
+  $('dq').innerHTML=q.ctx?`${q.ctx} Em que ponto ele chega?`:(q.sub?`Onde fica <span class="k">(${cx(q.a,q.b)}) − (${z2})</span>? (Somar o oposto: + (${cx(q.c,q.d)}).)`:`Onde fica <span class="k">(${cx(q.a,q.b)}) + (${z2})</span>?`);draw();},
+ conferir(q){if(!sel){msg('dm','Toque no ponto de chegada.','info');return null;}const s=[q.a+q.c,q.b+q.d],ok=sel[0]===s[0]&&sel[1]===s[1];setTimeout(draw,0);
+  return {ok,exp:`Parte real: ${sg(q.a)} ${q.c<0?'−':'+'} ${Math.abs(q.c)} = ${sg(s[0])}. Parte imaginária: ${sg(q.b)} ${q.d<0?'−':'+'} ${Math.abs(q.d)} = ${sg(s[1])}. Chegada: <b>${cx(s[0],s[1])}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>
