@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a caixa de papelão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Álgebra</div><h1 id="title">Monte a caixa de papelão</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">De uma folha retangular, corta-se um quadrado de lado x em cada canto e dobram-se as abas para cima. Calcule o volume da caixa sem tampa. Depois toque em OK e veja a caixa montada.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="flex-wrap:wrap;gap:8px"></div>
+<div class="ask">Volume: <input class="n" id="v" inputmode="numeric" autocomplete="off" style="width:110px"> cm³</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=polinomios-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Cada corte tira x de cada ponta da folha: o comprimento do fundo é o da folha menos 2x, e a largura também. A altura da caixa é o próprio x.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;
+function plano(q){const s=Math.min(300/q.L,190/q.W),P=24,w=q.L*s,h=q.W*s,c=q.x*s;let g=`<rect x="${P}" y="${P}" width="${w}" height="${h}" fill="#F3E3C3" stroke="#8A5A12" stroke-width="2"/>`;
+ [[0,0],[w-c,0],[0,h-c],[w-c,h-c]].forEach(([a,b])=>g+=`<rect x="${P+a}" y="${P+b}" width="${c}" height="${c}" fill="#fff" stroke="#B91C1C" stroke-width="1.5" stroke-dasharray="4 3"/>`);
+ g+=`<rect x="${P+c}" y="${P+c}" width="${w-2*c}" height="${h-2*c}" fill="none" stroke="#8A5A12" stroke-dasharray="5 4"/>`;
+ g+=`<text x="${P+w/2}" y="${P-7}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${q.L} cm</text><text x="${P-6}" y="${P+h/2}" text-anchor="end" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${q.W}</text>`;
+ g+=`<text x="${P+c/2}" y="${P+c/2+4}" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#B91C1C">x</text><text x="${P+w/2}" y="${P+h/2+4}" text-anchor="middle" font-size="12" font-family="Poppins" fill="#8A5A12">fundo da caixa</text>`;
+ return `<svg viewBox="0 0 ${w+2*P} ${h+2*P}" width="${Math.min(w+2*P,340)}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
+function caixa(q){const a=q.L-2*q.x,b=q.W-2*q.x,h=q.x,s=Math.min(200/(a+b*0.6),130/(h+b*0.5)),A=a*s,B=b*s*0.6,H=h*s,ox=20,oy=20+B*0.6;
+ const p=(x,y)=>`${(ox+x).toFixed(1)},${(oy+y).toFixed(1)}`;let g=`<polygon points="${p(0,H)} ${p(A,H)} ${p(A+B,H-B*0.6)} ${p(B,H-B*0.6)}" fill="#E9D3A8" stroke="#8A5A12"/>`;
+ g+=`<polygon points="${p(B,-B*0.6)} ${p(A+B,-B*0.6)} ${p(A+B,H-B*0.6)} ${p(B,H-B*0.6)}" fill="#EAD9B6" stroke="#8A5A12"/><polygon points="${p(0,0)} ${p(B,-B*0.6)} ${p(B,H-B*0.6)} ${p(0,H)}" fill="#DCC296" stroke="#8A5A12"/>`;
+ g+=`<polygon points="${p(A,0)} ${p(A+B,-B*0.6)} ${p(A+B,H-B*0.6)} ${p(A,H)}" fill="#DCC296" stroke="#8A5A12"/><polygon points="${p(0,0)} ${p(A,0)} ${p(A,H)} ${p(0,H)}" fill="#F3E3C3" stroke="#8A5A12" stroke-width="2"/>`;
+ g+=`<text x="${ox+A/2}" y="${oy+H+16}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${a} cm</text><text x="${ox+A+B/2+8}" y="${oy+H-B*0.3+12}" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${b} cm</text><text x="${ox-4}" y="${oy+H/2+4}" text-anchor="end" font-size="12" font-weight="700" font-family="Poppins" fill="#B91C1C">${h}</text>`;
+ return `<svg viewBox="0 0 ${A+B+80} ${H+B*0.6+50}" width="${Math.min(A+B+80,300)}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
+D.ciclo({
+ livros:[{L:30,W:20,x:4}],
+ sortear(){const L=pick([24,26,28,30,32,36,40]),W=pick([16,18,20,22,24]),x=rnd(2,Math.floor(W/2)-3);return {L,W,x};},
+ montar(q){cur=q;$('v').value='';$('v').style.borderColor='#D7DEEA';$('dq').innerHTML=`Folha de <span class="k">${q.L} cm × ${q.W} cm</span>, quadrados de lado <span class="k">x = ${q.x} cm</span>. Qual é o volume?`;$('fig').innerHTML=plano(q);},
+ conferir(q){const v=D.ler(['v']);if(!v)return null;const a=q.L-2*q.x,b=q.W-2*q.x,V=a*b*q.x,ok=v[0]===V;D.marcar(['v'],[ok]);$('fig').innerHTML=plano(q)+caixa(q);
+  return {ok,exp:`V = x(${q.L} − 2x)(${q.W} − 2x). Com x = ${q.x}: comprimento ${q.L} − ${2*q.x} = ${a}, largura ${q.W} − ${2*q.x} = ${b}, altura ${q.x}. <b>V = ${a} · ${b} · ${q.x} = ${fmt(V)} cm³</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>
