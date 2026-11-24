@@ -1,5 +1,5 @@
 window.QUIZ=window.QUIZ||{};window.RES=window.RES||{};window.APOSTILAS=window.APOSTILAS||{};window.FIN=window.FIN||{cls:{},ord:{},av:{}};
-// Educação Financeira · Nível 3 · Avançado
+// Educação Financeira · Avançado
 Object.assign(FIN.cls,{
 "pre-pos-hibrido":{title:"Prefixado, pós-fixado ou híbrido?",sub:"Leia a remuneração de cada título e classifique.",
  baldes:[["Prefixado","#0E2354"],["Pós-fixado","#F7821F"],["Híbrido","#15803D"]],
