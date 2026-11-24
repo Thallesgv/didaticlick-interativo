@@ -167,7 +167,7 @@
   // ---------------- balança de dois pratos ----------------
   // esq: [{rot, cor, w}] objetos; dir: lista de massas em gramas (pesos). tilt calculado por mEsq e mDir.
   function balanca(esq, dir, mEsq, mDir, opt = {}) {
-    const d = Math.sign(mDir - mEsq) * Math.min(1, Math.abs(mDir - mEsq) / Math.max(200, 0.2 * Math.max(mEsq, mDir)));
+    const d = Math.sign(mDir - mEsq) * Math.min(1, Math.abs(mDir - mEsq) / (opt.den || Math.max(200, 0.2 * Math.max(mEsq, mDir))));
     const a = d * 9 * Math.PI / 180, cx = 220, cy = 70, L = 150;
     const x1 = cx - L * Math.cos(a), y1 = cy - L * Math.sin(a), x2 = cx + L * Math.cos(a), y2 = cy + L * Math.sin(a);
     let b = `<rect x="185" y="238" width="70" height="10" rx="3" fill="${NAVY}"/><rect x="216" y="70" width="8" height="170" fill="${NAVY}"/><polygon points="220,56 210,74 230,74" fill="${NAVY}"/>`;

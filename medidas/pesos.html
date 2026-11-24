@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os três pesos de Manu · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">Os três pesos de Manu</h1></header>
+<main>
+
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted">Manu tem só três pesos: 1 g, 3 g e 9 g. O sal fica no prato da esquerda. Botão branco = peso fora; cinza = junto do sal; laranja = no outro prato. Toque num peso para mudar o lugar dele: <b>fora → prato do sal → outro prato → fora</b>. Quando achar que a balança equilibrou, toque em OK.</p>
+<div class="dq" id="dq"></div>
+<div class="fig" id="fig"></div>
+<div class="row pesos" style="margin-top:10px"><button data-g="1">1 g</button><button data-g="3">3 g</button><button data-g="9">9 g</button><button class="alt" id="tirar">Tirar todos</button></div>
+<div id="lug" class="muted" style="margin-top:6px"></div>
+<div class="row"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outra quantidade</button></div><div id="dm"></div>
+</div>
+<div class="card"><p class="muted" style="margin:0">Dica: um peso no mesmo prato do sal funciona como se fosse <b>tirado</b>. Por isso, com 1 g, 3 g e 9 g dá para medir todos os valores inteiros de 1 g a 13 g.</p></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const ORD=[2,5,7];let k=0,X,lugar,feito=false;   // lugar[g]: 0 fora, 1 prato do sal, 2 outro prato
+const NOME=['fora','no prato do sal','no outro prato'];
+const it=g=>({rot:g+' g',cor:g===9?UM.NAVY:(g===3?UM.BL:UM.OR),w:g===9?40:34,h:g===9?24:20,fs:10});
+function soma(l){return [1,3,9].filter(g=>lugar[g]===l).reduce((a,b)=>a+b,0);}
+function draw(){const e=X+soma(1),d=soma(2);
+ const esq=[{rot:'sal '+X+' g',cor:'#94A3B8',w:58,h:30,r:10}].concat([9,3,1].filter(g=>lugar[g]===1).map(it));
+ $('fig').innerHTML=UM.balanca(esq,[9,3,1].filter(g=>lugar[g]===2),e,d,{w:W(),den:6});
+ $('lug').innerHTML=[1,3,9].map(g=>`<b>${g} g</b>: ${NOME[lugar[g]]}`).join(' &nbsp;·&nbsp; ');
+ document.querySelectorAll('.pesos button[data-g]').forEach(b=>{const l=lugar[+b.dataset.g];b.style.background=l===0?'#fff':(l===1?'#94A3B8':'var(--orange)');b.style.color=l===0?'var(--navy)':'#fff';b.style.border='2px solid '+(l===0?'var(--navy)':'transparent');});}
+function novo(){X=k<ORD.length?ORD[k]:pick([1,2,4,5,6,7,8,10,11,12,13].filter(v=>v!==X));k++;lugar={1:0,3:0,9:0};feito=false;$('ok').disabled=false;msg('dm','');
+ $('dq').innerHTML=`Manu quer medir <span style="color:var(--orange)">${X} g</span> de sal.`;draw();}
+document.querySelectorAll('.pesos button[data-g]').forEach(b=>b.onclick=()=>{if(feito)return;const g=+b.dataset.g;lugar[g]=(lugar[g]+1)%3;draw();});
+$('tirar').onclick=()=>{if(feito)return;lugar={1:0,3:0,9:0};draw();};$('novo').onclick=novo;
+function conta(){const d=[9,3,1].filter(g=>lugar[g]===2),e=[9,3,1].filter(g=>lugar[g]===1);
+ return (d.join(' + ')||'0')+(e.length?' − '+e.join(' − '):'')+' = '+X;}
+function sol(){for(const a of[0,1,2])for(const b of[0,1,2])for(const c of[0,1,2]){const L={1:a,3:b,9:c};const v=[1,3,9].reduce((t,g)=>t+(L[g]===2?g:L[g]===1?-g:0),0);if(v===X)return L;}}
+$('ok').onclick=()=>{if(feito)return;if(soma(1)+soma(2)===0){msg('dm','Coloque pelo menos um peso na balança e toque em OK.','info');return;}
+ const ok=X+soma(1)===soma(2);feito=true;$('ok').disabled=true;placar(ok);
+ if(ok)msg('dm',`Certo! Equilibrou: ${conta()} g. Os pesos do outro prato somam, e os que ficam junto do sal subtraem.`,'ok');
+ else{lugar=sol();draw();msg('dm',`Ainda não. Veja uma solução na balança: ${conta()} g. Os pesos do outro prato somam, e os que ficam junto do sal subtraem.`,'bad');}};
+novo();
+
+</script>
+</body>
+</html>
