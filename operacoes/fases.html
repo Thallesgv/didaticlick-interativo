@@ -56,7 +56,7 @@ D.ciclo({
  livros:[{a:245,d:38}],
  sortear(){return {a:rnd(10,40)*5,d:rnd(11,60)};},
  montar(q){cur=q;ver=false;['r1','r2','r3'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
-  $('dq').innerHTML=`Num jogo, Lucas fez <span class="k">${q.a} pontos</span> na 1ª fase. Na 2ª, fez <span class="k">${q.d} a mais</span> do que na 1ª. Na 3ª, fez tantos pontos quanto nas duas primeiras juntas. Quantos pontos fez no total?`;draw();},
+  $('dq').innerHTML=`Num jogo, Ícaro fez <span class="k">${q.a} pontos</span> na 1ª fase. Na 2ª, fez <span class="k">${q.d} a mais</span> do que na 1ª. Na 3ª, fez tantos pontos quanto nas duas primeiras juntas. Quantos pontos fez no total?`;draw();},
  conferir(q){const v=D.ler(['r1','r2','r3']);if(!v)return null;const b=q.a+q.d,c=q.a+b,t=q.a+b+c,ok=[v[0]===b,v[1]===c,v[2]===t];D.marcar(['r1','r2','r3'],ok);ver=true;draw();
   return {ok:ok.every(x=>x),exp:`2ª fase: ${q.a} + ${q.d} = <b>${b}</b>. 3ª fase: ${q.a} + ${b} = <b>${c}</b>. Total: ${q.a} + ${b} + ${c} = <b>${fmt(t)}</b> pontos.`};},
  res:true});

@@ -43,7 +43,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur,sa,sb;
 function draw(){const q=cur,per=24,s=13;let g='';
  for(let k=1;k<=q.N;k++){const i=(k-1)%per,j=Math.floor((k-1)/per),x=8+i*s,y=8+j*(s+6);const A=sa&&k%q.a===0,B=sb&&k%q.b===0;
@@ -52,7 +52,7 @@ function draw(){const q=cur,per=24,s=13;let g='';
  $('bt').innerHTML=`<button data-w="a" class="${sa?'on':''}" style="${sa?'background:#F7821F;border-color:#F7821F':''}">${q.n[0]}: de ${q.a} em ${q.a}</button><button data-w="b" class="${sb?'on':''}" style="${sb?'background:#2457D6;border-color:#2457D6':''}">${q.n[1]}: de ${q.b} em ${q.b}</button>`;
  $('bt').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.w==='a')sa=!sa;else sb=!sb;draw();});}
 D.ciclo({
- livros:[{N:96,a:3,b:4,n:['Ana','Beto']}],
+ livros:[{N:96,a:3,b:4,n:['Duda','Gustavo']}],
  sortear(){for(;;){const a=rnd(2,6),b=rnd(a+1,8),l=a*b/gcd(a,b);if(l===b)continue;const N=l*rnd(2,Math.floor(120/l));if(N>=24&&N<=120)return {N,a,b,n:shuffle(NOMES).slice(0,2)};}},
  montar(q){cur=q;sa=false;sb=false;$('n1').textContent='Passos de '+q.n[0]+':';$('n2').textContent='Passos de '+q.n[1]+':';['r1','r2','r3'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
   $('dq').innerHTML=`Uma escada tem <span class="k">${q.N} degraus</span>. ${q.n[0]} sobe de <span class="k">${q.a} em ${q.a}</span> degraus e ${q.n[1]}, de <span class="k">${q.b} em ${q.b}</span>. Quantos passos cada um dá até o topo? Em quantos degraus os dois pisam?`;draw();},

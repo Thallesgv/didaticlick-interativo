@@ -58,7 +58,7 @@ D.ciclo({
  livros:[{d:'0',N:1000}],
  sortear(){return {d:String(rnd(0,9)),N:pick([100,200,300,500,1000])};},
  montar(q){cur=q;c0=0;$('r1').value='';$('r1').style.borderColor='';
-  $('dq').innerHTML=`Miguel escreveu todos os números de 1 a <span class="k">${SN.fmt(q.N)}</span>. Quantas vezes ele escreveu o algarismo <span class="k">${q.d}</span>?`;draw();},
+  $('dq').innerHTML=`Teodoro escreveu todos os números de 1 a <span class="k">${SN.fmt(q.N)}</span>. Quantas vezes ele escreveu o algarismo <span class="k">${q.d}</span>?`;draw();},
  conferir(q){const v=D.ler(['r1']);if(!v)return null;const pos=[0,0,0,0];
   for(let n=1;n<=q.N;n++){const s=String(n);for(let i=0;i<s.length;i++)if(s[i]===q.d)pos[s.length-1-i]++;}
   const t=pos.reduce((a,b)=>a+b,0),ok=v[0]===t;D.marcar(['r1'],[ok]);

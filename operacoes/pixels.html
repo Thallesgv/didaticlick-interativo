@@ -58,8 +58,8 @@ function tela(q,lupa){const M=200,s=M/Math.max(q.w,q.h),w=q.w*s,h=q.h*s,ox=48,oy
   g+=`<circle cx="${cx}" cy="${cy}" r="9" fill="none" stroke="#F7821F" stroke-width="2"/><text x="${L+30}" y="${T+74}" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">cada quadradinho</text><text x="${L+30}" y="${T+86}" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">é um pixel</text>`;}
  $('fig').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="${W}" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7FB3FF"/><stop offset="1" stop-color="#F7B267"/></linearGradient></defs>${g}</svg>`;}
 D.ciclo({
- livros:[{quem:'Samuel',o:'o celular',w:1080,h:2400}],
- sortear(){const t=pick(TELAS);return {quem:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela']),o:t[0],w:t[1],h:t[2]};},
+ livros:[{quem:'Nikolas',o:'o celular',w:1080,h:2400}],
+ sortear(){const t=pick(TELAS);return {quem:pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard']),o:t[0],w:t[1],h:t[2]};},
  montar(q){cur=q;esc=null;chips();$('t').value='';$('t').style.borderColor='#D7DEEA';
   $('dq').innerHTML=`A tela d${q.o.slice(0,1)==='a'?'a':'o'} ${q.o.slice(2)} de ${q.quem} tem <span class="k">${fmt(q.w)} × ${fmt(q.h)}</span> pixels.`;tela(q,false);},
  conferir(q){if(esc===null){msg('dm','Diga se a tela tem mais ou menos pixels que a TV Full HD.','info');return null;}

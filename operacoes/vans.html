@@ -58,8 +58,8 @@ function desenha(q,emb){const nv=Math.ceil(q.n/q.c);let h='';let rest=emb;
  $('fig').innerHTML=h;}
 function embarca(q){if(anim)clearInterval(anim);let e=0;anim=setInterval(()=>{e=Math.min(q.n,e+Math.max(1,Math.ceil(q.n/40)));desenha(q,e);if(e>=q.n){clearInterval(anim);anim=null;}},40);}
 D.ciclo({
- livros:[{quem:'Mikaela',n:87,c:15}],
- sortear(){let c,n;do{c=pick([8,10,12,14,15,16,18,20]);n=rnd(c+3,c*6);}while(n%c===0);return {quem:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela']),n,c};},
+ livros:[{quem:'Maria Antônia',n:87,c:15}],
+ sortear(){let c,n;do{c=pick([8,10,12,14,15,16,18,20]);n=rnd(c+3,c*6);}while(n%c===0);return {quem:pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard']),n,c};},
  montar(q){cur=q;if(anim){clearInterval(anim);anim=null;}['v','z'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});
   $('dq').innerHTML=`A escola de ${q.quem} vai levar <span class="k">${q.n} alunos</span>. Cada van leva <span class="k">${q.c}</span>.`;desenha(q,null);},
  conferir(q){const v=D.ler(['v','z']);if(!v)return null;const qo=Math.floor(q.n/q.c),r=q.n%q.c,nv=qo+(r?1:0),vz=nv*q.c-q.n;

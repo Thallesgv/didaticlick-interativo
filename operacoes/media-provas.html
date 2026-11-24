@@ -43,7 +43,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+const FEM=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela'];const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur,SX;
 function draw(){const q=cur,x=SX.get(),N=q.notas.concat([x]),m=N.reduce((a,b)=>a+b,0)/N.length,h=16;let g='';
  N.forEach((v,i)=>{const X=30+i*58;g+=`<rect x="${X}" y="${180-v*h}" width="40" height="${v*h}" fill="${i<N.length-1?'#2457D6':'#93C5FD'}" rx="3"/><text x="${X+20}" y="${174-v*h}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${fmt(v)}</text><text x="${X+20}" y="196" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${i+1}ª prova</text>`;});
@@ -51,10 +51,10 @@ function draw(){const q=cur,x=SX.get(),N=q.notas.concat([x]),m=N.reduce((a,b)=>a
  $('fig').innerHTML=`<svg viewBox="0 0 ${80+N.length*58} 202" width="${Math.min(340,80+N.length*58)}">${g}</svg>`;
  const ok=Math.abs(m-q.m2)<1e-9;$('st').innerHTML=`Média: ${N.map(fmt).join(' + ')} = ${fmt(N.reduce((a,b)=>a+b,0))}; ÷ ${N.length} = <b style="color:${ok?'var(--ok)':'var(--navy)'}">${fmt(Math.round(m*100)/100)}</b> ${ok?'✓':''}`;}
 D.ciclo({
- livros:[{k:3,m1:6,m2:7,notas:[6,6,6],nm:'Pedro'}],
+ livros:[{k:3,m1:6,m2:7,notas:[6,6,6],nm:'Luís Otávio'}],
  sortear(){for(;;){const k=rnd(2,4),m1=rnd(4,8),m2=m1+rnd(1,2),need=(k+1)*m2-k*m1;if(need<=10&&need>=0){const notas=Array.from({length:k},()=>m1);if(k>=2){const t=rnd(1,2);notas[0]-=t;notas[1]+=t;}return {k,m1,m2,notas,nm:pick(NOMES)};}}},
  montar(q){cur=q;SX=D.sl('sx',0,10,.5,5,draw,v=>fmt(v));$('r1').value='';$('r1').style.borderColor='';
-  $('dq').innerHTML=`A média das notas de ${q.nm} nas <span class="k">${q.k} primeiras provas</span> foi <span class="k">${q.m1}</span>. Quanto ${q.nm==='Ana'||q.nm==='Bia'||q.nm==='Lia'||q.nm==='Nina'||q.nm==='Malu'||q.nm==='Sofia'?'ela':'ele'} precisa tirar na próxima prova para a média das ${q.k+1} ficar <span class="k">${q.m2}</span>?`;draw();},
+  $('dq').innerHTML=`A média das notas de ${q.nm} nas <span class="k">${q.k} primeiras provas</span> foi <span class="k">${q.m1}</span>. Quanto ${FEM.includes(q.nm)?'ela':'ele'} precisa tirar na próxima prova para a média das ${q.k+1} ficar <span class="k">${q.m2}</span>?`;draw();},
  conferir(q){const v=D.ler(['r1']);if(!v)return null;const n=(q.k+1)*q.m2-q.k*q.m1,ok=v[0]===n;D.marcar(['r1'],[ok]);SX.set(n);draw();
   return {ok,exp:`Para média ${q.m2} em ${q.k+1} provas, a soma precisa ser ${q.k+1} × ${q.m2} = ${(q.k+1)*q.m2}. Nas ${q.k} primeiras a soma foi ${q.k} × ${q.m1} = ${q.k*q.m1}. Falta: ${(q.k+1)*q.m2} − ${q.k*q.m1} = <b>${n}</b>.`};},
  res:true});

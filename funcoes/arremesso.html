@@ -61,8 +61,8 @@ function quadra(q,t){const W=340,Hh=230,P=26,X1=q.X+1,sx=x=>P+x*(W-P-12)/X1,sy=y
  $('fig').innerHTML=`<svg viewBox="0 0 ${W} ${Hh}" width="${W}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
 function lance(q){const t0=performance.now();if(anim)cancelAnimationFrame(anim);const st=t=>{const p=Math.min(1,(t-t0)/1400);quadra(q,p);if(p<1)anim=requestAnimationFrame(st);else anim=null;};anim=requestAnimationFrame(st);}
 D.ciclo({
- livros:[{a:-0.2,d:3,e:4,X:5,quem:'Mikaela'}],
- sortear(){const a=pick([-0.15,-0.2,-0.25,-0.3]),d=pick([2,2.5,3]),e=pick([3.6,3.8,4,4.2,4.5]),X=pick([4,4.5,5,5.5]);return {a,d,e,X,quem:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela'])};},
+ livros:[{a:-0.2,d:3,e:4,X:5,quem:'Priscila'}],
+ sortear(){const a=pick([-0.15,-0.2,-0.25,-0.3]),d=pick([2,2.5,3]),e=pick([3.6,3.8,4,4.2,4.5]),X=pick([4,4.5,5,5.5]);return {a,d,e,X,quem:pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'])};},
  montar(q){cur=q;esc=null;chips();if(anim){cancelAnimationFrame(anim);anim=null;}['d','e','h'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});
   $('dq').innerHTML=`Arremesso de ${q.quem}: <span class="k">h(x) = ${fmt(q.a).replace('-','−')}(x − ${fmt(q.d)})² + ${fmt(q.e)}</span>. A cesta está a <span class="k">${fmt(q.X)} m</span>.`;quadra(q,0);},
  conferir(q){if(esc===null){msg('dm','Diga se a bola passa acima do aro.','info');return null;}const v=D.ler(['d','e','h']);if(!v)return null;const hx=r2(H(q,q.X)),acima=hx>ARO;

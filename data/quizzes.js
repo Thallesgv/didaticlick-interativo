@@ -20,7 +20,7 @@ window.QUIZ={
 "igualdade-m4":{title:"Igualdade · Módulo 4: Da situação à equação",qs:[
 {q:"O triplo de um número, diminuído de 5, é igual a 16. Que número é esse?",o:["3","7","11","21"],a:1,e:"3x − 5 = 16 → 3x = 21 → x = 7."},
 {q:"A soma de três números consecutivos é 45. O menor deles é:",o:["13","15","14","16"],a:2,e:"x + (x + 1) + (x + 2) = 45 → 3x + 3 = 45 → x = 14. Os números são 14, 15 e 16."},
-{q:"Ana tem o dobro da idade de Bia. Juntas, elas têm 39 anos. Qual é a idade de Bia?",o:["13 anos","26 anos","19 anos","12 anos"],a:0,e:"Bia: x; Ana: 2x. x + 2x = 39 → 3x = 39 → x = 13."},
+{q:"Manu tem o dobro da idade de Mikaela. Juntas, elas têm 39 anos. Qual é a idade de Mikaela?",o:["13 anos","26 anos","19 anos","12 anos"],a:0,e:"Mikaela: x; Manu: 2x. x + 2x = 39 → 3x = 39 → x = 13."},
 {q:"Um retângulo tem perímetro de 30 cm, e o comprimento é o dobro da largura. A largura mede:",o:["10 cm","7,5 cm","6 cm","5 cm"],a:3,e:"Largura x, comprimento 2x: 2(x + 2x) = 30 → 6x = 30 → x = 5 cm."},
 {q:"Numa prova de 20 questões, cada acerto vale +5 pontos e cada erro vale −2. Um aluno respondeu todas e fez 58 pontos. Quantas acertou?",o:["12","14","16","18"],a:1,e:"Acertos: a; erros: 20 − a. 5a − 2(20 − a) = 58 → 7a − 40 = 58 → 7a = 98 → a = 14."}]}
 };

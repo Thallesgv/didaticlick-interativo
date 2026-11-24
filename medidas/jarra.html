@@ -85,7 +85,7 @@ function draw(){const v=dentro.reduce((a,i)=>a+OBJ[i].v,0),n=base+v;
 slider('ag',12,4,14,v=>{base=v*100;draw();},v=>F(v*100)+' mL');
 document.querySelectorAll('.pesos button[data-o]').forEach(b=>b.onclick=()=>{const i=+b.dataset.o;dentro=dentro.includes(i)?dentro.filter(x=>x!==i):dentro.concat(i);draw();});
 desafio(()=>{const a=rnd(6,13)*100,v=pick([150,180,200,220,250,300,320,350,400,450]),o=pick(['uma pedra','um peso de ferro','uma bola de metal']);
- const unid=pick(['cm³','mL']);return {html:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><div style="text-align:center">${jarra(a,[],150)}<div class="muted" style="font-size:13px;line-height:1.2">antes</div></div><div style="text-align:center">${jarra(a+v,[{v:v,cor:'#78716C',f:'pedra'}],150)}<div class="muted" style="font-size:13px;line-height:1.2">depois</div></div></div>Samuel mergulhou ${o} na jarra. O volume ${o.startsWith('uma')?'dela':'dele'} é ${box('s')} ${unid}.`,res:[v],exp:`O nível foi de ${F(a)} mL para ${F(a+v)} mL: ${F(a+v)} − ${F(a)} = ${F(v)} mL = ${F(v)} cm³.`};});
+ const unid=pick(['cm³','mL']);return {html:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><div style="text-align:center">${jarra(a,[],150)}<div class="muted" style="font-size:13px;line-height:1.2">antes</div></div><div style="text-align:center">${jarra(a+v,[{v:v,cor:'#78716C',f:'pedra'}],150)}<div class="muted" style="font-size:13px;line-height:1.2">depois</div></div></div>Nikolas mergulhou ${o} na jarra. O volume ${o.startsWith('uma')?'dela':'dele'} é ${box('s')} ${unid}.`,res:[v],exp:`O nível foi de ${F(a)} mL para ${F(a+v)} mL: ${F(a+v)} − ${F(a)} = ${F(v)} mL = ${F(v)} cm³.`};});
 draw();
 
 </script>

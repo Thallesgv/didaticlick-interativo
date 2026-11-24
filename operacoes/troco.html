@@ -61,8 +61,8 @@ function desenha(){$('cofre').innerHTML=VAL.map(v=>`<span data-v="${v}">${peca(v
  $('bs').textContent=`Na bandeja: R$ ${band.reduce((s,v)=>s+v,0)},00 em ${band.length} peça${band.length===1?'':'s'}`;}
 function contar(p,pg){const s=[];let a=p;const d=Math.ceil(a/10)*10;if(d>a&&d<=pg){s.push([a,d]);a=d;}const c=Math.ceil(a/100)*100;if(c>a&&c<=pg&&pg-a>=100){s.push([a,c]);a=c;}if(pg>a)s.push([a,pg]);return s;}
 D.ciclo({
- livros:[{nome:'Teodoro',it:'um lanche',p:37,pg:100}],
- sortear(){const pg=pick([20,50,100,100,200]);let p;do p=rnd(Math.max(3,pg/5|0),pg-1);while(pg-p<3);return {nome:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela']),it:pick(['um lanche','um livro','um caderno','uma camiseta','um brinquedo','um ingresso']),p,pg};},
+ livros:[{nome:'Luís Otávio',it:'um lanche',p:37,pg:100}],
+ sortear(){const pg=pick([20,50,100,100,200]);let p;do p=rnd(Math.max(3,pg/5|0),pg-1);while(pg-p<3);return {nome:pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard']),it:pick(['um lanche','um livro','um caderno','uma camiseta','um brinquedo','um ingresso']),p,pg};},
  montar(q){cur=q;band=[];$('band').style.borderColor='#0E2354';$('t').value='';$('t').style.borderColor='#D7DEEA';
   $('dq').innerHTML=`${q.nome} comprou ${q.it} de <span class="k">R$ ${q.p},00</span> e pagou com uma nota de <span class="k">R$ ${q.pg},00</span>.`;
   $('ct').innerHTML=`Preço R$ ${q.p},00 · Pago R$ ${q.pg},00`;desenha();},

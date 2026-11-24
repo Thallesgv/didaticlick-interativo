@@ -80,9 +80,9 @@ $('passo').onclick=()=>{parar();tic();};$('zera').onclick=()=>{parar();$('play')
 stepper('sa',a,1,30,v=>{a=v;parar();$('play').textContent='▶ Começar';zera();});stepper('sb',b,1,30,v=>{b=v;parar();$('play').textContent='▶ Começar';zera();});
 let alvo,feito;
 const CTX=[(x,y)=>`Dois ônibus saem juntos do terminal. Um sai a cada ${x} minutos e o outro a cada ${y} minutos. Depois de quantos minutos saem juntos de novo?`,
- (x,y)=>`Carla toma um remédio de ${x} em ${x} horas e outro de ${y} em ${y} horas. Tomou os dois juntos agora. Daqui a quantas horas toma os dois juntos de novo?`,
+ (x,y)=>`Isabelle toma um remédio de ${x} em ${x} horas e outro de ${y} em ${y} horas. Tomou os dois juntos agora. Daqui a quantas horas toma os dois juntos de novo?`,
  (x,y)=>`Dois pisca-piscas acenderam juntos. Um acende a cada ${x} segundos e o outro a cada ${y}. Depois de quantos segundos acendem juntos de novo?`,
- (x,y)=>`Numa pista, Davi completa uma volta a cada ${x} minutos e Nina a cada ${y}. Largaram juntos. Depois de quantos minutos passam juntos pela largada?`];
+ (x,y)=>`Numa pista, Miguel completa uma volta a cada ${x} minutos e Sophia a cada ${y}. Largaram juntos. Depois de quantos minutos passam juntos pela largada?`];
 function desafio(){feito=false;msg('dm','');let x,y;do{x=rnd(2,15);y=rnd(2,20);}while(x===y||MD.mmc(x,y)>120||MD.mmc(x,y)===Math.max(x,y)&&Math.random()<.7);alvo=[x,y];
  $('dq').textContent='Quando se encontram de novo?';$('dbody').innerHTML=`<p style="margin:0 0 8px">${pick(CTX)(x,y)}</p><input type="number" id="resp" inputmode="numeric">`;}
 $('ok').onclick=()=>{if(feito)return;const v=parseInt($('resp').value);if(isNaN(v)){msg('dm','Digite um número antes do OK.','info');return;}feito=true;const [x,y]=alvo,M=MD.mmc(x,y),ok=v===M;placar(ok);

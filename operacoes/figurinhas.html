@@ -43,14 +43,14 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur,SX;
 function pil(n,k,ra,cor){const p=Math.floor(n/k),r=n%k,ok=r===ra;let g='';for(let i=0;i<p;i++)for(let j=0;j<k;j++)g+=`<rect x="${6+i*22}" y="${60-j*6}" width="18" height="5" rx="1" fill="${cor}"/>`;
  for(let j=0;j<r;j++)g+=`<rect x="${6+p*22+6}" y="${60-j*6}" width="18" height="5" rx="1" fill="${ok?'#15803D':'#B91C1C'}"/>`;
  return `<svg viewBox="0 0 340 92" width="330">${g}<text x="6" y="84" font-size="12" font-family="Poppins" fill="#0E2354">pilhas de ${k}: ${p} pilha${p===1?'':'s'}, sobra${r===1?'':'m'} <tspan font-weight="700" fill="${ok?'#15803D':'#B91C1C'}">${r}</tspan> ${ok?'✓':'(quero '+ra+')'}</text></svg>`;}
 function draw(){const q=cur,n=SX.get();$('fig').innerHTML=pil(n,q.a,q.ra,'#2457D6')+pil(n,q.b,q.rb,'#F7821F');}
 D.ciclo({
- livros:[{a:6,ra:4,b:5,rb:3,L:40,nm:'Davi'}],
+ livros:[{a:6,ra:4,b:5,rb:3,L:40,nm:'Guilherme'}],
  sortear(){const [a,b]=pick([[6,5],[4,7],[5,7],[3,8],[4,5],[6,7],[3,5]]),n=rnd(Math.max(a,b)+1,a*b-1);if(n%a===0||n%b===0)return this.sortear();return {a,ra:n%a,b,rb:n%b,L:a*b,nm:pick(NOMES)};},
  montar(q){cur=q;SX=D.sl('sx',1,q.L-1,1,1,draw);$('r1').value='';$('r1').style.borderColor='';
   $('dq').innerHTML=`Arrumando as figurinhas em pilhas de <span class="k">${q.a}</span>, ${q.nm} vê que sobra${q.ra===1?'':'m'} <span class="k">${q.ra}</span>. Em pilhas de <span class="k">${q.b}</span>, sobra${q.rb===1?'':'m'} <span class="k">${q.rb}</span>. Ele tem menos de <span class="k">${q.L}</span> figurinhas. Quantas são?`;draw();},

@@ -45,7 +45,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 <script>
 
 let cur;
-const pessoas=['Duda','Enzo','Alice','Guilherme','Mariah'];
+const pessoas=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 function nome(a){return a===0?'térreo':a>0?a+'º andar':(-a)+'º subsolo';}
 function draw(){const q=cur,lo=-4,hi=7,H=380,fy=v=>40+(hi-v)*(H-60)/(hi-lo);let g='';
  g+=`<rect x="90" y="${fy(hi)-14}" width="120" height="${fy(lo)-fy(hi)+28}" fill="#EEF3FF" stroke="#0E2354" stroke-width="2" rx="4"/>`;
@@ -60,14 +60,14 @@ function draw(){const q=cur,lo=-4,hi=7,H=380,fy=v=>40+(hi-v)*(H-60)/(hi-lo);let 
  if(D.feito)g+=`<text x="232" y="14" text-anchor="middle" font-size="10" font-family="Poppins" fill="#2457D6">números</text><text x="232" y="26" text-anchor="middle" font-size="10" font-family="Poppins" fill="#2457D6">novos</text>`;
  $('fig').innerHTML=`<svg viewBox="0 0 280 ${H}" width="280">${g}</svg>`;}
 D.ciclo({
- livros:[{tipo:'dist',p:[['Duda',4]],carro:-2,z:0},{tipo:'novo',p:[['Duda',4]],carro:-2,z:-2,alvos:[['andar da Duda',4],['térreo',0]]}],
+ livros:[{tipo:'dist',p:[['Gaby',4]],carro:-2,z:0},{tipo:'novo',p:[['Gaby',4]],carro:-2,z:-2,alvos:[['andar da Gaby',4],['térreo',0]]}],
  sortear(){const n=shuffle(pessoas),a=rnd(1,6),b=rnd(-3,3),z=pick([-3,-2,-1,1,2,3].filter(x=>x!==a&&x!==b));
   return {tipo:'novo',p:[[n[0],a],[n[1],b]],z,alvos:[['andar de '+n[0],a],['andar de '+n[1],b]]};},
  montar(q){cur=q;
-  if(q.tipo==='dist'){$('dq').innerHTML='Num prédio, o <span class="k">térreo é o 0</span>. Duda mora no 4º andar e o carro dela fica no 2º subsolo (−2). Quantos andares Duda desce do apartamento até o carro?';
-   $('perg').innerHTML='Duda desce '+box('r1',80)+' andares.';}
+  if(q.tipo==='dist'){$('dq').innerHTML='Num prédio, o <span class="k">térreo é o 0</span>. Gaby mora no 4º andar e o carro dela fica no 2º subsolo (−2). Quantos andares Gaby desce do apartamento até o carro?';
+   $('perg').innerHTML='Gaby desce '+box('r1',80)+' andares.';}
   else{const pz=q.p.map(([n,a])=>`${n} está no <b>${nome(a)}</b> (${sg(a)})`).join(' e ');
-   $('dq').innerHTML=(q.livro?'Duda mora no 4º andar e o carro fica no 2º subsolo. ':pz+'. ')+`Agora o síndico decidiu que o <span class="k">zero passa a ser o ${nome(q.z)}</span> (o antigo ${sg(q.z)}). Que números ganham estes andares?`;
+   $('dq').innerHTML=(q.livro?'Gaby mora no 4º andar e o carro fica no 2º subsolo. ':pz+'. ')+`Agora o síndico decidiu que o <span class="k">zero passa a ser o ${nome(q.z)}</span> (o antigo ${sg(q.z)}). Que números ganham estes andares?`;
    $('perg').innerHTML=q.alvos.map(([t],i)=>`${t}: `+box('r'+(i+1),80)).join(' &nbsp; ');}
   draw();},
  conferir(q){if(q.tipo==='dist'){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===6;D.marcar(['r1'],[ok]);draw();

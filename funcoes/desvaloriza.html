@@ -51,9 +51,9 @@ function graf(q,show){const T=Math.ceil(q.v0/q.d),K=q.v0/1000,o={x0:0,x1:T,y0:0,
  o.extra=(sx,sy)=>`<line x1="${sx(0)}" y1="${sy(q.alvo/1000)}" x2="${sx(T)}" y2="${sy(q.alvo/1000)}" stroke="#F7821F" stroke-dasharray="5 4" stroke-width="2"/><text x="${sx(T)-4}" y="${sy(q.alvo/1000)-6}" text-anchor="end" font-size="11" font-weight="700" font-family="Poppins" fill="#F7821F">${R(q.alvo)}</text>`;
  if(show){o.fns.push({f:t=>(q.v0-q.d*t)/1000,cor:'#2457D6'});o.pts.push({x:q.t,y:q.alvo/1000,cor:'#15803D',rot:`t = ${q.t}`});o.pts.push({x:T,y:(q.v0-q.d*T)/1000,cor:'#B91C1C'});}
  $('fig').innerHTML=D.plano(o)+'<div class="muted" style="font-size:12px;text-align:center">eixo vertical em milhares de reais · eixo horizontal em anos</div>';}
-const ITEM=['o celular','o notebook','a bicicleta','o videogame','a moto'],NOMES=['Sophia','Teodoro','Duda','Samuel','Miguel','Mikaela','Manu'];
+const ITEM=['o celular','o notebook','a bicicleta','o videogame','a moto'],NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 D.ciclo({
- livros:[{v0:3600,d:450,t:5,alvo:1350,quem:'Sophia',item:'o notebook'}],
+ livros:[{v0:3600,d:450,t:5,alvo:1350,quem:'Ângela',item:'o notebook'}],
  sortear(){let v0,d,t;do{d=pick([150,200,250,300,400,500]);v0=d*rnd(6,12);t=rnd(2,Math.floor(v0/d)-1);}while(!t);return {v0,d,t,alvo:v0-d*t,quem:pick(NOMES),item:pick(ITEM)};},
  montar(q){cur=q;['a','t'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});$('v0').textContent=fmt(q.v0);
   $('dq').innerHTML=`${q.item[0].toUpperCase()+q.item.slice(1)} de ${q.quem} custou <span class="k">${R(q.v0)}</span> e perde <span class="k">${R(q.d)}</span> por ano. Em quantos anos vale <span class="k">${R(q.alvo)}</span>?`;graf(q,false);},

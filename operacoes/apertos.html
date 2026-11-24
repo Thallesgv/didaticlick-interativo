@@ -43,7 +43,7 @@ table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const NOMES=['Ana','Bia','Caio','Davi','Lia','Rui','Téo','Nina','Igor','Malu','Leo','Sofia'];
+const NOMES=['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela','Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique','Nikolas','Richard'];
 let cur,E,sel;
 function draw(){const q=cur,n=q.n,R=110,cx=170,cy=135,P=Array.from({length:n},(_,i)=>[cx+R*Math.sin(2*Math.PI*i/n),cy-R*Math.cos(2*Math.PI*i/n)]);let g='';
  E.forEach(k=>{const [i,j]=k.split('-').map(Number);g+=`<line data-e="${k}" x1="${P[i][0]}" y1="${P[i][1]}" x2="${P[j][0]}" y2="${P[j][1]}" stroke="#F7821F" stroke-width="4" style="cursor:pointer"/>`;});
@@ -52,7 +52,7 @@ function draw(){const q=cur,n=q.n,R=110,cx=170,cy=135,P=Array.from({length:n},(_
  $('fig').querySelectorAll('[data-p]').forEach(el=>el.onclick=()=>{if(D.feito)return;const i=+el.dataset.p;if(sel===null)sel=i;else if(sel===i)sel=null;else{E.add(Math.min(sel,i)+'-'+Math.max(sel,i));sel=null;}draw();});
  $('fig').querySelectorAll('[data-e]').forEach(el=>el.onclick=()=>{if(!D.feito){E.delete(el.dataset.e);draw();}});}
 D.ciclo({
- livros:[{n:5,nm:['Ana','Bia','Caio','Davi','Lia']}],
+ livros:[{n:5,nm:['Rhaquel','Nicole','Miguel','Ícaro','Pietra']}],
  sortear(){const n=rnd(3,8);return {n,nm:shuffle(NOMES).slice(0,n)};},
  montar(q){cur=q;E=new Set();sel=null;$('r1').value='';$('r1').style.borderColor='';
   $('dq').innerHTML=`<span class="k">${q.n} amigos</span> se encontram e cada um aperta a mão de cada um dos outros uma única vez. Quantos apertos de mão acontecem?`;draw();},
