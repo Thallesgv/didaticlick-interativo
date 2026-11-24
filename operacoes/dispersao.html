@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mesma média, notas diferentes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Divisão</div><h1>Mesma média, notas diferentes</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Mude as quatro notas de cada aluno. A média junta tudo e reparte igualmente, mas não conta se as notas foram parecidas ou muito diferentes.</p><b style="color:#2457D6">Sophia</b><div class="sl" id="a0"><b>1ª nota</b><input type="range"><span></span></div><div class="sl" id="a1"><b>2ª nota</b><input type="range"><span></span></div><div class="sl" id="a2"><b>3ª nota</b><input type="range"><span></span></div><div class="sl" id="a3"><b>4ª nota</b><input type="range"><span></span></div><b style="color:#F7821F">Gustavo</b><div class="sl" id="b0"><b>1ª nota</b><input type="range"><span></span></div><div class="sl" id="b1"><b>2ª nota</b><input type="range"><span></span></div><div class="sl" id="b2"><b>3ª nota</b><input type="range"><span></span></div><div class="sl" id="b3"><b>4ª nota</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const VA=[7,7,7,7],VB=[10,10,4,4];const SA=VA.map((v,i)=>D.sl('a'+i,0,10,1,v,draw)),SB=VB.map((v,i)=>D.sl('b'+i,0,10,1,v,draw));
+function draw(){const a=SA.map(s=>s.get()),b=SB.map(s=>s.get()),ma=a.reduce((s,x)=>s+x,0)/4,mb=b.reduce((s,x)=>s+x,0)/4;
+ const W=330,sx=v=>20+v*29;let g='';[[a,ma,45,'#2457D6'],[b,mb,115,'#F7821F']].forEach(([v,m,y,c])=>{g+=`<line x1="20" y1="${y}" x2="310" y2="${y}" stroke="#D7DEEA" stroke-width="2"/>`;
+  v.forEach((x,i)=>{const k=v.slice(0,i).filter(z=>z===x).length;g+=`<circle cx="${sx(x)}" cy="${y-k*9}" r="6" fill="${c}"/>`;});g+=`<path d="M${sx(m)} ${y+6} l-6 10 h12z" fill="#0E2354"/>`+T(sx(m),y+28,'média '+f2(m),{fs:10});});
+ for(let k=0;k<=10;k+=2)g+=T(sx(k),162,k,{fs:9,w:500});
+ $('fig').innerHTML=svg(W,168,g);const amp=v=>Math.max(...v)-Math.min(...v);
+ $('nt').innerHTML=`Sophia: média <b>${f2(ma)}</b>, da menor à maior nota vão ${amp(a)} pontos. Gustavo: média <b>${f2(mb)}</b>, ${amp(b)} pontos. ${Math.abs(ma-mb)<1e-9?'Médias iguais, mas notas bem diferentes: a média esconde isso.':'Tente deixar as duas médias iguais com notas bem diferentes.'}`;}draw();
+
+</script>
+</body>
+</html>

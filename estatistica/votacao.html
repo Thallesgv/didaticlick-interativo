@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a tabela da votação · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.dados{display:flex;flex-wrap:wrap;gap:5px}.dados button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:6px 8px;font-size:13px}.dados button.on{background:#E5E9F2;color:#9CA3AF;border-color:#E5E9F2;text-decoration:line-through}</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">Monte a tabela da votação</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque em cada voto para contá-lo: um tracinho aparece na linha do passeio. Depois complete a frequência absoluta (f) e a frequência relativa em % de cada um.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="dados" id="vs"></div>
+<table class="t" id="tb"></table>
+<div class="muted" id="tot" style="margin-top:6px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=estatistica-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Frequência relativa = f ÷ total. Com 25 votos, cada voto vale 4%; com 20 votos, cada voto vale 5%.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+const LIVRO=["Zoológico", "Cinema", "Zoológico", "Praia", "Zoológico", "Praia", "Zoológico", "Praia", "Cinema", "Zoológico", "Museu", "Zoológico", "Praia", "Museu", "Praia", "Cinema", "Cinema", "Zoológico", "Museu", "Zoológico", "Museu", "Praia", "Cinema", "Zoológico", "Praia"];
+let cur,cont,us;
+function tally(n){let s='';for(let k=0;k<Math.floor(n/5);k++)s+='<span style="text-decoration:line-through;text-decoration-color:#F7821F;text-decoration-thickness:2px;letter-spacing:1px">||||</span> ';return s+'|'.repeat(n%5);}
+function tab(){$('tb').innerHTML='<tr><th>Opção</th><th>Contagem</th><th>f</th><th>fr (%)</th></tr>'+cur.cats.map((c,i)=>`<tr><td>${c}</td><td style="font-weight:700;color:#0E2354">${tally(cont[i])}</td><td>${box('f'+i,56)}</td><td>${box('p'+i,64)}</td></tr>`).join('');}
+function chips(){$('vs').innerHTML=cur.v.map((x,i)=>`<button data-i="${i}" class="${us[i]?'on':''}">${x}</button>`).join('');
+ $('vs').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(us[i]||D.feito)return;us[i]=1;cont[cur.cats.indexOf(cur.v[i])]++;b.classList.add('on');
+  cur.cats.forEach((c,k)=>{$('tb').rows[k+1].cells[1].innerHTML=tally(cont[k]);});$('tot').textContent=`Votos contados: ${us.filter(Boolean).length} de ${cur.v.length}`;});}
+D.ciclo({
+ livros:[{cats:['Zoológico','Museu','Praia','Cinema'],v:LIVRO,tema:'o passeio da turma da Duda'}],
+ sortear(){const T=pick([20,25]),temas=[['a fruta preferida',['Banana','Maçã','Uva','Manga']],['o esporte preferido',['Futebol','Vôlei','Natação','Basquete']],['a cor preferida',['Azul','Verde','Roxo','Preto']]],tm=pick(temas);
+  let f=[1,1,1,1];for(let k=4;k<T;k++)f[rnd(0,3)]++;let v=[];tm[1].forEach((c,i)=>{for(let k=0;k<f[i];k++)v.push(c);});return {cats:tm[1],v:shuffle(v),tema:tm[0]};},
+ montar(q){cur=q;cont=q.cats.map(()=>0);us=q.v.map(()=>0);
+  $('dq').innerHTML=`Os <span class="k">${q.v.length}</span> votos sobre ${q.tema}. Conte e monte a tabela.`;tab();chips();$('tot').textContent=`Votos contados: 0 de ${q.v.length}`;},
+ conferir(q){const ids=[];q.cats.forEach((c,i)=>ids.push('f'+i,'p'+i));const v=D.ler(ids);if(!v)return null;
+  const T=q.v.length,F=q.cats.map(c=>q.v.filter(x=>x===c).length),oks=[];F.forEach((f,i)=>{oks.push(v[2*i]===f,perto(v[2*i+1],100*f/T));});
+  D.marcar(ids,oks);const ok=oks.every(Boolean);
+  return {ok,exp:q.cats.map((c,i)=>`${c}: ${F[i]} (${F[i]}/${T} = ${fmt1(100*F[i]/T)}%)`).join(' · ')+`. Total: ${T} e 100%.`};},
+ res:true});
+
+</script>
+</body>
+</html>

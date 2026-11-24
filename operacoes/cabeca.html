@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conta de cabeça na reta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Operações</div><h1>Conta de cabeça na reta</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha os números e o caminho. A reta mostra cada salto; somados (ou tirados) um por um, chegam ao resultado sem armar a conta.</p><div class="sl" id="a"><b>1º número</b><input type="range"><span></span></div><div class="sl" id="b"><b>2º número</b><input type="range"><span></span></div><div class="row"><button class="alt on" id="c1">Dezenas primeiro</button><button class="alt" id="c2">Pela dezena redonda</button></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const SUB=(Q.get('op')||'soma')==='sub';let cam=1;
+const A=D.sl('a',SUB?20:10,99,1,+Q.get('a')||(SUB?85:47),draw),B=D.sl('b',2,SUB?79:99,1,+Q.get('b')||(SUB?27:36),draw);
+function passos(a,b){const s=SUB?-1:1,d=Math.floor(b/10)*10,u=b%10,P=[];let x=a;
+ if(cam===1){if(d){P.push([x,x+s*d]);x+=s*d;}if(u)P.push([x,x+s*u]);}
+ else{const r=SUB?(a%10):(10-a%10)%10;if(r&&r<=b){P.push([x,x+s*r]);x+=s*r;}let f=b-(P.length?r:0);const dd=Math.floor(f/10)*10,uu=f%10;if(dd){P.push([x,x+s*dd]);x+=s*dd;}if(uu)P.push([x,x+s*uu]);}
+ return P;}
+function draw(){let a=A.get(),b=B.get();if(SUB&&b>a){B.set(a);b=a;}const P=passos(a,b),r=SUB?a-b:a+b;
+ const lo=Math.min(a,r),hi=Math.max(a,r),m0=Math.floor(lo/10)*10,m1=Math.ceil(hi/10)*10||10,W=340,sx=v=>15+(v-m0)/(m1-m0)*(W-30);
+ let g=`<line x1="10" y1="80" x2="${W-10}" y2="80" stroke="#0E2354" stroke-width="2"/>`;
+ for(let k=m0;k<=m1;k+=10)g+=`<line x1="${sx(k)}" y1="74" x2="${sx(k)}" y2="86" stroke="#0E2354"/>`+T(sx(k),100,k,{fs:10,w:500});
+ P.forEach(([u,v],i)=>{const x1=sx(u),x2=sx(v),h=24+12*(i%2);g+=`<path d="M${x1} 78 Q${(x1+x2)/2} ${78-2*h} ${x2} 78" fill="none" stroke="${SUB?'#DC2626':'#F7821F'}" stroke-width="2.2"/>`+T((x1+x2)/2,78-h-4,(SUB?'−':'+')+(Math.abs(v-u)),{c:SUB?'#DC2626':'#F7821F'});});
+ g+=`<circle cx="${sx(a)}" cy="80" r="6" fill="#2457D6"/>`+T(sx(a),116,a,{c:'#2457D6',w:700})+`<circle cx="${sx(r)}" cy="80" r="6" fill="#15803D"/>`+T(sx(r),116,r,{c:'#15803D',w:700});
+ $('fig').innerHTML=svg(W,124,g);let x=a;const txt=P.map(([u,v])=>`${u} ${SUB?'−':'+'} ${Math.abs(v-u)} = ${v}`).join('; ');
+ $('nt').innerHTML=`<b>${a} ${SUB?'−':'+'} ${b}</b>: ${txt}. ${cam===2?(SUB?'Primeiro descemos até a dezena redonda; depois fica fácil.':'Primeiro completamos a dezena; depois fica fácil.'):(SUB?'Tiramos as dezenas e depois as unidades.':'Somamos as dezenas e depois as unidades.')}`;}
+$('c1').onclick=()=>{cam=1;$('c1').classList.add('on');$('c2').classList.remove('on');draw();};
+$('c2').onclick=()=>{cam=2;$('c2').classList.add('on');$('c1').classList.remove('on');draw();};
+if(SUB){document.querySelector('h1').textContent='Subtraia de cabeça na reta';document.querySelector('.brand').innerHTML='Didati<b>Click</b> · Subtração';$('c1').textContent='Dezenas primeiro';$('c2').textContent='Desça até a dezena redonda';}
+else document.querySelector('.brand').innerHTML='Didati<b>Click</b> · Adição';
+draw();
+
+</script>
+</body>
+</html>

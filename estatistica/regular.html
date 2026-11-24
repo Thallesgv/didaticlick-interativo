@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Qual time é mais regular? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">Qual time é mais regular?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Os dois times têm a mesma média de gols. Calcule a amplitude e o desvio médio de cada um e escolha o mais regular.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<table class="t"><tr><th></th><th>Média</th><th>Amplitude</th><th>Desvio médio</th></tr>
+<tr><td id="na"></td><td id="ma"></td><td><input class="n" id="r1" inputmode="decimal" style="width:64px"></td><td><input class="n" id="r2" inputmode="decimal" style="width:64px"></td></tr>
+<tr><td id="nb"></td><td id="mb"></td><td><input class="n" id="r3" inputmode="decimal" style="width:64px"></td><td><input class="n" id="r4" inputmode="decimal" style="width:64px"></td></tr></table>
+<div class="ask">Mais regular: <span class="chips" id="cl"></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=estatistica-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Desvio médio: calcule a distância de cada valor até a média (sempre positiva), some e divida por 5. Quanto menor, mais regular.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+let cur,esc=null;
+const amp=v=>Math.max(...v)-Math.min(...v),med=v=>v.reduce((s,x)=>s+x,0)/v.length,dm=v=>{const m=med(v);return v.reduce((s,x)=>s+Math.abs(x-m),0)/v.length;};
+function dot(v,y,cor){let g='';const c={};v.forEach(x=>{const k=c[x]||0;c[x]=k+1;g+=`<circle cx="${30+x*40}" cy="${y-8-k*14}" r="6.5" fill="${cor}"/>`;});return g;}
+function draw(){let g='';[[cur.A,84,'#2457D6',cur.na],[cur.B,194,'#7A4BB5',cur.nb]].forEach(([v,y,c,n])=>{g+=`<line x1="20" y1="${y}" x2="${30+6*40+10}" y2="${y}" stroke="#0E2354"/>`;
+ for(let k=0;k<=6;k++)g+=`<text x="${30+k*40}" y="${y+14}" font-size="11" text-anchor="middle" fill="#6B7280" font-family="Poppins">${k}</text>`;
+ g+=dot(v,y,c)+`<text x="20" y="${y-70}" font-size="12" font-weight="700" fill="${c}" font-family="Poppins">${n}: ${v.join(', ')} gols</text>`;
+ const m=med(v);g+=`<polygon points="${30+m*40},${y+18} ${25+m*40},${y+26} ${35+m*40},${y+26}" fill="#F7821F"/>`;});
+ $('fig').innerHTML=`<svg viewBox="0 0 300 226" width="320">${g}</svg>`;}
+function clb(){$('cl').innerHTML=[cur.na,cur.nb].map((n,i)=>`<button data-v="${i}" class="${esc===i?'on':''}">${n}</button>`).join('');$('cl').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;clb();}});}
+D.ciclo({
+ livros:[{A:[1,2,2,3,2],B:[0,4,1,5,0],na:'Time do Miguel',nb:'Time do Teodoro'}],
+ sortear(){let A,B;const m=rnd(2,3);do{A=[];B=[];for(let k=0;k<4;k++){A.push(rnd(Math.max(0,m-1),m+1));B.push(rnd(0,6));}
+   A.push(5*m-A.reduce((s,x)=>s+x,0));B.push(5*m-B.reduce((s,x)=>s+x,0));}while(A[4]<0||A[4]>6||B[4]<0||B[4]>6||!(amp(A)<amp(B)&&dm(A)<dm(B)));
+  const na='Time da '+pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela']),nb='Time do '+pick(['Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique']);return rnd(0,1)?{A,B,na,nb}:{A:B,B:A,na,nb};},
+ montar(q){cur=q;esc=null;['r1','r2','r3','r4'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('na').textContent=q.na;$('nb').textContent=q.nb;$('ma').textContent=fmt1(med(q.A));$('mb').textContent=fmt1(med(q.B));
+  $('dq').innerHTML=`Gols nos últimos 5 jogos. Média dos dois: <span class="k">${fmt1(med(q.A))}</span>.`;draw();clb();},
+ conferir(q){const v=D.ler(['r1','r2','r3','r4']);if(!v)return null;if(esc===null){msg('dm','Escolha o time mais regular.','info');return null;}
+  const oks=[v[0]===amp(q.A),perto(v[1],dm(q.A)),v[2]===amp(q.B),perto(v[3],dm(q.B))];D.marcar(['r1','r2','r3','r4'],oks);
+  const melhor=dm(q.A)<dm(q.B)?0:1,ok=oks.every(Boolean)&&esc===melhor,m=med(q.A);
+  const d=v=>v.map(x=>Math.abs(x-m)).join(' + ');
+  return {ok,exp:`${q.na}: amplitude ${Math.max(...q.A)} − ${Math.min(...q.A)} = ${amp(q.A)}; desvio médio (${d(q.A)}) ÷ 5 = ${fmt1(dm(q.A))}. ${q.nb}: amplitude ${amp(q.B)}; desvio médio (${d(q.B)}) ÷ 5 = ${fmt1(dm(q.B))}. Mais regular: <b>${melhor?q.nb:q.na}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

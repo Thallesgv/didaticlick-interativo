@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mesmo dado, vários gráficos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.vals{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.vals .v{display:flex;align-items:center;gap:2px;border:2px solid #D7DEEA;border-radius:10px;padding:2px}
+.vals .v button{padding:4px 9px;font-size:16px;background:#fff;color:var(--navy);border:0}
+.vals .v b{min-width:30px;text-align:center;color:var(--navy)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:20px;color:var(--navy)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.tabs button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;padding:7px 10px;font-size:14px}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>O mesmo dado, vários gráficos</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Digite os valores e troque o tipo de gráfico. Leia, para cada um, quando ele é a melhor escolha.</p><table class="t" id="tb"></table>
+<div class="tabs" id="tp"></div>
+<div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+function colunas(rot,val,o){o=o||{};const W=340,H=210,x0=34,y0=180,top=16,vmin=o.vmin||0,mx=o.vmax||Math.max(1,...val)*1.15,n=val.length,sl=(W-x0-6)/n,bw=sl*.62;let g='';
+ const st=o.passo||Math.max(1,Math.ceil((mx-vmin)/5));for(let v=vmin;v<=mx+1e-9;v+=st){const y=y0-(v-vmin)/(mx-vmin)*(y0-top);g+=`<line x1="${x0}" y1="${y}" x2="${W-4}" y2="${y}" stroke="#E5E9F2"/>`+T(x0-4,y+4,f2(v),{a:'end',c:'#6B7280',w:500,fs:10});}
+ val.forEach((v,i)=>{const x=x0+sl*i+(sl-bw)/2,h=Math.max(0,(v-vmin)/(mx-vmin)*(y0-top));g+=`<rect x="${x}" y="${y0-h}" width="${bw}" height="${h}" rx="2" fill="${(o.cores||CORES)[i%6]}"/>`+T(x+bw/2,y0-h-4,f2(v))+T(x+bw/2,y0+14,rot[i],{w:500});});
+ g+=`<line x1="${x0}" y1="${top-6}" x2="${x0}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/><line x1="${x0}" y1="${y0}" x2="${W-4}" y2="${y0}" stroke="#0E2354" stroke-width="1.6"/>`;
+ return `<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;}
+
+let rot=['A pé','Ônibus','Carro','Bicicleta'],val=[10,14,12,4],tipo=0;
+const TP=[['Colunas','<b>Colunas:</b> comparar quantidades entre categorias. Ordene do maior para o menor para facilitar.'],
+ ['Barras','<b>Barras deitadas:</b> as mesmas comparações, melhores quando os nomes são compridos ou há muitas categorias.'],
+ ['Setores','<b>Setores:</b> as partes de um todo (100%), com poucas fatias. Ângulo = fr × 360°.'],
+ ['Linhas','<b>Linhas:</b> só quando a variável do eixo horizontal é o <b>tempo</b>. Aqui as categorias não têm ordem, então ligar os pontos não faz sentido: repare como o gráfico engana!'],
+ ['Pictograma','<b>Pictograma:</b> chamar a atenção, com números redondos. Cada ícone vale 2.']];
+function tb(){$('tb').innerHTML='<tr><th>Categoria</th><th>Valor</th></tr>'+rot.map((r,i)=>`<tr><td><input class="n" id="r${i}" value="${r}" style="width:130px;font-size:15px"></td><td><input class="n" id="v${i}" value="${val[i]}" inputmode="numeric" style="width:70px"></td></tr>`).join('');
+ rot.forEach((r,i)=>{$('r'+i).oninput=()=>{rot[i]=$('r'+i).value;draw();};$('v'+i).oninput=()=>{const v=num($('v'+i).value);val[i]=v>=0?v:0;draw();};});}
+function draw(){const N=val.reduce((s,x)=>s+x,0);let s='';
+ if(tipo===0)s=colunas(rot,val);
+ else if(tipo===1){const mx=Math.max(1,...val);let g='';val.forEach((v,i)=>{const y=10+i*36,w=v/mx*210;g+=`<rect x="100" y="${y}" width="${w}" height="26" rx="3" fill="${CORES[i]}"/>`+T(94,y+17,rot[i],{a:'end',w:500})+T(104+w,y+17,f2(v),{a:'start'});});s=`<svg viewBox="0 0 340 ${20+val.length*36}" width="340">${g}</svg>`;}
+ else if(tipo===2){let a=-Math.PI/2,g='';val.forEach((v,i)=>{if(!N)return;const da=2*Math.PI*v/N,b=a+da,r=90,cx=110,cy=110;
+   g+=v===N?`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${CORES[i]}"/>`:`<path d="M${cx},${cy} L${cx+r*Math.cos(a)},${cy+r*Math.sin(a)} A${r},${r} 0 ${da>Math.PI?1:0},1 ${cx+r*Math.cos(b)},${cy+r*Math.sin(b)} Z" fill="${CORES[i]}" stroke="#fff" stroke-width="2"/>`;
+   g+=`<rect x="226" y="${40+i*26}" width="12" height="12" fill="${CORES[i]}"/>`+T(244,50+i*26,`${rot[i]} ${f2(100*v/N)}%`,{a:'start',fs:10.5,w:500});a=b;});s=`<svg viewBox="0 0 340 220" width="340">${g}</svg>`;}
+ else if(tipo===3){const mx=Math.max(1,...val)*1.15,X=i=>50+i*80,Y=v=>180-v/mx*160;let g=`<line x1="30" y1="180" x2="330" y2="180" stroke="#0E2354"/>`;g+=`<polyline points="${val.map((v,i)=>X(i)+','+Y(v)).join(' ')}" fill="none" stroke="#B91C1C" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+   val.forEach((v,i)=>{g+=`<circle cx="${X(i)}" cy="${Y(v)}" r="5" fill="#B91C1C"/>`+T(X(i),Y(v)-9,f2(v))+T(X(i),196,rot[i],{w:500});});s=`<svg viewBox="0 0 340 205" width="340">${g}</svg>`;}
+ else{let g='';val.forEach((v,i)=>{const y=8+i*34;g+=T(86,y+20,rot[i],{a:'end',w:500});for(let k=0;k<v/2;k++){const fr=Math.min(1,v/2-k);g+=`<clipPath id="c${i}_${k}"><rect x="${92+k*24}" y="${y}" width="${22*fr}" height="30"/></clipPath><g clip-path="url(#c${i}_${k})"><circle cx="${103+k*24}" cy="${y+8}" r="6" fill="${CORES[i]}"/><path d="M${94+k*24},${y+28} v-8 q0,-6 9,-6 q9,0 9,6 v8z" fill="${CORES[i]}"/></g>`;}});s=`<svg viewBox="0 0 340 ${16+val.length*34}" width="340">${g}</svg>`;}
+ $('fig').innerHTML=s;$('nt').innerHTML=TP[tipo][1];}
+$('tp').innerHTML=TP.map((t,i)=>`<button data-v="${i}" class="${i?'':'on'}">${t[0]}</button>`).join('');
+$('tp').querySelectorAll('button').forEach(b=>b.onclick=()=>{tipo=+b.dataset.v;$('tp').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));draw();});
+tb();draw();
+
+</script>
+</body>
+</html>

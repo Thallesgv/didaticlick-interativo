@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>É função ou não? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Função do 1º grau</div><h1>É função ou não?</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Toque num x e depois num y para ligar os dois com uma flecha (toque de novo para apagar). É função quando <b>cada x tem exatamente uma flecha</b>.</p><div class="fig" id="fig"></div><div class="row" style="gap:6px;display:flex;flex-wrap:wrap"><button class="alt" id="lp">Limpar</button><button class="alt" id="e1">Exemplo: y = 2x</button><button class="alt" id="e2">Exemplo: não é função</button></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const pz=v=>v<0?`(${sg(v)})`:sg(v);
+const nice=r=>{const e=Math.pow(10,Math.floor(Math.log10(r)));const m=r/e;return (m<=1?1:m<=2?2:m<=5?5:10)*e;};
+const chip=(id,L,k,cb)=>{$(id).innerHTML=L.map((o,i)=>`<button class="${i===k?'on':''}" data-t="${i}">${o}</button>`).join('');D.tap($(id),cb);};
+const big=s=>`<div style="font-size:20px;font-weight:700;color:#0E2354;text-align:center;line-height:1.9">${s}</div>`;
+const ok=b=>b?'<b style="color:#16A34A">✓</b>':'<b style="color:#DC2626">✗</b>';
+const poly=(a,b,c)=>{let s=(a===1?'':a===-1?'−':sg(a))+'x²';if(b)s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':fmt(Math.abs(b)))+'x';if(c)s+=(c<0?' − ':' + ')+fmt(Math.abs(c));return s;};
+
+const XA=[1,2,3,4],YB=[2,4,6,8,10];let F=[[0,0],[1,1],[2,2],[3,3]],sel=-1;
+$('lp').onclick=()=>{F=[];sel=-1;draw();};$('e1').onclick=()=>{F=[[0,0],[1,1],[2,2],[3,3]];sel=-1;draw();};$('e2').onclick=()=>{F=[[0,0],[1,1],[1,4],[3,2]];sel=-1;draw();};
+const ya=i=>40+i*46,yb=j=>30+j*40;
+function draw(){let g=`<ellipse cx="70" cy="110" rx="46" ry="100" fill="#DBEAFE"/><ellipse cx="250" cy="110" rx="46" ry="104" fill="#FFF1E3"/>`+T(70,14,'x',{fs:13})+T(250,10,'y',{fs:13});
+ F.forEach(([i,j])=>{g+=`<line x1="88" y1="${ya(i)}" x2="230" y2="${yb(j)}" stroke="#0E2354" stroke-width="2" marker-end="url(#m)"/>`;});
+ XA.forEach((v,i)=>{g+=`<g data-t="${i}" style="cursor:pointer"><circle cx="70" cy="${ya(i)}" r="16" fill="${sel===i?'#F7821F':'#fff'}" stroke="#2457D6" stroke-width="2"/>`+T(70,ya(i)+5,v,{fs:14})+'</g>';});
+ YB.forEach((v,j)=>{g+=`<g data-t="${10+j}" style="cursor:pointer"><circle cx="250" cy="${yb(j)}" r="16" fill="#fff" stroke="#F7821F" stroke-width="2"/>`+T(250,yb(j)+5,v,{fs:14})+'</g>';});
+ $('fig').innerHTML=svg(320,222,`<defs><marker id="m" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0L10,5L0,10z" fill="#0E2354"/></marker></defs>`+g);
+ D.tap($('fig'),t=>{if(t<10){sel=sel===t?-1:t;}else if(sel>=0){const j=t-10,k=F.findIndex(p=>p[0]===sel&&p[1]===j);if(k>=0)F.splice(k,1);else F.push([sel,j]);sel=-1;}draw();});
+ const n=XA.map((_,i)=>F.filter(p=>p[0]===i).length),sem=XA.filter((_,i)=>!n[i]),dois=XA.filter((_,i)=>n[i]>1);
+ const ys=YB.filter((_,j)=>F.filter(p=>p[1]===j).length>1);
+ $('nt').innerHTML=(!sem.length&&!dois.length)?`<b style="color:#16A34A">É função</b>: cada x tem uma flecha só.`+(ys.length?` Dois x chegando no mesmo y (${ys.join(', ')}) pode, sem problema.`:''):
+  `<b style="color:#DC2626">Não é função</b>: `+[sem.length?`${sem.join(', ')} ficou sem flecha`:'',dois.length?`${dois.join(', ')} tem mais de uma flecha`:''].filter(Boolean).join('; ')+'.';}draw();
+
+</script>
+</body>
+</html>

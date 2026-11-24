@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o diagrama de caixa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1>Monte o diagrama de caixa</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Digite os dados separados por espaço ou ponto e vírgula. A página põe em ordem (o rol), acha os cinco números e desenha a caixa: ela guarda a metade do meio dos dados.</p><input class="txt" id="d" value="2 4 4 4 5 5 7 9"><div class="fig" id="fig"></div><div class="res" id="rs"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const md=a=>{const n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;};
+function draw(){const v=$('d').value.split(/[;\s]+/).map(num).filter(x=>!isNaN(x)).sort((a,b)=>a-b);if(v.length<4){$('fig').innerHTML='';$('nt').textContent='Digite pelo menos 4 números.';$('rs').innerHTML='';return;}
+ const n=v.length,h=Math.floor(n/2),q1=md(v.slice(0,h)),q2=md(v),q3=md(v.slice(n%2?h+1:h)),mn=v[0],mx=v[n-1],W=330,lo=mn-(mx-mn)*0.08,hi=mx+(mx-mn)*0.08||mn+1,sx=x=>15+(x-lo)/(hi-lo)*(W-30);
+ let g=`<line x1="${sx(mn)}" y1="40" x2="${sx(q1)}" y2="40" stroke="#0E2354" stroke-width="2"/><line x1="${sx(q3)}" y1="40" x2="${sx(mx)}" y2="40" stroke="#0E2354" stroke-width="2"/><rect x="${sx(q1)}" y="22" width="${sx(q3)-sx(q1)}" height="36" fill="#FFF7EF" stroke="#F7821F" stroke-width="2"/><line x1="${sx(q2)}" y1="22" x2="${sx(q2)}" y2="58" stroke="#F7821F" stroke-width="3"/>`;
+ [mn,mx].forEach(x=>g+=`<line x1="${sx(x)}" y1="30" x2="${sx(x)}" y2="50" stroke="#0E2354" stroke-width="2"/>`);v.forEach(x=>g+=`<circle cx="${sx(x)}" cy="76" r="3" fill="#2457D6"/>`);
+ [[mn,'mín'],[q1,'Q1'],[q2,'Q2'],[q3,'Q3'],[mx,'máx']].forEach(([x,l],i)=>g+=T(sx(x),i%2?14:96,l,{fs:9}));
+ $('fig').innerHTML=svg(W,102,g);$('rs').innerHTML=[['mín',mn],['Q1',q1],['mediana',q2],['Q3',q3],['máx',mx]].map(([l,x])=>`<div>${l}<b>${fmt(x)}</b></div>`).join('');
+ $('nt').innerHTML=`Rol: ${v.map(fmt).join(', ')}. A caixa vai de ${fmt(q1)} a ${fmt(q3)} (largura ${fmt(+(q3-q1).toFixed(2))}): ali está a metade do meio dos dados. Mude um valor para muito grande e veja: a caixa quase não muda, só o bigode cresce.`;}
+$('d').oninput=draw;draw();
+
+</script>
+</body>
+</html>
