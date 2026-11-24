@@ -68,8 +68,8 @@ const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
 
 const GS={m:'Comprimento',g:'Massa',L:'Capacidade',m2:'Área',m3:'Volume'};
 let g=q.get('g');if(!UM.ESC[g])g='m';
-Object.keys(GS).forEach(k=>{const b=document.createElement('button');b.textContent=GS[k];b.className=k===g?'':'alt';b.onclick=()=>{g=k;[...$('gs').children].forEach(x=>x.className=x===b?'':'alt');fill();draw();};$('gs').appendChild(b);});
-function fill(){const U=UM.ESC[g];['de','pa'].forEach((id,j)=>{$(id).innerHTML=U.map((u,i)=>`<option value="${i}">${u}</option>`).join('');});$('de').value=g==='L'?3:0;$('pa').value=g==='L'?6:3;}
+Object.keys(GS).forEach(k=>{const b=document.createElement('button');b.textContent=GS[k];b.className=k===g?'':'alt';b.onclick=()=>{g=k;[...$('gs').children].forEach(x=>x.className=x===b?'':'alt');fill();draw();$('novo').click();};$('gs').appendChild(b);});
+function fill(){const U=UM.ESC[g];['de','pa'].forEach((id,j)=>{$(id).innerHTML=U.map((u,i)=>`<option value="${i}">${u}</option>`).join('');});const big=UM.POT[g]>1;$('de').value=g==='L'||big?3:0;$('pa').value=g==='L'?6:(big?4:3);}
 function draw(){const U=UM.ESC[g],i=+$('de').value,j=+$('pa').value,v=num($('val').value),f=UM.FATOR[UM.POT[g]];
  $('fig').innerHTML=UM.escada(g,{de:i,para:j,w:W()});
  if(isNaN(v)){$('res').innerHTML='Digite um número (use vírgula nos decimais).';$('qd').innerHTML='';return;}
