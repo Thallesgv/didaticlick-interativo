@@ -290,7 +290,8 @@
   // Segmento de 1 unidade dividido em n partes, com uma destacada.
   function segmento(n = 10, opt = {}) {
     const L = opt.L || 200, o = 10, W = L + 2 * o, H = 60; let b = '';
-    for (let k = 0; k < n; k++) b += `<rect x="${o + k * L / n}" y="24" width="${L / n}" height="14" fill="${k === 0 ? OR : '#EEF3FF'}" stroke="${NAVY}" stroke-width="1.2"/>`;
+    b += `<rect x="${o}" y="27" width="${L}" height="8" fill="#111"/><rect x="${o}" y="27" width="${L / n}" height="8" fill="${OR}"/>`;
+    for (let k = 0; k <= n; k++) b += `<line x1="${o + k * L / n}" y1="21" x2="${o + k * L / n}" y2="41" stroke="${OR}" stroke-width="1.6"/>`;
     b += T(o + L / 2, 16, opt.lado || '1 m = 10 dm', 12.5, OR);
     return svg(W, H, b, opt.w);
   }
