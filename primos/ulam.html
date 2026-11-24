@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A espiral de Ulam · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="../multiplos/md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números primos</div><h1 id="title">A espiral de Ulam</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque nos números primos da espiral para pintá-los. Toque de novo para despintar. Depois diga quantos primos você pintou e toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">Quantidade de primos: <input class="n" id="r1" inputmode="numeric" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=primos-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na espiral, os primos maiores que 2 são ímpares, então eles nunca ficam lado a lado na horizontal ou na vertical (vizinhos diferem de 1). Por isso eles se alinham em diagonais.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,sel=new Set();
+function pos(n){let x=0,y=0;const P=[[0,0]],d=[[1,0],[0,-1],[-1,0],[0,1]];let k=0,L=1;while(P.length<n){for(let t=0;t<2;t++){for(let i=0;i<L;i++){x+=d[k][0];y+=d[k][1];P.push([x,y]);}k=(k+1)%4;}L++;}return P.slice(0,n);}
+function draw(fim){const l=cur.l,S=Math.min(44,330/l),h=Math.floor(l/2),P=pos(l*l);let g='';
+ P.forEach(([x,y],i)=>{const v=cur.s+i,X=(x+h)*S,Y=(y+h)*S,on=sel.has(v),pr=MD.primo(v);let f=on?'#F7821F':'#fff';
+  if(fim)f=pr?(on?'#F7821F':'#FDE9D8'):(on?'#FEE2E2':'#fff');
+  g+=`<g data-t="${v}" style="cursor:pointer"><rect x="${X+1}" y="${Y+1}" width="${S-2}" height="${S-2}" rx="5" fill="${f}" stroke="${fim&&pr&&!on?'#F7821F':'#D7DEEA'}" stroke-width="${fim&&pr&&!on?2:1}"/>`+
+  `<text x="${X+S/2}" y="${Y+S/2+4}" text-anchor="middle" font-size="${S>30?12:10}" font-weight="600" font-family="Poppins" fill="${on&&!fim?'#fff':'#0E2354'}">${v}</text></g>`;});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${l*S} ${l*S}" width="${l*S}">${g}</svg>`;
+ D.tap($('fig'),v=>{if(D.feito)return;sel.has(v)?sel.delete(v):sel.add(v);draw();});}
+D.ciclo({
+ livros:[{l:7,s:1},{l:7,s:41}],
+ sortear(){return pick([{l:5,s:1},{l:7,s:1},{l:5,s:17},{l:7,s:17},{l:5,s:41},{l:7,s:11},{l:5,s:51}]);},
+ montar(q){cur=q;sel=new Set();$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Pinte os primos da espiral de <span class="k">${q.s}</span> a <span class="k">${q.s+q.l*q.l-1}</span>.`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const ps=[];for(let k=q.s;k<q.s+q.l*q.l;k++)if(MD.primo(k))ps.push(k);
+  const okp=ps.length===sel.size&&ps.every(k=>sel.has(k)),okn=v[0]===ps.length,ok=okp&&okn;D.marcar(['r1'],[okn]);draw(true);
+  const fal=ps.filter(k=>!sel.has(k)),sob=[...sel].filter(k=>!MD.primo(k));
+  return {ok,exp:`São <b>${ps.length} primos</b>: ${ps.join(', ')}.${fal.length?' Faltou pintar: '+fal.join(', ')+'.':''}${sob.length?' Não são primos: '+sob.map(k=>k+(k>1?' = '+MD.fatores(k).join(' × '):'')).join('; ')+'.':''}${q.s===41?' Repare na diagonal 41, 43, 47, 53, 61, 71, 83: são os valores de n² + n + 41, a fórmula de Euler.':''}`};},
+ res:true});
+
+</script>
+</body>
+</html>
