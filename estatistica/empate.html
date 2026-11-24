@@ -63,7 +63,7 @@ function draw(fx){const W=340,x0=90,x1=W-12,lo=Math.floor((Math.min(cur.a,cur.b)
 function clb(){$('cl').innerHTML=OP(cur).map((n,i)=>`<button data-v="${i}" class="${esc===i?'on':''}">${n}</button>`).join('');$('cl').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;clb();}});}
 D.ciclo({
  livros:[{a:42,b:38,m:3,na:'Candidata A',nb:'Candidato B'},{a:47,b:39,m:2,na:'Candidata A',nb:'Candidato B'}],
- sortear(){const m=pick([2,2,3,3,4]),a=rnd(25,50),b=a+pick([-1,1])*rnd(1,12);const nm=shuffle(['Sophia','Duda','Manu','Mikaela']),nn=shuffle(['Samuel','Miguel','Teodoro']);return {a,b,m,na:nm[0],nb:nn[0]};},
+ sortear(){const m=pick([2,2,3,3,4]),a=rnd(25,50),b=a+pick([-1,1])*rnd(1,12);const nm=shuffle(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole']),nn=shuffle(['Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo']);return {a,b,m,na:nm[0],nb:nn[0]};},
  montar(q){cur=q;esc=null;['r1','r2','r3','r4'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('na').textContent=q.na;$('nb').textContent=q.nb;
   $('dq').innerHTML=`${q.na}: <span class="k">${q.a}%</span> · ${q.nb}: <span class="k">${q.b}%</span> · margem de erro: <span class="k">${q.m} pontos</span>`;draw(false);clb();},
  conferir(q){const v=D.ler(['r1','r2','r3','r4']);if(!v)return null;if(esc===null){msg('dm','Escolha o resultado.','info');return null;}
