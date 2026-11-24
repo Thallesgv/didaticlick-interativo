@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Classifique nos subconjuntos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+.cj{font-family:'DejaVu Serif',Georgia,serif;font-weight:700}.cj sub{font-size:65%}.cj sup{font-size:65%}.chips button{min-width:56px;font-size:16px}</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Conjuntos numéricos</div><h1 id="title">Classifique nos subconjuntos</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque em todos os conjuntos a que o número pertence (toque de novo para desmarcar) e depois em OK. Lembre: o sinal embaixo escolhe o lado e o zero fica; o asterisco tira o zero.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" style="flex-direction:column"><div style="font-size:40px;font-weight:700;color:var(--navy);font-family:'DejaVu Serif',Georgia,serif" id="num"></div><div class="muted" id="sub"></div></div>
+<div class="chips" id="op"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div id="rs" class="hide"></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O sinal embaixo (+ ou −) escolhe o lado da reta e mantém o zero. O asterisco (*) tira o zero. Um mesmo número pode estar em vários conjuntos ao mesmo tempo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const C=(Q.get('c')||'Z').toUpperCase();
+const L={N:'ℕ',Z:'ℤ',Q:'ℚ',R:'ℝ'};
+const nt=(l,s,g)=>`<span class="cj">${l}${s?'<sup>*</sup>':''}${g?'<sub>'+g+'</sub>':''}</span>`;
+const isq=n=>Number.isInteger(Math.sqrt(n));const prim=n=>{if(n<2)return false;for(let d=2;d*d<=n;d++)if(n%d===0)return false;return true;};
+const sinal=L[C]?C:'Z';
+function padrao(l){return [{k:'s',h:nt(l,1),f:x=>x.v!==0},{k:'p',h:nt(l,0,'+'),f:x=>x.v>=0},{k:'m',h:nt(l,0,'−'),f:x=>x.v<=0}];}
+const OPS={
+ N:[{k:'s',h:nt('ℕ',1),f:x=>x.v!==0},{k:'par',h:'pares',f:x=>x.v%2===0},{k:'imp',h:'ímpares',f:x=>x.v%2===1},{k:'pr',h:'primos',f:x=>prim(x.v)},{k:'qd',h:'quadrados perfeitos',f:x=>isq(x.v)}],
+ Z:[{k:'s',h:nt('ℤ',1),f:x=>x.v!==0},{k:'p',h:nt('ℤ',0,'+'),f:x=>x.v>=0},{k:'m',h:nt('ℤ',0,'−'),f:x=>x.v<=0},{k:'sp',h:nt('ℤ',1,'+'),f:x=>x.v>0},{k:'sm',h:nt('ℤ',1,'−'),f:x=>x.v<0}],
+ Q:padrao('ℚ').concat([{k:'z',h:nt('ℤ'),f:x=>x.i},{k:'n',h:nt('ℕ'),f:x=>x.i&&x.v>=0}]),
+ R:padrao('ℝ').concat([{k:'q',h:nt('ℚ'),f:x=>x.r},{k:'ir',h:nt('𝕀'),f:x=>!x.r}])}[sinal];
+const I=v=>({t:sg(v),v,i:true,r:true});
+const Fq=(n,d,dec)=>{const v=n/d;return {t:dec?sg(v).replace('.',','):(n<0?'−':'')+Math.abs(n)+'/'+d,v,i:Number.isInteger(v),r:true};};
+const LIV={N:[I(0),I(2),I(9),I(15)],Z:[I(-3),I(0),I(5)],Q:[Fq(-3,4),I(0),Fq(5,2,1),I(-6)],
+ R:[{t:'√2',v:Math.SQRT2,r:false},{t:'−π',v:-Math.PI,r:false},I(0),Fq(3,4),I(-5)]}[sinal];
+const RES={N:'naturais-q5-6',Z:'inteiros-q6-6',Q:'racionais-q5-6',R:'reais-q5-6'}[sinal];
+$('rs').className='card hide';$('rs').innerHTML=`<p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=${RES}">Abrir a resolução comentada</a></p>`;
+$('title').innerHTML='Classifique nos subconjuntos de '+nt(L[sinal]);
+function sortear(){
+ if(sinal==='N')return I(rnd(0,36));
+ if(sinal==='Z')return I(rnd(-12,12));
+ if(sinal==='Q'){const t=rnd(0,3);if(t===0)return I(rnd(-9,9));const d=pick([2,3,4,5,8,10]);let n=rnd(-15,15);if(n===0)n=pick([0,1,-1]);return Fq(n,d,t===3&&[2,4,5,8,10].includes(d));}
+ const t=rnd(0,4);if(t===0)return I(rnd(-9,9));if(t===1){return Fq(pick([-7,-3,-1,1,3,5]),pick([2,4,5]));}
+ if(t===2){const k=pick([2,3,5,6,7,10]),s=pick([1,-1]);return {t:(s<0?'−':'')+'√'+k,v:s*Math.sqrt(k),r:false};}
+ if(t===3){const k=pick([4,9,16,25]),s=pick([1,-1]);return {t:(s<0?'−':'')+'√'+k,v:s*Math.sqrt(k),r:true,dica:`√${k} = ${Math.sqrt(k)}: é racional!`};}
+ const s=pick([1,-1]),m=pick([1,2]);return {t:(s<0?'−':'')+(m>1?m:'')+'π',v:s*m*Math.PI,r:false};}
+let cur,sel=new Set();
+function draw(){$('op').innerHTML=OPS.map(o=>{let c=sel.has(o.k)?'on':'';if(D.feito){const ok=o.f(cur);c=ok?'okk':(sel.has(o.k)?'bad':'');}return `<button data-k="${o.k}" class="${c}">${o.h}</button>`;}).join('');
+ $('op').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const k=b.dataset.k;sel.has(k)?sel.delete(k):sel.add(k);draw();});}
+D.ciclo({livros:LIV,sortear,
+ montar(q){cur=q;sel=new Set();$('num').textContent=q.t;$('sub').textContent=q.livro?'número da questão da apostila':'';
+  $('dq').innerHTML=`A quais conjuntos o número <span class="k">${q.t}</span> pertence?`;draw();},
+ conferir(q){if(!sel.size){msg('dm','Toque em pelo menos um conjunto e depois em OK.','info');return null;}const certo=OPS.filter(o=>o.f(q)).map(o=>o.k),ok=certo.length===sel.size&&certo.every(k=>sel.has(k));draw();
+  const lista=OPS.filter(o=>o.f(q)).map(o=>o.h).join(', ')||'nenhum destes';
+  return {ok,exp:`${q.t} pertence a: <b>${lista}</b>.${q.dica?' '+q.dica:''}${q.v===0?' O zero fica nos conjuntos com + e com −, mas sai de todo conjunto com asterisco.':''}`};},
+ res:true});
+
+</script>
+</body>
+</html>
