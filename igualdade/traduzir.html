@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Das palavras à conta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Propriedades da igualdade</div><h1>Das palavras à conta</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">As mesmas palavras em outra ordem dão outra conta. Escolha um par de frases e mova o número x.</p><div class="chips" id="ch"></div><div class="sl" id="x"><b>o número x</b><input type="range"><span></span></div><div id="cards"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const pz=v=>v<0?`(${sg(v)})`:sg(v);
+const nice=r=>{const e=Math.pow(10,Math.floor(Math.log10(r)));const m=r/e;return (m<=1?1:m<=2?2:m<=5?5:10)*e;};
+const chip=(id,L,k,cb)=>{$(id).innerHTML=L.map((o,i)=>`<button class="${i===k?'on':''}" data-t="${i}">${o}</button>`).join('');D.tap($(id),cb);};
+const big=s=>`<div style="font-size:20px;font-weight:700;color:#0E2354;text-align:center;line-height:1.9">${s}</div>`;
+const ok=b=>b?'<b style="color:#16A34A">✓</b>':'<b style="color:#DC2626">✗</b>';
+const poly=(a,b,c)=>{let s=(a===1?'':a===-1?'−':sg(a))+'x²';if(b)s+=(b<0?' − ':' + ')+(Math.abs(b)===1?'':fmt(Math.abs(b)))+'x';if(c)s+=(c<0?' − ':' + ')+fmt(Math.abs(c));return s;};
+
+const P=[[["a soma do dobro de um número com 3","2x + 3",x=>2*x+3],["o dobro da soma de um número com 3","2(x + 3)",x=>2*(x+3)]],
+ [["o triplo de um número, menos 4","3x − 4",x=>3*x-4],["4 menos o triplo de um número","4 − 3x",x=>4-3*x]],
+ [["a metade de um número, mais 5","x/2 + 5",x=>x/2+5],["a metade da soma de um número com 5","(x + 5)/2",x=>(x+5)/2]],
+ [["o quadrado de um número, mais 1","x² + 1",x=>x*x+1],["o quadrado da soma de um número com 1","(x + 1)²",x=>(x+1)**2]]];
+let k=0;const X=D.sl('x',-10,10,1,4,draw);
+function draw(){chip('ch',['par 1','par 2','par 3','par 4'],k,t=>{k=t;draw();});const x=X.get();
+ $('cards').innerHTML=P[k].map((p,i)=>`<div class="fig" style="flex-direction:column;align-items:stretch;text-align:left;padding:8px 12px"><div class="muted">“${p[0]}”</div><div style="font-size:20px;font-weight:700;color:#0E2354">${p[1]}</div><div>com x = ${sg(x)}: <b style="color:#F7821F;font-size:18px">${f2(p[2](x))}</b></div></div>`).join('');
+ const v1=p=>f2(P[k][p][2](x)),eq=Math.abs(P[k][0][2](x)-P[k][1][2](x))<1e-9;
+ $('nt').innerHTML=eq?`Com x = ${sg(x)} as duas dão ${v1(0)}: coincidência! Mova x e veja que, em geral, os valores são diferentes.`:`Com x = ${sg(x)}: ${v1(0)} de um lado e ${v1(1)} do outro. Leia devagar: a palavra que vem primeiro diz qual é a <b>última</b> conta a fazer.`;}draw();
+
+</script>
+</body>
+</html>
