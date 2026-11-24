@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantas vans para o passeio? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Operações</div><h1 id="title">Quantas vans para o passeio?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Divida o número de alunos pela capacidade de cada van. Ninguém pode ficar para trás: pense no que fazer com o resto. Diga quantas vans são necessárias e quantos lugares ficam vazios. Toque em OK e veja a turma embarcar.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="flex-wrap:wrap;gap:8px"></div>
+<div class="ask">Vans necessárias: <input class="n" id="v" inputmode="numeric" autocomplete="off" style="width:70px"></div>
+<div class="ask">Lugares vazios: <input class="n" id="z" inputmode="numeric" autocomplete="off" style="width:70px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=divisao-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Faça a divisão e olhe o resto. Se o resto não for zero, ainda há alunos sem lugar: some mais uma van. Os lugares vazios são todos os lugares das vans menos o número de alunos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,anim=null;
+function van(cap,oc,i){const cols=Math.min(cap,Math.ceil(cap/3)>6?Math.ceil(cap/4):Math.ceil(cap/3)),rows=Math.ceil(cap/cols),r=5,gx=13,W=cols*gx+44,H=rows*gx+34;
+ let g=`<rect x="2" y="6" width="${W-6}" height="${H-14}" rx="10" fill="#fff" stroke="#0E2354" stroke-width="2.5"/><rect x="${W-26}" y="12" width="16" height="16" rx="3" fill="#BFD8FF"/>`;
+ for(let k=0;k<cap;k++){const cx=12+(k%cols)*gx,cy=18+Math.floor(k/cols)*gx;g+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${k<oc?'#2457D6':'#fff'}" stroke="${k<oc?'#2457D6':'#9CA3AF'}" stroke-dasharray="${k<oc?'':'2 2'}"/>`;}
+ g+=`<circle cx="18" cy="${H-6}" r="6" fill="#0E2354"/><circle cx="${W-20}" cy="${H-6}" r="6" fill="#0E2354"/><text x="${W/2}" y="${H+10}" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">van ${i}</text>`;
+ return `<svg viewBox="0 0 ${W} ${H+14}" width="${W}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
+function desenha(q,emb){const nv=Math.ceil(q.n/q.c);let h='';let rest=emb;
+ if(emb===null){let d='';for(let k=0;k<q.n;k++)d+=`<circle cx="${8+(k%15)*13}" cy="${8+Math.floor(k/15)*13}" r="5" fill="#2457D6"/>`;const hh=Math.ceil(q.n/15)*13+4;h=`<div style="text-align:center"><svg viewBox="0 0 200 ${hh}" width="200" xmlns="http://www.w3.org/2000/svg">${d}</svg><div style="font-size:14px;color:#6B7280">${q.n} alunos esperando · cada van leva ${q.c}</div></div>`;}
+ else for(let i=1;i<=nv;i++){const oc=Math.max(0,Math.min(q.c,rest));rest-=oc;h+=van(q.c,oc,i);}
+ $('fig').innerHTML=h;}
+function embarca(q){if(anim)clearInterval(anim);let e=0;anim=setInterval(()=>{e=Math.min(q.n,e+Math.max(1,Math.ceil(q.n/40)));desenha(q,e);if(e>=q.n){clearInterval(anim);anim=null;}},40);}
+D.ciclo({
+ livros:[{quem:'Mikaela',n:87,c:15}],
+ sortear(){let c,n;do{c=pick([8,10,12,14,15,16,18,20]);n=rnd(c+3,c*6);}while(n%c===0);return {quem:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela']),n,c};},
+ montar(q){cur=q;if(anim){clearInterval(anim);anim=null;}['v','z'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});
+  $('dq').innerHTML=`A escola de ${q.quem} vai levar <span class="k">${q.n} alunos</span>. Cada van leva <span class="k">${q.c}</span>.`;desenha(q,null);},
+ conferir(q){const v=D.ler(['v','z']);if(!v)return null;const qo=Math.floor(q.n/q.c),r=q.n%q.c,nv=qo+(r?1:0),vz=nv*q.c-q.n;
+  const oks=[v[0]===nv,v[1]===vz];D.marcar(['v','z'],oks);embarca(q);
+  let e=`${q.n} ÷ ${q.c} = ${qo}, resto ${r}. ${r?`Os ${r} que sobram precisam de mais uma van: <b>${nv} vans</b>.`:`<b>${nv} vans</b>.`} Vazios: ${nv} × ${q.c} − ${q.n} = ${nv*q.c} − ${q.n} = <b>${vz}</b>.`;
+  if(v[0]===qo&&r)e+=' Com só '+qo+' vans, '+r+' alunos ficariam para trás!';
+  return {ok:oks.every(Boolean),exp:e};},
+ res:true});
+
+</script>
+</body>
+</html>
