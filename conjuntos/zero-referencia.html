@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mude o zero de lugar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números inteiros</div><h1 id="title">Mude o zero de lugar</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O prédio é uma reta em pé. O zero é só o andar que escolhemos como referência. Responda e toque em OK: depois aparecem os números antigos e os novos lado a lado.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask" id="perg"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=inteiros-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Mudar o zero de lugar é mudar a referência: todos os andares mudam pelo mesmo tanto, e a distância entre dois andares continua a mesma.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;
+const pessoas=['Duda','Enzo','Thaís','Guilherme','Mariah'];
+function nome(a){return a===0?'térreo':a>0?a+'º andar':(-a)+'º subsolo';}
+function draw(){const q=cur,lo=-4,hi=7,H=380,fy=v=>40+(hi-v)*(H-60)/(hi-lo);let g='';
+ g+=`<rect x="90" y="${fy(hi)-14}" width="120" height="${fy(lo)-fy(hi)+28}" fill="#EEF3FF" stroke="#0E2354" stroke-width="2" rx="4"/>`;
+ g+=`<line x1="60" y1="${fy(0)+14}" x2="250" y2="${fy(0)+14}" stroke="#15803D" stroke-width="2"/><text x="250" y="${fy(0)+27}" text-anchor="end" font-size="10" font-family="Poppins" fill="#15803D">chão da rua</text>`;
+ for(let v=lo;v<=hi;v++){const y=fy(v);
+  g+=`<line x1="90" y1="${y+14}" x2="210" y2="${y+14}" stroke="#C7D2E6"/>`;
+  g+=`<text x="80" y="${y+4}" text-anchor="end" font-size="12" font-weight="600" font-family="Poppins" fill="${v===0?'#F7821F':'#0E2354'}">${sg(v)}</text>`;
+  if(D.feito)g+=`<text x="222" y="${y+4}" font-size="12" font-weight="700" font-family="Poppins" fill="${v===q.z?'#F7821F':'#2457D6'}">${sg(v-q.z)}</text>`;
+  (q.p||[]).forEach(([n,a],i)=>{if(a===v)g+=`<circle cx="${125+i*50}" cy="${y}" r="9" fill="${i?'#B91C1C':'#2457D6'}"/><text x="${125+i*50}" y="${y+4}" text-anchor="middle" font-size="10" font-weight="700" font-family="Poppins" fill="#fff">${n[0]}</text>`;});
+  if(q.carro===v)g+=`<rect x="168" y="${y-7}" width="30" height="13" rx="4" fill="#B91C1C"/><circle cx="175" cy="${y+7}" r="3" fill="#0E2354"/><circle cx="191" cy="${y+7}" r="3" fill="#0E2354"/>`;}
+ g+=`<text x="72" y="14" text-anchor="middle" font-size="10" font-family="Poppins" fill="#F7821F">números</text><text x="72" y="26" text-anchor="middle" font-size="10" font-family="Poppins" fill="#F7821F">antigos</text>`;
+ if(D.feito)g+=`<text x="232" y="14" text-anchor="middle" font-size="10" font-family="Poppins" fill="#2457D6">números</text><text x="232" y="26" text-anchor="middle" font-size="10" font-family="Poppins" fill="#2457D6">novos</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 280 ${H}" width="280">${g}</svg>`;}
+D.ciclo({
+ livros:[{tipo:'dist',p:[['Duda',4]],carro:-2,z:0},{tipo:'novo',p:[['Duda',4]],carro:-2,z:-2,alvos:[['andar da Duda',4],['térreo',0]]}],
+ sortear(){const n=shuffle(pessoas),a=rnd(1,6),b=rnd(-3,3),z=pick([-3,-2,-1,1,2,3].filter(x=>x!==a&&x!==b));
+  return {tipo:'novo',p:[[n[0],a],[n[1],b]],z,alvos:[['andar de '+n[0],a],['andar de '+n[1],b]]};},
+ montar(q){cur=q;
+  if(q.tipo==='dist'){$('dq').innerHTML='Num prédio, o <span class="k">térreo é o 0</span>. Duda mora no 4º andar e o carro dela fica no 2º subsolo (−2). Quantos andares Duda desce do apartamento até o carro?';
+   $('perg').innerHTML='Duda desce '+box('r1',80)+' andares.';}
+  else{const pz=q.p.map(([n,a])=>`${n} está no <b>${nome(a)}</b> (${sg(a)})`).join(' e ');
+   $('dq').innerHTML=(q.livro?'Duda mora no 4º andar e o carro fica no 2º subsolo. ':pz+'. ')+`Agora o síndico decidiu que o <span class="k">zero passa a ser o ${nome(q.z)}</span> (o antigo ${sg(q.z)}). Que números ganham estes andares?`;
+   $('perg').innerHTML=q.alvos.map(([t],i)=>`${t}: `+box('r'+(i+1),80)).join(' &nbsp; ');}
+  draw();},
+ conferir(q){if(q.tipo==='dist'){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===6;D.marcar(['r1'],[ok]);draw();
+   return {ok,exp:'Do 4 até o −2: 4 − (−2) = 4 + 2 = <b>6 andares</b>.'};}
+  const ids=q.alvos.map((_,i)=>'r'+(i+1)),v=D.ler(ids);if(!v)return null;const certo=q.alvos.map(([,a])=>a-q.z),oks=v.map((x,i)=>x===certo[i]);D.marcar(ids,oks);draw();
+  const k=-q.z;return {ok:oks.every(Boolean),exp:`O novo zero é o antigo ${sg(q.z)}, então todo andar ${k>0?'ganha '+k:'perde '+(-k)}: `+q.alvos.map(([t,a],i)=>`${t}: ${sg(a)} ${k>0?'+':'−'} ${Math.abs(k)} = <b>${sg(certo[i])}</b>`).join(' · ')+'. As distâncias entre os andares não mudam.'};},
+ res:true});
+
+</script>
+</body>
+</html>
