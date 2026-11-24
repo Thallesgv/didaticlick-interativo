@@ -65,7 +65,7 @@ D.ciclo({
  livros:[{A:[1,2,2,3,2],B:[0,4,1,5,0],na:'Time do Miguel',nb:'Time do Teodoro'}],
  sortear(){let A,B;const m=rnd(2,3);do{A=[];B=[];for(let k=0;k<4;k++){A.push(rnd(Math.max(0,m-1),m+1));B.push(rnd(0,6));}
    A.push(5*m-A.reduce((s,x)=>s+x,0));B.push(5*m-B.reduce((s,x)=>s+x,0));}while(A[4]<0||A[4]>6||B[4]<0||B[4]>6||!(amp(A)<amp(B)&&dm(A)<dm(B)));
-  const na='Time da '+pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole']),nb='Time do '+pick(['Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo']);return rnd(0,1)?{A,B,na,nb}:{A:B,B:A,na,nb};},
+  const na='Time da '+pick(['Sophia','Duda','Manu','Mikaela','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Pietra','Ângela']),nb='Time do '+pick(['Samuel','Miguel','Teodoro','Gustavo','Guilherme','Luís Otávio','Bernardo','Ícaro','Fernando','Paulo Henrique']);return rnd(0,1)?{A,B,na,nb}:{A:B,B:A,na,nb};},
  montar(q){cur=q;esc=null;['r1','r2','r3','r4'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
   $('na').textContent=q.na;$('nb').textContent=q.nb;$('ma').textContent=fmt1(med(q.A));$('mb').textContent=fmt1(med(q.B));
   $('dq').innerHTML=`Gols nos últimos 5 jogos. Média dos dois: <span class="k">${fmt1(med(q.A))}</span>.`;draw();clb();},
