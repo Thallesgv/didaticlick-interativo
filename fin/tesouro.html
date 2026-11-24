@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prefixado ou IPCA+? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">Prefixado ou IPCA+?</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Você vai investir <b>R$ 1.000 por 5 anos</b> no Tesouro. Escolha entre um <b>Prefixado de 11% ao ano</b> (taxa conhecida hoje) e um <b>IPCA + 6% ao ano</b> (inflação + taxa). Quem ganha depende da inflação que vier. Teste os cenários.</p>
+<div class="sl" id="s1"><b>Inflação média nos 5 anos</b><input type="range"><span></span></div>
+<div class="kpi"><div>Prefixado 11%<b id="k1"></b></div><div class="o">IPCA + 6%<b id="k2"></b></div><div>Vencedor<b id="k3"></b></div></div>
+<div class="fig" id="fig"></div><p class="muted" id="obs" style="margin:0"></p></div>
+<div class="card"><h2>O título certo para cada sonho</h2><p style="margin:0">Reserva de emergência → <b>Tesouro Selic</b>. Valor conhecido em data certa → <b>Prefixado</b>. Longo prazo protegido da inflação → <b>IPCA+</b>. Faculdade → <b>Educa+</b>. Aposentadoria → <b>RendA+</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const s=SL('s1',0,15,0.5,4.5,draw,v=>pct(v)+' ao ano');
+function draw(){const ip=s.get()/100,pre=[1000],hib=[1000];for(let t=1;t<=5;t++){pre.push(pre[t-1]*1.11);hib.push(hib[t-1]*(1+ip)*1.06);}
+ const a=pre[5],b=hib[5];$('k1').textContent=R0(a);$('k2').textContent=R0(b);$('k3').textContent=Math.abs(a-b)<5?'empate':(a>b?'Prefixado':'IPCA+');
+ $('fig').innerHTML=grafico([{v:pre,cor:'#0E2354',nome:'Prefixado 11%',pontos:1},{v:hib,cor:'#F7821F',nome:'IPCA + 6%',pontos:1}],{rotX:t=>'ano '+t,min:900});
+ const br=(1.11/1.06-1)*100;$('obs').innerHTML=`O empate acontece com inflação perto de ${pct(br)} ao ano. Com inflação menor, o Prefixado ganha; com inflação maior, o IPCA+ protege melhor. <b>Poder de compra no fim</b> (descontando a inflação): Prefixado ${R0(a/Math.pow(1+ip,5))}, IPCA+ ${R0(b/Math.pow(1+ip,5))}.`;}
+draw();
+</script>
+
+</body>
+</html>

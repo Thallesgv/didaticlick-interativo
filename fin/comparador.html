@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CDB ou LCI? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script>
+<script src="../data/fin1.js"></script><script src="../data/fin2.js"></script><script src="../data/fin3.js"></script><script src="../data/finx.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Educação Financeira</div><h1 id="title">CDB ou LCI?</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O CDB paga IR sobre o rendimento; a LCI e a LCA são isentas. Qual rende mais <b>líquido</b>? Calcule o rendimento líquido de cada um no ano.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div><div class="dq" id="dq"></div><div id="area"></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro</button></div><div id="dm"></div></div>
+<div class="card hide" id="rs"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+D.ciclo({livros:[{cdi:10,pc:100,pl:90,ir:15,l:'LCI'}],
+ sortear(){return {cdi:pick([8,10,12,14]),pc:pick([90,100,105,110,120]),pl:pick([80,85,90,95]),ir:15,l:pick(['LCI','LCA'])};},
+ montar(q){$('dq').innerHTML=`CDI a <span class="k">${q.cdi}% ao ano</span>, aplicação por mais de 2 anos (IR de ${q.ir}%). CDB de <span class="k">${q.pc}% do CDI</span> ou ${q.l} de <span class="k">${q.pl}% do CDI</span>?`;
+  $('area').innerHTML='<div class="ask">CDB líquido: '+box('r1',80)+' %</div><div class="ask">'+q.l+': '+box('r2',80)+' %</div>';},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const c=q.cdi*q.pc/100*(1-q.ir/100),l=q.cdi*q.pl/100,ok=[Math.abs(v[0]-c)<0.051,Math.abs(v[1]-l)<0.051];D.marcar(['r1','r2'],ok);
+  const w=Math.abs(c-l)<1e-9?'empatam':(c>l?'o CDB rende mais':'a '+q.l+' rende mais');
+  return {ok:ok[0]&&ok[1],exp:`CDB: ${q.pc}% de ${q.cdi} = ${fmt(q.cdi*q.pc/100)}% bruto; menos ${q.ir}% de IR → ${fmt(Math.round(c*100)/100)}%. ${q.l}: ${q.pl}% de ${q.cdi} = ${fmt(l)}%, sem IR. Aqui ${w}.`};}});
+</script>
+
+</body>
+</html>
