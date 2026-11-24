@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Toque nos inteiros certos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números inteiros</div><h1 id="title">Toque nos inteiros certos</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque na reta em todos os inteiros que servem (toque de novo para desmarcar). Depois do OK, as distâncias aparecem como arcos.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">Marcados: <span class="k" id="lst">nenhum</span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=inteiros-q1-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O módulo de um número é a distância dele até o zero. A distância entre dois números é o módulo da diferença: de −2 a 3 são 5 unidades.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,sel=new Set(),arcos=false;
+const certos=q=>{const r=[];for(let k=-10;k<=10;k++)if(q.f(k))r.push(k);return r;};
+function draw(){const q=cur;$('fig').innerHTML=D.reta({min:-10,max:10,w:380,h:90,y:52,sel,cor:arcos?Object.fromEntries(certos(q).map(k=>[k,sel.has(k)?'#15803D':'#B91C1C'])):null,
+ extra:(sx,y)=>{let g=`<circle cx="${sx(q.c)}" cy="${y}" r="10" fill="none" stroke="#F7821F" stroke-width="2.5"/>`;
+  if(arcos)certos(q).forEach(k=>{if(k===q.c)return;const x1=sx(q.c),x2=sx(k),h=Math.min(40,Math.abs(x2-x1)/2);g+=`<path d="M${x1},${y-6} Q${(x1+x2)/2},${y-6-h*1.6} ${x2},${y-6}" fill="none" stroke="#F7821F" stroke-width="1.4" stroke-dasharray="3 2"/>`;});return g;}});
+ D.tap($('fig'),k=>{if(D.feito)return;sel.has(k)?sel.delete(k):sel.add(k);draw();});
+ $('lst').textContent=sel.size?[...sel].sort((a,b)=>a-b).map(sg).join(', '):'nenhum';}
+D.ciclo({
+ livros:[{t:'Quais números inteiros têm <span class="k">módulo menor que 4</span>?',c:0,f:k=>Math.abs(k)<4,d:'|x| < 4: todos a menos de 4 unidades do zero'},
+         {t:'Quais inteiros estão a <span class="k">5 unidades de distância do −2</span>?',c:-2,f:k=>Math.abs(k+2)===5,d:'−2 − 5 = −7 e −2 + 5 = 3'}],
+ sortear(){const t=rnd(0,2);if(t===0){const m=rnd(2,6),le=rnd(0,1);return {t:`Quais inteiros têm <span class="k">módulo ${le?'menor ou igual a':'menor que'} ${m}</span>?`,c:0,f:k=>le?Math.abs(k)<=m:Math.abs(k)<m,d:`do −${le?m:m-1} ao ${le?m:m-1}`};}
+  if(t===1){const c=rnd(-5,5),d=rnd(1,4);return {t:`Quais inteiros estão a <span class="k">${d} unidades de distância do ${sg(c)}</span>?`,c,f:k=>Math.abs(k-c)===d,d:`${sg(c)} − ${d} = ${sg(c-d)} e ${sg(c)} + ${d} = ${sg(c+d)}`};}
+  const c=rnd(-4,4),d=rnd(2,3);return {t:`Quais inteiros estão a <span class="k">menos de ${d} unidades do ${sg(c)}</span>?`,c,f:k=>Math.abs(k-c)<d,d:`do ${sg(c-d+1)} ao ${sg(c+d-1)}`};},
+ montar(q){cur=q;sel=new Set();arcos=false;$('dq').innerHTML=q.t;draw();},
+ conferir(q){if(!sel.size){msg('dm','Toque nos números da reta e depois em OK.','info');return null;}const c=certos(q),ok=c.length===sel.size&&c.every(k=>sel.has(k));arcos=true;draw();
+  return {ok,exp:`São ${c.length}: <b>${c.map(sg).join(', ')}</b> (${q.d}).${ok?'':' Na reta, verde = você marcou; vermelho = faltou.'}`};},
+ res:true});
+
+</script>
+</body>
+</html>

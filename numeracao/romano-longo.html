@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O número romano mais comprido · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de numeração</div><h1 id="title">O número romano mais comprido</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Arraste o controle para ver cada número em algarismos romanos e quantos símbolos ele usa. Descubra qual número da faixa precisa de mais símbolos.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl"><b>Número</b><input type="range" id="sl"><span id="sv"></span></div>
+<div class="fig" style="flex-direction:column"><div id="rom" style="font-size:30px;font-weight:700;color:var(--navy);letter-spacing:2px"></div><div class="muted" id="cnt"></div></div>
+<div class="ask">Recorde até agora: <span class="k" id="rec">—</span></div>
+<div class="ask">Número mais comprido: <input class="n" id="r1" inputmode="numeric" style="width:100px"> com <input class="n" id="r2" inputmode="numeric" style="width:70px"> símbolos</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=numeracao-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Separe o número por casas: 88 = 80 + 8 = LXXX + VIII. Em cada casa, o 8 é o que gasta mais símbolos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,rec;const len=n=>SN.romano(n).length;
+function show(){const n=+$('sl').value;$('sv').textContent=n;$('rom').textContent=SN.romano(n);$('cnt').textContent=`${len(n)} símbolos`;
+ if(!rec||len(n)>len(rec))rec=n;$('rec').textContent=`${rec} = ${SN.romano(rec)} (${len(rec)} símbolos)`;}
+$('sl').oninput=show;
+D.ciclo({
+ livros:[{a:1,b:100},{a:1,b:1000}],
+ sortear(){return pick([{a:1,b:50},{a:1,b:30},{a:100,b:200},{a:200,b:300},{a:1,b:500},{a:500,b:1000},{a:1000,b:2000},{a:1,b:3000}]);},
+ montar(q){cur=q;rec=null;$('sl').min=q.a;$('sl').max=q.b;$('sl').value=q.a;['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Qual número de <span class="k">${q.a}</span> a <span class="k">${q.b}</span> precisa da maior quantidade de símbolos romanos? Quantos símbolos?`;show();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;let m=0,best=[];for(let n=q.a;n<=q.b;n++){const L=len(n);if(L>m){m=L;best=[n];}else if(L===m)best.push(n);}
+  const ok1=best.includes(v[0]),ok2=v[1]===m;D.marcar(['r1','r2'],[ok1,ok2]);const b=best[0];
+  return {ok:ok1&&ok2,exp:`${best.length>1?'Os mais compridos são '+best.join(', '):'O mais comprido é '+b} = ${SN.romano(b)}, com <b>${m} símbolos</b>. Junte a parte mais longa de cada casa: 8 = VIII, 80 = LXXX, 800 = DCCC (4 símbolos cada).`};},
+ res:true});
+
+</script>
+</body>
+</html>

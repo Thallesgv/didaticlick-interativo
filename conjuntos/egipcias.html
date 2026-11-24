@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Frações egípcias na barra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números racionais</div><h1 id="title">Frações egípcias na barra</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Encha a barra laranja usando frações unitárias <b>diferentes</b> (1/2, 1/3, 1/4…). As peças entram na barra de baixo; a barra tem que ficar exatamente igual à de cima.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="chips" id="ch"></div><div class="ask" id="st"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=racionais-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Os egípcios escreviam 3/4 como 1/2 + 1/4. Com denominadores iguais fica fácil conferir: 1/2 + 1/4 = 2/4 + 1/4 = 3/4.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const LCM=27720;const U=[2,3,4,5,6,7,8,9,10,11,12];
+const soma=ks=>ks.reduce((s,k)=>s+LCM/k,0);   // em 1/27720
+function decomp(p,n,maxT){const alvo=p*LCM/n,res=[];(function go(i,ac,ks){if(ks.length>maxT||ac>alvo)return;if(ac===alvo&&ks.length){res.push(ks.slice());return;}
+ for(let j=i;j<U.length;j++){ks.push(U[j]);go(j+1,ac+LCM/U[j],ks);ks.pop();}})(0,0,[]);return res;}
+const ALVOS=[];for(let n=3;n<=12;n++)for(let p=2;p<n;p++)if(gcd(p,n)===1&&decomp(p,n,3).length)ALVOS.push([p,n]);
+const ftx=(p,n)=>`<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;font-weight:700"><span>${p}</span><span style="border-top:2px solid currentColor;padding:0 2px">${n}</span></span>`;
+function chipsU(el,sel,cb){el.innerHTML=U.map(k=>`<button data-k="${k}" class="${sel.has(k)?'on':''}">1/${k}</button>`).join('');
+ el.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const k=+b.dataset.k;sel.has(k)?sel.delete(k):sel.add(k);cb();});}
+
+let cur,sel=new Set();const COR=['#2457D6','#15803D','#7A4BB5','#0891B2','#B45309','#BE185D'];
+function draw(){const q=cur,ks=[...sel].sort((a,b)=>a-b),W=340,L=300;let g=`<rect x="20" y="10" width="${L*q.p/q.n}" height="30" fill="#F7821F"/><rect x="20" y="10" width="${L}" height="30" fill="none" stroke="#0E2354" stroke-width="2"/>`;
+ for(let i=1;i<q.n;i++)g+=`<line x1="${20+L*i/q.n}" y1="10" x2="${20+L*i/q.n}" y2="40" stroke="#0E2354" stroke-opacity=".35"/>`;
+ g+=`<text x="${24+L*q.p/q.n}" y="30" font-size="12" font-weight="700" font-family="Poppins" fill="#0E2354">${q.p}/${q.n}</text>`;
+ let x=20;ks.forEach((k,i)=>{const w=L/k;g+=`<rect x="${x}" y="52" width="${w}" height="30" fill="${COR[i%6]}" stroke="#fff" stroke-width="2"/><text x="${x+w/2}" y="72" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#fff">1/${k}</text>`;x+=w;});
+ g+=`<rect x="20" y="52" width="${L}" height="30" fill="none" stroke="#0E2354" stroke-width="2"/>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 92" width="${W}">${g}</svg>`;
+ const s=soma(ks),al=q.p*LCM/q.n;$('st').innerHTML=ks.length?`${ks.map(k=>'1/'+k).join(' + ')} ${s===al?'= '+q.p+'/'+q.n+' <b style="color:var(--ok)">✓</b>':s>al?'<b style="color:var(--bad)">passou</b>':'<b style="color:var(--orange)">ainda falta</b>'}`:'';chipsU($('ch'),sel,draw);}
+D.ciclo({
+ livros:[{p:5,n:6},{p:7,n:12},{p:3,n:4}],
+ sortear(){const [p,n]=pick(ALVOS);return {p,n};},
+ montar(q){cur=q;sel=new Set();$('dq').innerHTML=`Escreva <span class="k">${q.p}/${q.n}</span> como soma de frações unitárias diferentes.`;draw();},
+ conferir(q){if(!sel.size){msg('dm','Escolha as peças e toque em OK.','info');return null;}const ok=soma([...sel])===q.p*LCM/q.n;const ex=decomp(q.p,q.n,3).sort((a,b)=>a.length-b.length)[0];
+  if(!ok){sel=new Set(ex);draw();}return {ok,exp:`${q.p}/${q.n} = <b>${(ok?[...sel].sort((a,b)=>a-b):ex).map(k=>'1/'+k).join(' + ')}</b>. Truque: comece pela maior fração unitária que cabe e veja quanto falta.`};},
+ res:true});
+
+</script>
+</body>
+</html>

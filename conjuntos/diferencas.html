@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>a − b e b − a ao mesmo tempo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números naturais</div><h1 id="title">a − b e b − a ao mesmo tempo</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Toque na reta para mudar a (azul) e b (laranja): use os botões para escolher qual dos dois vai mexer. Verde = o resultado é natural; vermelho = sai de ℕ.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="chips" id="qual"><button data-q="a">Mexer no a</button><button data-q="b">Mexer no b</button></div>
+<div class="fig" id="fig"></div>
+<div class="ask" id="res" style="font-size:18px"></div>
+<div class="ask hide" id="prev">Antes de mexer, preveja: <span class="chips" id="pv"></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=naturais-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Em ℕ, x − y só existe quando x é maior ou igual a y. Para as duas subtrações existirem, a precisa ser ≥ b e b precisa ser ≥ a ao mesmo tempo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,a=7,b=3,qual='a',esc=null;const OP=['só a − b','só b − a','as duas','nenhuma'];
+function draw(){$('fig').innerHTML=D.reta({min:0,max:12,w:360,cor:Object.assign({}, {[a]:'#2457D6'},{[b]:a===b?'#15803D':'#F7821F'})});D.tap($('fig'),k=>{if(D.feito||cur.prev)return;if(qual==='a')a=k;else b=k;draw();});
+ const c=(x,y)=>{const v=x-y;return `<b style="color:${v>=0?'var(--ok)':'var(--bad)'}">${sg(v)}</b>${v>=0?' ∈ ℕ':' ∉ ℕ'}`;};
+ $('res').innerHTML=cur.prev&&!D.feito?`a = ${a}, b = ${b}`:`a − b = ${a} − ${b} = ${c(a,b)} &nbsp;·&nbsp; b − a = ${b} − ${a} = ${c(b,a)}`;
+ $('qual').querySelectorAll('button').forEach(x=>{x.classList.toggle('on',x.dataset.q===qual);x.onclick=()=>{qual=x.dataset.q;draw();};});
+ $('pv').innerHTML=OP.map((t,i)=>`<button data-i="${i}" class="${esc===i?'on':''}">${t}</button>`).join('');$('pv').querySelectorAll('button').forEach(x=>x.onclick=()=>{if(!D.feito){esc=+x.dataset.i;draw();}});}
+D.ciclo({
+ livros:[{busca:true}],
+ sortear(){const x=rnd(0,12),y=rnd(0,10)?rnd(0,12):x;return {prev:true,a:x,b:y};},
+ montar(q){cur=q;esc=null;$('prev').classList.toggle('hide',!q.prev);$('qual').classList.toggle('hide',!!q.prev);
+  if(q.busca){a=7;b=3;$('dq').innerHTML='Ana afirmou: “Se a − b e b − a são, os dois, números naturais, então a = b.” Mova a e b até deixar as <span class="k">duas</span> subtrações verdes e toque em OK.';}
+  else{a=q.a;b=q.b;$('dq').innerHTML=`Com a = <span class="k">${a}</span> e b = <span class="k">${b}</span>, quais subtrações dão um número natural?`;}draw();},
+ conferir(q){if(q.busca){const ok=a===b;return {ok,exp:ok?'As duas só ficam verdes quando a = b (as duas dão 0). Se a for maior, b − a fica negativo; se b for maior, a − b fica negativo. Ana está certa.':`Com a = ${a} e b = ${b} uma delas é negativa. As duas só ficam naturais quando a = b: Ana está certa.`};}
+  if(esc===null){msg('dm','Escolha uma das opções.','info');return null;}const r=a===b?2:a>b?0:1,ok=esc===r;draw();
+  return {ok,exp:`${a===b?'Como a = b, as duas dão 0, que é natural.':a>b?`Como a é maior, a − b = ${a-b} é natural, mas b − a = −${a-b} não.`:`Como b é maior, b − a = ${b-a} é natural, mas a − b = −${b-a} não.`} Resposta: <b>${OP[r]}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

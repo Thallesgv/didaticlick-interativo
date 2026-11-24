@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inteiros dentro do intervalo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números reais</div><h1 id="title">Inteiros dentro do intervalo</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O intervalo aparece em laranja. Bolinha vazia: a ponta fica de fora; bolinha cheia: a ponta entra. Toque em todos os inteiros que estão dentro.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask">Marcados: <span class="k" id="lst">nenhum</span></div>
+<div class="ask hide" id="rq">E quantos números reais há nele? <span class="chips" id="cl"><button data-v="0">nenhum</button><button data-v="1">uma quantidade finita</button><button data-v="2">infinitos</button></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=reais-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Primeiro descubra entre quais inteiros cada ponta fica: 3 &lt; √10 &lt; 4 (porque 9 &lt; 10 &lt; 16), então −√10 fica entre −4 e −3.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,sel=new Set(),esc=null;
+const PT=[{t:'−√10',v:-Math.sqrt(10)},{t:'π',v:Math.PI},{t:'−π',v:-Math.PI},{t:'√2',v:Math.SQRT2},{t:'−√5',v:-Math.sqrt(5)},{t:'√17',v:Math.sqrt(17)},{t:'5/2',v:2.5},{t:'−7/2',v:-3.5},{t:'√20',v:Math.sqrt(20)},{t:'−√2',v:-Math.SQRT2},{t:'−3',v:-3},{t:'2',v:2},{t:'4',v:4},{t:'−1',v:-1}];
+const dentro=(q,k)=>(q.fa?k>=q.a.v:k>q.a.v)&&(q.fb?k<=q.b.v:k<q.b.v);
+function draw(){const q=cur;$('fig').innerHTML=D.reta({min:-6,max:6,w:360,h:96,y:58,sel,extra:(sx,y)=>{const x1=sx(q.a.v),x2=sx(q.b.v);
+ return `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#F7821F" stroke-width="7" stroke-opacity=".55"/>`+
+ [[x1,q.fa,q.a.t],[x2,q.fb,q.b.t]].map(([x,f,t])=>`<circle cx="${x}" cy="${y-16}" r="5" fill="${f?'#F7821F':'#fff'}" stroke="#F7821F" stroke-width="2.5"/><text x="${x}" y="${y-26}" text-anchor="middle" font-size="12" font-weight="700" font-family="Poppins" fill="#F7821F">${t}</text><line x1="${x}" y1="${y-11}" x2="${x}" y2="${y}" stroke="#F7821F" stroke-width="1.5"/>`).join('');}});
+ D.tap($('fig'),k=>{if(D.feito)return;sel.has(k)?sel.delete(k):sel.add(k);draw();});$('lst').textContent=sel.size?[...sel].sort((a,b)=>a-b).map(sg).join(', '):'nenhum';
+ $('cl').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;draw();}};});}
+const nota=q=>`${q.fa?'[':']'}${q.a.t}, ${q.b.t}${q.fb?']':'['}`;
+D.ciclo({
+ livros:[{a:PT[0],b:PT[1],fa:false,fb:false,reais:true}],
+ sortear(){let a,b;do{a=pick(PT);b=pick(PT);}while(!(b.v-a.v>1.2&&b.v-a.v<9));return {a,b,fa:!!rnd(0,1),fb:!!rnd(0,1)};},
+ montar(q){cur=q;sel=new Set();esc=null;$('rq').classList.toggle('hide',!q.reais);$('dq').innerHTML=`Quantos números inteiros há no intervalo <span class="k">${nota(q)}</span>? Toque neles.`;draw();},
+ conferir(q){if(q.reais&&esc===null){msg('dm','Responda também quantos números reais há no intervalo.','info');return null;}
+  const c=[];for(let k=-6;k<=6;k++)if(dentro(q,k))c.push(k);const ok1=c.length===sel.size&&c.every(k=>sel.has(k)),ok2=!q.reais||esc===2;sel=new Set(c);draw();
+  return {ok:ok1&&ok2,exp:`${[q.a,q.b].filter(p=>!Number.isInteger(p.v)).map(p=>`${p.t} ≈ ${sg(Math.round(p.v*100)/100)}`).join(' e ')}${Number.isInteger(q.a.v)&&Number.isInteger(q.b.v)?'':'. '}Inteiros dentro: <b>${c.map(sg).join(', ')||'nenhum'}</b> (${c.length}).${q.reais?' Já os números reais são <b>infinitos</b>: entre dois números quaisquer sempre cabe outro.':''}`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina de Euclides · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script><script src="md.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Múltiplos e divisores</div><h1 id="title">A máquina de Euclides</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Euclides multiplicava uma lista de primos e somava 1. Faça a conta, use o testador de divisões e decida: o resultado é primo?</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="font-size:20px;font-weight:600;color:var(--navy)"></div>
+<div class="ask">Produto + 1 = <input class="n" id="r1" inputmode="numeric" style="width:120px"></div>
+<div class="ask">O resultado é: <span class="chips" id="pr"><button data-v="1">primo</button><button data-v="0">não é primo</button></span></div>
+<div class="card" style="background:#F8FAFC;margin:8px 0 0"><b style="color:var(--navy)">Testador de divisões</b>
+<div class="ask">Dividir por <input class="n" id="dv" inputmode="numeric" style="width:80px"> <button class="alt" id="tst">Testar</button></div><div id="tr" class="muted"></div></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=multiplos-q3-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Se você dividir o resultado por qualquer primo da lista, sobra 1. Então o resultado é primo ou tem um fator primo que ainda não estava na lista.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,esc=null;
+function prb(){$('pr').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(!D.feito){esc=+b.dataset.v;prb();}};});}
+$('tst').onclick=()=>{const v=num($('r1').value),d=num($('dv').value);if(isNaN(v)||isNaN(d)||d<2){$('tr').textContent='Escreva o resultado lá em cima e um divisor (2 ou mais).';return;}
+ const q=Math.floor(v/d),r=v%d;$('tr').innerHTML=`${fmt(v)} ÷ ${d} = ${fmt(q)}, resto <b style="color:${r?'var(--bad)':'var(--ok)'}">${r}</b>${r?'':' → divide!'}`;};
+D.ciclo({
+ livros:[{p:[2,3,5,7]}],
+ sortear(){return {p:pick([[2,3],[2,3,5],[2,5],[3,5],[2,7],[2,3,7],[3,7],[2,3,5,7,11],[2,3,5,7,11,13],[3,5,7],[2,11],[5,7]])};},
+ montar(q){cur=q;esc=null;prb();['r1','dv'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});$('tr').textContent='';
+  $('dq').innerHTML=`Siga a ideia de Euclides com a lista <span class="k">${q.p.join(', ')}</span>: calcule ${q.p.join(' × ')} + 1 e verifique se o resultado é primo.`;
+  $('fig').textContent=q.p.join(' × ')+' + 1 = ?';},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;if(esc===null){msg('dm','Escolha se o resultado é primo ou não.','info');return null;}
+  const N=q.p.reduce((a,b)=>a*b,1)+1,okN=v[0]===N,pr=MD.primo(N),ok=okN&&esc===(pr?1:0);D.marcar(['r1'],[okN]);
+  const f=MD.fatores(N);$('fig').innerHTML=`${q.p.join(' × ')} + 1 = <span class="k">${fmt(N)}</span>`;
+  return {ok,exp:`${q.p.join(' × ')} + 1 = ${fmt(N)}. Dividindo por ${q.p.join(', ')} sobra sempre 1, então nenhum primo da lista divide ${fmt(N)}. `+
+   (pr?`${fmt(N)} é <b>primo</b>: um primo novo, fora da lista.`:`${fmt(N)} = ${f.join(' × ')} <b>não é primo</b>, mas os fatores dele (${[...new Set(f)].join(', ')}) são primos novos, fora da lista. Por isso os primos nunca acabam.`)};},
+ res:true});
+
+</script>
+</body>
+</html>
