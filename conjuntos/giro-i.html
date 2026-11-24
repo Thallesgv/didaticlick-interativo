@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiplicar por i: gire 90° · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números complexos</div><h1 id="title">Multiplicar por i: gire 90°</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Multiplicar por i gira o ponto 90° no sentido anti-horário, em torno da origem. Toque no ponto onde ele vai parar e depois em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=complexos-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Um giro de 90° leva (a, b) em (−b, a): troque as coordenadas e mude o sinal da nova primeira. Dois giros (×i² = ×(−1)) levam ao oposto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const cx=(a,b)=>{const B=Math.abs(b),bi=(B===1?'':fmt(B))+'i';if(b===0)return sg(a);if(a===0)return (b<0?'−':'')+bi;return sg(a)+(b<0?' − ':' + ')+bi;};
+function plano(o){const n=o.n||5,S=o.S||30,P=22,W=2*n*S+2*P,X=a=>P+(a+n)*S,Y=b=>P+(n-b)*S;let g='';
+ for(let k=-n;k<=n;k++){g+=`<line x1="${X(k)}" y1="${Y(-n)}" x2="${X(k)}" y2="${Y(n)}" stroke="#E3E8F2"/><line x1="${X(-n)}" y1="${Y(k)}" x2="${X(n)}" y2="${Y(k)}" stroke="#E3E8F2"/>`;}
+ g+=`<line x1="${X(-n)-6}" y1="${Y(0)}" x2="${X(n)+6}" y2="${Y(0)}" stroke="#0E2354" stroke-width="2"/><line x1="${X(0)}" y1="${Y(-n)+6}" x2="${X(0)}" y2="${Y(n)-6}" stroke="#0E2354" stroke-width="2"/>`;
+ g+=`<text x="${X(n)}" y="${Y(0)-6}" font-size="11" font-weight="700" fill="#0E2354" text-anchor="end" font-family="Poppins">Re</text><text x="${X(0)+6}" y="${Y(n)+4}" font-size="11" font-weight="700" fill="#0E2354" font-family="Poppins">Im</text>`;
+ for(let k=-n;k<=n;k++)if(k){g+=`<text x="${X(k)}" y="${Y(0)+14}" font-size="10" fill="#6B7280" text-anchor="middle" font-family="Poppins">${sg(k)}</text><text x="${X(0)-4}" y="${Y(k)+4}" font-size="10" fill="#6B7280" text-anchor="end" font-family="Poppins">${cx(0,k)}</text>`;}
+ (o.vecs||[]).forEach(([a0,b0,a1,b1,c])=>{const x0=X(a0),y0=Y(b0),x1=X(a1),y1=Y(b1),L=Math.hypot(x1-x0,y1-y0)||1,ux=(x1-x0)/L,uy=(y1-y0)/L;
+  g+=`<line x1="${x0}" y1="${y0}" x2="${x1-ux*7}" y2="${y1-uy*7}" stroke="${c}" stroke-width="3"/><polygon points="${x1},${y1} ${x1-ux*12-uy*6},${y1-uy*12+ux*6} ${x1-ux*12+uy*6},${y1-uy*12-ux*6}" fill="${c}"/>`;});
+ if(o.tap)for(let a=-n;a<=n;a++)for(let b=-n;b<=n;b++)g+=`<circle data-p="${a},${b}" cx="${X(a)}" cy="${Y(b)}" r="11" fill="transparent" style="cursor:pointer"/>`;
+ (o.pts||[]).forEach(([a,b,l,c,oco])=>{g+=`<circle cx="${X(a)}" cy="${Y(b)}" r="7" fill="${oco?'#fff':c}" stroke="${c}" stroke-width="2.5" pointer-events="none"/>`+(l?`<text x="${X(a)+(a>=0?9:-9)}" y="${Y(b)-9}" font-size="12" font-weight="700" fill="${c}" text-anchor="${a>=0?'start':'end'}" font-family="Poppins" pointer-events="none">${l}</text>`:'');});
+ return `<svg viewBox="0 0 ${W} ${W}" width="${Math.min(W,340)}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;}
+function tapPlano(el,cb){el.querySelectorAll('[data-p]').forEach(c=>c.onclick=()=>{const [a,b]=c.dataset.p.split(',').map(Number);cb(a,b);});}
+
+let cur,sel=null;
+const rot=(a,b,k)=>{for(let j=0;j<k;j++)[a,b]=[-b,a];return [a,b];};
+function draw(){const [ra,rb]=rot(cur.a,cur.b,cur.k);const p=[[cur.a,cur.b,cx(cur.a,cur.b),'#2457D6']];if(sel)p.push([sel[0],sel[1],'',D.feito?(sel[0]===ra&&sel[1]===rb?'#15803D':'#B91C1C'):'#0E2354']);
+ const v=[[0,0,cur.a,cur.b,'#2457D6']];if(D.feito){p.push([ra,rb,cx(ra,rb),'#F7821F']);v.push([0,0,ra,rb,'#F7821F']);}
+ $('fig').innerHTML=plano({n:5,tap:!D.feito,pts:p,vecs:v});tapPlano($('fig'),(a,b)=>{sel=[a,b];draw();});}
+const pot=k=>k===1?'i':k===2?'i² = −1':'i³ = −i';
+D.ciclo({
+ livros:[{a:3,b:1,k:1},{a:3,b:1,k:2}],
+ sortear(){let a,b;do{a=rnd(-4,4);b=rnd(-4,4);}while(a===0&&b===0);return {a,b,k:pick([1,1,1,2,3])};},
+ montar(q){cur=q;sel=null;$('dq').innerHTML=`Onde para <span class="k">${cx(q.a,q.b)}</span> multiplicado por <span class="k">${pot(q.k)}</span>${q.k>1?` (${q.k} giros de 90°)`:''}?`;draw();},
+ conferir(q){if(!sel){msg('dm','Toque num ponto do plano.','info');return null;}const [ra,rb]=rot(q.a,q.b,q.k),ok=sel[0]===ra&&sel[1]===rb;setTimeout(draw,0);
+  const conta=q.k===1?`i × (${cx(q.a,q.b)}) = ${[q.a?cx(0,q.a):'',q.b?(q.b<0?'−':(q.a?'+':''))+' '+(Math.abs(q.b)===1?'':Math.abs(q.b))+'i²':''].filter(Boolean).join(' ').replace(/^- /,'−')} = ${cx(ra,rb)}`:`${q.k} giros de 90° = ${q.k*90}°: ${cx(ra,rb)}`;
+  return {ok,exp:`${conta}. O ponto (${sg(q.a)}, ${sg(q.b)}) foi para (${sg(ra)}, ${sg(rb)}).`};},
+ res:true});
+
+</script>
+</body>
+</html>
