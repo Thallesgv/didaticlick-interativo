@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As duas torneiras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Médias</div><h1>As duas torneiras</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha quanto tempo cada torneira leva sozinha para encher o tanque e toque em “Abrir as duas”. Compare o tempo juntas com a média harmônica dos dois tempos.</p><div class="sl" id="t1"><b>Torneira A</b><input type="range"><span></span></div><div class="sl" id="t2"><b>Torneira B</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="row"><button class="or" id="ab">Abrir as duas</button></div><div class="res" id="rs"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Duda','Manu','Miguel','Sophia'];
+const MA=a=>a.reduce((s,x)=>s+x,0)/a.length, MG=a=>Math.pow(a.reduce((s,x)=>s*x,1),1/a.length),
+ MH=a=>a.length/a.reduce((s,x)=>s+1/x,0), MQ=a=>Math.sqrt(a.reduce((s,x)=>s+x*x,0)/a.length);
+let AC=null;function tom(freqs,dur){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t0=AC.currentTime;
+ freqs.forEach((f,i)=>{const o=AC.createOscillator(),g=AC.createGain();o.type='triangle';o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+  const s=t0+i*(dur||.7);g.gain.setValueAtTime(0,s);g.gain.linearRampToValueAtTime(.25,s+.03);g.gain.exponentialRampToValueAtTime(.001,s+(dur||.7)*1.4);o.start(s);o.stop(s+(dur||.7)*1.5);});}catch(e){}}
+
+
+const A1=D.sl('t1',1,12,1,3,()=>{nv=0;draw();},v=>v+' h'),A2=D.sl('t2',1,12,1,6,()=>{nv=0;draw();},v=>v+' h');let nv=0,tm=0,anim=null;
+function draw(){const a=A1.get(),b=A2.get(),tj=1/(1/a+1/b),W=340;let g=`<rect x="110" y="30" width="120" height="140" fill="none" stroke="#0E2354" stroke-width="2"/>`;
+ const h=Math.min(1,nv)*138;g+=`<rect x="111" y="${169-h}" width="118" height="${h}" fill="#5B8DEF" fill-opacity=".7"/>`;
+ g+=`<rect x="60" y="14" width="60" height="10" fill="#2457D6"/><rect x="220" y="14" width="60" height="10" fill="#F7821F"/>`+T(60,10,'A: 1/'+a+' por hora',{a:'start',fs:10,c:'#2457D6'})+T(280,10,'B: 1/'+b+' por hora',{a:'end',fs:10,c:'#F7821F'});
+ g+=T(170,188,anim?('tempo: '+f2(tm)+' h'):(nv>=1?'cheio em '+f2(tj)+' h':''),{fs:12});$('fig').innerHTML=`<svg viewBox="0 0 ${W} 196" width="${W}">${g}</svg>`;
+ $('rs').innerHTML=`<div>juntas<b>${f2(tj)} h</b></div><div>média harmônica<b>${f2(MH([a,b]))} h</b></div><div>média aritmética<b>${f2(MA([a,b]))} h</b></div>`;
+ $('nt').innerHTML=`Por hora: 1/${a} + 1/${b} = 1/${f2(tj)} do tanque. Duas torneiras iguais de ${f2(MH([a,b]))} h encheriam juntas no mesmo tempo: a média harmônica preserva a soma dos inversos (o tempo juntas é a metade dela).`;}
+$('ab').onclick=()=>{if(anim)return;nv=0;tm=0;const a=A1.get(),b=A2.get(),r=1/a+1/b,tj=1/r;anim=setInterval(()=>{tm=Math.min(tj,tm+tj/60);nv=tm*r;draw();if(tm>=tj){clearInterval(anim);anim=null;draw();}},40);};
+draw();
+
+</script>
+</body>
+</html>
