@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A tábua de contar dos romanos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script><script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de Numeração</div><h1>A tábua de contar dos romanos</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Toque numa linha ou num espaço para pôr uma pedrinha; toque em “tirar” para remover. Nas linhas, cada pedrinha vale 1, 10, 100 ou 1 000; nos espaços entre elas, 5, 50 ou 500. Com 5 pedrinhas numa linha, troque por 1 no espaço de cima.</p><div class="fig" id="fig"></div><div class="row"><button class="alt" id="mod">Modo: pôr</button><button class="alt" id="trc">Fazer as trocas</button><button class="alt" id="zr">Limpar</button></div><div class="res" id="rs"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const V=[1,5,10,50,100,500,1000],S=['I','V','X','L','C','D','M'];let p=[3,1,2,1,1,0,0],tirar=false;
+function val(){return p.reduce((s,x,i)=>s+x*V[i],0);}
+function draw(){const W=330,H=300;let g='';for(let i=0;i<7;i++){const y=H-24-i*38,linha=i%2==0;
+  g+=`<g data-t="${i}" style="cursor:pointer"><rect x="40" y="${y-17}" width="280" height="34" fill="${linha?'#F5F7FB':'#FFF'}"/>`;
+  if(linha)g+=`<line x1="40" y1="${y}" x2="320" y2="${y}" stroke="#0E2354" stroke-width="2"/>`;
+  g+=T(20,y+4,S[i],{fs:14,c:linha?'#0E2354':'#F7821F'});
+  for(let k=0;k<p[i];k++)g+=`<circle cx="${70+k*26}" cy="${y}" r="10" fill="#9CA3AF" stroke="#4B5563"/>`;g+='</g>';}
+ $('fig').innerHTML=svg(W,H,g);D.tap($('fig'),t=>{t=+t;if(tirar){if(p[t]>0)p[t]--;}else if(p[t]<9)p[t]++;draw();});
+ const v=val();$('rs').innerHTML=`<div>valor<b>${SN.fmt(v)}</b></div><div>em romano<b>${v>0&&v<4000?SN.romano(v):'—'}</b></div><div>pedrinhas<b>${p.reduce((a,b)=>a+b,0)}</b></div>`;
+ const k=p.findIndex((x,i)=>i%2==0?x>=5:x>=2);
+ $('nt').innerHTML=k>=0?`Há ${p[k]} pedrinhas em <b>${S[k]}</b>: ${k%2==0?'5 delas':'2 delas'} valem 1 pedrinha em <b>${S[k+1]||'?'}</b>. Toque em “Fazer as trocas”.`:'A tábua está arrumada: cada linha tem no máximo 4 pedrinhas e cada espaço, no máximo 1. É assim que os romanos liam o número, pedrinha por pedrinha, do M até o I.';}
+$('mod').onclick=()=>{tirar=!tirar;$('mod').textContent='Modo: '+(tirar?'tirar':'pôr');};
+$('trc').onclick=()=>{let mud=true;while(mud){mud=false;for(let i=0;i<6;i++){const lim=i%2==0?5:2;if(p[i]>=lim){p[i]-=lim;p[i+1]++;mud=true;}}}draw();};
+$('zr').onclick=()=>{p=[0,0,0,0,0,0,0];draw();};draw();
+
+</script>
+</body>
+</html>

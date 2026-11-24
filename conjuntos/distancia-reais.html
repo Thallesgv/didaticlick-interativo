@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A distância entre dois reais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números Reais</div><h1>A distância entre dois reais</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Escolha a posição de duas pessoas numa trilha (em km). A distância entre elas é o maior menos o menor; com irracionais, fazemos a conta exata e arredondamos no fim.</p><div class="chips" id="ca"></div><div class="chips" id="cb" style="margin-top:6px"></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const L=[['−√2',-Math.SQRT2],['−1,5',-1.5],['−1/3',-1/3],['0',0],['√3',Math.sqrt(3)],['2',2],['π',Math.PI],['−π',-Math.PI]];let a=0,b=6;
+function chips(id,cur,f){$(id).innerHTML=L.map((x,i)=>`<button class="alt ${i===cur?'on':''}" data-i="${i}">${x[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(x=>x.onclick=()=>{f(+x.dataset.i);draw();});}
+function draw(){chips('ca',a,i=>a=i);chips('cb',b,i=>b=i);const x=L[a][1],y=L[b][1],W=340,sx=v=>20+(v+3.5)/7*(W-40);let g=`<line x1="10" y1="40" x2="${W-10}" y2="40" stroke="#0E2354" stroke-width="1.5"/>`;
+ for(let k=-3;k<=3;k++)g+=`<line x1="${sx(k)}" y1="35" x2="${sx(k)}" y2="45" stroke="#0E2354"/>`+T(sx(k),62,String(k).replace('-','−'),{fs:10,w:500});
+ g+=`<path d="M${sx(Math.min(x,y))} 26 H${sx(Math.max(x,y))}" stroke="#F7821F" stroke-width="4"/><circle cx="${sx(x)}" cy="40" r="6" fill="#2457D6"/><circle cx="${sx(y)}" cy="40" r="6" fill="#15803D"/>`;
+ $('fig').innerHTML=svg(W,70,g);const M=x>=y?L[a][0]:L[b][0],m=x>=y?L[b][0]:L[a][0];const ex=m.startsWith('−')?`${M} + ${m.slice(1)}`:m==='0'?M:`${M} − ${m}`;
+ $('nt').innerHTML=`Maior: ${M}; menor: ${m}. Distância = ${M} − (${m}) = <b>${ex}</b> ≈ ${f2(Math.abs(x-y)).replace(/(,\d)$/,'$10')} km.`;}draw();
+
+</script>
+</body>
+</html>

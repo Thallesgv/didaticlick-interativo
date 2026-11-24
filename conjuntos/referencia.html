@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mude o ponto de referência · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números Inteiros</div><h1>Mude o ponto de referência</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">O elevador do prédio tem garagem, térreo e andares. Escolha onde fica o zero. Os andares não saem do lugar, mas os números mudam.</p><div class="row"><button class="alt on" id="z1">Zero no térreo</button><button class="alt" id="z2">Zero na garagem G2</button></div><div class="fig" id="fig"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const AND=['G2','G1','térreo','1º','2º','3º','4º','5º'];let z=2,sel=6;
+function draw(){let g='';AND.forEach((a,i)=>{const y=250-i*30;g+=`<g data-t="${i}" style="cursor:pointer"><rect x="100" y="${y-26}" width="130" height="28" fill="${i===sel?'#FFF7EF':i<2?'#E5E7EB':'#F5F7FB'}" stroke="#0E2354"/>`+T(165,y-8,a,{fs:11})+T(80,y-8,String(i-z).replace('-','−'),{a:'end',fs:15,w:700,c:i===z?'#2457D6':'#0E2354'})+'</g>';});
+ g+=`<path d="M95 ${250-z*30-12} h-10" stroke="#2457D6" stroke-width="3"/>`;$('fig').innerHTML=svg(260,260,g);D.tap($('fig'),t=>{sel=t;draw();});
+ const v=sel-z;$('nt').innerHTML=`Com o zero ${z===2?'no térreo':'na garagem G2'}, o andar <b>${AND[sel]}</b> é o número <b>${String(v).replace('-','−')}</b>. Do ${AND[sel]} até a G2 são ${sel} andares, qualquer que seja o zero: as distâncias não mudam. Toque em outro andar.`;}
+$('z1').onclick=()=>{z=2;$('z1').classList.add('on');$('z2').classList.remove('on');draw();};$('z2').onclick=()=>{z=0;$('z2').classList.add('on');$('z1').classList.remove('on');draw();};draw();
+
+</script>
+</body>
+</html>

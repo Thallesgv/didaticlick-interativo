@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Onde existem √x e 1/x · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números Reais</div><h1>Onde existem √x e 1/x</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Mova x pela reta real. A raiz quadrada só existe para x em ℝ₊ (x ≥ 0); o inverso 1/x só existe para x em ℝ* (x ≠ 0).</p><div class="sl" id="x"><b>x</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="res" id="rs"></div><div class="nota" id="nt"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const Xs=D.sl('x',-40,40,1,9,draw,v=>(v/10).toFixed(1).replace('.',',').replace('-','−'));
+function draw(){const x=Xs.get()/10,W=340,sx=v=>20+(v+4)/8*(W-40);let g='';
+ g+=`<line x1="${sx(0)}" y1="22" x2="${W-10}" y2="22" stroke="#2457D6" stroke-width="5"/><circle cx="${sx(0)}" cy="22" r="5" fill="#2457D6"/>`+T(14,26,'√x',{a:'start',fs:10,c:'#2457D6'});
+ g+=`<line x1="10" y1="40" x2="${W-10}" y2="40" stroke="#F7821F" stroke-width="5"/><circle cx="${sx(0)}" cy="40" r="5" fill="#fff" stroke="#F7821F" stroke-width="2.5"/>`+T(14,54,'1/x',{a:'start',fs:10,c:'#F7821F'});
+ g+=`<line x1="10" y1="64" x2="${W-10}" y2="64" stroke="#0E2354"/>`;for(let k=-4;k<=4;k++)g+=T(sx(k),82,String(k).replace('-','−'),{fs:10,w:500});g+=`<path d="M${sx(x)} 58 l-6 -10 h12z" fill="#0E2354"/>`;
+ $('fig').innerHTML=svg(W,88,g);const fx=v=>v.toFixed(3).replace(/\.?0+$/,'').replace('.',',').replace('-','−');
+ $('rs').innerHTML=`<div>√x<b>${x>=0?fx(Math.sqrt(x)):'não existe'}</b></div><div>1/x<b>${x!==0?fx(1/x):'não existe'}</b></div>`;
+ $('nt').innerHTML=x===0?'No zero: √0 = 0 existe, mas 1/0 não existe (nenhum número vezes 0 dá 1).':x<0?`x é negativo: nenhum real ao quadrado dá ${fx(x)}, então √x não existe em ℝ (só em ℂ). Já 1/x existe.`:'x positivo: as duas existem.';}draw();
+
+</script>
+</body>
+</html>
