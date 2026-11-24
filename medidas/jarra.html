@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A jarra de Arquimedes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;overflow-x:auto}
+.tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
+.tabs button{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.tabs button.on{background:var(--navy);color:#fff}
+.sl{display:grid;grid-template-columns:110px 1fr 70px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy)}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.res{font-size:18px;font-weight:600;color:var(--navy);margin:6px 0;line-height:1.7}
+.res .k{color:var(--orange)}.res .g{color:var(--ok)}.res .z{color:#fff;background:var(--orange);border-radius:4px;padding:0 2px}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.hide{display:none!important}
+input.n{font-family:inherit;font-size:20px;width:120px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+input.s{width:70px}
+select{font-family:inherit;font-size:16px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;background:#fff}
+.dq{font-size:20px;font-weight:600;color:var(--navy);line-height:2.1}
+.pesos button{min-width:70px}
+</style>
+<script src="um.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Unidades de medida</div><h1 id="title">A jarra de Arquimedes</h1></header>
+<main>
+
+<div class="card">
+<p class="muted">Conta a história que Arquimedes, tomando banho, percebeu que a água subia quando ele entrava na banheira. A água que sobe ocupa o mesmo volume do objeto. Escolha quanto de água pôr na jarra e toque num objeto para mergulhá-lo (toque de novo para tirar). Lembre: 1 mL = 1 cm³.</p>
+<div class="sl" id="ag"><b>Água</b><input type="range"><span></span></div>
+<div class="row pesos" style="margin:6px 0"><button data-o="0">pedra</button><button data-o="1">cubo 5 cm</button><button data-o="2">coroa</button><button data-o="3">pedra grande</button></div>
+<div class="fig" id="jf"></div><div class="res" id="jr"></div></div>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div><h3 style="margin:0 0 6px;color:var(--navy)">Desafio</h3>
+<div class="dq" id="dq"></div><div class="row"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outra jarra</button></div><div id="dm"></div></div>
+
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const q=new URLSearchParams(location.search);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));const pick=a=>a[rnd(0,a.length-1)];
+const F=UM.fmt;
+const W=()=>Math.max(280,Math.min(560,innerWidth-70));
+function msg(id,t,c){$(id).innerHTML=t?`<div class="msg ${c||'info'}">${t}</div>`:'';}
+function tabs(ids,cb){ids.forEach(t=>{$('tab-'+t).onclick=()=>{ids.forEach(u=>{$('tab-'+u).classList.toggle('on',u===t);$('pn-'+u).classList.toggle('hide',u!==t);});cb&&cb(t);};});}
+function slider(id,v,lo,hi,cb,show){const el=$(id);const i=el.querySelector('input'),s=el.querySelector('span');i.min=lo;i.max=hi;i.step=1;i.value=v;
+ const sh=()=>{s.textContent=show?show(+i.value):i.value;};sh();i.oninput=()=>{sh();cb(+i.value);};return {get:()=>+i.value,set:x=>{i.value=x;sh();}};}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace('−','-');if(/,.*\./.test(s)||(s.match(/,/g)||[]).length>1)return NaN;s=s.replace(',','.');return s===''?NaN:Number(s);};
+let ac=0,tt=0;function placar(ok){tt++;if(ok)ac++;$('placar').textContent=`Acertos: ${ac} de ${tt}`;}
+// desafio genérico: gerar() devolve {html, res:[números], exp, tol}; só conta depois do OK
+function desafio(gerar){let cur,feito=false;
+ function novo(){cur=gerar();feito=false;$('dq').innerHTML=cur.html;msg('dm','');$('ok').disabled=false;
+  const ins=[...document.querySelectorAll('#dq input')];if(ins[0])ins[0].focus();
+  ins.forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});}
+ $('ok').onclick=()=>{if(feito)return;const ins=[...document.querySelectorAll('#dq input')];
+  if(ins.some(x=>x.value.trim()==='')){msg('dm','Preencha a resposta e toque em OK.','info');return;}
+  const vals=ins.map(x=>num(x.value));if(vals.some(v=>isNaN(v))){msg('dm','Use só números, com vírgula para os decimais (ex.: 2,5).','info');return;}
+  const tol=cur.tol||1e-9;const okk=cur.res.map((r,i)=>Math.abs(r-vals[i])<=tol*Math.max(1,Math.abs(r)));const ok=okk.every(x=>x);
+  feito=true;$('ok').disabled=true;placar(ok);ins.forEach((x,i)=>x.style.borderColor=okk[i]?'var(--ok)':'var(--bad)');
+  msg('dm',(ok?'Certo! ':'Ainda não. ')+cur.exp,ok?'ok':'bad');};
+ $('novo').onclick=novo;novo();}
+const box=(c)=>`<input class="n ${c||''}" inputmode="decimal">`;
+
+const OBJ=[{n:'pedra',v:250,cor:'#78716C',f:'pedra'},{n:'cubo de 5 cm',v:125,cor:UM.BL,f:'cubo'},{n:'coroa',v:350,cor:'#CA8A04',f:'coroa'},{n:'pedra grande',v:480,cor:'#57534E',f:'pedra'}];
+let base=1200,dentro=[];
+function jarra(nivel,objs,w){const H=300,y0=H-20,top=30,cap=2000,sc=(y0-top)/cap,x0=120,x1=250;
+ let b=`<path d="M${x0},${top-10} L${x0},${y0} Q${x0},${y0+8} ${x0+8},${y0+8} L${x1-8},${y0+8} Q${x1},${y0+8} ${x1},${y0} L${x1},${top-10}" fill="#F8FAFF" stroke="${UM.NAVY}" stroke-width="3"/>`;
+ const yl=y0-nivel*sc;b+=`<rect x="${x0+2}" y="${yl}" width="${x1-x0-4}" height="${y0-yl+6}" fill="#7DD3FC" fill-opacity=".65"/><line x1="${x0+2}" y1="${yl}" x2="${x1-2}" y2="${yl}" stroke="#0284C7" stroke-width="2"/>`;
+ // objetos no fundo
+ let xx=x0+12;objs.forEach(o=>{const s=Math.cbrt(o.v)*4.2,y=y0-s+4;
+  if(o.f==='cubo')b+=`<rect x="${xx}" y="${y}" width="${s}" height="${s}" fill="${o.cor}" stroke="${UM.NAVY}"/>`;
+  else if(o.f==='coroa'){b+=`<path d="M${xx},${y0+4} L${xx},${y+6} L${xx+s*.25},${y+s*.45} L${xx+s*.5},${y} L${xx+s*.75},${y+s*.45} L${xx+s},${y+6} L${xx+s},${y0+4}Z" fill="${o.cor}" stroke="#713F12"/>`;}
+  else b+=`<ellipse cx="${xx+s/2}" cy="${y+s/2+2}" rx="${s/2}" ry="${s/2.4}" fill="${o.cor}"/>`;
+  xx+=s+4;});
+ for(let v=0;v<=cap;v+=100){const y=y0-v*sc,big=v%500===0;b+=`<line x1="${x0}" y1="${y}" x2="${x0+(big?18:10)}" y2="${y}" stroke="${UM.NAVY}"/>`;
+  if(big)b+=`<text x="${x0-6}" y="${y+4}" font-size="11.5" text-anchor="end" fill="${UM.NAVY}" font-family="Poppins,sans-serif">${v===1000?'1 L':v===2000?'2 L':F(v)+' mL'}</text>`;}
+ b+=`<text x="${x1+8}" y="${yl+4}" font-size="13" font-weight="700" fill="#0284C7" font-family="Poppins,sans-serif">${F(nivel)} mL</text>`;
+ return `<svg viewBox="0 0 340 ${H+10}" width="${Math.min(w||W(),340)}">${b}</svg>`;}
+function draw(){const v=dentro.reduce((a,i)=>a+OBJ[i].v,0),n=base+v;
+ $('jf').innerHTML=jarra(n,dentro.map(i=>OBJ[i]));
+ document.querySelectorAll('.pesos button[data-o]').forEach(b=>{const on=dentro.includes(+b.dataset.o);b.style.background=on?'var(--orange)':'#fff';b.style.color=on?'#fff':'var(--navy)';b.style.border='2px solid '+(on?'transparent':'var(--navy)');});
+ $('jr').innerHTML=dentro.length?`Antes: ${F(base)} mL &nbsp;·&nbsp; Depois: ${F(n)} mL<br>Volume ${dentro.length>1?'dos objetos':'do objeto'}: ${F(n)} − ${F(base)} = <span class="k">${F(v)} mL = ${F(v)} cm³</span>`+(dentro.includes(1)?`<br><span class="g">Confira o cubo: 5 cm × 5 cm × 5 cm = 125 cm³.</span>`:''):`Nível da água: <span class="k">${F(base)} mL</span>. Mergulhe um objeto.`;}
+slider('ag',12,4,14,v=>{base=v*100;draw();},v=>F(v*100)+' mL');
+document.querySelectorAll('.pesos button[data-o]').forEach(b=>b.onclick=()=>{const i=+b.dataset.o;dentro=dentro.includes(i)?dentro.filter(x=>x!==i):dentro.concat(i);draw();});
+desafio(()=>{const a=rnd(6,13)*100,v=pick([150,180,200,220,250,300,320,350,400,450]),o=pick(['uma pedra','um peso de ferro','uma bola de metal']);
+ const unid=pick(['cm³','mL']);return {html:`<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><div style="text-align:center">${jarra(a,[],150)}<div class="muted" style="font-size:13px;line-height:1.2">antes</div></div><div style="text-align:center">${jarra(a+v,[{v:v,cor:'#78716C',f:'pedra'}],150)}<div class="muted" style="font-size:13px;line-height:1.2">depois</div></div></div>Samuel mergulhou ${o} na jarra. O volume ${o.startsWith('uma')?'dela':'dele'} é ${box('s')} ${unid}.`,res:[v],exp:`O nível foi de ${F(a)} mL para ${F(a+v)} mL: ${F(a+v)} − ${F(a)} = ${F(v)} mL = ${F(v)} cm³.`};});
+draw();
+
+</script>
+</body>
+</html>
