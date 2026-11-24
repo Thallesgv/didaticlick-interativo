@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O carrinho do mercado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Operações</div><h1 id="title">O carrinho do mercado</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Antes de passar no caixa, estime o total arredondando cada preço para a dezena mais próxima. Depois calcule o total exato e diga se o dinheiro dá. Toque em OK e veja o caixa passar as compras.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig"><div id="cx" style="width:300px;font-size:15px;color:#0E2354;text-align:left"></div></div>
+<div class="ask">Estimativa: R$ <input class="n" id="e" inputmode="numeric" autocomplete="off" style="width:80px"></div>
+<div class="ask">Total exato: R$ <input class="n" id="t" inputmode="numeric" autocomplete="off" style="width:80px"></div>
+<div class="ask">O dinheiro dá? <span class="chips" id="pa"><button data-v="1">dá</button><button data-v="0">não dá</button></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=adicao-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Para arredondar à dezena mais próxima, olhe o algarismo das unidades: de 0 a 4 desce, de 6 a 9 sobe (38 vira 40, 52 vira 50). Na conta exata, junte primeiro os preços que fecham dezenas, como 38 + 52 = 90.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,esc=null,anim=null;
+const R=v=>'R$ '+v+',00',ARR=v=>Math.round(v/10)*10;
+const PROD=['Arroz','Feijão','Café','Frango','Frutas','Leite','Pão','Queijo','Macarrão','Sabão','Carne','Biscoito','Suco','Iogurte'];
+function chips(){$('pa').querySelectorAll('button').forEach(b=>{b.classList.toggle('on',esc===+b.dataset.v);b.onclick=()=>{if(D.feito)return;esc=+b.dataset.v;chips();};});}
+function caixa(q,k,show){const L=(a,b,c,d)=>`<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed #D7DEEA;padding:5px 0"><span>${a}</span><span>${d?`<span style="color:#6B7280;font-size:13px;margin-right:8px">≈ ${d}</span>`:''}<b style="color:${c||'#0E2354'}">${b}</b></span></div>`;
+ let h=`<div style="background:#0E2354;color:#fff;border-radius:10px 10px 0 0;padding:8px 12px;font-weight:700;display:flex;justify-content:space-between"><span>Caixa 3</span><span>${q.nome}: ${R(q.din)}</span></div><div style="border:2px solid #0E2354;border-top:0;border-radius:0 0 10px 10px;padding:6px 12px">`;
+ q.it.forEach((p,i)=>{h+=L((i<k?'✓ ':'')+p[0],R(p[1]),i<k?'#15803D':null,show?ARR(p[1]):null);});
+ let soma=q.it.slice(0,k).reduce((s,p)=>s+p[1],0);
+ h+=`<div style="display:flex;justify-content:space-between;padding:7px 0 2px;font-size:17px"><b>Total</b><b>${k?R(soma):'?'}</b></div>`;
+ if(show&&k===q.it.length){const tr=q.din-soma;h+=`<div style="text-align:right;font-weight:700;color:${tr>=0?'#15803D':'#B91C1C'}">${tr>=0?'Troco: '+R(tr):'Faltam '+R(-tr)}</div>`;}
+ $('cx').innerHTML=h+'</div>';}
+function passar(q){if(anim)clearInterval(anim);let k=0;caixa(q,0,true);anim=setInterval(()=>{k++;caixa(q,k,true);if(k>=q.it.length){clearInterval(anim);anim=null;}},450);}
+D.ciclo({
+ livros:[{nome:'Mikaela',din:150,it:[['Arroz',38],['Carne',52],['Café',27],['Frutas',19]]}],
+ sortear(){const n=pick([3,4,4,5]),nomes=[...PROD].sort(()=>Math.random()-.5).slice(0,n);
+  const it=nomes.map(p=>{let v;do v=rnd(8,69);while(v%10===5);return [p,v];});const tot=it.reduce((s,p)=>s+p[1],0);
+  let din=Math.round((tot+rnd(-15,20))/10)*10;if(din===tot)din+=10;return {nome:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela']),din,it};},
+ montar(q){cur=q;esc=null;chips();if(anim){clearInterval(anim);anim=null;}['e','t'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});
+  $('dq').innerHTML=`${q.nome} tem <span class="k">${R(q.din)}</span>. Quanto vai dar a compra?`;caixa(q,0,false);},
+ conferir(q){if(esc===null){msg('dm','Diga se o dinheiro dá.','info');return null;}const v=D.ler(['e','t']);if(!v)return null;
+  const est=q.it.reduce((s,p)=>s+ARR(p[1]),0),tot=q.it.reduce((s,p)=>s+p[1],0),da=tot<=q.din;
+  const oks=[v[0]===est,v[1]===tot];D.marcar(['e','t'],oks);const ok=oks.every(Boolean)&&(esc===1)===da;passar(q);
+  return {ok,exp:`Estimativa: ${q.it.map(p=>ARR(p[1])).join(' + ')} = <b>${est}</b>. Exato: ${q.it.map(p=>p[1]).join(' + ')} = <b>${tot}</b>. ${da?`Dá, e sobram ${q.din} − ${tot} = <b>R$ ${q.din-tot},00</b>.`:`Não dá: faltam ${tot} − ${q.din} = <b>R$ ${tot-q.din},00</b>.`}`};},
+ res:true});
+
+</script>
+</body>
+</html>

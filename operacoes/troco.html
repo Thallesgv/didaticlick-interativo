@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O troco no caixa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Operações</div><h1 id="title">O troco no caixa</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Calcule o troco contando para a frente, do preço até o valor pago. Depois monte o troco tocando nas notas e moedas, usando o menor número possível de peças. Toque numa peça da bandeja para tirá-la. Depois toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" style="flex-direction:column;gap:8px"><div id="ct" style="font-size:16px;color:#0E2354;font-weight:600"></div>
+<div id="cofre" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center"></div>
+<div style="font-size:13px;color:#6B7280">Bandeja do troco</div>
+<div id="band" style="min-height:52px;width:300px;max-width:100%;border:2px solid #0E2354;border-radius:10px;display:flex;flex-wrap:wrap;gap:5px;padding:6px;justify-content:center;align-items:center"></div>
+<div id="bs" style="font-weight:700;color:#0E2354"></div></div>
+<div class="ask">Troco: R$ <input class="n" id="t" inputmode="numeric" autocomplete="off" style="width:80px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=subtracao-q6-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Conte do preço até o valor pago: primeiro complete a dezena, depois a centena, depois chegue ao valor pago. Para usar poucas peças, pegue sempre a maior nota que ainda cabe no que falta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const VAL=[50,20,10,5,2,1],COR={50:'#C99A3A',20:'#E3A72F',10:'#C0504D',5:'#8E6BB8',2:'#3A86C8',1:'#B8B8B8'};
+let cur,band=[];
+const peca=(v,on)=>v>1?`<span style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:30px;border-radius:5px;background:${COR[v]};color:#fff;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 1px 2px #0003">${v}</span>`
+ :`<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:radial-gradient(#E8E8E8,#A9A9A9);border:2px solid #C9A43A;color:#0E2354;font-weight:700;font-size:13px;cursor:pointer">1</span>`;
+function guloso(t){const r=[];for(const v of VAL)while(t>=v){r.push(v);t-=v;}return r;}
+function desenha(){$('cofre').innerHTML=VAL.map(v=>`<span data-v="${v}">${peca(v)}</span>`).join('');
+ $('cofre').querySelectorAll('[data-v]').forEach(e=>e.onclick=()=>{if(D.feito)return;band.push(+e.dataset.v);band.sort((a,b)=>b-a);desenha();});
+ $('band').innerHTML=band.length?band.map((v,i)=>`<span data-i="${i}">${peca(v)}</span>`).join(''):'<span style="color:#9CA3AF;font-size:13px">toque nas notas e moedas acima</span>';
+ $('band').querySelectorAll('[data-i]').forEach(e=>e.onclick=()=>{if(D.feito)return;band.splice(+e.dataset.i,1);desenha();});
+ $('bs').textContent=`Na bandeja: R$ ${band.reduce((s,v)=>s+v,0)},00 em ${band.length} peça${band.length===1?'':'s'}`;}
+function contar(p,pg){const s=[];let a=p;const d=Math.ceil(a/10)*10;if(d>a&&d<=pg){s.push([a,d]);a=d;}const c=Math.ceil(a/100)*100;if(c>a&&c<=pg&&pg-a>=100){s.push([a,c]);a=c;}if(pg>a)s.push([a,pg]);return s;}
+D.ciclo({
+ livros:[{nome:'Teodoro',it:'um lanche',p:37,pg:100}],
+ sortear(){const pg=pick([20,50,100,100,200]);let p;do p=rnd(Math.max(3,pg/5|0),pg-1);while(pg-p<3);return {nome:pick(['Sophia','Teodoro','Duda','Samuel','Miguel','Manu','Mikaela']),it:pick(['um lanche','um livro','um caderno','uma camiseta','um brinquedo','um ingresso']),p,pg};},
+ montar(q){cur=q;band=[];$('band').style.borderColor='#0E2354';$('t').value='';$('t').style.borderColor='#D7DEEA';
+  $('dq').innerHTML=`${q.nome} comprou ${q.it} de <span class="k">R$ ${q.p},00</span> e pagou com uma nota de <span class="k">R$ ${q.pg},00</span>.`;
+  $('ct').innerHTML=`Preço R$ ${q.p},00 · Pago R$ ${q.pg},00`;desenha();},
+ conferir(q){const v=D.ler(['t']);if(!v)return null;if(!band.length){msg('dm','Monte o troco na bandeja.','info');return null;}
+  const tr=q.pg-q.p,g=guloso(tr),soma=band.reduce((s,x)=>s+x,0),okv=v[0]===tr,okb=soma===tr&&band.length===g.length;D.marcar(['t'],[okv]);
+  $('band').style.borderColor=okb?'var(--ok)':'var(--bad)';
+  const sal=contar(q.p,q.pg);
+  let e=`Contando para a frente: ${sal.map(([a,b])=>`${a} + ${b-a} = ${b}`).join('; ')}. Troco: ${sal.map(([a,b])=>b-a).join(' + ')} = <b>R$ ${tr},00</b>. Com menos peças: <b>${g.join(' + ')}</b> (${g.length} peça${g.length>1?'s':''}).`;
+  if(soma===tr&&!okb)e+=' Sua bandeja soma certo, mas dá para usar menos peças: comece pela maior nota que cabe.';
+  return {ok:okv&&okb,exp:e};},
+ res:true});
+
+</script>
+</body>
+</html>

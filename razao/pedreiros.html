@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os pedreiros e o muro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Razão e Proporção</div><h1 id="title">Os pedreiros e o muro</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mais pedreiros ou mais horas por dia: menos dias. As duas grandezas são inversas ao número de dias.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><table class="t" id="tb"></table><div class="ask" id="pq"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=razao-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O trabalho total (pedreiros × horas por dia × dias) é sempre o mesmo muro. Calcule esse total e divida pelos novos pedreiros × horas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Sophia','Duda','Manu','Samuel','Miguel','Teodoro','Mikaela','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Nikolas','Richard'];
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#0E9AA7'];
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+const soma=a=>a.reduce((s,x)=>s+x,0);
+const mmc=a=>a.reduce((m,x)=>m*x/gcd(m,x),1);
+function fv(s){s=String(s).trim();if(s.includes('/')){const[p,q]=s.split('/').map(num);return p/q;}return num(s);}
+function frac(v){for(let d=1;d<=24;d++){const n=Math.round(v*d);if(Math.abs(n/d-v)<1e-9){if(d===1)return fmt(n);const i=Math.floor(n/d),r=n-i*d;return (i?i+' ':'')+r+'/'+d;}}return f2(v);}
+function rep(N,w){const S=soma(w);return w.map(p=>N*p/S);}
+function barra(N,w,nomes,u){const S=soma(w),L=300;let x=20,g='';w.forEach((p,i)=>{const l=L*p/S;g+=`<rect x="${x}" y="18" width="${l}" height="26" fill="${CORES[i%5]}" stroke="#fff" stroke-width="2"/>`+(l>34?T(x+l/2,35,nomes[i],{fs:10,c:'#fff'}):'')+T(x+l/2,62,f2(N*p/S)+(u||''),{fs:10});x+=l;});return svg(340,72,T(170,12,'total: '+fmt(N)+(u||''),{fs:10,c:'#6B7280'})+g);}
+
+D.ciclo({
+ livros:[{p:6,h:8,d:15,P:10,H:6}],
+ sortear(){for(;;){const p=rnd(2,10),h=pick([4,5,6,8,10]),d=rnd(4,30),P=rnd(2,12),H=pick([4,5,6,8,10]),D2=p*h*d/(P*H);if(Number.isInteger(D2)&&(P!==p||H!==h)&&D2>0)return {p,h,d,P,H};}},
+ montar(q){$('tb').innerHTML=`<tr><th>Pedreiros</th><th>Horas por dia</th><th>Dias</th></tr><tr><td>${q.p}</td><td>${q.h}</td><td>${q.d}</td></tr><tr><td>${q.P}</td><td>${q.H}</td><td>?</td></tr>`;
+  $('dq').innerHTML=`${q.p} pedreiros, trabalhando ${q.h} h por dia, fazem o muro em ${q.d} dias. Em quantos dias <span class="k">${q.P} pedreiros, ${q.H} h por dia</span>, fazem o mesmo muro?`;$('pq').innerHTML='Dias: '+box('r1',80);},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const x=q.p*q.h*q.d/(q.P*q.H),ok=perto(v[0],x);D.marcar(['r1'],[ok]);
+  return {ok,exp:`Pedreiros e horas são inversas aos dias: x = ${q.d} · ${q.p}/${q.P} · ${q.h}/${q.H} = <b>${f2(x)}</b>. Confira pelo trabalho total: ${q.p} · ${q.h} · ${q.d} = ${q.p*q.h*q.d} = ${q.P} · ${q.H} · ${f2(x)}.`};},
+ res:true});
+
+</script>
+</body>
+</html>
