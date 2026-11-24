@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Separe em classes e leia · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy)}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.txt{width:100%;font-size:18px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script><script src="sistemas.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Sistemas de Numeração</div><h1>Separe em classes e leia</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Digite um número natural (até 999 bilhões). Ele se separa em classes de 3 algarismos, da direita para a esquerda; cada classe se lê como um número de 3 algarismos seguido do nome da classe.</p><input class="txt" id="n" inputmode="numeric" value="203080756"><div class="fig" id="fig"></div><div class="nota" id="nt"></div><div class="row"><button class="alt" id="sx">Sortear outro</button></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+
+
+const CL=['unidades simples','milhares','milhões','bilhões'],COR=['#2457D6','#15803D','#F7821F','#7A4BB5'];
+function draw(){let s=$('n').value.replace(/\D/g,'').replace(/^0+(?=\d)/,'').slice(0,12);if(!s){$('fig').innerHTML='';$('nt').textContent='Digite um número.';return;}
+ const g=[];for(let i=s.length;i>0;i-=3)g.unshift(s.slice(Math.max(0,i-3),i));const n=g.length;let h='';
+ g.forEach((x,j)=>{const k=n-1-j,c=COR[k];h+=`<div style="display:inline-block;text-align:center;margin:0 4px"><div style="font-size:26px;font-weight:700;color:${c};letter-spacing:2px">${x}</div><div style="font-size:11px;color:${c};font-weight:600">${CL[k]}</div></div>`;});
+ $('fig').innerHTML=h;const v=+s;$('nt').innerHTML=`<b>${SN.fmt(v)}</b>: ${s.length} algarismos, ${s.length} ordens e ${n} classe${n>1?'s':''}.<br>Lê-se: <b>${SN.extenso(v)}</b>.`;}
+$('n').oninput=draw;$('sx').onclick=()=>{const L=rnd(4,12);let s=''+rnd(1,9);for(let i=1;i<L;i++)s+=Math.random()<.35?'0':rnd(0,9);$('n').value=s;draw();};draw();
+
+</script>
+</body>
+</html>
