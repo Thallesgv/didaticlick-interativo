@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança da média · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Estatística</div><h1 id="title">A balança da média</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Cada nota é um peso sobre a régua. Arraste o apoio até a régua ficar em equilíbrio: esse ponto é a média. Depois escreva a mediana e a moda.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>Apoio</b><input type="range"><span></span></div>
+<div class="ask">Mediana: <input class="n" id="r1" inputmode="decimal" style="width:70px"> &nbsp; Moda: <input class="n" id="r2" inputmode="decimal" style="width:70px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=estatistica-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Se a régua pende para a direita, há mais “peso” à direita do apoio: mova o apoio para a direita. A mediana é o valor do meio das notas em ordem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const fmt1=v=>fmt(Math.round(v*100)/100);
+const perto=(a,b,t)=>Math.abs(a-b)<=(t||0.011);
+const CORES=['#2457D6','#F7821F','#15803D','#7A4BB5','#B91C1C','#0E9AA7'];
+
+let cur,F;
+function draw(){const f=F.get(),W=340,x0=16,x1=W-16,X=v=>x0+v/10*(x1-x0),cy=96;const tq=cur.v.reduce((s,v)=>s+(v-f),0),ang=Math.max(-10,Math.min(10,tq*2.2));
+ let g=`<g transform="rotate(${ang} ${X(f)} ${cy})"><rect x="${x0-8}" y="${cy-6}" width="${x1-x0+16}" height="12" rx="3" fill="#F5DEB3" stroke="#0E2354"/>`;
+ for(let v=0;v<=10;v++)g+=`<line x1="${X(v)}" y1="${cy-6}" x2="${X(v)}" y2="${cy}" stroke="#0E2354"/><text x="${X(v)}" y="${cy+4}" font-size="7" text-anchor="middle" font-family="Poppins" font-weight="700" fill="#0E2354">${v}</text>`;
+ const cnt={};cur.v.forEach(v=>{const k=cnt[v]||0;cnt[v]=k+1;g+=`<rect x="${X(v)-11}" y="${cy-6-22*(k+1)}" width="22" height="21" rx="3" fill="#2457D6" stroke="#fff"/><text x="${X(v)}" y="${cy-6-22*k-6}" font-size="12" font-weight="700" text-anchor="middle" fill="#fff" font-family="Poppins">${v}</text>`;});
+ g+=`</g><polygon points="${X(f)},${cy+6} ${X(f)-14},${cy+34} ${X(f)+14},${cy+34}" fill="#F7821F"/>`;
+ g+=`<text x="${W/2}" y="160" font-size="13" font-weight="700" text-anchor="middle" font-family="Poppins" fill="${Math.abs(tq)<1e-9?'#15803D':'#B91C1C'}">${Math.abs(tq)<1e-9?'Em equilíbrio!':(tq>0?'Pende para a direita':'Pende para a esquerda')}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${W} 170" width="${W}">${g}</svg>`;}
+F=D.sl('sf',0,10,0.2,5,()=>draw(),v=>fmt1(v));
+function moda1(v){const c={};v.forEach(x=>c[x]=(c[x]||0)+1);const m=Math.max(...Object.values(c));const ks=Object.keys(c).filter(k=>c[k]===m);return ks.length===1&&m>1?+ks[0]:null;}
+D.ciclo({
+ livros:[{v:[5,6,6,8,10]}],
+ sortear(){let v;do{v=[];for(let k=0;k<5;k++)v.push(rnd(1,10));}while(moda1(v)===null);return {v:v.sort((a,b)=>a-b)};},
+ montar(q){cur=q;$('r1').value='';$('r2').value='';['r1','r2'].forEach(i=>$(i).style.borderColor='');F.set(pick([1,2,9]));
+  $('dq').innerHTML=`Notas: <span class="k">${q.v.join(', ')}</span>. Em que ponto a régua fica em equilíbrio?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const m=q.v.reduce((s,x)=>s+x,0)/5,s=[...q.v].sort((a,b)=>a-b),md=s[2],mo=moda1(q.v);
+  const ok0=perto(F.get(),m,0.05),oks=[v[0]===md,v[1]===mo];D.marcar(['r1','r2'],oks);
+  return {ok:ok0&&oks[0]&&oks[1],exp:`${ok0?'O apoio está certo':'O apoio deveria estar em '+fmt1(m)}: média = ${q.v.join(' + ')} = ${q.v.reduce((s,x)=>s+x,0)}, e ${q.v.reduce((s,x)=>s+x,0)} ÷ 5 = <b>${fmt1(m)}</b>. Mediana: o 3º valor do rol, <b>${md}</b>. Moda: <b>${mo}</b>, o que mais se repete.`};},
+ res:true});
+
+</script>
+</body>
+</html>
