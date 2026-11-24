@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O aparelho que perde valor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Funções</div><h1 id="title">O aparelho que perde valor</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O aparelho perde sempre a mesma quantia por ano: o valor é uma função afim decrescente do tempo. Escreva a taxa de queda (o a) e descubra depois de quantos anos ele chega ao valor pedido. Depois toque em OK e veja no gráfico.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="ask">V(t) = <span id="v0" class="k" style="font-weight:700"></span> − <input class="n" id="a" inputmode="numeric" autocomplete="off" style="width:80px"> · t</div>
+<div class="ask">Chega ao valor pedido em t = <input class="n" id="t" inputmode="decimal" autocomplete="off" style="width:70px"> anos</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao1-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O valor do começo é o b; o quanto ele perde por ano é o a, com sinal de menos. Iguale V(t) ao valor pedido e isole o t.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur;const R=v=>'R$ '+fmt(v);
+function graf(q,show){const T=Math.ceil(q.v0/q.d),K=q.v0/1000,o={x0:0,x1:T,y0:0,y1:K,w:340,h:260,passo:1,passoY:K/6,rot:1,rotY:K/3,fns:[],pts:[{x:0,y:K,cor:'#2457D6',rot:R(q.v0)}]};
+ o.extra=(sx,sy)=>`<line x1="${sx(0)}" y1="${sy(q.alvo/1000)}" x2="${sx(T)}" y2="${sy(q.alvo/1000)}" stroke="#F7821F" stroke-dasharray="5 4" stroke-width="2"/><text x="${sx(T)-4}" y="${sy(q.alvo/1000)-6}" text-anchor="end" font-size="11" font-weight="700" font-family="Poppins" fill="#F7821F">${R(q.alvo)}</text>`;
+ if(show){o.fns.push({f:t=>(q.v0-q.d*t)/1000,cor:'#2457D6'});o.pts.push({x:q.t,y:q.alvo/1000,cor:'#15803D',rot:`t = ${q.t}`});o.pts.push({x:T,y:(q.v0-q.d*T)/1000,cor:'#B91C1C'});}
+ $('fig').innerHTML=D.plano(o)+'<div class="muted" style="font-size:12px;text-align:center">eixo vertical em milhares de reais · eixo horizontal em anos</div>';}
+const ITEM=['o celular','o notebook','a bicicleta','o videogame','a moto'],NOMES=['Sophia','Teodoro','Duda','Samuel','Miguel','Mikaela','Manu'];
+D.ciclo({
+ livros:[{v0:3600,d:450,t:5,alvo:1350,quem:'Sophia',item:'o notebook'}],
+ sortear(){let v0,d,t;do{d=pick([150,200,250,300,400,500]);v0=d*rnd(6,12);t=rnd(2,Math.floor(v0/d)-1);}while(!t);return {v0,d,t,alvo:v0-d*t,quem:pick(NOMES),item:pick(ITEM)};},
+ montar(q){cur=q;['a','t'].forEach(i=>{$(i).value='';$(i).style.borderColor='#D7DEEA';});$('v0').textContent=fmt(q.v0);
+  $('dq').innerHTML=`${q.item[0].toUpperCase()+q.item.slice(1)} de ${q.quem} custou <span class="k">${R(q.v0)}</span> e perde <span class="k">${R(q.d)}</span> por ano. Em quantos anos vale <span class="k">${R(q.alvo)}</span>?`;graf(q,false);},
+ conferir(q){const v=D.ler(['a','t']);if(!v)return null;const oks=[v[0]===q.d,v[1]===q.t];D.marcar(['a','t'],oks);graf(q,true);
+  return {ok:oks[0]&&oks[1],exp:`V(t) = ${fmt(q.v0)} − ${fmt(q.d)}t. ${fmt(q.v0)} − ${fmt(q.d)}t = ${fmt(q.alvo)} → ${fmt(q.d)}t = ${fmt(q.v0-q.alvo)} → <b>t = ${q.t} anos</b>. O zero da função é t = ${fmt(Math.round(q.v0/q.d*100)/100)}: aí o valor no papel acaba.`};},
+ res:true});
+
+</script>
+</body>
+</html>
