@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os km da corrida de aplicativo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Álgebra</div><h1 id="title">Os km da corrida de aplicativo</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">O recibo da corrida mostra a tarifa base, o preço por km, o preço por minuto, o tempo e o total, mas a distância sumiu. Monte a equação e descubra quantos km foram. Depois toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig"><div id="rec" style="width:290px;font-size:15px;color:#0E2354;text-align:left"></div></div>
+<div class="ask">Distância: <input class="n" id="x" inputmode="decimal" autocomplete="off" style="width:90px"> km</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=eq1-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Primeiro calcule a parte que você já conhece (base + minutos). O que sobra do total é o preço dos km: divida pelo preço de cada km.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const R=v=>'R$ '+v.toFixed(2).replace('.',',');
+let cur;
+function rec(q,show){const L=(a,b,c)=>`<div style="display:flex;justify-content:space-between;border-bottom:1px dashed #D7DEEA;padding:5px 0"><span>${a}</span><b style="color:${c||'#0E2354'}">${b}</b></div>`;
+ $('rec').innerHTML=`<div style="background:#0E2354;color:#fff;border-radius:10px 10px 0 0;padding:8px 12px;font-weight:700">Recibo da viagem · ${q.nome}</div><div style="border:2px solid #0E2354;border-top:0;border-radius:0 0 10px 10px;padding:6px 12px">`+
+ L('Tarifa base',R(q.b))+L(`Tempo: ${q.min} min × ${R(q.m)}`,R(q.m*q.min))+L(`Distância: ${show?fmt(q.x):'?'} km × ${R(q.k)}`,show?R(q.k*q.x):'?','#F7821F')+
+ `<div style="display:flex;justify-content:space-between;padding:7px 0 2px;font-size:17px"><b>Total</b><b>${R(q.tot)}</b></div></div>`;}
+const NOMES=['Manu','Sophia','Teodoro','Duda','Samuel','Miguel','Mikaela'];
+D.ciclo({
+ livros:[{nome:'Manu',b:5,k:1.6,m:0.4,min:25,x:10,tot:31}],
+ sortear(){const b=pick([4,5,6,7]),k=pick([1.5,1.6,1.8,2,2.2,2.5]),m=pick([0.3,0.4,0.5]),min=rnd(2,8)*5,x=rnd(3,20);return {nome:pick(NOMES),b,k,m,min,x,tot:Math.round((b+k*x+m*min)*100)/100};},
+ montar(q){cur=q;$('x').value='';$('x').style.borderColor='#D7DEEA';$('dq').innerHTML=`${q.nome} pagou <span class="k">${R(q.tot)}</span>. Quantos km foram?`;rec(q,false);},
+ conferir(q){const v=D.ler(['x']);if(!v)return null;const ok=Math.abs(v[0]-q.x)<1e-6;D.marcar(['x'],[ok]);rec(q,true);const t=Math.round(q.m*q.min*100)/100,f=Math.round((q.b+t)*100)/100,r=Math.round((q.tot-f)*100)/100;
+  return {ok,exp:`${fmt(q.b)} + ${fmt(q.k)}x + ${fmt(q.m)} · ${q.min} = ${fmt(q.tot)} → ${fmt(f)} + ${fmt(q.k)}x = ${fmt(q.tot)} → ${fmt(q.k)}x = ${fmt(r)} → <b>x = ${fmt(q.x)} km</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>
