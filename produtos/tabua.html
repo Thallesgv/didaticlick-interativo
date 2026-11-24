@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multiplicar com a tábua de quadrados · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos notáveis</div><h1 id="title">Multiplicar com a tábua de quadrados</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Os babilônios multiplicavam usando só uma tábua de quadrados: 4ab = (a + b)² − (a − b)². Toque nos dois quadrados que você precisa e calcule.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="ask" id="st"></div><div class="ask"><span id="pq"></span> = <input class="n" id="r1" inputmode="numeric" style="width:100px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=produtos-q2-10">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">(a + b)² = a² + 2ab + b² e (a − b)² = a² − 2ab + b². Subtraindo, sobra 4ab.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,sel=[];
+function draw(){let h='<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;width:100%;max-width:420px">';
+ for(let n=1;n<=36;n++)h+=`<button data-n="${n}" style="padding:4px 0;font-size:12px;background:${sel.includes(n)?'var(--orange)':'#fff'};color:${sel.includes(n)?'#fff':'var(--navy)'};border:1px solid #D7DEEA;border-radius:6px">${n}² = ${n*n}</button>`;
+ $('fig').innerHTML=h+'</div>';$('fig').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const n=+b.dataset.n;sel=sel.includes(n)?sel.filter(x=>x!==n):sel.concat(n).slice(-2);draw();});
+ const s=[...sel].sort((x,y)=>y-x);$('st').innerHTML=s.length===2?`${s[0]}² − ${s[1]}² = ${s[0]**2} − ${s[1]**2} = <b>${s[0]**2-s[1]**2}</b>; ÷ 4 = <b>${(s[0]**2-s[1]**2)/4}</b>`:'Escolha dois quadrados na tábua.';}
+D.ciclo({
+ livros:[{a:13,b:7}],
+ sortear(){let a,b;do{a=rnd(6,22);b=rnd(3,a-1);}while(a+b>36);return {a,b};},
+ montar(q){cur=q;sel=[];$('r1').value='';$('r1').style.borderColor='';$('pq').innerHTML=`<b>${q.a} × ${q.b}</b>`;
+  $('dq').innerHTML=`Calcule <span class="k">${q.a} × ${q.b}</span> usando a tábua: (${q.a} + ${q.b})² − (${q.a} − ${q.b})² = 4 × ${q.a} × ${q.b}.`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const ok=v[0]===q.a*q.b;D.marcar(['r1'],[ok]);sel=[q.a+q.b,q.a-q.b];draw();
+  return {ok,exp:`${q.a+q.b}² − ${q.a-q.b}² = ${(q.a+q.b)**2} − ${(q.a-q.b)**2} = ${4*q.a*q.b}; dividindo por 4: <b>${q.a*q.b}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

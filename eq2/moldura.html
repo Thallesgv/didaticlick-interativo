@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A moldura da foto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Equação do 2º grau</div><h1 id="title">A moldura da foto</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude a largura da moldura: a foto com moldura cresce dos quatro lados. A área total tem que dar o valor pedido.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>moldura</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="ask" id="st"></div><div class="ask">Largura da moldura: <input class="n" id="r1" style="width:70px"> cm</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=eq2-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">A moldura aumenta 2x em cada medida (x de cada lado). Monte (largura + 2x)(altura + 2x) = área total e resolva.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;
+function draw(){const q=cur,x=SX.get(),A=q.a+2*x,B=q.b+2*x,s=200/(q.b+2*6);
+ $('fig').innerHTML=`<svg viewBox="0 0 ${B*s+40} ${A*s+40}" width="${Math.min(330,B*s+40)}"><rect x="20" y="20" width="${B*s}" height="${A*s}" fill="#B45309" rx="3"/><rect x="${20+x*s}" y="${20+x*s}" width="${q.b*s}" height="${q.a*s}" fill="#BFDBFE"/><text x="${20+B*s/2}" y="${24+A*s/2}" text-anchor="middle" font-size="12" font-family="Poppins" fill="#0E2354">foto ${q.a} × ${q.b}</text></svg>`;
+ $('st').innerHTML=`(${q.a} + 2 · ${String(x).replace('.',',')}) × (${q.b} + 2 · ${String(x).replace('.',',')}) = ${String(A).replace('.',',')} × ${String(B).replace('.',',')} = <b style="color:${A*B===q.T?'var(--ok)':'var(--navy)'}">${String(A*B).replace('.',',')}</b> cm² (quero ${q.T})`;}
+D.ciclo({
+ livros:[{a:10,b:15,T:266}],
+ sortear(){const a=pick([6,8,10,12]),b=a+pick([2,4,5,6]),x=pick([1,1.5,2,2.5,3]);return {a,b,T:(a+2*x)*(b+2*x)};},
+ montar(q){cur=q;SX=D.sl('sx',0,6,0.5,0,draw,v=>String(v).replace('.',',')+' cm');$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Uma foto de <span class="k">${q.a} cm por ${q.b} cm</span> ganhou uma moldura de largura x em toda a volta. A área total ficou <span class="k">${String(q.T).replace('.',',')} cm²</span>. Qual é a largura da moldura?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;let x=0;for(let t=0;t<=12;t+=0.5)if((q.a+2*t)*(q.b+2*t)===q.T){x=t;break;}const ok=v[0]===x;D.marcar(['r1'],[ok]);SX.set(x);draw();
+  return {ok,exp:`(${q.a} + 2x)(${q.b} + 2x) = ${q.T} → 4x² + ${2*(q.a+q.b)}x ${q.a*q.b-q.T>=0?'+ '+(q.a*q.b-q.T):'− '+(q.T-q.a*q.b)} = 0. A raiz positiva é <b>x = ${String(x).replace('.',',')} cm</b> (a negativa não serve para uma largura).`};},
+ res:true});
+
+</script>
+</body>
+</html>

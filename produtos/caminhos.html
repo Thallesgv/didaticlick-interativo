@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os caminhos de Kevin · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos notáveis</div><h1 id="title">Os caminhos de Kevin</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Monte um caminho tocando em → e ↑, sem nunca voltar. Toque em “Guardar caminho” para colecioná-lo. Quantos caminhos diferentes existem?</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="row"><button id="dir">→ direita</button><button id="cim">↑ cima</button><button class="alt" id="apaga">Apagar</button><button class="alt" id="guarda">Guardar caminho</button></div><div class="ask" id="lst"></div><div class="ask">Total de caminhos: <input class="n" id="r1" inputmode="numeric" style="width:80px"></div><div class="fig hide" id="pas"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=produtos-q6-10">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Cada esquina recebe a soma dos caminhos que chegam pela esquerda e por baixo. Essa é exatamente a regra do triângulo de Pascal.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,cam='',col=[];const C=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);};
+function draw(){const q=cur,s=Math.min(50,260/Math.max(q.d,q.c)),X=30,Y=30+q.c*s;let g='';
+ for(let i=0;i<=q.d;i++)g+=`<line x1="${X+i*s}" y1="${Y}" x2="${X+i*s}" y2="${Y-q.c*s}" stroke="#CBD5E1" stroke-width="4"/>`;
+ for(let j=0;j<=q.c;j++)g+=`<line x1="${X}" y1="${Y-j*s}" x2="${X+q.d*s}" y2="${Y-j*s}" stroke="#CBD5E1" stroke-width="4"/>`;
+ let x=0,y=0,d=`M${X},${Y}`;for(const ch of cam){if(ch==='d')x++;else y++;d+=` L${X+x*s},${Y-y*s}`;}
+ g+=`<path d="${d}" fill="none" stroke="#F7821F" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="${X-6}" y="${Y+18}" font-size="11" font-family="Poppins">casa</text><text x="${X+q.d*s-14}" y="${Y-q.c*s-8}" font-size="11" font-family="Poppins">escola</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 ${X+q.d*s+40} ${Y+26}" width="${Math.min(340,X+q.d*s+40)}">${g}</svg>`;
+ $('lst').innerHTML=`Caminhos guardados: <b>${col.length}</b> ${col.length?'('+col.map(c=>c.replace(/d/g,'→').replace(/c/g,'↑')).join(' · ')+')':''}`;}
+const pos=()=>[...cam].reduce((a,c)=>c==='d'?[a[0]+1,a[1]]:[a[0],a[1]+1],[0,0]);
+$('dir').onclick=()=>{if(D.feito)return;if(pos()[0]<cur.d){cam+='d';draw();}};$('cim').onclick=()=>{if(D.feito)return;if(pos()[1]<cur.c){cam+='c';draw();}};
+$('apaga').onclick=()=>{cam='';draw();};
+$('guarda').onclick=()=>{if(D.feito)return;if(cam.length<cur.d+cur.c){msg('dm','O caminho ainda não chegou à escola.','info');return;}if(col.includes(cam))msg('dm','Esse caminho você já guardou.','info');else{col.push(cam);msg('dm','');}cam='';draw();};
+D.ciclo({
+ livros:[{d:3,c:2}],
+ sortear(){const d=rnd(2,4),c=rnd(1,3);return {d,c};},
+ montar(q){cur=q;cam='';col=[];$('r1').value='';$('r1').style.borderColor='';$('pas').classList.add('hide');
+  $('dq').innerHTML=`Kevin anda <span class="k">${q.d} quarteirões para a direita e ${q.c} para cima</span>, em qualquer ordem, sem nunca voltar. Quantos caminhos diferentes ele pode fazer?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const n=q.d+q.c,t=C(n,q.c),ok=v[0]===t;D.marcar(['r1'],[ok]);
+  let h='';for(let r=0;r<=n;r++){h+='<div style="text-align:center">'+Array.from({length:r+1},(_,k)=>`<span style="display:inline-block;min-width:30px;margin:1px;padding:2px;border-radius:6px;${r===n&&k===q.c?'background:var(--orange);color:#fff;font-weight:700':''}">${C(r,k)}</span>`).join('')+'</div>';}
+  $('pas').innerHTML='<div>'+h+'</div>';$('pas').classList.remove('hide');
+  return {ok,exp:`São <b>${t}</b> caminhos: cada caminho é uma fila de ${n} passos em que ${q.c} são “↑”. No triângulo de Pascal, é o número da linha ${n}, posição ${q.c} (contando do 0).`};},
+ res:true});
+
+</script>
+</body>
+</html>

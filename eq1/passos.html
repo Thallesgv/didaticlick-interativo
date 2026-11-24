@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte os passos da resolução · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Equação do 1º grau</div><h1 id="title">Monte os passos da resolução</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Escolha a próxima ação. A equação se transforma a cada passo certo. Ao chegar ao fim, escreva o valor de x.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="eq" style="flex-direction:column;gap:4px;font-size:18px;font-weight:600;color:var(--navy)"></div><div class="chips" id="ac"></div><div class="ask">x = <input class="n" id="r1" style="width:90px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=eq1-q2-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">O sinal de menos antes de um parêntese troca o sinal de tudo que está dentro: −(x + 4) = −x − 4.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,st=0,lin=[];const AC=['Distribuir (tirar parênteses)','Juntar termos parecidos','Passar os x para a esquerda','Passar os números para a direita','Dividir pelo número do x'];
+const ex=(a,b)=>`${a===1?'':a===-1?'−':sg(a)}x${b?(b>0?' + '+b:' − '+(-b)):''}`||'0';
+function eqs(q){const {a,b,c,d,e,f,g,h}=q;// a(bx + c) − (dx + e) = f(x + g) + h
+ const L1=`${a}(${ex(b,c)}) − (${ex(d,e)}) = ${f}(${ex(1,g)}) ${h>=0?'+ '+h:'− '+(-h)}`;
+ const L2=`${a*b}x ${a*c>=0?'+ '+a*c:'− '+(-a*c)} − ${d===1?'':d}x ${-e>=0?'+ '+(-e):'− '+e} = ${f}x ${f*g>=0?'+ '+f*g:'− '+(-f*g)} ${h>=0?'+ '+h:'− '+(-h)}`;
+ const A=a*b-d,B=a*c-e,C=f,Dd=f*g+h;const L3=`${ex(A,B)} = ${ex(C,Dd)}`;const L4=`${ex(A-C,B)} = ${sg(Dd)}`;const L5=`${ex(A-C,0)} = ${sg(Dd-B)}`;const L6=`x = ${sg((Dd-B)/(A-C))}`;
+ return [L1,L2,L3,L4,L5,L6];}
+function draw(){const L=eqs(cur);$('eq').innerHTML=L.slice(0,st+1).map((l,i)=>`<div style="opacity:${i===st?1:.5}">${l}</div>`).join('');
+ $('ac').innerHTML=AC.map((t,i)=>`<button data-i="${i}">${t}</button>`).join('');
+ $('ac').querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;const i=+b.dataset.i;if(i===st){st++;msg('dm','');draw();}else msg('dm',i<st?'Esse passo já foi feito.':'Ainda não: primeiro “'+AC[st]+'”.','info');});}
+D.ciclo({
+ livros:[{a:2,b:3,c:-1,d:1,e:4,f:3,g:-2,h:10}],
+ sortear(){for(;;){const a=rnd(2,4),b=rnd(1,3),c=rnd(-4,4),d=rnd(1,2),e=rnd(-4,5),f=rnd(1,3),g=rnd(-3,3),h=rnd(-6,10);const A=a*b-d;if(A===f)continue;const x=(f*g+h-(a*c-e))/(A-f);if(Number.isInteger(x)&&Math.abs(x)<=12)return {a,b,c,d,e,f,g,h};}},
+ montar(q){cur=q;st=0;$('r1').value='';$('r1').style.borderColor='';$('dq').innerHTML='Resolva a equação escolhendo os passos na ordem certa.';draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const A=q.a*q.b-q.d,x=(q.f*q.g+q.h-(q.a*q.c-q.e))/(A-q.f),ok=v[0]===x;D.marcar(['r1'],[ok]);st=5;draw();
+  return {ok,exp:`Distribuindo, juntando e isolando o x: <b>x = ${sg(x)}</b>. Cuidado com o sinal de menos antes do parêntese: −(x + 4) = −x − 4.`};},
+ res:true});
+
+</script>
+</body>
+</html>

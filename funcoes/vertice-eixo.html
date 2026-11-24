@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O vértice no eixo x · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Função do 2º grau</div><h1 id="title">O vértice no eixo x</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude o k: a parábola sobe e desce sem mudar de forma. Deixe o vértice exatamente sobre o eixo x.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="sl" id="sk"><b>k</b><input type="range"><span></span></div><div class="ask" id="st"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao2-q3-13">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Vértice sobre o eixo x quer dizer uma raiz só: Δ = 0. Também dá para completar o quadrado.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SK;
+function draw(){const q=cur,k=SK.get(),h=q.h,yv=k-h*h;$('fig').innerHTML=D.plano({x0:-6,x1:10,y0:-10,y1:12,fns:[{f:x=>x*x-2*h*x+k}],pts:[{x:h,y:yv,rot:'V',cor:yv===0?'#15803D':'#F7821F'}]});
+ $('st').innerHTML=`f(x) = x² ${-2*h>=0?'+ '+(-2*h):'− '+2*h}x ${k>=0?'+ '+k:'− '+(-k)} · vértice (${sg(h)}, ${sg(yv)})`;}
+D.ciclo({
+ livros:[{h:3}],
+ sortear(){return {h:pick([-4,-3,-2,-1,1,2,4])};},
+ montar(q){cur=q;SK=D.sl('sk',-10,20,1,0,draw);$('dq').innerHTML=`Para que valor de k o vértice da parábola <span class="k">f(x) = x² ${-2*q.h>=0?'+ '+(-2*q.h):'− '+2*q.h}x + k</span> fica sobre o eixo x?`;draw();},
+ conferir(q){const k=q.h*q.h,ok=SK.get()===k;SK.set(k);draw();
+  return {ok,exp:`O x do vértice é −b ÷ 2a = ${sg(q.h)}. Para o vértice ficar no eixo, f(${sg(q.h)}) = 0: ${q.h*q.h} − ${2*q.h*q.h} + k = 0 → <b>k = ${k}</b>. Aí f(x) = (x ${q.h>0?'− '+q.h:'+ '+(-q.h)})², e Δ = 0.`};},
+ res:true});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O taxímetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Função do 1º grau</div><h1 id="title">O taxímetro</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Ajuste a bandeirada e o preço por km do taxímetro até ele cobrar certo as duas corridas. Depois calcule a corrida pedida.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sb"><b>bandeirada</b><input type="range"><span></span></div><div class="sl" id="sa"><b>por km</b><input type="range"><span></span></div><div class="fig" id="fig" style="flex-direction:column;gap:6px"></div><div class="ask">Corrida de <span id="kmq"></span> km: R$ <input class="n" id="r1" style="width:90px"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao1-q4-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">A diferença de preço entre as duas corridas vem só dos km a mais. Isso dá o preço por km.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SA,SB;const R=v=>'R$ '+v.toFixed(2).replace('.',',');
+function draw(){const q=cur,b=SB.get(),a=SA.get();$('fig').innerHTML=q.c.map(([k,p])=>{const v=b+a*k,ok=Math.abs(v-p)<1e-9;
+ return `<div style="font-size:16px;background:#0E2354;color:#fff;border-radius:10px;padding:8px 14px;font-family:monospace">${k} km → <b style="color:${ok?'#86EFAC':'#FCA5A5'}">${R(v)}</b> <span style="font-family:Poppins;font-size:12px">(cobrou ${R(p)})</span></div>`;}).join('');}
+D.ciclo({
+ livros:[{c:[[4,17],[10,32]],k:15}],
+ sortear(){const a=pick([1.5,2,2.5,3,3.5]),b=pick([4,4.5,5,5.5,6]),k1=rnd(2,5),k2=k1+rnd(3,8);return {c:[[k1,b+a*k1],[k2,b+a*k2]],k:rnd(12,25)};},
+ montar(q){cur=q;SB=D.sl('sb',0,10,0.5,3,draw,R);SA=D.sl('sa',0,5,0.5,1,draw,R);$('kmq').textContent=q.k;$('r1').value='';$('r1').style.borderColor='';
+  $('dq').innerHTML=`Uma corrida de <span class="k">${q.c[0][0]} km</span> custa <span class="k">${R(q.c[0][1])}</span> e uma de <span class="k">${q.c[1][0]} km</span> custa <span class="k">${R(q.c[1][1])}</span>. Qual é a bandeirada, o preço por km e quanto custa uma corrida de ${q.k} km?`;draw();},
+ conferir(q){const v=D.ler(['r1']);if(!v)return null;const [[k1,p1],[k2,p2]]=q.c,a=(p2-p1)/(k2-k1),b=p1-a*k1,t=b+a*q.k,ok=Math.abs(v[0]-t)<0.005&&SA.get()===a&&SB.get()===b;D.marcar(['r1'],[Math.abs(v[0]-t)<0.005]);SA.set(a);SB.set(b);draw();
+  return {ok,exp:`${k2-k1} km a mais custaram ${R(p2-p1)} a mais: ${R(a)} por km. Bandeirada: ${R(p1)} − ${k1} × ${R(a)} = <b>${R(b)}</b>. Corrida de ${q.k} km: ${R(b)} + ${q.k} × ${R(a)} = <b>${R(t)}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>

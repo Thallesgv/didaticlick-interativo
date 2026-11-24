@@ -61,3 +61,28 @@ D.tap = (el, cb) => el.querySelectorAll('[data-t]').forEach(n => n.onclick = () 
 // frações: [n, d] simplificada
 const fr = (n, d) => { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d) || 1; return [n / g, d / g]; };
 const frt = ([n, d]) => d === 1 ? sg(n) : `${sg(n)}/${d}`;
+// Plano cartesiano. o: {x0,x1,y0,y1,w,h,fns:[{f,cor,tr}],pts:[{x,y,cor,rot,oco}],extra:(sx,sy)=>svg}
+D.plano = function (o) {
+  const W = o.w || 340, H = o.h || 300, p = 22, sx = x => p + (x - o.x0) / (o.x1 - o.x0) * (W - 2 * p), sy = y => H - p - (y - o.y0) / (o.y1 - o.y0) * (H - 2 * p);
+  const st = o.passo || 1; let g = '';
+  for (let x = Math.ceil(o.x0 / st) * st; x <= o.x1; x += st) g += `<line x1="${sx(x)}" y1="${p}" x2="${sx(x)}" y2="${H - p}" stroke="#EEF2F7"/>`;
+  const sty = o.passoY || st; for (let y = Math.ceil(o.y0 / sty) * sty; y <= o.y1; y += sty) g += `<line x1="${p}" y1="${sy(y)}" x2="${W - p}" y2="${sy(y)}" stroke="#EEF2F7"/>`;
+  g += `<line x1="${p}" y1="${sy(0)}" x2="${W - p}" y2="${sy(0)}" stroke="#0E2354" stroke-width="1.5"/><line x1="${sx(0)}" y1="${p}" x2="${sx(0)}" y2="${H - p}" stroke="#0E2354" stroke-width="1.5"/>`;
+  const ls = o.rot || 2;
+  for (let x = Math.ceil(o.x0 / ls) * ls; x <= o.x1; x += ls) if (x) g += `<text x="${sx(x)}" y="${sy(0) + 13}" text-anchor="middle" font-size="10" font-family="Poppins" fill="#6B7280">${sg(Math.round(x * 1e6) / 1e6)}</text>`;
+  const lsy = o.rotY || ls; for (let y = Math.ceil(o.y0 / lsy) * lsy; y <= o.y1; y += lsy) if (y) g += `<text x="${sx(0) - 4}" y="${sy(y) + 3}" text-anchor="end" font-size="10" font-family="Poppins" fill="#6B7280">${sg(Math.round(y * 1e6) / 1e6)}</text>`;
+  g += `<clipPath id="cp"><rect x="${p}" y="${p}" width="${W - 2 * p}" height="${H - 2 * p}"/></clipPath><g clip-path="url(#cp)">`;
+  (o.fns || []).forEach(F => { let d = ''; const n = 200; for (let i = 0; i <= n; i++) { const x = o.x0 + (o.x1 - o.x0) * i / n, y = F.f(x); if (!isFinite(y)) continue; d += (d ? 'L' : 'M') + sx(x).toFixed(1) + ',' + sy(Math.max(o.y0 - 50, Math.min(o.y1 + 50, y))).toFixed(1); }
+    g += `<path d="${d}" fill="none" stroke="${F.cor || '#2457D6'}" stroke-width="${F.lw || 2.5}"${F.tr ? ' stroke-dasharray="6 4"' : ''}/>`; });
+  if (o.extra) g += o.extra(sx, sy);
+  g += '</g>';
+  (o.pts || []).forEach(P => { g += `<circle cx="${sx(P.x)}" cy="${sy(P.y)}" r="5" fill="${P.oco ? '#fff' : (P.cor || '#F7821F')}" stroke="${P.cor || '#F7821F'}" stroke-width="2"/>` + (P.rot ? `<text x="${sx(P.x) + 7}" y="${sy(P.y) - 7}" font-size="11" font-weight="700" font-family="Poppins" fill="${P.cor || '#F7821F'}">${P.rot}</text>` : ''); });
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`;
+};
+// controle deslizante: D.sl(id, min, max, passo, valor, cb, mostra)
+D.sl = function (id, lo, hi, st, v, cb, show) {
+  const el = $(id), i = el.querySelector('input'), s = el.querySelector('span'); i.min = lo; i.max = hi; i.step = st; i.value = v;
+  const sh = () => { s.textContent = show ? show(+i.value) : sg(+i.value); }; sh(); i.oninput = () => { if (D.feito) { i.value = i.dataset.v; return; } i.dataset.v = i.value; sh(); cb && cb(+i.value); }; i.dataset.v = v;
+  return { get: () => +i.value, set: x => { i.value = x; i.dataset.v = x; sh(); } };
+};
+const sl = (id, rot) => `<div class="sl" id="${id}"><b>${rot}</b><input type="range"><span></span></div>`;

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diferença de dois quadrados · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Produtos notáveis</div><h1 id="title">Diferença de dois quadrados</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Escolha o quadrado grande (a) e o pequeno (b). A peça em L que sobra tem área a² − b². Ache todas as formas de chegar ao número pedido.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sa"><b>a</b><input type="range"><span></span></div><div class="sl" id="sb"><b>b</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="row"><button class="alt" id="guarda">Guardar esta forma</button></div><div class="ask" id="lst"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=produtos-q3-11">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">a² − b² = (a + b)(a − b). Para 45 = 45 × 1 = 15 × 3 = 9 × 5, resolva a + b e a − b em cada par.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SA,SB,achadas=[];
+function draw(){const a=SA.get(),b=Math.min(SB.get(),a-1);const s=180/Math.max(a,1);let g=`<rect x="20" y="20" width="${a*s}" height="${a*s}" fill="#F7821F" fill-opacity=".55" stroke="#C2410C"/><rect x="20" y="20" width="${b*s}" height="${b*s}" fill="#fff" stroke="#94A3B8" stroke-dasharray="4 3"/>`;
+ const d=a*a-b*b;g+=`<text x="${30+a*s}" y="${30+a*s/2}" font-size="13" font-weight="700" font-family="Poppins" fill="${d===cur.N?'#15803D':'#0E2354'}">${a}² − ${b}² = ${d}</text>`;
+ $('fig').innerHTML=`<svg viewBox="0 0 330 ${a*s+40}" width="330">${g}</svg>`;$('lst').innerHTML='Formas guardadas: '+(achadas.length?achadas.map(([x,y])=>`${x}² − ${y}²`).join(' · '):'nenhuma');}
+$('guarda').onclick=()=>{if(D.feito)return;const a=SA.get(),b=SB.get();if(a*a-b*b!==cur.N){msg('dm',`${a}² − ${b}² = ${a*a-b*b}, não ${cur.N}.`,'info');return;}if(!achadas.some(([x,y])=>x===a&&y===b))achadas.push([a,b]);msg('dm','');draw();};
+const formas=N=>{const r=[];for(let b=0;b<60;b++)for(let a=b+1;a<=60;a++)if(a*a-b*b===N)r.push([a,b]);return r;};
+D.ciclo({
+ livros:[{N:45}],
+ sortear(){return {N:pick([15,21,24,32,33,35,40,48,63])};},
+ montar(q){cur=q;achadas=[];SA=D.sl('sa',1,25,1,8,draw);SB=D.sl('sb',0,24,1,3,draw);
+  $('dq').innerHTML=`Escreva <span class="k">${q.N}</span> como diferença de dois quadrados de números naturais (com b ≥ 1) de <span class="k">todas</span> as formas possíveis.`;draw();},
+ conferir(q){const f=formas(q.N).filter(([a,b])=>b>=1);if(!achadas.length){msg('dm','Guarde as formas que encontrar e toque em OK.','info');return null;}
+  const ok=f.length===achadas.filter(([a,b])=>b>=1).length;achadas=f;draw();
+  return {ok,exp:`São ${f.length}: <b>${f.map(([a,b])=>`${a}² − ${b}²`).join(', ')}</b>. Truque: ${q.N} = (a + b)(a − b); cada par de divisores de ${q.N} com a mesma paridade dá uma forma.`};},
+ res:true});
+
+</script>
+</body>
+</html>

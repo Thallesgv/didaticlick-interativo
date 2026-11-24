@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cercado junto ao muro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Função do 2º grau</div><h1 id="title">O cercado junto ao muro</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude a largura do cercado. A tela forma três lados; o muro é o quarto. O gráfico mostra a área para cada largura.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="sl" id="sx"><b>largura</b><input type="range"><span></span></div><div class="fig" id="fig" style="flex-direction:column"></div><div class="ask">Largura: <input class="n" id="r1" style="width:70px"> m &nbsp; Comprimento: <input class="n" id="r2" style="width:70px"> m</div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao2-q4-11">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Escreva a área como função da largura: A(x) = x(tela − 2x). É uma parábola para baixo, e o máximo está no vértice.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SX;const nc=v=>{const e=10**Math.floor(Math.log10(v)),m=v/e;return (m<=1?1:m<=2?2:m<=5?5:10)*e;};
+function draw(){const q=cur,x=SX.get(),c=q.L-2*x,A=x*c,s=440/q.L;
+ let g=`<rect x="20" y="10" width="${q.L*s/2+20}" height="8" fill="#6B7280"/><text x="24" y="8" font-size="10" font-family="Poppins">muro</text>`;
+ g+=`<rect x="20" y="18" width="${c*s/2}" height="${x*s}" fill="#DCFCE7" stroke="#15803D" stroke-width="3"/><text x="${24+c*s/4}" y="${24+x*s/2}" text-anchor="middle" font-size="11" font-family="Poppins">${A} m²</text>`;
+ const gr=D.plano({x0:0,x1:q.L/2,y0:0,y1:q.L*q.L/8*1.15,w:300,h:180,passo:nc(q.L/20),rot:nc(q.L/10),passoY:nc(q.L*q.L/80),rotY:nc(q.L*q.L/40),fns:[{f:t=>t*(q.L-2*t)}],pts:[{x,y:A,cor:'#F7821F'}]});
+ $('fig').innerHTML=`<svg viewBox="0 0 ${q.L*s/2+60} ${x*s+30}" width="${Math.min(320,q.L*s/2+60)}">${g}</svg><div class="muted">${x} m × ${c} m = ${A} m² (tela: ${x} + ${c} + ${x} = ${q.L} m)</div>`+gr;}
+D.ciclo({
+ livros:[{L:60}],
+ sortear(){return {L:pick([20,24,32,40,48,80])};},
+ montar(q){cur=q;SX=D.sl('sx',1,q.L/2-1,1,2,draw,v=>v+' m');['r1','r2'].forEach(i=>{$(i).value='';$(i).style.borderColor='';});
+  $('dq').innerHTML=`Com <span class="k">${q.L} m de tela</span>, quer-se cercar uma área retangular encostada num muro, que forma o quarto lado. Quais medidas dão a maior área?`;draw();},
+ conferir(q){const v=D.ler(['r1','r2']);if(!v)return null;const x=q.L/4,c=q.L/2,ok=[v[0]===x,v[1]===c];D.marcar(['r1','r2'],ok);SX.set(x);draw();
+  return {ok:ok[0]&&ok[1],exp:`A = x(${q.L} − 2x) = −2x² + ${q.L}x. O vértice fica em x = ${q.L} ÷ 4 = <b>${x} m</b>; o comprimento é ${q.L} − 2 · ${x} = <b>${c} m</b>, e a área máxima, ${x*c} m².`};},
+ res:true});
+
+</script>
+</body>
+</html>

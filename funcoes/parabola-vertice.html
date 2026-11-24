@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Encaixe a parábola pelo vértice · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Função do 2º grau</div><h1 id="title">Encaixe a parábola pelo vértice</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Mude a, h e k até a parábola ter o vértice pedido (o ponto fica verde) e a abertura certa.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="fig"></div><div class="sl" id="sa"><b>a</b><input type="range"><span></span></div><div class="sl" id="sh"><b>h (vértice x)</b><input type="range"><span></span></div><div class="sl" id="sk"><b>k (vértice y)</b><input type="range"><span></span></div><div class="ask" id="lei" style="font-size:18px"></div><div id="extra"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=funcao2-q1-12">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Na forma f(x) = a(x − h)² + k, o vértice é (h, k). O sinal de a diz para onde abre; o tamanho de a, se é mais aberta ou mais fechada.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+let cur,SA,SH,SK;const fm=(a,h,k)=>`${a===1?'':a===-1?'−':sg(a)}(x ${h>=0?'− '+h:'+ '+(-h)})² ${k>=0?'+ '+k:'− '+(-k)}`;
+function draw(){const q=cur,a=SA.get(),h=SH.get(),k=SK.get(),f=x=>a*(x-h)**2+k;const pts=q.pts.map(([x,y,r])=>({x,y,rot:r,cor:Math.abs(f(x)-y)<1e-9?'#15803D':'#F7821F'}));
+ $('fig').innerHTML=D.plano({x0:-8,x1:10,y0:-10,y1:10,fns:[{f}].concat(q.eixo!==undefined?[]:[]),pts,extra:(sx,sy)=>q.eixo!==undefined?`<line x1="${sx(q.eixo)}" y1="${sy(-10)}" x2="${sx(q.eixo)}" y2="${sy(10)}" stroke="#F7821F" stroke-dasharray="6 4"/>`:''});
+ $('lei').innerHTML=`f(x) = <b>${fm(a,h,k)}</b>`;}
+D.ciclo({
+ livros:[{a:-1,h:-2,k:5,pts:[[-2,5,'V']],yc:1,txt:'Uma parábola tem a <span class="k">mesma abertura de y = x²</span>, <span class="k">concavidade para baixo</span> e vértice <span class="k">(−2, 5)</span>. Escreva sua lei e calcule onde ela corta o eixo y.',ext:'<div class="ask">Corta o eixo y em y = <input class="n" id="r1" style="width:70px"></div>',exp:'Mesma abertura de x² e para baixo: a = −1. Vértice (−2, 5): h = −2, k = 5.'}],
+ sortear:function(){const a=pick([-2,-1,1,2]),h=rnd(-4,5),k=rnd(-6,6);return {a,h,k,pts:[[h,k,'V']],yc:a*h*h+k,txt:`Uma parábola tem vértice <span class="k">(${sg(h)}, ${sg(k)})</span>, concavidade para <span class="k">${a>0?'cima':'baixo'}</span> e é <span class="k">${Math.abs(a)===1?'igual em abertura a':'duas vezes mais fechada que'}</span> y = x². Escreva a lei e diga onde corta o eixo y.`,ext:'<div class="ask">Corta o eixo y em y = <input class="n" id="r1" style="width:70px"></div>',exp:`a = ${sg(a)}, h = ${sg(h)}, k = ${sg(k)}.`};},
+ montar(q){cur=q;SA=D.sl('sa',-3,3,1,1,draw);SH=D.sl('sh',-6,8,1,0,draw);SK=D.sl('sk',-9,9,1,0,draw);$('dq').innerHTML=q.txt;$('extra').innerHTML=q.ext||'';
+  document.querySelectorAll('#extra input.n').forEach(x=>x.onkeydown=e=>{if(e.key==='Enter')$('ok').click();});draw();},
+ conferir(q){let okx=true;if(q.ext){const v=D.ler(['r1']);if(!v)return null;okx=v[0]===q.yc;D.marcar(['r1'],[okx]);}
+  const ok=SA.get()===q.a&&SH.get()===q.h&&SK.get()===q.k&&okx;SA.set(q.a);SH.set(q.h);SK.set(q.k);draw();
+  return {ok,exp:q.exp+` Lei: <b>f(x) = ${fm(q.a,q.h,q.k)}</b>.`+(q.ext?` Corta o eixo y em f(0) = <b>${sg(q.yc)}</b>.`:'')};},
+ res:true});
+
+</script>
+</body>
+</html>

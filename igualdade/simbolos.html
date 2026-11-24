@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança dos símbolos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Propriedades da igualdade</div><h1 id="title">A balança dos símbolos</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Figuras iguais pesam o mesmo. Mude o peso de cada figura nos controles: as duas balanças mostram se a igualdade ficou verdadeira.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" id="b1" style="flex-direction:column"></div><div class="fig" id="b2" style="flex-direction:column"></div><div class="sl" id="s1"><b>▲ pesa</b><input type="range"><span></span></div><div class="sl" id="s2"><b>■ pesa</b><input type="range"><span></span></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div id="rs" class="hide"></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">Substituir uma figura por outra que pesa o mesmo não desequilibra a balança. É assim que se descobre o peso de cada uma.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+// balança simples: esq e dir são listas de itens {t:texto, w:largura, cor}; pe e pd são os pesos
+function balanca(esq,dir,pe,pd,W){W=W||340;const t=Math.max(-1,Math.min(1,(pd-pe)/Math.max(4,Math.abs(pe)+Math.abs(pd))))*14,cx=W/2;
+ const yl=70-t,yr=70+t;let g=`<polygon points="${cx-14},150 ${cx+14},150 ${cx},84" fill="#0E2354"/><line x1="${cx-130}" y1="${yl}" x2="${cx+130}" y2="${yr}" stroke="#0E2354" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="70" r="5" fill="#F7821F"/>`;
+ const prato=(x,y,its)=>{let s=`<path d="M${x-60},${y+40} L${x+60},${y+40}" stroke="#0E2354" stroke-width="4"/><line x1="${x}" y1="${y}" x2="${x}" y2="${y+40}" stroke="#94A3B8"/>`;
+  let tw=its.reduce((a,b)=>a+b.w+3,0),xx=x-Math.min(tw,118)/2,row=0;its.forEach(it=>{if(xx+it.w>x+60){row++;xx=x-55;}s+=`<rect x="${xx}" y="${y+18-row*22}" width="${it.w}" height="20" rx="4" fill="${it.cor||'#2457D6'}"/><text x="${xx+it.w/2}" y="${y+32-row*22}" text-anchor="middle" font-size="11" font-weight="700" font-family="Poppins" fill="#fff">${it.t}</text>`;xx+=it.w+3;});return s;};
+ return `<svg viewBox="0 0 ${W} 156" width="${W}">${g}${prato(cx-130,yl,esq)}${prato(cx+130,yr,dir)}</svg>`;}
+
+let cur,S1,S2;const T={t:'▲',w:26,cor:'#F7821F'},Qd={t:'■',w:26,cor:'#2457D6'},U=n=>({t:n,w:n>9?30:22,cor:'#0E2354'});
+function draw(){const q=cur,t=S1.get(),s=S2.get(),rep=(it,n)=>Array.from({length:n},()=>it);
+ $('b1').innerHTML=balanca(rep(T,q.a),[Qd],q.a*t,s)+`<div class="muted" style="text-align:center">${q.a} × ▲ = ■ ${q.a*t===s?'✓':''}</div>`;
+ $('b2').innerHTML=balanca([Qd].concat(rep(T,q.b)),[U(q.k)],s+q.b*t,q.k)+`<div class="muted" style="text-align:center">■ + ${q.b>1?q.b+' × ':''}▲ = ${q.k} ${s+q.b*t===q.k?'✓':''}</div>`;}
+D.ciclo({
+ livros:[{a:2,b:1,k:9}],
+ sortear(){const a=rnd(2,4),b=rnd(1,2),t=rnd(1,5);return {a,b,k:(a+b)*t};},
+ montar(q){cur=q;S1=D.sl('s1',0,12,1,0,draw);S2=D.sl('s2',0,30,1,0,draw);
+  $('dq').innerHTML=`Na 1ª balança, <span class="k">${q.a} triângulos</span> equilibram <span class="k">1 quadrado</span>. Na 2ª, <span class="k">1 quadrado${q.b>1?' e '+q.b+' triângulos':' e 1 triângulo'}</span> equilibram <span class="k">${q.k}</span>. Quanto pesa cada figura?`;draw();},
+ conferir(q){const t=q.k/(q.a+q.b),ok=S1.get()===t&&S2.get()===q.a*t;S1.set(t);S2.set(q.a*t);D.feito=true;draw();
+  return {ok,exp:`Troque o quadrado da 2ª balança por ${q.a} triângulos (a 1ª balança diz que pesam o mesmo): ficam ${q.a+q.b} triângulos = ${q.k}. Então <b>▲ = ${t}</b> e <b>■ = ${q.a*t}</b>.`};}});
+
+</script>
+</body>
+</html>
