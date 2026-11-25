@@ -68,7 +68,7 @@ Object.assign(window.RES,{
 ["Forma canônica:","A(x) = −2(x − 15)² + 450"],
 ["a < 0: máximo no vértice, x = d = 15. O lado paralelo mede 60 − 30 = 30.",""],
 ["Conferindo: 15 · 30 = 450 m², e a tela usada é 15 + 15 + 30 = 60 m. Confere!",""]],ans:"Resposta: 15 m por 30 m (lado de 30 m paralelo ao muro), com área de 450 m²"},
-"funcao2-q5-11":{title:"Função do 2º grau · Módulo 5 · Exercício 11 (desafio)",enun:"Uma parábola tem zeros 1 e 7 e valor mínimo −9. Escreva sua lei na forma canônica.",steps:[
+"funcao2-q5-11":{title:"Função do 2º grau · Módulo 5 · Exercício 15 (desafio)",enun:"Uma parábola tem zeros 1 e 7 e valor mínimo −9. Escreva sua lei na forma canônica.",steps:[
 ["Os zeros são simétricos em relação ao eixo de simetria. Então d é a média dos zeros.","d = (1 + 7)/2 = 4"],
 ["O valor mínimo é o e.","e = −9"],
 ["Falta descobrir a. Escrevemos a forma canônica com a desconhecido.","f(x) = a(x − 4)² − 9"],
