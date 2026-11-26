@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Enquadre a cena · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Enquadre a cena</h1></header>
+<main>
+<div class="card"><h2>Componha o quadro</h2><p class="muted" style="margin-top:0">Arraste o personagem e o sol. Escolha a grade e tente colocar cada um num ponto de interesse.</p>
+<div class="chips" id="cg"></div>
+<div class="fig"><svg id="sv" viewBox="0 0 320 180" width="320"></svg></div>
+<div class="kpi"><div class="o">Personagem<b id="k1"></b></div><div>Sol<b id="k2"></b></div><div>Nota<b id="k3"></b></div></div><div id="m"></div>
+<p class="muted">Coordenadas em pixels de uma tela Full HD (1920 × 1080).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const sv=$('sv');let P={x:160,y:105},S={x:260,y:40};const cg=chips('cg',['Terços','Áurea','Sem grade'],0,draw);
+sv.innerHTML=`<rect width="320" height="180" fill="${PEACH}"/><rect y="120" width="320" height="60" fill="${LIGHT}"/><g id="gr"></g>
+<g id="so"><circle r="15" fill="${ORANGE}"/></g><g id="pe"><circle cy="-34" r="8" fill="${NAVY}"/><rect x="-9" y="-26" width="18" height="34" rx="6" fill="${NAVY}"/></g>`;
+arrastar(sv,$('pe'),(x,y)=>{P={x:clamp(x,10,310),y:clamp(y,40,175)};draw();});arrastar(sv,$('so'),(x,y)=>{S={x:clamp(x,15,305),y:clamp(y,15,165)};draw();});
+function pts(t){const f=t===1?[0.382,0.618]:[1/3,2/3];const o=[];f.forEach(a=>f.forEach(b=>o.push([a*320,b*180])));return o;}
+function dist(q,t){return Math.min(...pts(t).map(([x,y])=>Math.hypot(q.x-x,q.y-y)));}
+function draw(){const t=cg.get();let g='';if(t<2){const f=t===1?[0.382,0.618]:[1/3,2/3];
+ f.forEach(a=>{g+=`<line x1="${a*320}" y1="0" x2="${a*320}" y2="180" stroke="${NAVY}" stroke-dasharray="4 3"/><line x1="0" y1="${a*180}" x2="320" y2="${a*180}" stroke="${NAVY}" stroke-dasharray="4 3"/>`;});
+ pts(t).forEach(([x,y])=>g+=`<circle cx="${x}" cy="${y}" r="3" fill="${ORANGE}"/>`);}
+ $('gr').innerHTML=g;$('pe').setAttribute('transform',`translate(${P.x},${P.y})`);$('so').setAttribute('transform',`translate(${S.x},${S.y})`);
+ const c=q=>'('+Math.round(q.x*6)+', '+Math.round(q.y*6)+')';$('k1').textContent=c({x:P.x,y:P.y-20});$('k2').textContent=c(S);
+ const tt=t===2?0:t,d=(dist({x:P.x,y:P.y-20},tt)+dist(S,tt))/2,nota=clamp(Math.round(10-d/8),0,10);$('k3').textContent=nota+' / 10';
+ missao('m',nota>=9,'Composição de cinema! Os dois estão perto de pontos de interesse.','Dica: o rosto do personagem e o sol ficam mais fortes sobre os cruzamentos da grade.');}
+draw();
+</script>
+</body>
+</html>

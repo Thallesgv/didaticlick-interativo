@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Câmera 3D · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Câmera 3D</h1></header>
+<main>
+<div class="card"><h2>Do 3D para a tela</h2><p class="muted" style="margin-top:0">Cada vértice (x, y, z) vai para a tela em x' = f · x ÷ z e y' = f · y ÷ z. Gire o sólido, mude a focal e a distância.</p>
+<div class="fig" id="fig"></div>
+<b style="color:var(--navy);font-size:14px">Sólido</b><div class="chips" id="so"></div>
+<div class="sl" id="rg"><b>Girar</b><input type="range"><span></span></div>
+<div class="sl" id="ig"><b>Inclinar</b><input type="range"><span></span></div>
+<div class="sl" id="ff"><b>Focal f</b><input type="range"><span></span></div>
+<div class="sl" id="dz"><b>Distância até a câmera</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">V<b id="k1"></b></div><div>A<b id="k2"></b></div><div>F<b id="k3"></b></div><div>V − A + F<b id="k4"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Veja os três sólidos e confira a relação de Euler em cada um. Depois aproxime bem a câmera: o que acontece com a face mais próxima?</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const SOL=[{v:[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],a:[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]],f:6},
+ {v:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1],[0,1.2,0]],a:[[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]],f:5},
+ {v:[[-1,-1,-1],[1,-1,-1],[0,0.8,-1],[-1,-1,1],[1,-1,1],[0,0.8,1]],a:[[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]],f:5}];
+let vistos=new Set();const so=chips('so',['cubo','pirâmide','prisma'],0,draw),RG=SL('rg',0,360,1,30,draw,v=>v+'°'),IG=SL('ig',-60,60,1,20,draw,v=>v+'°'),FF=SL('ff',1,6,0.1,2.5,draw,v=>r1(v)),DZ=SL('dz',2.2,12,0.1,5,draw,v=>r1(v));
+function draw(){const s=SOL[so.get()],ra=RG.get()*Math.PI/180,ri=IG.get()*Math.PI/180,f=FF.get(),dz=DZ.get();vistos.add(so.get());
+ const pr=s.v.map(([x,y,z])=>{let X=x*Math.cos(ra)+z*Math.sin(ra),Z=-x*Math.sin(ra)+z*Math.cos(ra);let Y=y*Math.cos(ri)-Z*Math.sin(ri);Z=y*Math.sin(ri)+Z*Math.cos(ri)+dz;return [170+f*X/Z*110,115-f*Y/Z*110];});
+ let g='';s.a.forEach(([i,j])=>{g+=`<line x1="${pr[i][0]}" y1="${pr[i][1]}" x2="${pr[j][0]}" y2="${pr[j][1]}" stroke="${NAVY}" stroke-width="2.5"/>`;});pr.forEach(p=>g+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${ORANGE}"/>`);
+ $('fig').innerHTML=SVG(340,230,`<defs><clipPath id="cc"><rect x="0" y="0" width="340" height="230"/></clipPath></defs><g clip-path="url(#cc)">${g}</g>`);
+ const V=s.v.length,A=s.a.length,F=s.f;$('k1').textContent=V;$('k2').textContent=A;$('k3').textContent=F;$('k4').textContent=V-A+F;
+ missao('m',vistos.size===3,'Os três dão V − A + F = 2. E bem perto da câmera, a face mais próxima fica enorme: z pequeno, divisão por um número pequeno.','Sólidos vistos: '+vistos.size+' de 3.');}
+draw();
+</script>
+</body>
+</html>

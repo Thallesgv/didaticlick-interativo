@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Misturador RGB · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Misturador RGB</h1></header>
+<main>
+<div class="card"><h2>Três luzes, 16 777 216 cores</h2><p class="muted" style="margin-top:0">Cada pixel mistura luz vermelha, verde e azul, de 0 a 255. Veja os valores em decimal e em binário.</p>
+<div class="fig" id="fig" style="height:110px"></div>
+<div class="sl" id="r"><b>Vermelho (R)</b><input type="range"><span></span></div>
+<div class="sl" id="g"><b>Verde (G)</b><input type="range"><span></span></div>
+<div class="sl" id="b"><b>Azul (B)</b><input type="range"><span></span></div>
+<div class="card" style="background:var(--bg);font-family:monospace;font-size:15px" id="bin"></div><div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre o laranja da DidatiClick: R = 247, G = 141, B = 51 (vale chegar a 10 de distância em cada luz). Depois descubra: que cor sai de R = G = 255 e B = 0?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const R=SL('r',0,255,1,14,draw),G=SL('g',0,255,1,35,draw),B=SL('b',0,255,1,84,draw);
+const bn=v=>v.toString(2).padStart(8,'0');
+function draw(){const r=R.get(),g=G.get(),b=B.get();$('fig').style.background=`rgb(${r},${g},${b})`;$('fig').innerHTML='';
+ $('bin').innerHTML=`R = ${r} = <b>${bn(r)}</b><br>G = ${g} = <b>${bn(g)}</b><br>B = ${b} = <b>${bn(b)}</b><br>Hex: #${[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase()}`;
+ missao('m',Math.abs(r-247)<=10&&Math.abs(g-141)<=10&&Math.abs(b-51)<=10,'Achou o laranja DidatiClick!','Distância até o laranja: R '+(r-247)+', G '+(g-141)+', B '+(b-51)+'.');}
+draw();
+</script>
+</body>
+</html>

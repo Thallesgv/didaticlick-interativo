@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Câmara escura · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Câmara escura</h1></header>
+<main>
+<div class="card"><h2>O furinho que forma imagens</h2><p class="muted" style="margin-top:0">Os raios que passam pelo furo se cruzam. À direita, a parede do fundo da caixa (ampliada): a imagem aparece de cabeça para baixo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="hh"><b>Altura do objeto</b><input type="range"><span></span></div>
+<div class="sl" id="pp"><b>Distância do objeto até o furo</b><input type="range"><span></span></div>
+<div class="sl" id="cc"><b>Profundidade da caixa</b><input type="range"><span></span></div>
+<div class="sl" id="ff"><b>Diâmetro do furo</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Altura da imagem<b id="k1"></b></div><div>Mancha de cada ponto<b id="k2"></b></div><div>Brilho (furo de 1 mm = 1)<b id="k3"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Um prédio de 30 m está a 50 m do furo. Ajuste a caixa para a imagem do prédio ter <b>exatamente 15 cm</b>. Depois aumente o furo e repare no que acontece com a nitidez e com o brilho.</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const HH=SL('hh',0.5,30,0.5,6,draw,v=>r1(v)+' m'),PP=SL('pp',1,50,1,20,draw,v=>v+' m'),CC=SL('cc',5,100,1,30,draw,v=>v+' cm'),FF=SL('ff',0.5,10,0.5,2,draw,v=>r1(v)+' mm');
+function draw(){const h=HH.get(),p=PP.get(),c=CC.get(),fu=FF.get(),hi=h*c/p,br=fu*fu;
+ $('k1').textContent=r1(hi)+' cm';$('k2').textContent='≈ '+r1(fu)+' mm';$('k3').textContent=r1(br)+'×';
+ const y0=95,ho=Math.min(70,20+h*2),xo=20,xf=150,xc=xf+c*0.4;
+ let g=`<rect x="${xf}" y="25" width="${c*0.4}" height="140" fill="${PEACH}" stroke="${NAVY}" stroke-width="2"/><rect x="${xf-2}" y="${y0-1-fu/2}" width="4" height="${2+fu}" fill="#fff"/>`;
+ g+=`<rect x="${xo+8}" y="${y0}" width="6" height="${ho/2}" fill="#8B5A2B"/><circle cx="${xo+11}" cy="${y0-ho/4}" r="${ho/3.2}" fill="${GREEN}"/>`;
+ const yt=y0-ho/2-ho/4,yb=y0+ho/2,s=(xc-xf)/(xf-xo-11);
+ g+=`<line x1="${xo+11}" y1="${yt}" x2="${xc}" y2="${y0+(y0-yt)*s}" stroke="${ORANGE}" stroke-width="1.4"/><line x1="${xo+11}" y1="${yb}" x2="${xc}" y2="${y0-(yb-y0)*s}" stroke="${ORANGE}" stroke-width="1.4"/>`;
+ g+=TX(80,185,'objeto a '+p+' m',{fs:10})+TX(xf+c*0.2,185,'caixa',{fs:10});
+ const wx=262,hp=Math.max(4,Math.min(135,hi*6)),op=Math.max(0.15,Math.min(1,br/4)),bl=fu*0.9;
+ g+=`<defs><filter id="bl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${bl}"/></filter></defs><rect x="${wx-55}" y="22" width="110" height="146" rx="4" fill="#1b1b1b"/>`;
+ g+=`<g filter="url(#bl)" opacity="${op}"><rect x="${wx-3}" y="${y0-hp/2}" width="6" height="${hp*0.45}" fill="#B07A43"/><circle cx="${wx}" cy="${y0+hp*0.2}" r="${hp*0.3}" fill="#4ADE80"/></g>`;
+ g+=TX(wx,185,'parede do fundo',{fs:10});
+ $('fig').innerHTML=SVG(340,192,g);
+ missao('m',h===30&&p===50&&Math.abs(hi-15)<0.3,'Isso! A caixa de 25 cm dá 30 × 25 ÷ 50 = 15 cm. Semelhança de triângulos.','Ponha o objeto com 30 m, a 50 m, e procure a profundidade da caixa. Agora a imagem tem '+r1(hi)+' cm.');}
+draw();
+</script>
+</body>
+</html>

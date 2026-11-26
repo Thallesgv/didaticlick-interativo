@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ponto de fuga · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Ponto de fuga</h1></header>
+<main>
+<div class="card"><h2>Desenhe uma rua em perspectiva</h2><p class="muted" style="margin-top:0">Arraste o ponto laranja. Ele é o ponto de fuga e fica sempre sobre a linha do horizonte, que é a altura da câmera.</p>
+<div class="fig"><svg id="sv" viewBox="0 0 320 220" width="320"></svg></div>
+<p class="muted">Repare: as retas que, na rua de verdade, são paralelas (bordas da calçada, topos dos prédios, fios) passam todas pelo ponto de fuga. As linhas verticais continuam verticais.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const sv=$('sv');let F={x:160,y:90};sv.innerHTML='<g id="cena"></g><circle id="vp" r="8" fill="'+ORANGE+'" stroke="#fff" stroke-width="2"/>';
+arrastar(sv,$('vp'),(x,y)=>{F={x:clamp(x,20,300),y:clamp(y,30,170)};draw();});
+function lin(x1,y1,x2,y2,c,w,d){return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w||1}"${d?' stroke-dasharray="4 3"':''}/>`;}
+function draw(){const h=F.y;let g=`<rect width="320" height="${h}" fill="${PEACH}"/><rect y="${h}" width="320" height="${220-h}" fill="#FCE3CC"/>`+lin(0,h,320,h,NAVY,1.2);
+ g+=`<polygon points="${F.x},${h} 40,220 280,220" fill="${LIGHT}"/>`;
+ // prédios dos dois lados: frente em x fixo, profundidade até t
+ [[-1,10,60,120],[1,310,260,140]].forEach(([s,x0,x1,top])=>{const yb=220,yt=yb-top;
+  const at=(x,y,t)=>[x+(F.x-x)*t,y+(h-y)*t];
+  for(let k=0;k<3;k++){const t0=0.1+k*0.22,t1=t0+0.17;const [ax,ay]=at(x0,yt,t0),[bx,by]=at(x0,yt,t1),[cx,cy]=at(x0,yb,t1),[dx,dy]=at(x0,yb,t0);
+   g+=`<polygon points="${ax},${ay} ${bx},${by} ${cx},${cy} ${dx},${dy}" fill="${k%2?NAVY:BLUE}" opacity="1"/>`;}
+  g+=lin(x0,yt,F.x,h,ORANGE,0.8,1)+lin(x0,yb,F.x,h,ORANGE,0.8,1);});
+ for(let k=1;k<6;k++){const t=1-Math.pow(0.6,k);const y=220+(h-220)*t;g+=lin(F.x+(160-F.x)*(1-t)-3*(1-t),y,F.x+(160-F.x)*(1-t)+3*(1-t),y,'#fff',2+3*(1-t));}
+ g+=`<text x="6" y="${h-5}" font-size="10" fill="${NAVY}" font-family="Poppins">linha do horizonte</text>`;
+ $('cena').innerHTML=g;$('vp').setAttribute('cx',F.x);$('vp').setAttribute('cy',F.y);}
+draw();
+</script>
+</body>
+</html>

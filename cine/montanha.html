@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Montanhas fractais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Montanhas fractais</h1></header>
+<main>
+<div class="card"><h2>Deslocamento do ponto médio</h2><p class="muted" style="margin-top:0">A cada rodada, cada segmento ganha um ponto no meio, que sobe ou desce um valor sorteado. O valor máximo do sorteio é multiplicado pela rugosidade a cada rodada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ru"><b>Rugosidade</b><input type="range"><span></span></div>
+<div class="row"><button id="mais" class="or">Mais uma rodada</button><button id="nova" class="alt">Montanha nova</button></div>
+<div class="kpi"><div class="o">Rodadas<b id="k1"></b></div><div>Segmentos<b id="k2"></b></div><div>Pontos<b id="k3"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça <b>6 rodadas</b>. Antes de clicar, preveja quantos segmentos e quantos pontos a montanha terá.</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const RU=SL('ru',0.3,0.8,0.05,0.5,null,v=>r2(v));let pts,rod,amp;
+function nova(){pts=[[10,150],[330,150]];rod=0;amp=70;draw();}
+function mais(){if(rod>=10)return;const np=[];for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];np.push(a,[(a[0]+b[0])/2,(a[1]+b[1])/2-(Math.random()*2-1)*amp]);}np.push(pts[pts.length-1]);pts=np;amp*=RU.get();rod++;draw();}
+function draw(){const p=pts.map(q=>q[0]+','+clamp(q[1],8,195)).join(' ');const g=`<rect x="0" y="0" width="340" height="200" fill="#DBEAFE"/><polygon points="10,200 ${p} 330,200" fill="#5B6B8C"/><polyline points="${p}" fill="none" stroke="${NAVY}" stroke-width="2"/>`+(rod<4?pts.map(q=>`<circle cx="${q[0]}" cy="${clamp(q[1],8,195)}" r="3" fill="${ORANGE}"/>`).join(''):'');
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=rod;$('k2').textContent=pts.length-1;$('k3').textContent=pts.length;
+ missao('m',rod>=6,'Depois de 6 rodadas: 2⁶ = 64 segmentos e 65 pontos.','Rodadas: '+rod+'. Segmentos: 2 elevado ao número de rodadas.');}
+$('mais').onclick=mais;$('nova').onclick=nova;nova();
+</script>
+</body>
+</html>

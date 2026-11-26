@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perspectiva forçada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Perspectiva forçada</h1></header>
+<main>
+<div class="card"><h2>Quem parece maior?</h2><p class="muted" style="margin-top:0">A câmera mede altura ÷ distância. Mude a distância de cada ator e veja, à direita, como eles aparecem na tela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Distância do ator A (1,80 m) até a câmera</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Distância do ator B até a câmera</b><input type="range"><span></span></div>
+<div class="sl" id="hb"><b>Altura real do ator B</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Razão A<b id="ka"></b></div><div>Razão B<b id="kb"></b></div><div>B na tela<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o ator B, de 1,70 m, aparecer com <b>60% ou menos</b> da altura do ator A, como um hobbit ao lado de um mago. Depois tente com exatamente 60%.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const A=SL('sa',1,10,0.1,3,draw,v=>r1(v)+' m'),B=SL('sb',1,15,0.1,5,draw,v=>r1(v)+' m'),H=SL('hb',1.2,2.0,0.01,1.7,draw,v=>r2(v)+' m');
+function draw(){const da=A.get(),db=B.get(),hb=H.get(),ra=1.8/da,rb=hb/db,pc=rb/ra*100;
+ $('ka').textContent=r2(ra);$('kb').textContent=r2(rb);$('kp').textContent=Math.round(pc)+'% de A';
+ const W=340,Hh=200,y0=170,cx=24,sx=x=>cx+x*(170/15),k=120;
+ let g=`<line x1="10" y1="${y0}" x2="200" y2="${y0}" stroke="${GRAYL}"/><rect x="6" y="${y0-40}" width="20" height="14" rx="3" fill="${NAVY}"/>`;
+ [[da,1.8,NAVY,'A'],[db,hb,BLUE,'B']].forEach(([d,h,c,n])=>{const x=sx(d),hp=h*45;g+=`<line x1="${cx}" y1="${y0-33}" x2="${x}" y2="${y0-hp}" stroke="${ORANGE}" stroke-dasharray="3 2"/><line x1="${cx}" y1="${y0-33}" x2="${x}" y2="${y0}" stroke="${ORANGE}" stroke-dasharray="3 2"/>
+  <rect x="${x-5}" y="${y0-hp}" width="10" height="${hp}" rx="4" fill="${c}"/>`+TX(x,y0-hp-5,n,{fs:10,c})});
+ g+=`<rect x="220" y="30" width="112" height="150" rx="6" fill="${PEACH}" stroke="${NAVY}"/>`+TX(276,22,'NA TELA',{fs:10});
+ const ha=Math.min(130,ra*k),hbb=Math.min(130,rb*k);g+=`<rect x="243" y="${172-ha}" width="22" height="${ha}" rx="7" fill="${NAVY}"/><rect x="289" y="${172-hbb}" width="22" height="${hbb}" rx="7" fill="${BLUE}"/>`+TX(254,190,'A',{fs:10})+TX(300,190,'B',{fs:10,c:BLUE});
+ $('fig').innerHTML=SVG(W,Hh+5,g);
+ missao('m',Math.abs(hb-1.7)<0.011&&pc<=60.5,Math.abs(pc-60)<1.5?'Perfeito: B aparece com 60% de A. Confira: (1,70 ÷ dB) ÷ (1,80 ÷ dA) = 0,6.':'Missão cumprida: B parece um hobbit. Consegue chegar a exatamente 60%?','Ainda não: B aparece com '+Math.round(pc)+'% da altura de A (com 1,70 m).');}
+draw();
+</script>
+</body>
+</html>

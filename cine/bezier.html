@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editor de Bézier · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Editor de Bézier</h1></header>
+<main>
+<div class="card"><h2>Interpolar interpolações</h2><p class="muted" style="margin-top:0">Arraste os quadradinhos P0 a P3. O controle de t mostra a construção de De Casteljau: três rodadas de interpolação até o ponto da curva.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="tt"><b>t</b><input type="range"><span></span></div>
+<div class="row"><button id="pl" class="or">Personagem andando</button></div>
+<div class="kpi"><div class="o">Ponto da curva<b id="k1"></b></div><div>Pesos (cúbica)<b id="k2"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova os pontos de controle para que o ponto da curva em <b>t = 0,5</b> fique sobre a estrela. Repare que a curva não passa por P1 e P2.</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+let PT=[[30,190],[60,60],[270,60],[310,190]],an=false,tm;const TT=SL('tt',0,1,0.01,0.4,draw,v=>r2(v));const lp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+function cast(t){let lv=[PT];while(lv[lv.length-1].length>1){const q=lv[lv.length-1];lv.push(q.slice(1).map((p,i)=>lp(q[i],p,t)));}return lv;}
+function draw(){const t=TT.get(),lv=cast(t);let g=`<text x="170" y="58" font-size="22" text-anchor="middle" fill="${GRAYL}">★</text>`;
+ g+=`<polyline points="${PT.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${GRAYL}" stroke-dasharray="4 3"/>`;let c='';for(let k=0;k<=60;k++){const q=cast(k/60);c+=q[3][0].join(',')+' ';}
+ g+=`<polyline points="${c}" fill="none" stroke="${NAVY}" stroke-width="3"/>`;const cs=[LIGHT,BLUE,ORANGE];
+ lv.slice(1).forEach((q,j)=>{if(q.length>1)g+=`<polyline points="${q.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${cs[j]}" stroke-width="1.5"/>`;q.forEach(p=>g+=`<circle cx="${p[0]}" cy="${p[1]}" r="${q.length>1?3.5:7}" fill="${cs[j]}"/>`);});
+ PT.forEach((p,i)=>{g+=`<rect id="p${i}" x="${p[0]-8}" y="${p[1]-8}" width="16" height="16" fill="#fff" stroke="${NAVY}" stroke-width="2"/>`+TX(p[0],p[1]-12,'P'+i,{fs:10});});
+ $('fig').innerHTML=SVG(340,220,g);const s=$('fig').querySelector('svg');PT.forEach((p,i)=>arrastar(s,s.querySelector('#p'+i),(x,y)=>{PT[i]=[clamp(x,8,332),clamp(y,8,212)];draw();}));
+ const q=lv[3][0];$('k1').textContent='('+Math.round(q[0])+', '+Math.round(220-q[1])+')';const u=1-t;$('k2').textContent=[u**3,3*t*u*u,3*t*t*u,t**3].map(r2).join(' + ');
+ const h=cast(0.5)[3][0];missao('m',Math.hypot(h[0]-170,h[1]-50)<9,'Na estrela! Em t = 0,5 os pesos são 1/8, 3/8, 3/8 e 1/8.','Em t = 0,5 a curva está em ('+Math.round(h[0])+', '+Math.round(220-h[1])+'). Puxe P1 e P2 para cima.');}
+$('pl').onclick=()=>{clearInterval(tm);let k=0;tm=setInterval(()=>{TT.set(k/50);draw();if(++k>50)clearInterval(tm);},40);};
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Regiomontanus · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Regiomontanus</h1></header>
+<main>
+<div class="card"><h2>A que distância ficar?</h2><p class="muted" style="margin-top:0">Vista de lado. A tela está acima dos seus olhos. Ande pela sala e veja o ângulo; o gráfico mostra o ângulo em cada distância.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="b"><b>Altura da base da tela acima dos olhos (b)</b><input type="range"><span></span></div>
+<div class="sl" id="a"><b>Altura da tela (a)</b><input type="range"><span></span></div>
+<div class="sl" id="d"><b>A sua distância até a parede da tela</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Ângulo<b id="k1"></b></div><div>Melhor distância √(b(a+b))<b id="k2"></b></div></div><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const Bb=SL('b',0.5,6,0.5,3,draw,v=>r1(v)+' m'),Aa=SL('a',1,12,0.5,9,draw,v=>r1(v)+' m'),Dd=SL('d',0.5,25,0.1,10,draw,v=>r1(v)+' m');
+const ang=(d,a,b)=>(Math.atan((a+b)/d)-Math.atan(b/d))*180/Math.PI;
+function draw(){const a=Aa.get(),b=Bb.get(),d=Dd.get(),best=Math.sqrt(b*(a+b)),s=150/25,sy=120/20;
+ let g=`<line x1="10" y1="150" x2="170" y2="150" stroke="${GRAYL}"/><rect x="160" y="${140-(a+b)*sy}" width="6" height="${a*sy}" fill="${NAVY}"/>`;
+ const ex=160-d*s,ey=140;g+=`<circle cx="${ex}" cy="${ey}" r="5" fill="${ORANGE}"/><line x1="${ex}" y1="${ey}" x2="160" y2="${140-(a+b)*sy}" stroke="${ORANGE}"/><line x1="${ex}" y1="${ey}" x2="160" y2="${140-b*sy}" stroke="${ORANGE}"/>`;
+ // gráfico
+ let pts=[];for(let x=0.5;x<=25;x+=0.25)pts.push([190+x*5.6,150-ang(x,a,b)*1.6]);
+ g+=`<line x1="190" y1="150" x2="332" y2="150" stroke="${GRAYL}"/><line x1="190" y1="150" x2="190" y2="10" stroke="${GRAYL}"/>`;
+ g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=`<circle cx="${190+best*5.6}" cy="${150-ang(best,a,b)*1.6}" r="4" fill="${GREEN}"/><circle cx="${190+d*5.6}" cy="${150-ang(d,a,b)*1.6}" r="5" fill="${ORANGE}"/>`+TX(260,168,'distância (m)',{fs:9,w:400})+TX(205,12,'ângulo',{fs:9,w:400,a:'start'});
+ $('fig').innerHTML=SVG(340,175,g);$('k1').textContent=r1(ang(d,a,b))+'°';$('k2').textContent=r2(best)+' m · '+r1(ang(best,a,b))+'°';
+ missao('m',Math.abs(d-best)<0.15,'Você achou o ângulo máximo! Ali a circunferência que passa pela base e pelo topo da tela toca a linha dos seus olhos.','Missão: ande até o ponto verde do gráfico, onde o ângulo é o maior possível.');}
+draw();
+</script>
+</body>
+</html>

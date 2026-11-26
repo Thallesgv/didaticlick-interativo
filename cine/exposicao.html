@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Triângulo da exposição · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Triângulo da exposição</h1></header>
+<main>
+<div class="card"><h2>Abertura, tempo e ISO</h2><p class="muted" style="margin-top:0">Cada passo em qualquer controle é 1 stop: dobra ou divide a luz por 2. O fotômetro mostra quantos stops a imagem está clara ou escura demais.</p>
+<div class="fig" id="fig"></div>
+<b style="color:var(--navy);font-size:14px">Abertura</b><div class="chips" id="ab"></div>
+<b style="color:var(--navy);font-size:14px">Tempo do obturador (s)</b><div class="chips" id="tt"></div>
+<b style="color:var(--navy);font-size:14px">ISO</b><div class="chips" id="is"></div>
+<div class="kpi"><div class="o">Fotômetro<b id="k1"></b></div><div>Ângulo do obturador a 24 q/s<b id="k2"></b></div><div>Efeito colateral<b id="k3"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Filme a cena com o tempo da regra dos 180 graus (<b>1/50 s</b>) e com <b>ISO 100</b>, para não ter granulado. Que abertura deixa o fotômetro no zero?</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const AN=['1,4','2','2,8','4','5,6','8','11','16'],TT=[1/15,1/30,1/50,1/125,1/250,1/500,1/1000],IS=[100,200,400,800,1600,3200,6400];
+const ab=chips('ab',AN.map(v=>'f/'+v),3,draw),tt=chips('tt',['1/15','1/30','1/50','1/125','1/250','1/500','1/1000'],2,draw),is=chips('is',IS.map(String),2,draw);
+function draw(){const N=Math.SQRT2**(ab.get()+1),t=TT[tt.get()],iso=IS[is.get()],e=Math.log2(t*iso/(N*N)/(1/50*400/16));
+ const ev=Math.round(e*3)/3;$('k1').textContent=(Math.abs(ev)<0.05?'0':(ev>0?'+':'−')+r1(Math.abs(ev)))+' stop'+(Math.abs(ev)>=1.05?'s':'');
+ $('k2').textContent=Math.round(360*24*t)+'°';const ef=[];if(t>=1/30)ef.push('borrão');if(t<=1/500)ef.push('movimento "picotado"');if(iso>=1600)ef.push('granulado');if(ab.get()<=1)ef.push('fundo bem desfocado');$('k3').textContent=ef.join(', ')||'nenhum';
+ const bl=6/N,len=10+t*900,gr=Math.max(0,Math.log2(iso/100)/6)*0.55;
+ let g=`<defs><filter id="fb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${bl}"/></filter><filter id="gr"><feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="${Math.floor(Math.random()*99)}"/><feColorMatrix type="saturate" values="0"/></filter><clipPath id="cl"><rect x="20" y="10" width="300" height="160" rx="6"/></clipPath></defs><g clip-path="url(#cl)">`;
+ g+=`<g filter="url(#fb)"><rect x="20" y="10" width="300" height="160" fill="#BFDBFE"/><rect x="20" y="120" width="300" height="50" fill="#A3C585"/>`;
+ [[30,60],[70,40],[110,75],[220,50],[260,85],[296,45]].forEach(([x,h])=>{g+=`<rect x="${x}" y="${120-h}" width="26" height="${h}" fill="#5B6B8C"/>`;});g+=`</g>`;
+ g+=`<rect x="${170-len/2}" y="98" width="${len}" height="22" rx="11" fill="${ORANGE}" opacity="${Math.min(1,22/len+0.25)}"/><circle cx="${170+len/2-11}" cy="109" r="11" fill="${ORANGE}"/>`;
+ if(gr>0)g+=`<rect x="20" y="10" width="300" height="160" filter="url(#gr)" opacity="${gr}"/>`;
+ const lum=2**e;if(lum<1)g+=`<rect x="20" y="10" width="300" height="160" fill="#000" opacity="${Math.min(0.92,1-lum)}"/>`;else g+=`<rect x="20" y="10" width="300" height="160" fill="#fff" opacity="${Math.min(0.92,1-1/lum)}"/>`;
+ g+=`</g><rect x="20" y="10" width="300" height="160" rx="6" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=`<line x1="50" y1="190" x2="290" y2="190" stroke="${NAVY}" stroke-width="2"/>`;for(let k=-3;k<=3;k++)g+=`<line x1="${170+k*40}" y1="184" x2="${170+k*40}" y2="196" stroke="${NAVY}"/>`+TX(170+k*40,210,k>0?'+'+k:k===0?'0':'−'+(-k),{fs:10});
+ g+=`<path d="M${170+Math.max(-3.4,Math.min(3.4,e))*40},186 l-6,-10 h12 z" fill="${Math.abs(e)<0.2?GREEN:ORANGE}"/>`;
+ $('fig').innerHTML=SVG(340,215,g);
+ missao('m',tt.get()===2&&is.get()===0&&Math.abs(e)<0.2,'Exposição certa com 1/50 s, ISO 100 e f/2. Você perdeu 2 stops no ISO (400 → 100) e ganhou 2 na abertura (f/4 → f/2).','Escolha 1/50 s e ISO 100 e procure a abertura que zera o fotômetro.');}
+draw();
+</script>
+</body>
+</html>

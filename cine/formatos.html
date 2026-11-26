@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Formatos de tela · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Formatos de tela</h1></header>
+<main>
+<div class="card"><h2>Filme × tela</h2><p class="muted" style="margin-top:0">O filme é ajustado para caber inteiro na tela. Onde as razões não batem, aparecem faixas pretas.</p>
+<b style="color:var(--navy);font-size:14px">Formato do filme</b><div class="chips" id="cf"></div>
+<b style="color:var(--navy);font-size:14px;display:block;margin-top:10px">Tela</b><div class="chips" id="ct"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Imagem<b id="k1"></b></div><div>Faixas<b id="k2"></b></div><div>Tela usada<b id="k3"></b></div></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const F=[['4:3',4/3],['16:9',16/9],['1,85:1',1.85],['2,39:1',2.39],['2,76:1 (Ben-Hur)',2.76],['9:16 (vertical)',9/16]];
+const T=[['TV 16:9 · 1920×1080',1920,1080],['Celular deitado · 2400×1080',2400,1080],['Tablet 4:3 · 2048×1536',2048,1536],['Celular em pé · 1080×2400',1080,2400],['Cinema scope · 4096×1716',4096,1716]];
+const cf=chips('cf',F.map(f=>f[0]),3,draw),ct=chips('ct',T.map(t=>t[0]),0,draw);
+function draw(){const r=F[cf.get()][1],[n,W,H]=T[ct.get()];let w,h,bar,tipo;
+ if(r>W/H){w=W;h=W/r;bar=(H-h)/2;tipo='em cima e embaixo';}else{h=H;w=H*r;bar=(W-w)/2;tipo='nas laterais';}
+ const s=Math.min(300/W,220/H),ox=(320-W*s)/2+10,oy=10;
+ let g=`<rect x="${ox}" y="${oy}" width="${W*s}" height="${H*s}" fill="#111"/><rect x="${ox+(W-w)/2*s}" y="${oy+(H-h)/2*s}" width="${w*s}" height="${h*s}" fill="${ORANGE}"/>`;
+ g+=TX(ox+W*s/2,oy+H*s/2+4,F[cf.get()][0],{fs:14,c:'#fff'});
+ $('fig').innerHTML=SVG(340,H*s+20,g);
+ $('k1').textContent=Math.round(w)+' × '+Math.round(h);$('k2').textContent=bar<0.5?'nenhuma':Math.round(bar)+' px '+tipo;$('k3').textContent=Math.round(w*h/(W*H)*100)+'%';}
+draw();
+</script>
+</body>
+</html>

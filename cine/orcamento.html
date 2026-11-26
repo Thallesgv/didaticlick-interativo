@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planejador do curta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Planejador do curta</h1></header>
+<main>
+<div class="card"><h2>Orçamento</h2><div class="sl" id="tot"><b>Orçamento total</b><input type="range"><span></span></div>
+<div class="sl" id="p0"><b>Figurino e arte</b><input type="range"><span></span></div>
+<div class="sl" id="p1"><b>Lanche da equipe</b><input type="range"><span></span></div>
+<div class="sl" id="p2"><b>Transporte</b><input type="range"><span></span></div>
+<div class="sl" id="p3"><b>Reserva para imprevistos</b><input type="range"><span></span></div>
+<div class="fig" id="pz"></div><div id="m"></div></div>
+<div class="card"><h2>Duração e planos</h2><div class="sl" id="du"><b>Duração do curta</b><input type="range"><span></span></div>
+<div class="sl" id="pl"><b>Duração média do plano</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Páginas de roteiro<b id="c1"></b></div><div>Planos<b id="c2"></b></div><div>Quadros a 30 q/s<b id="c3"></b></div></div></div>
+<div class="card"><h2>Cronograma</h2><div class="sl" id="en"><b>Número de encontros</b><input type="range"><span></span></div><div class="fig" id="cr"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const T=SL('tot',50,2000,10,300,draw,v=>'R$ '+v),P=[40,30,20,10].map((v,i)=>SL('p'+i,0,100,5,v,draw,x=>x+'%'));
+const DU=SL('du',1,10,0.5,4,draw,v=>r1(v)+' min'),PL=SL('pl',1,15,0.5,4,draw,v=>r1(v)+' s'),EN=SL('en',4,16,1,8,draw);
+const NOM=['Arte','Lanche','Transporte','Reserva'];
+function draw(){const t=T.get(),p=P.map(s=>s.get()),s=p.reduce((a,b)=>a+b,0);
+ $('pz').innerHTML=pizza(p.map((v,i)=>({v,cor:CORES_FIN[i],nome:NOM[i]+': R$ '+fmt(Math.round(t*v)/100*1)})),70);
+ missao('m',s===100,'As porcentagens somam 100%. Orçamento fechado!','As porcentagens somam '+s+'%. Ajuste até dar exatamente 100%.');
+ const d=DU.get();$('c1').textContent='≈ '+r1(d);$('c2').textContent='≈ '+Math.round(d*60/PL.get());$('c3').textContent=fmt(d*60*30);
+ const n=EN.get(),pre=Math.round(n*3/8),pro=Math.round(n/4),pos=n-pre-pro;let g='';
+ for(let i=0;i<n;i++){const c=i<pre?BLUE:i<pre+pro?ORANGE:NAVY;g+=`<rect x="${6+i*(326/n)}" y="10" width="${326/n-3}" height="30" rx="4" fill="${c}"/>`+TX(6+i*(326/n)+(326/n-3)/2,30,i+1,{fs:10,c:'#fff'});}
+ g+=TX(10,58,'pré-produção: '+pre,{fs:10,a:'start',c:BLUE})+TX(130,58,'filmagem: '+pro,{fs:10,a:'start',c:ORANGE})+TX(235,58,'pós: '+pos,{fs:10,a:'start'});$('cr').innerHTML=SVG(340,64,g);}
+draw();
+</script>
+</body>
+</html>

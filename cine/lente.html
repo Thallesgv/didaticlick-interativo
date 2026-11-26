@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Banco óptico · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Banco óptico</h1></header>
+<main>
+<div class="card"><h2>A lente forma a imagem</h2><p class="muted" style="margin-top:0">Um raio paralelo ao eixo passa pelo foco F; um raio pelo centro da lente segue reto. Onde eles se cruzam, está a imagem. As linhas verticais estão a cada 5 cm.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ff"><b>Distância focal da lente (f)</b><input type="range"><span></span></div>
+<div class="sl" id="pp"><b>Distância do objeto até a lente (p)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Imagem a (p')<b id="k1"></b></div><div>Aumento<b id="k2"></b></div><div>Tipo<b id="k3"></b></div></div>
+<p class="muted">1/f = 1/p + 1/p'. Aproxime o objeto do foco e veja a imagem fugir para longe; passe do foco e a lente vira lupa.</p></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça a imagem ficar <b>do mesmo tamanho</b> do objeto (aumento 1). Onde o objeto precisa ficar? Teste com duas lentes diferentes.</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const FF=SL('ff',2,10,0.5,5,draw,v=>r1(v)+' cm'),PP=SL('pp',1,30,0.5,12,draw,v=>r1(v)+' cm');let feitos=new Set();
+function draw(){const f=FF.get(),p=PP.get(),k=6,xl=170,y0=100,ho=30,xo=xl-p*k;
+ let g='';for(let x=xl%(5*k);x<340;x+=5*k)g+=`<line x1="${x}" y1="20" x2="${x}" y2="180" stroke="#E5EAF2"/>`;
+ g+=`<line x1="0" y1="${y0}" x2="340" y2="${y0}" stroke="${GRAYL}" stroke-width="1.5"/><ellipse cx="${xl}" cy="${y0}" rx="6" ry="70" fill="#DBEAFE" stroke="${BLUE}" stroke-width="1.5"/>`;
+ [-1,1].forEach(sg=>{g+=`<circle cx="${xl+sg*f*k}" cy="${y0}" r="3.5" fill="${NAVY}"/>`+TX(xl+sg*f*k,y0+15,'F',{fs:10});});
+ g+=`<line x1="${xo}" y1="${y0}" x2="${xo}" y2="${y0-ho}" stroke="${NAVY}" stroke-width="3"/><path d="M${xo-5},${y0-ho+7} L${xo},${y0-ho} L${xo+5},${y0-ho+7}" fill="none" stroke="${NAVY}" stroke-width="3"/>`;
+ const ext=(x1,y1,x2,y2,X)=>y1+(y2-y1)*(X-x1)/(x2-x1);
+ g+=`<line x1="${xo}" y1="${y0-ho}" x2="${xl}" y2="${y0-ho}" stroke="${ORANGE}" stroke-width="1.5"/><line x1="${xl}" y1="${y0-ho}" x2="340" y2="${ext(xl,y0-ho,xl+f*k,y0,340)}" stroke="${ORANGE}" stroke-width="1.5"/>`;
+ g+=`<line x1="${xo}" y1="${y0-ho}" x2="340" y2="${ext(xo,y0-ho,xl,y0,340)}" stroke="${BLUE}" stroke-width="1.5"/>`;
+ let t1,t2,t3,real=false,A=0;
+ if(Math.abs(p-f)<1e-9){t1='no infinito';t2='—';t3='raios paralelos';}
+ else{const pi=1/(1/f-1/p);A=pi/p;const xi=xl+pi*k,hi=-ho*A;real=pi>0;
+  if(!real){g+=`<line x1="${xl}" y1="${y0-ho}" x2="${xi}" y2="${y0+hi}" stroke="${ORANGE}" stroke-dasharray="4 3"/><line x1="${xo}" y1="${y0-ho}" x2="${xi}" y2="${y0+hi}" stroke="${BLUE}" stroke-dasharray="4 3"/>`;}
+  if(xi>-20&&xi<360)g+=`<line x1="${xi}" y1="${y0}" x2="${xi}" y2="${y0+hi}" stroke="${real?ORANGE:LIGHT}" stroke-width="3" ${real?'':'stroke-dasharray="4 3"'}/>`;
+  t1=(real?'':'−')+r1(Math.abs(pi))+' cm';t2=r2(Math.abs(A))+'×';t3=real?'real, invertida':'virtual, direita (lupa)';}
+ g+=TX(xo,y0-ho-6,'objeto',{fs:10});
+ $('fig').innerHTML=SVG(340,190,g);$('k1').textContent=t1;$('k2').textContent=t2;$('k3').textContent=t3;
+ const ok=real&&Math.abs(A-1)<0.03;if(ok)feitos.add(f);
+ missao('m',ok,'Aumento 1 com p = '+r1(p)+' cm = 2 × f. '+(feitos.size>1?'Você testou '+feitos.size+' lentes: sempre p = 2f.':'Troque a lente e confira de novo.'),'Agora o aumento é '+t2+'. Dica: experimente p igual ao dobro de f.');}
+draw();
+</script>
+</body>
+</html>

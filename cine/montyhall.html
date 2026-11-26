@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monty Hall · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Monty Hall</h1></header>
+<main>
+<div class="card"><h2>Três portas, um carro</h2><p class="muted" style="margin-top:0" id="ins">Escolha uma porta.</p>
+<div class="row" id="portas" style="justify-content:center"></div>
+<div class="row" style="margin-top:10px;justify-content:center"><button id="fica" class="alt" hidden>Ficar</button><button id="troca" class="or" hidden>Trocar</button><button id="nova" hidden>Jogar de novo</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Placar</h2><div class="kpi"><div class="o">Trocando<b id="k1">0 de 0</b></div><div>Ficando<b id="k2">0 de 0</b></div></div>
+<div class="row" style="margin-top:8px"><button id="sim">Simular 1 000 jogos de cada</button><button id="zera" class="alt">Zerar</button></div><div class="fig" id="fig"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+let car,esc,aberta,fase=0;const st={t:[0,0],f:[0,0]};
+function porta(i){const ab=(fase>0&&i===aberta)||fase===2;const tem=i===car;const cor=i===esc?ORANGE:NAVY;
+ return `<button data-i="${i}" style="width:92px;height:130px;font-size:30px;background:${ab?(tem?'#DCFCE7':'#F3F4F6'):cor};color:${ab?NAVY:'#fff'}">${ab?(tem?'🚗':'🐐'):i+1}</button>`;}
+function draw(){$('portas').innerHTML=[0,1,2].map(porta).join('');$('portas').querySelectorAll('button').forEach(b=>b.onclick=()=>clique(+b.dataset.i));
+ $('fica').hidden=$('troca').hidden=fase!==1;$('nova').hidden=fase!==2;
+ const p=a=>a[1]?a[0]+' de '+a[1]+' ('+Math.round(100*a[0]/a[1])+'%)':'0 de 0';$('k1').textContent=p(st.t);$('k2').textContent=p(st.f);
+ const bar=(a,y,c,n)=>{const w=a[1]?240*a[0]/a[1]:0;return `<rect x="70" y="${y}" width="${w}" height="22" rx="5" fill="${c}"/>`+TX(64,y+15,n,{fs:11,a:'end'})+TX(76+w,y+15,a[1]?Math.round(100*a[0]/a[1])+'%':'',{fs:11,a:'start'});};
+ $('fig').innerHTML=SVG(340,70,bar(st.t,8,ORANGE,'trocando')+bar(st.f,40,NAVY,'ficando'));}
+function nova(){car=rnd(0,2);esc=-1;aberta=-1;fase=0;$('ins').textContent='Escolha uma porta.';msg('m','');draw();}
+function clique(i){if(fase!==0)return;esc=i;const op=[0,1,2].filter(k=>k!==esc&&k!==car);aberta=pick(op);fase=1;$('ins').textContent='O apresentador abriu a porta '+(aberta+1)+': um bode! Quer trocar?';draw();}
+function fim(trocou){if(trocou)esc=[0,1,2].find(k=>k!==esc&&k!==aberta);const g=esc===car,a=trocou?st.t:st.f;a[1]++;if(g)a[0]++;fase=2;
+ missao('m',g,(trocou?'Você trocou':'Você ficou')+' e ganhou o carro!',(trocou?'Você trocou':'Você ficou')+' e levou um bode.');$('ins').textContent='Fim do jogo.';draw();}
+$('fica').onclick=()=>fim(false);$('troca').onclick=()=>fim(true);$('nova').onclick=nova;
+$('sim').onclick=()=>{for(let k=0;k<1000;k++){const c=rnd(0,2),e=rnd(0,2);st.f[1]++;if(c===e)st.f[0]++;st.t[1]++;if(c!==e)st.t[0]++;}draw();};
+$('zera').onclick=()=>{st.t=[0,0];st.f=[0,0];draw();};nova();
+</script>
+</body>
+</html>
