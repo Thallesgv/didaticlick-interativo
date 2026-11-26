@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mosaico de cubos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Mosaico de cubos</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Escolha um desenho ou uma foto sua. A página transforma a imagem num mosaico de cubos mágicos, só com as 6 cores do cubo, e conta quantos cubos você precisa. A foto não sai do seu celular.</p>
+<div class="chips" id="img"></div>
+<input type="file" id="arq" accept="image/*" style="display:none">
+<div style="text-align:center;margin:8px 0"><span class="muted">Largura: </span><input type="range" id="lar" min="2" max="20" value="6" style="width:170px;vertical-align:middle"> <b id="larv"></b></div>
+<canvas id="cv" style="width:100%;max-width:520px;display:block;margin:0 auto;border-radius:8px"></canvas>
+<div class="msg info" id="conta" style="font-size:17px;margin-top:10px"></div>
+<div id="cores" style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px"></div>
+<div class="row" style="justify-content:center;margin-top:8px"><button class="alt" id="ori">Ver a imagem original</button></div>
+<canvas id="orig" style="display:none;width:60%;max-width:300px;margin:8px auto;border-radius:8px"></canvas></div>
+<div class="card"><h2>Como funciona</h2><p style="margin:0">Cada cubo mostra uma face de 3 x 3 adesivos: são 9 "pixels". A imagem é dividida em quadradinhos, e cada um recebe a cor do cubo
+mais <b>próxima</b>: a página mede a distância entre as cores como se fossem pontos no espaço (vermelho, verde, azul) e escolhe a menor.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR={W:[255,255,255],Y:[255,213,0],G:[0,155,72],B:[0,70,173],R:[200,16,46],O:[255,106,19]},NOME={W:'branco',Y:'amarelo',G:'verde',B:'azul',R:'vermelho',O:'laranja'};
+const HEX={W:'#FFFFFF',Y:'#FFD500',G:'#009B48',B:'#0046AD',R:'#C8102E',O:'#FF6A13'};
+const src=document.createElement('canvas');src.width=src.height=360;const sx=src.getContext('2d');
+const DES={
+ 'Sorriso':g=>{g.fillStyle='#fff';g.fillRect(0,0,360,360);g.fillStyle='#FFD500';g.beginPath();g.arc(180,180,160,0,7);g.fill();g.fillStyle='#0046AD';g.beginPath();g.arc(125,135,22,0,7);g.arc(235,135,22,0,7);g.fill();g.lineWidth=22;g.strokeStyle='#0046AD';g.beginPath();g.arc(180,190,95,.15*Math.PI,.85*Math.PI);g.stroke();},
+ 'Coração':g=>{g.fillStyle='#fff';g.fillRect(0,0,360,360);g.fillStyle='#C8102E';g.beginPath();g.moveTo(180,320);g.bezierCurveTo(-40,180,60,20,180,110);g.bezierCurveTo(300,20,400,180,180,320);g.fill();},
+ 'Bandeira':g=>{g.fillStyle='#009B48';g.fillRect(0,0,360,360);g.fillStyle='#FFD500';g.beginPath();g.moveTo(180,40);g.lineTo(340,180);g.lineTo(180,320);g.lineTo(20,180);g.fill();g.fillStyle='#0046AD';g.beginPath();g.arc(180,180,80,0,7);g.fill();},
+ 'Pôr do sol':g=>{const l=g.createLinearGradient(0,0,0,360);l.addColorStop(0,'#FF6A13');l.addColorStop(.55,'#FFD500');l.addColorStop(.56,'#0046AD');l.addColorStop(1,'#0046AD');g.fillStyle=l;g.fillRect(0,0,360,360);g.fillStyle='#fff';g.beginPath();g.arc(180,200,70,Math.PI,0);g.fill();}};
+let atual='Sorriso',foto=null;
+function perto(r,g,b){let m=1e9,k='W';for(const c in COR){const [R,G,B]=COR[c],d=(r-R)**2+(g-G)**2+(b-B)**2;if(d<m){m=d;k=c;}}return k;}
+function fonte(){sx.clearRect(0,0,360,360);if(atual==='Sua foto'&&foto){const s=Math.min(foto.width,foto.height);src.width=360;src.height=Math.round(360*foto.height/foto.width);
+  sx.drawImage(foto,0,0,src.width,src.height);}else{src.width=src.height=360;DES[atual](sx);}}
+function gera(){fonte();const nc=+$('lar').value,px=nc*3,py=Math.max(3,Math.round(px*src.height/src.width/3)*3),mc=py/3;$('larv').textContent=nc+' cubos';
+ const t=document.createElement('canvas');t.width=px;t.height=py;const tx=t.getContext('2d');tx.imageSmoothingEnabled=true;tx.drawImage(src,0,0,px,py);const d=tx.getImageData(0,0,px,py).data;
+ const cv=$('cv'),W=1040,s=W/px;cv.width=W;cv.height=Math.round(py*s);const g=cv.getContext('2d');g.fillStyle='#0E2354';g.fillRect(0,0,cv.width,cv.height);
+ const cont={W:0,Y:0,G:0,B:0,R:0,O:0};
+ for(let y=0;y<py;y++)for(let x=0;x<px;x++){const i=(y*px+x)*4,k=perto(d[i],d[i+1],d[i+2]);cont[k]++;g.fillStyle=HEX[k];const m=Math.max(1,s*.07);g.fillRect(x*s+m,y*s+m,s-2*m,s-2*m);}
+ g.strokeStyle='#F78D33';g.lineWidth=Math.max(2,s*.12);for(let x=0;x<=px;x+=3){g.beginPath();g.moveTo(x*s,0);g.lineTo(x*s,cv.height);g.stroke();}for(let y=0;y<=py;y+=3){g.beginPath();g.moveTo(0,y*s);g.lineTo(cv.width,y*s);g.stroke();}
+ $('conta').innerHTML=`<b>${nc} x ${mc} = ${nc*mc} cubos</b> · ${px} x ${py} = ${fmt(px*py)} adesivos ("pixels")`;
+ $('cores').innerHTML=Object.keys(cont).map(k=>`<div style="display:flex;align-items:center;gap:6px"><span style="width:20px;height:20px;border-radius:4px;background:${HEX[k]};border:1px solid #999"></span>${NOME[k]}: <b>${cont[k]}</b></div>`).join('');
+ const o=$('orig');o.width=src.width;o.height=src.height;o.getContext('2d').drawImage(src,0,0);}
+const OP=[...Object.keys(DES),'Sua foto'];
+chips('img',OP,0,i=>{if(OP[i]==='Sua foto'){$('arq').click();return;}atual=OP[i];gera();});
+$('arq').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{foto=im;atual='Sua foto';gera();};im.src=URL.createObjectURL(f);};
+$('lar').oninput=gera;$('ori').onclick=()=>{const o=$('orig');o.style.display=o.style.display==='none'?'block':'none';};
+gera();
+})();
+</script>
+</body>
+</html>
