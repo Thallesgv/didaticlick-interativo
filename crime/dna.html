@@ -32,8 +32,8 @@ function draw(){const n=NV[N.get()],r=RV[R.get()],E=n/r,pc=1/(1+E),k=Math.min(Ma
  if(E<1)g+=TX(170,H-8,'por acaso, só se espera '+r2(E)+' pessoa: provavelmente nenhuma',{fs:10,c:GRAY});
  $('fig').innerHTML=SVG(W,H,g);
  $('ke').textContent=E<0.01?'≈ 0':E<10?r2(E):fmt(Math.round(E));$('kp').textContent=(pc>0.9999?'> 99,99':r1(pc*100))+'%';
- if(M.get()==1)missao('m',n==3e6&&r==1e6,'Com 3 milhões de pessoas e perfil de 1 em 1 milhão, esperam-se 3 coincidências por acaso. Só com o DNA, a chance de Ricardo ser a fonte é de 1 em 4 (25%), não de 999 999 em 1 milhão: é a falácia do promotor.','Escolha 3 milhões de pessoas e raridade de 1 em 1 milhão.');
- else $('m').innerHTML='<div class="msg info">Esperam-se '+(E<10?r2(E):fmt(Math.round(E)))+' coincidências por acaso. Quanto maior a população, mais "Ricardos" existem; quanto mais raro o perfil, menos.</div>';}
+ if(M.get()==1)missao('m',n==3e6&&r==1e6,'Com 3 milhões de pessoas e perfil de 1 em 1 milhão, esperam-se 3 coincidências por acaso. Só com o DNA, a chance de Bernardo ser a fonte é de 1 em 4 (25%), não de 999 999 em 1 milhão: é a falácia do promotor.','Escolha 3 milhões de pessoas e raridade de 1 em 1 milhão.');
+ else $('m').innerHTML='<div class="msg info">Esperam-se '+(E<10?r2(E):fmt(Math.round(E)))+' coincidências por acaso. Quanto maior a população, mais "Bernardos" existem; quanto mais raro o perfil, menos.</div>';}
 draw();
 })();
 </script>

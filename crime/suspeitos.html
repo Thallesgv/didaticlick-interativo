@@ -19,7 +19,7 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const HV=['1,65 m','1,72 m','1,80 m','1,88 m'];const NOMES=[['Bia','Sandro','Ricardo','Otávio'],['Ana','Caio','Dora','Eva'],['Léo','Mia','Nina','Téo'],['Rui','Sol','Tito','Vera']];
+const HV=['1,65 m','1,72 m','1,80 m','1,88 m'];const NOMES=[['Bia','Sandro','Bernardo','Otávio'],['Ana','Caio','Dora','Eva'],['Léo','Mia','Nina','Téo'],['Rui','Sol','Tito','Vera']];
 let S,PI,SOL,G;const perms=(()=>{const r=[];const f=(a,u)=>{if(a.length==4){r.push(a.slice());return;}for(let i=0;i<4;i++)if(!u[i]){u[i]=1;a.push(i);f(a,u);a.pop();u[i]=0;}};f([],[]);return r;})();
 const ok=(c,p)=>c.t=='eq'?p[c.s]==c.v:c.t=='ne'?p[c.s]!=c.v:c.t=='gt'?p[c.a]>p[c.b]:c.t=='min'?p[c.s]==0:p[c.s]==3;
 const txt=c=>c.t=='eq'?`${S[c.s]} tem ${HV[c.v]}.`:c.t=='ne'?`${S[c.s]} não tem ${HV[c.v]}.`:c.t=='gt'?`${S[c.a]} é mais alto(a) que ${S[c.b]}.`:c.t=='min'?`${S[c.s]} é a pessoa mais baixa.`:`${S[c.s]} é a pessoa mais alta.`;
