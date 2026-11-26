@@ -1,11 +1,11 @@
 <!--T: Escriba egípcio-->
 <div class="card"><h2>Escreva como um escriba</h2><p class="muted">Digite um número de 1 a 9 999 999. Cada potência de 10 tem o seu desenho, e o número é a soma de todos.</p>
-<input type="number" id="n" value="1325" min="1" max="9999999"><div id="out" style="margin-top:10px;overflow-x:auto"></div><div id="conta" class="msg info"></div></div>
-<div class="card"><h2>Agora leia</h2><p class="muted">Que número o escriba escreveu?</p><div id="q" style="overflow-x:auto"></div>
+<input type="number" id="n" value="1325" min="1" max="9999999"><div id="out" style="margin-top:10px"></div><div id="conta" class="msg info"></div></div>
+<div class="card"><h2>Agora leia</h2><p class="muted">Que número o escriba escreveu?</p><div id="q"></div>
 <div class="row" style="margin-top:8px"><input type="number" id="r" placeholder="sua resposta" style="flex:1"><button class="or" id="ok">Conferir</button><button class="alt" id="novo">Outro</button></div><div id="m"></div><div class="placar muted" id="pl"></div></div>
 <div class="card"><h2>Os sete símbolos</h2><div id="tab" style="overflow-x:auto"></div></div>
 <script>
-const NOMES=['traço','calcanhar','corda','flor de lótus','dedo','girino','homem espantado'];
+const NOMES=['traço','calcanhar','corda','flor de lótus','dedo','girino','homem espantado'],PL=['traços','calcanhares','cordas','flores de lótus','dedos','girinos','homens espantados'];
 function g(k,x,h){const c='#0E2354',y=h+4;let s='';
  if(k==0)s=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y-h}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`;
  if(k==1)s=`<path d="M${x-h*.32} ${y} V${y-h*.55} C${x-h*.32} ${y-h*1.05} ${x+h*.32} ${y-h*1.05} ${x+h*.32} ${y-h*.55} V${y}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`;
@@ -17,8 +17,8 @@ function g(k,x,h){const c='#0E2354',y=h+4;let s='';
  return s;}
 const LG=[.35,.8,.65,.75,.55,.6,.85];
 function svg(n,h=44){const d=String(n).split('').reverse().map(Number);let it=[];for(let k=d.length-1;k>=0;k--)for(let j=0;j<d[k];j++)it.push(k);
- let x=6,s='';for(const k of it){x+=LG[k]*h/2;s+=g(k,x,h);x+=LG[k]*h/2+6;}return `<svg width="${x+6}" height="${h+10}" viewBox="0 0 ${x+6} ${h+10}">${s}</svg>`;}
-function conta(n){const d=String(n).split('').reverse().map(Number);let p=[],t=0;for(let k=d.length-1;k>=0;k--)if(d[k]){p.push(d[k]+' '+NOMES[k]+(d[k]>1?(k==2?'s':k==3?'':'s'):''));t+=d[k];}return p.join(', ')+` → ${t} símbolos`;}
+ return '<div style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 4px">'+it.map(k=>{const w=LG[k]*h+4;return `<svg width="${w}" height="${h+10}" viewBox="0 0 ${w} ${h+10}">${g(k,w/2,h)}</svg>`;}).join('')+'</div>';}
+function conta(n){const d=String(n).split('').reverse().map(Number);let p=[],t=0;for(let k=d.length-1;k>=0;k--)if(d[k]){p.push(d[k]+' '+(d[k]>1?PL[k]:NOMES[k]));t+=d[k];}return p.join(', ')+` → ${t} símbolos`;}
 function draw(){let n=Math.max(1,Math.min(9999999,parseInt($('n').value)||1));$('out').innerHTML=svg(n);$('conta').textContent=n.toLocaleString('pt-BR')+' = '+conta(n);}
 function $(i){return document.getElementById(i)}
 $('n').oninput=draw;draw();
