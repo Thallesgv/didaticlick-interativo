@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decifrador · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Decifrador</h1></header>
+<main>
+<div class="card"><h2>A roda de César</h2><p class="muted" style="margin-top:0">Gire a roda. A letra de fora (texto cifrado) vira a letra de dentro (texto original). O gráfico conta as letras do bilhete.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sk"><b>Chave</b><input type="range"><span></span></div>
+<input id="tx" style="width:100%;padding:10px;border:2px solid #D7DEEA;border-radius:10px;font:600 15px Poppins,sans-serif;letter-spacing:1px;text-transform:uppercase" value="VHJXQGD DV FLQFR QR FDLV">
+<div class="kpi"><div class="o">Texto decifrado<b id="kd" style="font-size:16px;letter-spacing:1px"></b></div></div>
+<div class="fig" id="fr"></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AL='ABCDEFGHIJKLMNOPQRSTUVWXYZ';const K=SL('sk',0,25,1,0,draw,v=>v);$('tx').oninput=draw;
+const norm=s=>s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const dec=(s,k)=>norm(s).replace(/[A-Z]/g,c=>AL[(AL.indexOf(c)-k+26)%26]);
+function draw(){const k=K.get(),txt=norm($('tx').value);let g=`<rect width="340" height="300" fill="#fff"/>`;const cx=170,cy=150;
+ g+=`<circle cx="${cx}" cy="${cy}" r="135" fill="${NAVY}"/><circle cx="${cx}" cy="${cy}" r="100" fill="${PEACH}" stroke="${ORANGE}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="62" fill="#fff"/>`;
+ const cnt={};for(const c of txt)if(AL.includes(c))cnt[c]=(cnt[c]||0)+1;
+ for(let i=0;i<26;i++){const a=(i/26)*2*Math.PI-Math.PI/2,co=Math.cos(a),si=Math.sin(a);
+  g+=TX(cx+118*co,cy+118*si+5,AL[i],{fs:13,c:cnt[AL[i]]?LIGHT:'#fff'});g+=TX(cx+82*co,cy+82*si+5,AL[(i-k+26)%26],{fs:13,c:NAVY});}
+ g+=LN(cx,cy-62,cx,cy-140,ORANGE,3)+TX(cx,cy-4,'chave',{fs:11,c:GRAY})+TX(cx,cy+20,k,{fs:24,c:ORANGE});
+ $('fig').innerHTML=SVG(340,300,g);const d=dec(txt,k);$('kd').textContent=d||'—';
+ const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10),mx=top.length?top[0][1]:1;let f=`<rect width="340" height="130" fill="#fff"/>`;
+ top.forEach(([c,v],i)=>{const h=v/mx*80,x=20+i*31;f+=`<rect x="${x}" y="${100-h}" width="22" height="${h}" rx="3" fill="${i?NAVY:ORANGE}"/>`+TX(x+11,95-h,v,{fs:9})+TX(x+11,116,c,{fs:11})+TX(x+11,128,'→'+AL[(AL.indexOf(c)-k+26)%26],{fs:8,c:GRAY});});
+ $('fr').innerHTML=SVG(340,132,f);
+ const ok=/SEGUNDA/.test(d);missao('m',ok,'Decifrado com a chave '+k+': '+d+'.','Gire até o bilhete fazer sentido. Dica: a letra mais frequente do texto cifrado (barra laranja) costuma esconder A, E ou O.');}
+draw();
+})();
+</script>
+</body>
+</html>
