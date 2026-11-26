@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratório de gotas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Laboratório de gotas</h1></header>
+<main>
+<div class="card"><h2>Da esfera à elipse</h2><p class="muted" style="margin-top:0">Escolha o ângulo de queda. À esquerda, a gota de lado; à direita, a mancha vista de cima. A largura é sempre o diâmetro da gota.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo de impacto (α)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Largura ℓ<b id="kl"></b></div><div>Comprimento C<b id="kc"></b></div><div>ℓ ÷ C = sen α<b id="ks"></b></div></div></div>
+<div class="card"><h2>Mancha misteriosa</h2><p class="muted" style="margin-top:0">Meça a mancha com a régua (cada tracinho = 1 mm) e descubra o ângulo.</p>
+<div class="fig" id="fig2"></div>
+<input type="number" id="r" placeholder="ângulo em graus" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">
+<div class="row" style="margin-top:8px"><button id="conf">Conferir</button><button class="alt" id="nova">Outra mancha</button></div><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const A=SL('sa',10,90,1,40,draw,v=>v+'°');const W=6;
+function draw(){const a=A.get(),s=Math.sin(a*RAD),C=W/s;let g=LN(10,190,160,190,NAVY,3);
+ const ix=120;for(let k=3;k>=1;k--){const L=k*40;g+=`<circle cx="${ix-L*Math.cos(a*RAD)}" cy="${190-L*Math.sin(a*RAD)}" r="7" fill="${NAVY}"/>`;}
+ g+=LN(ix-150*Math.cos(a*RAD),190-150*Math.sin(a*RAD),ix,190,ORANGE,1.5,'4 3')+ELI(ix+C*1.5,191,C*2,2.5,0,NAVY);
+ g+=`<path d="M${ix-30},190 A30,30 0 0 1 ${ix-30*Math.cos(a*RAD)},${190-30*Math.sin(a*RAD)}" fill="none" stroke="${NAVY}" stroke-width="2"/>`+TX(ix-40,183,'α',{fs:12,a:'end'});
+ const k=8,cx=260,cy=110;g+=`<rect x="185" y="20" width="150" height="190" rx="8" fill="${PEACH}"/>`+TX(260,36,'VISTA DE CIMA',{fs:10});
+ g+=ELI(cx,cy,Math.min(C*k/2,72),W*k/2,0,NAVY)+LN(cx-Math.min(C*k/2,72),cy+36,cx+Math.min(C*k/2,72),cy+36,ORANGE,2)+TX(cx,cy+52,'C = '+r1(C)+' mm',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,215,g);$('kl').textContent=W+' mm';$('kc').textContent=r1(C)+' mm';$('ks').textContent=r2(s);}
+let alvo,lw,cw;function nova(){alvo=rint(20,85);lw=rint(4,7);cw=lw/Math.sin(alvo*RAD);$('m').innerHTML='';$('r').value='';
+ const k=14,x0=40;let g=ELI(x0+cw*k/2,60,cw*k/2,lw*k/2,0,NAVY);const n=Math.ceil(cw)+2;g+=LN(x0,105,x0+n*k,105,NAVY,1.5);
+ for(let i=0;i<=n;i++)g+=LN(x0+i*k,105,x0+i*k,i%5==0?93:99,NAVY,1)+(i%5==0?TX(x0+i*k,120,i,{fs:9}):'');
+ g+=LN(x0+cw*k+12,60-lw*k/2,x0+cw*k+12,60+lw*k/2,ORANGE,2)+TX(x0+cw*k+18,64,'ℓ = '+lw+' mm',{fs:10,a:'start',c:ORANGE});
+ $('fig2').innerHTML=SVG(340,128,g);}
+$('nova').onclick=nova;$('conf').onclick=()=>{const v=+$('r').value.replace(',','.');const ok=Math.abs(v-alvo)<=4;
+ $('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'✔ Isso!':'Ainda não.'} A mancha mede ${lw} mm por ${r1(cw)} mm: sen α = ${lw} ÷ ${r1(cw)} ≈ ${r2(lw/cw)}, então α ≈ ${alvo}°.</div>`;};
+draw();nova();
+})();
+</script>
+</body>
+</html>
