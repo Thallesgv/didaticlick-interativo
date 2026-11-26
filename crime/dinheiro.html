@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Siga o dinheiro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Siga o dinheiro</h1></header>
+<main>
+<div class="card"><h2>Do pagamento à conta final</h2><p class="muted" style="margin-top:0">Toque nas contas, seguindo as setas, para levar o dinheiro da associação até a conta final. A empresa fica com 10% e divide o resto em três contas de laranjas, que ficam com 5% cada uma. Passe pelas três.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Chegou à conta final<b id="kv"></b></div><div>Ficou pelo caminho<b id="kf"></b></div><div>Contas seguidas<b id="kp"></b></div></div>
+<div id="m"></div><button class="alt" id="rec" style="margin-top:8px">Recomeçar</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const brl=v=>'R$ '+fmt(Math.round(v));const pc=v=>r1(v)+'%';
+const NO={as:[40,140,'Associação','paga 60.000'],em:[120,140,'Restaura Já','fica 10%'],a:[205,60,'conta A','fica 5%'],b:[205,140,'conta B','fica 5%'],c:[205,220,'conta C','fica 5%'],f:[295,140,'conta final','?']};
+const ED={as:['em'],em:['a','b','c'],a:['f'],b:['f'],c:['f'],f:[]};let cam,usados,erro='';
+function rec(){cam=['as'];usados=[];erro='';draw();}$('rec').onclick=rec;
+$('fig').onclick=e=>{const g=e.target.closest('[data-n]');if(!g)return;const n=g.dataset.n;let at=cam[cam.length-1];erro='';
+ if(at=='f'&&['a','b','c'].includes(n)){cam.push('em');at='em';}
+ if(!ED[at].includes(n)){erro='Não há seta de '+NO[at][2]+' para '+NO[n][2]+'. Siga as setas.';draw();return;}
+ if(usados.includes(n)){erro='O dinheiro da '+NO[n][2]+' já foi seguido. Escolha outra conta.';draw();return;}
+ cam.push(n);if(['a','b','c'].includes(n))usados.push(n);draw();};
+function draw(){let g=`<rect width="340" height="280" fill="#F8FAFC"/>`;const pas=[];for(let i=1;i<cam.length;i++)pas.push(cam[i-1]+cam[i]);
+ Object.keys(ED).forEach(a=>ED[a].forEach(b=>{const [x1,y1]=NO[a],[x2,y2]=NO[b],on=pas.includes(a+b);g+=LN(x1+34,y1,x2-34,y2,on?ORANGE:GRAYL,on?4:2);
+  const ang=Math.atan2(y2-y1,x2-x1-68),xe=x2-34,ye=y2;g+=`<polygon points="${xe},${ye} ${xe-10*Math.cos(ang-.4)},${ye-10*Math.sin(ang-.4)} ${xe-10*Math.cos(ang+.4)},${ye-10*Math.sin(ang+.4)}" fill="${on?ORANGE:GRAYL}"/>`;}));
+ const at=cam[cam.length-1];Object.entries(NO).forEach(([k,[x,y,t,s]])=>{const vis=cam.includes(k),cur=k==at;
+  g+=`<g data-n="${k}" style="cursor:pointer"><rect x="${x-34}" y="${y-22}" width="68" height="44" rx="9" fill="${cur?ORANGE:vis?PEACH:'#fff'}" stroke="${cur||vis?ORANGE:NAVY}" stroke-width="2"/>`+TX(x,y-3,t,{fs:9.5,c:cur?'#fff':NAVY})+TX(x,y+12,s,{fs:8.5,c:cur?'#fff':GRAY,w:500})+'</g>';});
+ $('fig').innerHTML=SVG(340,280,g);
+ const emp=cam.length>1?6000:0;let che=0,lar=0;usados.forEach(n=>{lar+=900;if(cam[cam.lastIndexOf(n)+1]=='f')che+=17100;});
+ $('kv').textContent=brl(che);$('kf').textContent=brl(emp+lar);$('kp').textContent=usados.length+' de 3';
+ if(erro){$('m').innerHTML='<div class="msg bad">'+erro+'</div>';return;}
+ const fim=usados.length==3&&at=='f';
+ missao('m',fim,'Os 60.000 viraram 6.000 na empresa, 3 · 900 = 2.700 com os laranjas e '+brl(che)+' na conta final. 6.000 + 2.700 + 51.300 = 60.000: nada sumiu.',
+  at=='f'?'Chegou! Agora toque em outra conta de laranja para seguir a próxima parte.':at=='as'?'Comece tocando na empresa que recebeu o pagamento.':'Toque na próxima conta do caminho.');}
+rec();
+})();
+</script>
+</body>
+</html>

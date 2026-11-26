@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrida dos juros · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Corrida dos juros</h1></header>
+<main>
+<div class="card"><h2>Reta ou curva?</h2><p class="muted" style="margin-top:0">A reta azul são os juros simples; a curva laranja, os compostos. O marcador mostra quando o dinheiro dobra nos compostos.</p>
+<div class="chips" id="md"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Valor inicial</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Taxa ao mês</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Prazo</b><input type="range"><span></span></div>
+<div class="kpi"><div>Simples<b id="ks"></b></div><div class="o">Compostos<b id="kc"></b></div><div>Diferença<b id="kd"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const brl=v=>'R$ '+fmt(Math.round(v));const pc=v=>r1(v)+'%';
+const M=chips('md',['Explorar','Caso: o extrato de Heitor'],0,()=>{if(M.get()==1){C.set(50000);I.set(1);T.set(12);}draw();});
+const C=SL('sc',1000,100000,1000,50000,draw,v=>brl(v)),I=SL('si',0.5,10,0.5,2,draw,v=>r1(v)+'%'),T=SL('st',6,120,1,36,draw,v=>v+' meses');
+function draw(){const c=C.get(),i=I.get()/100,t=T.get(),ms=c*(1+i*t),mc=c*Math.pow(1+i,t),mx=Math.max(mc,ms)*1.1;
+ const x0=48,y0=220,W=270,H=190,X=m=>x0+m/t*W,Y=v=>y0-v/mx*H;let g=`<rect width="340" height="250" fill="#F8FAFC"/>`;
+ for(let k=0;k<=4;k++){const v=mx*k/4;g+=LN(x0,Y(v),x0+W,Y(v),GRAYL,1)+TX(x0-4,Y(v)+4,fmt(Math.round(v/1000))+' mil',{fs:9,a:'end',c:GRAY,w:500});}
+ for(let k=0;k<=4;k++){const m=Math.round(t*k/4);g+=TX(X(m),y0+14,m,{fs:9,c:GRAY,w:500});}
+ g+=TX(x0+W/2,y0+28,'meses',{fs:9,c:GRAY,w:500});
+ g+=LN(X(0),Y(c),X(t),Y(ms),BLUE,3);let d='';for(let k=0;k<=100;k++){const m=t*k/100;d+=(k?'L':'M')+X(m).toFixed(1)+','+Y(c*Math.pow(1+i,m)).toFixed(1);}
+ g+=`<path d="${d}" fill="none" stroke="${ORANGE}" stroke-width="3.5"/>`;
+ const m2=Math.log(2)/Math.log(1+i);if(m2<=t)g+=LN(X(m2),y0,X(m2),Y(2*c),ORANGE,1.5,'4 3')+`<circle cx="${X(m2)}" cy="${Y(2*c)}" r="6" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`+TX(X(m2),Y(2*c)-10,'dobrou: '+r1(m2)+' meses',{fs:10,c:ORANGE,a:X(m2)>250?'end':'middle'});
+ $('fig').innerHTML=SVG(340,250,g);$('ks').textContent=brl(ms);$('kc').textContent=brl(mc);$('kd').textContent=brl(mc-ms);
+ if(M.get()==1){const ok=c==50000&&Math.abs(i-0.02)<1e-9&&t==36;missao('m',ok,'Extrato de Heitor: R$ 86.000 (simples). Aplicação de verdade: cerca de R$ 101.994 (compostos). Sumiram quase R$ 16.000.','Monte o caso: R$ 50.000, 2% ao mês, 36 meses. Compare as duas linhas no fim.');}
+ else $('m').innerHTML=`<div class="msg info">Regra do 72: a ${r1(I.get())}% ao mês, o valor dobra em cerca de ${r1(72/I.get())} meses. A conta exata dá ${r1(m2)}.</div>`;}
+draw();
+})();
+</script>
+</body>
+</html>
