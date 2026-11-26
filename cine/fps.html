@@ -15,9 +15,14 @@
 <div class="row"><button id="pp" class="or">Pausar</button><button id="pa" class="alt">Quadro a quadro</button><button id="rs" class="alt">Rastro</button></div>
 <div class="kpi"><div class="o">Quadro<b id="k1"></b></div><div>Cada quadro dura<b id="k2"></b></div><div>Ciclo dura<b id="k3"></b></div></div></div>
 <div class="card"><h2>Câmera lenta e timelapse</h2>
-<div class="sl" id="f"><b>Taxa de filmagem</b><input type="range"><span></span></div>
-<div class="sl" id="t"><b>Duração real da cena</b><input type="range"><span></span></div>
-<div class="kpi"><div class="o">Fator<b id="c1"></b></div><div>Na tela (a 24 q/s)<b id="c2"></b></div></div></div>
+<p class="muted" style="margin-top:0">A câmera pode tirar muitas ou poucas fotos por segundo, mas a tela <b>sempre mostra 24 por segundo</b>. Se a câmera tirou mais de 24 fotos por segundo, a cena fica mais <b>lenta</b> na tela. Se tirou menos, fica mais <b>rápida</b> (timelapse).</p>
+<b style="color:var(--navy);font-size:14px">Escolha um exemplo</b><div class="chips" id="exs"></div>
+<div class="fig"><svg id="sv2" viewBox="0 0 320 230" width="320"></svg></div>
+<div class="row"><button id="pl2" class="or">Ver na tela</button></div>
+<b style="color:var(--navy);font-size:14px">Fotos por segundo da câmera</b><div class="chips" id="tx"></div>
+<div class="sl" id="t"><b>Quanto tempo a cena dura na vida real</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Fotos tiradas<b id="c1"></b></div><div>Na tela dura<b id="c2"></b></div><div>Efeito<b id="c3"></b></div></div>
+<div id="cx"></div></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
@@ -31,8 +36,35 @@ function tick(){i=(i+1)%N;draw();}
 function rest(){clearInterval(tm);if(run)tm=setInterval(tick,1000/QS.get());draw();}
 $('pp').onclick=()=>{run=!run;$('pp').textContent=run?'Pausar':'Continuar';rest();};$('pa').onclick=()=>{run=false;$('pp').textContent='Continuar';rest();tick();};
 $('rs').onclick=()=>{tr=!tr;draw();};rest();
-const F=SL('f',1,960,1,240,cam,v=>v+' q/s'),T=SL('t',0.1,60,0.1,2,cam,v=>r1(v)+' s');
-function cam(){const f=F.get()/24;$('c1').textContent=f>=1?r1(f)+'× mais lento':r1(1/f)+'× mais rápido';$('c2').textContent=r1(T.get()*f)+' s';}cam();
+const TXS=[0.1,1,24,120,240,960],TXN=['1 foto a cada 10 s','1 foto por segundo','24 (normal)','120','240','960'];
+const durS=v=>Math.pow(10,-1+4.6*v/100),durV=d=>(Math.log10(d)+1)*100/4.6;
+const tempo=d=>d<60?r1(d).replace(/,0$/,'')+' s':d<3600?r1(d/60).replace(/,0$/,'')+' min':r1(d/3600).replace(/,0$/,'')+' h';
+let tipo=0,anT=null,anI;const EXS=[['Gota caindo',240,0.5,0],['Pessoa andando',24,3,1],['Pôr do sol',0.1,3600,2],['Flor abrindo',0.1,43200,3]];
+let durEx=0.5;const dA=()=>durEx!==null?durEx:durS(TT.get());const tx=chips('tx',TXN,4,()=>cam()),TT=SL('t',0,100,0.5,durV(0.5),()=>{durEx=null;cam();},v=>tempo(durS(v)));
+chips('exs',EXS.map(e=>e[0]),0,k=>{const e=EXS[k];tipo=e[3];TT.set(durV(e[2]));durEx=e[2];$('t').querySelector('span').textContent=tempo(e[2]);fixTx(e[1]);cam();});
+let taxa=240;function fixTx(v){taxa=v;$('tx').querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',TXS[i]===v));}
+$('tx').addEventListener('click',()=>{taxa=TXS[tx.get()];cam();});
+function cena(p){// p de 0 a 1: andamento do acontecimento
+ if(tipo===0)return `<rect x="135" y="0" width="50" height="12" fill="${GRAYL}"/><path d="M160,${14+p*86} q-8,12 0,18 q8,-6 0,-18z" fill="${BLUE}"/><rect x="120" y="120" width="80" height="6" fill="${NAVY}"/>`;
+ if(tipo===1)return `<line x1="20" y1="120" x2="300" y2="120" stroke="${NAVY}" stroke-width="2"/><circle cx="${40+p*240}" cy="78" r="8" fill="#F2C9A0"/><rect x="${33+p*240}" y="87" width="14" height="22" rx="4" fill="${ORANGE}"/><line x1="${37+p*240}" y1="108" x2="${33+p*240+Math.sin(p*40)*6}" y2="120" stroke="${NAVY}" stroke-width="3"/><line x1="${43+p*240}" y1="108" x2="${47+p*240-Math.sin(p*40)*6}" y2="120" stroke="${NAVY}" stroke-width="3"/>`;
+ if(tipo===2){const a=Math.PI*(0.15+0.85*p);return `<rect x="0" y="0" width="320" height="128" fill="rgb(${Math.round(150-90*p)},${Math.round(200-150*p)},${Math.round(255-160*p)})"/><circle cx="${160-120*Math.cos(a)}" cy="${118-80*Math.sin(Math.PI*(0.5-0.5*p))}" r="14" fill="${ORANGE}"/><rect x="0" y="110" width="320" height="18" fill="#4B5A7A"/>`;}
+ let g=`<line x1="160" y1="125" x2="160" y2="70" stroke="${GREEN}" stroke-width="4"/>`;for(let k=0;k<6;k++){const a=k*Math.PI/3,r=6+22*p;g+=`<ellipse cx="${160+r*Math.cos(a)}" cy="${60+r*Math.sin(a)}" rx="${4+8*p}" ry="${3+5*p}" fill="#F472B6" transform="rotate(${k*60} ${160+r*Math.cos(a)} ${60+r*Math.sin(a)})"/>`;}return g+`<circle cx="160" cy="60" r="7" fill="#FACC15"/>`;}
+function quadro(p,real,tela,txt){const W=300,M=Math.max(real,tela),wr=Math.max(4,W*real/M),wt=Math.max(4,W*tela/M);
+ let g=`<g transform="translate(0,0)">${cena(p)}</g>`;g+=TX(10,150,'Na vida real: '+tempo(real),{fs:11,a:'start'})+`<rect x="10" y="156" width="${wr}" height="12" rx="4" fill="${GRAYL}"/>`;
+ g+=TX(10,192,'Na tela: '+tempo(tela),{fs:11,a:'start',c:ORANGE})+`<rect x="10" y="198" width="${wt}" height="12" rx="4" fill="${LIGHT}"/>`;
+ if(anT!==null)g+=`<rect x="10" y="198" width="${wt*p}" height="12" rx="4" fill="${ORANGE}"/>`;
+ if(txt)g+=TX(310,226,txt,{fs:9,a:'end',c:'#6B7280'});$('sv2').innerHTML=g;}
+function cam(){clearInterval(anI);anT=null;const real=dA(),f=taxa,fotos=f*real,tela=fotos/24,fat=f/24;
+ $('c1').textContent=fotos<1?'menos de 1':fmt(Math.round(fotos));$('c2').textContent=tempo(tela);
+ $('c3').textContent=Math.abs(fat-1)<1e-9?'velocidade normal':fat>1?r1(fat).replace(/,0$/,'')+'× mais lento':fmt(Math.round(1/fat))+'× mais rápido';
+ const fr=f>=1?fmt(f):(f===0.1?'0,1':'1/'+Math.round(1/f));
+ const seg=real<60?'':' ('+fmt(Math.round(real))+' s)',nf=fmt(Math.round(fotos));
+ const ini=f>=1?`A câmera tirou ${fr} ${f===1?'foto':'fotos'} por segundo durante ${tempo(real)}${seg}: ${fr} × ${fmt(Math.round(real*10)/10)}`:`A câmera tirou 1 foto a cada ${fmt(Math.round(1/f))} s durante ${tempo(real)}${seg}: ${fmt(Math.round(real))} ÷ ${fmt(Math.round(1/f))}`;
+ $('cx').innerHTML=`<div class="msg info">${ini} ≈ <b>${nf} fotos</b>. A tela mostra 24 fotos por segundo: ${nf} ÷ 24 ≈ <b>${tempo(tela)}</b>. ${Math.abs(fat-1)<1e-9?'É a velocidade normal.':fat>1?'A cena dura mais na tela: <b>câmera lenta</b>.':'A cena dura menos na tela: <b>timelapse</b>.'}</div>`;
+ quadro(1,real,tela,'');}
+$('pl2').onclick=()=>{clearInterval(anI);const real=dA(),tela=taxa*real/24,dur=Math.min(tela,12),t0=performance.now();anT=0;
+ anI=setInterval(()=>{const p=Math.min(1,(performance.now()-t0)/1000/dur);quadro(p,real,tela,tela>12?'(acelerado para caber em 12 s)':'');if(p>=1){clearInterval(anI);}},40);};
+fixTx(240);cam();
 </script>
 </body>
 </html>
