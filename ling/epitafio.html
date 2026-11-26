@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O epitáfio de Diofanto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">O epitáfio de Diofanto</h1></header>
+<main>
+<div class="card"><h2>A régua da vida</h2><p class="muted">Infância: 1/6 da vida. Juventude: mais 1/12. Casamento depois de mais 1/7. Filho 5 anos depois. O filho viveu 1/2 da vida do pai. O pai viveu mais 4 anos. Arraste a idade até a régua fechar.</p>
+<div class="sl"><span>Idade</span><input type="range" id="a" min="12" max="120" value="60"><b id="av"></b></div>
+<svg id="s" viewBox="0 0 320 70" style="width:100%"></svg><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+function draw(){const x=+$('a').value;$('av').textContent=x+' anos';const p=[[x/6,'infância','#0E2354'],[x/12,'juventude','#2457D6'],[x/7,'até casar','#F7821F'],[5,'até o filho','#C2410C'],[x/2,'vida do filho','#15803D'],[4,'luto','#6B7280']];
+ const tot=p.reduce((s,q)=>s+q[0],0);let X=0,s='';const k=300/Math.max(tot,x);
+ for(const [v,n,c] of p){s+=`<rect x="${10+X*k}" y="10" width="${v*k}" height="26" fill="${c}" stroke="#fff"/>`;X+=v;}
+ s+=`<line x1="${10+x*k}" y1="4" x2="${10+x*k}" y2="44" stroke="#B91C1C" stroke-width="2"/><text x="${10+x*k}" y="58" text-anchor="middle" font-size="11" fill="#B91C1C">fim da vida (${x})</text>`;$('s').innerHTML=s;
+ const inteiros=[6,12,7,2].every(d=>x%d==0),ok=Math.abs(tot-x)<1e-9;
+ $('m').innerHTML=`<div class="msg ${ok?'ok':'info'}">Soma dos pedaços: ${tot.toFixed(2).replace('.',',')} anos. ${ok?'Fechou! Diofanto teria vivido '+x+' anos.':(tot>x?'Os pedaços passam da vida: diminua a idade.':'Faltam anos na régua: aumente a idade.')}${inteiros&&!ok?' (Todos os pedaços são inteiros, mas a soma ainda não bate.)':''}</div>`;}
+$('a').oninput=draw;draw();
+</script>
+
+</body>
+</html>

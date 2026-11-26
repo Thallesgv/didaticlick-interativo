@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">Pratique</h1></header>
+<main>
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const P=a=>a[Math.floor(Math.random()*a.length)];
+const mdc=(a,b)=>b?mdc(b,a%b):a, mmc=(a,b)=>a*b/mdc(a,b);
+const T=['Contar sem números','A língua muda a conta?','Números por extenso','A álgebra em palavras','Abreviar para pensar','Nasce o x','Problemas em verso','A lógica da frase','Traduzir enunciados','Os números das palavras','Regras que criam textos','Argumentar é demonstrar'];
+const G={
+1:()=>{const n=R(120,9999),m=Math.floor(n/1000),c=Math.floor(n/100)%10,d=Math.floor(n/10)%10,u=n%10;
+ if(Math.random()<.5)return{q:`No Egito antigo, o número <b>${n}</b> era escrito repetindo símbolos: flor de lótus = 1000, espiral (rolo de corda) = 100, ferradura = 10 e traço = 1. Quantos <b>símbolos ao todo</b> são desenhados?`,a:m+c+d+u,exp:`${m} flor(es) + ${c} espiral(is) + ${d} ferradura(s) + ${u} traço(s) = ${m+c+d+u} símbolos. O sistema egípcio soma símbolos; não tem posição nem zero.`};
+ return{q:`Um escriba desenhou ${m} flor(es) de lótus, ${c} espiral(is), ${d} ferradura(s) e ${u} traço(s). Que número ele escreveu?`,a:n,exp:`${m}×1000 + ${c}×100 + ${d}×10 + ${u} = ${n}. A ordem dos símbolos no papiro não muda o valor.`};},
+2:()=>{const D=['','yī','èr','sān','sì','wǔ','liù','qī','bā','jiǔ'],n=R(11,99),a=Math.floor(n/10),b=n%10;
+ const nome=(a>1?D[a]+' ':'')+'shí'+(b?' '+D[b]:'');
+ if(Math.random()<.5)return{q:`Em chinês (mandarim), os números de 1 a 9 são yī, èr, sān, sì, wǔ, liù, qī, bā, jiǔ, e dez é shí. Que número é <b>${nome}</b>?`,a:n,exp:`${nome} = ${a>1?D[a]+' (':''}${a>1?a+') × ':''}shí (10)${b?' + '+D[b]+' ('+b+')':''} = ${n}. O nome diz a conta: dezenas vezes dez, mais as unidades.`};
+ return{q:`Usando yī, èr, sān, sì, wǔ, liù, qī, bā, jiǔ (1 a 9) e shí (10): quantas <b>palavras</b> tem o nome chinês de ${n}? (Em português, “${n}” também é escrito com algumas palavras.)`,a:nome.split(' ').length,exp:`${n} = <b>${nome}</b>, ${nome.split(' ').length} palavra(s). Em chinês, o nome segue exatamente a estrutura decimal do número.`};},
+3:()=>{if(Math.random()<.6){const n=R(60,99);const u=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf'];
+  let nome,conta;if(n<80){const r=n-60;nome='soixante'+(r==1||r==11?'-et-':r?'-':'')+(r?u[r]:'');conta=`60 + ${r}`;}else{const r=n-80;nome='quatre-vingt'+(r?'-'+u[r]:'s');conta=`4 × 20 + ${r}`;}
+  return{q:`Em francês, <b>${nome}</b> é que número? (soixante = 60, quatre = 4, vingt = 20)`,a:n,exp:`${nome} = ${conta} = ${n}. O francês guarda restos de uma contagem de 20 em 20.`};}
+ const k=P([9,12,15,18]),nomes={9:['bilhão','mil milhões'],12:['trilhão','bilião'],15:['quatrilhão','mil biliões'],18:['quintilhão','trilião']}[k];
+ return{q:`Quantos zeros tem o número que no Brasil se chama <b>um ${nomes[0]}</b>? (Em Portugal, o mesmo número se chama “${nomes[1]}”.)`,a:k,exp:`Um ${nomes[0]} = 10<sup>${k}</sup>, ${k} zeros. O Brasil usa a escala curta (cada nome novo multiplica por mil); Portugal usa a longa (por um milhão).`};},
+4:()=>{const x=R(2,12),b=2*R(1,8),c=x*x+b*x,h=b/2;
+ return{q:`À moda de al-Khwarizmi: “Um quadrado e <b>${b} raízes</b> do mesmo são iguais a <b>${c} dirhams</b>.” Quanto vale a raiz (o lado do quadrado)?`,a:x,exp:`Metade das raízes: ${h}. ${h}² = ${h*h}. ${c} + ${h*h} = ${c+h*h}, cuja raiz é ${x+h}. Subtraia a metade das raízes: ${x+h} − ${h} = ${x}. Hoje: x² + ${b}x = ${c}.`};},
+5:()=>{const a=P([2,3,4,5,6]);let b;do{b=P([3,4,6,8,10,12]);}while(b==a||1/a+1/b>=1);const m=mmc(a,b),f=m-m/a-m/b,k=R(1,4),x=m*k,r=f*k;
+ return{q:`Um enigma em estilo de epitáfio: “A ${a==2?'metade':a+'ª parte'} da minha vida foi infância, a ${b}ª parte foi juventude e os <b>${r} anos</b> restantes eu vivi como adulto.” Quantos anos viveu?`,a:x,exp:`Em linguagem moderna: x/${a} + x/${b} + ${r} = x. A parte que sobra é ${f}/${m} de x, então x = ${r} × ${m}/${f} = ${x}. Diofanto escreveria isso de forma abreviada, sem nosso x.`};},
+6:()=>{const a=R(2,9),b=R(2,9),c=R(2,9),t=P([0,1,2,3]);let e,v;
+ if(t==0){e=`${a} + ${b} × ${c}`;v=a+b*c;}else if(t==1){e=`(${a} + ${b}) × ${c}`;v=(a+b)*c;}else if(t==2){e=`${a*c} − ${c} × ${b>a?a:b}`;v=a*c-c*(b>a?a:b);}else{const cc=Math.min(c,Math.floor(Math.sqrt(a*b)));e=`${a} × ${b} − ${cc}²`;v=a*b-cc*cc;}
+ return{q:`Os símbolos têm uma gramática: multiplicação e potência vêm antes de soma e subtração, e o parêntese manda primeiro. Quanto vale <b>${e}</b>?`,a:v,exp:`${e} = ${v}. Sem essa “gramática”, a mesma linha de símbolos poderia ser lida de dois jeitos.`};},
+7:()=>{if(Math.random()<.5){const n=R(4,12),f=[1,1];for(let i=2;i<=n;i++)f[i]=f[i-1]+f[i-2];
+  return{q:`Na poesia indiana, uma sílaba curta vale 1 tempo e uma longa vale 2. De quantas maneiras se pode preencher um verso de <b>${n} tempos</b>?`,a:f[n],exp:`Cada contagem é a soma das duas anteriores (o verso termina em curta ou em longa): 1, 2, 3, 5, 8, 13... Para ${n} tempos, ${f[n]} maneiras.`};}
+ const a=P([3,4,5]),b=P([5,6,8,10]),m=mmc(a,b);if(1/a+1/b>=1)return G[7]();const f=m-m/a-m/b,k=R(1,3),x=m*k,r=f*k;
+ return{q:`Como no Lilavati: “Ó bela donzela, de um enxame de abelhas, 1/${a} pousou no lótus, 1/${b} foi ao jasmim, e <b>${r}</b> abelhas ficaram voando.” Quantas abelhas havia?`,a:x,exp:`x/${a} + x/${b} + ${r} = x. Sobra ${f}/${m} do enxame, que são ${r} abelhas: x = ${r} × ${m}/${f} = ${x}.`};},
+8:()=>{const p=Math.random()<.5,q=Math.random()<.5,V=v=>v?'V':'F';const ops=[['p ∧ q (p e q)',p&&q],['p ∨ q (p ou q)',p||q],['¬p ∧ q (não p, e q)',!p&&q],['p → q (se p, então q)',!p||q],['¬(p ∨ q)',!(p||q)],['p → ¬q',!p||!q]];const [e,v]=P(ops);
+ return{q:`Se p é <b>${V(p)}</b> e q é <b>${V(q)}</b>, qual é o valor de <b>${e}</b>?`,opts:['V','F'],a:V(v),exp:`Com p = ${V(p)} e q = ${V(q)}, ${e} é ${V(v)}. Lembre: “se p então q” só é falsa quando p é V e q é F.`};},
+9:()=>{const x=R(3,20),t=P([0,1,2,3,4]);let q,exp;
+ if(t==0){const k=R(2,5);q=`A soma de um número com o seu ${['','','dobro','triplo','quádruplo','quíntuplo'][k]} é ${x+k*x}. Que número é esse?`;exp=`x + ${k}x = ${x+k*x} → ${k+1}x = ${x+k*x} → x = ${x}.`;}
+ else if(t==1){const k=R(2,9);q=`O dobro de um número, aumentado de ${k}, dá ${2*x+k}. Que número é esse?`;exp=`2x + ${k} = ${2*x+k} → 2x = ${2*x} → x = ${x}.`;}
+ else if(t==2){const k=R(1,x-1);q=`O triplo da diferença entre um número e ${k} é ${3*(x-k)}. Que número é esse?`;exp=`3(x − ${k}) = ${3*(x-k)} → x − ${k} = ${x-k} → x = ${x}. Repare: “o triplo <i>da diferença</i>” pede parêntese.`;}
+ else if(t==3){const k=R(1,9);q=`A diferença entre o triplo de um número e ${k} é ${3*x-k}. Que número é esse?`;exp=`3x − ${k} = ${3*x-k} → 3x = ${3*x} → x = ${x}. Compare com “o triplo da diferença”: a ordem das palavras muda a conta.`;}
+ else{const k=R(2,6);q=`Pensei num número, somei ${k} e multipliquei o resultado por 2. Deu ${2*(x+k)}. Em que número pensei?`;exp=`2(x + ${k}) = ${2*(x+k)} → x + ${k} = ${x+k} → x = ${x}.`;}
+ return{q,a:x,exp};},
+10:()=>{const F=['a matematica foi escrita com palavras','quem conta letras decifra segredos','o sabio de bagda resolvia problemas em versos','uma palavra pode guardar um numero','a lingua portuguesa adora a letra a'];
+ if(Math.random()<.5){const f=P(F),l=P(['a','e','o','s','r']),n=[...f].filter(c=>c==l).length;
+  return{q:`Conte: quantas vezes a letra <b>${l}</b> aparece na frase<br><i>“${f}”</i>?`,a:n,exp:`A letra ${l} aparece ${n} vez(es). Contagens assim, feitas num texto longo, revelam a “impressão digital” de cada língua.`};}
+ const w=P(['numero','palavra','codigo','letra','verso','cifra','soma']),k=R(1,9),c=w.replace(/[a-z]/g,ch=>String.fromCharCode((ch.charCodeAt(0)-97+k)%26+97));
+ return{q:`Na cifra de César, cada letra andou algumas casas no alfabeto. A palavra <b>${w}</b> virou <b>${c}</b>. Quantas casas cada letra andou?`,a:k,exp:`${w[0]} → ${c[0]}: ${k} casa(s). Basta uma letra para achar a chave, e as outras confirmam.`};},
+11:()=>{if(Math.random()<.5){let n;do{n=R(10,99);}while(String(n)==[...String(n)].reverse().join(''));let s=n,p=0;while(String(s)!=[...String(s)].reverse().join('')&&p<30){s+=+[...String(s)].reverse().join('');p++;}if(p>6)return G[11]();
+  return{q:`Some <b>${n}</b> com o seu inverso, e repita com o resultado, até aparecer uma capicua (número que se lê igual dos dois lados). Quantas somas são necessárias?`,a:p,exp:`Partindo de ${n}, depois de ${p} soma(s) chega-se a ${s}, que é capicua. Ninguém sabe ainda se 196 chega a uma.`};}
+ const v=P([2,3,4,5]),k=P([3,4,6,8,10]);
+ return{q:`Inspirado em Queneau: um poema tem <b>${v} versos</b>, e para cada verso o autor escreveu <b>${k} opções</b>. Quantos poemas diferentes podem ser montados?`,a:k**v,exp:`${k} opções para cada um dos ${v} versos: ${Array(v).fill(k).join(' × ')} = ${k**v}. Com 10 opções para 14 versos, Queneau chegou a 10<sup>14</sup> poemas.`};},
+12:()=>{const t=P([0,1,2]);
+ if(t==0){const n=R(4,30);return{q:`Some os <b>${n}</b> primeiros números ímpares (1 + 3 + 5 + ...). Quanto dá? (Dica: desenhe quadrados em forma de L.)`,a:n*n,exp:`A soma dos n primeiros ímpares é n². Cada ímpar é um “L” que transforma um quadrado no seguinte. Aqui, ${n}² = ${n*n}. A figura convence; a demonstração garante para todo n.`};}
+ if(t==1){const [d,r]=P([['dois números pares','par'],['dois números ímpares','par'],['um número par e um ímpar','ímpar']]);
+  return{q:`A soma de ${d} é sempre...`,opts:['par','ímpar','depende dos números'],a:r,exp:`Escreva os números como 2a, 2b (pares) ou 2a + 1, 2b + 1 (ímpares) e some: o resultado é sempre ${r}. Testar exemplos convence; a conta com letras demonstra.`};}
+ const n=P([40,41]);return{q:`A expressão n² + n + 41 dá número primo para n = 0, 1, 2, 3... Para <b>n = ${n}</b>, o resultado ainda é primo?`,opts:['sim','não'],a:'não',exp:`${n}² + ${n} + 41 = ${n*n+n+41} = 41 × ${(n*n+n+41)/41}. Muitos exemplos não são prova: basta um contraexemplo para derrubar a afirmação.`};}
+};
+let m=+(new URLSearchParams(location.search).get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="number" id="r" placeholder="sua resposta">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;const certo=cur.opts?v==cur.a:(+v.replace(',','.')==cur.a);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+cur.a+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+</script>
+
+</body>
+</html>

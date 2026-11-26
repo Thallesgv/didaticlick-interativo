@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ritmos de Pingala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">Ritmos de Pingala</h1></header>
+<main>
+<div class="card"><h2>Sílabas curtas e longas</h2><p class="muted">Curta = 1 tempo (azul), longa = 2 tempos (laranja). De quantas formas dá para preencher um verso de n tempos?</p>
+<div class="sl"><span>n</span><input type="range" id="n" min="1" max="8" value="5"><b id="nv"></b></div><div class="big" id="tot"></div><div id="lista"></div>
+<p class="muted">Toque num ritmo para ouvir a batida.</p><div class="msg info" id="seq"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);function gera(k){if(k==0)return[[]];if(k<0)return[];return gera(k-1).map(r=>[1,...r]).concat(gera(k-2).map(r=>[2,...r]));}
+let ctx;function toca(r){ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();let t=ctx.currentTime+.05;for(const s of r){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=s==1?660:440;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+s*.22);o.start(t);o.stop(t+s*.25);t+=s*.25;}}
+function draw(){const n=+$('n').value;$('nv').textContent=n;const rs=gera(n);$('tot').textContent=rs.length+' ritmos';
+ $('lista').innerHTML=rs.map((r,i)=>`<div style="display:flex;gap:3px;margin:4px 0;cursor:pointer" data-i="${i}">${r.map(s=>`<span style="display:inline-block;height:18px;width:${s*26-3}px;border-radius:5px;background:${s==1?'#0E2354':'#F7821F'}"></span>`).join('')}<span class="muted" style="margin-left:6px">${r.join(' + ')}</span></div>`).join('');
+ [...$('lista').children].forEach(d=>d.onclick=()=>toca(rs[+d.dataset.i]));
+ $('seq').innerHTML='Quantidades de 1 a 8 tempos: '+[1,2,3,4,5,6,7,8].map(k=>k==n?`<b>${gera(k).length}</b>`:gera(k).length).join(', ')+'. Cada uma é a soma das duas anteriores.';}
+$('n').oninput=draw;draw();
+</script>
+
+</body>
+</html>

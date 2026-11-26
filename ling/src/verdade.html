@@ -1,0 +1,33 @@
+<!--T: Tabela-verdade-->
+<div class="card"><h2>Monte a sua frase</h2><label class="lbl">Frase p</label><input type="text" id="p" value="faz sol"><label class="lbl">Frase q</label><input type="text" id="q" value="vou à praia">
+<label class="lbl">Conectivo</label><select id="c"><option value="e">p e q</option><option value="ou">p ou q</option><option value="se" selected>se p, então q</option><option value="sse">p se e somente se q</option><option value="xou">ou p ou q (exclusivo)</option></select>
+<div class="msg info" id="fr"></div>
+<p class="lbl">Toque nos interruptores: ligado = verdade, desligado = mentira. A lâmpada acende quando a frase inteira é verdadeira.</p>
+<svg id="circ" viewBox="0 0 320 190" style="width:100%;background:#F8FAFC;border-radius:12px;cursor:pointer"></svg><div id="t"></div><p class="muted">Toque numa linha para ver o que ela quer dizer.</p><div id="exp"></div></div>
+<div class="card"><h2>Desafio rápido</h2><div id="dq"></div><div class="row" id="ops" style="margin-top:6px"></div><div id="dm"></div></div>
+<script>
+const $=i=>document.getElementById(i);const OP={e:(a,b)=>a&&b,ou:(a,b)=>a||b,se:(a,b)=>!a||b,sse:(a,b)=>a==b,xou:(a,b)=>a!=b};
+const TX={e:(p,q)=>`${p} e ${q}`,ou:(p,q)=>`${p} ou ${q}`,se:(p,q)=>`se ${p}, então ${q}`,sse:(p,q)=>`${p} se e somente se ${q}`,xou:(p,q)=>`ou ${p}, ou ${q} (mas não os dois)`};
+const V=b=>b?'<b style="color:var(--ok)">V</b>':'<b style="color:var(--bad)">F</b>';
+function draw(){const p=$('p').value||'p',q=$('q').value||'q',c=$('c').value;$('fr').textContent='"'+TX[c](p,q)+'"';
+ const L=[[1,1],[1,0],[0,1],[0,0]];$('t').innerHTML='<table class="t"><tr><th>p</th><th>q</th><th>frase</th></tr>'+L.map((l,i)=>`<tr data-i="${i}" style="cursor:pointer"><td>${V(l[0])}</td><td>${V(l[1])}</td><td>${V(OP[c](l[0],l[1]))}</td></tr>`).join('')+'</table>';
+ [...$('t').querySelectorAll('tr[data-i]')].forEach(r=>r.onclick=()=>{const l=L[+r.dataset.i];sp=l[0];sq=l[1];circ();const v=OP[c](l[0],l[1]);$('exp').innerHTML=`<div class="msg ${v?'ok':'bad'}">"${p}" é ${l[0]?'verdade':'mentira'} e "${q}" é ${l[1]?'verdade':'mentira'}: a frase inteira é <b>${v?'verdadeira':'falsa'}</b>.${c=='se'&&!l[0]?' Quando a condição não acontece, a promessa não é quebrada.':''}</div>`;});}
+let sp=1,sq=1;
+function sw(x,y,on,nome,id){const c=on?'#2E9E5B':'#C2410C';return `<g data-s="${id}"><rect x="${x-34}" y="${y-26}" width="68" height="52" fill="transparent"/><circle cx="${x-22}" cy="${y}" r="5" fill="#0E2354"/><circle cx="${x+22}" cy="${y}" r="5" fill="#0E2354"/>
+ <line x1="${x-22}" y1="${y}" x2="${x+22}" y2="${on?y:y-24}" stroke="${c}" stroke-width="6" stroke-linecap="round"/><text x="${x}" y="${y+24}" text-anchor="middle" font-size="12" font-weight="700" fill="${c}">${nome}: ${on?'V':'F'}</text></g>`;}
+function lamp(on){return `<circle cx="276" cy="95" r="24" fill="${on?'#FFD54A':'#E5E7EB'}" stroke="#0E2354" stroke-width="3"/>${on?'<g stroke="#F7821F" stroke-width="3"><line x1="306" y1="70" x2="314" y2="62"/><line x1="246" y1="70" x2="238" y2="62"/></g>':''}<text x="276" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="#0E2354">${on?'acesa':'apagada'}</text>`;}
+function circ(){const c=$('c').value,on=OP[c](!!sp,!!sq),W='stroke="#0E2354" stroke-width="3" fill="none"';let h='';
+ h+=`<rect x="6" y="80" width="22" height="30" rx="3" fill="#0E2354"/><text x="17" y="72" text-anchor="middle" font-size="10" fill="#0E2354">pilha</text>`;
+ if(c=='e'){h+=`<path d="M28 95 H58 M102 95 H148 M192 95 H252" ${W}/>`+sw(80,95,sp,'p','p')+sw(170,95,sq,'q','q');}
+ else if(c=='ou'){h+=`<path d="M28 95 H50 V45 H98 M142 45 H210 V95 M50 95 V145 H98 M142 145 H210 V95 H252" ${W}/>`+sw(120,45,sp,'p','p')+sw(120,145,sq,'q','q');}
+ else{const nm={se:'se p, então q',sse:'p se e só se q',xou:'ou p ou q'}[c];h+=`<path d="M28 95 H40 M100 45 H130 M100 145 H130 M210 95 H252" ${W}/><path d="M40 95 V45 H56 M40 95 V145 H56" ${W}/>`+sw(78,45,sp,'p','p')+sw(78,145,sq,'q','q')+
+  `<rect x="130" y="25" width="80" height="140" rx="10" fill="#0E2354"/><text x="170" y="90" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">caixa</text><text x="170" y="106" text-anchor="middle" font-size="10" fill="#F7821F">${nm}</text>`;}
+ h+=`<path d="M276 119 V175 H17 V110" stroke="#0E2354" stroke-width="3" fill="none"/>`+lamp(on);$('circ').innerHTML=h;
+ [...$('circ').querySelectorAll('[data-s]')].forEach(g=>g.onclick=()=>{if(g.dataset.s=='p')sp=1-sp;else sq=1-sq;circ();});
+ const idx=[[1,1],[1,0],[0,1],[0,0]].findIndex(l=>l[0]==sp&&l[1]==sq);[...$('t').querySelectorAll('tr[data-i]')].forEach((r,i)=>r.style.background=i==idx?'#FDEEDC':'');}
+['p','q','c'].forEach(i=>$(i).oninput=()=>{draw();circ();});draw();circ();
+const D=[['Se 5 é par, então 2 + 2 = 5.',1,'A condição é falsa, então a frase "se... então" é verdadeira.'],['3 > 2 e 7 é par.',0,'Uma parte é falsa: "e" exige as duas.'],['3 > 2 ou 7 é par.',1,'Basta uma parte verdadeira.'],['Se 4 é par, então 4 é primo.',0,'Condição verdadeira, consequência falsa.'],['Não é verdade que 10 é ímpar.',1,'10 é par, então negar "10 é ímpar" dá verdadeiro.'],['Se 9 é múltiplo de 3, então 9 é ímpar.',1,'As duas partes são verdadeiras.']];
+let a=0,t=0;function nq(){const d=D[Math.floor(Math.random()*D.length)];$('dq').innerHTML='<p><b>'+d[0]+'</b></p>';$('ops').innerHTML='';$('dm').innerHTML='';
+ ['Verdadeira','Falsa'].forEach((x,i)=>{const b=document.createElement('button');b.textContent=x;b.className=i?'alt':'';b.onclick=()=>{t++;const ok=(i==0)==!!d[1];if(ok)a++;$('dm').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Não.'} ${d[2]} (acertos: ${a} de ${t})</div><button class="or" style="margin-top:8px" onclick="nq()">Outra</button>`;};$('ops').appendChild(b);});}
+nq();
+</script>

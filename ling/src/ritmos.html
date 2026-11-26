@@ -1,0 +1,13 @@
+<!--T: Ritmos de Pingala-->
+<div class="card"><h2>Sílabas curtas e longas</h2><p class="muted">Curta = 1 tempo (azul), longa = 2 tempos (laranja). De quantas formas dá para preencher um verso de n tempos?</p>
+<div class="sl"><span>n</span><input type="range" id="n" min="1" max="8" value="5"><b id="nv"></b></div><div class="big" id="tot"></div><div id="lista"></div>
+<p class="muted">Toque num ritmo para ouvir a batida.</p><div class="msg info" id="seq"></div></div>
+<script>
+const $=i=>document.getElementById(i);function gera(k){if(k==0)return[[]];if(k<0)return[];return gera(k-1).map(r=>[1,...r]).concat(gera(k-2).map(r=>[2,...r]));}
+let ctx;function toca(r){ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();let t=ctx.currentTime+.05;for(const s of r){const o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=s==1?660:440;o.connect(g);g.connect(ctx.destination);g.gain.setValueAtTime(.3,t);g.gain.exponentialRampToValueAtTime(.001,t+s*.22);o.start(t);o.stop(t+s*.25);t+=s*.25;}}
+function draw(){const n=+$('n').value;$('nv').textContent=n;const rs=gera(n);$('tot').textContent=rs.length+' ritmos';
+ $('lista').innerHTML=rs.map((r,i)=>`<div style="display:flex;gap:3px;margin:4px 0;cursor:pointer" data-i="${i}">${r.map(s=>`<span style="display:inline-block;height:18px;width:${s*26-3}px;border-radius:5px;background:${s==1?'#0E2354':'#F7821F'}"></span>`).join('')}<span class="muted" style="margin-left:6px">${r.join(' + ')}</span></div>`).join('');
+ [...$('lista').children].forEach(d=>d.onclick=()=>toca(rs[+d.dataset.i]));
+ $('seq').innerHTML='Quantidades de 1 a 8 tempos: '+[1,2,3,4,5,6,7,8].map(k=>k==n?`<b>${gera(k).length}</b>`:gera(k).length).join(', ')+'. Cada uma é a soma das duas anteriores.';}
+$('n').oninput=draw;draw();
+</script>
