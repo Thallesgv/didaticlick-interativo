@@ -1,0 +1,21 @@
+<!--T: Tradutor de enunciados-->
+<div class="card"><h2>Qual é a equação?</h2><p class="muted">Leia a frase e escolha a tradução certa. Dica: teste com números!</p><div class="placar muted" id="pl"></div>
+<div id="fr" class="msg info" style="font-size:16px"></div><div id="ops"></div><div id="m"></div></div>
+<script>
+const $=i=>document.getElementById(i);
+const Q=[['Há seis vezes mais alunos (A) do que professores (P).',['A = 6P','6A = P','A + 6 = P','A = P + 6'],'Teste: 10 professores → 60 alunos. Só A = 6P dá 60 = 6 × 10. A armadilha 6A = P segue a ordem das palavras.'],
+['Ana (A) tem 5 anos a mais que Bia (B).',['A = B + 5','B = A + 5','A = 5B','A + B = 5'],'Se Bia tem 10, Ana tem 15: 15 = 10 + 5.'],
+['O triplo da soma de um número com 4 é 30.',['3(x + 4) = 30','3x + 4 = 30','x + 12 = 3','3 + x + 4 = 30'],'Primeiro a soma (x + 4), depois o triplo.'],
+['A soma do triplo de um número com 4 é 30.',['3x + 4 = 30','3(x + 4) = 30','4x + 3 = 30','x + 4 = 90'],'Primeiro o triplo (3x), depois soma 4.'],
+['Pedro (P) tem 3 anos a menos que Clara (C).',['P = C − 3','C = P − 3','P − C = 3','3P = C'],'Se Clara tem 10, Pedro tem 7: 7 = 10 − 3.'],
+['Três números consecutivos somam 45.',['n + (n + 1) + (n + 2) = 45','3n = 45 + 3','n + 2n + 3n = 45','n + 1 + 2 = 45'],'Consecutivos: cada um é o anterior mais 1.'],
+['A diferença entre 20 e um número é 8.',['20 − x = 8','x − 20 = 8','20 + x = 8','8 − x = 20'],'"A diferença entre 20 e x" começa pelo 20.'],
+['Um quadrado e dez raízes são iguais a trinta e nove.',['x² + 10x = 39','10x² = 39','x + 10 = 39','x² = 10x + 39'],'É a frase de al-Khwarizmi: quadrado = x², raiz = x.'],
+['Daqui a 5 anos terei o dobro da idade que tinha há 5 anos.',['x + 5 = 2(x − 5)','x + 5 = 2x − 5','2(x + 5) = x − 5','x − 5 = 2(x + 5)'],'"O dobro da idade que tinha" pede parênteses: 2(x − 5).'],
+['Há quatro vezes mais galinhas (G) do que vacas (V).',['G = 4V','4G = V','G + 4 = V','V = 4G'],'Com 5 vacas, 20 galinhas: 20 = 4 × 5.']];
+let ord=Q.map((_,i)=>i).sort(()=>Math.random()-.5),k=0,ac=0;
+function show(){const q=Q[ord[k%Q.length]];$('fr').textContent=q[0];$('m').innerHTML='';const o=q[1].map((t,i)=>[t,i]).sort(()=>Math.random()-.5);
+ $('ops').innerHTML='';o.forEach(([t,i])=>{const b=document.createElement('button');b.className='opt';b.textContent=t;b.onclick=()=>{if($('m').innerHTML)return;const ok=i==0;if(ok)ac++;b.classList.add(ok?'right':'wrong');
+  [...$('ops').children].forEach(x=>{if(x.textContent==q[1][0])x.classList.add('right');});$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Cuidado com a armadilha.'} ${q[2]}</div><button class="or" style="margin-top:8px" id="nx">Próxima</button>`;$('nx').onclick=()=>{k++;show();};$('pl').textContent=`Acertos: ${ac} de ${k+1}`;};$('ops').appendChild(b);});}
+show();
+</script>

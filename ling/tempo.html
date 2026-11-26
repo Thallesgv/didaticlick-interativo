@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linhas e copos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">Linhas e copos</h1></header>
+<main>
+<div class="card"><h2>Quanto tempo passou?</h2><p class="muted">Uma versão curta do experimento de Casasanto e colegas (2004). Uma linha vai crescer ou um copo vai encher. Quando parar, estime quantos segundos durou. São 8 rodadas.</p>
+<svg id="cena" viewBox="0 0 320 170" style="width:100%;background:#F8FAFC;border-radius:12px"></svg>
+<div class="sl"><span>Tempo:</span><input type="range" id="est" min="1" max="5" step="0.5" value="3"><b id="ev">3 s</b></div>
+<div class="row"><button class="or" id="go">Começar rodada</button><button id="ok" disabled>Confirmar estimativa</button></div><div id="m"></div></div>
+<div class="card hide" id="res" style="display:none"><h2>Resultado</h2><div id="rt"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);let ronda=0,dados=[],atual=null;
+const tipos=[];for(const t of ['linha','copo'])for(const d of [1.5,3,4.5])for(const tam of [0.35,1])tipos.push({t,d,tam});
+tipos.sort(()=>Math.random()-.5);const R=tipos.slice(0,8);
+$('est').oninput=()=>$('ev').textContent=$('est').value.replace('.',',')+' s';
+function cena(f,q){const c=$('cena');if(q.t=='linha'){c.innerHTML=`<line x1="20" y1="85" x2="${20+280*q.tam*f}" y2="85" stroke="#0E2354" stroke-width="10" stroke-linecap="round"/>`;}
+ else{const h=130*q.tam*f;c.innerHTML=`<rect x="120" y="20" width="80" height="140" rx="8" fill="#fff" stroke="#0E2354" stroke-width="3"/><rect x="123" y="${157-h}" width="74" height="${h}" fill="#F7821F" opacity=".85"/>`;}}
+$('go').onclick=()=>{if(ronda>=8)return;atual=R[ronda];$('go').disabled=true;$('m').innerHTML='';const t0=performance.now();
+ (function an(){const f=Math.min(1,(performance.now()-t0)/(atual.d*1000));cena(f,atual);if(f<1)requestAnimationFrame(an);else{setTimeout(()=>{$('cena').innerHTML='';$('ok').disabled=false;},300);}})();};
+$('ok').onclick=()=>{const e=parseFloat($('est').value);dados.push({...atual,e});ronda++;$('ok').disabled=true;$('go').disabled=false;
+ $('m').innerHTML=`<div class="msg info">Rodada ${ronda} de 8: durou ${String(atual.d).replace('.',',')} s, você estimou ${String(e).replace('.',',')} s.</div>`;
+ if(ronda==8)fim();};
+function media(a){return a.length?a.reduce((x,y)=>x+y,0)/a.length:0}
+function fim(){const ef=t=>{const g=dados.filter(x=>x.t==t),gr=g.filter(x=>x.tam==1),pq=g.filter(x=>x.tam<1);return media(gr.map(x=>x.e-x.d))-media(pq.map(x=>x.e-x.d));};
+ const l=ef('linha'),c=ef('copo');$('res').style.display='block';
+ $('rt').innerHTML=`<p>Quanto o <b>tamanho</b> aumentou a sua estimativa (estímulos grandes menos pequenos, mesma duração em média):</p><table class="t"><tr><th>Estímulo</th><th>Efeito</th></tr><tr><td>Linha comprida × curta</td><td>${l.toFixed(1).replace('.',',')} s</td></tr><tr><td>Copo cheio × pouco cheio</td><td>${c.toFixed(1).replace('.',',')} s</td></tr></table>
+ <p class="muted">No estudo original, falantes de inglês e indonésio se deixaram levar mais pela linha; falantes de grego e espanhol, pelo copo. Com só 8 rodadas o resultado é apenas uma brincadeira: juntem os dados da turma toda para ver um padrão.</p><button class="alt" onclick="location.reload()">Jogar de novo</button>`;}
+</script>
+
+</body>
+</html>

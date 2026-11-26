@@ -1,0 +1,18 @@
+<!--T: Máquina de poemas-->
+<div class="card"><h2>1 296 poemas numa tela</h2><p class="muted">Inspirada nos <i>Cem mil bilhões de poemas</i> de Queneau (1961). São 4 versos com 6 opções cada: 6 × 6 × 6 × 6 = 1 296 poemas. Toque num verso para trocá-lo.</p>
+<div id="poema"></div><div class="row" style="margin-top:8px"><button class="or" id="sorte">Sortear um poema</button></div><div class="msg info" id="num"></div></div>
+<div class="card"><h2>Quanto tempo para ler todos?</h2><div class="sl"><span>segundos por poema</span><input type="range" id="sg" min="5" max="60" value="20"><b id="sv"></b></div><div id="tp"></div></div>
+<script>
+const $=i=>document.getElementById(i);
+const V=[['No caderno da manhã,','Na janela da escola,','No meio da tempestade,','Debaixo do céu de giz,','Na esquina do recreio,','No silêncio da biblioteca,'],
+['um x procurava o seu valor,','a vírgula fugia da conta,','o zero sonhava ser infinito,','uma raiz quadrada cochilava,','o poeta contava sílabas,','a frase pedia um sinal de igual,'],
+['enquanto o vento escrevia em versos','e o professor apagava o quadro','porque a palavra virou número','sem saber que o tempo era longo','e o relógio dava dez pra três','como se Diofanto ainda abreviasse'],
+['a lição que ninguém decorou.','um problema sem resposta.','a resposta que era três.','o mistério do bilhão.','o poema que a turma inventou.','a equação de toda tarde.']];
+let e=[0,0,0,0];function draw(){$('poema').innerHTML=e.map((x,i)=>`<button class="opt" data-i="${i}" style="font-size:17px">${V[i][x]}</button>`).join('');
+ [...$('poema').children].forEach(b=>b.onclick=()=>{const i=+b.dataset.i;e[i]=(e[i]+1)%6;draw();});
+ $('num').innerHTML=`Este é o poema nº <b>${e[0]*216+e[1]*36+e[2]*6+e[3]+1}</b> de 1 296 (como um número em base 6: ${e.join('')}).`;}
+$('sorte').onclick=()=>{e=e.map(()=>Math.floor(Math.random()*6));draw();};draw();
+function tp(){const s=+$('sg').value;$('sv').textContent=s+' s';const h=1296*s/3600,q=1e14*s/(3600*24*365);
+ $('tp').innerHTML=`<p>Os 1 296 poemas desta máquina: <b>${h.toFixed(1).replace('.',',')} horas</b>.</p><p>Os 10¹⁴ poemas de Queneau: <b>${Math.round(q/1e6).toLocaleString('pt-BR')} milhões de anos</b>, lendo sem parar.</p>`;}
+$('sg').oninput=tp;tp();
+</script>

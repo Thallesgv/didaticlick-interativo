@@ -1,0 +1,18 @@
+<!--T: Análise de frequência-->
+<div class="card"><h2>A mensagem cifrada</h2><p class="muted">Uma frase em português foi cifrada com a cifra de César (cada letra andou k casas no alfabeto). Use as frequências para achar k, como al-Kindi.</p>
+<div class="big" id="cif" style="font-size:18px;text-align:left"></div><div id="fq"></div>
+<div class="sl"><span>chave k</span><input type="range" id="k" min="0" max="25" value="0"><b id="kv"></b></div>
+<div class="msg info" id="dec"></div><div class="row" style="margin-top:8px"><button class="alt" id="novo">Outra mensagem</button></div></div>
+<div class="card"><h2>Cifre a sua</h2><input type="text" id="meu" placeholder="escreva uma frase"><div class="sl"><span>k</span><input type="range" id="k2" min="1" max="25" value="3"><b id="k2v"></b></div><div class="msg info" id="saida"></div></div>
+<script>
+const $=i=>document.getElementById(i);
+const F=['a matematica foi escrita com palavras durante milhares de anos antes de ganhar os simbolos que usamos hoje','quem conta as letras de uma mensagem secreta descobre a chave sem precisar adivinhar','a letra mais comum do portugues e a letra a seguida de perto pela letra e e pela letra o','um quadrado e dez raizes do mesmo sao iguais a trinta e nove moedas disse o sabio de bagda'];
+function cesar(t,k){return t.replace(/[a-z]/g,c=>String.fromCharCode((c.charCodeAt(0)-97+k+26)%26+97));}
+let txt,ch;function novo(){txt=F[Math.floor(Math.random()*F.length)];ch=1+Math.floor(Math.random()*25);const c=cesar(txt,ch);$('cif').textContent=c;
+ const L={};let t=0;for(const x of c)if(x!=' '){L[x]=(L[x]||0)+1;t++;}const r=Object.entries(L).sort((a,b)=>b[1]-a[1]).slice(0,8);
+ $('fq').innerHTML='<p class="muted">Letras mais frequentes da mensagem:</p>'+r.map(([k,v])=>`<span class="tag"><b>${k}</b> ${v}</span>`).join('');$('k').value=0;draw();}
+function draw(){const k=+$('k').value;$('kv').textContent=k;const d=cesar($('cif').textContent,-k);const ok=d==txt;$('dec').innerHTML=(ok?'<b>Decifrado!</b> ':'')+d;$('dec').className='msg '+(ok?'ok':'info');}
+$('k').oninput=draw;$('novo').onclick=novo;novo();
+function m(){const k=+$('k2').value;$('k2v').textContent=k;$('saida').textContent=cesar($('meu').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''),k)||'...';}
+$('meu').oninput=m;$('k2').oninput=m;m();
+</script>

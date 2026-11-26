@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Completar o quadrado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">Completar o quadrado</h1></header>
+<main>
+<div class="card"><h2>x² + bx = c</h2><p class="muted">Escolha b (par) e c. O desenho divide as b raízes em duas faixas e mostra o canto que falta para fechar o quadrado, como al-Khwarizmi.</p>
+<div class="sl"><span>b</span><input type="range" id="b" min="2" max="20" step="2" value="10"><b id="bv"></b></div>
+<div class="sl"><span>x</span><input type="range" id="x" min="1" max="12" step="1" value="3"><b id="xv"></b></div>
+<p class="muted" style="margin-top:0">(Escolher x define c = x² + bx, para a conta fechar em números inteiros.)</p>
+<div class="msg info" id="frase"></div><svg id="s" viewBox="0 0 320 320" style="width:100%;max-width:360px;display:block;margin:10px auto"></svg>
+<div class="row"><button class="or" id="pc">Completar o quadrado</button></div><div id="passos"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const N=['zero','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','catorze','quinze','dezesseis','dezessete','dezoito','dezenove','vinte'];
+function ext(n){if(n<=20)return N[n];const d=['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'],c=['','cento','duzentos','trezentos','quatrocentos'];
+ if(n<100)return d[Math.floor(n/10)]+(n%10?' e '+N[n%10]:'');if(n==100)return 'cem';return c[Math.floor(n/100)]+(n%100?' e '+ext(n%100):'');}
+let comp=false;
+function draw(){const b=+$('b').value,x=+$('x').value,c=x*x+b*x,h=b/2;$('bv').textContent=b;$('xv').textContent=x;
+ $('frase').innerHTML=`<b>al-Khwarizmi:</b> "Um quadrado e ${ext(b)} raízes são iguais a ${ext(c)} dirhams."<br><b>Hoje:</b> x² + ${b}x = ${c}`;
+ const T=x+h,u=280/T,o=20;let s=`<rect x="${o}" y="${o}" width="${x*u}" height="${x*u}" fill="#0E2354"/><text x="${o+x*u/2}" y="${o+x*u/2+6}" fill="#fff" text-anchor="middle" font-weight="700">x²</text>`;
+ s+=`<rect x="${o+x*u}" y="${o}" width="${h*u}" height="${x*u}" fill="#F7821F" stroke="#fff"/><text x="${o+x*u+h*u/2}" y="${o+x*u/2+6}" fill="#fff" text-anchor="middle" font-weight="700">${h}x</text>`;
+ s+=`<rect x="${o}" y="${o+x*u}" width="${x*u}" height="${h*u}" fill="#F7821F" stroke="#fff"/><text x="${o+x*u/2}" y="${o+x*u+h*u/2+6}" fill="#fff" text-anchor="middle" font-weight="700">${h}x</text>`;
+ s+=`<rect x="${o+x*u}" y="${o+x*u}" width="${h*u}" height="${h*u}" fill="${comp?'#FDE9D8':'none'}" stroke="#F7821F" stroke-dasharray="6 4" stroke-width="2"/>`;
+ if(comp)s+=`<text x="${o+x*u+h*u/2}" y="${o+x*u+h*u/2+6}" fill="#F7821F" text-anchor="middle" font-weight="700">${h*h}</text>`;
+ $('s').innerHTML=s;
+ $('passos').innerHTML=comp?`<div class="step"><div class="why">1. Junte o canto de ${h} × ${h} = ${h*h} dos dois lados.</div><div class="math">x² + ${b}x + ${h*h} = ${c} + ${h*h} = ${c+h*h}</div></div><div class="step"><div class="why">2. O quadrado grande tem área ${c+h*h}, então o lado é ${T}.</div><div class="math">x + ${h} = ${T}</div></div><div class="step"><div class="why">3. Tire as ${h} unidades.</div><div class="math">x = ${x}</div></div>`:'';}
+['b','x'].forEach(i=>$(i).oninput=()=>{comp=false;draw();});$('pc').onclick=()=>{comp=true;draw();};draw();
+</script>
+
+</body>
+</html>

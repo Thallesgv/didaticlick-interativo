@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Números por extenso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">Números por extenso</h1></header>
+<main>
+<div class="card"><h2>Digite um número</h2><input type="text" id="n" value="97" inputmode="numeric"><p class="muted">Até 18 algarismos. Use os botões para testar potências de 10.</p>
+<div class="row"><button class="alt" data-v="97">97</button><button class="alt" data-v="80">80</button><button class="alt" data-v="23">23</button><button class="alt" data-v="1000000000">10⁹</button><button class="alt" data-v="1000000000000">10¹²</button><button class="alt" data-v="1000000000000000000">10¹⁸</button></div></div>
+<div class="card" id="out"></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+const U=['zero','um','dois','três','quatro','cinco','seis','sete','oito','nove','dez','onze','doze','treze','catorze','quinze','dezasseis','dezassete','dezoito','dezanove'];
+const D=['','','vinte','trinta','quarenta','cinquenta','sessenta','setenta','oitenta','noventa'],C=['','cento','duzentos','trezentos','quatrocentos','quinhentos','seiscentos','setecentos','oitocentos','novecentos'];
+function c3(n,br){const u=br?U.map(w=>w.replace('dezasseis','dezesseis').replace('dezassete','dezessete').replace('dezanove','dezenove')):U;if(n==0)return'';if(n==100)return'cem';let p=[];const c=Math.floor(n/100),r=n%100;if(c)p.push(C[c]);if(r){if(r<20)p.push(u[r]);else{p.push(D[Math.floor(r/10)]+(r%10?' e '+u[r%10]:''));}}return p.join(' e ');}
+function ate999999(n,br){const m=Math.floor(n/1000),r=n%1000;let p=[];if(m)p.push(m==1?'mil':c3(m,br)+' mil');if(r)p.push(c3(r,br));
+ if(p.length==2)return p[0]+((r<100||r%100==0)?' e ':' ')+p[1];return p.join('');}
+function pt(nS,br){let n=BigInt(nS);if(n==0n)return'zero';const g=[];const B=br?1000n:1000000n;while(n>0n){g.push(Number(n%B));n/=B;}
+ const T=br?[['',''],['mil','mil'],['milhão','milhões'],['bilhão','bilhões'],['trilhão','trilhões'],['quatrilhão','quatrilhões'],['quintilhão','quintilhões']]
+           :[['',''],['milhão','milhões'],['bilião','biliões'],['trilião','triliões']];
+ let p=[];for(let i=g.length-1;i>=0;i--){if(!g[i])continue;const w=br?c3(g[i],br):ate999999(g[i],br);
+  if(br&&i==1){p.push(g[i]==1?'mil':w+' mil');continue;}p.push(i==0?w:(w+' '+(g[i]==1?T[i][0]:T[i][1])));}
+ if(p.length>1){const u=g.find(v=>v>0);const e=(u<100||u%100==0)&&(br||u<1000||u%1000==0||(u%1000==0));return p.slice(0,-1).join(' ')+(e?' e ':' ')+p[p.length-1];}
+ return p[0];}
+const FU=['zéro','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf'];
+const FD=['','','vingt','trente','quarante','cinquante','soixante','soixante','quatre-vingt','quatre-vingt'];
+function f2(n){if(n<20)return[FU[n],String(n)];const d=Math.floor(n/10),u=n%10;
+ if(d==7||d==9){const r=10+u;return[FD[d]+(d==7&&u==1?'-et-':'-')+FU[r],(d==7?'60':'4 × 20')+' + '+(u>=7?'10 + '+u:r)];}
+ if(d==8)return[u?'quatre-vingt-'+FU[u]:'quatre-vingts',u?'4 × 20 + '+u:'4 × 20'];return[FD[d]+(u==1?'-et-un':u?'-'+FU[u]:''),d*10+(u?' + '+u:'')];}
+function fr(n){if(n>=1e6)return['(até 999 999)',''];if(n==0)return['zéro','0'];let p=[],c=[];const m=Math.floor(n/1000),r=n%1000;
+ if(m){if(m>1){const x=fr(m);p.push(x[0]+' mille');c.push('('+x[1]+') × 1000');}else{p.push('mille');c.push('1000');}}
+ const h=Math.floor(r/100),t=r%100;if(h){p.push((h>1?FU[h]+' ':'')+'cent'+(h>1&&!t?'s':''));c.push(h+' × 100');}if(t){const x=f2(t);p.push(x[0]);c.push(x[1]);}return[p.join(' '),c.join(' + ')];}
+const EU=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],ED=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+function e3(n){let p=[];if(n>=100){p.push(EU[Math.floor(n/100)]+' hundred');n%=100;}if(n){p.push(n<20?EU[n]:ED[Math.floor(n/10)]+(n%10?'-'+EU[n%10]:''));}return p.join(' ');}
+function en(nS){let n=BigInt(nS);if(n==0n)return'zero';const g=[],N=['','thousand','million','billion','trillion','quadrillion','quintillion'];while(n>0n){g.push(Number(n%1000n));n/=1000n;}let p=[];for(let i=g.length-1;i>=0;i--)if(g[i])p.push(e3(g[i])+(N[i]?' '+N[i]:''));return p.join(' ');}
+const ZU=['zero','um','dois','três','quatro','cinco','seis','sete','oito','nove'];
+function zh(n){if(n>=1e4)return'(até 9 999)';if(n==0)return'zero';const o=['','dez','cem','mil'];let p=[];const d=String(n).split('').reverse().map(Number);
+ for(let k=d.length-1;k>=0;k--){if(!d[k])continue;p.push((d[k]==1&&k==1&&n<20?'':ZU[d[k]]+(k?'-':''))+o[k]);}return p.join('-').replace(/--/g,'-');}
+function draw(){const s=($('n').value||'0').replace(/\D/g,'').slice(0,18)||'0';const n=Number(s),pot=s.length-1;
+ const f=fr(n),z=zh(n);
+ $('out').innerHTML=`<h2>${BigInt(s).toLocaleString('pt-BR')}</h2><table class="t">
+ <tr><th>Língua</th><th>Por extenso</th></tr>
+ <tr><td>Brasil (escala curta)</td><td>${pt(s,true)}</td></tr>
+ <tr><td>Portugal (escala longa)</td><td>${pt(s,false)}</td></tr>
+ <tr><td>Francês</td><td>${f[0]}<br><span class="muted">conta escondida: ${f[1]}</span></td></tr>
+ <tr><td>Inglês</td><td>${en(s)}</td></tr>
+ <tr><td>Lógica do chinês</td><td>${z}</td></tr></table>
+ ${/^10*$/.test(s)&&pot>=6?`<div class="msg info">10<sup>${pot}</sup>: na escala curta, cada nome novo é 10³ vezes o anterior; na longa, 10⁶ vezes.</div>`:''}`;}
+$('n').oninput=draw;document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{$('n').value=b.dataset.v;draw();});draw();
+</script>
+
+</body>
+</html>

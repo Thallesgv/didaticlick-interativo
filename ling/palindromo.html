@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Palíndromos e capicuas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Linguagens</div><h1 id="title">Palíndromos e capicuas</h1></header>
+<main>
+<div class="card"><h2>É palíndromo?</h2><input type="text" id="f" value="Socorram-me, subi no ônibus em Marrocos"><div id="pr"></div></div>
+<div class="card"><h2>Inverter e somar</h2><p class="muted">Some o número com o seu inverso até aparecer uma capicua. Será que você acha um que demora muitos passos? (O 196 nunca chegou a uma capicua nos testes já feitos.)</p>
+<div class="row"><input type="number" id="n" value="87" style="flex:1"><button class="or" id="go">Calcular</button></div><div id="passos"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+function pal(){const s=$('f').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');const r=[...s].reverse().join('');const ok=s.length>1&&s==r;
+ $('pr').innerHTML=`<p class="muted">Só as letras: ${s}<br>Ao contrário: ${r}</p><div class="msg ${ok?'ok':'bad'}">${ok?'É palíndromo!':'Não é palíndromo.'}</div>`;}
+$('f').oninput=pal;pal();
+function inv(x){return BigInt([...x.toString()].reverse().join(''));}
+$('go').onclick=()=>{let x=BigInt($('n').value||0);let h='';let k=0;const cap=v=>v.toString()==[...v.toString()].reverse().join('');
+ while(!cap(x)&&k<300){const y=inv(x);h+=`<div>${x} + ${y} = <b>${x+y}</b></div>`;x=x+y;k++;}
+ h+=`<div class="msg ${cap(x)?'ok':'bad'}">${cap(x)?`Capicua ${x} em ${k} passo${k==1?'':'s'}!`:'Depois de 300 passos, nenhuma capicua. Você pode ter achado um número como o 196.'}</div>`;$('passos').innerHTML=h;};$('go').click();
+</script>
+
+</body>
+</html>

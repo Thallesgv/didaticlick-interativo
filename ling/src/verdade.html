@@ -1,0 +1,18 @@
+<!--T: Tabela-verdade-->
+<div class="card"><h2>Monte a sua frase</h2><label class="lbl">Frase p</label><input type="text" id="p" value="faz sol"><label class="lbl">Frase q</label><input type="text" id="q" value="vou à praia">
+<label class="lbl">Conectivo</label><select id="c"><option value="e">p e q</option><option value="ou">p ou q</option><option value="se" selected>se p, então q</option><option value="sse">p se e somente se q</option><option value="xou">ou p ou q (exclusivo)</option></select>
+<div class="msg info" id="fr"></div><div id="t"></div><p class="muted">Toque numa linha para ver o que ela quer dizer.</p><div id="exp"></div></div>
+<div class="card"><h2>Desafio rápido</h2><div id="dq"></div><div class="row" id="ops" style="margin-top:6px"></div><div id="dm"></div></div>
+<script>
+const $=i=>document.getElementById(i);const OP={e:(a,b)=>a&&b,ou:(a,b)=>a||b,se:(a,b)=>!a||b,sse:(a,b)=>a==b,xou:(a,b)=>a!=b};
+const TX={e:(p,q)=>`${p} e ${q}`,ou:(p,q)=>`${p} ou ${q}`,se:(p,q)=>`se ${p}, então ${q}`,sse:(p,q)=>`${p} se e somente se ${q}`,xou:(p,q)=>`ou ${p}, ou ${q} (mas não os dois)`};
+const V=b=>b?'<b style="color:var(--ok)">V</b>':'<b style="color:var(--bad)">F</b>';
+function draw(){const p=$('p').value||'p',q=$('q').value||'q',c=$('c').value;$('fr').textContent='"'+TX[c](p,q)+'"';
+ const L=[[1,1],[1,0],[0,1],[0,0]];$('t').innerHTML='<table class="t"><tr><th>p</th><th>q</th><th>frase</th></tr>'+L.map((l,i)=>`<tr data-i="${i}" style="cursor:pointer"><td>${V(l[0])}</td><td>${V(l[1])}</td><td>${V(OP[c](l[0],l[1]))}</td></tr>`).join('')+'</table>';
+ [...$('t').querySelectorAll('tr[data-i]')].forEach(r=>r.onclick=()=>{const l=L[+r.dataset.i],v=OP[c](l[0],l[1]);$('exp').innerHTML=`<div class="msg ${v?'ok':'bad'}">"${p}" é ${l[0]?'verdade':'mentira'} e "${q}" é ${l[1]?'verdade':'mentira'}: a frase inteira é <b>${v?'verdadeira':'falsa'}</b>.${c=='se'&&!l[0]?' Quando a condição não acontece, a promessa não é quebrada.':''}</div>`;});}
+['p','q','c'].forEach(i=>$(i).oninput=draw);draw();
+const D=[['Se 5 é par, então 2 + 2 = 5.',1,'A condição é falsa, então a frase "se... então" é verdadeira.'],['3 > 2 e 7 é par.',0,'Uma parte é falsa: "e" exige as duas.'],['3 > 2 ou 7 é par.',1,'Basta uma parte verdadeira.'],['Se 4 é par, então 4 é primo.',0,'Condição verdadeira, consequência falsa.'],['Não é verdade que 10 é ímpar.',1,'10 é par, então negar "10 é ímpar" dá verdadeiro.'],['Se 9 é múltiplo de 3, então 9 é ímpar.',1,'As duas partes são verdadeiras.']];
+let a=0,t=0;function nq(){const d=D[Math.floor(Math.random()*D.length)];$('dq').innerHTML='<p><b>'+d[0]+'</b></p>';$('ops').innerHTML='';$('dm').innerHTML='';
+ ['Verdadeira','Falsa'].forEach((x,i)=>{const b=document.createElement('button');b.textContent=x;b.className=i?'alt':'';b.onclick=()=>{t++;const ok=(i==0)==!!d[1];if(ok)a++;$('dm').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Não.'} ${d[2]} (acertos: ${a} de ${t})</div><button class="or" style="margin-top:8px" onclick="nq()">Outra</button>`;};$('ops').appendChild(b);});}
+nq();
+</script>

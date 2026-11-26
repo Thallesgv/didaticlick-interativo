@@ -1,0 +1,28 @@
+<!--T: Escriba egípcio-->
+<div class="card"><h2>Escreva como um escriba</h2><p class="muted">Digite um número de 1 a 9 999 999. Cada potência de 10 tem o seu desenho, e o número é a soma de todos.</p>
+<input type="number" id="n" value="1325" min="1" max="9999999"><div id="out" style="margin-top:10px;overflow-x:auto"></div><div id="conta" class="msg info"></div></div>
+<div class="card"><h2>Agora leia</h2><p class="muted">Que número o escriba escreveu?</p><div id="q" style="overflow-x:auto"></div>
+<div class="row" style="margin-top:8px"><input type="number" id="r" placeholder="sua resposta" style="flex:1"><button class="or" id="ok">Conferir</button><button class="alt" id="novo">Outro</button></div><div id="m"></div><div class="placar muted" id="pl"></div></div>
+<div class="card"><h2>Os sete símbolos</h2><div id="tab" style="overflow-x:auto"></div></div>
+<script>
+const NOMES=['traço','calcanhar','corda','flor de lótus','dedo','girino','homem espantado'];
+function g(k,x,h){const c='#0E2354',y=h+4;let s='';
+ if(k==0)s=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y-h}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`;
+ if(k==1)s=`<path d="M${x-h*.32} ${y} V${y-h*.55} C${x-h*.32} ${y-h*1.05} ${x+h*.32} ${y-h*1.05} ${x+h*.32} ${y-h*.55} V${y}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`;
+ if(k==2){let p='';for(let i=0;i<60;i++){const a=i*.32,r=h*.05+h*.0075*i;p+=(i?'L':'M')+(x+r*Math.cos(a)).toFixed(1)+' '+(y-h*.42-r*Math.sin(a)).toFixed(1)+' ';}s=`<path d="${p}" fill="none" stroke="${c}" stroke-width="2"/>`;}
+ if(k==3)s=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y-h*.62}" stroke="${c}" stroke-width="2.4"/><ellipse cx="${x}" cy="${y-h*.8}" rx="${h*.17}" ry="${h*.2}" fill="${c}"/><line x1="${x}" y1="${y-h*.15}" x2="${x-h*.28}" y2="${y-h*.05}" stroke="${c}" stroke-width="2"/>`;
+ if(k==4)s=`<path d="M${x} ${y} V${y-h*.75} C${x} ${y-h} ${x+h*.3} ${y-h} ${x+h*.3} ${y-h*.78}" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/>`;
+ if(k==5)s=`<ellipse cx="${x}" cy="${y-h*.3}" rx="${h*.2}" ry="${h*.27}" fill="${c}"/><path d="M${x} ${y-h*.55} C${x+h*.25} ${y-h*.75} ${x-h*.2} ${y-h*.85} ${x+h*.1} ${y-h}" fill="none" stroke="${c}" stroke-width="2.4"/>`;
+ if(k==6)s=`<circle cx="${x}" cy="${y-h*.62}" r="${h*.1}" fill="${c}"/><path d="M${x} ${y-h*.52} V${y-h*.15} M${x-h*.25} ${y} L${x} ${y-h*.15} L${x+h*.05} ${y} M${x} ${y-h*.42} L${x-h*.3} ${y-h*.6} V${y-h*.95} M${x} ${y-h*.42} L${x+h*.3} ${y-h*.6} V${y-h*.95}" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`;
+ return s;}
+const LG=[.35,.8,.65,.75,.55,.6,.85];
+function svg(n,h=44){const d=String(n).split('').reverse().map(Number);let it=[];for(let k=d.length-1;k>=0;k--)for(let j=0;j<d[k];j++)it.push(k);
+ let x=6,s='';for(const k of it){x+=LG[k]*h/2;s+=g(k,x,h);x+=LG[k]*h/2+6;}return `<svg width="${x+6}" height="${h+10}" viewBox="0 0 ${x+6} ${h+10}">${s}</svg>`;}
+function conta(n){const d=String(n).split('').reverse().map(Number);let p=[],t=0;for(let k=d.length-1;k>=0;k--)if(d[k]){p.push(d[k]+' '+NOMES[k]+(d[k]>1?(k==2?'s':k==3?'':'s'):''));t+=d[k];}return p.join(', ')+` → ${t} símbolos`;}
+function draw(){let n=Math.max(1,Math.min(9999999,parseInt($('n').value)||1));$('out').innerHTML=svg(n);$('conta').textContent=n.toLocaleString('pt-BR')+' = '+conta(n);}
+function $(i){return document.getElementById(i)}
+$('n').oninput=draw;draw();
+let alvo,ac=0,tot=0;function novo(){const e=[2,3,3,4,4,5][Math.floor(Math.random()*6)];alvo=Math.floor(10**(e-1)+Math.random()*9*10**(e-1));$('q').innerHTML=svg(alvo,40);$('r').value='';$('m').innerHTML='';}
+$('novo').onclick=novo;$('ok').onclick=()=>{const v=parseInt($('r').value);if(isNaN(v))return;tot++;const ok=v===alvo;if(ok)ac++;$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Ainda não.'} O número é ${alvo.toLocaleString('pt-BR')}: ${conta(alvo)}.</div>`;$('pl').textContent=`Acertos: ${ac} de ${tot}`;};novo();
+$('tab').innerHTML='<div class="row">'+[0,1,2,3,4,5,6].map(k=>`<div style="text-align:center;background:var(--peach);border-radius:10px;padding:6px;min-width:84px">${svg(10**k,40)}<br><b>${(10**k).toLocaleString('pt-BR')}</b><br><span class="muted">${NOMES[k]}</span></div>`).join('')+'</div>';
+</script>

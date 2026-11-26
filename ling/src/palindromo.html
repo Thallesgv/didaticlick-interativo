@@ -1,0 +1,14 @@
+<!--T: Palíndromos e capicuas-->
+<div class="card"><h2>É palíndromo?</h2><input type="text" id="f" value="Socorram-me, subi no ônibus em Marrocos"><div id="pr"></div></div>
+<div class="card"><h2>Inverter e somar</h2><p class="muted">Some o número com o seu inverso até aparecer uma capicua. Será que você acha um que demora muitos passos? (O 196 nunca chegou a uma capicua nos testes já feitos.)</p>
+<div class="row"><input type="number" id="n" value="87" style="flex:1"><button class="or" id="go">Calcular</button></div><div id="passos"></div></div>
+<script>
+const $=i=>document.getElementById(i);
+function pal(){const s=$('f').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');const r=[...s].reverse().join('');const ok=s.length>1&&s==r;
+ $('pr').innerHTML=`<p class="muted">Só as letras: ${s}<br>Ao contrário: ${r}</p><div class="msg ${ok?'ok':'bad'}">${ok?'É palíndromo!':'Não é palíndromo.'}</div>`;}
+$('f').oninput=pal;pal();
+function inv(x){return BigInt([...x.toString()].reverse().join(''));}
+$('go').onclick=()=>{let x=BigInt($('n').value||0);let h='';let k=0;const cap=v=>v.toString()==[...v.toString()].reverse().join('');
+ while(!cap(x)&&k<300){const y=inv(x);h+=`<div>${x} + ${y} = <b>${x+y}</b></div>`;x=x+y;k++;}
+ h+=`<div class="msg ${cap(x)?'ok':'bad'}">${cap(x)?`Capicua ${x} em ${k} passo${k==1?'':'s'}!`:'Depois de 300 passos, nenhuma capicua. Você pode ter achado um número como o 196.'}</div>`;$('passos').innerHTML=h;};$('go').click();
+</script>

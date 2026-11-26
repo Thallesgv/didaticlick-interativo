@@ -1,0 +1,16 @@
+<!--T: Máquina de frases-->
+<div class="card"><h2>As regras</h2><p class="muted">Frase → SN SV &nbsp;·&nbsp; SN → Art N &nbsp;·&nbsp; SV → V SN. Edite as listas de palavras (separadas por vírgula).</p>
+<label class="lbl">Artigos (Art)</label><input type="text" id="art" value="o, um"><label class="lbl">Nomes (N)</label><input type="text" id="nn" value="gato, menino, queijo, poeta"><label class="lbl">Verbos (V)</label><input type="text" id="vv" value="come, vê, encontra">
+<label class="lbl"><input type="checkbox" id="rec"> Ativar a regra recursiva SN → SN que SV</label>
+<div class="row" style="margin-top:8px"><button class="or" id="go">Gerar frase</button></div><div class="big" id="fr" style="font-size:20px"></div><div id="arv" style="overflow-x:auto"></div><div class="msg info" id="cont"></div></div>
+<script>
+const $=i=>document.getElementById(i);const L=id=>$(id).value.split(',').map(s=>s.trim()).filter(Boolean);const P=a=>a[Math.floor(Math.random()*a.length)];
+function SN(d){if($('rec').checked&&d<2&&Math.random()<.45){return{r:'SN',f:[SN(d+1),{r:'que',w:'que'},SV(d+1)]};}return{r:'SN',f:[{r:'Art',w:P(L('art'))},{r:'N',w:P(L('nn'))}]};}
+function SV(d){return{r:'SV',f:[{r:'V',w:P(L('vv'))},SN(d)]};}
+function pal(n){return n.w?[n.w]:n.f.flatMap(pal);}
+function html(n){return n.w?`<li><span class="tag">${n.r}</span> <b style="color:var(--orange)">${n.w}</b></li>`:`<li><span class="tag" style="background:var(--navy);color:#fff">${n.r}</span><ul>${n.f.map(html).join('')}</ul></li>`;}
+$('go').onclick=()=>{const t={r:'Frase',f:[SN(0),SV(0)]};const w=pal(t);$('fr').textContent=w.join(' ').replace(/^./,c=>c.toUpperCase())+'.';$('arv').innerHTML='<ul style="list-style:none;padding-left:0">'+html(t)+'</ul>';
+ const a=L('art').length,n=L('nn').length,v=L('vv').length;$('cont').innerHTML=$('rec').checked?'Com a regra recursiva, o número de frases possíveis é <b>infinito</b>: um SN pode conter outro SN, que pode conter outro...':`Sem recursão, as regras geram ${a} × ${n} × ${v} × ${a} × ${n} = <b>${a*n*v*a*n}</b> frases.`;};
+$('go').click();
+</script>
+<style>main ul ul{padding-left:18px;border-left:2px solid #E5E7EB;list-style:none}</style>
