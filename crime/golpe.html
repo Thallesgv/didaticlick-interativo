@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Campanha do golpe · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Campanha do golpe</h1></header>
+<main>
+<div class="card"><h2>Pelo menos um cai?</h2><p class="muted" style="margin-top:0">Cada bonequinho recebe a mensagem falsa. Cada um cai, de forma independente, com a chance escolhida. Sorteie várias campanhas e compare com a conta 1 − (1 − p)ⁿ.</p>
+<div class="sl" id="sn"><b>Mensagens enviadas</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Chance de cada um cair</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin-top:6px"><button id="sor">Disparar campanha</button><button class="alt" id="cem">Disparar 100 campanhas</button></div>
+<div class="kpi"><div class="o">Caíram nesta campanha<b id="kc"></b></div><div>Esperado (n · p)<b id="ke"></b></div><div>P(pelo menos um)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let caiu=[],camp=0,comAlgum=0;
+const N=SL('sn',1,400,1,100,reset,v=>v),PP=SL('sp',0.5,10,0.5,1,reset,v=>r1(v)+'%');
+function reset(){caiu=[];camp=0;comAlgum=0;draw();}
+function uma(){const n=N.get(),p=PP.get()/100;return Array.from({length:n},()=>Math.random()<p);}
+$('sor').onclick=()=>{caiu=uma();camp++;if(caiu.some(x=>x))comAlgum++;draw();};
+$('cem').onclick=()=>{for(let i=0;i<100;i++){caiu=uma();camp++;if(caiu.some(x=>x))comAlgum++;}draw();};
+function draw(){const n=N.get(),p=PP.get()/100,col=20,s=Math.min(16,320/col),lin=Math.ceil(n/col);let g=`<rect width="340" height="${lin*s*1.3+60}" fill="#F8FAFC"/>`;
+ for(let i=0;i<n;i++){const x=14+(i%col)*s,y=10+Math.floor(i/col)*s*1.3+s*1.2;g+=bonequinho(x+s/2,y,s*1.15,caiu[i]?ORANGE:NAVY);}
+ const yb=lin*s*1.3+30,pt=1-Math.pow(1-p,n),pe=camp?comAlgum/camp:0;
+ g+=TX(14,yb-4,'teoria',{fs:9,a:'start',c:GRAY,w:500})+`<rect x="70" y="${yb-14}" width="250" height="12" rx="4" fill="#EEF2F7"/><rect x="70" y="${yb-14}" width="${250*pt}" height="12" rx="4" fill="${ORANGE}"/>`;
+ g+=TX(14,yb+14,'campanhas',{fs:9,a:'start',c:GRAY,w:500})+`<rect x="70" y="${yb+4}" width="250" height="12" rx="4" fill="#EEF2F7"/><rect x="70" y="${yb+4}" width="${250*pe}" height="12" rx="4" fill="${BLUE}"/>`;
+ $('fig').innerHTML=SVG(340,lin*s*1.3+60,g);
+ $('kc').textContent=caiu.length?caiu.filter(x=>x).length:'—';$('ke').textContent=r1(n*p);$('kp').textContent=r1(100*pt)+'%';
+ $('m').innerHTML=`<div class="msg info">${camp?`Em ${camp} campanha(s), ${comAlgum} tiveram pelo menos uma vítima: ${r1(100*pe)}%. A conta prevê ${r1(100*pt)}%.`:'Dispare uma campanha. Depois dispare 100 e compare a barra azul (o que aconteceu) com a laranja (a conta).'}</div>`;}
+reset();
+})();
+</script>
+</body>
+</html>

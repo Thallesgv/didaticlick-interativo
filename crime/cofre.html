@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cofre de força bruta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Cofre de força bruta</h1></header>
+<main>
+<div class="card"><h2>O robô e o cofre</h2><p class="muted" style="margin-top:0">O cofre tem uma senha de 3 dígitos (000 a 999). O robô testa as combinações em ordem; cada quadradinho apagado é uma tentativa. Compare com o ataque de dicionário, que testa primeiro as senhas mais comuns.</p>
+<div class="chips" id="md"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Velocidade</b><input type="range"><span></span></div>
+<div class="row" style="margin-top:6px"><button id="go">Começar</button><button class="alt" id="nova">Outra senha</button></div>
+<div class="kpi"><div class="o">Tentativas<b id="kt"></b></div><div>Senha do cofre<b id="ks"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COMUNS=[0,111,222,333,444,555,666,777,888,999,123,321,12,234,345,456,567,678,789,987,100,200,500,101,212,313,1,2,3,7,69,420,911,147,258,369,159,357,246,135];
+let alvo,t,tm=null,ordem,tent;const M=chips('md',['Força bruta (em ordem)','Dicionário (comuns primeiro)'],0,()=>parar(true));
+const V=SL('sv',1,6,1,3,()=>{},v=>['devagar','lento','médio','rápido','muito rápido','turbo'][v-1]);
+function nova(){alvo=Math.random()<.35?P(COMUNS):rint(0,999);parar(true);}
+function parar(z){clearInterval(tm);tm=null;if(z){tent=0;ordem=M.get()?[...COMUNS,...Array.from({length:1000},(_,i)=>i).filter(i=>!COMUNS.includes(i))]:Array.from({length:1000},(_,i)=>i);}$('go').textContent='Começar';draw();}
+$('nova').onclick=nova;$('go').onclick=()=>{if(tm){parar(false);return;}if(tent>0&&ordem[tent-1]==alvo)parar(true);$('go').textContent='Pausar';
+ tm=setInterval(()=>{const passo=[1,3,8,20,50,120][V.get()-1];for(let k=0;k<passo;k++){if(ordem[tent]==alvo){tent++;parar(false);return;}tent++;}draw();},60);};
+function draw(){const feitos=new Set(ordem.slice(0,tent));let g=`<rect width="340" height="352" fill="#F8FAFC"/>`;const s=10.6;
+ for(let i=0;i<1000;i++){const x=8+(i%30)*s*1.04,y=8+Math.floor(i/30)*s,ach=feitos.has(i)&&i==alvo;
+  g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s*0.92}" height="${s-1.6}" rx="1.5" fill="${ach?ORANGE:feitos.has(i)?'#334155':PEACH}"/>`;}
+ $('fig').innerHTML=SVG(340,352,g);$('kt').textContent=fmt(tent);const achou=tent>0&&ordem[tent-1]==alvo;$('ks').textContent=achou?String(alvo).padStart(3,'0'):'???';
+ if(achou)missao('m',true,`Aberto em ${fmt(tent)} tentativas. ${M.get()?(COMUNS.includes(alvo)?'A senha era comum: o dicionário acertou logo no começo.':'A senha não era comum: o dicionário não ajudou.'):'Em média, a força bruta precisa de cerca de 500 tentativas (metade das 1.000).'}`,'');
+ else $('m').innerHTML='<div class="msg info">Aperte Começar. Depois sorteie outras senhas e compare as duas estratégias.</div>';}
+nova();
+})();
+</script>
+</body>
+</html>
