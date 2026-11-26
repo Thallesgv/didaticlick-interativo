@@ -20,6 +20,7 @@ table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th
 <main>
 <div class="card"><h2>Digite um número</h2><input type="text" id="n" value="97" inputmode="numeric"><p class="muted">Até 18 algarismos. Use os botões para testar potências de 10.</p>
 <div class="row"><button class="alt" data-v="97">97</button><button class="alt" data-v="80">80</button><button class="alt" data-v="23">23</button><button class="alt" data-v="1000000000">10⁹</button><button class="alt" data-v="1000000000000">10¹²</button><button class="alt" data-v="1000000000000000000">10¹⁸</button></div></div>
+<div class="card"><h2>Os grupos de algarismos</h2><p class="muted">Cada grupo ganha um nome. No Brasil, um nome novo a cada 3 algarismos; em Portugal, a cada 6.</p><div style="overflow-x:auto"><svg id="gr" height="160"></svg></div></div>
 <div class="card" id="out"></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
@@ -61,6 +62,15 @@ function draw(){const s=($('n').value||'0').replace(/\D/g,'').slice(0,18)||'0';c
  <tr><td>Inglês</td><td>${en(s)}</td></tr>
  <tr><td>Lógica do chinês</td><td>${z}</td></tr></table>
  ${/^10*$/.test(s)&&pot>=6?`<div class="msg info">10<sup>${pot}</sup>: na escala curta, cada nome novo é 10³ vezes o anterior; na longa, 10⁶ vezes.</div>`:''}`;}
+function grupos(s){const d=[...s],n=d.length,W=Math.max(13,Math.min(22,300/n));
+ function linha(y,tam,nomes,cor,titulo){let h=`<text x="4" y="${y-8}" font-size="12" font-weight="700" fill="#0E2354">${titulo}</text>`;const x0=4;
+  for(let i=0;i<n;i++){const pos=n-1-i,g=Math.floor(pos/tam),x=x0+i*W+g*0;h+=`<rect x="${x+1}" y="${y}" width="${W-2}" height="26" rx="4" fill="${cor[g%2]}"/><text x="${x+W/2}" y="${y+18}" text-anchor="middle" font-size="${W>17?14:11}" font-weight="700" fill="#fff">${d[i]}</text>`;
+   if(pos%tam==0){const ini=i-Math.min(tam,i+1)+1;const xa=x0+Math.max(0,i-tam+1)*W,xb=x+W;h+=`<path d="M${xa+2} ${y+31} V${y+35} H${xb-2} V${y+31}" fill="none" stroke="${cor[g%2]}" stroke-width="1.5"/><text x="${(xa+xb)/2}" y="${y+48}" text-anchor="middle" font-size="10" fill="#0E2354">${nomes[g]||''}</text>`;}}
+  return h;}
+ const BR=['','mil','milhão','bilhão','trilhão','quatrilhão','quintilhão'],PT=['','milhão','bilião','trilião'];
+ const w=Math.max(4+n*W+4,330);$('gr').setAttribute('viewBox',`0 0 ${w} 160`);$('gr').setAttribute('width',w);
+ $('gr').innerHTML=linha(22,3,BR,['#0E2354','#F7821F'],'Brasil: grupos de 3 algarismos')+linha(104,6,PT,['#2E7D4F','#7C3AED'],'Portugal: grupos de 6 algarismos');}
+const _d=draw;draw=function(){_d();const s=(($('n').value||'0').replace(/\D/g,'').slice(0,18)||'0').replace(/^0+(?=\d)/,'');grupos(s);};
 $('n').oninput=draw;document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{$('n').value=b.dataset.v;draw();});draw();
 </script>
 

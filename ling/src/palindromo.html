@@ -1,14 +1,24 @@
 <!--T: Palíndromos e capicuas-->
-<div class="card"><h2>É palíndromo?</h2><input type="text" id="f" value="Socorram-me, subi no ônibus em Marrocos"><div id="pr"></div></div>
+<div class="card"><h2>É palíndromo?</h2><input type="text" id="f" value="Socorram-me, subi no ônibus em Marrocos"><div style="overflow-x:auto"><svg id="esp" height="150"></svg></div><div id="pr"></div>
+<div class="row" style="margin-top:6px"><button class="alt" data-f="Socorram-me, subi no ônibus em Marrocos">Socorram-me...</button><button class="alt" data-f="A base do teto desaba">A base do teto...</button><button class="alt" data-f="Roma me tem amor">Roma me tem amor</button><button class="alt" data-f="Matemática">Matemática</button></div></div>
 <div class="card"><h2>Inverter e somar</h2><p class="muted">Some o número com o seu inverso até aparecer uma capicua. Será que você acha um que demora muitos passos? (O 196 nunca chegou a uma capicua nos testes já feitos.)</p>
-<div class="row"><input type="number" id="n" value="87" style="flex:1"><button class="or" id="go">Calcular</button></div><div id="passos"></div></div>
+<div class="row"><input type="number" id="n" value="87" style="flex:1"><button class="or" id="go">Calcular</button></div><div style="overflow-x:auto"><svg id="esp2" height="150"></svg></div><div id="passos"></div></div>
 <script>
 const $=i=>document.getElementById(i);
 function pal(){const s=$('f').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');const r=[...s].reverse().join('');const ok=s.length>1&&s==r;
  $('pr').innerHTML=`<p class="muted">Só as letras: ${s}<br>Ao contrário: ${r}</p><div class="msg ${ok?'ok':'bad'}">${ok?'É palíndromo!':'Não é palíndromo.'}</div>`;}
+function espelho(s,el){const n=s.length,W=Math.max(16,Math.min(26,340/Math.max(n,1))),w=n*W+20;let h='';const m=(n-1)/2;
+ for(let i=0;i<Math.floor(n/2);i++){const j=n-1-i,x1=10+i*W+W/2,x2=10+j*W+W/2,r=(x2-x1)/2,ok=s[i]==s[j];
+  h+=`<path d="M${x1} 62 A ${r} ${Math.min(r,52)} 0 0 1 ${x2} 62" fill="none" stroke="${ok?'#2E9E5B':'#C2410C'}" stroke-width="${ok?1.6:2.6}" opacity=".85"/>`;}
+ for(let i=0;i<n;i++){const ok=s[i]==s[n-1-i];h+=`<rect x="${10+i*W+1}" y="66" width="${W-2}" height="26" rx="5" fill="${ok?'#0E2354':'#C2410C'}"/><text x="${10+i*W+W/2}" y="85" text-anchor="middle" font-size="${W>20?15:12}" font-weight="700" fill="#fff">${s[i]}</text>`;}
+ if(n%2)h+=`<text x="${10+m*W+W/2}" y="112" text-anchor="middle" font-size="11" fill="#F7821F">centro</text>`;else if(n)h+=`<line x1="${10+n/2*W}" y1="58" x2="${10+n/2*W}" y2="100" stroke="#F7821F" stroke-dasharray="4 3" stroke-width="2"/>`;
+ h+=`<text x="10" y="135" font-size="11" fill="#6B7280">Cada arco liga uma letra à sua imagem no espelho: verde = iguais, vermelho = diferentes.</text>`;
+ el.setAttribute('width',Math.max(w,360));el.setAttribute('viewBox',`0 0 ${Math.max(w,360)} 150`);el.innerHTML=h;}
+const _pal=pal;pal=function(){_pal();espelho($('f').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,''),$('esp'));};
+document.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{$('f').value=b.dataset.f;pal();});
 $('f').oninput=pal;pal();
 function inv(x){return BigInt([...x.toString()].reverse().join(''));}
 $('go').onclick=()=>{let x=BigInt($('n').value||0);let h='';let k=0;const cap=v=>v.toString()==[...v.toString()].reverse().join('');
  while(!cap(x)&&k<300){const y=inv(x);h+=`<div>${x} + ${y} = <b>${x+y}</b></div>`;x=x+y;k++;}
- h+=`<div class="msg ${cap(x)?'ok':'bad'}">${cap(x)?`Capicua ${x} em ${k} passo${k==1?'':'s'}!`:'Depois de 300 passos, nenhuma capicua. Você pode ter achado um número como o 196.'}</div>`;$('passos').innerHTML=h;};$('go').click();
+ h+=`<div class="msg ${cap(x)?'ok':'bad'}">${cap(x)?`Capicua ${x} em ${k} passo${k==1?'':'s'}!`:'Depois de 300 passos, nenhuma capicua. Você pode ter achado um número como o 196.'}</div>`;$('passos').innerHTML=h;espelho(x.toString(),$('esp2'));};$('go').click();
 </script>

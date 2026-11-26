@@ -13,9 +13,25 @@ const Q=[['Há seis vezes mais alunos (A) do que professores (P).',['A = 6P','6A
 ['Um quadrado e dez raízes são iguais a trinta e nove.',['x² + 10x = 39','10x² = 39','x + 10 = 39','x² = 10x + 39'],'É a frase de al-Khwarizmi: quadrado = x², raiz = x.'],
 ['Daqui a 5 anos terei o dobro da idade que tinha há 5 anos.',['x + 5 = 2(x − 5)','x + 5 = 2x − 5','2(x + 5) = x − 5','x − 5 = 2(x + 5)'],'"O dobro da idade que tinha" pede parênteses: 2(x − 5).'],
 ['Há quatro vezes mais galinhas (G) do que vacas (V).',['G = 4V','4G = V','G + 4 = V','V = 4G'],'Com 5 vacas, 20 galinhas: 20 = 4 × 5.']];
+const AZ='#0E2354',LA='#F7821F',VE='#2E7D4F',CI='#9CA3AF';
+const B=[[['P',[['P',1,AZ]]],['A',[['P',1,LA],['P',1,LA],['P',1,LA],['P',1,LA],['P',1,LA],['P',1,LA]]]],
+[['B',[['B',3,AZ]]],['A',[['B',3,LA],['5',1,VE]]]],
+[['30',[['x',2,AZ],['4',1,VE],['x',2,AZ],['4',1,VE],['x',2,AZ],['4',1,VE]]]],
+[['30',[['x',2,AZ],['x',2,AZ],['x',2,AZ],['4',1,VE]]]],
+[['C',[['P',3,AZ],['3',1,VE]]],['P',[['P',3,LA]]]],
+[['45',[['n',2,AZ],['n',2,AZ],['1',.6,VE],['n',2,AZ],['1',.6,VE],['1',.6,VE]]]],
+[['20',[['x',2.4,AZ],['8',2,VE]]]],
+[['39',[['x²',3,AZ],['10x',4,LA]]]],
+[['hoje + 5',[['x',4,AZ],['5',1,VE]]],['2 × (hoje − 5)',[['x − 5',2.6,LA],['x − 5',2.6,LA]]]],
+[['V',[['V',1,AZ]]],['G',[['V',1,LA],['V',1,LA],['V',1,LA],['V',1,LA]]]]];
+function barras(i){const L=B[i];let h='',y=8;const tot=Math.max(...L.map(r=>r[1].reduce((a,b)=>a+b[1],0))),k=Math.min(46,250/tot);
+ for(const [nome,seg] of L){let x=70;h+=`<text x="64" y="${y+20}" text-anchor="end" font-size="12" font-weight="700" fill="${AZ}">${nome}</text>`;
+  for(const [t,u,c] of seg){h+=`<rect x="${x}" y="${y}" width="${u*k-2}" height="30" rx="5" fill="${c}"/><text x="${x+(u*k-2)/2}" y="${y+20}" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">${t}</text>`;x+=u*k;}
+  y+=40;}
+ return `<p class="lbl">Em barras (cada bloco é um pedaço da frase):</p><svg viewBox="0 0 330 ${y}" style="width:100%">${h}</svg>`;}
 let ord=Q.map((_,i)=>i).sort(()=>Math.random()-.5),k=0,ac=0;
 function show(){const q=Q[ord[k%Q.length]];$('fr').textContent=q[0];$('m').innerHTML='';const o=q[1].map((t,i)=>[t,i]).sort(()=>Math.random()-.5);
  $('ops').innerHTML='';o.forEach(([t,i])=>{const b=document.createElement('button');b.className='opt';b.textContent=t;b.onclick=()=>{if($('m').innerHTML)return;const ok=i==0;if(ok)ac++;b.classList.add(ok?'right':'wrong');
-  [...$('ops').children].forEach(x=>{if(x.textContent==q[1][0])x.classList.add('right');});$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Cuidado com a armadilha.'} ${q[2]}</div><button class="or" style="margin-top:8px" id="nx">Próxima</button>`;$('nx').onclick=()=>{k++;show();};$('pl').textContent=`Acertos: ${ac} de ${k+1}`;};$('ops').appendChild(b);});}
+  [...$('ops').children].forEach(x=>{if(x.textContent==q[1][0])x.classList.add('right');});$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Cuidado com a armadilha.'} ${q[2]}</div>${barras(ord[k%Q.length])}<button class="or" style="margin-top:8px" id="nx">Próxima</button>`;$('nx').onclick=()=>{k++;show();};$('pl').textContent=`Acertos: ${ac} de ${k+1}`;};$('ops').appendChild(b);});}
 show();
 </script>
