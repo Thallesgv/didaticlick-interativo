@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Máquina de resumos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Máquina de resumos</h1></header>
+<main>
+<div class="card"><h2>Uma letra muda tudo</h2><p class="muted" style="margin-top:0">Digite um texto em cada caixa. O site calcula um resumo de 8 símbolos (uma função hash simples, chamada FNV, parecida em espírito com as usadas pela perícia) e desenha o resumo como uma faixa colorida.</p>
+<p style="margin:6px 0 2px"><b>Original</b></p><input id="a" type="text" style="width:100%;font-size:16px">
+<p style="margin:10px 0 2px"><b>Cópia</b></p><input id="b" type="text" style="width:100%;font-size:16px">
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Resumo do original<b id="ka"></b></div><div class="o">Resumo da cópia<b id="kb"></b></div><div>Símbolos iguais<b id="ki"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function fnv(s){let h=0x811c9dc5;for(const ch of unescape(encodeURIComponent(s))){h^=ch.charCodeAt(0);h=Math.imul(h,0x01000193)>>>0;}return h.toString(16).padStart(8,'0');}
+const COR=['#0E2354','#2457D6','#15803D','#F7821F','#FBB57A','#B91C1C','#7A4BB5','#0E9AA7','#6B7280','#D97706','#1E40AF','#065F46','#9D174D','#4338CA','#92400E','#334155'];
+$('a').value='Transferir 18.000 para a conta B';$('b').value='Transferir 18.000 para a conta B';$('a').oninput=draw;$('b').oninput=draw;
+function faixa(h,y){let g='';h.split('').forEach((c,i)=>{const v=parseInt(c,16);g+=`<rect x="${10+i*40}" y="${y}" width="38" height="44" rx="5" fill="${COR[v]}"/>`+TX(29+i*40,y+28,c,{fs:15,c:'#fff'});});return g;}
+function draw(){const ha=fnv($('a').value),hb=fnv($('b').value);let g=`<rect width="340" height="150" fill="#F8FAFC"/>`+TX(10,20,'original',{fs:10,a:'start',c:GRAY,w:500})+faixa(ha,26)+TX(10,94,'cópia',{fs:10,a:'start',c:GRAY,w:500})+faixa(hb,100);
+ $('fig').innerHTML=SVG(340,150,g);$('ka').textContent=ha;$('kb').textContent=hb;const ig=ha.split('').filter((c,i)=>c==hb[i]).length;$('ki').textContent=ig+' de 8';
+ if(ha==hb)$('m').innerHTML='<div class="msg ok">✔ Resumos iguais: a cópia é idêntica ao original. Agora mude uma única letra, um ponto ou um espaço da cópia.</div>';
+ else $('m').innerHTML=`<div class="msg bad">Resumos diferentes: a cópia foi alterada. Repare que, mesmo com uma mudança mínima, quase todos os símbolos mudaram (${8-ig} de 8).</div>`;}
+draw();
+})();
+</script>
+</body>
+</html>

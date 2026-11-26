@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relógio do RSA · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Relógio do RSA</h1></header>
+<main>
+<div class="card"><h2>Cifrar e decifrar dando voltas</h2><p class="muted" style="margin-top:0">Um relógio com 33 posições (mod 33). Para cifrar, multiplique a mensagem por ela mesma 3 vezes (chave pública e = 3), sempre voltando ao relógio. Para decifrar, 7 vezes (chave privada d = 7).</p>
+<div class="sl" id="sm"><b>Mensagem m</b><input type="range"><span></span></div>
+<div class="chips" id="md"></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin-top:6px"><button id="pp">Próximo passo</button><button class="alt" id="tudo">Todos os passos</button></div>
+<div id="hist" class="muted" style="margin-top:6px"></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const n=33;let passos=[],k=0;
+const MM=SL('sm',2,32,1,4,ini,v=>v);const M=chips('md',['Cifrar (e = 3)','Decifrar (d = 7)'],0,ini);
+function base(){const m=MM.get();return M.get()==0?m:Math.pow(m,3)%n;}
+function ini(){const b=base(),ex=M.get()?7:3;passos=[b];for(let i=1;i<ex;i++)passos.push(passos[i-1]*b%n);k=0;draw();}
+$('pp').onclick=()=>{if(k<passos.length-1)k++;draw();};$('tudo').onclick=()=>{k=passos.length-1;draw();};
+function draw(){const cx=170,cy=150,r=120;let g=`<rect width="340" height="300" fill="#F8FAFC"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="#fff" stroke="${NAVY}" stroke-width="2"/>`;
+ const P_=i=>{const a=-Math.PI/2+2*Math.PI*i/n;return[cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+ for(let i=0;i<n;i++){const [x,y]=P_(i),[xl,yl]=[cx+(r-16)*Math.cos(-Math.PI/2+2*Math.PI*i/n),cy+(r-16)*Math.sin(-Math.PI/2+2*Math.PI*i/n)];g+=`<circle cx="${x}" cy="${y}" r="3" fill="${GRAYL}"/>`+TX(xl,yl+4,i,{fs:9,c:GRAY,w:500});}
+ for(let i=1;i<=k;i++){const [x1,y1]=P_(passos[i-1]),[x2,y2]=P_(passos[i]);g+=`<path d="M${x1},${y1} Q${cx},${cy} ${x2},${y2}" fill="none" stroke="${i==k?ORANGE:LIGHT}" stroke-width="${i==k?3:2}"/>`;}
+ passos.slice(0,k+1).forEach((v,i)=>{const [x,y]=P_(v);g+=`<circle cx="${x}" cy="${y}" r="${i==k?11:7}" fill="${i==k?ORANGE:i==0?BLUE:LIGHT}" stroke="#fff" stroke-width="2"/>`+(i==k||i==0?TX(x,y+4,v,{fs:i==k?11:9,c:'#fff'}):'');});
+ const ex=M.get()?7:3,b=passos[0];g+=TX(8,18,M.get()?'c = '+b:'m = '+b,{fs:13,a:'start',c:BLUE})+TX(332,18,(M.get()?b+'^'+(k+1):b+'^'+(k+1))+' mod 33 = '+passos[k],{fs:12,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(340,300,g);
+ $('hist').innerHTML=passos.slice(0,k+1).map((v,i)=>`${b}<sup>${i+1}</sup> ≡ ${v}`).join(' · ');
+ const fim=k==passos.length-1;
+ if(!fim)$('m').innerHTML=`<div class="msg info">Passo ${k+1} de ${ex}: cada passo multiplica por ${b} e fica com o resto da divisão por 33.</div>`;
+ else if(M.get()==0)missao('m',true,`A mensagem ${b} cifrada é <b>${passos[k]}</b>. Agora troque para Decifrar: o site parte de ${passos[k]} e, com d = 7, deve voltar a ${b}.`,'');
+ else missao('m',true,`Voltou: ${b}<sup>7</sup> mod 33 = <b>${passos[k]}</b>, a mensagem original (${MM.get()}). Só quem conhece d = 7 consegue.`,'');}
+ini();
+})();
+</script>
+</body>
+</html>
