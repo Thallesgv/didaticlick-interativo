@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O júri dos sete · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>O júri dos sete</h1></header>
+<main>
+<div class="card"><h2>A maioria acerta mais?</h2><p class="muted" style="margin-top:0">Cada jurado acerta com a chance escolhida, sem combinar com os outros. Sorteie votações e compare o placar com a distribuição binomial.</p>
+<div class="sl" id="sp"><b>Chance de cada jurado acertar</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Número de jurados</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin-top:6px"><button id="um">Votar uma vez</button><button class="alt" id="cem">100 julgamentos</button></div>
+<div class="kpi"><div class="o">P(maioria acerta)<b id="k1"></b></div><div>Placar da última votação<b id="k2"></b></div><div>Maioria acertou nos sorteios<b id="k3"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let voto=[],tot=0,ac=0;const PP=SL('sp',0.3,0.95,0.05,0.7,reset,v=>Math.round(100*v)+'%'),NN=SL('sn',1,25,2,7,reset,v=>v+(v==1?' jurado':' jurados'));
+function reset(){voto=[];tot=0;ac=0;draw();}
+const C=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+function vota(){const n=NN.get(),p=PP.get();voto=Array.from({length:n},()=>Math.random()<p);tot++;if(voto.filter(x=>x).length>n/2)ac++;}
+$('um').onclick=()=>{vota();draw();};$('cem').onclick=()=>{for(let i=0;i<100;i++)vota();draw();};
+function draw(){const n=NN.get(),p=PP.get(),pr=Array.from({length:n+1},(_,k)=>C(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k)),maj=pr.reduce((a,v,k)=>a+(k>n/2?v:0),0);
+ let g=`<rect width="340" height="270" fill="#F8FAFC"/>`;const cw=Math.min(36,320/Math.max(n,1));
+ for(let i=0;i<n;i++){const x=10+(i%13)*24.6,y=10+Math.floor(i/13)*34,v=voto[i];
+  g+=`<rect x="${x}" y="${y}" width="21" height="28" rx="3" fill="${v===undefined?'#EEF2F7':v?ORANGE:GRAYL}" stroke="${NAVY}" stroke-width="0.8"/>`+TX(x+10.5,y+18,v===undefined?'?':v?'✔':'✗',{fs:11,c:v===undefined?GRAY:v?'#fff':NAVY});}
+ const mx=Math.max(...pr),bw=320/(n+1),y0=240;
+ pr.forEach((v,k)=>{const h=v/mx*140,x=10+k*bw;g+=`<rect x="${x+1}" y="${y0-h}" width="${bw-2}" height="${h}" rx="2" fill="${k>n/2?ORANGE:NAVY}"/>`;
+  if(n<=13||k%2==0)g+=TX(x+bw/2,y0+12,k,{fs:9,c:GRAY,w:500});
+  const nk=voto.length?voto.filter(x=>x).length:-1;if(k==nk)g+=`<polygon points="${x+bw/2-5},${y0-h-12} ${x+bw/2+5},${y0-h-12} ${x+bw/2},${y0-h-4}" fill="#B91C1C"/>`;});
+ g+=TX(170,y0+26,'jurados que acertam (laranja: maioria correta)',{fs:9.5,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,270,g);$('k1').textContent=r1(100*maj)+'%';
+ const nk=voto.filter(x=>x).length;$('k2').textContent=voto.length?nk+' × '+(n-nk):'—';$('k3').textContent=tot?r1(100*ac/tot)+'% de '+tot:'—';
+ const caso=n==7&&Math.abs(p-0.7)<1e-9;
+ missao('m',p<0.5&&n>=7,`Com cada jurado errando mais do que acerta, o grupo fica PIOR que uma pessoa sozinha: ${r1(100*maj)}% contra ${Math.round(100*p)}%. O teorema de Condorcet precisa de p maior que 1/2.`,
+  caso?`7 jurados, 70% cada: a maioria acerta em ${r1(100*maj)}% das vezes. Aumente o número de jurados e veja a barra laranja crescer. Depois tente p abaixo de 50%.`:
+  `Com ${n} jurado(s) e ${Math.round(100*p)}% cada, a maioria acerta em ${r1(100*maj)}%. Missão: descubra o que acontece com um júri grande quando cada jurado acerta menos de 50%.`);}
+reset();
+})();
+</script>
+</body>
+</html>
