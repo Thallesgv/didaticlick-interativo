@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'cub1':{T:["Conheça o cubo", "A língua do cubo", "A cruz branca", "A primeira camada", "A segunda camada", "A cruz amarela", "O cubo montado"],G:{1:()=>{const t=R(0,3);const C=[['branco','verde','vermelho'],['amarelo','azul','laranja'],['branco','azul'],['verde','laranja'],['amarelo'],['vermelho','amarelo','verde'],['azul','branco','laranja'],['verde']];const c=P(C);
+ if(t<2)return{q:`Uma peça tem as cores <b>${c.join(', ')}</b>. Que tipo de peça é?`,opts:['centro','meio','quina'],a:['centro','meio','quina'][c.length-1],exp:`${c.length} cor(es): ${['centro','meio','quina'][c.length-1]}.`};
+ const O={branco:'amarelo',amarelo:'branco',verde:'azul',azul:'verde',vermelho:'laranja',laranja:'vermelho'},k=P(Object.keys(O));if(t==2)return{q:`Qual cor fica <b>oposta</b> ao ${k}?`,opts:['amarelo','branco','verde','azul','vermelho','laranja'].filter(x=>x!=k),a:O[k],exp:`Os pares opostos são branco/amarelo, verde/azul e vermelho/laranja.`};
+ const n=P([2,3,4,5]);return{q:`Num cubo ${n}x${n}, quantas etiquetas (quadradinhos) há ao todo?`,a:6*n*n,exp:`6 faces · ${n}·${n} = ${6*n*n}.`};},
+2:()=>{const F=['R','L','U','D','F','B'],S=['',"'",'2'];const t=R(0,2);
+ if(t==0){const k=R(2,3),s=Array.from({length:k},()=>P(F)+P(S));const inv=s.slice().reverse().map(x=>x.endsWith('2')?x:x.endsWith("'")?x[0]:x+"'");const ops=[inv.join(' '),s.map(x=>x.endsWith('2')?x:x.endsWith("'")?x[0]:x+"'").join(' '),s.slice().reverse().join(' ')];
+  return{q:`Qual é o <b>inverso</b> de <b>${s.join(' ')}</b>?`,opts:[...new Set(ops)].sort(()=>Math.random()-.5),a:inv.join(' '),exp:`Inverta cada movimento e a ordem: ${inv.join(' ')}.`};}
+ if(t==1){const f=P(F),k=P([4,8,2,6,12,5,7]);return{q:`Você faz <b>${f}</b> ${k} vezes seguidas. Isso equivale a quantos quartos de volta além de voltas inteiras? (0 a 3)`,a:k%4,exp:`A cada 4 quartos, a face volta: ${k} = ${Math.floor(k/4)}·4 + ${k%4}.`};}
+ const k=R(2,4);return{q:`Quantas sequências diferentes de <b>${k}</b> movimentos existem, se cada movimento pode ser qualquer um dos 18 (R, R', R2, ...)?`,a:18**k,exp:`18 multiplicado ${k} vezes: ${fmt(18**k)}.`};},
+3:()=>{const t=R(0,2);const COR=['verde','vermelho','azul','laranja'];
+ if(t==0){const a=R(0,3);let b=R(0,3);if(a==b)b=(a+2)%4;const d=(b-a+4)%4;return{q:`Em volta do cubo, os centros laterais seguem a ordem verde, vermelho, azul, laranja. Uma pétala tem <b>${COR[a]}</b> do lado e está sobre o centro <b>${COR[b]}</b>. Para combinar, você gira U:`,opts:['um quarto de volta (U ou U’)','meia volta (U2)'],a:d==2?'meia volta (U2)':'um quarto de volta (U ou U’)',exp:d==2?`${COR[a]} e ${COR[b]} são opostos: meia volta.`:`${COR[a]} e ${COR[b]} são vizinhos: um quarto de volta.`};}
+ if(t==1){const n=R(1,4);return{q:`Faltam <b>${n}</b> pétalas para descer. Quantos F2 ainda serão feitos?`,a:n,exp:`Um F2 por pétala.`};}
+ const m=R(6,20),s=P([0.4,0.5,0.6]);return{q:`Você fez a cruz em <b>${m}</b> movimentos, a <b>${fmt(s)} s</b> cada. Quanto tempo levou, em segundos?`,a:Math.round(m*s*10)/10,tol:.05,exp:`${m} · ${fmt(s)} = ${fmt(Math.round(m*s*10)/10)} s.`};},
+4:()=>{const t=R(0,2);if(t==0){const o=P([['para a direita',1],['para a frente',3],['para cima',5]]);return{q:`A quina está sobre o lugar, com o branco virado <b>${o[0]}</b>. Quantas repetições de R U R' U'?`,opts:['1','3','5'],a:String(o[1]),exp:`Branco para a direita: 1; para a frente: 3; para cima: 5.`};}
+ if(t==1){const k=R(7,40);return{q:`R U R' U' tem ordem 6. Fazer <b>${k}</b> repetições é o mesmo que fazer quantas? (0 a 5)`,a:k%6,exp:`${k} = ${Math.floor(k/6)}·6 + ${k%6}.`};}
+ const q=R(1,4),r=P([1,3,5]),s=P([1,1.2,1.5]);return{q:`Cada repetição leva <b>${fmt(s)} s</b>. Quanto tempo para descer <b>${q}</b> quina(s), cada uma com <b>${r}</b> repetições?`,a:Math.round(q*r*s*10)/10,tol:.05,exp:`${q} · ${r} · ${fmt(s)} = ${fmt(Math.round(q*r*s*10)/10)} s.`};},
+5:()=>{const C=['verde','vermelho','azul','laranja'];const i=R(0,3),dir=Math.random()<.5;const f=C[i],lado=dir?C[(i+1)%4]:C[(i+3)%4];
+ return{q:`Olhando de frente, o centro da frente é <b>${f}</b>, o da direita é <b>${C[(i+1)%4]}</b> e o da esquerda, <b>${C[(i+3)%4]}</b>. Um meio forma o T com o ${f} e tem <b>${lado}</b> em cima. Qual algoritmo?`,opts:['meio para a direita',"meio para a esquerda"],a:dir?'meio para a direita':'meio para a esquerda',exp:`A cor de cima (${lado}) está ${dir?'à direita':'à esquerda'}: o meio vai para esse lado.`};},
+6:()=>{const t=R(0,2);if(t==0){const c=P([['ponto',3],['L',2],['linha',1]]);return{q:`Com o desenho <b>${c[0]}</b>, quantas vezes (no máximo) F R U R' U' F' até a cruz amarela?`,a:c[1],exp:`Ponto → L → linha → cruz: ${c[1]} vez(es).`};}
+ if(t==1){const n=P([3,4,5]);const f=[1,1,2,6,24,120][n];return{q:`De quantas ordens diferentes ${n} meios podem ser colocados em ${n} lugares?`,a:f,exp:`${n}! = ${f}.`};}
+ const k=R(0,4);return{q:`Quantos meios amarelos podem estar virados para cima antes da cruz? Pode ser <b>${k}</b>?`,opts:['sim','não'],a:k%2==0?'sim':'não',exp:`O número de meios virados é sempre par (0, 2 ou 4).`};},
+7:()=>{const t=R(0,2);if(t==0){const a=[R(15,90),R(15,90),R(15,90),R(15,90),R(15,90)].map(x=>x+R(0,9)/10);const s=a.slice().sort((x,y)=>x-y),m=Math.round((s[1]+s[2]+s[3])/3*100)/100;
+  return{q:`Tempos: <b>${a.map(fmt).join(' · ')}</b> s. Qual a média de 5 (tirando o melhor e o pior)? (2 casas)`,a:m,tol:.011,exp:`Tire ${fmt(s[0])} e ${fmt(s[4])}: (${fmt(s[1])} + ${fmt(s[2])} + ${fmt(s[3])}) ÷ 3 ≈ ${fmt(m)} s.`};}
+ if(t==1){const mi=R(1,4),se=R(0,59);return{q:`Quantos segundos há em <b>${mi} min ${se} s</b>?`,a:mi*60+se,exp:`${mi} · 60 + ${se} = ${mi*60+se} s.`};}
+ const k=P([2,4]);return{q:`R' D' R D tem ordem 6. Se uma quina precisou de ${k} repetições, ela girou quantos terços de volta?`,a:k/2,exp:`Cada 2 repetições giram um terço: ${k}/2 = ${k/2}.`};}}},'cub2':{T:["A cruz por baixo", "F2L: o par", "F2L: os casos", "OLL em 2 olhares", "PLL em 2 olhares", "Dedos rápidos"],G:{1:()=>{const t=R(0,2);if(t==0){const k=P([4,5,6,7,8]),pc={4:5.2,5:24.4,6:51.2,7:18.4,8:0.05}[k];return{q:`Que porcentagem das cruzes precisa de exatamente <b>${k}</b> movimentos? (tabela do livro)`,opts:['0,05%','5,2%','18,4%','24,4%','51,2%'],a:fmt(pc)+'%',exp:`Pela contagem das 190.080 posições: ${fmt(pc)}%.`};}
+ if(t==1){const n=R(2,4);let v=1;for(let i=0;i<n;i++)v*=12-i;return{q:`De quantos jeitos <b>${n}</b> meios brancos podem ocupar ${n} dos 12 lugares de meios (sem contar orientação)?`,a:v,exp:`12 · 11 · ... (${n} fatores) = ${fmt(v)}.`};}
+ const s=R(5,15);return{q:`Você planejou a cruz em <b>${s}</b> s de inspeção. O limite da WCA é 15 s. Sobra quanto tempo?`,a:15-s,exp:`15 − ${s} = ${15-s} s.`};},
+2:()=>{const F=['R','L','U','D','F','B'];const t=R(0,1);if(t==0){const a=P(['R',"R'",'F',"F'",'L',"L'"]),b=P(['U',"U'",'U2']);const ia=a.endsWith("'")?a[0]:a+"'";return{q:`Escreva a conjugação "abrir, mexer, fechar" com A = <b>${a}</b> e B = <b>${b}</b>.`,opts:[`${a} ${b} ${ia}`,`${a} ${b} ${a}`,`${ia} ${b} ${a} ${b}`,`${b} ${a} ${ia}`],a:`${a} ${b} ${ia}`,exp:`A, B, A⁻¹: ${a} ${b} ${ia}.`};}
+ const k=R(5,30);return{q:`R U R' tem ordem 4. Fazer R U R' <b>${k}</b> vezes é o mesmo que fazer quantas vezes? (0 a 3)`,a:k%4,exp:`${k} = ${Math.floor(k/4)}·4 + ${k%4}.`};},
+3:()=>{const t=R(0,1);if(t==0){const m=[4,4,7,8,8,11],k=R(2,6),s=m.slice(0,k);return{q:`Qual a média de movimentos destes algoritmos de F2L: <b>${s.join(', ')}</b>? (1 casa)`,a:Math.round(s.reduce((a,b)=>a+b)/k*10)/10,tol:.05,exp:`Soma ${s.reduce((a,b)=>a+b)} ÷ ${k}.`};}
+ const mv=R(5,9),tps=P([1.5,2,2.5,3]);return{q:`Cada par leva <b>${mv}</b> movimentos e você faz <b>${fmt(tps)}</b> por segundo. Quanto tempo leva o F2L (4 pares)? (1 casa)`,a:Math.round(4*mv/tps*10)/10,tol:.05,exp:`4 · ${mv} = ${4*mv} movimentos ÷ ${fmt(tps)} = ${fmt(Math.round(4*mv/tps*10)/10)} s.`};},
+4:()=>{const C=[['Sune',1],['Antisune',1],['H',0],['Pi',0],['Faróis',2],['T',2],['Gravata',2]],c=P(C);if(Math.random()<.5)return{q:`No caso <b>${c[0]}</b>, quantas quinas estão com o amarelo para cima?`,opts:['0','1','2'],a:String(c[1]),exp:`${c[0]}: ${c[1]} quina(s).`};
+ const n=R(8,80);return{q:`A chance de a cruz amarela já vir pronta é 1 em 8. Em <b>${n*8}</b> resoluções, em quantas você espera isso?`,a:n,exp:`${n*8} ÷ 8 = ${n}.`};},
+5:()=>{const C=[['T',2],['Y',2],['Ua',3],['Ub',3],['H',2],['Z',2]],c=P(C);if(Math.random()<.6)return{q:`Quantas vezes é preciso fazer a PLL <b>${c[0]}</b> para o cubo voltar ao início?`,a:c[1],exp:`Ordem de ${c[0]}: ${c[1]}.`};
+ const a=P([2,3,4,6]),b=P([2,3,4,5]);const g=(x,y)=>y?g(y,x%y):x;return{q:`Um algoritmo tem um ciclo de tamanho <b>${a}</b> e outro de tamanho <b>${b}</b>. Qual a ordem dele?`,a:a*b/g(a,b),exp:`mmc(${a}, ${b}) = ${a*b/g(a,b)}.`};},
+6:()=>{const t=R(0,2);if(t==0){const m=R(40,90),s=R(10,40);return{q:`<b>${m}</b> movimentos em <b>${s}</b> s. Qual o TPS? (2 casas)`,a:Math.round(m/s*100)/100,tol:.011,exp:`${m} ÷ ${s} ≈ ${fmt(Math.round(m/s*100)/100)}.`};}
+ if(t==1){const m=R(50,80),tps=P([2,2.5,3,4,5]);return{q:`<b>${m}</b> movimentos com TPS <b>${fmt(tps)}</b>: quanto tempo? (1 casa)`,a:Math.round(m/tps*10)/10,tol:.05,exp:`${m} ÷ ${fmt(tps)} = ${fmt(Math.round(m/tps*10)/10)} s.`};}
+ const m=P([60,72,80]),a=P([40,36,30]),b=P([24,20,18]);return{q:`Para baixar de ${a} s para ${b} s com ${m} movimentos, de quanto o TPS precisa subir? (2 casas)`,a:Math.round((m/b-m/a)*100)/100,tol:.011,exp:`${m}/${b} − ${m}/${a} = ${fmt(Math.round((m/b-m/a)*100)/100)}.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='cub1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>
