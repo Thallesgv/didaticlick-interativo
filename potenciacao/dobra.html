@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Somar ou dobrar? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy);word-break:break-all}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.t{width:100%;font-size:17px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Potenciação</div><h1>Somar ou dobrar?</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Comece com 1. De um lado, some sempre a mesma quantidade por dia; do outro, dobre. Mude a soma diária e veja em que dia o dobro passa à frente.</p><div class="sl" id="k"><b>Soma por dia</b><input type="range"><span></span></div><div class="sl" id="d"><b>Dias</b><input type="range"><span></span></div><div class="fig" id="fig"></div><div class="res" id="rs"></div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Sophia','Duda','Manu','Samuel','Miguel','Teodoro','Mikaela','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Nikolas','Richard'];
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+const sup=e=>String(e).replace(/-/g,'⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+const big=s=>String(s).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pw=(b,e)=>e>=0?big((BigInt(b)**BigInt(e)).toString()):'1/'+big((BigInt(b)**BigInt(-e)).toString());
+function fv(s){s=String(s).trim().replace(/\s/g,'');if(s.includes('/')){const[p,q]=s.split('/').map(num);return p/q;}return num(s);}
+const perto=(a,b)=>Math.abs(a-b)<=Math.abs(b)*1e-6+1e-12;
+function cubo(n,cx,cy,sz){const a=Math.min(22,sz/(2*n)),dx=a*.866,dy=a*.5;let g='';
+ const P=(x,y,z)=>[cx+(x-y)*dx,cy+(x+y)*dy-z*a];
+ const F=(p,c)=>`<polygon points="${p.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="${c}" stroke="#fff" stroke-width="1.2"/>`;
+ for(let z=0;z<n;z++)for(let x=0;x<n;x++)for(let y=0;y<n;y++){
+  if(z==n-1)g+=F([P(x,y,z+1),P(x+1,y,z+1),P(x+1,y+1,z+1),P(x,y+1,z+1)],'#FDBA74');
+  if(y==n-1)g+=F([P(x,y+1,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x,y+1,z+1)],'#F7821F');
+  if(x==n-1)g+=F([P(x+1,y,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x+1,y,z+1)],'#C2410C');}
+ return g;}
+
+
+const K=D.sl('k',1,100,1,10,draw),Dd=D.sl('d',1,20,1,10,draw);
+function draw(){const k=K.get(),d=Dd.get(),lin=i=>1+k*i,ex=i=>2**i,mx=Math.max(lin(d),ex(d));const W=340,H=200,X=i=>30+i*300/d,Y=v=>180-v/mx*165;
+ let g=`<line x1="30" y1="180" x2="330" y2="180" stroke="#0E2354"/><line x1="30" y1="180" x2="30" y2="10" stroke="#0E2354"/>`;
+ for(const[f,c]of[[lin,'#2457D6'],[ex,'#F7821F']]){let p='';for(let i=0;i<=d;i++)p+=X(i).toFixed(1)+','+Y(f(i)).toFixed(1)+' ';g+=`<polyline points="${p}" fill="none" stroke="${c}" stroke-width="2.5"/>`;}
+ g+=T(40,20,'dobrar',{c:'#F7821F',a:'start'})+T(40,34,'somar '+k,{c:'#2457D6',a:'start'});$('fig').innerHTML=svg(W,H,g);
+ let p=0;while(ex(p)<=lin(p)&&p<60)p++;
+ $('rs').innerHTML=`<div>somando<b>${big(lin(d))}</b></div><div>dobrando<b>${big(ex(d))}</b></div><div>dobrar passa à frente no dia<b>${p}</b></div>`;}
+draw();
+
+</script>
+</body>
+</html>

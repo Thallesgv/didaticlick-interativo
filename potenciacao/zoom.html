@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Do átomo às galáxias · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:8px 0}
+.res div{background:#F5F7FB;border-radius:10px;padding:6px;text-align:center;font-size:13px;color:#6B7280}
+.res div b{display:block;font-size:19px;color:var(--navy);word-break:break-all}
+.nota{background:#FFF7EF;border-left:5px solid var(--orange);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px}
+input.t{width:100%;font-size:17px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;font-family:inherit;box-sizing:border-box}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Potenciação</div><h1>Do átomo às galáxias</h1></header>
+<main><div class="card"><p class="muted" style="margin-top:0">Cada passo do controle multiplica o tamanho por 10. Veja o que mede mais ou menos 10ⁿ metros.</p><div class="sl" id="n"><b>Expoente</b><input type="range"><span></span></div><div class="dq" id="ex" style="font-size:20px"></div><div class="res" id="rs"></div><div class="nota">Os tamanhos são aproximados: o que importa é a ordem de grandeza, a potência de 10 mais próxima.</div></div></main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const f2=v=>fmt(Math.round(v*100)/100);
+const T=(x,y,s,o)=>{o=o||{};return `<text x="${x}" y="${y}" font-size="${o.fs||11}" font-weight="${o.w||600}" text-anchor="${o.a||'middle'}" fill="${o.c||'#0E2354'}" font-family="Poppins">${s}</text>`;};
+const NOMES=['Sophia','Duda','Manu','Samuel','Miguel','Teodoro','Mikaela','Gustavo','Guilherme','Luís Otávio','Bernardo','Maria Antônia','Priscila','Rhaquel','Maria Fernanda','Nicole','Isabelle','Gaby','Ícaro','Pietra','Ângela','Fernando','Paulo Henrique','Nikolas','Richard'];
+const svg=(W,H,g)=>`<svg viewBox="0 0 ${W} ${H}" width="${W}">${g}</svg>`;
+const sup=e=>String(e).replace(/-/g,'⁻').replace(/\d/g,d=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[d]);
+const big=s=>String(s).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pw=(b,e)=>e>=0?big((BigInt(b)**BigInt(e)).toString()):'1/'+big((BigInt(b)**BigInt(-e)).toString());
+function fv(s){s=String(s).trim().replace(/\s/g,'');if(s.includes('/')){const[p,q]=s.split('/').map(num);return p/q;}return num(s);}
+const perto=(a,b)=>Math.abs(a-b)<=Math.abs(b)*1e-6+1e-12;
+function cubo(n,cx,cy,sz){const a=Math.min(22,sz/(2*n)),dx=a*.866,dy=a*.5;let g='';
+ const P=(x,y,z)=>[cx+(x-y)*dx,cy+(x+y)*dy-z*a];
+ const F=(p,c)=>`<polygon points="${p.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="${c}" stroke="#fff" stroke-width="1.2"/>`;
+ for(let z=0;z<n;z++)for(let x=0;x<n;x++)for(let y=0;y<n;y++){
+  if(z==n-1)g+=F([P(x,y,z+1),P(x+1,y,z+1),P(x+1,y+1,z+1),P(x,y+1,z+1)],'#FDBA74');
+  if(y==n-1)g+=F([P(x,y+1,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x,y+1,z+1)],'#F7821F');
+  if(x==n-1)g+=F([P(x+1,y,z),P(x+1,y+1,z),P(x+1,y+1,z+1),P(x+1,y,z+1)],'#C2410C');}
+ return g;}
+
+
+const O={'-10':'um átomo','-9':'a largura de uma molécula de DNA','-8':'um vírus pequeno','-7':'um vírus grande','-6':'uma bactéria','-5':'um glóbulo vermelho','-4':'a espessura de um fio de cabelo','-3':'um grão de areia','-2':'uma formiga','-1':'um celular','0':'uma pessoa','1':'um ônibus','2':'um campo de futebol','3':'um bairro','4':'uma cidade pequena','5':'a distância entre duas cidades','6':'um estado grande','7':'a Terra (diâmetro)','8':'a distância Terra–Lua','9':'o Sol (diâmetro)','10':'a distância de Mercúrio ao Sol','11':'a distância Terra–Sol','12':'a distância de Saturno ao Sol','13':'o Sistema Solar até Netuno','14':'a nuvem de cometas mais próxima','15':'1 ano-luz','16':'até a estrela mais próxima','17':'estrelas vizinhas','18':'um aglomerado de estrelas','19':'nebulosas grandes','20':'o centro da Via Láctea','21':'a Via Láctea','22':'até a galáxia de Andrômeda','23':'um grupo de galáxias','24':'um superaglomerado','25':'grandes vazios do universo','26':'o universo observável'};
+const N=D.sl('n',-10,26,1,0,draw);
+function draw(){const n=N.get();$('ex').innerHTML=`10${sup(n)} m ≈ <span class="k">${O[n]}</span>`;
+ $('rs').innerHTML=`<div>em metros<b>${n>=0?(n<=12?big('1'+'0'.repeat(n)):'1 e '+n+' zeros'):(n>=-6?'0,'+'0'.repeat(-n-1)+'1':'0,(…)1')}</b></div><div>vezes 1 metro<b>${n>=0?'× 10'+sup(n):'÷ 10'+sup(-n)}</b></div>`;}
+draw();
+
+</script>
+</body>
+</html>
