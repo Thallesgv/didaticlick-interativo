@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Montador de tabelas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Montador de tabelas</h1></header>
+<main>
+<div class="card"><h2>Tabela-verdade</h2><p class="muted" style="margin-top:0">Escolha a expressão A e a expressão B. A tabela se preenche linha por linha. Colunas iguais em todas as linhas: as expressões são <b>equivalentes</b>.</p>
+<p style="margin:6px 0 2px"><b>Expressão A</b></p><div class="chips" id="ca"></div>
+<p style="margin:6px 0 2px"><b>Expressão B</b></p><div class="chips" id="cb"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Linhas iguais<b id="ki"></b></div><div>Pares equivalentes achados<b id="kp"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EX=[['p ∧ q',(p,q)=>p&&q],['p ∨ q',(p,q)=>p||q],['¬p',(p,q)=>!p],['p → q',(p,q)=>!p||q],['q → p',(p,q)=>!q||p],['¬q → ¬p',(p,q)=>q||!p],['¬p ∨ q',(p,q)=>!p||q],['¬(p ∧ q)',(p,q)=>!(p&&q)],['¬p ∨ ¬q',(p,q)=>!p||!q],['¬(p ∨ q)',(p,q)=>!(p||q)],['¬p ∧ ¬q',(p,q)=>!p&&!q],['p ↔ q',(p,q)=>p==q]];
+const L=[[true,true],[true,false],[false,true],[false,false]];const achados=new Set();let n=0,tm=null;
+const A=chips('ca',EX.map(e=>e[0]),3,inicio),B=chips('cb',EX.map(e=>e[0]),4,inicio);
+function inicio(){n=0;clearInterval(tm);draw();tm=setInterval(()=>{n++;draw();if(n>=4)clearInterval(tm);},450);}
+function cel(x,y,v,w){return `<rect x="${x}" y="${y}" width="${w}" height="34" rx="6" fill="${v?'#DCFCE7':'#F3F4F6'}" stroke="#fff" stroke-width="2"/>`+TX(x+w/2,y+23,v?'V':'F',{fs:15,c:v?GREEN:'#6B7280'});}
+function draw(){const a=EX[A.get()],b=EX[B.get()];let g=`<rect width="340" height="215" fill="#fff"/>`;
+ const xs=[10,62,114,227],ws=[50,50,111,111];
+ ['p','q',a[0],b[0]].forEach((t,i)=>{g+=`<rect x="${xs[i]}" y="8" width="${ws[i]}" height="30" rx="6" fill="${i<2?NAVY:i==2?ORANGE:BLUE}"/>`+TX(xs[i]+ws[i]/2,28,t,{fs:i<2?13:12,c:'#fff'});});
+ let iguais=0;
+ L.forEach(([p,q],r)=>{const y=44+r*40;g+=cel(xs[0],y,p,ws[0])+cel(xs[1],y,q,ws[1]);
+  if(r<n){const va=a[1](p,q),vb=b[1](p,q);g+=cel(xs[2],y,va,ws[2])+cel(xs[3],y,vb,ws[3]);if(va==vb)iguais++;else g+=`<rect x="${xs[2]-2}" y="${y-2}" width="${xs[3]+ws[3]-xs[2]+4}" height="38" rx="8" fill="none" stroke="${ORANGE}" stroke-width="3"/>`;}
+  else g+=`<rect x="${xs[2]}" y="${y}" width="${xs[3]+ws[3]-xs[2]}" height="34" rx="6" fill="#FAFAFA" stroke="${GRAYL}" stroke-dasharray="4 3"/>`;});
+ $('fig').innerHTML=SVG(340,215,g);$('ki').textContent=iguais+' de '+n;
+ const eq=n>=4&&iguais==4,dif=A.get()!=B.get();
+ if(eq&&dif)achados.add([a[0],b[0]].sort().join(' ≡ '));
+ $('kp').textContent=achados.size;
+ if(n<4)$('m').innerHTML='<div class="msg info">Preenchendo...</div>';
+ else if(!dif)$('m').innerHTML='<div class="msg info">A e B são a mesma expressão. Escolha duas diferentes.</div>';
+ else if(eq)missao('m',true,`<b>${a[0]}</b> e <b>${b[0]}</b> são equivalentes: as colunas são iguais nas 4 linhas.`+(achados.size>1?'<br>Pares achados: '+[...achados].join('; '):''),'');
+ else $('m').innerHTML=`<div class="msg info">Não são equivalentes: as linhas destacadas em laranja têm valores diferentes. Dica: procure a contrapositiva e as leis de De Morgan.</div>`;}
+inicio();
+})();
+</script>
+</body>
+</html>
