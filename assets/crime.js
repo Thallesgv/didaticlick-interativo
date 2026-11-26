@@ -6,12 +6,24 @@ const RAD = Math.PI / 180, DEG = 180 / Math.PI;
 const P = a => a[Math.floor(Math.random() * a.length)];
 const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
 function arrastar(svg, el, cb) {
-  const pt = e => { const p = svg.createSVGPoint(), t = e.touches ? e.touches[0] : e; p.x = t.clientX; p.y = t.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
-  let on = false;
-  el.addEventListener('pointerdown', e => { on = true; e.preventDefault(); });
-  svg.addEventListener('pointermove', e => { if (!on) return; e.preventDefault(); const p = pt(e); cb(p.x, p.y); });
-  window.addEventListener('pointerup', () => { on = false; });
-  el.style.cursor = 'grab'; el.style.touchAction = 'none'; svg.style.touchAction = 'none';
+  // O desenho é refeito a cada movimento: o estado do arraste fica no contêiner (que não muda), não no <svg>.
+  // Tocar em qualquer ponto da figura pega o objeto arrastável mais próximo, leva até ali e começa o arraste (fácil no celular).
+  const box = svg.parentNode;
+  svg.style.touchAction = 'none'; box.style.touchAction = 'none'; if (el) el.style.cursor = 'grab';
+  if (!box._drag) {
+    const D = box._drag = { on: null, alvos: {} };
+    const pt = e => { const s = box.querySelector('svg'), p = s.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(s.getScreenCTM().inverse()); };
+    box.addEventListener('pointerdown', e => {
+      const ids = Object.keys(D.alvos); if (!ids.length) return;
+      const p = pt(e), s = box.querySelector('svg'); let melhor = ids[0], dm = Infinity;
+      if (ids.length > 1) ids.forEach(id => { const n = s.querySelector('#' + id); if (!n) return; const b = n.getBBox(), d = Math.hypot(b.x + b.width / 2 - p.x, b.y + b.height / 2 - p.y); if (d < dm) { dm = d; melhor = id; } });
+      D.on = melhor; e.preventDefault(); try { box.setPointerCapture(e.pointerId); } catch (_) {} D.alvos[melhor](p.x, p.y);
+    });
+    box.addEventListener('pointermove', e => { if (!D.on) return; e.preventDefault(); const p = pt(e); D.alvos[D.on](p.x, p.y); });
+    const fim = () => { D.on = null; };
+    box.addEventListener('pointerup', fim); box.addEventListener('pointercancel', fim); window.addEventListener('pointerup', fim);
+  }
+  box._drag.alvos[(el && el.id) || '_'] = cb;
 }
 function chips(id, itens, ini, cb) {
   const el = $(id); let cur = ini;
