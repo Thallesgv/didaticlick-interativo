@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Peças do cubo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Peças do cubo</h1></header>
+<main>
+<div class="card"><h2>Centros, meios e quinas</h2><p class="muted" style="margin-top:0">Toque num tipo de peça para acender só ele. Arraste para ver o cubo por todos os lados.</p>
+<div class="chips" id="md"></div><div id="cubo"></div>
+<div class="msg info" id="info"></div>
+<div class="row" style="justify-content:center;margin-top:10px"><button id="emb">Embaralhar (animado)</button><button class="alt" id="res">Montar de novo</button></div></div>
+<div class="card"><h2>Conte você</h2><p>No cubo 3x3 há <b>6</b> centros, <b>12</b> meios e <b>8</b> quinas. Embaralhe e repare: os <b>centros</b> continuam nos mesmos lugares, só giram. Por isso o centro diz a cor da face.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const T=['Tudo','Centros (1 cor)','Meios (2 cores)','Quinas (3 cores)'],K=[null,'centros','meios','quinas'];
+const INF=['O cubo 3x3 tem 26 peças visíveis: 6 centros, 12 meios e 8 quinas.','6 centros: cada um tem 1 cor e nunca sai do lugar.','12 meios: cada um tem 2 cores e fica entre dois centros.','8 quinas: cada uma tem 3 cores e fica num canto.'];
+const C=new Cubo3D('cubo');
+const M=chips('md',T,0,i=>{C.mask=K[i]?CUBO_MASCARAS[K[i]]:null;$('info').textContent=INF[i];C.desenha();});$('info').textContent=INF[0];
+$('emb').onclick=()=>C.roda(C.embaralha(12));
+$('res').onclick=()=>{C.parar=true;setTimeout(()=>{C.reset();C.desenha();},400);};
+})();
+</script>
+</body>
+</html>
