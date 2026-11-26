@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checador de álibis · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Checador de álibis</h1></header>
+<main>
+<div class="card"><h2>Dá tempo?</h2><p class="muted" style="margin-top:0">Arraste a pizzaria pelo mapa (cada quadra = 1 km) e ajuste os horários. A distância pelas ruas é a soma dos deslocamentos na horizontal e na vertical.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Saída do museu (alarme)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Recibo na pizzaria</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Velocidade necessária<b id="kv"></b></div><div>Distância pelas ruas<b id="kd"></b></div><div>Tempo<b id="kt"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const hm=v=>{const h=Math.floor(v/60)%24,m=v%60;return String(h).padStart(2,'0')+'h'+String(m).padStart(2,'0');};
+const SA=SL('sa',100,130,1,112,draw,hm),SB=SL('sb',105,140,1,123,draw,hm);let Z={x:9,y:5};const k=24,ox=30,oy=230;
+function draw(){const t=(SB.get()-SA.get())/60,d=Math.abs(Z.x)+Math.abs(Z.y),v=t>0?d/t:Infinity;
+ let g='';for(let i=0;i<=12;i++)g+=LN(ox+i*k,oy,ox+i*k,oy-8*k,GRAYL,1);for(let j=0;j<=8;j++)g+=LN(ox,oy-j*k,ox+12*k,oy-j*k,GRAYL,1);
+ g+=`<path d="M${ox},${oy} H${ox+Z.x*k} V${oy-Z.y*k}" fill="none" stroke="${ORANGE}" stroke-width="4"/>`+LN(ox,oy,ox+Z.x*k,oy-Z.y*k,NAVY,1.5,'4 3');
+ g+=`<circle cx="${ox}" cy="${oy}" r="8" fill="${NAVY}"/>`+TX(ox+4,oy+18,'museu',{fs:10,a:'start'});
+ g+=`<circle id="z" cx="${ox+Z.x*k}" cy="${oy-Z.y*k}" r="11" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`+TX(ox+Z.x*k,oy-Z.y*k-16,'pizzaria',{fs:10});
+ const vm=Math.min(isFinite(v)?v:200,150),bar=`<rect x="10" y="250" width="320" height="14" rx="7" fill="#EEF2F7"/><rect x="10" y="250" width="${vm/150*320}" height="14" rx="7" fill="${v<=6?GREEN:v<=20?BLUE:v<=60?ORANGE:'#B91C1C'}"/>`;
+ g+=bar+TX(10,280,'a pé',{fs:9,a:'start',c:GRAY})+TX(10+20/150*320,280,'bike',{fs:9,c:GRAY})+TX(10+60/150*320,280,'carro na cidade',{fs:9,c:GRAY})+TX(330,280,'150 km/h',{fs:9,a:'end',c:GRAY});
+ $('fig').innerHTML=SVG(340,288,g);const svg=$('fig').querySelector('svg');arrastar(svg,svg.querySelector('#z'),(x,y)=>{Z={x:clamp(Math.round((x-ox)/k),0,12),y:clamp(Math.round((oy-y)/k),0,8)};draw();});
+ $('kv').textContent=isFinite(v)?Math.round(v)+' km/h':'impossível';$('kd').textContent=d+' km';$('kt').textContent=Math.max(0,Math.round(t*60))+' min';
+ const txt=!isFinite(v)||t<=0?'O recibo é anterior à saída do museu: álibi perfeito.':v>60?'Precisaria de '+Math.round(v)+' km/h de média na cidade: o álibi se sustenta.':v>20?'Possível de carro: o álibi não exclui o suspeito.':'Possível até de bicicleta ou a pé: o álibi é fraco.';
+ missao('m',v>60||!isFinite(v),txt,txt);}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trilha de pegadas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Trilha de pegadas</h1></header>
+<main>
+<div class="card"><h2>Quem passou por aqui?</h2><p class="muted" style="margin-top:0">Mude a altura e o ritmo. O pé tem cerca de 15% da altura; andando, o passo tem cerca de 40% (correndo, muito mais).</p>
+<div class="chips" id="rt"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Altura da pessoa</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Pé<b id="kp"></b></div><div>Passo<b id="ks"></b></div><div>Velocidade<b id="kv"></b></div></div></div>
+<div class="card"><h2>Trilha misteriosa</h2><p class="muted" style="margin-top:0">Meça com a régua (cada tracinho = 10 cm) e estime a altura pela regra do passo (pessoa caminhando).</p><div class="fig" id="fig2"></div>
+<input type="number" id="r" placeholder="altura em cm" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">
+<div class="row" style="margin-top:8px"><button id="conf">Conferir</button><button class="alt" id="nova">Outra trilha</button></div><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=chips('rt',['andando','correndo'],0,draw);const H=SL('sh',120,200,1,175,draw,v=>v+' cm');
+function trilha(pe,passo,k,y0,n){let g='';for(let i=0;i<n;i++){const x=20+i*passo*k,y=y0+(i%2?-12:12);if(x>330)break;g+=ELI(x+pe*k/2,y,pe*k/2,5,0,NAVY)+`<circle cx="${x+pe*k+3}" cy="${y}" r="4" fill="${NAVY}"/>`;}return g;}
+function draw(){const h=H.get(),cor=R.get()==1,pe=0.15*h,passo=(cor?0.9:0.4)*h,cad=cor?3:2,v=passo/100*cad;const k=0.9;
+ let g=`<rect width="340" height="110" fill="${PEACH}"/>`+trilha(pe,passo,k,55,10)+LN(20,95,20+passo*k,95,ORANGE,2)+TX(20+passo*k/2,107,'passo '+Math.round(passo)+' cm',{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(340,112,g);$('kp').textContent=r1(pe)+' cm';$('ks').textContent=Math.round(passo)+' cm';$('kv').textContent=r1(v*3.6)+' km/h';}
+let alvo;function nova(){alvo=rint(150,195);const passo=0.4*alvo,k=0.9;let g=`<rect width="340" height="120" fill="${PEACH}"/>`+trilha(0.15*alvo,passo,k,45,10);
+ g+=LN(20,90,330,90,NAVY,1.5);for(let i=0;i*10*k<=310;i++)g+=LN(20+i*10*k,90,20+i*10*k,i%5==0?78:84,NAVY,1)+(i%5==0?TX(20+i*10*k,104,i*10,{fs:8}):'');
+ $('fig2').innerHTML=SVG(340,112,g);$('r').value='';$('m').innerHTML='';}
+$('conf').onclick=()=>{const x=+$('r').value;const ok=Math.abs(x-alvo)<=8;$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'✔ Boa estimativa!':'Ainda não.'} O passo mede cerca de ${Math.round(0.4*alvo)} cm: altura ≈ ${Math.round(0.4*alvo)} ÷ 0,4 = ${alvo} cm.</div>`;};
+$('nova').onclick=nova;draw();nova();
+})();
+</script>
+</body>
+</html>

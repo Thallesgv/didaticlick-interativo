@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cerque o perímetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Cerque o perímetro</h1></header>
+<main>
+<div class="card"><h2>60 metros de fita</h2><p class="muted" style="margin-top:0">A fita tem sempre 60 m. Escolha o formato e mexa no controle: a área protegida muda, a fita não.</p>
+<div class="chips" id="fm"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sx"><b id="lx">Largura do retângulo</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área protegida<b id="ka"></b></div><div>Fita usada<b id="kf"></b></div><div>Recorde deste formato<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Descubra o formato e as medidas que protegem a <b>maior área</b> com os 60 m. Dica: a parede do museu também conta como lado, e ela não gasta fita.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const F=chips('fm',['Retângulo','Círculo','Encostado na parede'],0,()=>{ajusta();draw();});
+const X=SL('sx',1,29,0.5,20,draw,v=>r1(v)+' m');
+function ajusta(){const f=F.get();$('sx').style.display=f==1?'none':'';if(f==0){$('lx').textContent='Largura do retângulo';X.set(20);$('sx').querySelector('input').max=29;}
+ if(f==2){$('lx').textContent='Lado paralelo à parede';$('sx').querySelector('input').max=58;X.set(20);}}
+function draw(){const f=F.get(),x=X.get();let A,g='',k=8,cx=170,cy=118;
+ if(f==0){const y=30-x;A=x*y;g+=`<rect x="${cx-x*k/2}" y="${cy-y*k/2}" width="${x*k}" height="${y*k}" fill="${PEACH}" stroke="${ORANGE}" stroke-width="4" stroke-dasharray="10 6"/>`+TX(cx,cy-y*k/2-6,r1(x)+' m',{fs:11})+TX(cx+x*k/2+20,cy+4,r1(y)+' m',{fs:11});$('kr').textContent='225 m² (quadrado)';}
+ else if(f==1){const r=60/(2*Math.PI);A=Math.PI*r*r;g+=`<circle cx="${cx}" cy="${cy}" r="${r*k}" fill="${PEACH}" stroke="${ORANGE}" stroke-width="4" stroke-dasharray="10 6"/>`+LN(cx,cy,cx+r*k,cy,NAVY,2)+TX(cx+r*k/2,cy-6,'r ≈ 9,55 m',{fs:11});$('kr').textContent='≈ 286 m²';}
+ else{const y=(60-x)/2;A=x*y;k=3.2;const top=40;g+=`<rect x="20" y="${top-12}" width="300" height="12" fill="${NAVY}"/>`+TX(170,top-16,'parede do museu (não gasta fita)',{fs:10,c:GRAY});
+  g+=`<rect x="${cx-x*k/2}" y="${top}" width="${x*k}" height="${y*k}" fill="${PEACH}"/><path d="M${cx-x*k/2},${top} V${top+y*k} H${cx+x*k/2} V${top}" fill="none" stroke="${ORANGE}" stroke-width="4" stroke-dasharray="10 6"/>`+TX(cx,top+y*k+16,r1(x)+' m',{fs:11})+TX(cx+x*k/2+22,top+y*k/2,r1(y)+' m',{fs:11});$('kr').textContent='450 m²';}
+ g+=`<circle cx="${cx}" cy="${f==2?40+((60-x)/2)*3.2/2:cy}" r="6" fill="${NAVY}"/>`;
+ $('fig').innerHTML=SVG(340,236,g);$('ka').textContent=fmt(Math.round(A))+' m²';$('kf').textContent='60 m';
+ missao('m',f==2&&A>=449,'Recorde: 450 m² com 30 m paralelos à parede e 15 m de cada lado. A parede "economizou" fita!',
+  f==0&&Math.abs(x-15)<.3?'O quadrado (15 × 15) é o melhor retângulo solto: 225 m². Dá para fazer melhor com outro formato?':'Área atual: '+fmt(Math.round(A))+' m². Continue tentando.');}
+ajusta();draw();
+})();
+</script>
+</body>
+</html>

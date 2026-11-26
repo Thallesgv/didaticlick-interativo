@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trajetória a laser · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Trajetória a laser</h1></header>
+<main>
+<div class="card"><h2>Dois furos, uma reta</h2><p class="muted" style="margin-top:0">Arraste para cima ou para baixo o furo no vidro e a marca na parede (2 m depois do vidro). A reta se prolonga para o jardim, até o muro a 5 m.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Altura no muro<b id="km"></b></div><div>Inclinação<b id="ki"></b></div><div>Ângulo<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O atirador do estilingue estava em pé sobre o muro de 1,2 m, com a mão erguida a <b>2,6 m</b> do chão. Com o furo do vidro em 1,60 m, onde precisa estar a marca na parede para a reta passar pela mão dele?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let hv=1.6,hp=1.5;const k=38,y0=215,xv=250,xp=xv+2*k,xm=xv-5*k;
+function Y(h){return y0-h*k;}
+function draw(){const m=(hp-hv)/2,hm=hv-m*5;let g=LN(5,y0,335,y0,NAVY,3);
+ g+=`<rect x="${xm-14}" y="${Y(1.2)}" width="28" height="${1.2*k}" fill="${LIGHT}"/>`+TX(xm,y0+14,'muro (−5 m)',{fs:10});
+ g+=`<rect x="${xv-3}" y="${Y(4.5)}" width="6" height="${4.5*k}" fill="#BFD7F2"/>`+TX(xv,y0+14,'vidro',{fs:10})+`<rect x="${xp}" y="${Y(5)}" width="14" height="${5*k}" fill="${GRAYL}"/>`+TX(xp+7,y0+14,'parede',{fs:10});
+ g+=LN(xm,Y(hm),xp,Y(hp),ORANGE,2,'6 4')+LN(xv,Y(hv),xp,Y(hp),ORANGE,3.5);
+ if(Math.abs(hm-2.6)<.06)g+=bonequinho(xm,Y(1.2),1.6*k,BLUE);
+ g+=`<circle cx="${xm}" cy="${Y(hm)}" r="6" fill="${NAVY}"/>`+TX(xm+10,Y(hm)-8,r2(hm)+' m',{fs:11,a:'start'});
+ g+=`<circle id="a" cx="${xv}" cy="${Y(hv)}" r="10" fill="${NAVY}" stroke="#fff" stroke-width="3"/><circle id="b" cx="${xp}" cy="${Y(hp)}" r="10" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`;
+ g+=TX(xv-14,Y(hv)+4,r2(hv)+' m',{fs:10,a:'end'})+TX(xp+20,Y(hp)-12,r2(hp)+' m',{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,230,g);const svg=$('fig').querySelector('svg');
+ arrastar(svg,svg.querySelector('#a'),(x,y)=>{hv=clamp(Math.round((y0-y)/k*20)/20,0.2,4.4);draw();});arrastar(svg,svg.querySelector('#b'),(x,y)=>{hp=clamp(Math.round((y0-y)/k*20)/20,0.2,4.9);draw();});
+ $('km').textContent=r2(hm)+' m';$('ki').textContent=r2(Math.abs(m))+(m<0?' (desce)':m>0?' (sobe)':'');$('ka').textContent=r1(Math.atan(Math.abs(m))*DEG)+'°';
+ missao('m',Math.abs(hv-1.6)<.03&&Math.abs(hm-2.6)<.03,'Isso! Com a marca a 1,20 m, a reta desce 0,2 m por metro e passa a 2,60 m no muro: a mão do atirador.','Ajuste os furos. Altura no muro agora: '+r2(hm)+' m.');}
+draw();
+})();
+</script>
+</body>
+</html>
