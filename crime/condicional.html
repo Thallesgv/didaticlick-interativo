@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Árvore do corte · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Árvore do corte</h1></header>
+<main>
+<div class="card"><h2>Corte na mão: duas perguntas</h2><p class="muted" style="margin-top:0">Cada quadradinho é uma das 1.000 pessoas do bairro naquela noite. Mude os números e compare P(corte | vitrine) com P(vitrine | corte).</p>
+<div class="sl" id="sv"><b>Pessoas que mexeram na vitrine</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Com corte, entre as da vitrine</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Com corte, entre as outras</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>P(corte | vitrine)<b id="k1"></b></div><div class="o">P(vitrine | corte)<b id="k2"></b></div><div>Pessoas com corte<b id="k3"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const V=SL('sv',2,60,1,10,draw,v=>v+' pessoas'),A=SL('sa',50,100,5,90,draw,v=>v+'%'),B=SL('sb',0.5,10,0.5,2,draw,v=>r1(v)+'%');
+function draw(){const nv=V.get(),a=Math.round(nv*A.get()/100),b=Math.round((1000-nv)*B.get()/100),s=8.2;
+ let g=`<rect width="340" height="300" fill="#F8FAFC"/>`;
+ for(let i=0;i<1000;i++){const x=6+(i%40)*s,y=6+Math.floor(i/40)*s;let c=GRAYL;
+  if(i<a)c=ORANGE;else if(i<nv)c=LIGHT;else if(i<nv+b)c=NAVY;
+  g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s-1.4}" height="${s-1.4}" rx="1.3" fill="${c}"/>`;}
+ const leg=[[ORANGE,'vitrine, com corte'],[LIGHT,'vitrine, sem corte'],[NAVY,'outras, com corte'],[GRAYL,'outras, sem corte']];
+ leg.forEach((l,i)=>{const x=8+(i%2)*168,y=222+Math.floor(i/2)*16;g+=`<rect x="${x}" y="${y-9}" width="10" height="10" rx="2" fill="${l[0]}"/>`+TX(x+15,y,l[1],{fs:10,a:'start',w:500});});
+ const p1=a/nv,p2=a/Math.max(a+b,1);
+ [[p1,'P(corte | vitrine)',NAVY],[p2,'P(vitrine | corte)',ORANGE]].forEach((q,i)=>{const y=262+i*20;g+=TX(8,y+9,q[1],{fs:10,a:'start'})+`<rect x="118" y="${y}" width="180" height="12" rx="4" fill="#EEF2F7"/><rect x="118" y="${y}" width="${180*q[0]}" height="12" rx="4" fill="${q[2]}"/>`+TX(304,y+10,Math.round(100*q[0])+'%',{fs:10,a:'start'});});
+ $('fig').innerHTML=SVG(340,300,g);$('k1').textContent=r1(100*p1)+'%';$('k2').textContent=r1(100*p2)+'%';$('k3').textContent=a+b;
+ missao('m',p2>=0.5,`Agora metade ou mais das pessoas cortadas mexeu na vitrine: ${a} de ${a+b}. Repare que foi preciso deixar o corte raro entre as outras pessoas.`,
+  `Missão: faça P(vitrine | corte) passar de 50%. Hoje, das ${a+b} pessoas com corte, só ${a} mexeram na vitrine.`);}
+draw();
+})();
+</script>
+</body>
+</html>
