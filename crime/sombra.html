@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relógio de sombra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Relógio de sombra</h1></header>
+<main>
+<div class="card"><h2>O Sol anda, a sombra gira</h2><p class="muted" style="margin-top:0">Mova o relógio. O Sol nasce no leste (à direita) e se põe no oeste (à esquerda). O mastro tem 9 m.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Hora do dia</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Altura do Sol θ<b id="kt"></b></div><div>Sombra<b id="ks"></b></div><div>Aponta para o<b id="kd"></b></div></div></div>
+<div class="card"><h2>A foto misteriosa</h2><p id="enun" style="margin:0"></p><div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Outra foto</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const TAB=[0,0,22,35,48,60,66,60,48,35,22,0,0];// 6h a 18h
+function theta(h){const i=clamp(h-6,0,12),a=Math.floor(i),f=i-a;return a>=12?0:TAB[a]+(TAB[a+1]-TAB[a])*f;}
+const Hr=SL('sh',6.5,17.5,0.25,9,draw,v=>{const h=Math.floor(v),mm=Math.round((v-h)*60);return h+'h'+(mm?String(mm).padStart(2,'0'):'');});
+let F;function nova(){const h=P([8,9,10,11,13,14,15,16]);F={h,s:9/Math.tan(theta(h)*RAD),dir:h<12?'oeste':'leste'};$('enun').innerHTML=`Na foto, a sombra do mastro mede <b>${r1(F.s)} m</b> e aponta para o <b>${F.dir}</b>. Ajuste a hora até a sombra ficar igual.`;draw();}
+function draw(){const h=Hr.get(),t=theta(h),s=t>0?9/Math.tan(t*RAD):99,manha=h<12;const x0=170,y0=200,k=9;
+ let g=`<rect x="0" y="0" width="340" height="${y0}" fill="#EAF2FF"/>`+LN(0,y0,340,y0,NAVY,3);
+ const ang=(h-6)/12*Math.PI,sx=x0+150*Math.cos(ang),sy=y0-150*Math.sin(t*RAD)/Math.sin(66*RAD)*1.0;
+ g+=`<path d="M20,${y0} Q170,-60 320,${y0}" fill="none" stroke="${LIGHT}" stroke-dasharray="4 4"/>`;
+ g+=`<circle cx="${sx}" cy="${Math.min(sy,y0-6)}" r="13" fill="${ORANGE}"/>`;
+ const sl=Math.min(s*k,165),dirx=manha?-1:1;
+ g+=`<rect x="${dirx<0?x0-sl:x0}" y="${y0-5}" width="${sl}" height="10" fill="${GRAY}"/>`;
+ g+=`<rect x="${x0-3}" y="${y0-9*k}" width="6" height="${9*k}" fill="${NAVY}"/><path d="M${x0+3},${y0-9*k} l20,6 l-20,6z" fill="${ORANGE}"/>`;
+ g+=TX(20,y0+16,'OESTE',{fs:10,a:'start',c:GRAY})+TX(320,y0+16,'LESTE',{fs:10,a:'end',c:GRAY});
+ $('fig').innerHTML=SVG(340,222,g);$('kt').textContent=Math.round(t)+'°';$('ks').textContent=s>90?'—':r1(s)+' m';$('kd').textContent=manha?'oeste':'leste';
+ if(F){const ok=Math.abs(s-F.s)<.25&&(manha?'oeste':'leste')==F.dir;missao('m',ok,`É isso: ${F.h}h. tg θ = 9 ÷ ${r1(F.s)} ≈ ${r2(9/F.s)}, θ ≈ ${Math.round(theta(F.h))}°, e a sombra para o ${F.dir} mostra que era ${F.h<12?'manhã':'tarde'}.`,'Ainda não bate. Compare o tamanho e a direção da sombra.');}}
+nova();
+})();
+</script>
+</body>
+</html>

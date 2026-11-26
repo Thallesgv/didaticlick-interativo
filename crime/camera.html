@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Régua na imagem · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Régua na imagem</h1></header>
+<main>
+<div class="card"><h2>A porta é a régua</h2><p class="muted" style="margin-top:0">À esquerda, a cena vista de cima; à direita, a imagem da câmera. Mova a pessoa para perto ou para longe e mude a altura dela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância da pessoa até a câmera</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura real da pessoa</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Pessoa na imagem<b id="kp"></b></div><div>Porta (2,10 m, a 6 m)<b id="kd"></b></div><div>Altura por proporção<b id="kh"></b></div></div>
+<div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Sortear suspeito</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=SL('sd',3,12,0.5,9,draw,v=>r1(v)+' m'),H=SL('sh',1.4,2.0,0.01,1.8,draw,v=>r2(v)+' m');let alvo=null;
+$('nova').onclick=()=>{alvo=rint(150,195)/100;H.set(alvo);D.set(rint(6,22)/2);draw();};
+function draw(){const d=D.get(),h=H.get(),f=600;const pp=h/d*f,pd=2.1/6*f,est=2.1*pp/pd;
+ let g=`<rect x="0" y="0" width="120" height="230" rx="8" fill="#F8FAFC"/>`+TX(60,16,'DE CIMA',{fs:10,c:GRAY});
+ g+=`<rect x="52" y="210" width="16" height="10" fill="${NAVY}"/>`+LN(60,210,15,30,GRAYL,1)+LN(60,210,105,30,GRAYL,1);
+ g+=`<rect x="30" y="${210-6*15}" width="22" height="5" fill="${ORANGE}"/>`+`<circle cx="80" cy="${210-d*15}" r="6" fill="${BLUE}"/>`;
+ g+=`<rect x="130" y="20" width="205" height="210" rx="6" fill="${PEACH}" stroke="${NAVY}"/>`+TX(232,36,'IMAGEM DA CÂMERA',{fs:10});
+ const base=215,s=0.75;g+=`<rect x="150" y="${base-pd*s}" width="${pd*s*0.42}" height="${pd*s}" fill="${LIGHT}" stroke="${NAVY}"/>`;
+ g+=bonequinho(270,base-((1/d-1/6)*300),Math.min(pp*s,190),BLUE);
+ g+=LN(150+pd*s*0.42+8,base,150+pd*s*0.42+8,base-pd*s,ORANGE,1.5)+TX(150+pd*s*0.42+12,base-pd*s/2,Math.round(pd)+' px',{fs:9,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,235,g);$('kp').textContent=Math.round(pp)+' px';$('kd').textContent=Math.round(pd)+' px';$('kh').textContent=r2(est)+' m';
+ const mesma=Math.abs(d-6)<0.01;
+ if(alvo!==null)missao('m',mesma,'Agora sim: na mesma distância da porta, a proporção dá '+r2(est)+' m, a altura real do suspeito.','Suspeito sorteado. Leve-o até a mesma distância da porta (6 m) antes de usar a proporção. Agora ela daria '+r2(est)+' m.');
+ else missao('m',mesma,'Na mesma distância da porta, a proporção acerta a altura: '+r2(est)+' m.','Fora da distância da porta, a proporção erra: dá '+r2(est)+' m para uma pessoa de '+r2(h)+' m.');}
+draw();
+})();
+</script>
+</body>
+</html>

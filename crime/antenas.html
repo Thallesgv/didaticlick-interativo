@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Torres de celular · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Torres de celular</h1></header>
+<main>
+<div class="card"><h2>Ângulos e distâncias</h2><p class="muted" style="margin-top:0">Arraste o celular. As antenas A e B (a 3 km uma da outra) medem os ângulos; a antena C mede só a distância. Os círculos tracejados são as distâncias até cada antena.</p>
+<div class="fig" id="fig"></div><div class="chips" id="md"></div>
+<div class="kpi"><div class="o">Ângulo em A<b id="ka"></b></div><div>Ângulo em B<b id="kb"></b></div><div>AP pela lei dos senos<b id="kp"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const k=60,A={x:70,y:250},B={x:70+3*k,y:250},C={x:300,y:80};let Pp={x:150,y:110};const S={x:rint(80,280),y:rint(60,200)};
+const M=chips('md',['Explorar','Caso: ache o celular'],0,draw);
+function ang(o,p,q){const a=Math.atan2(-(p.y-o.y),p.x-o.x),b=Math.atan2(-(q.y-o.y),q.x-o.x);let d=Math.abs(a-b)*DEG;return d>180?360-d:d;}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)/k;}
+function draw(){const caso=M.get()==1,alvo=caso?S:Pp;const aA=ang(A,B,alvo),aB=ang(B,A,alvo),aP=180-aA-aB,AP=3*Math.sin(aB*RAD)/Math.sin(aP*RAD);
+ let g=`<rect width="340" height="290" fill="#F8FAFC"/>`;
+ [[A,'A'],[B,'B'],[C,'C']].forEach(([o,n])=>{const r=dist(o,alvo)*k;g+=`<circle cx="${o.x}" cy="${o.y}" r="${r}" fill="none" stroke="${caso&&n!='C'?'none':NAVY}" stroke-dasharray="4 4"/>`;});
+ if(caso)g+=`<circle cx="${C.x}" cy="${C.y}" r="${dist(C,S)*k}" fill="none" stroke="${NAVY}" stroke-dasharray="4 4"/>`;
+ g+=`<path d="M${A.x},${A.y} L${B.x},${B.y} L${alvo.x},${alvo.y}Z" fill="${caso?'none':PEACH}" stroke="${caso?'none':ORANGE}" stroke-width="2"/>`;
+ if(caso){[A,B].forEach((o,i)=>{const a=(i?180-aB:aA)*RAD;g+=LN(o.x,o.y,o.x+400*Math.cos(a),o.y-400*Math.sin(a),ORANGE,2,'6 4');});}
+ [[A,'A'],[B,'B'],[C,'C']].forEach(([o,n])=>g+=`<path d="M${o.x-9},${o.y+8} L${o.x+9},${o.y+8} L${o.x},${o.y-18}Z" fill="${NAVY}"/>`+TX(o.x,o.y+22,n,{fs:11}));
+ if(!caso)g+=`<rect id="p" x="${Pp.x-9}" y="${Pp.y-15}" width="18" height="30" rx="4" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
+ else g+=`<rect id="p" x="${Pp.x-9}" y="${Pp.y-15}" width="18" height="30" rx="4" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`;
+ g+=TX(A.x+(B.x-A.x)/2,A.y+22,'3 km',{fs:10});
+ $('fig').innerHTML=SVG(340,290,g);const svg=$('fig').querySelector('svg');arrastar(svg,svg.querySelector('#p'),(x,y)=>{Pp={x:clamp(x,15,325),y:clamp(y,20,230)};draw();});
+ $('ka').textContent=Math.round(aA)+'°';$('kb').textContent=Math.round(aB)+'°';$('kp').textContent=r2(AP)+' km';
+ if(caso){const ok=Math.hypot(Pp.x-S.x,Pp.y-S.y)<12;missao('m',ok,'Achou! O celular está onde as duas retas dos ângulos e o círculo da antena C se cruzam.','As retas laranjas mostram os ângulos medidos em A e B; o círculo, a distância até C. Arraste o celular azul até o cruzamento.');}
+ else $('m').innerHTML='<div class="msg info">Confira a lei dos senos: AP = 3 · sen B ÷ sen P, com P = 180° − A − B = '+Math.round(aP)+'°.</div>';}
+draw();
+})();
+</script>
+</body>
+</html>

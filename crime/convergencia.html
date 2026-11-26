@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barbantes virtuais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Barbantes virtuais</h1></header>
+<main>
+<div class="card"><h2>De onde vieram as gotas?</h2><p class="muted" style="margin-top:0">Vista de cima. Arraste a <b>origem</b> (círculo laranja) e mude a altura: as seis manchas mudam de forma e de direção. As linhas tracejadas são os barbantes.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Altura da origem (h)</b><input type="range"><span></span></div>
+<div class="chips" id="md"></div>
+<div class="kpi"><div class="o">Gota 1: d<b id="kd"></b></div><div>Gota 1: α<b id="ka"></b></div><div>h = d · tg α<b id="kh"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const GS=[[60,60],[280,50],[300,190],[70,200],[170,30],[180,215]];let O={x:150,y:120},S={x:rint(110,230),y:rint(90,160),h:rint(70,130)/100};
+const H=SL('sh',0.3,1.8,0.05,1.0,draw,v=>r2(v)+' m');const M=chips('md',['Explorar','Caso: ache a origem'],0,draw);const k=50; // 50 px = 1 m
+function manchas(o,h,cor,extra){let g='';GS.forEach(([x,y])=>{const d=Math.hypot(x-o.x,y-o.y)/k,a=Math.atan2(h,d),ang=Math.atan2(y-o.y,x-o.x)*DEG,b=5,al=Math.min(b/Math.sin(a),30);g+=ELI(x,y,al,b,ang,cor,extra);});return g;}
+function draw(){const h=H.get(),caso=M.get()==1;let g=`<rect x="0" y="0" width="340" height="245" rx="10" fill="#fff"/>`;
+ if(caso)g+=manchas(S,S.h,NAVY);
+ GS.forEach(([x,y])=>g+=LN(O.x,O.y,x,y,ORANGE,1.2,'4 3'));
+ g+=caso?manchas(O,h,'none',`stroke="${ORANGE}" stroke-width="2"`):manchas(O,h,NAVY);
+ g+=`<circle id="o" cx="${O.x}" cy="${O.y}" r="11" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`;
+ $('fig').innerHTML=SVG(340,245,g);const svg=$('fig').querySelector('svg');arrastar(svg,svg.querySelector('#o'),(x,y)=>{O={x:clamp(x,15,325),y:clamp(y,15,230)};draw();});
+ const d=Math.hypot(GS[0][0]-O.x,GS[0][1]-O.y)/k,a=Math.atan2(h,d)*DEG;$('kd').textContent=r2(d)+' m';$('ka').textContent=Math.round(a)+'°';$('kh').textContent=r2(d*Math.tan(a*RAD))+' m';
+ if(caso){const ok=Math.hypot(O.x-S.x,O.y-S.y)<12&&Math.abs(h-S.h)<.08;missao('m',ok,'Origem encontrada! A mão estava a '+r2(S.h)+' m do chão. Repare: no ponto certo, as linhas laranjas encaixam exatamente nas manchas azuis.','Arraste a origem e mude a altura até as elipses laranjas coincidirem com as manchas azuis.');}
+ else $('m').innerHTML='<div class="msg info">Aproxime a origem de uma gota: ela fica mais redonda (ângulo perto de 90°). Afaste: ela se alonga.</div>';}
+draw();
+})();
+</script>
+</body>
+</html>

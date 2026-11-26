@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Termômetro do tempo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Termômetro do tempo</h1></header>
+<main>
+<div class="card"><h2>Há quanto tempo esfriou?</h2><p class="muted" style="margin-top:0">A curva mostra a temperatura caindo até a do ambiente. A linha laranja é a temperatura medida agora: onde ela cruza a curva, lê-se o tempo que passou.</p>
+<div class="chips" id="md"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Temperatura do ambiente</b><input type="range"><span></span></div>
+<div class="sl" id="s0"><b>Temperatura inicial</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Meia-vida térmica</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Temperatura medida agora</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Tempo desde o início<b id="kt"></b></div><div>Metades da diferença<b id="kn"></b></div><div>Se medido às 06h00, começou às<b id="kh"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const M=chips('md',['Explorar','Caso: o carro da fuga'],0,()=>{if(M.get()==1){TA.set(15);T0.set(95);H.set(60);TM.set(25);}draw();});
+const TA=SL('sa',0,30,1,20,draw,v=>v+' °C'),T0=SL('s0',40,100,1,90,draw,v=>v+' °C'),H=SL('sh',10,120,5,30,draw,v=>v+' min'),TM=SL('sm',1,99,0.5,50,draw,v=>r1(v)+' °C');
+const hm=v=>{v=((Math.round(v)%1440)+1440)%1440;return String(Math.floor(v/60)).padStart(2,'0')+'h'+String(v%60).padStart(2,'0');};
+function draw(){const ta=TA.get(),t0=T0.get(),h=H.get();let tm=clamp(TM.get(),ta+0.5,t0);
+ const tmax=Math.max(240,h*5),x0=40,y0=230,W=285,Hh=200,X=t=>x0+t/tmax*W,Y=T=>y0-T/100*Hh;
+ let g=`<rect width="340" height="260" fill="#F8FAFC"/>`;
+ for(let T=0;T<=100;T+=20)g+=LN(x0,Y(T),x0+W,Y(T),GRAYL,1)+TX(x0-6,Y(T)+4,T+'°',{fs:9,a:'end',c:GRAY});
+ for(let t=0;t<=tmax;t+=60)g+=TX(X(t),y0+14,(t/60)+'h',{fs:9,c:GRAY});
+ g+=LN(x0,Y(ta),x0+W,Y(ta),BLUE,2,'6 4')+TX(x0+W,Y(ta)-5,'ambiente',{fs:9,a:'end',c:BLUE});
+ let d='';for(let i=0;i<=120;i++){const t=tmax*i/120,T=ta+(t0-ta)*Math.pow(.5,t/h);d+=(i?'L':'M')+X(t).toFixed(1)+','+Y(T).toFixed(1);}
+ g+=`<path d="${d}" fill="none" stroke="${NAVY}" stroke-width="3"/>`;
+ for(let k=1;k<=4;k++){const t=k*h;if(t>tmax)break;const T=ta+(t0-ta)/Math.pow(2,k);g+=`<circle cx="${X(t)}" cy="${Y(T)}" r="3.5" fill="${LIGHT}"/>`;}
+ const n=Math.log2((t0-ta)/(tm-ta)),te=n*h,xe=X(Math.min(te,tmax));
+ g+=LN(x0,Y(tm),xe,Y(tm),ORANGE,2.5)+LN(xe,Y(tm),xe,y0,ORANGE,2.5,'5 4')+`<circle cx="${xe}" cy="${Y(tm)}" r="8" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`;
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.5);$('fig').innerHTML=SVG(340,260,g);
+ const mm=Math.round(te%60);$('kt').textContent=te>=60?Math.floor(te/60)+' h'+(mm?' '+mm+' min':''):Math.round(te)+' min';$('kn').textContent=r1(n);$('kh').textContent=hm(360-te);
+ if(M.get()==1){const ok=ta==15&&t0==95&&h==60&&Math.abs(tm-25)<.3;missao('m',ok,'O motor esfriou 3 meias-vidas (80 → 40 → 20 → 10 °C de diferença): foi desligado por volta das 03h00.','Monte o caso: ambiente 15 °C, motor a 95 °C, meia-vida de 60 min e 25 °C medidos às 06h00.');}
+ else $('m').innerHTML='<div class="msg info">Mude a meia-vida: com ela maior, a mesma temperatura medida significa que passou mais tempo.</div>';}
+draw();
+})();
+</script>
+</body>
+</html>

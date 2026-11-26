@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'crm1':{T:["Isolando a cena", "Medir o que não se alcança", "As gotas falam", "De onde veio?", "A trajetória", "Sombras e janelas", "Marcas no chão"],G:{1:()=>{const t=P([0,1,2,3]),f=P([40,48,60,80,100,120]);
+ if(t==0){const x=R(2,f/2-2),y=f/2-x;return{q:`Com <b>${f} m</b> de fita, a equipe cercou um retângulo com um lado de <b>${x} m</b>. Qual a área isolada, em m²?`,a:x*y,exp:`Os dois lados somam ${f}/2 = ${f/2} m, então o outro lado mede ${y} m. Área = ${x} · ${y} = ${x*y} m².`};}
+ if(t==1)return{q:`Com <b>${f} m</b> de fita, qual a <b>maior</b> área retangular possível, em m²?`,a:(f/4)**2,exp:`O maior retângulo é o quadrado de lado ${f}/4 = ${f/4} m: área ${(f/4)**2} m².`};
+ if(t==2)return{q:`Com <b>${f} m</b> de fita e uma parede servindo de lado, qual a maior área retangular, em m²?`,a:(f/2)*(f/4),exp:`x + 2y = ${f}; o melhor é x = ${f/2} m e y = ${f/4} m: área ${(f/2)*(f/4)} m².`};
+ const a=R(0,8),b=R(0,8),c=a+P([3,6,5,8]),d=b+P([4,8,12,6]),dd=Math.round(Math.hypot(c-a,d-b)*10)/10;return{q:`Na planta (em metros), um vestígio está em (${a}, ${b}) e outro em (${c}, ${d}). Qual a distância entre eles? (1 casa decimal)`,a:dd,tol:.11,exp:`√((${c}−${a})² + (${d}−${b})²) = √(${(c-a)**2} + ${(d-b)**2}) ≈ ${fmt(dd)} m.`};},
+2:()=>{const ang=P([30,45,60]),tg={30:0.58,45:1,60:1.73}[ang],d=R(4,15),o=P([1.5,1.6,1.7]),h=Math.round((d*tg+o)*100)/100;
+ return{q:`A <b>${d} m</b> de uma parede, com o olho a <b>${fmt(o)} m</b> do chão, o clinômetro marca <b>${ang}°</b> até uma janela. A que altura está a janela? (tg ${ang}° ≈ ${fmt(tg)})`,a:h,tol:.06,exp:`${d} · ${fmt(tg)} + ${fmt(o)} = ${fmt(h)} m.`};},
+3:()=>{const [s,a]=P([[0.5,30],[0.71,45],[0.87,60],[1,90],[0.6,37],[0.8,53]]),l=R(3,9),C=Math.round(l/s*10)/10;
+ if(Math.random()<.5)return{q:`Uma mancha mede <b>${l} mm</b> de largura e <b>${fmt(C)} mm</b> de comprimento. Qual o ângulo de impacto, em graus? (aproxime pela tabela: 30°, 37°, 45°, 53°, 60°, 90°)`,a:a,tol:2,exp:`sen α = ${l} ÷ ${fmt(C)} ≈ ${fmt(s)} → α ≈ ${a}°.`};
+ return{q:`Uma gota de <b>${l} mm</b> de diâmetro bate no piso a <b>${a}°</b> (sen ≈ ${fmt(s)}). Qual o comprimento da mancha, em mm? (1 casa decimal)`,a:C,tol:.15,exp:`C = ℓ ÷ sen α = ${l} ÷ ${fmt(s)} ≈ ${fmt(C)} mm.`};},
+4:()=>{const ang=P([30,40,45,50]),tg={30:0.58,40:0.84,45:1,50:1.19}[ang],d=P([0.8,1,1.2,1.5,2]),h=Math.round(d*tg*100)/100;
+ return{q:`Uma gota está a <b>${fmt(d)} m</b> da área de convergência, com ângulo de impacto <b>${ang}°</b>. A que altura estava a origem? (tg ${ang}° ≈ ${fmt(tg)})`,a:h,tol:.03,exp:`h = d · tg α = ${fmt(d)} · ${fmt(tg)} ≈ ${fmt(h)} m.`};},
+5:()=>{const hv=P([1.4,1.5,1.6,1.8]),dh=P([0.2,0.3,0.4,0.6]),L=2,x=P([3,4,5,6]),m=dh/L,h=Math.round((hv+m*x)*100)/100;
+ return{q:`Furo no vidro a <b>${fmt(hv)} m</b> e marca na parede a <b>${fmt(Math.round((hv-dh)*100)/100)} m</b>, 2 m depois. Prolongando a reta <b>${x} m</b> para fora, a que altura ela passa?`,a:h,tol:.03,exp:`Desce ${fmt(dh)} m em 2 m: ${fmt(m)} por metro. Para fora, sobe: ${fmt(hv)} + ${fmt(m)} · ${x} = ${fmt(h)} m.`};},
+6:()=>{const [ang,tg]=P([[30,0.58],[45,1],[60,1.73]]),hh=P([3,6,9,12]);
+ if(Math.random()<.5){const s=Math.round(hh/tg*10)/10;return{q:`Um poste de <b>${hh} m</b> está sob o Sol a <b>${ang}°</b> (tg ≈ ${fmt(tg)}). Qual o comprimento da sombra? (1 casa decimal)`,a:s,tol:.15,exp:`sombra = altura ÷ tg θ = ${hh} ÷ ${fmt(tg)} ≈ ${fmt(s)} m.`};}
+ const ss=R(2,8),o=R(2,6),k=P([1.5,2,2.5,3]);return{q:`Na mesma foto, um objeto de <b>${o} m</b> faz sombra de <b>${fmt(o*k)} m</b>. Quanto mede a sombra de um mastro de <b>${ss*2} m</b>?`,a:ss*2*k,tol:.05,exp:`A razão sombra ÷ altura é a mesma: ${fmt(k)}. Sombra = ${ss*2} · ${fmt(k)} = ${fmt(ss*2*k)} m.`};},
+7:()=>{const t=P([0,1]);if(t==0){const v=P([40,50,60,70,80]),mu=P([0.7,0.4]),d=Math.round((v/3.6)**2/(2*mu*9.8)*10)/10;
+ return{q:`Marca de frenagem de <b>${fmt(d)} m</b> com μ = ${fmt(mu)}. Qual a velocidade mínima, em km/h? (v = √(2 · μ · 9,8 · d), em m/s; depois × 3,6)`,a:v,tol:2,exp:`√(2 · ${fmt(mu)} · 9,8 · ${fmt(d)}) ≈ ${r1(v/3.6)} m/s ≈ ${v} km/h.`};}
+ const d=P([5,8,9,10]),k=P([2,3]);return{q:`Um carro deixa uma marca de <b>${d} m</b>. No mesmo piso, com <b>${k} vezes</b> a velocidade, que marca deixaria?`,a:d*k*k,exp:`A marca cresce com o quadrado da velocidade: ${d} · ${k}² = ${d*k*k} m.`};}}},'crm2':{T:["O raio de fuga", "Triangulação do celular", "A câmera de segurança", "Reconhecimento facial", "Pegadas e passos", "O álibi impossível"],G:{1:()=>{const v=P([4,5,6,12,15,30,40]),t=P([6,10,12,15,20,30]),r=v*t/60;if(Math.random()<.5)return{q:`Um suspeito fugiu a <b>${v} km/h</b> há <b>${t} minutos</b>. Qual o raio de fuga, em km?`,a:r,tol:.01,exp:`r = v · t = ${v} · ${t}/60 = ${fmt(r)} km.`};
+ const rr=P([2,3,4,5,10]);return{q:`Raio de fuga de <b>${rr} km</b>. Qual a área do círculo de busca? (π ≈ 3,14; 1 casa decimal)`,a:Math.round(3.14*rr*rr*10)/10,tol:.11,exp:`A = 3,14 · ${rr}² = ${fmt(Math.round(3.14*rr*rr*10)/10)} km².`};},
+2:()=>{const a=R(30,80),b=R(30,80);if(a+b>=170)return G[2]();if(Math.random()<.5)return{q:`Antenas A e B medem ângulos de <b>${a}°</b> e <b>${b}°</b> até o celular. Qual o ângulo no celular?`,a:180-a-b,exp:`180° − ${a}° − ${b}° = ${180-a-b}°.`};
+ const x=P([3,6,9]),y=P([4,8,12]),d=Math.hypot(x,y);return{q:`Uma antena está em (0, 0) e o celular em (${x}, ${y}), em km. Qual a distância?`,a:d,tol:.01,exp:`√(${x}² + ${y}²) = √${x*x+y*y} = ${fmt(d)} km.`};},
+3:()=>{const ref=P([[2.1,'uma porta de 2,10 m'],[1.5,'uma prateleira de 1,50 m'],[2.4,'um portão de 2,40 m']]),px=P([200,240,300]),h=R(150,195)/100,pp=Math.round(h/ref[0]*px);const hh=Math.round(ref[0]*pp/px*100)/100;
+ return{q:`Na imagem, ${ref[1]} ocupa <b>${px} px</b>. Uma pessoa ao lado, na mesma distância da câmera, ocupa <b>${pp} px</b>. Qual a altura dela, em metros?`,a:hh,tol:.015,exp:`${fmt(ref[0])} · ${pp} ÷ ${px} ≈ ${fmt(hh)} m.`};},
+4:()=>{const t=P([0,1]);if(t==0){const a=[R(30,50)/100,R(80,110)/100],b=[a[0]+P([-3,3,4,-4])/100,a[1]+P([3,4,-3,-4])/100],d=Math.round(Math.hypot(a[0]-b[0],a[1]-b[1])*100)/100;
+ return{q:`Distância entre os vetores (${fmt(a[0])}; ${fmt(a[1])}) e (${fmt(b[0])}; ${fmt(b[1])})?`,a:d,tol:.006,exp:`√(${fmt(Math.round((a[0]-b[0])*100)/100)}² + ${fmt(Math.round((a[1]-b[1])*100)/100)}²) = ${fmt(d)}.`};}
+ const n=P([1,2,5,10]),f=P([10000,50000,100000]);return{q:`Banco com <b>${n} milhão(ões)</b> de fotos e taxa de falso positivo de 1 em ${fmt(f)}. Quantos falsos parecidos são esperados por busca?`,a:n*1e6/f,exp:`${fmt(n*1e6)} ÷ ${fmt(f)} = ${fmt(n*1e6/f)}.`};},
+5:()=>{const t=P([0,1,2]);if(t==0){const pe=P([24,25,26,27,28,30]);return{q:`Uma pegada mede <b>${pe} cm</b>. Pela regra do pé (15% da altura), qual a altura estimada, em cm?`,a:Math.round(pe/0.15),tol:1,exp:`${pe} ÷ 0,15 ≈ ${Math.round(pe/0.15)} cm.`};}
+ if(t==1){const p=P([60,64,68,72,76]);return{q:`Passo de <b>${p} cm</b>, caminhando. Pela regra dos 40%, qual a altura estimada, em cm?`,a:p/0.4,tol:1,exp:`${p} ÷ 0,4 = ${p/0.4} cm.`};}
+ const p=P([0.7,0.8,1.2,1.5]),c=P([2,3]);return{q:`Passos de <b>${fmt(p)} m</b>, <b>${c}</b> por segundo. Qual a velocidade em km/h? (1 casa decimal)`,a:Math.round(p*c*3.6*10)/10,tol:.11,exp:`${fmt(p)} · ${c} = ${fmt(Math.round(p*c*100)/100)} m/s · 3,6 = ${fmt(Math.round(p*c*3.6*10)/10)} km/h.`};},
+6:()=>{const dx=R(2,9),dy=R(1,6),t=P([6,10,12,15,20,30]),d=dx+dy,v=Math.round(d/(t/60));
+ return{q:`O museu e o lugar do álibi estão a <b>${dx} km</b> na horizontal e <b>${dy} km</b> na vertical, numa cidade em grade. O suspeito teria <b>${t} minutos</b>. Qual a velocidade média necessária pelas ruas, em km/h?`,a:v,tol:1,exp:`Pelas ruas: ${dx} + ${dy} = ${d} km. v = ${d} ÷ (${t}/60) ≈ ${v} km/h.`};}}},'crm3':{T:["A hora da morte", "Impressões digitais", "O DNA e as chances", "Códigos e bilhetes", "Gráfico dos suspeitos", "O laudo final"],G:{1:()=>{const ta=P([10,15,20,25]),k=P([1,2,3,4]),d0=P([40,60,80])*1,hv=P([20,30,40,60]),T0=ta+d0,Tm=ta+d0/2**k;if(Math.random()<.5)return{q:`Ambiente a <b>${ta} °C</b>, objeto começou a <b>${T0} °C</b>, meia-vida térmica de <b>${hv} min</b>. Qual a temperatura depois de <b>${k*hv} minutos</b>?`,a:Tm,tol:.01,exp:`${k} meias-vidas: a diferença ${d0} cai para ${fmt(d0/2**k)}; ${ta} + ${fmt(d0/2**k)} = ${fmt(Tm)} °C.`};
+ return{q:`Ambiente a <b>${ta} °C</b>, objeto começou a <b>${T0} °C</b> e agora está a <b>${fmt(Tm)} °C</b>. Meia-vida térmica de <b>${hv} min</b>. Há quantos minutos começou a esfriar?`,a:k*hv,exp:`A diferença foi de ${d0} para ${fmt(d0/2**k)}: ${k} metades · ${hv} min = ${k*hv} min.`};},
+2:()=>{const p=P([2,4,5,10]),n=P([2,3,4,5,6]);if(Math.random()<.5)return{q:`Cada minúcia coincide por acaso com chance de 1 em ${p}. Coincidirem <b>${n}</b> minúcias independentes: a chance é de 1 em quanto?`,a:p**n,exp:`(1/${p})<sup>${n}</sup> = 1/${fmt(p**n)}: regra do produto.`};
+ return{q:`Com chance de 1 em 10 por minúcia, quantas minúcias coincidentes dão chance de 1 em <b>${fmt(10**n)}</b>?`,a:n,exp:`10<sup>${n}</sup> = ${fmt(10**n)}, então ${n} minúcias.`};},
+3:()=>{const N=P([2,3,5,6,10]),R=P([1,2]);const E=N/R;if(Math.random()<.5)return{q:`Numa região de <b>${N} milhões</b> de pessoas, um perfil de DNA tem raridade de 1 em <b>${R} milhão(ões)</b>. Quantas coincidências por acaso são esperadas?`,a:E,tol:.01,exp:`${N} milhões ÷ ${R} milhão(ões) = ${fmt(E)}.`};
+ const e=P([2,3,4,9]);return{q:`Esperam-se <b>${e}</b> coincidências por acaso, além da fonte verdadeira. Sem nenhuma outra prova, qual a chance (em %) de o suspeito ser a fonte?`,a:100/(e+1),tol:.1,exp:`1 ÷ (${e} + 1) = ${fmt(Math.round(1000/(e+1))/10)}%.`};},
+4:()=>{const AL='ABCDEFGHIJKLMNOPQRSTUVWXYZ',W=P(['CAIS','OURO','MAPA','RUA','PISTA','CHAVE','PORTO','NOITE']),k=R(1,9),c=W.replace(/./g,x=>AL[(AL.indexOf(x)+k)%26]);
+ if(Math.random()<.5)return{q:`Decifre <b>${c}</b> (cifra de César, chave ${k}).`,opts:[W,W.split('').reverse().join(''),c.replace(/./g,x=>AL[(AL.indexOf(x)+1)%26]),W.replace(/./g,x=>AL[(AL.indexOf(x)+1)%26])].sort(()=>Math.random()-.5),a:W,exp:`Volte ${k} letras em cada uma: ${c} → ${W}.`};
+ const p=R(0,25),kk=R(3,25);return{q:`Calcule (${p} + ${kk}) mod 26.`,a:(p+kk)%26,exp:`${p} + ${kk} = ${p+kk}; resto da divisão por 26: ${(p+kk)%26}.`};},
+5:()=>{const F=P([['Se choveu, então o jardim está molhado.','Se o jardim não está molhado, então não choveu.','Se o jardim está molhado, então choveu.'],['Se é o culpado, então esteve no museu.','Se não esteve no museu, então não é o culpado.','Se esteve no museu, então é o culpado.'],['Se cortou a mão, então deixou sangue.','Se não deixou sangue, então não cortou a mão.','Se deixou sangue, então cortou a mão.']]);
+ if(Math.random()<.5)return{q:`Qual frase é <b>equivalente</b> a "${F[0]}"?`,opts:[F[1],F[2]].sort(()=>Math.random()-.5),a:F[1],exp:`A contrapositiva ("${F[1]}") é equivalente. A recíproca ("${F[2]}") não é.`};
+ const n=P([3,4,5]),f={3:6,4:24,5:120}[n];return{q:`De quantas maneiras diferentes ${n} alturas podem ser distribuídas entre ${n} suspeitos (uma para cada)?`,a:f,exp:`${n}! = ${f}.`};},
+6:()=>{const t=P([0,1,2]);if(t==0){const a=P([1,2,3,4,9]),b=P([1,3,4,9,19,99]);return{q:`Uma chance de <b>${a} contra ${b}</b> corresponde a que probabilidade, em %? (1 casa decimal)`,a:Math.round(1000*a/(a+b))/10,tol:.1,exp:`${a} ÷ (${a} + ${b}) = ${fmt(Math.round(1000*a/(a+b))/10)}%.`};}
+ if(t==1){const c=P([99,999,49]),rv=P([10,100,1000]);return{q:`Chance antes: <b>1 contra ${c}</b>. Uma prova tem RV = <b>${rv}</b>. A chance depois é de quanto contra ${c}?`,a:rv,exp:`1 · ${rv} = ${rv}: fica ${rv} contra ${c}.`};}
+ const r1=P([5,10,20]),r2=P([10,100]);return{q:`Duas provas independentes com RV ${r1} e RV ${r2}. Qual a RV combinada?`,a:r1*r2,exp:`Multiplica: ${r1} · ${r2} = ${r1*r2}.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='crm1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>

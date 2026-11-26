@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comparador de digitais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Comparador de digitais</h1></header>
+<main>
+<div class="card"><h2>Marque as minúcias</h2><p class="muted" style="margin-top:0">Toque nas bolinhas do fragmento para marcar as minúcias que coincidem com a digital do arquivo. A régua embaixo mostra a chance de tantas coincidências acontecerem por acaso.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Chance de cada minúcia coincidir por acaso: 1 em</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Minúcias marcadas<b id="kn"></b></div><div>Chance por acaso<b id="kc"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PP=SL('sp',2,20,1,10,draw,v=>v);const PTS=[[130,80],[175,70],[215,95],[110,120],[160,115],[205,135],[235,170],[95,165],[140,160],[185,175],[120,205],[165,215],[210,215],[145,250],[190,255],[230,120]];
+const on=new Set();let ridges='';const cx=170,cy=165;
+for(let i=1;i<=13;i++){const rx=8+i*10,ry=12+i*12;const c=2*Math.PI*Math.sqrt((rx*rx+ry*ry)/2);const a=rint(30,80),b=rint(4,10);
+ ridges+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#9AA6BD" stroke-width="3" stroke-dasharray="${a} ${b} ${rint(20,60)} ${rint(4,9)}" stroke-dashoffset="${rint(0,c)}"/>`;}
+function fmtN(x){if(x<1e3)return fmt(Math.round(x));const U=[[1e12,'trilhão','trilhões'],[1e9,'bilhão','bilhões'],[1e6,'milhão','milhões'],[1e3,'mil','mil']];for(const [v,s,p] of U)if(x>=v){const q=Math.round(x/v*10)/10;return fmt(q)+' '+(q<2?s:p);}}
+function draw(){const p=PP.get(),n=on.size,X=Math.pow(p,n);
+ let g=`<style>text{pointer-events:none}</style><defs><clipPath id="cl"><ellipse cx="${cx}" cy="${cy}" rx="110" ry="130"/></clipPath></defs><rect width="340" height="380" fill="#fff"/>`;
+ g+=`<ellipse cx="${cx}" cy="${cy}" rx="112" ry="132" fill="${PEACH}"/><g clip-path="url(#cl)">${ridges}</g>`;
+ PTS.forEach(([x,y],i)=>{const o=on.has(i);g+=`<circle data-i="${i}" cx="${x}" cy="${y}" r="${o?11:9}" fill="${o?ORANGE:'#fff'}" stroke="${o?NAVY:ORANGE}" stroke-width="2.5" style="cursor:pointer"/>`+(o?TX(x,y+4,'✓',{fs:11,c:'#fff'}):'');});
+ const L=v=>20+Math.min(v,15)/15*300,lx=Math.log10(X);
+ g+=`<rect x="20" y="320" width="300" height="14" rx="7" fill="#EEF2F7"/><rect x="20" y="320" width="${L(lx)-20}" height="14" rx="7" fill="${lx>=Math.log10(8e9)?GREEN:ORANGE}"/>`;
+ [[3,'mil'],[6,'milhão'],[9,'bilhão'],[12,'trilhão']].forEach(([e,s])=>g+=LN(L(e),316,L(e),338,NAVY,1.5)+TX(L(e),352,'1 '+s,{fs:9,c:GRAY}));
+ g+=LN(L(Math.log10(8e9)),312,L(Math.log10(8e9)),340,BLUE,2,'3 2')+TX(L(Math.log10(8e9)),370,'população da Terra',{fs:8.5,c:BLUE});
+ $('fig').innerHTML=SVG(340,380,g);$('fig').querySelectorAll('circle[data-i]').forEach(c=>c.onclick=()=>{const i=+c.dataset.i;on.has(i)?on.delete(i):on.add(i);draw();});
+ $('kn').textContent=n;$('kc').textContent=n?'1 em '+fmtN(X):'—';
+ missao('m',X>=8e9,'Com '+n+' minúcias, a chance de coincidência por acaso (1 em '+fmtN(X)+') é menor que 1 dividido pela população da Terra, neste modelo simplificado.','Marque minúcias até a barra passar da linha azul. Quantas são precisas com 1 chance em '+p+'? E se cada uma coincidir com 1 chance em 4?');}
+draw();
+})();
+</script>
+</body>
+</html>

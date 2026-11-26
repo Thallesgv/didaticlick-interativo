@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Balança das provas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Balança das provas</h1></header>
+<main>
+<div class="card"><h2>Chance a favor contra</h2><p class="muted" style="margin-top:0">Comece com todas as pessoas que poderiam ser o culpado. Cada prova ligada multiplica a chance a favor pela sua razão de verossimilhança (RV). Os valores das RVs são ilustrativos.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Pessoas que poderiam ser o culpado</b><input type="range"><span></span></div>
+<div class="chips" id="pv"></div>
+<div class="sl" id="se"><b>Erro do laboratório de DNA: 1 em</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Probabilidade de culpa<b id="kp"></b></div><div>Chance a favor contra<b id="ko"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PR=[['Digital na borda',100],['DNA da gota',1e6],['Pegada de 27 cm',5],['Carro na câmera',10],['Letra do bilhete',3]];const on=[1,1,0,0,0];
+const big=v=>v>=1e9?fmt(Math.round(v/1e8)/10)+' bi':v>=1e6?fmt(Math.round(v/1e5)/10)+' mi':fmt(Math.round(v));
+const N=SL('sn',1,5,0.1,2,draw,v=>big(Math.round(Math.pow(10,v)))),E=SL('se',2,9,0.5,9,draw,v=>big(Math.pow(10,v)));
+$('pv').innerHTML=PR.map((p,i)=>`<button data-i="${i}">${p[0]} · RV ${big(p[1])}</button>`).join('');
+$('pv').querySelectorAll('button').forEach(b=>b.onclick=()=>{on[+b.dataset.i]^=1;draw();});
+function draw(){$('pv').querySelectorAll('button').forEach(b=>b.classList.toggle('on',!!on[+b.dataset.i]));
+ const n=Math.round(Math.pow(10,N.get())),er=Math.pow(10,-E.get());let a=1,c=Math.max(1,n-1);
+ PR.forEach((p,i)=>{if(!on[i])return;a*=i==1?1/(1e-6+er):p[1];});const pr=a/(a+c),lg=Math.log10(a/c),ang=clamp(lg*4,-28,28);
+ let g=`<rect width="340" height="240" fill="#fff"/>`;const cx=170,cy=70,L=120,ca=Math.cos(ang*RAD),sa=Math.sin(ang*RAD);
+ const xl=cx-L*ca,yl=cy+L*sa,xr=cx+L*ca,yr=cy-L*sa;
+ g+=`<path d="M${cx-30},205 L${cx+30},205 L${cx},${cy}Z" fill="${NAVY}"/>`+LN(xl,yl,xr,yr,NAVY,6);
+ const prato=(x,y,cor,t1,t2)=>LN(x,y,x-30,y+55,GRAY,1.5)+LN(x,y,x+30,y+55,GRAY,1.5)+`<path d="M${x-42},${y+55} Q${x},${y+80} ${x+42},${y+55}Z" fill="${cor}"/>`+TX(x,y+100,t1,{fs:11})+TX(x,y+114,t2,{fs:10,c:GRAY});
+ g+=prato(xl,yl,ORANGE,'culpado',big(a))+prato(xr,yr,BLUE,'inocente',big(c));
+ g+=`<circle cx="${cx}" cy="${cy}" r="7" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kp').textContent=(pr>0.99999?'> 99,999':pr<1e-5?'< 0,001':pr>.999?fmt(Math.floor(pr*1e5)/1e3):r1(pr*100))+'%';$('ko').textContent=big(a)+' contra '+big(c);
+ missao('m',!on[1]&&pr>0.99,'Sem o DNA, só com provas independentes, a chance passou de 99%. Agora ligue o DNA e piore o laboratório (1 em 100): o elo mais fraco manda.','Desafio: com 100 pessoas, desligue o DNA e chegue a mais de 99% combinando as outras provas.');}
+draw();
+})();
+</script>
+</body>
+</html>
