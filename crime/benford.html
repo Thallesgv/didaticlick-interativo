@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teste de Benford · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Teste de Benford</h1></header>
+<main>
+<div class="card"><h2>O primeiro dígito</h2><p class="muted" style="margin-top:0">Escolha um conjunto de números. As barras mostram com que frequência cada dígito aparece na frente; a linha azul é o que a Lei de Benford prevê.</p>
+<div class="chips" id="cd"></div>
+<div id="tx" style="display:none"><textarea id="ta" rows="4" style="width:100%;font:inherit;padding:8px;border-radius:10px;border:1px solid #D7DEEA" placeholder="Cole ou digite valores separados por espaço, vírgula ou linha"></textarea></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Números analisados<b id="kn"></b></div><div class="o">Começam com 1<b id="k1"></b></div><div>Distância de Benford<b id="kd"></b></div></div>
+<div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Sortear de novo</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const BF=[1,2,3,4,5,6,7,8,9].map(d=>100*Math.log10(1+1/d));let dados=[];
+const D=chips('cd',['Potências de 2','Populações simuladas','Valores inventados','Notas de Heitor','Seus números'],0,gerar);
+$('nova').onclick=gerar;$('ta').oninput=()=>{if(D.get()==4)gerar();};
+function gerar(){const t=D.get();$('tx').style.display=t==4?'':'none';$('nova').style.display=t==0||t==4?'none':'';
+ if(t==0)dados=Array.from({length:200},(_,i)=>Math.pow(2,i+1));
+ if(t==1)dados=Array.from({length:300},()=>{let v=500;const n=rint(10,80);for(let k=0;k<n;k++)v*=1+Math.random()*.12;return v;});
+ if(t==2)dados=Array.from({length:200},()=>rint(1000,9999));
+ if(t==3){const c=[22,18,17,19,24,25,26,24,25];dados=[];c.forEach((q,i)=>{for(let k=0;k<q;k++)dados.push((i+1)*1000+rint(0,999));});}
+ if(t==4)dados=($('ta').value.match(/\d[\d.,]*/g)||[]).map(s=>parseFloat(s.replace(/\./g,'').replace(',','.'))).filter(v=>v>0);
+ draw();}
+const pd=v=>{let s=String(v);if(s.includes('e')){return +s[0];}s=s.replace(/^[0.]+/,'');return +s[0];};
+function draw(){const c=Array(9).fill(0);dados.forEach(v=>{const d=pd(v);if(d>=1&&d<=9)c[d-1]++;});const n=c.reduce((a,b)=>a+b,0)||1,pp=c.map(q=>100*q/n);
+ const x0=36,y0=210,H=180,bw=30,Y=v=>y0-v/40*H;let g=`<rect width="340" height="240" fill="#F8FAFC"/>`;
+ for(let v=0;v<=40;v+=10)g+=LN(x0,Y(v),x0+9*bw+10,Y(v),GRAYL,1)+TX(x0-4,Y(v)+4,v+'%',{fs:9,a:'end',c:GRAY,w:500});
+ let pts='';pp.forEach((v,i)=>{const x=x0+8+i*bw;g+=`<rect x="${x}" y="${Y(Math.min(v,40))}" width="${bw-8}" height="${y0-Y(Math.min(v,40))}" rx="3" fill="${LIGHT}"/>`+TX(x+(bw-8)/2,y0+15,i+1,{fs:11});pts+=(i?' ':'')+(x+(bw-8)/2)+','+Y(BF[i]);});
+ g+=`<polyline points="${pts}" fill="none" stroke="${BLUE}" stroke-width="3"/>`+pts.split(' ').map(p=>{const [x,y]=p.split(',');return `<circle cx="${x}" cy="${y}" r="3.5" fill="${BLUE}"/>`;}).join('');
+ $('fig').innerHTML=SVG(340,240,g);const dist=pp.reduce((a,v,i)=>a+Math.abs(v-BF[i]),0)/2;
+ $('kn').textContent=fmt(dados.length);$('k1').textContent=r1(pp[0])+'%';$('kd').textContent=r1(dist)+' pontos';
+ const t=D.get();if(t==4&&dados.length<20){$('m').innerHTML='<div class="msg info">Digite pelo menos 20 valores reais (preços, contas, populações) para o teste fazer sentido.</div>';return;}
+ $('m').innerHTML=`<div class="msg ${dist<10?'ok':'bad'}">${dist<10?'Perto de Benford: o padrão de dados reais que crescem por multiplicação.':'Longe de Benford. '+(t==2?'Números “inventados” de forma uniforme dão cerca de 11% para cada dígito.':t==3?'As notas de Heitor têm dígitos altos demais: sinal para auditar.':'Confira se os dados se espalham por várias ordens de grandeza.')}</div>`;}
+gerar();
+})();
+</script>
+</body>
+</html>

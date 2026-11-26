@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a pirâmide · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Monte a pirâmide</h1></header>
+<main>
+<div class="card"><h2>Até onde a pirâmide aguenta?</h2><p class="muted" style="margin-top:0">Cada participante precisa trazer novos participantes. Os níveis se empilham até passar a população escolhida. A barra mostra quantos ficam no último nível, sem ninguém para recrutar.</p>
+<div class="sl" id="sk"><b>Cada um traz</b><input type="range"><span></span></div>
+<p style="margin:6px 0 2px"><b>População disponível</b></p><div class="chips" id="cp"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Níveis possíveis<b id="kn"></b></div><div>Participantes<b id="kt"></b></div><div>No último nível (perdem)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const POP=[['Vila Serena',60000],['Brasil',203000000],['Planeta',8000000000]];
+const K=SL('sk',2,10,1,6,draw,v=>v+' pessoas');const CP=chips('cp',POP.map(p=>p[0]),0,draw);
+const big=v=>v>=1e9?r1(v/1e9)+' bi':v>=1e6?r1(v/1e6)+' mi':fmt(Math.round(v));
+function draw(){const k=K.get(),pop=POP[CP.get()][1];const niv=[];let tot=0,n=1;
+ while(true){const c=Math.pow(k,n-1);if(tot+c>pop)break;niv.push(c);tot+=c;n++;}
+ const prox=Math.pow(k,niv.length);let g=`<rect width="340" height="300" fill="#F8FAFC"/>`;const N=niv.length,h=Math.min(24,210/(N+1));
+ niv.forEach((c,j)=>{const w=30+j*(260/Math.max(N,1)),y=12+j*h,ult=j==N-1;g+=`<rect x="${170-w/2}" y="${y}" width="${w}" height="${h-3}" rx="3" fill="${ult?ORANGE:j%2?LIGHT:NAVY}"/>`;
+  if(h>=14)g+=TX(170,y+h/2+2,big(c),{fs:Math.min(10,h-5),c:ult||j%2==0?'#fff':NAVY});});
+ const yN=12+N*h;g+=`<rect x="20" y="${yN}" width="300" height="${h-3}" rx="3" fill="none" stroke="#B91C1C" stroke-width="2" stroke-dasharray="5 4"/>`+TX(170,yN+h/2+3,'próximo nível: '+big(prox)+' (não existe gente)',{fs:9.5,c:'#B91C1C'});
+ const ult=niv[N-1]||0,f=tot?ult/tot:0,yb=262;g+=TX(20,yb-8,'Quem ganha × quem perde',{fs:10,a:'start'});
+ g+=`<rect x="20" y="${yb}" width="300" height="20" rx="5" fill="${NAVY}"/><rect x="${20+300*(1-f)}" y="${yb}" width="${300*f}" height="20" rx="5" fill="${ORANGE}"/>`+TX(20+300*(1-f)+300*f/2,yb+14,r1(100*f)+'% perdem',{fs:10,c:'#fff'});
+ $('fig').innerHTML=SVG(340,300,g);$('kn').textContent=N;$('kt').textContent=big(tot);$('kp').textContent=big(ult);
+ $('m').innerHTML=`<div class="msg info">Com ${k} por pessoa, ${POP[CP.get()][0]} aguenta só ${N} níveis. O nível ${N+1} precisaria de ${big(prox)} pessoas, mais que ${big(pop)}. ${k==6&&CP.get()==0?'É o Clube Premium de Heitor: no nível 8 não há gente.':''}</div>`;}
+draw();
+})();
+</script>
+</body>
+</html>

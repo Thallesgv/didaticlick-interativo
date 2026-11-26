@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora do superfaturamento · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Calculadora do superfaturamento</h1></header>
+<main>
+<div class="card"><h2>Quanto foi desviado?</h2><p class="muted" style="margin-top:0">Escolha o preço real do serviço e quantos por cento a nota foi aumentada. A parte laranja da barra é o desvio.</p>
+<div class="chips" id="md"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Preço real</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Aumento na nota</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Desvio<b id="kd"></b></div><div>% sobre o real<b id="kr"></b></div><div>% da nota<b id="kn"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const brl=v=>'R$ '+fmt(Math.round(v));const pc=v=>r1(v)+'%';
+const M=chips('md',['Explorar','Caso: o telhado'],0,()=>{if(M.get()==1){R.set(40000);A.set(10);}draw();});
+const R=SL('sr',10000,100000,1000,48000,draw,v=>brl(v)),A=SL('sa',0,100,1,25,draw,v=>v+'%');
+function draw(){const r=R.get(),a=A.get(),n=r*(1+a/100),d=n-r,mx=200000,y0=230,H=190,Y=v=>y0-v/mx*H;
+ let g=`<rect width="340" height="260" fill="#F8FAFC"/>`;
+ for(let v=0;v<=mx;v+=50000)g+=LN(40,Y(v),330,Y(v),GRAYL,1)+TX(36,Y(v)+4,v/1000+' mil',{fs:9,a:'end',c:GRAY,w:500});
+ g+=`<rect x="70" y="${Y(r)}" width="80" height="${y0-Y(r)}" rx="4" fill="${NAVY}"/>`+TX(110,Y(r)-6,brl(r),{fs:11})+TX(110,y0+16,'preço real',{fs:10,c:GRAY,w:500});
+ g+=`<rect x="200" y="${Y(r)}" width="80" height="${y0-Y(r)}" rx="4" fill="${NAVY}"/><rect x="200" y="${Y(n)}" width="80" height="${Y(r)-Y(n)}" fill="${ORANGE}"/>`;
+ g+=TX(240,Y(n)-6,brl(n),{fs:11})+TX(240,y0+16,'nota paga',{fs:10,c:GRAY,w:500})+(Y(r)-Y(n)>16?TX(240,(Y(r)+Y(n))/2+4,'+'+fmt(Math.round(d)),{fs:10,c:'#fff'}):'');
+ g+=LN(150,Y(r),200,Y(r),NAVY,1,'4 3');
+ $('fig').innerHTML=SVG(340,260,g);$('kd').textContent=brl(d);$('kr').textContent=pc(a);$('kn').textContent=n?pc(100*d/n):'0%';
+ if(M.get()==1)missao('m',r==48000&&a==25,'É o caso: R$ 48.000 viraram R$ 60.000. O desvio de R$ 12.000 é 25% do real, mas só 20% da nota.','Monte o caso: preço real R$ 48.000 e nota de R$ 60.000. Qual aumento dá isso?');
+ else $('m').innerHTML='<div class="msg info">Repare: a porcentagem sobre o real é sempre maior que a porcentagem da nota. A base maior “encolhe” o desvio.</div>';}
+draw();
+})();
+</script>
+</body>
+</html>
