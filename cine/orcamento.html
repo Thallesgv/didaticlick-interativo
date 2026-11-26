@@ -17,6 +17,7 @@
 <div class="fig" id="pz"></div><div id="m"></div></div>
 <div class="card"><h2>Duração e planos</h2><div class="sl" id="du"><b>Duração do curta</b><input type="range"><span></span></div>
 <div class="sl" id="pl"><b>Duração média do plano</b><input type="range"><span></span></div>
+<div class="fig" id="dp"></div>
 <div class="kpi"><div class="o">Páginas de roteiro<b id="c1"></b></div><div>Planos<b id="c2"></b></div><div>Quadros a 30 q/s<b id="c3"></b></div></div></div>
 <div class="card"><h2>Cronograma</h2><div class="sl" id="en"><b>Número de encontros</b><input type="range"><span></span></div><div class="fig" id="cr"></div></div>
 </main>
@@ -25,10 +26,21 @@
 const T=SL('tot',50,2000,10,300,draw,v=>'R$ '+v),P=[40,30,20,10].map((v,i)=>SL('p'+i,0,100,5,v,draw,x=>x+'%'));
 const DU=SL('du',1,10,0.5,4,draw,v=>r1(v)+' min'),PL=SL('pl',1,15,0.5,4,draw,v=>r1(v)+' s'),EN=SL('en',4,16,1,8,draw);
 const NOM=['Arte','Lanche','Transporte','Reserva'];
+function fita(d,pl){const L=320,x0=10,np=Math.round(d*60/pl),w=L/(d*60/pl);let g=TX(x0,12,'O filme inteiro: '+r1(d)+' min',{fs:11,a:'start'});
+ g+=`<rect x="${x0}" y="18" width="${L}" height="28" fill="${NAVY}" rx="3"/>`;
+ for(let i=0;i<np;i++){const x=x0+i*w,ww=Math.min(w,x0+L-x);if(ww<=0)break;g+=`<rect x="${x+(w>3?1:0)}" y="22" width="${Math.max(0.6,ww-(w>3?2:0.4))}" height="20" fill="${i%2?PEACH:ORANGE}"/>`;}
+ g+=TX(x0,60,'cada bloco é um plano de '+r1(pl)+' s',{fs:10,a:'start',c:'#5A6B8C'})+TX(x0+L,60,np+' planos',{fs:10,a:'end',c:ORANGE});
+ g+=TX(x0,84,'Roteiro: 1 página ≈ 1 minuto',{fs:11,a:'start'});const pw=L/10;
+ for(let i=0;i<Math.ceil(d);i++){const f=Math.min(1,d-i),x=x0+i*pw;g+=`<rect x="${x+2}" y="92" width="${(pw-6)*f}" height="34" fill="#fff" stroke="${NAVY}" rx="2"/>`;
+  for(let l=0;l<4;l++)g+=`<line x1="${x+6}" y1="${100+l*6}" x2="${x+2+(pw-6)*f-4}" y2="${100+l*6}" stroke="${GRAYL}"/>`;}
+ const q=Math.round(pl*30);g+=TX(x0,148,'Um plano de '+r1(pl)+' s = '+q+' quadros',{fs:11,a:'start'});
+ const nq=Math.min(q,60),qw=L/nq;for(let i=0;i<nq;i++)g+=`<rect x="${x0+i*qw}" y="155" width="${Math.max(0.8,qw-1)}" height="14" fill="${i%2?NAVY:'#3A4E7A'}"/>`;
+ if(q>60)g+=TX(x0+L,182,'(mostrando 60 dos '+q+' quadros)',{fs:9,a:'end',c:'#5A6B8C'});
+ $('dp').innerHTML=SVG(340,188,g);}
 function draw(){const t=T.get(),p=P.map(s=>s.get()),s=p.reduce((a,b)=>a+b,0);
  $('pz').innerHTML=pizza(p.map((v,i)=>({v,cor:CORES_FIN[i],nome:NOM[i]+': R$ '+fmt(Math.round(t*v)/100*1)})),70);
  missao('m',s===100,'As porcentagens somam 100%. Orçamento fechado!','As porcentagens somam '+s+'%. Ajuste até dar exatamente 100%.');
- const d=DU.get();$('c1').textContent='≈ '+r1(d);$('c2').textContent='≈ '+Math.round(d*60/PL.get());$('c3').textContent=fmt(d*60*30);
+ const d=DU.get();$('c1').textContent='≈ '+r1(d);$('c2').textContent='≈ '+Math.round(d*60/PL.get());$('c3').textContent=fmt(d*60*30);fita(d,PL.get());
  const n=EN.get(),pre=Math.round(n*3/8),pro=Math.round(n/4),pos=n-pre-pro;let g='';
  for(let i=0;i<n;i++){const c=i<pre?BLUE:i<pre+pro?ORANGE:NAVY;g+=`<rect x="${6+i*(326/n)}" y="10" width="${326/n-3}" height="30" rx="4" fill="${c}"/>`+TX(6+i*(326/n)+(326/n-3)/2,30,i+1,{fs:10,c:'#fff'});}
  g+=TX(10,58,'pré-produção: '+pre,{fs:10,a:'start',c:BLUE})+TX(130,58,'filmagem: '+pro,{fs:10,a:'start',c:ORANGE})+TX(235,58,'pós: '+pos,{fs:10,a:'start'});$('cr').innerHTML=SVG(340,64,g);}

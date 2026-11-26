@@ -15,22 +15,40 @@
 <div class="sl" id="tt"><b>Duração da queda na tela</b><input type="range"><span></span></div>
 <div class="row"><button id="go" class="or">Soltar</button></div>
 <div class="kpi"><div class="o">Tempo real<b id="k1"></b></div><div>Velocidade final<b id="k2"></b></div><div>Veredito<b id="k3"></b></div></div></div>
-<div class="card"><h2>Salto entre prédios</h2>
+<div class="card"><h2>Salto entre prédios</h2><p class="muted" style="margin-top:0">O ator corre e pula do prédio da esquerda. Enquanto cai o desnível, ele precisa avançar o vão inteiro. Quanto menos tempo no ar, mais rápido ele tem que correr.</p>
+<div class="fig" id="fs"></div>
 <div class="sl" id="vao"><b>Vão entre os prédios</b><input type="range"><span></span></div>
 <div class="sl" id="dh"><b>Desnível (o de chegada é mais baixo)</b><input type="range"><span></span></div>
-<div class="kpi"><div class="o">Tempo no ar<b id="s1"></b></div><div>Velocidade mínima<b id="s2"></b></div></div><p class="muted">Para comparar: um velocista corre uns 10 m/s (36 km/h).</p></div>
+<div class="row"><button id="pula" class="or">Pular</button></div>
+<div class="kpi"><div class="o">Tempo no ar<b id="s1"></b></div><div>Velocidade mínima<b id="s2"></b></div><div>Veredito<b id="s3"></b></div></div><p class="muted">Para comparar: uma pessoa correndo forte chega a uns 7 m/s; o homem mais rápido do mundo, a 12 m/s.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const H=SL('h',1,500,1,45,draw,v=>v+' m'),TT=SL('tt',0.5,30,0.5,8,draw,v=>r1(v)+' s');let anim=null;
+const H=SL('h',1,500,1,45,()=>draw(),v=>v+' m'),TT=SL('tt',0.5,30,0.5,8,()=>draw(),v=>r1(v)+' s');let anim=null;
 function draw(y){const h=H.get(),t=Math.sqrt(h/5),f=TT.get()/t;$('k1').textContent=r1(t)+' s';$('k2').textContent=Math.round(10*t*3.6)+' km/h';
  $('k3').textContent=f<1.15&&f>0.87?'realista':f>=1.15?'câmera lenta ('+r1(f)+'×)':'acelerada ('+r1(1/f)+'×)';
  const yy=y===undefined?0:y;let g=`<rect x="20" y="10" width="60" height="180" fill="${NAVY}"/><line x1="0" y1="190" x2="320" y2="190" stroke="${GRAYL}"/>`;
  g+=`<circle cx="110" cy="${18+yy*168}" r="9" fill="${ORANGE}"/>`+TX(200,60,h+' m',{fs:16})+TX(200,85,'queda real: '+r1(t)+' s',{fs:11,w:500});$('fig').innerHTML=SVG(320,200,g);}
 $('go').onclick=()=>{const t=TT.get(),t0=performance.now();cancelAnimationFrame(anim);const st=n=>{const e=Math.min(1,(n-t0)/1000/t);draw(e*e);if(e<1)anim=requestAnimationFrame(st);};anim=requestAnimationFrame(st);};
 draw();
-const V=SL('vao',2,40,1,20,pulo,v=>v+' m'),DH=SL('dh',0.5,20,0.5,5,pulo,v=>r1(v)+' m');
-function pulo(){const t=Math.sqrt(DH.get()/5),v=V.get()/t;$('s1').textContent=r2(t)+' s';$('s2').textContent=r1(v)+' m/s = '+Math.round(v*3.6)+' km/h';}pulo();
+const V=SL('vao',2,40,1,20,()=>pulo(1),v=>v+' m'),DH=SL('dh',0.5,20,0.5,5,()=>pulo(1),v=>r1(v)+' m');let anP=null;
+function pulo(e){const w=V.get(),dh=DH.get(),t=Math.sqrt(dh/5),v=w/t,ok=v<=7,el=v<=12;
+ $('s1').textContent=r2(t)+' s';$('s2').textContent=r1(v)+' m/s = '+Math.round(v*3.6)+' km/h';
+ $('s3').textContent=ok?'dá para pular':el?'só um atleta olímpico':'impossível';$('s3').style.color=ok?GREEN:el?ORANGE:'#C0392B';
+ const sc=Math.min(200/w,100/dh,14),x0=70,y0=78,x1=x0+w*sc,y1=y0+dh*sc,cor=ok?GREEN:el?ORANGE:'#C0392B';
+ let g=`<rect x="0" y="${y0}" width="${x0}" height="${235-y0}" fill="${NAVY}"/><rect x="${x1}" y="${y1}" width="${340-x1}" height="${235-y1}" fill="${NAVY}"/>`;
+ for(let i=0;i<6;i++)for(let j=0;j<2;j++){const wy=y0+14+i*26;if(wy<228)g+=`<rect x="${12+j*28}" y="${wy}" width="16" height="12" fill="${PEACH}"/>`;const wy2=y1+14+i*26;if(wy2<228&&x1+12+j*28<330)g+=`<rect x="${x1+12+j*28}" y="${wy2}" width="16" height="12" fill="${PEACH}"/>`;}
+ g+=`<line x1="0" y1="235" x2="340" y2="235" stroke="${GRAYL}"/>`;
+ let pts=[];for(let k=0;k<=30;k++){const tt=t*k/30;pts.push((x0+v*tt*sc).toFixed(1)+','+(y0-8+5*tt*tt*sc).toFixed(1));}
+ g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${cor}" stroke-width="2" stroke-dasharray="5 4"/>`;
+ g+=`<line x1="${x0}" y1="${y0-26}" x2="${x1}" y2="${y0-26}" stroke="${NAVY}" marker-end="url(#ps)" marker-start="url(#ps)"/>`+TX((x0+x1)/2,y0-31,'vão: '+w+' m',{fs:11});
+ if(dh*sc>14)g+=`<line x1="${x1+3}" y1="${y0}" x2="${x1+3}" y2="${y1}" stroke="#5A6B8C" stroke-dasharray="2 2"/><line x1="${x0}" y1="${y0}" x2="${x1+3}" y2="${y0}" stroke="${GRAYL}" stroke-dasharray="2 2"/>`+TX(x1+8,(y0+y1)/2-1,'desce',{fs:9,a:'start',c:'#5A6B8C'})+TX(x1+8,(y0+y1)/2+10,r1(dh)+' m',{fs:10,a:'start',c:'#5A6B8C'});
+ const tt=t*Math.min(1,e),px=x0+v*tt*sc,py=y0-8+5*tt*tt*sc;
+ g+=`<circle cx="${px}" cy="${py-8}" r="5" fill="${ORANGE}"/><line x1="${px}" y1="${py-3}" x2="${px}" y2="${py+8}" stroke="${ORANGE}" stroke-width="3"/>`;
+ g+=TX(170,18,'precisa correr a '+Math.round(v*3.6)+' km/h',{fs:13,c:cor});
+ $('fs').innerHTML=SVG(340,240,`<defs><marker id="ps" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${NAVY}"/></marker></defs>`+g);}
+$('pula').onclick=()=>{const t0=performance.now(),dur=Math.max(1.2,Math.sqrt(DH.get()/5)*2);cancelAnimationFrame(anP);const st=n=>{const e=Math.min(1,(n-t0)/1000/dur);pulo(e);if(e<1)anP=requestAnimationFrame(st);};pulo(0);anP=requestAnimationFrame(st);};
+pulo(1);
 </script>
 </body>
 </html>
