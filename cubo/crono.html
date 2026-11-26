@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cronômetro Ao5 · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Cronômetro Ao5</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Embaralhe o seu cubo com a sequência abaixo (branco em cima, verde na frente). O cubo 3D mostra como ele deve ficar.</p>
+<p id="emb" style="text-align:center;font-size:19px;font-weight:700;color:var(--navy);line-height:1.5;margin:6px 0"></p>
+<div id="cubo"></div>
+<div class="row" style="justify-content:center"><button class="alt" id="nova">Outro embaralhamento</button></div></div>
+<div class="card" style="text-align:center">
+<div id="fase" class="muted" style="font-weight:600">Toque no cronômetro para começar a inspeção</div>
+<div id="tempo" style="font-size:64px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--navy);padding:18px 0;border-radius:16px;background:#F3F6FB;margin:8px 0;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation">0,00</div>
+<p class="muted" style="margin:0">Toque 1: começa a inspeção (15 s) · Toque 2: começa a resolver · Toque 3: para. No computador, use a barra de espaço.</p></div>
+<div class="card"><h2>Rodada (5 resoluções)</h2><div id="lista"></div>
+<div class="msg info" id="media" style="font-size:18px"></div>
+<div class="row" style="justify-content:center;margin-top:8px"><button class="alt" id="zera">Nova rodada</button></div>
+<p class="muted">Regras da WCA: até 15 s de inspeção; começar entre 15 e 17 s dá +2; depois de 17 s, DNF. A média de 5 tira o melhor e o pior tempo e faz a média dos 3 do meio; um DNF conta como o pior, dois DNF tornam a média DNF.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C=new Cubo3D('cubo');let emb='',fase=0,t0=0,pen=0,raf=null,tempos=[];
+const f2=x=>fmt((Math.floor(x*100)/100).toFixed(2));
+function nova(){emb=C.embaralha(20);C.reset();C.aplica(emb);$('emb').textContent=emb.replace(/'/g,'’');}
+function show(s,cor){$('tempo').textContent=s;$('tempo').style.color=cor||'var(--navy)';}
+function loop(){const dt=(performance.now()-t0)/1000;
+ if(fase==1){const r=15-dt;if(r>0)show(String(Math.ceil(r)),r<=3?'#E8590C':'var(--navy)');else if(dt<17)show('+2','#E8590C');else show('DNF','#C92A2A');}
+ if(fase==2)show(f2(dt));raf=requestAnimationFrame(loop);}
+function toque(){const agora=performance.now();
+ if(fase==0){if(tempos.length>=5)return;fase=1;t0=agora;$('fase').textContent='Inspeção: olhe o cubo. Toque de novo para começar a resolver.';loop();return;}
+ if(fase==1){const dt=(agora-t0)/1000;pen=dt<=15?0:dt<=17?2:-1;fase=2;t0=agora;$('fase').textContent='Resolvendo... toque para parar.'+(pen==2?' (+2 na inspeção)':pen<0?' (DNF na inspeção)':'');return;}
+ if(fase==2){cancelAnimationFrame(raf);const t=Math.floor((agora-t0)/10)/100;fase=0;tempos.push({t,pen});show(f2(t));
+  $('fase').textContent=tempos.length<5?'Anotado! Embaralhe de novo e toque para a próxima inspeção.':'Rodada completa. Veja a sua média abaixo.';lista();nova();}}
+$('tempo').addEventListener('pointerdown',e=>{e.preventDefault();toque();});
+document.addEventListener('keydown',e=>{if(e.code=='Space'){e.preventDefault();toque();}});
+const val=x=>x.pen<0?Infinity:x.t+x.pen;
+const txt=x=>x.pen<0?'DNF':f2(x.t+x.pen)+(x.pen?'+':'');
+function lista(){
+ const v=tempos.map(val),ord=[...v.keys()].sort((a,b)=>v[a]-v[b]),fora=tempos.length==5?[ord[0],ord[4]]:[];
+ $('lista').innerHTML=tempos.length?tempos.map((x,i)=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #E5EAF2"><b style="width:24px">${i+1}.</b><span style="flex:1;font-size:18px;font-weight:700;${fora.includes(i)?'opacity:.5':''}">${fora.includes(i)?'('+txt(x)+')':txt(x)}</span><button class="alt" data-i="${i}" data-p="2" style="padding:4px 10px">+2</button><button class="alt" data-i="${i}" data-p="-1" style="padding:4px 10px">DNF</button><button class="alt" data-i="${i}" data-p="0" style="padding:4px 10px">OK</button></div>`).join(''):'<p class="muted">Nenhum tempo ainda.</p>';
+ document.querySelectorAll('#lista button').forEach(b=>b.onclick=()=>{tempos[+b.dataset.i].pen=+b.dataset.p;lista();});
+ if(tempos.length<5){$('media').innerHTML='Faltam <b>'+(5-tempos.length)+'</b> tempo(s) para a média de 5.';return;}
+ const s=[...v].sort((a,b)=>a-b),dnf=v.filter(x=>x==Infinity).length;
+ if(dnf>=2){$('media').innerHTML='Média de 5: <b>DNF</b> (dois ou mais DNF).';return;}
+ const m=(s[1]+s[2]+s[3])/3;
+ $('media').innerHTML=`Tira o melhor (${s[0]==Infinity?'DNF':f2(s[0])}) e o pior (${s[4]==Infinity?'DNF':f2(s[4])}).<br>Média de 5: (${f2(s[1])} + ${f2(s[2])} + ${f2(s[3])}) ÷ 3 = <b>${fmt((Math.round(m*100)/100).toFixed(2))} s</b>`;}
+$('nova').onclick=nova;$('zera').onclick=()=>{tempos=[];fase=0;cancelAnimationFrame(raf);show('0,00');$('fase').textContent='Toque no cronômetro para começar a inspeção';lista();};
+nova();lista();
+})();
+</script>
+</body>
+</html>
