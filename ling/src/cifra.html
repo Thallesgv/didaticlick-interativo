@@ -4,9 +4,9 @@
 <svg id="roda" viewBox="0 0 300 300" style="width:100%;max-width:320px;display:block;margin:8px auto"></svg>
 <p class="muted" style="text-align:center;margin-top:-4px">Anel de fora: letra original · anel de dentro: letra cifrada</p>
 <div class="sl"><span>chave k</span><input type="range" id="k" min="0" max="25" value="0"><b id="kv"></b></div>
-<div class="msg info" id="dec"></div><p class="lbl">Frequência das letras: mensagem decifrada com a chave k (laranja) × português de Dom Casmurro (contorno azul)</p>
+<p class="lbl" id="declbl"></p><div class="msg info" id="dec"></div><p class="lbl">Frequência das letras: mensagem decifrada com a chave k (laranja) × português de Dom Casmurro (contorno azul)</p>
 <svg id="barras" viewBox="0 0 330 130" style="width:100%"></svg>
-<div class="row" style="margin-top:8px"><button class="alt" id="novo">Outra mensagem</button></div></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="novo">Outra mensagem</button><button class="alt" id="dica">Mostrar a resposta</button></div></div>
 <div class="card"><h2>Cifre a sua</h2><input type="text" id="meu" placeholder="escreva uma frase"><div class="sl"><span>k</span><input type="range" id="k2" min="1" max="25" value="3"><b id="k2v"></b></div><div class="msg info" id="saida"></div></div>
 <script>
 const $=i=>document.getElementById(i);
@@ -26,8 +26,8 @@ function barras(d){const c={};let t=0;for(const x of d)if(x!=' '){c[x]=(c[x]||0)
  for(let i=0;i<26;i++){const L=AB[i],v=100*(c[L]||0)/t,x=4+i*W,hv=95*v/mx,hp=95*PT[L]/mx;
   h+=`<rect x="${x+1}" y="${105-hv}" width="${W-3}" height="${hv}" fill="#F7821F"/><rect x="${x+1}" y="${105-hp}" width="${W-3}" height="${hp}" fill="none" stroke="#0E2354" stroke-width="1.4"/><text x="${x+W/2}" y="120" text-anchor="middle" font-size="9" fill="#0E2354">${L}</text>`;}
  $('barras').innerHTML=h;}
-function draw(){const k=+$('k').value;roda(k);barras(cesar($('cif').textContent,-k));$('kv').textContent=k;const d=cesar($('cif').textContent,-k);const ok=d==txt;$('dec').innerHTML=(ok?'<b>Decifrado!</b> ':'')+d;$('dec').className='msg '+(ok?'ok':'info');}
-$('k').oninput=draw;$('novo').onclick=novo;novo();
+function draw(){const k=+$('k').value;roda(k);barras(cesar($('cif').textContent,-k));$('kv').textContent=k;const d=cesar($('cif').textContent,-k);const ok=d==txt;$('declbl').textContent=ok?'Mensagem decifrada:':'Mensagem lida com a chave '+k+' (mexa na chave até virar português):';$('dec').innerHTML=(ok?'<b>Decifrado! A chave é '+k+'.</b><br>':'')+d;$('dec').className='msg '+(ok?'ok':'info');}
+$('k').oninput=draw;$('dica').onclick=()=>{$('k').value=ch;draw();};$('novo').onclick=novo;novo();
 function m(){const k=+$('k2').value;$('k2v').textContent=k;$('saida').textContent=cesar($('meu').value.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''),k)||'...';}
 $('meu').oninput=m;$('k2').oninput=m;m();
 </script>
