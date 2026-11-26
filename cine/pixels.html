@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Editor de pixels · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Editor de pixels</h1></header>
+<main>
+<div class="card"><h2>A imagem é uma matriz</h2><p class="muted" style="margin-top:0">Escolha um tom (0 = branco, 9 = preto) e toque nas casas para pintar. Depois aplique as operações e veja a matriz e a imagem mudarem juntas.</p>
+<div class="sl" id="br"><b>Tom do pincel</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="b1">Brilho (−1)</button><button id="b2">Escurecer (+1)</button><button id="b3">Contraste</button><button id="b4" class="or">Negativo</button><button id="b5">Transpor</button><button id="b6">Espelhar</button><button id="b7" class="alt">Exemplo</button><button id="b8" class="alt">Limpar</button></div>
+<div class="kpi"><div class="o">Mais claro<b id="k1"></b></div><div>Mais escuro<b id="k2"></b></div><div>Média<b id="k3"></b></div></div><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const N=8;let M;const pin=SL('br',0,9,1,9,null);
+const ex=()=>{M=[[0,0,9,9,9,9,0,0],[0,9,0,0,0,0,9,0],[9,0,9,0,0,9,0,9],[9,0,0,0,0,0,0,9],[9,0,9,0,0,9,0,9],[9,0,0,9,9,0,0,9],[0,9,0,0,0,0,9,0],[0,0,9,9,9,9,0,0]];};ex();
+const op=f=>{M=f(M);draw();};
+$('b1').onclick=()=>op(m=>m.map(l=>l.map(v=>clamp(v-1,0,9))));$('b2').onclick=()=>op(m=>m.map(l=>l.map(v=>clamp(v+1,0,9))));
+$('b3').onclick=()=>op(m=>m.map(l=>l.map(v=>clamp(Math.round((v-4.5)*1.5+4.5),0,9))));$('b4').onclick=()=>op(m=>m.map(l=>l.map(v=>9-v)));
+$('b5').onclick=()=>op(m=>m[0].map((_,j)=>m.map(l=>l[j])));$('b6').onclick=()=>op(m=>m.map(l=>l.slice().reverse()));
+$('b7').onclick=()=>{ex();draw();};$('b8').onclick=()=>op(m=>m.map(l=>l.map(()=>0)));
+function draw(){const s=19,g0=8,g1=g0+N*s+24;let g='';
+ for(let i=0;i<N;i++)for(let j=0;j<N;j++){const v=M[i][j],c=Math.round(255*(1-v/9));
+  g+=`<rect data-i="${i}" data-j="${j}" x="${g0+j*s}" y="${10+i*s}" width="${s}" height="${s}" fill="#fff" stroke="${GRAYL}"/>`+TX(g0+j*s+s/2,10+i*s+13,v,{fs:10})
+   +`<rect data-i="${i}" data-j="${j}" x="${g1+j*s}" y="${10+i*s}" width="${s}" height="${s}" fill="rgb(${c},${c},${c})" stroke="#eee"/>`;}
+ $('fig').innerHTML=SVG(g1+N*s+8,N*s+20,g);
+ $('fig').querySelectorAll('rect[data-i]').forEach(r=>r.onclick=()=>{M[+r.dataset.i][+r.dataset.j]=pin.get();draw();});
+ const all=M.flat();$('k1').textContent=Math.min(...all);$('k2').textContent=Math.max(...all);$('k3').textContent=r1(all.reduce((a,b)=>a+b,0)/all.length);}
+draw();
+</script>
+</body>
+</html>

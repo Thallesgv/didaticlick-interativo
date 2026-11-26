@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gerador de fractais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Gerador de fractais</h1></header>
+<main>
+<div class="card"><h2>Regras que se repetem</h2><div class="chips" id="tp"></div>
+<div class="fig"><svg id="sv" viewBox="0 0 320 290" width="320"></svg></div>
+<div class="sl" id="n"><b>Passo</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Peças<b id="k1"></b></div><div id="l2">Comprimento<b id="k2"></b></div></div>
+<p class="muted" id="ex"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const tp=chips('tp',['Curva de Koch','Triângulo de Sierpinski','Árvore'],0,draw),N=SL('n',0,6,1,2,draw);const sv=$('sv');
+function koch(n,a,b){if(!n)return [a,b];const d=[(b[0]-a[0])/3,(b[1]-a[1])/3],p=[a[0]+d[0],a[1]+d[1]],q=[a[0]+2*d[0],a[1]+2*d[1]],
+ r=[p[0]+d[0]*Math.cos(-Math.PI/3)-d[1]*Math.sin(-Math.PI/3),p[1]+d[0]*Math.sin(-Math.PI/3)+d[1]*Math.cos(-Math.PI/3)];
+ let o=[];[[a,p],[p,r],[r,q],[q,b]].forEach(([x,y],i)=>{const s=koch(n-1,x,y);o=o.concat(i?s.slice(1):s);});return o;}
+function sier(n,a,b,c){if(!n)return `<polygon points="${a} ${b} ${c}" fill="${ORANGE}"/>`;const m=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2];
+ return sier(n-1,a,m(a,b),m(a,c))+sier(n-1,m(a,b),b,m(b,c))+sier(n-1,m(a,c),m(b,c),c);}
+function arv(n,x,y,a,l){if(!n)return '';const x2=x+l*Math.cos(a),y2=y-l*Math.sin(a);return `<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${n>2?NAVY:ORANGE}" stroke-width="${n}"/>`+arv(n-1,x2,y2,a+0.45,l*0.7)+arv(n-1,x2,y2,a-0.45,l*0.7);}
+function draw(){const n=N.get(),t=tp.get();let g='';
+ if(t===0){const p=koch(n,[10,200],[310,200]);g=`<polyline points="${p.map(q=>q.join(',')).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+  $('k1').textContent=fmt(4**n)+' segmentos';$('l2').firstChild.textContent='Comprimento (começando com 1 m)';$('k2').textContent=r2((4/3)**n)+' m';$('ex').textContent='A cada passo: segmentos × 4, tamanho de cada um ÷ 3, comprimento total × 4/3.';}
+ else if(t===1){g=sier(n,[160,15],[10,275],[310,275]);$('k1').textContent=fmt(3**n)+' triângulos';$('l2').firstChild.textContent='Área pintada (começando com 1)';$('k2').textContent=r2((3/4)**n);$('ex').textContent='A cada passo: triângulos × 3, área de cada um ÷ 4, área total × 3/4.';}
+ else{g=arv(n+3,160,285,Math.PI/2,80);$('k1').textContent=fmt(2**(n+3)-1)+' galhos';$('l2').firstChild.textContent='Galhos novos neste passo';$('k2').textContent=fmt(2**(n+2));$('ex').textContent='Cada galho gera 2 galhos menores, com 70% do comprimento.';}
+ sv.innerHTML=g;}
+draw();
+</script>
+</body>
+</html>

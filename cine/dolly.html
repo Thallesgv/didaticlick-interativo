@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dolly zoom · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Dolly zoom</h1></header>
+<main>
+<div class="card"><h2>O efeito vertigem</h2><p class="muted" style="margin-top:0">Em cima, o quadro da câmera. Embaixo, a vista de cima do set: arraste a câmera. Com o ajuste ligado, a focal muda sozinha para manter f ÷ d constante e o ator do mesmo tamanho.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="aj" class="or">Ajuste automático: ligado</button></div>
+<div class="sl" id="dd"><b>Distância câmera–ator (d)</b><input type="range"><span></span></div>
+<div class="sl" id="fl"><b>Focal (zoom)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Focal<b id="k1"></b></div><div>Ator, comparado ao início<b id="k2"></b></div><div>Prédio, comparado ao início<b id="k3"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O prédio está 10 m atrás do ator. Começando com 24 mm a 2 m, faça o prédio ficar <b>2 vezes maior</b> com o ator do mesmo tamanho. Depois desligue o ajuste e veja o zoom comum: tudo cresce junto.</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+let auto=true;const B=10,F0=24,D0=2;const DS=SL('dd',1,10,0.1,2,mud,v=>r1(v)+' m'),FL=SL('fl',12,200,1,24,mudf,v=>v+' mm');
+function mud(){if(auto)FL.set(Math.round(F0/D0*DS.get()));draw();}function mudf(){if(auto){auto=false;$('aj').textContent='Ajuste automático: desligado';}draw();}
+$('aj').onclick=()=>{auto=!auto;$('aj').textContent='Ajuste automático: '+(auto?'ligado':'desligado');mud();};
+function draw(){const d=DS.get(),f=FL.get(),ra=(f/d)/(F0/D0),rb=(f/(d+B))/(F0/(D0+B));
+ $('k1').textContent=f+' mm';$('k2').textContent=r2(ra)+'×';$('k3').textContent=r2(rb)+'×';
+ let g=`<defs><clipPath id="cq"><rect x="20" y="8" width="300" height="150" rx="5"/></clipPath></defs><g clip-path="url(#cq)"><rect x="20" y="8" width="300" height="150" fill="#DBEAFE"/><rect x="20" y="128" width="300" height="30" fill="#C7D7A8"/>`;
+ const hb=60*rb,wb=50*rb;g+=`<rect x="${170-wb}" y="${128-hb}" width="${wb*2}" height="${hb}" fill="#5B6B8C"/>`;
+ for(let i=0;i<3;i++)for(let j=0;j<4;j++)g+=`<rect x="${170-wb+wb*0.15+j*wb*0.47}" y="${128-hb+hb*0.12+i*hb*0.28}" width="${wb*0.25}" height="${hb*0.15}" fill="#FDE68A"/>`;
+ [-1,1].forEach(sg=>{g+=`<circle cx="${170+sg*wb*1.9}" cy="${128-28*rb}" r="${16*rb}" fill="${GREEN}"/><rect x="${170+sg*wb*1.9-2*rb}" y="${128-14*rb}" width="${4*rb}" height="${14*rb}" fill="#8B5A2B"/>`;});
+ const ha=95*ra;g+=`<circle cx="170" cy="${158-ha*0.86}" r="${ha*0.12}" fill="#F2C9A0"/><rect x="${170-ha*0.14}" y="${158-ha*0.74}" width="${ha*0.28}" height="${ha*0.74}" rx="${ha*0.06}" fill="${ORANGE}"/></g><rect x="20" y="8" width="300" height="150" rx="5" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+ const X=m=>40+m*13.5,yv=190;g+=`<line x1="20" y1="${yv}" x2="330" y2="${yv}" stroke="${GRAYL}"/><circle cx="${X(10)}" cy="${yv}" r="7" fill="${ORANGE}"/>`+TX(X(10),yv-12,'ator',{fs:10})+`<rect x="${X(20)-8}" y="${yv-8}" width="16" height="16" fill="#5B6B8C"/>`+TX(X(20),yv+20,'prédio',{fs:10});
+ g+=`<g id="cam"><rect x="${X(10-d)-12}" y="${yv-8}" width="24" height="16" rx="3" fill="${NAVY}"/><path d="M${X(10-d)+12},${yv} l12,-9 v18 z" fill="${NAVY}"/></g>`+TX(X(10-d),yv+20,'câmera',{fs:10});
+ const svg=$('fig');svg.innerHTML=SVG(340,215,g);const s=svg.querySelector('svg');arrastar(s,s.querySelector('#cam'),x=>{DS.set(clamp(Math.round((10-(x-40)/13.5)*10)/10,1,10));mud();});
+ missao('m',Math.abs(ra-1)<0.03&&Math.abs(rb-2)<0.05,'Prédio 2× maior e ator igual: d = 5 m e f = 60 mm. Confira: 60 ÷ 15 = 4 = 2 × (24 ÷ 12).','Ator: '+r2(ra)+'×, prédio: '+r2(rb)+'×. Mantenha o ator em 1× e leve o prédio a 2×.');}
+draw();
+</script>
+</body>
+</html>

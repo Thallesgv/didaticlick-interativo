@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Profundidade de campo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Profundidade de campo</h1></header>
+<main>
+<div class="card"><h2>O que fica nítido?</h2><p class="muted" style="margin-top:0">Três atores em fila, a 2 m, 4 m e 8 m da câmera. A faixa laranja é a região nítida. Usamos um círculo de confusão de 0,03 mm (full frame).</p>
+<div class="fig" id="fig"></div>
+<b style="color:var(--navy);font-size:14px">Focal</b><div class="chips" id="fo"></div>
+<b style="color:var(--navy);font-size:14px">Abertura</b><div class="chips" id="ab"></div>
+<div class="sl" id="ss"><b>Distância de foco</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Nítido de<b id="k1"></b></div><div>até<b id="k2"></b></div><div>Hiperfocal<b id="k3"></b></div></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Deixe <b>os três atores</b> nítidos ao mesmo tempo. Depois faça o contrário: só o ator do meio nítido, com os outros dois desfocados.</p><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const FO=[24,35,50,85,135],NS=[1.4,2,2.8,4,5.6,8,11,16],fo=chips('fo',FO.map(v=>v+' mm'),2,draw),ab=chips('ab',NS.map(v=>'f/'+String(v).replace('.',',')),1,draw),SS=SL('ss',0.5,15,0.1,4,draw,v=>r1(v)+' m');let todos=false;
+function draw(){const f=FO[fo.get()],N=NS[ab.get()],s=SS.get()*1000,c=0.03,H=f*f/(N*c)+f,pe=s*(H-f)/(H+s-2*f),lo=s<H-f?s*(H-f)/(H-s):Infinity;
+ $('k1').textContent=r2(pe/1000)+' m';$('k2').textContent=isFinite(lo)?r2(lo/1000)+' m':'infinito';$('k3').textContent=r2(H/1000)+' m';
+ const X=m=>30+m*19,y0=150;let g=`<line x1="10" y1="${y0}" x2="335" y2="${y0}" stroke="${NAVY}" stroke-width="2"/>`;
+ const x1=X(pe/1000),x2=isFinite(lo)?Math.min(335,X(lo/1000)):335;g+=`<rect x="${Math.min(335,x1)}" y="40" width="${Math.max(0,x2-x1)}" height="${y0-40}" fill="${PEACH}"/>`;
+ if(!isFinite(lo)||lo/1000>16)g+=TX(325,35,'→ ∞',{fs:11,c:ORANGE});
+ g+=`<line x1="${X(s/1000)}" y1="40" x2="${X(s/1000)}" y2="${y0}" stroke="${ORANGE}" stroke-width="2" stroke-dasharray="5 3"/><rect x="8" y="${y0-26}" width="22" height="14" rx="3" fill="${NAVY}"/>`;
+ let defs='',nit=[];[[2,BLUE],[4,ORANGE],[8,GREEN]].forEach(([d,cor],k)=>{const mm=d*1000,ok=mm>=pe-1&&mm<=lo+1;nit.push(ok);
+  const bmm=f*f*Math.abs(mm-s)/(N*mm*(s-f)),fora=ok?0:Math.min(6,bmm/c*0.5);defs+=`<filter id="b${k}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${fora.toFixed(2)}"/></filter>`;
+  g+=`<g filter="url(#b${k})"><circle cx="${X(d)}" cy="${y0-62}" r="9" fill="#F2C9A0"/><rect x="${X(d)-9}" y="${y0-52}" width="18" height="52" rx="6" fill="${cor}"/></g>`+TX(X(d),y0+16,d+' m',{fs:10});});
+ $('fig').innerHTML=SVG(340,172,'<defs>'+defs+'</defs>'+g);
+ if(nit.every(v=>v))todos=true;const meio=!nit[0]&&nit[1]&&!nit[2];
+ missao('m',todos&&meio,'As duas! Abertura fechada e focal curta aumentam a faixa nítida; abertura grande e teleobjetiva isolam o ator.',todos?'Os três nítidos: feito. Agora isole só o ator do meio (dica: abra o diafragma e use uma focal maior).':'Faça os três ficarem nítidos (dica: feche o diafragma e use uma focal curta).');}
+draw();
+</script>
+</body>
+</html>

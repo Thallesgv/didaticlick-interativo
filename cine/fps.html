@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Animador de quadros · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Animador de quadros</h1></header>
+<main>
+<div class="card"><h2>Fotos paradas que andam</h2><p class="muted" style="margin-top:0">São 24 desenhos de uma bola quicando. Mude quantos aparecem por segundo e veja quando o movimento fica contínuo.</p>
+<div class="fig"><svg id="sv" viewBox="0 0 320 180" width="320"></svg></div>
+<div class="sl" id="q"><b>Quadros por segundo</b><input type="range"><span></span></div>
+<div class="row"><button id="pp" class="or">Pausar</button><button id="pa" class="alt">Quadro a quadro</button><button id="rs" class="alt">Rastro</button></div>
+<div class="kpi"><div class="o">Quadro<b id="k1"></b></div><div>Cada quadro dura<b id="k2"></b></div><div>Ciclo dura<b id="k3"></b></div></div></div>
+<div class="card"><h2>Câmera lenta e timelapse</h2>
+<div class="sl" id="f"><b>Taxa de filmagem</b><input type="range"><span></span></div>
+<div class="sl" id="t"><b>Duração real da cena</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Fator<b id="c1"></b></div><div>Na tela (a 24 q/s)<b id="c2"></b></div></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const N=24,QS=SL('q',1,30,1,6,rest,v=>v+' q/s');let i=0,run=true,tr=false,tm;const sv=$('sv');
+function pos(k){const t=k/N,f=t*3,n=Math.min(Math.floor(f),2),u=f-n;return [30+t*260,160-120*Math.pow(0.55,n)*4*u*(1-u)];}
+function draw(){let g=`<line x1="10" y1="168" x2="310" y2="168" stroke="${NAVY}" stroke-width="2"/>`;
+ if(tr)for(let k=0;k<i;k++){const [x,y]=pos(k);g+=`<circle cx="${x}" cy="${y}" r="7" fill="${LIGHT}"/>`;}
+ const [x,y]=pos(i);g+=`<circle cx="${x}" cy="${y}" r="9" fill="${ORANGE}" stroke="${NAVY}" stroke-width="2"/>`;sv.innerHTML=g;
+ $('k1').textContent=(i+1)+' de '+N;$('k2').textContent=r1(1000/QS.get())+' ms';$('k3').textContent=r1(N/QS.get())+' s';}
+function tick(){i=(i+1)%N;draw();}
+function rest(){clearInterval(tm);if(run)tm=setInterval(tick,1000/QS.get());draw();}
+$('pp').onclick=()=>{run=!run;$('pp').textContent=run?'Pausar':'Continuar';rest();};$('pa').onclick=()=>{run=false;$('pp').textContent='Continuar';rest();tick();};
+$('rs').onclick=()=>{tr=!tr;draw();};rest();
+const F=SL('f',1,960,1,240,cam,v=>v+' q/s'),T=SL('t',0.1,60,0.1,2,cam,v=>r1(v)+' s');
+function cam(){const f=F.get()/24;$('c1').textContent=f>=1?r1(f)+'× mais lento':r1(1/f)+'× mais rápido';$('c2').textContent=r1(T.get()*f)+' s';}cam();
+</script>
+</body>
+</html>

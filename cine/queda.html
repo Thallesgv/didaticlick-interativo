@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Essa cena seria possível? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Essa cena seria possível?</h1></header>
+<main>
+<div class="card"><h2>Teste de queda</h2><p class="muted" style="margin-top:0">Sem contar o ar: h = 5 t². Compare com o tempo que a queda dura na tela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="h"><b>Altura da queda</b><input type="range"><span></span></div>
+<div class="sl" id="tt"><b>Duração da queda na tela</b><input type="range"><span></span></div>
+<div class="row"><button id="go" class="or">Soltar</button></div>
+<div class="kpi"><div class="o">Tempo real<b id="k1"></b></div><div>Velocidade final<b id="k2"></b></div><div>Veredito<b id="k3"></b></div></div></div>
+<div class="card"><h2>Salto entre prédios</h2>
+<div class="sl" id="vao"><b>Vão entre os prédios</b><input type="range"><span></span></div>
+<div class="sl" id="dh"><b>Desnível (o de chegada é mais baixo)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Tempo no ar<b id="s1"></b></div><div>Velocidade mínima<b id="s2"></b></div></div><p class="muted">Para comparar: um velocista corre uns 10 m/s (36 km/h).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const H=SL('h',1,500,1,45,draw,v=>v+' m'),TT=SL('tt',0.5,30,0.5,8,draw,v=>r1(v)+' s');let anim=null;
+function draw(y){const h=H.get(),t=Math.sqrt(h/5),f=TT.get()/t;$('k1').textContent=r1(t)+' s';$('k2').textContent=Math.round(10*t*3.6)+' km/h';
+ $('k3').textContent=f<1.15&&f>0.87?'realista':f>=1.15?'câmera lenta ('+r1(f)+'×)':'acelerada ('+r1(1/f)+'×)';
+ const yy=y===undefined?0:y;let g=`<rect x="20" y="10" width="60" height="180" fill="${NAVY}"/><line x1="0" y1="190" x2="320" y2="190" stroke="${GRAYL}"/>`;
+ g+=`<circle cx="110" cy="${18+yy*168}" r="9" fill="${ORANGE}"/>`+TX(200,60,h+' m',{fs:16})+TX(200,85,'queda real: '+r1(t)+' s',{fs:11,w:500});$('fig').innerHTML=SVG(320,200,g);}
+$('go').onclick=()=>{const t=TT.get(),t0=performance.now();cancelAnimationFrame(anim);const st=n=>{const e=Math.min(1,(n-t0)/1000/t);draw(e*e);if(e<1)anim=requestAnimationFrame(st);};anim=requestAnimationFrame(st);};
+draw();
+const V=SL('vao',2,40,1,20,pulo,v=>v+' m'),DH=SL('dh',0.5,20,0.5,5,pulo,v=>r1(v)+' m');
+function pulo(){const t=Math.sqrt(DH.get()/5),v=V.get()/t;$('s1').textContent=r2(t)+' s';$('s2').textContent=r1(v)+' m/s = '+Math.round(v*3.6)+' km/h';}pulo();
+</script>
+</body>
+</html>

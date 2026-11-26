@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel de bilheteria · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Painel de bilheteria</h1></header>
+<main>
+<div class="card"><h2>Média, mediana e moda</h2><p class="muted" style="margin-top:0">Público de cada filme, em mil pessoas. Mude os valores e veja as linhas da média (laranja) e da mediana (azul).</p>
+<div class="fig" id="fig"></div><div id="sls"></div>
+<div class="kpi"><div class="o">Média<b id="k1"></b></div><div>Mediana<b id="k2"></b></div><div>Moda<b id="k3"></b></div></div>
+<div class="row" style="margin-top:8px"><button id="big" class="or">Lançar um sucesso gigante</button><button id="ori" class="alt">Dados do livro</button></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const NM='ABCDEFGH';let V=[120,45,300,45,80,1500,60,90];const S=[];
+$('sls').innerHTML=NM.split('').map((n,i)=>`<div class="sl" id="s${i}"><b>Filme ${n}</b><input type="range"><span></span></div>`).join('');
+NM.split('').forEach((n,i)=>S.push(SL('s'+i,0,2000,5,V[i],v=>{V[i]=v;draw();},v=>v+' mil')));
+function draw(){const o=V.slice().sort((a,b)=>a-b),m=V.reduce((a,b)=>a+b,0)/V.length,md=(o[3]+o[4])/2,c={};V.forEach(v=>c[v]=(c[v]||0)+1);
+ const mx=Math.max(...Object.values(c)),mo=mx>1?Object.keys(c).filter(k=>c[k]===mx).join(' e ')+' mil':'não há';
+ $('k1').textContent=r1(m)+' mil';$('k2').textContent=r1(md)+' mil';$('k3').textContent=mo;
+ const top=Math.max(...V,1)*1.1,y=v=>150-v/top*135;let g='';V.forEach((v,i)=>{g+=`<rect x="${20+i*39}" y="${y(v)}" width="28" height="${150-y(v)}" rx="3" fill="${LIGHT}"/>`+TX(34+i*39,166,NM[i],{fs:10});});
+ g+=`<line x1="10" y1="${y(m)}" x2="330" y2="${y(m)}" stroke="${ORANGE}" stroke-width="2.5"/><line x1="10" y1="${y(md)}" x2="330" y2="${y(md)}" stroke="${BLUE}" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+ $('fig').innerHTML=SVG(340,172,g);}
+$('big').onclick=()=>{V[rnd(0,7)]=2000;S.forEach((s,i)=>s.set(V[i]));draw();};$('ori').onclick=()=>{V=[120,45,300,45,80,1500,60,90];S.forEach((s,i)=>s.set(V[i]));draw();};draw();
+</script>
+</body>
+</html>

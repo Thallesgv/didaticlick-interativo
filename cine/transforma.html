@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transformações · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/cine.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Cinema</div><h1>Transformações</h1></header>
+<main>
+<div class="card"><h2>Mova o personagem com contas</h2><p class="muted" style="margin-top:0">Cada botão aplica uma regra a todos os vértices. Repare nas coordenadas.</p>
+<div class="fig"><svg id="sv" viewBox="0 0 300 300" width="300"></svg></div>
+<div class="row"><button id="t1">→ (x + 1, y)</button><button id="t2">↑ (x, y + 1)</button><button id="t3" class="or">Reflexão (−x, y)</button><button id="t4" class="or">Reflexão (x, −y)</button>
+<button id="t5">Rotação 90° (−y, x)</button><button id="t6">Ampliar (2x, 2y)</button><button id="t7">Reduzir (x/2, y/2)</button><button id="t8" class="alt">Recomeçar</button></div>
+<div class="card" style="background:var(--bg);font-family:monospace;font-size:14px;margin-top:10px" id="co"></div><div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leve a bandeira até o quadrado laranja, de cabeça para baixo, usando no máximo 4 botões.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const O=[[1,1],[1,5],[4,4],[1,3]];let P=O.map(p=>p.slice()),cont=0;const sv=$('sv'),u=15,c=150;
+const ap=f=>{P=P.map(f);cont++;draw();};
+$('t1').onclick=()=>ap(([x,y])=>[x+1,y]);$('t2').onclick=()=>ap(([x,y])=>[x,y+1]);$('t3').onclick=()=>ap(([x,y])=>[-x,y]);$('t4').onclick=()=>ap(([x,y])=>[x,-y]);
+$('t5').onclick=()=>ap(([x,y])=>[-y,x]);$('t6').onclick=()=>ap(([x,y])=>[2*x,2*y]);$('t7').onclick=()=>ap(([x,y])=>[x/2,y/2]);$('t8').onclick=()=>{P=O.map(p=>p.slice());cont=0;draw();};
+const alvo=[[-1,-1],[-1,-5],[-4,-4],[-1,-3]];
+function draw(){let g='';for(let k=-9;k<=9;k++){g+=`<line x1="${c+k*u}" y1="10" x2="${c+k*u}" y2="290" stroke="#EEF1F6"/><line x1="10" y1="${c+k*u}" x2="290" y2="${c+k*u}" stroke="#EEF1F6"/>`;}
+ g+=`<line x1="10" y1="${c}" x2="290" y2="${c}" stroke="#9CA3AF"/><line x1="${c}" y1="10" x2="${c}" y2="290" stroke="#9CA3AF"/>`;
+ g+=`<rect x="${c-4*u-6}" y="${c+1*u-6}" width="${3*u+12}" height="${4*u+12}" fill="none" stroke="${ORANGE}" stroke-width="2" stroke-dasharray="5 3"/>`;
+ g+=`<polygon points="${O.map(([x,y])=>(c+x*u)+','+(c-y*u)).join(' ')}" fill="none" stroke="${GRAYL}" stroke-width="2"/>`;
+ g+=`<polygon points="${P.map(([x,y])=>(c+x*u)+','+(c-y*u)).join(' ')}" fill="${ORANGE}" stroke="${NAVY}" stroke-width="2"/>`;
+ P.forEach(([x,y],k)=>g+=`<circle cx="${c+x*u}" cy="${c-y*u}" r="3" fill="${NAVY}"/>`+TX(c+x*u+10,c-y*u-4,'ABCD'[k],{fs:9}));sv.innerHTML=g;
+ $('co').innerHTML=P.map(([x,y],k)=>'ABCD'[k]+' = ('+fmt(x)+', '+fmt(y)+')').join('<br>')+'<br>Botões usados: '+cont;
+ const ok=P.every((p,k)=>p[0]===alvo[k][0]&&p[1]===alvo[k][1]);missao('m',ok,'Bandeira no lugar! Era uma rotação de 180°: (x, y) → (−x, −y).','A bandeira tem de ficar dentro do quadrado laranja, de cabeça para baixo.');}
+draw();
+</script>
+</body>
+</html>
