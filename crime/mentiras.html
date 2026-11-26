@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Detector de mentiras lógico · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Detector de mentiras lógico</h1></header>
+<main>
+<div class="card"><h2>Exatamente um mente</h2><p class="muted" style="margin-top:0">Toque em quem você acha que mente. O detector supõe que só essa pessoa mente, que as outras falam a verdade, e confere frase por frase.</p>
+<div class="fig" id="fig"></div>
+<div id="fr"></div>
+<div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Outro caso</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CASOS=[
+ {t:'A associação',n:['Heitor','Glória','Davi'],f:['“Eu estava viajando no sábado.”','“O Heitor esteve na sede no sábado.”','“A Glória está dizendo a verdade.”'],W:['sede','viagem'],v:[w=>w=='viagem',w=>w=='sede',w=>w=='sede'],w:w=>w=='sede'?'Heitor esteve na sede no sábado.':'Heitor estava viajando.'},
+ {t:'Quem foi?',n:['Ana','Beto','Caio'],f:['“Fui eu.”','“Não foi a Ana.”','“Foi o Beto.”'],W:['Ana','Beto','Caio'],v:[w=>w=='Ana',w=>w!='Ana',w=>w=='Beto'],w:w=>'O culpado é '+w+'.'},
+ {t:'A chave sumida',n:['Ana','Beto','Caio'],f:['“O Beto não pegou.”','“Fui eu que peguei.”','“Foi a Ana que pegou.”'],W:['Ana','Beto','Caio'],v:[w=>w!='Beto',w=>w=='Beto',w=>w=='Ana'],w:w=>'Quem pegou a chave foi '+w+'.'},
+ {t:'Quatro suspeitos',n:['Ana','Beto','Caio','Dora'],f:['“Foi o Caio.”','“Não fui eu.”','“Foi a Dora.”','“O Caio está mentindo.”'],W:['Ana','Beto','Caio','Dora'],v:[w=>w=='Caio',w=>w!='Beto',w=>w=='Dora',w=>w!='Dora'],w:w=>'O culpado é '+w+'.'},
+ {t:'O vigia',n:['Davi','Glória','Heitor','Nina'],f:['“A janela estava aberta.”','“O Davi mente.”','“A janela estava fechada.”','“A Glória fala a verdade.”'],W:['aberta','fechada'],v:[w=>w=='aberta',w=>w=='fechada',w=>w=='fechada',w=>w=='fechada'],w:w=>'A janela estava '+w+'.'}];
+let ci=0,L=null,vistos=new Set();
+$('nova').onclick=()=>{ci=(ci+1)%CASOS.length;L=null;vistos=new Set();draw();};
+$('fig').onclick=e=>{const g=e.target.closest('[data-i]');if(!g)return;L=+g.dataset.i;vistos.add(L);draw();};
+function avaliar(c,L){let best=null;c.W.forEach(w=>{const r=c.v.map((f,i)=>{const deve=i!=L,fica=f(w);return{deve,fica,ok:deve==fica};});const k=r.filter(x=>!x.ok).length;if(!best||k<best.k)best={w,r,k};});return best;}
+function draw(){const c=CASOS[ci],n=c.n.length,W=340/n;let g=`<rect width="340" height="150" fill="#F8FAFC"/>`+TX(170,16,'Caso: '+c.t,{fs:12});
+ const res=L==null?null:avaliar(c,L);
+ c.n.forEach((nm,i)=>{const x=W*i+W/2,sel=i==L,cor=sel?(res.k?'#B91C1C':ORANGE):NAVY;
+  g+=`<g data-i="${i}" style="cursor:pointer"><rect x="${x-W/2+4}" y="24" width="${W-8}" height="120" rx="10" fill="${sel?PEACH:'#fff'}" stroke="${sel?cor:GRAYL}" stroke-width="${sel?3:1.5}"/>`+bonequinho(x,112,62,cor)+TX(x,134,nm,{fs:11,c:cor})+(sel?TX(x,44,'mente?',{fs:10,c:cor}):'')+'</g>';});
+ $('fig').innerHTML=SVG(340,150,g);
+ $('fr').innerHTML=c.n.map((nm,i)=>{let s=`<b>${nm}:</b> ${c.f[i]}`;if(res){const r=res.r[i];s+=` <span style="white-space:nowrap">· deveria ser <b>${r.deve?'V':'F'}</b> · fica <b>${r.fica?'V':'F'}</b> ${r.ok?'✔':'✗'}</span>`;}
+  return `<div class="msg ${res?(res.r[i].ok?'ok':'bad'):'info'}" style="margin:4px 0">${s}</div>`;}).join('');
+ if(!res)$('m').innerHTML='<div class="msg info">Teste uma hipótese de cada vez: toque em uma pessoa.</div>';
+ else if(res.k)$('m').innerHTML=`<div class="msg bad">Supondo que só ${c.n[L]} mente, o melhor que se consegue ainda deixa <b>${res.k}</b> contradição(ões). Hipótese descartada.</div>`;
+ else missao('m',true,`Só essa hipótese não gera contradição: <b>${c.n[L]}</b> mente. ${c.w(res.w)}`+(vistos.size<n?' Teste as outras para ter certeza de que elas falham.':' Você testou todas as hipóteses.'),'');}
+draw();
+})();
+</script>
+</body>
+</html>

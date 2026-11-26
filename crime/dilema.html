@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Jogo das duas salas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Jogo das duas salas</h1></header>
+<main>
+<div class="card"><h2>O dilema em 10 rodadas</h2><p class="muted" style="margin-top:0">Em cada rodada você escolhe <b>calar</b> ou <b>delatar</b>, sem ver a escolha do outro. Os anos de prisão vão se somando nas barras. Quem tiver <b>menos</b> anos se sai melhor.</p>
+<p style="margin:6px 0 2px"><b>Estratégia do adversário</b></p><div class="chips" id="es"></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin-top:8px"><button id="bc">Calar</button><button id="bd">Delatar</button><button class="alt" id="br">Recomeçar</button></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ANOS={'CC':[1,1],'CD':[10,0],'DC':[0,10],'DD':[5,5]};let H=[];
+const ES=chips('es',['Sempre cala','Sempre delata','Olho por olho','Aleatória'],2,()=>{H=[];draw();});
+function dele(){const s=ES.get();if(s==0)return'C';if(s==1)return'D';if(s==2)return H.length?H[H.length-1][0]:'C';return Math.random()<.5?'C':'D';}
+function jogar(x){if(H.length>=10)return;const o=dele();H.push([x,o]);draw();}
+$('bc').onclick=()=>jogar('C');$('bd').onclick=()=>jogar('D');$('br').onclick=()=>{H=[];draw();};
+function draw(){let g=`<rect width="340" height="230" fill="#F8FAFC"/>`;let sv=0,so=0;
+ g+=TX(8,40,'você',{fs:10,a:'start'})+TX(8,72,'outro',{fs:10,a:'start'});
+ for(let i=0;i<10;i++){const x=52+i*28.5,h=H[i];
+  g+=TX(x+12,18,i+1,{fs:9,c:GRAY,w:500});
+  if(h){const [a,b]=ANOS[h[0]+h[1]];sv+=a;so+=b;
+   g+=`<rect x="${x}" y="25" width="24" height="24" rx="5" fill="${h[0]=='C'?BLUE:ORANGE}"/>`+TX(x+12,42,h[0]=='C'?'C':'D',{fs:11,c:'#fff'});
+   g+=`<rect x="${x}" y="57" width="24" height="24" rx="5" fill="${h[1]=='C'?BLUE:ORANGE}"/>`+TX(x+12,74,h[1]=='C'?'C':'D',{fs:11,c:'#fff'});
+   g+=TX(x+12,96,a+'·'+b,{fs:8.5,c:GRAY,w:500});}
+  else g+=`<rect x="${x}" y="25" width="24" height="24" rx="5" fill="none" stroke="${GRAYL}"/><rect x="${x}" y="57" width="24" height="24" rx="5" fill="none" stroke="${GRAYL}"/>`;}
+ const mx=100,Wb=230,bar=(y,v,c,t)=>`<rect x="70" y="${y}" width="${Wb}" height="22" rx="6" fill="#EEF2F7"/><rect x="70" y="${y}" width="${Wb*v/mx}" height="22" rx="6" fill="${c}"/>`+TX(8,y+16,t,{fs:11,a:'start'})+TX(70+Math.max(Wb*v/mx,0)+6,y+16,v+' anos',{fs:11,a:'start'});
+ g+=TX(170,122,'Anos somados',{fs:11,c:GRAY})+bar(132,sv,NAVY,'você')+bar(164,so,LIGHT,'outro');
+ g+=`<rect x="70" y="202" width="12" height="12" rx="3" fill="${BLUE}"/>`+TX(86,212,'C = cala',{fs:10,a:'start',w:500})+`<rect x="160" y="202" width="12" height="12" rx="3" fill="${ORANGE}"/>`+TX(176,212,'D = delata',{fs:10,a:'start',w:500});
+ $('fig').innerHTML=SVG(340,230,g);$('bc').disabled=$('bd').disabled=H.length>=10;
+ if(H.length<10)$('m').innerHTML=`<div class="msg info">Rodada ${H.length+1} de 10. Anos por rodada: os dois calam, 1 e 1; um delata e o outro cala, 0 e 10; os dois delatam, 5 e 5.</div>`;
+ else{const nome=['sempre cala','sempre delata','olho por olho','aleatória'][ES.get()];
+  $('m').innerHTML=`<div class="msg ${sv<=so?'ok':'info'}">Fim: você somou <b>${sv}</b> anos e o adversário (${nome}) somou <b>${so}</b>. ${ES.get()==2?'Contra o olho por olho, calar sempre dá 10 anos para cada um: o melhor resultado conjunto.':ES.get()==1?'Contra quem sempre delata, calar custa caro: o mínimo que dá para fazer é 50 anos.':'Troque a estratégia do adversário e jogue de novo.'}</div>`;}}
+draw();
+})();
+</script>
+</body>
+</html>
