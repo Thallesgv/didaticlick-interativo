@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grade de suspeitos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Grade de suspeitos</h1></header>
+<main>
+<div class="card"><h2>Lógica antes de opinião</h2><p class="muted" style="margin-top:0">Toque nas células: uma vez marca ✗, duas marca ✓, três apaga. Cada linha tem uma só resposta certa. Depois toque em Conferir.</p>
+<div class="chips" id="md"></div>
+<div id="pis" style="margin:8px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="chips"><button id="bc">Conferir</button></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const HV=['1,65 m','1,72 m','1,80 m','1,88 m'];const NOMES=[['Bia','Sandro','Ricardo','Otávio'],['Ana','Caio','Dora','Eva'],['Léo','Mia','Nina','Téo'],['Rui','Sol','Tito','Vera']];
+let S,PI,SOL,G;const perms=(()=>{const r=[];const f=(a,u)=>{if(a.length==4){r.push(a.slice());return;}for(let i=0;i<4;i++)if(!u[i]){u[i]=1;a.push(i);f(a,u);a.pop();u[i]=0;}};f([],[]);return r;})();
+const ok=(c,p)=>c.t=='eq'?p[c.s]==c.v:c.t=='ne'?p[c.s]!=c.v:c.t=='gt'?p[c.a]>p[c.b]:c.t=='min'?p[c.s]==0:p[c.s]==3;
+const txt=c=>c.t=='eq'?`${S[c.s]} tem ${HV[c.v]}.`:c.t=='ne'?`${S[c.s]} não tem ${HV[c.v]}.`:c.t=='gt'?`${S[c.a]} é mais alto(a) que ${S[c.b]}.`:c.t=='min'?`${S[c.s]} é a pessoa mais baixa.`:`${S[c.s]} é a pessoa mais alta.`;
+const sols=cs=>perms.filter(p=>cs.every(c=>ok(c,p)));
+function novo(){const m=M.get();G=[...Array(4)].map(()=>[0,0,0,0]);
+ if(m==0){S=NOMES[0];SOL=[0,1,2,3];PI=[{t:'min',s:0},{t:'gt',a:2,b:1},{t:'ne',s:3,v:2},{t:'gt',a:3,b:1}];}
+ else{S=NOMES[rint(1,3)];SOL=P(perms);let cs;do{cs=[];let g=0;while(sols(cs).length>1&&g++<40){const t=P(['ne','ne','gt','gt','min','max','eq']),a=rint(0,3);let b=rint(0,3);if(b==a)b=(a+1)%4;
+   const c=t=='eq'||t=='ne'?{t,s:a,v:t=='eq'?SOL[a]:(SOL[a]+rint(1,3))%4}:t=='gt'?(SOL[a]>SOL[b]?{t,a,b}:{t,a:b,b:a}):t=='min'?{t,s:SOL.indexOf(0)}:{t,s:SOL.indexOf(3)};
+   if(!cs.some(x=>JSON.stringify(x)==JSON.stringify(c)))cs.push(c);}}while(sols(cs).length!=1||cs.length>6);PI=cs;}
+ $('pis').innerHTML=PI.map((c,i)=>`<div class="msg info" style="margin:4px 0">(${i+1}) ${txt(c)}</div>`).join('');$('m').innerHTML='';draw();}
+function porque(s,v){if(SOL[s]==v)return '';for(let i=0;i<PI.length;i++)if(perms.filter(p=>p[s]==v).every(p=>!ok(PI[i],p)))return i+1;return 'el';}
+let ver=false;
+function draw(){let g=`<style>text{pointer-events:none}</style><rect width="340" height="210" fill="#fff"/>`;const x0=80,y0=36,w=62,h=40;
+ HV.forEach((v,j)=>g+=TX(x0+j*w+w/2,24,v,{fs:11}));
+ S.forEach((n,i)=>{g+=TX(x0-8,y0+i*h+h/2+4,n,{fs:12,a:'end'});HV.forEach((v,j)=>{const st=G[i][j];let f='#fff',sym='',note='';
+  if(ver&&st){const certo=st==2?SOL[i]==j:SOL[i]!=j;f=certo?'#DCFCE7':'#FEE2E2';if(st==1&&certo){const q=porque(i,j);note=q=='el'?'elim.':'pista '+q;}}
+  if(st==1)sym='✗';if(st==2)sym='✓';
+  g+=`<rect data-c="${i},${j}" x="${x0+j*w+2}" y="${y0+i*h+2}" width="${w-4}" height="${h-4}" rx="6" fill="${f}" stroke="${GRAYL}" stroke-width="2" style="cursor:pointer"/>`+TX(x0+j*w+w/2,y0+i*h+h/2+(note?1:6),sym,{fs:17,c:st==2?GREEN:NAVY})+(note?TX(x0+j*w+w/2,y0+i*h+h-7,note,{fs:8,c:GRAY}):'');});});
+ $('fig').innerHTML=SVG(340,210,g);$('fig').querySelectorAll('rect[data-c]').forEach(r=>r.onclick=()=>{const [i,j]=r.dataset.c.split(',').map(Number);G[i][j]=(G[i][j]+1)%3;ver=false;$('m').innerHTML='';draw();});}
+const M=chips('md',['Caso do livro','Novo caso sorteado'],0,()=>{ver=false;novo();});
+$('bc').onclick=()=>{ver=true;draw();let erros=0,certos=0;G.forEach((l,i)=>l.forEach((st,j)=>{if(!st)return;const c=st==2?SOL[i]==j:SOL[i]!=j;c?st==2&&certos++:erros++;}));
+ missao('m',certos==4&&!erros,'Caso resolvido! '+S.map((n,i)=>n+' = '+HV[SOL[i]]).join(' · ')+'.',erros?erros+' marcação(ões) em vermelho contradizem as pistas. Cada ✗ certo mostra a pista que o justifica.':'Até aqui, tudo certo. Embaixo de cada ✗ aparece a pista usada ("elim." = por eliminação). Continue até achar um ✓ por linha.');};
+novo();
+})();
+</script>
+</body>
+</html>
