@@ -1,0 +1,5 @@
+// Gerado pelo livro "Cubo Mágico na Escola · Guia do Professor" (matematica_crime/src): quizzes, resoluções e lista de interativos.
+window.QUIZ=window.QUIZ||{};window.RES=window.RES||{};window.APOSTILAS=window.APOSTILAS||{};
+Object.assign(QUIZ,{});
+Object.assign(RES,{});
+APOSTILAS["cub7"]={"title": "Cubo Mágico na Escola · Guia do Professor", "mods": [{"t": "Capítulo 2 · Resolver o cubo", "l": [["Interativos · Livro 1", "apostila.html?id=cub1"], ["Interativos · Livro 2", "apostila.html?id=cub2"], ["Interativos · Livro 3", "apostila.html?id=cub3"], ["Cubo 3D", "cubo/sim.html"], ["Teclado do cubo", "cubo/notacao.html"], ["Cronômetro de campeonato", "cubo/crono.html"]]}, {"t": "Capítulo 3 · A matemática do cubo", "l": [["Interativos · Livro 4", "apostila.html?id=cub4"], ["43 quintilhões", "cubo/contagem.html"], ["Quantas vezes até voltar?", "cubo/ordem.html"]]}, {"t": "Capítulo 4 · Outros quebra-cabeças e mosaicos", "l": [["Interativos · Livro 5", "apostila.html?id=cub5"], ["Interativos · Livro 6", "apostila.html?id=cub6"], ["Sólidos e Euler", "cubo/solidos.html"], ["Mosaico de cubos", "cubo/mosaico.html"]]}]};

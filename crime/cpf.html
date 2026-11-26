@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Validador de CPF · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Validador de CPF</h1></header>
+<main>
+<div class="card"><h2>Os dígitos que denunciam</h2><p class="muted" style="margin-top:0">Digite os 9 primeiros dígitos e veja o cálculo dos dois verificadores, passo a passo. Use só os números do livro, nunca o CPF de alguém.</p>
+<div class="chips" id="md"></div>
+<div class="row" style="align-items:center"><input id="n" type="text" inputmode="numeric" maxlength="14" style="width:170px;font-size:18px;letter-spacing:1px"><button class="alt" id="ex">Exemplo</button></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const FIC=['111.444.777-35','529.982.247-25','246.813.579-31'];let esc=-1;
+const M=chips('md',['Calcular','As três fichas do caso'],0,()=>{$('n').value=M.get()?FIC[0]:'123456789';esc=M.get()?0:-1;draw();});
+$('n').oninput=draw;$('ex').onclick=()=>{$('n').value=M.get()?FIC[(esc=(esc+1)%3)]:'123456789';draw();};
+const dvs=d=>{const s1=d.slice(0,9).reduce((a,x,i)=>a+x*(10-i),0),r1_=s1%11,d1=r1_<2?0:11-r1_;const e=[...d.slice(0,9),d1];const s2=e.reduce((a,x,i)=>a+x*(11-i),0),r2_=s2%11,d2=r2_<2?0:11-r2_;return{s1,r1:r1_,d1,s2,r2:r2_,d2};};
+function draw(){const d=($('n').value.match(/\d/g)||[]).map(Number);let g=`<rect width="340" height="250" fill="#F8FAFC"/>`;
+ if(d.length<9){$('fig').innerHTML=SVG(340,60,`<rect width="340" height="60" fill="#F8FAFC"/>`+TX(170,35,'Digite pelo menos 9 dígitos ('+d.length+' até agora)',{fs:12,c:GRAY}));$('m').innerHTML='';return;}
+ const R=dvs(d),bw=28;
+ for(let i=0;i<11;i++){const x=14+i*29,v=i<9?d[i]:i==9?R.d1:R.d2,ver=i>=9,dado=d[i];
+  g+=`<rect x="${x}" y="12" width="${bw-2}" height="34" rx="6" fill="${ver?ORANGE:NAVY}"/>`+TX(x+bw/2-1,35,v,{fs:16,c:'#fff'});
+  if(ver&&dado!==undefined)g+=TX(x+bw/2-1,62,dado==v?'✔':'✗ '+dado,{fs:11,c:dado==v?GREEN:'#B91C1C'});}
+ g+=TX(14,88,'1º verificador: pesos 10 a 2',{fs:11,a:'start'});
+ const pr=d.slice(0,9).map((x,i)=>x*(10-i)),mx=Math.max(...pr,1);
+ pr.forEach((p,i)=>{const x=14+i*29,h=50*p/90;g+=`<rect x="${x+4}" y="${150-h}" width="18" height="${h}" rx="3" fill="${LIGHT}"/>`+TX(x+13,164,p,{fs:9.5})+TX(x+13,98+0,'×'+(10-i),{fs:8.5,c:ORANGE});});
+ g+=TX(14,188,`soma ${R.s1} = 11 · ${Math.floor(R.s1/11)} + ${R.r1} → resto ${R.r1} → dígito ${R.d1}`,{fs:11,a:'start',c:NAVY});
+ g+=TX(14,212,`2º: soma ${R.s2} = 11 · ${Math.floor(R.s2/11)} + ${R.r2} → resto ${R.r2} → dígito ${R.d2}`,{fs:11,a:'start',c:NAVY});
+ g+=TX(14,236,'resto 0 ou 1 → dígito 0; senão, 11 − resto',{fs:10,a:'start',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,250,g);
+ const fm=d.slice(0,3).join('')+'.'+d.slice(3,6).join('')+'.'+d.slice(6,9).join('')+'-'+R.d1+R.d2;
+ if(d.length>=11){const ok=d[9]==R.d1&&d[10]==R.d2;$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'✔ Número válido: os verificadores batem.':'✗ Número inválido: os verificadores corretos seriam '+R.d1+R.d2+' ('+fm+').'}${M.get()==1&&!ok?' Esta é a ficha do laranja inventado!':''}</div>`;}
+ else $('m').innerHTML=`<div class="msg info">Com esses 9 dígitos, o número completo é <b>${fm}</b>.${M.get()==1?'':' Troque um dígito e veja os verificadores mudarem.'}</div>`;}
+$('n').value='123456789';draw();
+})();
+</script>
+</body>
+</html>

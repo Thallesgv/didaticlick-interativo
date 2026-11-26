@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Multidão de suspeitos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Multidão de suspeitos</h1></header>
+<main>
+<div class="card"><h2>Quantos têm o mesmo perfil?</h2><p class="muted" style="margin-top:0">Escolha a população e a raridade do perfil. A figura mostra todas as pessoas que teriam o mesmo DNA da amostra: o suspeito (azul-marinho) e as que coincidem só por acaso (laranja).</p>
+<div class="chips" id="md"></div>
+<p style="margin:10px 0 4px;font-weight:600">População que poderia ter estado lá</p><div class="chips" id="pn"></div>
+<p style="margin:10px 0 4px;font-weight:600">Raridade do perfil</p><div class="chips" id="pr"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Coincidências esperadas por acaso<b id="ke"></b></div><div>Chance de o suspeito ser a fonte (só com o DNA)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NV=[1e4,1e5,1e6,3e6,1e7,2e8],NN=['10 mil','100 mil','1 milhão','3 milhões','10 milhões','200 milhões'],RV=[1e3,1e5,1e6,1e9],RN=['1 em mil','1 em 100 mil','1 em 1 milhão','1 em 1 bilhão'];
+const N=chips('pn',NN,1,draw),R=chips('pr',RN,1,draw);
+const M=chips('md',['Explorar','Caso: Vila Serena'],0,()=>{if(M.get()==1){$('pn').querySelectorAll('button')[3].click();$('pr').querySelectorAll('button')[2].click();}draw();});
+function draw(){const n=NV[N.get()],r=RV[R.get()],E=n/r,pc=1/(1+E),k=Math.min(Math.round(E),59);
+ const tot=k+1,cols=10,rows=Math.ceil(tot/cols),hh=rows>3?34:46,W=340,H=40+rows*(hh+10)+(E>59||E<1?24:0);
+ let g=`<rect width="${W}" height="${H}" fill="#fff"/>`+TX(170,22,'quem tem o mesmo perfil entre '+NN[N.get()]+' de pessoas',{fs:11});
+ const pos=[...Array(tot).keys()].sort(()=>Math.random()-.5);
+ for(let i=0;i<tot;i++){const p=pos[i],c=p%cols,l=Math.floor(p/cols);g+=bonequinho(22+c*33,40+(l+1)*(hh+10)-6,hh,i==0?NAVY:ORANGE);}
+ if(E>59)g+=TX(170,H-8,'e mais '+fmt(Math.round(E)-59)+' pessoas que não cabem na figura',{fs:10,c:GRAY});
+ if(E<1)g+=TX(170,H-8,'por acaso, só se espera '+r2(E)+' pessoa: provavelmente nenhuma',{fs:10,c:GRAY});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('ke').textContent=E<0.01?'≈ 0':E<10?r2(E):fmt(Math.round(E));$('kp').textContent=(pc>0.9999?'> 99,99':r1(pc*100))+'%';
+ if(M.get()==1)missao('m',n==3e6&&r==1e6,'Com 3 milhões de pessoas e perfil de 1 em 1 milhão, esperam-se 3 coincidências por acaso. Só com o DNA, a chance de Bernardo ser a fonte é de 1 em 4 (25%), não de 999 999 em 1 milhão: é a falácia do promotor.','Escolha 3 milhões de pessoas e raridade de 1 em 1 milhão.');
+ else $('m').innerHTML='<div class="msg info">Esperam-se '+(E<10?r2(E):fmt(Math.round(E)))+' coincidências por acaso. Quanto maior a população, mais "Bernardos" existem; quanto mais raro o perfil, menos.</div>';}
+draw();
+})();
+</script>
+</body>
+</html>

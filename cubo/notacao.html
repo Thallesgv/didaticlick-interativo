@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Teclado do cubo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Teclado do cubo</h1></header>
+<main>
+<div class="card"><div class="chips" id="md"></div><div id="cubo"></div><div id="painel"></div></div>
+<div class="card"><h2>Lembrete</h2><p style="margin:0"><b>R</b> direita, <b>L</b> esquerda, <b>U</b> cima, <b>D</b> baixo, <b>F</b> frente, <b>B</b> trás. Sozinha, a letra é um quarto de volta no sentido horário <b>olhando para a face</b>; com ’ é anti-horário; com 2 é meia volta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C=new Cubo3D('cubo');let alvo=null,ok=0,tot=0;
+const M=chips('md',['Explorar','Jogo: qual foi o movimento?'],0,i=>monta(i));
+function monta(i){C.reset();C.desenha();
+ if(i==0){$('painel').innerHTML='<div id="tec" style="margin-top:10px"></div><p class="muted" id="hist" style="text-align:center"></p>';const h=[];cuboTeclado(C,'tec',{cada:m=>{h.push(m.replace("'",'’'));$('hist').textContent='Você fez: '+h.slice(-12).join(' ');}});return;}
+ $('painel').innerHTML='<p style="text-align:center;font-weight:600;color:var(--navy)">O cubo vai fazer um movimento. Qual foi?</p><div id="ops" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:420px;margin:0 auto"></div><div id="m"></div><div class="row" style="justify-content:center;margin-top:8px"><button class="alt" id="rep">Ver de novo</button><button id="nv">Outro</button></div><p class="muted" id="pl" style="text-align:center"></p>';
+ $('rep').onclick=()=>mostra();$('nv').onclick=()=>nova();nova();}
+function nova(){const F=['R','L','U','D','F','B'],S=['',"'",'2'];alvo=P(F)+P(S);
+ let ops=new Set([alvo]);while(ops.size<6)ops.add(P(F)+P(S));
+ $('ops').innerHTML=[...ops].sort(()=>Math.random()-.5).map(o=>`<button class="alt" data-o="${o}" style="font-size:18px;font-weight:700">${o.replace("'",'’')}</button>`).join('');
+ $('m').innerHTML='';document.querySelectorAll('#ops button').forEach(b=>b.onclick=()=>{tot++;const c=b.dataset.o==alvo;if(c)ok++;
+  missao('m',c,'Isso! Foi '+alvo.replace("'",'’')+'.','Não foi '+b.dataset.o.replace("'",'’')+'. Foi <b>'+alvo.replace("'",'’')+'</b>. Toque em "Ver de novo".');$('pl').textContent='Acertos: '+ok+' de '+tot;});
+ mostra();}
+async function mostra(){C.reset();C.desenha();await new Promise(r=>setTimeout(r,450));await C.anima(alvo,600);}
+monta(0);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança das provas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>A balança das provas</h1></header>
+<main>
+<div class="card"><h2>Pese as provas</h2><p class="muted" style="margin-top:0">Comece com a presunção de inocência: o réu é só um entre vários suspeitos. Cada prova que você coloca multiplica a chance pela sua razão de verossimilhança (RV) e a balança pende.</p>
+<div class="sl" id="sn"><b>Ponto de partida: 1 entre</b><input type="range"><span></span></div>
+<div class="chips" id="pv"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Chance a favor<b id="k1"></b></div><div class="o">Probabilidade de culpa<b id="k2"></b></div><div>RV total<b id="k3"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PV=[['Corte na mão',45],['Câmera da rua',20],['Mensagens',50],['Álibi parcial',0.1],['Testemunha confusa',1],['2ª foto da mesma câmera',1.2]];let on=[false,false,false,false,false,false];
+$('pv').innerHTML=PV.map((t,i)=>`<button data-i="${i}">${t[0]} (RV ${fmt(t[1])})</button>`).join('');
+$('pv').querySelectorAll('button').forEach(b=>b.onclick=()=>{on[+b.dataset.i]=!on[+b.dataset.i];draw();});
+const N=SL('sn',2,1000,1,100,draw,v=>v+' suspeitos');
+const chance=o=>o>=1?fmt(Math.round(o*10)/10)+' : 1':'1 : '+fmt(Math.round(10/o)/10);
+function draw(){$('pv').querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',on[i]));
+ const rv=PV.reduce((a,t,i)=>a*(on[i]?t[1]:1),1),o=rv/(N.get()-1),p=o/(1+o),ang=clamp(Math.log10(o)*9,-28,28);
+ let g=`<rect width="340" height="250" fill="#F8FAFC"/><polygon points="160,190 180,190 170,70" fill="${NAVY}"/><rect x="120" y="190" width="100" height="10" rx="4" fill="${NAVY}"/>`;
+ g+=`<g transform="rotate(${-ang} 170 70)">`+LN(60,70,280,70,NAVY,5);
+ const pan=(x,txt,c)=>LN(x,70,x-26,112,GRAY,1.5)+LN(x,70,x+26,112,GRAY,1.5)+`<path d="M${x-34},112 L${x+34},112 Q${x},140 ${x-34},112" fill="${c}"/>`;
+ g+=pan(70,'',ORANGE)+pan(270,'',LIGHT)+'</g>';
+ const dy=Math.sin(ang*Math.PI/180)*100;
+ g+=TX(70,160+dy,'culpado',{fs:11,c:ORANGE})+TX(270,160-dy,'inocente',{fs:11,c:GRAY});
+ g+=`<rect x="20" y="222" width="300" height="12" rx="5" fill="#EEF2F7"/><rect x="20" y="222" width="${300*p}" height="12" rx="5" fill="${ORANGE}"/>`+TX(20,246,'0%',{fs:9,a:'start',c:GRAY,w:500})+TX(320,246,'100%',{fs:9,a:'end',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,250,g);$('k1').textContent=chance(o);$('k2').textContent=(p>0.995&&p<1?r2(100*p):r1(100*p))+'%';$('k3').textContent=rv>=1?fmt(Math.round(rv*10)/10):r2(rv);
+ const caso=N.get()==100&&on[0]&&on[1]&&on[2]&&!on[3];
+ if(on[5]&&on[1])$('m').innerHTML='<div class="msg info">Cuidado: a 2ª foto da mesma câmera não é independente da primeira. Ela quase não acrescenta nada, e multiplicar as duas infla a conta.</div>';
+ else missao('m',caso,`Com 1 entre 100 suspeitos e as três provas do promotor, a probabilidade chega a ${r1(100*p)}%. Experimente agora ligar o álibi parcial.`,
+  'Missão: reproduza o exemplo do livro: 1 entre 100 suspeitos, com corte na mão, câmera da rua e mensagens. Repare que a testemunha confusa (RV 1) não muda nada.');}
+draw();
+})();
+</script>
+</body>
+</html>

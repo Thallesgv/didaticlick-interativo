@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cubo 3D · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Cubo 3D</h1></header>
+<main>
+<div class="card"><p class="muted" id="sub" style="margin-top:0">O cubo começa no caso do livro. Toque em <b>▶ Rodar</b> para ver o algoritmo, ou vá passo a passo.</p>
+<div id="cubo"></div><div id="player"></div></div>
+<div class="card"><h2>Gire você mesmo</h2><div id="tec"></div>
+<div class="row" style="margin-top:10px;justify-content:center"><button class="alt" id="emb">Embaralhar</button><button class="alt" id="res">Cubo montado</button><button class="alt" id="caso">Voltar ao caso</button></div>
+<h2 style="margin-top:14px">Escreva uma sequência</h2>
+<div class="row"><input id="seq" style="flex:1;min-width:180px;font-size:16px;padding:10px;border:2px solid #D7DEEA;border-radius:10px" placeholder="ex.: R U R' U'" autocomplete="off" autocapitalize="characters"><button id="ok">Usar</button></div>
+<p class="muted">Letras: R L U D F B (faces), M E S (camadas do meio), x y z (o cubo todo). ’ = anti-horário, 2 = meia volta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const qs=new URLSearchParams(location.search);let alg=qs.get('alg')||"R U R' U'",setup=qs.get('setup')||'',n=+(qs.get('n')||3);
+if(qs.get('t')){$('titulo').textContent=qs.get('t');document.title=qs.get('t')+' · DidatiClick';}
+const C=new Cubo3D('cubo',{n,mask:CUBO_MASCARAS[qs.get('ver')]||null});
+let PL=cuboPlayer(C,'player',alg,setup);
+cuboTeclado(C,'tec');
+$('emb').onclick=()=>{C.reset();C.aplica(C.embaralha(n==2?11:20));};
+$('res').onclick=()=>{C.reset();C.desenha();};
+$('caso').onclick=()=>PL.inicio();
+$('ok').onclick=()=>{const s=$('seq').value.trim();if(!s)return;alg=s;setup=cuboInverso(s);$('sub').textContent='O cubo começa no caso que a sua sequência resolve. Toque em ▶ Rodar.';PL=cuboPlayer(C,'player',alg,setup);};
+})();
+</script>
+</body>
+</html>

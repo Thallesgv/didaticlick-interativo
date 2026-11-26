@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>43 quintilhões · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">43 quintilhões</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Quantas posições diferentes o cubo pode ter? Vamos montar a conta em 5 passos. Toque nos passos em ordem.</p>
+<div class="chips" id="pas"></div><div id="cubo"></div>
+<div class="row" style="justify-content:center"><button class="alt" id="sor">Sortear uma posição destas peças</button></div>
+<div class="msg info" id="txt"></div>
+<div style="text-align:center;margin:10px 0"><div class="muted">Até aqui:</div><div id="num" style="font-size:22px;font-weight:800;color:var(--navy);word-break:break-all"></div><div id="conta" class="muted"></div></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C=new Cubo3D('cubo');
+const fat=n=>{let r=1n;for(let i=2n;i<=BigInt(n);i++)r*=i;return r;};
+const PAS=[
+ ['1. Quinas nos lugares','quinas',fat(8),'8!','As 8 quinas podem ocupar os 8 cantos em qualquer ordem: 8 · 7 · 6 · 5 · 4 · 3 · 2 · 1 = 8! = 40 320 jeitos.'],
+ ['2. Quinas giradas','quinas',3n**7n,'3⁷','Cada quina pode estar girada de 3 jeitos. Mas, se 7 estão decididas, a última é obrigada: 3⁷ = 2 187.'],
+ ['3. Meios nos lugares','meios',fat(12),'12!','Os 12 meios nos 12 lugares de meio: 12! = 479 001 600 jeitos.'],
+ ['4. Meios virados','meios',2n**11n,'2¹¹','Cada meio pode estar virado de 2 jeitos; o último é obrigado: 2¹¹ = 2 048.'],
+ ['5. Regra da paridade','',2n,'÷ 2','Uma troca de duas peças sozinha é impossível: as quinas e os meios trocam juntos. Isso corta o total pela metade.']];
+let ate=-1;
+function mostra(i){ate=Math.max(ate,i);const p=PAS[i];C.mask=p[1]?CUBO_MASCARAS[p[1]]:null;C.reset();C.desenha();$('txt').textContent=p[4];
+ let v=1n,f=[];for(let j=0;j<=i;j++){v=j==4?v/2n:v*PAS[j][2];f.push(PAS[j][3]);}
+ $('num').textContent=fmt(v.toString());$('conta').textContent=f.join(' · ').replace(' · ÷',' ÷')+(i==4?' = 43 quintilhões, 252 quatrilhões, ...':'');}
+chips('pas',PAS.map(p=>p[0]),0,mostra);mostra(0);
+$('sor').onclick=()=>{C.reset();C.roda(C.embaralha(12));};
+})();
+</script>
+</body>
+</html>

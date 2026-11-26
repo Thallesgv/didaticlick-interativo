@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quantas vezes até voltar? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Quantas vezes até voltar?</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Escolha uma sequência. O cubo a repete até voltar a ficar montado: esse número é a <b>ordem</b> da sequência.</p>
+<div class="chips" id="ex"></div>
+<div class="row"><input id="seq" style="flex:1;min-width:160px;font-size:16px;padding:10px;border:2px solid #D7DEEA;border-radius:10px" autocomplete="off" autocapitalize="characters"><button id="ok">Usar</button></div>
+<div id="cubo"></div>
+<div style="text-align:center;font-size:22px;font-weight:800;color:var(--navy);margin:6px 0" id="cont"></div>
+<div class="row" style="justify-content:center"><button id="um">+1 repetição (animada)</button><button class="alt" id="dez">+10</button><button class="alt" id="ate">Ir até o fim</button><button class="alt" id="zero">Recomeçar</button></div></div>
+<div class="card"><h2>Por que esse número?</h2><div id="ciclos"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const qs=new URLSearchParams(location.search);
+const EX=[['R U',"R U"],["R U R' U'","R U R' U'"],['R2 U2','R2 U2'],["Sune","R U R' U R U2 R'"],["Recordista","R U2 D' B D'"]];
+const C=new Cubo3D('cubo');let alg=qs.get('alg')||'R U',ord=1,k=0,ocup=false;
+function tmp(){const c=Object.create(Cubo3D.prototype);c.n=3;c.reset();return c;}
+const casa=pc=>pc.p.join(',')===pc.id&&pc.st.every(s=>s.n.join()===CUBO_NORMAIS[s.f].join());
+function analisa(a){const t=tmp();let o=0;do{a&&cuboTokens(a).forEach(m=>t.gira(m));o++;}while(!t.pecas.every(casa)&&o<5000);
+ const u=tmp();cuboTokens(a).forEach(m=>u.gira(m));const ida={};u.pecas.forEach(pc=>ida[pc.id]=pc.p.join(','));
+ const vis=new Set(),cic=[];
+ for(const pc of u.pecas){if(pc.st.length<2||vis.has(pc.id))continue;let L=0,x=pc.id;do{vis.add(x);x=ida[x];L++;}while(x!==pc.id);
+  const w=tmp();let m=0;do{cuboTokens(a).forEach(mm=>w.gira(mm));m++;}while(!casa(w.pecas.find(q=>q.id===pc.id))&&m<5000);
+  if(m>1)cic.push({tipo:pc.st.length==3?'quinas':'meios',L,m});}
+ return{o,cic};}
+const g=(a,b)=>b?g(b,a%b):a;
+function monta(a){alg=a.trim();$('seq').value=alg.replace(/'/g,'’');const r=analisa(alg);ord=r.o;k=0;C.reset();C.desenha();conta();
+ const grupos={};r.cic.forEach(c=>{const key=c.tipo+c.L+'-'+c.m;grupos[key]=grupos[key]||{...c,n:0};grupos[key].n++;});
+ const linhas=Object.values(grupos).map(c=>c.L==1?`<li>${c.n>1?c.n+' '+c.tipo+' ficam':(c.tipo=='quinas'?'Uma quina fica':'Um meio fica')} no lugar, mas ${c.tipo=='quinas'?'gira':'vira'}: só volta${c.n>1?'m':''} certinha${c.n>1?'s':''} em <b>${c.m}</b> repetições.</li>`
+  :`<li>${c.n>1?c.n+' ciclos':'Um ciclo'} de <b>${c.L}</b> ${c.tipo} em roda: ${c.L==c.m?`as peças voltam em <b>${c.m}</b> repetições.`:`as peças voltam ao lugar a cada ${c.L} repetições, mas só voltam <b>certinhas</b> (sem giro) em <b>${c.m}</b>.`}</li>`);
+ const ms=[...new Set(r.cic.map(c=>c.m))];
+ $('ciclos').innerHTML=`<p style="margin-top:0">Uma repetição de <b>${alg.replace(/'/g,'’')}</b> leva as peças assim:</p><ul>${linhas.join('')}</ul><p>O cubo só volta quando <b>todos</b> os ciclos voltam juntos: é o <b>mínimo múltiplo comum</b>.<br>mmc(${ms.join(', ')}) = <b>${ms.reduce((a,b)=>a*b/g(a,b),1)}</b> = ordem ${ord}.</p>`;}
+function conta(){$('cont').innerHTML=k==0?`Ordem: ${ord}. Repetições feitas: 0`:(k%ord==0?`✔ Voltou! ${k} repetições`:`Repetições: ${k} de ${ord}`);}
+$('um').onclick=async()=>{if(ocup)return;ocup=true;C.vel=Math.min(4,1+cuboTokens(alg).length/4);await C.roda(alg);k++;conta();ocup=false;};
+$('dez').onclick=()=>{if(ocup)return;for(let i=0;i<10;i++){C.aplica(alg);k++;}conta();};
+$('ate').onclick=()=>{if(ocup)return;while(k%ord!==0||k==0){C.aplica(alg);k++;}conta();};
+$('zero').onclick=()=>{if(ocup)return;k=0;C.reset();C.desenha();conta();};
+$('ok').onclick=()=>{const s=$('seq').value;if(cuboTokens(s).length)monta(s);};
+chips('ex',EX.map(e=>e[0]),Math.max(0,EX.findIndex(e=>e[1]==alg)),i=>monta(EX[i][1]));
+monta(alg);
+})();
+</script>
+</body>
+</html>

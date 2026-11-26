@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laboratório de rostos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Laboratório de rostos</h1></header>
+<main>
+<div class="card"><h2>O rosto em números</h2><p class="muted" style="margin-top:0">Arraste os pontos laranjas (olhos, nariz e boca). O programa calcula duas razões e compara com os rostos do banco. Mova o limiar e veja quem é chamado de "parecido".</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Limiar de semelhança</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Razão 1 (olhos ÷ rosto)<b id="k1"></b></div><div>Razão 2 (nariz–boca ÷ olhos–nariz)<b id="k2"></b></div><div>"Parecidos"<b id="kn"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let P={oe:{x:72,y:110},od:{x:128,y:110},na:{x:100,y:145},bo:{x:100,y:180}};const LW=140;
+const BANCO=[];for(let i=0;i<40;i++)BANCO.push([0.34+Math.random()*0.14,0.75+Math.random()*0.5]);const VERD=[0.40,1.0];BANCO.push(VERD);
+const Lm=SL('sl',0.01,0.12,0.005,0.04,draw,v=>r2(v));
+function draw(){const r1v=(P.od.x-P.oe.x)/LW,r2v=(P.bo.y-P.na.y)/(P.na.y-(P.oe.y+P.od.y)/2||1),lim=Lm.get();
+ let g=`<ellipse cx="100" cy="135" rx="70" ry="95" fill="${PEACH}" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=LN(P.oe.x,P.oe.y,P.od.x,P.od.y,ORANGE,2)+LN(P.oe.x,P.oe.y,P.na.x,P.na.y,ORANGE,1.5)+LN(P.od.x,P.od.y,P.na.x,P.na.y,ORANGE,1.5)+LN(P.na.x,P.na.y,P.bo.x,P.bo.y,ORANGE,2);
+ Object.keys(P).forEach(k=>g+=`<circle id="${k}" cx="${P[k].x}" cy="${P[k].y}" r="8" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`);
+ const gx=190,gy=20,gw=145,gh=200,sx=v=>gx+(v-0.3)/0.22*gw,sy=v=>gy+gh-(v-0.7)/0.6*gh;let n=0;
+ g+=`<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" fill="#F8FAFC" stroke="${GRAYL}"/>`+TX(gx+gw/2,gy+gh+14,'razão 1',{fs:9,c:GRAY});
+ g+=`<ellipse cx="${sx(r1v)}" cy="${sy(r2v)}" rx="${lim/0.22*gw}" ry="${lim/0.6*gh}" fill="${PEACH}" stroke="${ORANGE}" stroke-dasharray="4 3"/>`;
+ BANCO.forEach((b,i)=>{const d=Math.hypot(b[0]-r1v,b[1]-r2v),p=d<lim;if(p)n++;g+=`<circle cx="${sx(b[0])}" cy="${sy(b[1])}" r="${i==BANCO.length-1?5:3.5}" fill="${p?ORANGE:GRAYL}" stroke="${i==BANCO.length-1?NAVY:'none'}" stroke-width="2"/>`;});
+ g+=`<circle cx="${sx(r1v)}" cy="${sy(r2v)}" r="5" fill="${NAVY}"/>`;
+ $('fig').innerHTML=SVG(340,240,g);const svg=$('fig').querySelector('svg');Object.keys(P).forEach(k=>arrastar(svg,svg.querySelector('#'+k),(x,y)=>{P[k]={x:clamp(x,40,160),y:clamp(y,60,215)};draw();}));
+ $('k1').textContent=r2(r1v);$('k2').textContent=r2(r2v);$('kn').textContent=n;
+ const dv=Math.hypot(VERD[0]-r1v,VERD[1]-r2v);
+ missao('m',dv<lim&&n==1,'Só a pessoa certa (ponto com borda azul) foi chamada de parecida. Agora aumente o limiar e veja os falsos positivos aparecerem.',
+  dv<lim?'A pessoa certa está entre os parecidos, mas há '+(n-1)+' falso(s) positivo(s). Diminua o limiar.':'A pessoa certa (borda azul) ainda não foi chamada. Ajuste os pontos do rosto ou o limiar.');}
+draw();
+})();
+</script>
+</body>
+</html>

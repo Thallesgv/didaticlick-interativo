@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pista de frenagem · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Pista de frenagem</h1></header>
+<main>
+<div class="card"><h2>Freie e meça a marca</h2><p class="muted" style="margin-top:0">Escolha a velocidade e o piso e aperte <b>Frear</b>. A marca no asfalto tem d = v² ÷ (2 · μ · g).</p>
+<div class="chips" id="pi"></div>
+<div class="sl" id="sv"><b>Velocidade no começo da freada</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><button id="go">Frear</button>
+<div class="kpi"><div class="o">Marca<b id="kd"></b></div><div>Velocidade<b id="kv"></b></div><div>Atrito μ<b id="km"></b></div></div></div>
+<div class="card"><h2>Perícia</h2><p id="enun" style="margin:0"></p><input type="number" id="r" placeholder="velocidade em km/h" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box;margin-top:8px">
+<div class="row" style="margin-top:8px"><button id="conf">Conferir</button><button class="alt" id="nova">Outra marca</button></div><div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MU=[0.7,0.4,0.5,0.1],NM=['asfalto seco','asfalto molhado','terra','gelo'];const Pi=chips('pi',NM.map((n,i)=>n+' (μ = '+fmt(MU[i])+')'),0,()=>pista(1));
+const V=SL('sv',20,120,5,60,()=>pista(1),v=>v+' km/h');let anim=null;
+function dist(v,mu){const ms=v/3.6;return ms*ms/(2*mu*9.8);}
+function pista(f){const v=V.get(),mu=MU[Pi.get()],d=dist(v,mu),esc=Math.min(300/Math.max(d,1),12),x0=20,pos=x0+d*esc*f;
+ let g=`<rect x="0" y="20" width="340" height="80" fill="#E5E7EB"/>`;for(let i=0;i<9;i++)g+=`<rect x="${i*40+5}" y="58" width="22" height="4" fill="#fff"/>`;
+ g+=`<rect x="${x0}" y="38" width="${pos-x0}" height="4" fill="${NAVY}"/><rect x="${x0}" y="78" width="${pos-x0}" height="4" fill="${NAVY}"/>`;
+ g+=`<rect x="${pos-6}" y="30" width="56" height="60" rx="10" fill="${ORANGE}"/><rect x="${pos+28}" y="38" width="14" height="44" rx="4" fill="${PEACH}"/>`;
+ if(f>=1)g+=LN(x0,112,pos,112,NAVY,1.5)+TX((x0+pos)/2,126,r1(d)+' m',{fs:11});
+ $('fig').innerHTML=SVG(340,135,g);$('kd').textContent=r1(d*f)+' m';$('kv').textContent=Math.round(v*Math.sqrt(Math.max(0,1-f)))+' km/h';$('km').textContent=fmt(mu);}
+$('go').onclick=()=>{cancelAnimationFrame(anim);const t0=performance.now();const step=t=>{const u=Math.min((t-t0)/1500,1),f=1-(1-u)*(1-u);pista(f);if(u<1)anim=requestAnimationFrame(step);};anim=requestAnimationFrame(step);};
+let Q;function nova(){const i=P([0,0,1,2]),v=P([40,50,60,70,80,90]);Q={i,v,d:dist(v,MU[i])};$('r').value='';$('m').innerHTML='';
+ $('enun').innerHTML=`Marca de <b>${r1(Q.d)} m</b> em ${NM[i]} (μ = ${fmt(MU[i])}). A que velocidade estava o carro?`;}
+$('conf').onclick=()=>{const x=+$('r').value.replace(',','.');const ok=Math.abs(x-Q.v)<=3;$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'✔ Certo!':'Ainda não.'} v = √(2 · ${fmt(MU[Q.i])} · 9,8 · ${r1(Q.d)}) ≈ ${r1(Q.v/3.6)} m/s ≈ <b>${Q.v} km/h</b>.</div>`;};
+$('nova').onclick=nova;pista(1);nova();
+})();
+</script>
+</body>
+</html>

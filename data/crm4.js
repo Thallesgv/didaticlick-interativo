@@ -1,0 +1,5 @@
+// Gerado pelo livro "A Matemática de um Crime · Guia do Professor" (matematica_crime/src): quizzes, resoluções e lista de interativos.
+window.QUIZ=window.QUIZ||{};window.RES=window.RES||{};window.APOSTILAS=window.APOSTILAS||{};
+Object.assign(QUIZ,{});
+Object.assign(RES,{});
+APOSTILAS["crm4"]={"title": "A Matemática de um Crime · Guia do Professor", "mods": [{"t": "Capítulo 2 · Livro 1 · A Trigonometria de um Crime", "l": [["Interativos · Livro 1 · A cena", "apostila.html?id=crm1"], ["Cerque o perímetro", "crime/perimetro.html"], ["Laboratório de gotas", "crime/gota.html"]]}, {"t": "Capítulo 3 · Livro 2 · A Geometria de uma Fuga", "l": [["Interativos · Livro 2 · A fuga", "apostila.html?id=crm2"], ["Mapa da fuga", "crime/fuga.html"], ["Laboratório de rostos", "crime/rosto.html"]]}, {"t": "Capítulo 4 · Livro 3 · A Probabilidade de uma Prova", "l": [["Interativos · Livro 3 · A prova", "apostila.html?id=crm3"], ["Multidão de suspeitos", "crime/dna.html"], ["Grade de suspeitos", "crime/suspeitos.html"]]}]};

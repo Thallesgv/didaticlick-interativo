@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapa da fuga · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Mapa da fuga</h1></header>
+<main>
+<div class="card"><h2>O cerco cresce a cada minuto</h2><p class="muted" style="margin-top:0">O ponto laranja é o museu. Escolha como o suspeito fugiu e mova o relógio. O círculo é tudo o que ele alcança em linha reta; o losango, andando só pelas ruas.</p>
+<div class="chips" id="mo"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Minutos de fuga</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Raio r = v · t<b id="kr"></b></div><div>Área do círculo<b id="kc"></b></div><div>Área do losango<b id="kl"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const V=[5,15,30],NM=['a pé (5 km/h)','bicicleta (15 km/h)','carro (30 km/h)'];const M=chips('mo',NM,0,draw);const T=SL('st',1,40,1,10,draw,v=>v+' min');
+function draw(){const v=V[M.get()],t=T.get(),r=v*t/60,rmax=v*40/60,esc=150/rmax;const px=r*esc,cx=170,cy=160;
+ const q=esc*(v>=30?2:1);let g=`<rect x="0" y="0" width="340" height="320" fill="${PEACH}"/>`;
+ for(let x=cx%q;x<340;x+=q)g+=`<rect x="${x-1.5}" y="0" width="3" height="320" fill="#fff"/>`;for(let y=cy%q;y<320;y+=q)g+=`<rect x="0" y="${y-1.5}" width="340" height="3" fill="#fff"/>`;
+ g+=`<path d="M${cx+px},${cy} L${cx},${cy-px} L${cx-px},${cy} L${cx},${cy+px}Z" fill="${LIGHT}" stroke="${ORANGE}" stroke-width="2"/>`;
+ g+=`<circle cx="${cx}" cy="${cy}" r="${px}" fill="none" stroke="${NAVY}" stroke-width="3"/>`+LN(cx,cy,cx+px*.8,cy-px*.6,ORANGE,2.5);
+ g+=`<circle cx="${cx}" cy="${cy}" r="7" fill="${ORANGE}" stroke="${NAVY}" stroke-width="2"/>`+TX(170,312,'escala: 1 quadra = '+(v>=30?2:1)+' km',{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(340,320,g);const Ac=Math.PI*r*r,Al=2*r*r;$('kr').textContent=r2(r)+' km';$('kc').textContent=r1(Ac)+' km²';$('kl').textContent=r1(Al)+' km²';
+ missao('m',Ac<=50,'Ainda dá para cercar: a área do círculo é de '+r1(Ac)+' km². Dobre o tempo e veja a área quadruplicar.','Tarde demais: '+r1(Ac)+' km² de busca. Volte o relógio e descubra até que minuto a área fica abaixo de 50 km².');}
+draw();
+})();
+</script>
+</body>
+</html>

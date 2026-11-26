@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Triagem na multidão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Triagem na multidão</h1></header>
+<main>
+<div class="card"><h2>O rosto apontado é o culpado?</h2><p class="muted" style="margin-top:0">Um programa compara o rosto da câmera com todas as fotos de um cadastro e erra de vez em quando. Cada rosto abaixo é um alerta: laranja são inocentes apontados por engano.</p>
+<div class="sl" id="sn"><b>Fotos no cadastro</b><input type="range"><span></span></div>
+<div class="sl" id="sx"><b>Erro do programa: 1 em</b><input type="range"><span></span></div>
+<div class="chips" id="cd"></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin-top:6px"><button id="bus">Fazer uma busca</button></div>
+<div class="kpi"><div>Falsos alertas (média)<b id="k1"></b></div><div class="o">P(apontado é o culpado)<b id="k2"></b></div><div>Alertas nesta busca<b id="k3"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NOM=v=>{const x=Math.round(Math.pow(10,v));return x>=1e6?r1(x/1e6)+(Math.round(x/1e5)>=20?' milhões':' milhão'):fmt(x);};
+let busca=null;const N=SL('sn',3,7,0.5,6,()=>{busca=null;draw();},NOM),X=SL('sx',3,7,0.5,5,()=>{busca=null;draw();},NOM),CD=chips('cd',['O culpado está no cadastro','O culpado NÃO está no cadastro'],0,()=>{busca=null;draw();});
+function poisson(l){if(l>40)return Math.max(0,Math.round(l+Math.sqrt(l)*(Math.random()+Math.random()+Math.random()-1.5)*2));let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
+const e=()=>Math.round(Math.pow(10,N.get()))/Math.round(Math.pow(10,X.get()));
+$('bus').onclick=()=>{busca=poisson(e());draw();};
+function rosto(x,y,c){return `<circle cx="${x}" cy="${y}" r="11" fill="${c}"/><circle cx="${x-4}" cy="${y-2}" r="1.6" fill="#fff"/><circle cx="${x+4}" cy="${y-2}" r="1.6" fill="#fff"/><path d="M${x-4},${y+4} Q${x},${y+7} ${x+4},${y+4}" stroke="#fff" stroke-width="1.4" fill="none"/>`;}
+function draw(){const ee=e(),dentro=CD.get()==0,f=busca===null?Math.round(ee):busca,mostra=Math.min(f,49),tot=mostra+(dentro?1:0),lin=Math.max(1,Math.ceil(tot/10)),H=lin*30+56;
+ let g=`<rect width="340" height="${H}" fill="#F8FAFC"/>`;
+ for(let i=0;i<tot;i++){const x=24+(i%10)*32,y=22+Math.floor(i/10)*30;g+=rosto(x,y,dentro&&i==tot-1?NAVY:ORANGE);}
+ if(!tot)g+=TX(170,30,'nenhum alerta',{fs:12,c:GRAY});
+ g+=TX(8,H-26,(busca===null?'Média (arredondada): ':'Nesta busca: ')+f+' inocente(s) apontado(s)'+(dentro?' + o culpado (azul)':''),{fs:11,a:'start'});
+ if(f>49)g+=TX(8,H-10,'(aparecem só 49 inocentes; os outros '+fmt(f-49)+' não cabem)',{fs:10,a:'start',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,H,g);const pc=dentro?1/(1+ee):0;
+ $('k1').textContent=ee<0.01?'quase 0':r2(ee);$('k2').textContent=(pc>0.995&&pc<1?r2(100*pc):r1(100*pc))+'%';$('k3').textContent=busca===null?'—':busca+(dentro?1:0);
+ if(!dentro)$('m').innerHTML='<div class="msg info">Se o culpado não está no cadastro, todo alerta aponta um inocente. Foi o que aconteceu com Robert Williams, em Detroit, em 2020.</div>';
+ else missao('m',pc>=0.9,`Agora um rosto apontado tem ${r1(100*pc)}% de chance de ser o culpado. Repare: foi preciso um cadastro pequeno ou um programa que erra muito pouco.`,
+  `Com ${NOM(N.get())} de fotos e erro de 1 em ${NOM(X.get())}, esperamos ${r2(ee)} falsos alertas. Missão: faça a chance de o rosto apontado ser o culpado passar de 90%.`);}
+draw();
+})();
+</script>
+</body>
+</html>

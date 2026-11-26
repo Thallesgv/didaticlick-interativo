@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estique o gráfico · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Estique o gráfico</h1></header>
+<main>
+<div class="card"><h2>O mesmo número, outro desenho</h2><p class="muted" style="margin-top:0">Arraste a bolinha laranja da direita para mudar onde o eixo começa. Os valores não mudam: R$ 96 mil e R$ 100 mil. Só o desenho muda.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Eixo começa em<b id="kb"></b></div><div class="o">A barra parece maior<b id="kp"></b></div><div>É maior de verdade<b id="kr"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let b=95;const V=[96,100];
+function draw(){const y0=230,H=190,Y=v=>y0-(v-b)/(101-b)*H;let g=`<rect width="340" height="260" fill="#F8FAFC"/>`;
+ for(let k=0;k<=4;k++){const v=b+(101-b)*k/4;g+=LN(50,Y(v),320,Y(v),GRAYL,1)+TX(46,Y(v)+4,r1(v),{fs:9,a:'end',c:GRAY,w:500});}
+ V.forEach((v,i)=>{const x=95+i*120;g+=`<rect x="${x}" y="${Y(v)}" width="70" height="${y0-Y(v)}" rx="4" fill="${i?ORANGE:NAVY}"/>`+TX(x+35,Y(v)-6,'R$ '+v+' mil',{fs:11})+TX(x+35,y0+16,2024+i,{fs:10,c:GRAY,w:500});});
+ const yk=230-b/95.5*190;g+=LN(50,y0,320,y0,ORANGE,4)+LN(332,40,332,230,GRAYL,6)+`<circle id="eixo" cx="332" cy="${yk}" r="10" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`+TX(318,yk+4,'eixo em '+r1(b)+' mil',{fs:10,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(345,260,g);const svg=$('fig').querySelector('svg');
+ arrastar(svg,svg.querySelector('#eixo'),(x,y)=>{b=clamp(Math.round((230-y)/190*95.5*2)/2,0,95.5);draw();});
+ const ap=(100-b)/(96-b),re=100/96;$('kb').textContent=r1(b)+' mil';$('kp').textContent=r2(ap)+' vez(es)';$('kr').textContent=r2(re)+' vez';
+ $('m').innerHTML=`<div class="msg ${b<1?'ok':ap>2?'bad':'info'}">${b<1?'Eixo no zero: as alturas são proporcionais aos valores. Este é o gráfico honesto.':'Com o eixo em '+r1(b)+' mil, a barra de 2025 parece '+r2(ap)+' vezes a de 2024, mas o aumento real foi de só 4,2%.'+(Math.abs(b-95)<.05?' É o relatório de Heitor.':'')}</div>`;}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ache o armário · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Ache o armário</h1></header>
+<main>
+<div class="card"><h2>Um armário entre 1 024</h2><p class="muted" style="margin-top:0">Um armário foi sorteado. Pergunte “é maior que...?” e veja os armários eliminados escurecerem. Com a pergunta certa, 10 perguntas bastam.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin-top:8px;align-items:center"><span>É maior que</span><input id="n" type="text" inputmode="numeric" style="width:90px"><button id="bq">Perguntar</button><button class="alt" id="bm">Usar o meio</button></div>
+<div class="kpi"><div class="o">Perguntas feitas<b id="kq"></b></div><div>Armários possíveis<b id="kr"></b></div></div>
+<div id="hist" class="muted" style="margin-top:6px"></div>
+<div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Sortear outro armário</button></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let S,lo,hi,Q;function novo(){S=rint(1,1024);lo=1;hi=1024;Q=[];$('n').value='';draw();}
+$('nova').onclick=novo;$('bm').onclick=()=>{$('n').value=Math.floor((lo+hi)/2);};
+$('bq').onclick=()=>{const v=parseInt(String($('n').value).replace(/\D/g,''),10);if(isNaN(v)||lo==hi)return;const r=S>v;Q.push([v,r]);if(r)lo=Math.max(lo,v+1);else hi=Math.min(hi,v);draw();};
+function draw(){let g=`<rect width="340" height="340" fill="#F8FAFC"/>`;const s=10.25;
+ for(let i=0;i<1024;i++){const n=i+1,x=6+(i%32)*s,y=6+Math.floor(i/32)*s,vivo=n>=lo&&n<=hi,ach=lo==hi&&n==S;
+  g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s-1.4}" height="${s-1.4}" rx="1.5" fill="${ach?ORANGE:vivo?PEACH:'#334155'}"${ach?` stroke="${NAVY}" stroke-width="2"`:''}/>`;}
+ $('fig').innerHTML=SVG(340,340,g);$('kq').textContent=Q.length;$('kr').textContent=fmt(hi-lo+1)+(hi>lo?' (de '+lo+' a '+hi+')':'');
+ $('hist').innerHTML=Q.map(([v,r],i)=>`${i+1}) maior que ${v}? <b>${r?'sim':'não'}</b>`).join(' · ');
+ if(lo==hi)missao('m',Q.length<=10,`Achou: armário <b>${S}</b> em ${Q.length} perguntas. Cada pergunta no meio corta as possibilidades pela metade: 1 024 → 512 → ... → 1.`,`Achou o armário <b>${S}</b>, mas usou ${Q.length} perguntas. Tente de novo perguntando sempre pelo meio dos que sobraram.`);
+ else $('m').innerHTML=`<div class="msg info">Sobram ${fmt(hi-lo+1)} armários. ${Q.length?'':'Dica: o meio de 1 a 1 024 é 512.'}</div>`;}
+novo();
+})();
+</script>
+</body>
+</html>

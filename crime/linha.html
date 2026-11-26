@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linha do tempo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Linha do tempo</h1></header>
+<main>
+<div class="card"><h2>A versão cabe nas provas?</h2><p class="muted" style="margin-top:0">A barra azul é o intervalo em que o suspeito diz que estava <b>em casa</b>. Arraste as bolinhas das pontas. Provas que caem dentro da barra ficam laranja: são contradições.</p>
+<div class="chips" id="md"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Versão “em casa”<b id="kv"></b></div><div>Duração<b id="kd"></b></div><div>Contradições<b id="kc"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const T0=23*60,T1=31*60,x0=22,x1=318,X=m=>x0+(m-T0)/(T1-T0)*(x1-x0),Minv=x=>T0+(x-x0)/(x1-x0)*(T1-T0);
+const PR=[[25*60+52,'portão'],[25*60+55,'carro sai'],[26*60+7,'posto'],[27*60,'motor']];
+let a=T0,b=T1;const hm=v=>String(Math.floor(v/60)%24).padStart(2,'0')+'h'+String(v%60).padStart(2,'0');
+const snap=x=>clamp(Math.round(Minv(x)/5)*5,T0,T1);
+const M=chips('md',['Explorar','Missão: começa às 23h','Missão: termina às 07h'],0,()=>{if(M.get()==1){a=T0;b=T0+120;}if(M.get()==2){a=T1-120;b=T1;}draw();});
+function draw(){let g=`<rect width="340" height="230" fill="#F8FAFC"/>`;const y=150;
+ g+=LN(x0,y,x1,y,NAVY,2);for(let h=0;h<=8;h++){const xx=X(T0+h*60);g+=LN(xx,y-5,xx,y+5,NAVY,1.5)+TX(xx,y+20,String((23+h)%24).padStart(2,'0')+'h',{fs:9,c:GRAY,w:500});}
+ g+=`<rect x="${X(a)}" y="40" width="${Math.max(2,X(b)-X(a))}" height="30" rx="8" fill="${BLUE}" opacity=".85"/>`+TX((X(a)+X(b))/2,60,X(b)-X(a)>70?'em casa':'',{fs:11,c:'#fff'});
+ let nc=0;PR.forEach(([m,t],k)=>{const dentro=m>=a&&m<=b;if(dentro)nc++;const xx=X(m),c=dentro?ORANGE:GRAY;
+  g+=LN(xx,dentro?72:y,xx,y,c,dentro?2.5:1.2,'4 3')+`<circle cx="${xx}" cy="${y}" r="${dentro?7:5}" fill="${c}"/>`;
+  const yl=y+36+k*13;g+=LN(xx,y+7,xx,yl-4,c,.8)+TX(xx+4,yl,t+' '+hm(m)+(dentro?' ✗':''),{fs:9.5,a:'start',c:dentro?ORANGE:GRAY});});
+ g+=`<circle id="ha" cx="${X(a)}" cy="55" r="12" fill="#fff" stroke="${NAVY}" stroke-width="3"/><circle id="hb" cx="${X(b)}" cy="55" r="12" fill="#fff" stroke="${NAVY}" stroke-width="3"/>`;
+ g+=TX(X(a),30,hm(a),{fs:10})+TX(X(b),30,hm(b),{fs:10});
+ $('fig').innerHTML=SVG(340,230,g);const svg=$('fig').querySelector('svg');
+ arrastar(svg,svg.querySelector('#ha'),x=>{a=Math.min(snap(x),b-5);draw();});arrastar(svg,svg.querySelector('#hb'),x=>{b=Math.max(snap(x),a+5);draw();});
+ $('kv').textContent=hm(a)+' às '+hm(b);const d=b-a;$('kd').textContent=Math.floor(d/60)+' h '+String(d%60).padStart(2,'0')+' min';$('kc').textContent=nc;
+ if(M.get()==1)missao('m',a==T0&&b==25*60+50,'A maior versão que começa às 23h vai até 01h50: a prova do portão (01h52) fica fora por pouco.',a!=T0?'Deixe o começo em 23h00.':'Estique o fim o máximo possível sem nenhuma prova laranja.');
+ else if(M.get()==2)missao('m',b==T1&&a==27*60+5,'A maior versão que termina às 07h começa às 03h05, logo depois do motor desligado (~03h00).',b!=T1?'Deixe o fim em 07h00.':'Puxe o começo o mais para a esquerda possível sem nenhuma prova laranja.');
+ else $('m').innerHTML=`<div class="msg ${nc?'bad':'ok'}">${nc?'A versão e as provas não podem ser todas verdadeiras: '+nc+' prova(s) dentro do intervalo.':'Nenhuma prova cai dentro: a versão é possível (o que não quer dizer que seja verdadeira).'}</div>`;}
+draw();
+})();
+</script>
+</body>
+</html>

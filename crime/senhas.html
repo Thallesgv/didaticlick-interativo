@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fábrica de senhas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Crime</div><h1>Fábrica de senhas</h1></header>
+<main>
+<div class="card"><h2>Quantas senhas existem?</h2><p class="muted" style="margin-top:0">Ligue os tipos de caracteres permitidos e escolha o comprimento. A torre mostra quantos algarismos tem o total de senhas: cada andar é uma potência de 10.</p>
+<div class="chips" id="tp"></div>
+<div class="sl" id="sn"><b>Comprimento</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Tentativas por segundo</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Símbolos (k)<b id="kk"></b></div><div class="o">Senhas (kⁿ)<b id="kt"></b></div><div>Tempo médio<b id="ktm"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const TP=[['minúsculas',26],['maiúsculas',26],['dígitos',10],['símbolos',32]];let on=[true,false,false,false];
+$('tp').innerHTML=TP.map((t,i)=>`<button data-i="${i}">${t[0]} (${t[1]})</button>`).join('');
+$('tp').querySelectorAll('button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;on[i]=!on[i];if(!on.some(x=>x))on[i]=true;draw();});
+const N=SL('sn',1,16,1,8,draw,v=>v+' caracteres'),SUP=x=>String(x).split('').map(c=>'⁰¹²³⁴⁵⁶⁷⁸⁹'[+c]).join(''),V=SL('sv',3,12,1,9,draw,v=>'10'+SUP(v)+' por segundo');
+const nomes=[[1e3,'mil'],[1e6,'milhão'],[1e9,'bilhão'],[1e12,'trilhão'],[1e15,'quatrilhão'],[1e18,'quintilhão'],[1e21,'sextilhão'],[1e24,'septilhão'],[1e27,'octilhão'],[1e30,'nonilhão']];
+function grande(x){if(x<10)return r1(x);if(x<1000)return fmt(Math.round(x));let u=nomes[0];for(const nn of nomes)if(x>=nn[0])u=nn;const v=x/u[0];return (v<10?r1(v):fmt(Math.round(v)))+' '+(v>=2&&u[1]!='mil'?u[1].replace('ão','ões'):u[1]);}
+function tempo(s){if(s<1)return 'menos de 1 segundo';const U=[[31557600,'anos'],[86400,'dias'],[3600,'horas'],[60,'minutos'],[1,'segundos']];for(const [d,n] of U)if(s>=d)return grande(s/d)+' '+n;}
+function draw(){$('tp').querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',on[i]));
+ const k=TP.reduce((a,t,i)=>a+(on[i]?t[1]:0),0),n=N.get(),lg=n*Math.log10(k),tot=Math.pow(10,lg),v=Math.pow(10,V.get());
+ let g=`<rect width="340" height="270" fill="#F8FAFC"/>`;const and=Math.floor(lg)+1,h=Math.min(18,240/Math.max(and,1));
+ for(let a=0;a<and;a++){const y=255-(a+1)*h,c=a%3==2?ORANGE:a%2?LIGHT:NAVY;g+=`<rect x="120" y="${y}" width="100" height="${h-2}" rx="3" fill="${c}"/>`;if(h>=12&&a%3==0)g+=TX(228,y+h-5,'10'+(a?SUP(a):'⁰'),{fs:9,a:'start',c:GRAY,w:500});}
+ g+=TX(110,255-and*h+12,and+' algarismos',{fs:11,a:'end'});
+ $('fig').innerHTML=SVG(340,270,g);$('kk').textContent=k;$('kt').textContent=grande(tot);$('ktm').textContent=tempo(tot/2/v);
+ const caso=k==62&&n==8;$('m').innerHTML=`<div class="msg ${caso?'ok':'info'}">${caso?'Maiúsculas, minúsculas e dígitos, 8 caracteres: 62⁸ ≈ 218 trilhões. A 1 bilhão por segundo, cerca de 30 horas em média.':'Tente: com só minúsculas, aumente o comprimento de 8 para 12. Depois volte a 8 e ligue todos os tipos. O que pesa mais?'}</div>`;}
+draw();
+})();
+</script>
+</body>
+</html>
