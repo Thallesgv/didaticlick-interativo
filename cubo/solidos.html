@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sólidos e Euler · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/crime.js?v=2"></script><script src="../assets/cubo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Cubo Mágico na Escola</div><h1 id="titulo">Sólidos e Euler</h1></header>
+<main>
+<div class="card"><p class="muted" style="margin-top:0">Escolha um sólido. Arraste para girar. Acenda os vértices, as arestas ou as faces e confira a fórmula de Euler.</p>
+<div class="chips" id="sol"></div>
+<div id="nlados" style="display:none;text-align:center;margin:6px 0"><span class="muted">Lados da base: </span><input type="range" id="n" min="3" max="12" value="5" style="width:170px;vertical-align:middle"> <b id="nv">5</b></div>
+<canvas id="cv" style="width:100%;max-width:420px;display:block;margin:0 auto;touch-action:none;cursor:grab"></canvas>
+<div class="chips" id="modo" style="justify-content:center"></div>
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-top:10px">
+<div class="msg info" style="margin:0"><div class="muted">Vértices</div><b id="V" style="font-size:26px"></b></div>
+<div class="msg info" style="margin:0"><div class="muted">Arestas</div><b id="A" style="font-size:26px"></b></div>
+<div class="msg info" style="margin:0"><div class="muted">Faces</div><b id="F" style="font-size:26px"></b></div></div>
+<p style="text-align:center;font-size:20px;font-weight:700;color:var(--navy)" id="eu"></p>
+<p class="muted" id="info" style="text-align:center"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const fi=(1+Math.sqrt(5))/2,iv=1/fi;
+const sg=a=>a.flatMap(v=>{let r=[[]];v.forEach(x=>{r=r.flatMap(p=>x===0?[[...p,0]]:[[...p,x],[...p,-x]]);});return r;});
+const perm3=v=>[[v[0],v[1],v[2]],[v[1],v[2],v[0]],[v[2],v[0],v[1]]];
+const SOL={
+ 'Tetraedro':{v:[[1,1,1],[1,-1,-1],[-1,1,-1],[-1,-1,1]],i:'4 triângulos; 3 em cada vértice. É a forma da pirâmide (Pyraminx).'},
+ 'Cubo':{v:sg([[1,1,1]]),i:'6 quadrados; 3 em cada vértice. O cubo mágico!'},
+ 'Octaedro':{v:sg(perm3([1,0,0])),i:'8 triângulos; 4 em cada vértice.'},
+ 'Dodecaedro':{v:sg([[1,1,1]]).concat(sg(perm3([0,iv,fi]))),i:'12 pentágonos; 3 em cada vértice. É a forma do Megaminx.'},
+ 'Icosaedro':{v:sg(perm3([0,1,fi])),i:'20 triângulos; 5 em cada vértice.'},
+ 'Prisma':{p:n=>{const v=[];for(let k=0;k<n;k++){const a=2*Math.PI*k/n;v.push([Math.cos(a),-.8,Math.sin(a)],[Math.cos(a),.8,Math.sin(a)]);}return v;},i:'Duas bases de n lados e n retângulos dos lados.'},
+ 'Pirâmide':{p:n=>{const v=[[0,1.1,0]];for(let k=0;k<n;k++){const a=2*Math.PI*k/n;v.push([Math.cos(a),-.7,Math.sin(a)]);}return v;},i:'Uma base de n lados e n triângulos.'}};
+const sub=(a,b)=>a.map((x,i)=>x-b[i]),dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],cr=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+function casca(V){const F=[],vis=new Set(),n=V.length;
+ for(let i=0;i<n;i++)for(let j=i+1;j<n;j++)for(let k=j+1;k<n;k++){let N=cr(sub(V[j],V[i]),sub(V[k],V[i]));const L=Math.hypot(...N);if(L<1e-9)continue;N=N.map(x=>x/L);
+  const d=dot(N,V[i]);let pos=0,neg=0;const pl=[];V.forEach((p,q)=>{const s=dot(N,p)-d;if(Math.abs(s)<1e-6)pl.push(q);else if(s>0)pos++;else neg++;});
+  if(pos&&neg)continue;if(pos)N=N.map(x=>-x);const key=pl.slice().sort((a,b)=>a-b).join();if(vis.has(key))continue;vis.add(key);
+  const c=pl.reduce((s,q)=>s.map((x,t)=>x+V[q][t]/pl.length),[0,0,0]);const u=sub(V[pl[0]],c),w=cr(N,u);
+  pl.sort((a,b)=>Math.atan2(dot(sub(V[a],c),w),dot(sub(V[a],c),u))-Math.atan2(dot(sub(V[b],c),w),dot(sub(V[b],c),u)));F.push({idx:pl,N,c});}
+ const E=new Set();F.forEach(f=>f.idx.forEach((a,t)=>{const b=f.idx[(t+1)%f.idx.length];E.add(Math.min(a,b)+'-'+Math.max(a,b));}));
+ return{F,E:[...E].map(s=>s.split('-').map(Number))};}
+const cv=$('cv'),ctx=cv.getContext('2d');let nome='Cubo',modo=0,yaw=.6,pitch=.45,auto=true,G=null,V=null;
+const CORES=['#F78D33','#0E2354','#2B8A3E','#C92A2A','#1971C2','#F5C400','#862E9C','#E8590C','#0B7285','#5C940D','#A61E4D','#495057'];
+function monta(){const s=SOL[nome],n=+$('n').value;$('nlados').style.display=s.p?'block':'none';$('nv').textContent=n;
+ V=s.p?s.p(n):s.v;const m=Math.max(...V.map(p=>Math.hypot(...p)));V=V.map(p=>p.map(x=>x/m));G=casca(V);
+ $('V').textContent=V.length;$('A').textContent=G.E.length;$('F').textContent=G.F.length;
+ $('eu').textContent=`V − A + F = ${V.length} − ${G.E.length} + ${G.F.length} = ${V.length-G.E.length+G.F.length}`;$('info').textContent=s.i;}
+function rot(p){const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);let [x,y,z]=p;[x,z]=[x*cy+z*sy,-x*sy+z*cy];[y,z]=[y*cp-z*sp,y*sp+z*cp];return[x,y,z];}
+function desenha(){const W=cv.clientWidth||360;cv.width=W*2;cv.height=W*2;const S=W*.72,o=W;ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);
+ const P=V.map(rot),pr=p=>[o+p[0]*S,o-p[1]*S];
+ const fs=G.F.map((f,i)=>({f,i,z:dot(rot(f.c),[0,0,1]),n:rot(f.N)[2]})).sort((a,b)=>a.z-b.z);
+ for(const {f,i,n} of fs){ctx.beginPath();f.idx.forEach((q,t)=>{const [X,Y]=pr(P[q]);t?ctx.lineTo(X,Y):ctx.moveTo(X,Y);});ctx.closePath();
+  const frente=n>0;ctx.globalAlpha=frente?(modo==2?.92:.55):(modo==0?.18:.10);ctx.fillStyle=modo==2?CORES[i%CORES.length]:'#FBB57A';ctx.fill();ctx.globalAlpha=1;}
+ for(const [a,b] of G.E){const A=pr(P[a]),B=pr(P[b]);ctx.beginPath();ctx.moveTo(...A);ctx.lineTo(...B);ctx.strokeStyle=modo==1?'#E8590C':'#0E2354';ctx.lineWidth=modo==1?7:3;
+  ctx.globalAlpha=(P[a][2]+P[b][2])/2>-.05||modo==1?1:.35;ctx.stroke();ctx.globalAlpha=1;}
+ if(modo==0)P.forEach((p,i)=>{const [X,Y]=pr(p);ctx.beginPath();ctx.arc(X,Y,12,0,7);ctx.fillStyle=p[2]>-.05?'#C92A2A':'#E599A1';ctx.fill();});}
+function loop(){if(auto){yaw+=.006;desenha();}requestAnimationFrame(loop);}
+let ini=null;cv.addEventListener('pointerdown',e=>{auto=false;ini=[e.clientX,e.clientY,yaw,pitch];try{cv.setPointerCapture(e.pointerId);}catch(_){}});
+cv.addEventListener('pointermove',e=>{if(!ini)return;yaw=ini[2]+(e.clientX-ini[0])*.011;pitch=Math.max(-1.4,Math.min(1.4,ini[3]+(e.clientY-ini[1])*.011));desenha();});
+cv.addEventListener('pointerup',()=>ini=null);
+const NOMES=Object.keys(SOL),q0=new URLSearchParams(location.search).get('s');if(q0&&SOL[q0])nome=q0;
+chips('sol',NOMES,NOMES.indexOf(nome),i=>{nome=NOMES[i];monta();desenha();});
+chips('modo',['Vértices','Arestas','Faces'],0,i=>{modo=i;desenha();});
+$('n').oninput=()=>{monta();desenha();};monta();desenha();loop();
+})();
+</script>
+</body>
+</html>
