@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A ração que acaba · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A ração que acaba</h1></header>
+<main>
+<div class="card"><h2>O estoque é uma reta</h2><p class="muted" style="margin-top:0">Escolha quantas rações há no porão, quantos homens há a bordo e quanto cada um come por dia. A reta E(t) = estoque − consumo · t aparece na hora; o ponto em que ela toca o eixo é o dia em que o porão fica vazio.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Rações no porão</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Homens a bordo</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Ração de cada homem por dia</b><input type="range"><span></span></div>
+<div class="kpi"><div>Consumo por dia (taxa)<b id="kc"></b></div><div class="o">O estoque acaba no dia<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com <b>18 000 rações</b> e <b>120 homens</b>, o porto está a <b>120 dias</b>. Escolha a <b>maior</b> ração que ainda faz o estoque chegar ao porto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w||280,h=o.h||180,X=x=>ox+x/xmax*w,Y=y=>oy-y/ymax*h;
+ let g='';xt.forEach(v=>{g+=LN(X(v),oy,X(v),oy-h,'#EEF2F7',1)+TX(X(v),oy+13,fmt(v),{fs:9,c:GRAY,w:500});});
+ yt.forEach(v=>{g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-5,Y(v)+3,fmt(v),{fs:9,c:GRAY,w:500,a:'end'});});
+ g+=LN(ox,oy,ox+w+6,oy,NAVY,1.5)+LN(ox,oy,ox,oy-h-6,NAVY,1.5)+TX(ox+w,oy+26,xl,{fs:9,a:'end'})+TX(ox+4,oy-h-8,yl,{fs:9,a:'start'});
+ const linha=(f,x0,x1,cor,lw,dash,n)=>{n=n||160;let p=[];for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n,y=f(x);if(y==null||y>ymax*1.02||y<-1e-9)continue;p.push(X(x).toFixed(1)+','+Y(y).toFixed(1));}
+  return p.length>1?`<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}"${dash?` stroke-dasharray="${dash}"`:''} stroke-linejoin="round"/>`:'';};
+ const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
+ return {g,X,Y,linha,pts};}
+const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const Es=SL('se',6000,24000,1000,18000,draw,v=>fmt(v)),Hs=SL('sh',40,160,10,120,draw,v=>v+' homens'),Rs=SL('sr',0.5,1.5,0.05,1,draw,v=>fmt(Math.round(v*100))+'% da ração');
+function draw(){const E0=Es.get(),c=Hs.get()*Rs.get(),dia=E0/c,G0=G(250,24000,[0,50,100,150,200,250],[0,6000,12000,18000,24000],'dias','rações');
+ let g=G0.g;g+=LN(G0.X(120),G0.Y(0),G0.X(120),G0.Y(24000),GREEN,1.5,'5 4')+TX(G0.X(120)+4,G0.Y(22500),'porto: dia 120',{fs:9,a:'start',c:GREEN});
+ g+=G0.linha(t=>E0-c*t,0,Math.min(dia,250),ORANGE,3);
+ if(dia<=250)g+=BOLA(G0.X(dia),G0.Y(0),dia>=120?GREEN:'#B91C1C',6);
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kc').textContent=fmt(Math.round(c))+' rações';$('kd').textContent=r1(dia);
+ const ok=E0==18000&&Hs.get()==120&&dia>=120&&Math.abs(Rs.get()-1.25)<1e-6;
+ missao('m',ok,'Isso! 18 000 ÷ 120 dias = 150 rações por dia; ÷ 120 homens = 1,25: cada um pode comer até 125% da ração e ainda chegar.',
+  (E0!=18000||Hs.get()!=120)?'Para a missão, use 18 000 rações e 120 homens.':(dia<120?'O estoque acaba no dia '+r1(dia)+', antes do porto. Diminua a ração.':'Chega com sobra (acaba no dia '+r1(dia)+'). Dá para comer mais!'));}
+draw();
+})();
+</script>
+</body>
+</html>

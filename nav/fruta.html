@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os dias sem fruta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Os dias sem fruta</h1></header>
+<main>
+<div class="card"><h2>A serra do contador</h2><p class="muted" style="margin-top:0">O contador D(t) conta os dias desde a última fruta: sobe 1 por dia e volta a zero em cada parada. Toque nos dias para marcar ou desmarcar paradas com fruta (no máximo 3). Acima de 30 dias (um mês), o gráfico fica vermelho.</p>
+<div class="fig" id="fig"></div>
+<div class="chips" id="dias"></div>
+<div class="kpi"><div>Paradas<b id="kp"></b></div><div class="o">Maior número de dias sem fruta<b id="km"></b></div><div>Dias em perigo<b id="kr"></b></div></div>
+<div id="fx" class="muted" style="margin-top:6px"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Atravesse os <b>120 dias</b> com <b>no máximo 3 paradas</b>, sem que o contador passe de <b>30</b> em nenhum dia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w||280,h=o.h||180,X=x=>ox+x/xmax*w,Y=y=>oy-y/ymax*h;
+ let g='';xt.forEach(v=>{g+=LN(X(v),oy,X(v),oy-h,'#EEF2F7',1)+TX(X(v),oy+13,fmt(v),{fs:9,c:GRAY,w:500});});
+ yt.forEach(v=>{g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-5,Y(v)+3,fmt(v),{fs:9,c:GRAY,w:500,a:'end'});});
+ g+=LN(ox,oy,ox+w+6,oy,NAVY,1.5)+LN(ox,oy,ox,oy-h-6,NAVY,1.5)+TX(ox+w,oy+26,xl,{fs:9,a:'end'})+TX(ox+4,oy-h-8,yl,{fs:9,a:'start'});
+ const linha=(f,x0,x1,cor,lw,dash,n)=>{n=n||160;let p=[];for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n,y=f(x);if(y==null||y>ymax*1.02||y<-1e-9)continue;p.push(X(x).toFixed(1)+','+Y(y).toFixed(1));}
+  return p.length>1?`<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}"${dash?` stroke-dasharray="${dash}"`:''} stroke-linejoin="round"/>`:'';};
+ const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
+ return {g,X,Y,linha,pts};}
+const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+let PAR=[25,70];const OP=[];for(let d=10;d<=110;d+=5)OP.push(d);
+$('dias').innerHTML=OP.map(d=>`<button data-d="${d}">dia ${d}</button>`).join('');
+$('dias').querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=+b.dataset.d;if(PAR.includes(d))PAR=PAR.filter(x=>x!=d);else if(PAR.length<3)PAR.push(d);PAR.sort((a,b)=>a-b);draw();});
+function draw(){$('dias').querySelectorAll('button').forEach(b=>b.classList.toggle('on',PAR.includes(+b.dataset.d)));
+ const G0=G(120,60,[0,20,40,60,80,100,120],[0,10,20,30,40,50,60],'dia da viagem','dias sem fruta');let g=G0.g;
+ g+=`<rect x="${G0.X(0)}" y="${G0.Y(60)}" width="${G0.X(120)-G0.X(0)}" height="${G0.Y(30)-G0.Y(60)}" fill="#FDECEC"/>`+LN(G0.X(0),G0.Y(30),G0.X(120),G0.Y(30),'#B91C1C',1.5,'5 4');
+ const ini=[0].concat(PAR),fim=PAR.concat([120]);let mx=0,perigo=0;
+ for(let i=0;i<ini.length;i++){const a=ini[i],b=fim[i],L=b-a;mx=Math.max(mx,L);perigo+=Math.max(0,L-30);
+  g+=G0.linha(t=>t-a,a,Math.min(b,a+30),ORANGE,3,null,10);if(L>30)g+=G0.linha(t=>t-a,a+30,b,'#B91C1C',3.5,null,10);
+  if(i<PAR.length)g+=LN(G0.X(b),G0.Y(L),G0.X(b),G0.Y(0),GRAY,1,'2 3')+BOLA(G0.X(b),G0.Y(0),GREEN,5);}
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kp').textContent=PAR.length+' de 3';$('km').textContent=mx;$('kr').textContent=perigo;
+ $('fx').innerHTML='D(t) = '+ini.map((a,i)=>(a?'t − '+a:'t')+' , se '+a+' ≤ t '+(i<ini.length-1?'&lt; '+fim[i]:'≤ 120')).join(' · ');
+ missao('m',mx<=30,'Nenhum trecho passa de 30 dias. Com 3 paradas há 4 trechos, e 4 · 30 = 120: as paradas precisam ser exatamente nos dias 30, 60 e 90.',
+  'O trecho mais longo tem '+mx+' dias. '+(PAR.length<3?'Você ainda pode marcar mais uma parada.':'Mude os dias para repartir melhor a viagem.'));}
+draw();
+})();
+</script>
+</body>
+</html>

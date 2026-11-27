@@ -115,7 +115,30 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
 6:()=>{const t=R(0,2);
  if(t==0){const h=R(2,8),v=P([1.5,2,2.5,3]);return{q:`A nau anda <b>${fmt(v)} léguas/h</b> por <b>${h} horas</b>. Quantas léguas se desloca?`,a:v*h,tol:.01,exp:`${h} · ${fmt(v)} = ${fmt(v*h)} léguas.`};}
  if(t==1){const a=R(-5,9),b=R(-5,9),c=R(-5,9),d=R(-5,9);return{q:`Some os deslocamentos (${a}; ${b}) e (${c}; ${d}). Qual a componente <b>norte</b> da soma?`,a:b+d,exp:`${b} + (${d}) = ${b+d}.`};}
- const k=R(2,5),a=R(-4,4),b=R(-4,4);return{q:`A velocidade é (${a}; ${b}) léguas/h. Qual a componente <b>leste</b> do deslocamento em <b>${k} horas</b>?`,a:k*a,exp:`${k} · (${a}; ${b}) = (${k*a}; ${k*b}).`};}}}};
+ const k=R(2,5),a=R(-4,4),b=R(-4,4);return{q:`A velocidade é (${a}; ${b}) léguas/h. Qual a componente <b>leste</b> do deslocamento em <b>${k} horas</b>?`,a:k*a,exp:`${k} · (${a}; ${b}) = (${k*a}; ${k*b}).`};}}},'nav5':{T:["A ração que acaba", "Os dias sem fruta", "Dobrar a cada três dias", "Uma tripulação finita", "Suscetíveis, doentes e recuperados", "Contágio ou falta?"],G:{1:()=>{const t=R(0,2),h=P([40,60,80,100,120]),d=P([50,100,120,150,200]);
+ if(t==0)return{q:`O porão tem <b>${h*d}</b> rações e <b>${h}</b> homens comem uma por dia. Em quantos dias acaba?`,a:d,exp:`${h*d} ÷ ${h} = ${d} dias (a raiz de E(t) = ${h*d} − ${h}t).`};
+ if(t==1){const x=R(5,40);return{q:`E(t) = ${h*d} − ${h}t. Quanto resta no dia <b>${x}</b>?`,a:h*d-h*x,exp:`${h*d} − ${h} · ${x} = ${h*d-h*x}.`};}
+ const y0=P([600,800,1000]),k=P([10,15,20,25]),x=P([4,6,10]);return{q:`Uma reta passa por (0; ${y0}) e (${x}; ${y0-k*x}). Qual a taxa de variação?`,a:-k,exp:`(${y0-k*x} − ${y0}) ÷ ${x} = −${k}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const a=P([20,25,30]),b=a+P([30,35,40,45]),x=R(b+1,b+40);return{q:`Paradas com fruta nos dias <b>${a}</b> e <b>${b}</b>. Quanto vale D(${x}) (dias sem fruta no dia ${x})?`,a:x-b,exp:`Última parte: D(t) = t − ${b}; D(${x}) = ${x-b}.`};}
+ if(t==1){const a=P([20,25,30]),x=R(a+1,a+30);return{q:`Parada com fruta no dia <b>${a}</b> (e nenhuma outra antes de ${a+40}). Quanto vale D(${x})?`,a:x-a,exp:`D(t) = t − ${a}: ${x-a}.`};}
+ const n=P([1,2,3,4]),T=P([90,100,120,150]);return{q:`Viagem de <b>${T} dias</b> com <b>${n}</b> parada(s) repartindo a viagem em trechos iguais. Quantos dias tem cada trecho? (1 casa)`,a:Math.round(T/(n+1)*10)/10,tol:.06,exp:`${n} paradas fazem ${n+1} trechos: ${T} ÷ ${n+1} ≈ ${fmt(Math.round(T/(n+1)*10)/10)}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=P([2,3,5]),d=P([2,3,4]),n=R(2,5);return{q:`g(t) = ${a} · 2<sup>t/${d}</sup>. Quanto vale g(${n*d})?`,a:a*Math.pow(2,n),exp:`${n*d} ÷ ${d} = ${n} dobras: ${a} · 2<sup>${n}</sup> = ${a*Math.pow(2,n)}.`};}
+ if(t==1){const [seq,tp]=P([[[3,6,12,24],'exponencial'],[[3,6,9,12],'afim'],[[5,15,45,135],'exponencial'],[[7,11,15,19],'afim'],[[2,8,32,128],'exponencial']]);return{q:`A sequência <b>${seq.join(', ')}</b> é:`,opts:['afim','exponencial'],a:tp,exp:tp=='afim'?'Diferença constante.':'Razão constante.'};}
+ const d=P([2,3,5]),T=d*P([4,5,6,10]);return{q:`Uma quantidade dobra a cada <b>${d} dias</b>. Em quanto fica multiplicada em <b>${T} dias</b>?`,a:Math.pow(2,T/d),exp:`${T} ÷ ${d} = ${T/d} dobras: 2<sup>${T/d}</sup> = ${Math.pow(2,T/d)}.`};},
+4:()=>{const t=R(0,2),C=P([60,80,100,120,200,500]);
+ if(t==0)return{q:`Uma logística tem capacidade <b>${C}</b>. Quantos já adoeceram quando o crescimento é mais rápido?`,a:C/2,exp:`No ponto de inflexão: C ÷ 2 = ${C/2}.`};
+ if(t==1){const a=P([2,4,5,10]);return{q:`L(t) = ${C} ÷ (1 + ${C/a-1} · 2<sup>−t</sup>). Quanto vale L(0)?`,a:a,exp:`${C} ÷ (1 + ${C/a-1}) = ${C} ÷ ${C/a} = ${a}.`};}
+ const k=P([3,7,15,31]),n=Math.log2(k+1);return{q:`L(t) = ${C} ÷ (1 + ${k} · 2<sup>−t</sup>). Quanto vale L(${n})?`,a:Math.round(C/(1+k/Math.pow(2,n))*100)/100,tol:.05,exp:`2<sup>−${n}</sup> = 1/${k+1}: ${C} ÷ (1 + ${k}/${k+1}) ≈ ${fmt(Math.round(C/(1+k/Math.pow(2,n))*100)/100)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const b=P([0.2,0.25,0.4,0.5]),D=P([2,4,5,8]);return{q:`β = ${fmt(b)} e D = ${D} dias. Quanto vale R₀?`,a:b*D,tol:.001,exp:`R₀ = β · D = ${fmt(b)} · ${D} = ${fmt(b*D)}.`};}
+ if(t==1){const N=P([100,200]),S=N*P([0.5,0.6,0.8]),I=P([5,10,20]),b=P([0.2,0.5]);return{q:`N = ${N}, S = ${S}, I = ${I}, β = ${fmt(b)}. Quantos novos doentes no dia?`,a:b*S*I/N,tol:.01,exp:`${fmt(b)} · ${S} · ${I} ÷ ${N} = ${fmt(b*S*I/N)}.`};}
+ const N=120,S=R(40,100),I=R(2,15);return{q:`N = ${N}, S = ${S} e I = ${I}. Quanto vale R?`,a:N-S-I,exp:`R = ${N} − ${S} − ${I} = ${N-S-I}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const v=P([40,50,60]),n=P([2,3,4,5]);return{q:`Se cada laranja desse ${v} mg de vitamina C, quantos mg dariam <b>${n}</b> laranjas?`,a:v*n,exp:`V(n) = ${v}n: ${v*n} mg.`};}
+ if(t==1){const h=P([60,100,120]),d=P([50,100,150]);return{q:`<b>${h}</b> homens, <b>${d}</b> dias, 0,2 laranja por homem por dia. Quantas laranjas?`,a:h*d*0.2,tol:.01,exp:`${h} · ${d} · 0,2 = ${h*d*0.2}.`};}
+ const x=R(35,70);return{q:`Os sinais valem 0 até 30 dias sem fruta e depois s(d) = 0,25 · (d − 30). Quanto vale s(${x})?`,a:0.25*(x-30),tol:.01,exp:`0,25 · (${x} − 30) = ${fmt(0.25*(x-30))}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

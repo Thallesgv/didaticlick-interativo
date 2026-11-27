@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contágio ou falta? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Contágio ou falta?</h1></header>
+<main>
+<div class="card"><h2>De que a doença depende?</h2><p class="muted" style="margin-top:0">Cada ponto é um dos 40 marinheiros (dados fictícios). No eixo vertical, os sinais da doença das gengivas (0 a 10). Escolha o que vai no eixo horizontal e veja se aparece um padrão.</p>
+<div class="fig" id="fig"></div>
+<div class="chips" id="ch"></div>
+<div class="sl" id="sl"><b>Linha de corte</b><input type="range"><span></span></div>
+<div class="kpi"><div>Doentes à esquerda da linha<b id="ke"></b></div><div class="o">Doentes à direita da linha<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Descubra qual variável explica a doença e coloque a linha de corte no valor a partir do qual ela aparece: <b>nenhum doente à esquerda</b>, com a linha o mais à direita possível.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w||280,h=o.h||180,X=x=>ox+x/xmax*w,Y=y=>oy-y/ymax*h;
+ let g='';xt.forEach(v=>{g+=LN(X(v),oy,X(v),oy-h,'#EEF2F7',1)+TX(X(v),oy+13,fmt(v),{fs:9,c:GRAY,w:500});});
+ yt.forEach(v=>{g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-5,Y(v)+3,fmt(v),{fs:9,c:GRAY,w:500,a:'end'});});
+ g+=LN(ox,oy,ox+w+6,oy,NAVY,1.5)+LN(ox,oy,ox,oy-h-6,NAVY,1.5)+TX(ox+w,oy+26,xl,{fs:9,a:'end'})+TX(ox+4,oy-h-8,yl,{fs:9,a:'start'});
+ const linha=(f,x0,x1,cor,lw,dash,n)=>{n=n||160;let p=[];for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n,y=f(x);if(y==null||y>ymax*1.02||y<-1e-9)continue;p.push(X(x).toFixed(1)+','+Y(y).toFixed(1));}
+  return p.length>1?`<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}"${dash?` stroke-dasharray="${dash}"`:''} stroke-linejoin="round"/>`:'';};
+ const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
+ return {g,X,Y,linha,pts};}
+const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+let sd=11;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
+const M=[];for(let i=0;i<40;i++){const dias=Math.round(5+rnd()*65),cont=Math.round(rnd()*100)/10,g=Math.max(0,Math.min(10,(dias-30)*0.28+(rnd()-.5)*1.6));M.push({dias,cont,g:dias<=30?0:g});}
+const VAR=[{n:'horas perto de doentes',k:'cont',max:10,t:[0,2,4,6,8,10]},{n:'dias sem fruta',k:'dias',max:70,t:[0,10,20,30,40,50,60,70]}];
+const Cv=chips('ch',['Horas perto de doentes','Dias sem fruta'],0,()=>{const v=VAR[Cv.get()];Lc.set(0);draw();});
+const Lc=SL('sl',0,70,1,0,draw,v=>fmt(v));
+function draw(){const v=VAR[Cv.get()],cut=Math.min(Lc.get(),v.max),G0=G(v.max,10,v.t,[0,5,10],v.n,'sinais');let g=G0.g,e=0,d=0;
+ M.forEach(m=>{const x=m[v.k],doe=m.g>=1;if(doe){if(x<cut)e++;else d++;}g+=BOLA(G0.X(x),G0.Y(m.g),doe?ORANGE:BLUE,4.5);});
+ g+=LN(G0.X(cut),G0.Y(0),G0.X(cut),G0.Y(10),'#B91C1C',2,'5 4');
+ $('fig').innerHTML=SVG(340,250,g);$('ke').textContent=e;$('kd').textContent=d;
+ const lim=Math.min(...M.filter(m=>m.g>=1).map(m=>m.dias));
+ const ok=Cv.get()==1&&e==0&&cut>=lim-1&&cut<=lim;
+ missao('m',ok,'Os sinais só aparecem depois de cerca de '+cut+' dias sem fruta, e não têm relação com o contato: é falta, não contágio, como diz a fonte (pelo menos um mês sem vitamina C).',
+  Cv.get()==0?'Com o contato no eixo, os doentes (laranja) se espalham por toda parte: '+e+' à esquerda e '+d+' à direita. Isso parece uma nuvem.':
+  (e>0?'Há '+e+' doente(s) à esquerda da linha. Volte um pouco.':'Nenhum doente à esquerda. Dá para levar a linha mais para a direita?'));}
+Lc.set(0);draw();
+})();
+</script>
+</body>
+</html>
