@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O quadrado de Vitrúvio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O quadrado de Vitrúvio</h1></header>
+<main>
+<div class="card"><h2>Cabe no quadrado?</h2><p class="muted" style="margin-top:0">O quadrado tem lado igual à altura. Ajuste a altura e a envergadura (braços abertos) do boneco. Depois mude o tamanho da cabeça em relação ao corpo, de bebê a adulto.</p>
+<div class="sl" id="sa"><b>Altura</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Envergadura</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>A altura vale quantas cabeças?</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Envergadura ÷ altura<b id="kr"></b></div><div>Cabeça ÷ altura<b id="kc"></b></div><div class="o">Parece<b id="ki"></b></div></div>
+</div>
+<div class="card"><h2>A cauda do mico</h2><p class="muted" style="margin-top:0">O Pipoca tem corpo de 22 cm e cauda de 33 cm: razão 1,5. Monte outros micos.</p>
+<div class="sl" id="sb"><b>Corpo</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Cauda</b><input type="range"><span></span></div>
+<div class="fig" id="fm" style="flex-direction:column"></div>
+<div class="kpi"><div class="o">Cauda ÷ corpo<b id="km"></b></div><div>Comprimento total<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça o corpo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',45,190,1,150,draw,v=>v+' cm'),SE=SL('se',45,200,1,170,draw,v=>v+' cm'),SC=SL('sc',3.5,8,0.5,7.5,draw,v=>fmt(v)),SB=SL('sb',15,30,1,22,draw,v=>v+' cm'),ST=SL('st',15,45,0.5,22,draw,v=>fmt(v)+' cm');
+const rz=()=>SE.get()/SA.get(),rm=()=>ST.get()/SB.get();
+MIS.def(()=>[
+ ['Faça o boneco caber <b>certinho</b> no quadrado: braços abertos iguais à altura.',()=>SE.get()==SA.get(),()=>'Envergadura ÷ altura = 1. É o corpo "bem proporcionado" de Vitrúvio.',()=>'Agora a razão é '+r2(rz())+'. '+(rz()>1?'Os braços passam do quadrado.':'Os braços não chegam às bordas.')],
+ ['Monte um <b>recém-nascido</b>: 50 cm de altura e cabeça de 1/4 da altura (envergadura igual à altura).',()=>SA.get()==50&&SC.get()==4&&SE.get()==50,'Cabeça = 1/4 da altura: num bebê de 50 cm, 12,5 cm. Num adulto de 8 cabeças, a cabeça seria 1/8.',()=>SC.get()!=4?'A cabeça deve valer 1/4: altura = 4 cabeças.':(SA.get()!=50?'Ajuste a altura para 50 cm.':'Iguale a envergadura à altura: 50 cm.')],
+ ['Monte um mico adulto com <b>corpo de 26 cm</b> e a <b>mesma razão</b> do Pipoca.',()=>SB.get()==26&&Math.abs(rm()-1.5)<1e-9,'Cauda de 39 cm: 39 ÷ 26 = 1,5. Pela regra de três, 22/33 = 26/x dá x = 39.',()=>SB.get()!=26?'Ajuste o corpo para 26 cm.':'Razão agora: '+r2(rm())+'. A cauda deve ser 1,5 vez o corpo.']]);
+function boneco(cx,yb,h,env,cab){const c=h/cab,r=c/2,ombro=yb-h+c*1.15,cor='#F2C9A0',bd='#B9835A';let g='';
+ g+=LN(cx-env/2,ombro,cx+env/2,ombro,bd,Math.max(3,c*0.28))+CI(cx-env/2,ombro,Math.max(2,c*0.16),bd)+CI(cx+env/2,ombro,Math.max(2,c*0.16),bd);
+ g+=RC(cx-c*0.5,ombro-c*0.1,c,h*0.38,cor,'stroke="'+bd+'" rx="'+c*0.2+'"');
+ const quad=ombro-c*0.1+h*0.38;g+=LN(cx-c*0.25,quad,cx-c*0.32,yb,bd,Math.max(3,c*0.3))+LN(cx+c*0.25,quad,cx+c*0.32,yb,bd,Math.max(3,c*0.3));
+ g+=CI(cx,yb-h+r,r,cor,'stroke="'+bd+'"');return g;}
+function draw(){const s=1.15,h=SA.get()*s,env=SE.get()*s,yb=245,cx=170;let g=RC(0,0,340,260,'#FFF8E7','rx="10"');
+ g+=RC(cx-h/2,yb-h,h,h,'none','stroke="'+NAVY+'" stroke-width="1.5" stroke-dasharray="5 4"');
+ g+=boneco(cx,yb,h,env,SC.get());
+ const cab=h/SC.get();for(let k=0;k<=SC.get()+1e-9;k++){const y=yb-h+k*cab;g+=LN(cx+h/2+8,y,cx+h/2+16,y,GRAY,1);}
+ g+=TX(cx,yb-h-6,'quadrado de lado = altura',{fs:10,c:GRAY});
+ $('fig').innerHTML=SVG(340,260,g);
+ $('kr').textContent=r2(rz());$('kc').textContent='1/'+fmt(SC.get());$('ki').textContent=SC.get()<=4.5?'bebê':(SC.get()<=6?'criança':'adulto');
+ const u=3.6,b=SB.get()*u,t=ST.get()*u,x0=22+t;let m=RC(0,0,340,130,'#E6F2DC','rx="10"');
+ m+=`<path d="M${x0} 64 q${-t*0.5} ${t*0.22} ${-t} ${-t*0.05}" stroke="#C98A12" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+ m+=`<ellipse cx="${x0+b/2}" cy="60" rx="${b/2}" ry="${b*0.2}" fill="#F5A623" stroke="#B8740C"/>`+CI(x0+b,52,b*0.19,'#F5A623','stroke="#B8740C"')+CI(x0+b*1.07,49,2.5,NAVY);
+ m+=LN(x0,100,x0+b,100,NAVY,2)+TX(x0+b/2,118,'corpo '+SB.get()+' cm',{fs:10})+LN(x0-t,100,x0,100,ORANGE,2)+TX(x0-t/2,118,'cauda '+fmt(ST.get())+' cm',{fs:10,c:ORANGE});
+ $('fm').innerHTML=SVG(340,130,m);$('km').textContent=r2(rm());$('kt').textContent=fmt(SB.get()+ST.get())+' cm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

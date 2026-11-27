@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O gigante da serra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O gigante da serra</h1></header>
+<main>
+<div class="card"><h2>Amplie e veja o osso</h2><p class="muted" style="margin-top:0">O boneco cinza é uma pessoa comum. Amplie o laranja k vezes. As barras mostram quanto crescem o comprimento, a área do osso e a massa (cada risca da régua vale 10 vezes a anterior). O medidor mostra a carga em cada cm² de osso.</p>
+<div class="sl" id="sk"><b>Escala k</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Engrossar o osso (diâmetro × )</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Área × <b id="ka"></b></div><div>Massa × <b id="km"></b></div><div class="o">Carga no osso ×<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Salve o gigante.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SK=SL('sk',0.1,10,0.1,1,draw,v=>fmt(v)),SG=SL('sg',1,4,0.05,1,draw,v=>fmt(v));
+const k=()=>Math.round(SK.get()*10)/10,gg=()=>SG.get(),carga=()=>k()/(gg()*gg());
+MIS.def(()=>[
+ ['Amplie o boneco <b>10 vezes</b>, sem engrossar o osso. O que acontece com a carga?',()=>k()==10&&gg()==1,'Massa × 1.000, área do osso × 100: carga × 10. É o limite em que o fêmur quebra: o gigante quebraria as pernas ao andar.',()=>'Escala '+fmt(k())+' com osso '+fmt(gg())+'. Leve a escala a 10 e o osso a 1.'],
+ ['Salve o gigante de 10 vezes: engrosse o osso até a carga voltar a <b>1</b> (ou menos).',()=>k()==10&&carga()<=1.001,()=>'Diâmetro × '+fmt(gg())+': área do osso × '+r1(100*gg()*gg())+'. O osso precisa engrossar √10 ≈ 3,16 vezes além da ampliação: é por isso que o elefante tem pernas tão grossas.',()=>k()!=10?'Volte a escala para 10.':'Carga ainda × '+r2(carga())+'. Engrosse mais.'],
+ ['Encolha o boneco até o tamanho de um <b>mico</b> (k = 0,2) com osso normal. Quanto fica a pele por grama?',()=>k()==0.2&&gg()==1,'k = 0,2: área ÷ massa fica 5 vezes maior. O mico perde calor depressa e precisa comer muito para o seu tamanho.',()=>'Ajuste a escala para 0,2 e o osso para 1.']]);
+function draw(){const K=k(),G=gg(),c=carga();let g=RC(0,0,340,270,'#F5F7FB','rx="10"');
+ const yb=250,h0=19,h=h0*K;g+=LN(8,yb,200,yb,'#94A3B8',2);
+ g+=BONECO(30,yb,h0*1.0,'#9CA3AF');
+ const cx=110,lw=Math.max(1.5,h*0.07*G),cor=c>=10?'#D9342B':(c>3?'#F59E0B':ORANGE);
+ g+=CI(cx,yb-h+h*0.08,h*0.08,cor)+RC(cx-h*0.12,yb-h*0.84,h*0.24,h*0.4,cor,'rx="'+h*0.05+'"')+LN(cx-h*0.06,yb-h*0.45,cx-h*0.08,yb-lw/2,cor,lw)+LN(cx+h*0.06,yb-h*0.45,cx+h*0.08,yb-lw/2,cor,lw);
+ if(c>=10)g+=TX(cx,yb-h-8<20?40:yb-h-8,'CRAC!',{fs:14,c:'#D9342B'});
+ const bars=[['comprimento',K],['área do osso',K*K*G*G],['massa',K**3]],lx=v=>210+((Math.min(4,Math.log10(v))+3)/7)*120;
+ g+=TX(270,20,'quantas vezes',{fs:9,c:GRAY});
+ for(let e=-3;e<=4;e++){const x=lx(10**e);g+=LN(x,28,x,150,'#E5E7EB',1)+(e%3==0?TX(x,162,e==0?'1':(e>0?fmt(10**e):'1/'+fmt(10**-e)),{fs:8,c:GRAY}):'');}
+ bars.forEach(([nm,v],i)=>{const y=40+i*38,x1=lx(1),x2=lx(v);g+=RC(Math.min(x1,x2),y,Math.max(2,Math.abs(x2-x1)),16,i==2?ORANGE:'#FBB57A')+TX(212,y-3,nm+': × '+(v>=10?fmt(Math.round(v)):r2(v)),{fs:9,a:'start'});});
+ const mx=270,my=232,R=48,lim=Math.min(c,15),a=Math.PI*(1-lim/15);
+ g+=`<path d="M${mx-R} ${my} A${R} ${R} 0 0 1 ${mx+R} ${my}" fill="none" stroke="#E5E7EB" stroke-width="10"/>`;
+ [[0,3,'#86EFAC'],[3,10,'#FCD34D'],[10,15,'#FCA5A5']].forEach(([a0,a1,co])=>{const t0=Math.PI*(1-a0/15),t1=Math.PI*(1-a1/15);g+=`<path d="M${mx+R*Math.cos(t0)} ${my-R*Math.sin(t0)} A${R} ${R} 0 0 1 ${mx+R*Math.cos(t1)} ${my-R*Math.sin(t1)}" fill="none" stroke="${co}" stroke-width="10"/>`;});
+ g+=LN(mx,my,mx+(R-6)*Math.cos(a),my-(R-6)*Math.sin(a),NAVY,2.5)+CI(mx,my,4,NAVY)+TX(mx,my+16,'carga × '+r2(c),{fs:10})+TX(mx,178,'osso',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,270,g);
+ $('ka').textContent=r2(K*K*G*G);$('km').textContent=K**3>=10?fmt(Math.round(K**3)):fmt(Math.round(K**3*1000)/1000);$('kc').textContent=r2(c);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

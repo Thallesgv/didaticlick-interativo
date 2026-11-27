@@ -185,7 +185,30 @@ const LIV={'vid1':{T:["Do metro ao micrômetro", "Notação científica", "O aum
 6:()=>{const t=R(0,1);
  if(t==0){const a=R(2,9),b=R(2,9),c=R(5,16);const m=Math.min(c,a+b);return{q:`De A a B são <b>${a} km</b>, de B a C são <b>${b} km</b> e de A direto a C são <b>${c} km</b>. Qual o caminho mais curto de A a C (km)?`,a:m,exp:`Pelo B: ${a} + ${b} = ${a+b}; direto: ${c}. O menor é ${m}.`};}
  const ab=R(1,6),ac=R(4,12),bd=R(3,9),cd=R(1,6),bc=R(1,5);const dB=Math.min(ab,ac+bc),dC=Math.min(ac,ab+bc),dD=Math.min(dB+bd,dC+cd);
- return{q:`Corredores: AB ${ab}, AC ${ac}, BC ${bc}, BD ${bd}, CD ${cd} (km). Qual a menor distância de A até D?`,a:dD,exp:`Dijkstra: B fica com ${dB}, C com ${dC}; D = menor entre ${dB} + ${bd} e ${dC} + ${cd} = ${dD} km.`};}}}};
+ return{q:`Corredores: AB ${ab}, AC ${ac}, BC ${bc}, BD ${bd}, CD ${cd} (km). Qual a menor distância de A até D?`,a:dD,exp:`Dijkstra: B fica com ${dB}, C com ${dC}; D = menor entre ${dB} + ${bd} e ${dC} + ${cd} = ${dD} km.`};}}},'vid8':{T:["Medidas do corpo", "Batimentos e taxas", "A área escondida", "O rato e o elefante", "A lei de Kleiber", "A régua das potências"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const c=R(18,30),r=P([1.2,1.4,1.5,1.6]);const v=Math.round(c*r*10)/10;return{q:`Um mico tem corpo de <b>${c} cm</b> e a cauda é <b>${fmt(r)}</b> vez o corpo. Quanto mede a cauda (cm)?`,a:v,tol:0.06,exp:`${fmt(r)} × ${c} = ${fmt(v)} cm.`};}
+ if(t==1){const a=P([2,3,4,5,6]),b=P([3,4,5,8,10]),c=a*R(2,6);const x=c*b/a;return{q:`Resolva a proporção <b>x/${b} = ${c}/${a}</b>.`,a:x,tol:0.001,exp:`x = ${b} × ${c} ÷ ${a} = ${fmt(x)}.`};}
+ const h=8*R(18,23),k=P([4,6,7,8]);const v=Math.round(h/k*10)/10;return{q:`Uma pessoa de <b>${h} cm</b> tem cabeça de <b>1/${k}</b> da altura. Quanto mede a cabeça (cm)?`,a:v,tol:0.06,exp:`${h} ÷ ${k} ≈ ${fmt(v)} cm.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const s=P([10,15,20,30]),n=R(5,60);const f=60/s;return{q:`Contaram <b>${n}</b> batidas em <b>${s} segundos</b>. Qual a frequência por minuto?`,a:n*f,exp:`1 minuto = ${f} × ${s} s: ${n} × ${f} = ${n*f} por minuto.`};}
+ if(t==1){const b=P([30,60,70,72,80,90,224,600]);return{q:`Um coração bate <b>${b}</b> vezes por minuto. Quantas batidas por dia?`,a:b*1440,exp:`1 dia = 1.440 min: ${b} × 1.440 = ${fmt(b*1440)}.`};}
+ const a=P([600,300,240,120]),b=P([30,60,20,40]);return{q:`Um coração bate <b>${a}</b> vezes por minuto e outro, <b>${b}</b>. Quantas vezes o primeiro é mais rápido?`,a:a/b,tol:0.001,exp:`${a} ÷ ${b} = ${fmt(a/b)}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,9);return{q:`Qual a área total de um cubo de aresta <b>${a} cm</b> (cm²)?`,a:6*a*a,exp:`6 × ${a}² = 6 × ${a*a} = ${6*a*a} cm².`};}
+ if(t==1){const n=R(2,10);return{q:`Um cubo é cortado em cubinhos, dividindo cada aresta em <b>${n}</b> partes. Quantos cubinhos saem?`,a:n**3,exp:`${n} × ${n} × ${n} = ${n**3}.`};}
+ const n=R(2,10);return{q:`Cortando cada aresta de um cubo em <b>${n}</b> partes, a área total fica multiplicada por quanto?`,a:n,exp:`São ${n**3} cubinhos, cada um com 1/${n*n} da área do cubo inteiro: ${n**3} ÷ ${n*n} = ${n}. A área fica × ${n}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const k=R(2,10);return{q:`Ampliando um bicho <b>${k}</b> vezes, quantas vezes aumenta a massa?`,a:k**3,exp:`${k}³ = ${k**3}.`};}
+ if(t==1){const k=R(2,10);return{q:`Ampliando um bicho <b>${k}</b> vezes, quantas vezes aumenta a área da pele?`,a:k*k,exp:`${k}² = ${k*k}.`};}
+ const k=R(2,10),m=P([10,20,50]);return{q:`Uma estátua usa <b>${m} kg</b> de bronze. Quantos quilos usa uma cópia <b>${k}</b> vezes mais alta, do mesmo jeito?`,a:m*k**3,exp:`Volume × ${k}³ = ${k**3}: ${m} × ${k**3} = ${fmt(m*k**3)} kg.`};},
+5:()=>{const t=R(0,2),B=[[16,2],[81,3],[256,4],[625,5],[10000,10]];
+ if(t==0){const [m,r]=P(B);return{q:`Calcule <b>${fmt(m)}<sup>3/4</sup></b>.`,a:r**3,exp:`⁴√${fmt(m)} = ${r}; ${r}³ = ${fmt(r**3)}.`};}
+ if(t==1){const [m,r]=P(B);return{q:`Pela lei de Kleiber (B ≈ 70 × M<sup>3/4</sup>), quantas kcal por dia gasta em repouso um animal de <b>${fmt(m)} kg</b>?`,a:70*r**3,exp:`${fmt(m)}<sup>3/4</sup> = ${fmt(r**3)}; 70 × ${fmt(r**3)} = ${fmt(70*r**3)} kcal.`};}
+ const [m,r]=P(B);return{q:`Um animal é <b>${fmt(m)}</b> vezes mais pesado que outro. Quantas vezes mais energia ele gasta, pela lei de Kleiber?`,a:r**3,exp:`${fmt(m)}<sup>3/4</sup> = (⁴√${fmt(m)})³ = ${r}³ = ${fmt(r**3)}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const e=R(-3,6);return{q:`Quanto vale <b>log ${fmt(10**e)}</b>?`,a:e,exp:`10${SUP(e)} = ${fmt(10**e)}, então log = ${e}.`};}
+ if(t==1){const e=R(1,6);return{q:`Se <b>log x = ${e}</b>, quanto vale x?`,a:10**e,exp:`x = 10${SUP(e)} = ${fmt(10**e)}.`};}
+ const k=P([4,8,12]);return{q:`No gráfico log-log da lei de Kleiber (inclinação 3/4), a massa sobe <b>${k}</b> marcas. Quantas marcas sobe o gasto?`,a:k*3/4,tol:0.001,exp:`${k} × 3/4 = ${fmt(k*3/4)}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='vid1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

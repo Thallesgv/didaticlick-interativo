@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança de Kleiber · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A balança de Kleiber</h1></header>
+<main>
+<div class="card"><h2>Massa, energia e energia por quilo</h2><p class="muted" style="margin-top:0">Deslize a massa do camundongo ao elefante (o controle anda em potências de 10) ou toque num bicho. A lei de Kleiber, B ≈ 70 × M<sup>3/4</sup>, dá o gasto de energia em repouso por dia.</p>
+<div id="ca" style="margin:6px 0"></div>
+<div class="sl" id="sm"><b>Massa</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Massa<b id="kk"></b></div><div class="o">kcal por dia<b id="kb"></b></div><div>kcal por quilo<b id="kq"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Pese.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AN=[['camundongo',0.025],['Pipoca',0.5],['gato',4],['pessoa',70],['vaca',600],['elefante',4000]];
+const mostra=v=>{const M=10**v;return M<1?fmt(Math.round(M*1000))+' g':(M<1000?fmt(Math.round(M*10)/10)+' kg':fmt(Math.round(M/100)/10)+' t');};
+const SM=SL('sm',-1.6,3.6,0.01,0,draw,mostra);const CA=chips('ca',AN.map(a=>a[0]),-1,i=>{SM.set(Math.log10(AN[i][1]));draw();});
+const M=()=>10**SM.get(),B=m=>70*m**0.75;
+MIS.def(()=>[
+ ['Ache a massa de um bicho que gasta <b>8 vezes mais</b> que um de 1 kg (70 kcal).',()=>Math.abs(B(M())-560)<12,()=>'Uns 16 kg: 16<sup>3/4</sup> = 8, então 70 × 8 = 560 kcal. A massa subiu 16 vezes, o gasto só 8.',()=>'Agora: '+fmt(Math.round(B(M())))+' kcal. Procure 560.'],
+ ['Ponha o <b>Pipoca</b> (0,5 kg) na balança. Quanto ele gasta por dia e por quilo?',()=>Math.abs(M()-0.5)<0.02,'Umas 42 kcal por dia e 83 por quilo, mais de 3 vezes o que uma pessoa gasta por quilo.',()=>'Toque em Pipoca ou deslize até 500 g.'],
+ ['Ache a massa em que o gasto cai para <b>24 kcal por quilo</b>.',()=>Math.abs(B(M())/M()-24)<0.4,()=>'Perto de '+mostra(SM.get())+', o tamanho de uma pessoa adulta. Quanto maior o bicho, menos ele gasta por quilo.',()=>'Agora: '+r1(B(M())/M())+' kcal por quilo. Aumente a massa.']]);
+function draw(){const m=M(),b=B(m),q=b/m;let g=RC(0,0,340,250,'#F3FAEE','rx="10"');
+ const r=Math.max(3,Math.min(80,14*Math.cbrt(m)));g+=CI(90,200-r,r,'#F5A623','stroke="#B8740C" stroke-width="1.5"')+LN(10,200,170,200,'#94A3B8',2)+TX(90,222,mostra(SM.get()),{fs:13});
+ const lg=v=>Math.max(0,Math.log10(v)),bx=190,bw=40;
+ const hb=lg(b)/5*170,hq=lg(q)/3*170;
+ g+=RC(bx,200-hb,bw,hb,ORANGE)+TX(bx+bw/2,194-hb,fmt(Math.round(b)),{fs:11,c:ORANGE})+TX(bx+bw/2,216,'kcal/dia',{fs:9,c:GRAY});
+ g+=RC(bx+70,200-hq,bw,hq,'#3F8F4A')+TX(bx+70+bw/2,194-hq,r1(q),{fs:11,c:'#3F8F4A'})+TX(bx+70+bw/2,216,'por quilo',{fs:9,c:GRAY});
+ g+=TX(255,240,'barras em régua de potências de 10',{fs:8.5,c:GRAY});
+ $('fig').innerHTML=SVG(340,250,g);$('kk').textContent=mostra(SM.get());$('kb').textContent=fmt(Math.round(b));$('kq').textContent=r1(q);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
