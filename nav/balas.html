@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A pirâmide de balas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A pirâmide de balas</h1></header>
+<main>
+<div class="card"><h2>Contar sem tocar</h2><p class="muted" style="margin-top:0">Escolha o número de camadas. A pilha cresce de lado, cada camada é um quadrado de balas, e a fórmula n (n + 1) (2n + 1) ÷ 6 dá o total.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Camadas</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Raio da bala</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Total de balas<b id="kt"></b></div><div>Massa de uma bala<b id="kb"></b></div><div>Massa da pilha<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O artilheiro tem <b>204 balas</b>. Quantas camadas tem a pirâmide que usa todas elas, sem sobrar nenhuma?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const N=SL('sn',1,10,1,5,draw,v=>v+' camadas'),Rr=SL('sr',3,8,0.5,5,draw,v=>r1(v)+' cm');
+function draw(){const n=N.get(),r=Rr.get(),T=n*(n+1)*(2*n+1)/6,vb=4*3.14*r**3/3,mb=vb*7.9/1000;
+ const s=Math.min(16,150/n),y0=196;let g='';
+ for(let j=0;j<n;j++){const cnt=n-j;const x0=170-cnt*s/2;for(let i=0;i<cnt;i++)g+=`<circle cx="${x0+s/2+i*s}" cy="${y0-s/2-j*s*0.87}" r="${s/2-0.6}" fill="#3A3F4A"/>`;
+  g+=TX(170+cnt*s/2+6,y0-s/2-j*s*0.87+4,cnt+'² = '+cnt*cnt,{fs:Math.min(10,s*.7),a:'start',c:GRAY,w:500});}
+ g+=TX(170,16,'pilha vista de lado: cada fileira é uma camada quadrada',{fs:9.5,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,206,g);
+ $('kt').textContent=fmt(T);$('kb').textContent=r1(mb)+' kg';$('km').textContent=fmt(Math.round(T*mb))+' kg';
+ missao('m',T==204,'8 camadas: 1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 = 204. Pela fórmula: 8 × 9 × 17 ÷ 6 = 204.',
+  'Com '+n+' camadas são '+fmt(T)+' balas. '+(T<204?'Faltam '+(204-T)+'.':'Passou de 204.'));}
+draw();
+})();
+</script>
+</body>
+</html>

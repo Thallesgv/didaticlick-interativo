@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A linha d'água · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A linha d'água</h1></header>
+<main>
+<div class="card"><h2>Carregar sem afundar</h2><p class="muted" style="margin-top:0">A nau tem 20 m × 6 m na linha d'água. Cada tonelada de carga faz a nau descer: o empuxo cresce com a água deslocada até equilibrar o peso.</p>
+<div class="chips" id="ag"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Pimenta</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Água de bordo</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Balas e artilharia</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">A nau desce<b id="kd"></b></div><div>Carga total<b id="kc"></b></div><div>Água deslocada a mais<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">A faixa de segurança permite descer no máximo <b>1 m</b>. Com 4,5 t de água e 3,5 t de balas, qual é a maior carga de pimenta? E na água doce do rio?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Pm=SL('sp',0,130,1,47,draw,v=>v+' t'),Ag=SL('sa',0,20,0.5,4.5,draw,v=>r1(v)+' t'),Bl=SL('sb',0,10,0.5,3.5,draw,v=>r1(v)+' t');
+const AG=chips('ag',['Água do mar (1.025 kg/m³)','Água doce (1.000 kg/m³)'],0,draw);
+function draw(){const rho=AG.get()==0?1.025:1,c=Pm.get()+Ag.get()+Bl.get(),d=c/(120*rho);
+ const k=60,wl=110,base=wl+0.6*k,top=wl-1.6*k,dd=Math.min(d,1.6)*k;
+ let g=`<rect x="0" y="${wl}" width="340" height="120" fill="${rho==1?'#D6ECFA':'#BFD7F2'}"/>`;
+ const sh=-dd*0+0;const y=t=>t+dd;
+ g+=`<polygon points="${170-95},${y(top)} ${170+95},${y(top)} ${170+98},${y(wl)} ${170+60},${y(base+30)} ${170},${y(base+44)} ${170-60},${y(base+30)} ${170-98},${y(wl)}" fill="#B7793F" stroke="#7A4E26" stroke-width="2"/>`;
+ g+=`<rect x="${170-98}" y="${wl}" width="196" height="${dd}" fill="${ORANGE}" opacity=".85"/>`;
+ g+=LN(0,wl,340,wl,'#2457D6',2);
+ g+=`<rect x="${170+92}" y="${y(wl)-k}" width="8" height="${k}" fill="${d>1?'#B91C1C':GREEN}" opacity=".8"/>`+TX(170+104,y(wl)-k/2,'1 m',{fs:9,a:'start'});
+ g+=TX(10,wl-6,'superfície',{fs:9,a:'start',c:'#2457D6',w:500});
+ $('fig').innerHTML=SVG(340,230,g);
+ $('kd').innerHTML=`<span style="color:${d>1?'#B91C1C':GREEN}">${fmt(Math.round(d*100))} cm</span>`;$('kc').textContent=r1(c)+' t';$('kv').textContent=r1(c/rho)+' m³';
+ const lim=Math.floor(120*rho-Ag.get()-Bl.get());
+ missao('m',Math.abs(d-1)<0.01&&Ag.get()==4.5&&Bl.get()==3.5,'No limite! '+(rho==1.025?'No mar: 123 − 4,5 − 3,5 = 115 t de pimenta.':'Na água doce: 120 − 4,5 − 3,5 = 112 t de pimenta. Desce mais, porque a água doce é menos densa.'),
+  d>1?'Passou da faixa: a nau desceu '+fmt(Math.round(d*100))+' cm.':'A nau desceu '+fmt(Math.round(d*100))+' cm. Com essa água e essas balas, o limite de pimenta é cerca de '+lim+' t.');}
+draw();
+})();
+</script>
+</body>
+</html>

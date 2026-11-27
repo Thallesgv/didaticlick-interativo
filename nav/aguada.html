@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A aguada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A aguada</h1></header>
+<main>
+<div class="card"><h2>Pipas no porão</h2><p class="muted" style="margin-top:0">Cada pipa guarda 250 L e ocupa 0,441 m³ do porão. Escolha a tripulação, a ração de água e os dias até a próxima aguada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Homens</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Água por homem, por dia</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dias até a aguada</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Água necessária<b id="ka"></b></div><div>Pipas<b id="kp"></b></div><div>Espaço no porão<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Gaspar reservou <b>10 m³</b> do porão para a água. Abasteça 50 homens com 1,5 L por dia, por 60 dias. Cabe? Depois descubra o máximo de dias que cabem nesse espaço.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Hm=SL('sh',10,100,1,40,draw,v=>v+' homens'),Ra=SL('sr',0.5,3,0.5,2,draw,v=>r1(v)+' L'),D=SL('sd',10,120,5,30,draw,v=>v+' dias');
+function draw(){const h=Hm.get(),ra=Ra.get(),d=D.get(),L=h*ra*d,n=Math.ceil(L/250),esp=n*0.441;
+ let g=`<rect x="10" y="20" width="320" height="150" rx="10" fill="#F3ECE2" stroke="#7A4E26" stroke-width="2"/>`+TX(170,14,'porão: espaço reservado de 10 m³ (cerca de 22 pipas)',{fs:9.5,c:GRAY,w:500});
+ const cap=Math.floor(10/0.441);
+ for(let i=0;i<Math.max(n,cap);i++){const col=i%11,row=Math.floor(i/11),x=28+col*28,y=36+row*34;if(row>3)break;
+  if(i<n)g+=`<circle cx="${x}" cy="${y+8}" r="12" fill="${i<cap?'#B7793F':'#B91C1C'}" stroke="#7A4E26" stroke-width="1.5"/>`;
+  else g+=`<circle cx="${x}" cy="${y+8}" r="12" fill="none" stroke="${GRAYL}" stroke-dasharray="3 2"/>`;}
+ $('fig').innerHTML=SVG(340,180,g);
+ $('ka').textContent=fmt(L)+' L';$('kp').textContent=n;$('ke').textContent=r1(esp)+' m³';
+ const ok=h==50&&ra==1.5&&d==60;
+ missao('m',ok&&esp<=10,'50 × 1,5 × 60 = 4.500 L = 18 pipas, ocupando 18 × 0,441 ≈ 7,9 m³. Cabe nos 10 m³, e ainda sobra lugar para 4 pipas.',
+  esp>10?'Passou do espaço: '+n+' pipas ocupam '+r1(esp)+' m³ (as vermelhas não cabem).':'Ainda cabe. Ajuste os valores da missão.');}
+draw();
+})();
+</script>
+</body>
+</html>
