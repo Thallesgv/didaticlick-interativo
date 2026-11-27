@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A travessia · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A travessia</h1></header>
+<main>
+<div class="card"><h2>Trecho por trecho</h2><p class="muted" style="margin-top:0">Ajuste a chance de passar sem encontro em cada trecho. Das 100 viagens imaginárias, só seguem limpas as que passaram por todos os trechos até ali.</p>
+<div class="sl" id="s1"><b>Rua do Mercado</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Ponte do Moinho</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Av. da Fábrica</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">Chegam limpas<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos trechos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const F=v=>fmt(Math.round(v*100)/100);const S1=SL('s1',0.5,1,0.05,0.9,draw,F),S2=SL('s2',0.5,1,0.05,0.8,draw,F),S3=SL('s3',0.5,1,0.05,0.7,draw,F);
+const q=x=>Math.round(x*100)/100,p1=()=>q(S1.get()),p2=()=>q(S2.get()),p3=()=>q(S3.get()),PR=()=>p1()*p2()*p3();
+MIS.def(()=>[
+ ['Confira o caminho de Rita: <b>0,9</b>, <b>0,8</b> e <b>0,7</b>.',()=>p1()==0.9&&p2()==0.8&&p3()==0.7,()=>'0,9 × 0,8 × 0,7 = 0,504: só cerca de 50 das 100 viagens passam limpas.',()=>'Agora: '+F(p1())+', '+F(p2())+', '+F(p3())+'.'],
+ ['Partindo de 0,9, 0,8 e 0,7, suba <b>um só</b> trecho para 0,95 e consiga a <b>maior chance</b> possível.',()=>p1()==0.9&&p2()==0.8&&p3()==0.95,()=>'0,9 × 0,8 × 0,95 = 0,684. Melhorar o trecho mais fraco rende mais.',()=>{const u=[p1()!=0.9,p2()!=0.8,p3()!=0.7].filter(x=>x).length;return u>1?'Mude só um trecho.':'Agora: '+fmt(Math.round(PR()*1000)/1000)+'. Tente outro trecho.';}],
+ ['Ajuste os trechos para a chance de passar limpo <b>passar de 70%</b>.',()=>PR()>0.7,()=>'Agora '+fmt(Math.round(PR()*1000)/10)+'%. Repare: mesmo com trechos bons, o produto cai depressa.',()=>'Agora: '+fmt(Math.round(PR()*1000)/10)+'%.']]);
+function draw(){const n=[100,Math.round(100*p1()),Math.round(100*p1()*p2()),Math.round(100*PR())];let g='';const xs=[38,124,210,296],ps=[p1(),p2(),p3()],nm=['início','após o mercado','após a ponte','na fábrica'];
+ for(let i=0;i<3;i++){g+=LN(xs[i]+30,40,xs[i+1]-30,40,'#9AA7BD',5)+RC((xs[i]+xs[i+1])/2-18,48,36,16,'#DFF3E4','rx="3" stroke="#15803D"')+TX((xs[i]+xs[i+1])/2,60,F(ps[i]),{fs:9,c:'#15803D'});}
+ n.forEach((k,j)=>{g+=TX(xs[j],34,k,{fs:13,c:j==3?ORANGE:NAVY});g+=TX(xs[j],232,nm[j],{fs:8,c:GRAY,w:500});
+  for(let t=0;t<100;t++){const x=xs[j]-27+(t%10)*6,y=76+Math.floor(t/10)*14;g+=CI(x+3,y,2.4,t<k?(j==3?ORANGE:'#2457D6'):'#E5E7EB');}});
+ $('fig').innerHTML=SVG(342,240,g);$('kc').textContent=F(p1())+' × '+F(p2())+' × '+F(p3());$('kp').textContent=fmt(Math.round(PR()*1000)/10)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

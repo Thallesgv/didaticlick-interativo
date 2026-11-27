@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A árvore dos planos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A árvore dos planos</h1></header>
+<main>
+<div class="card"><h2>Galho por galho</h2><p class="muted" style="margin-top:0">Cada etapa do plano abre galhos. Escolha quantas opções há em cada etapa e conte as pontas da árvore: é o total de planos.</p>
+<div class="sl" id="sc"><b>Caminhos</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Horários</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Equipes</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">Total de planos<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nas etapas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SC=SL('sc',1,3,1,1,draw),SH=SL('sh',1,4,1,1,draw),SE=SL('se',1,3,1,1,draw);
+const TOT=()=>SC.get()*SH.get()*SE.get(),mud=()=>(SC.get()!=2)+(SH.get()!=3)+(SE.get()!=1);
+MIS.def(()=>[
+ ['Monte os planos de Rita: <b>2 caminhos</b>, <b>3 horários</b> e 1 equipe.',()=>SC.get()==2&&SH.get()==3&&SE.get()==1,()=>'2 × 3 × 1 = 6 planos: 6 pontas na árvore.',()=>'Agora: '+TOT()+' planos.'],
+ ['Chegue a <b>24 planos</b>.',()=>TOT()==24,()=>SC.get()+' × '+SH.get()+' × '+SE.get()+' = 24.',()=>'Agora: '+TOT()+'. Que produto dá 24?'],
+ ['Volte aos 6 planos de Rita (2, 3, 1) e <b>dobre o total</b> mudando <b>uma só</b> etapa.',()=>TOT()==12&&mud()==1,()=>'12 planos. Dobrar uma etapa dobra o total: o produto cresce na mesma proporção.',()=>mud()>1?'Mude só uma das três etapas a partir de 2, 3 e 1.':'Agora: '+TOT()+' planos.']]);
+const CN=['ponte','rio','túnel'],HN=['manhã','tarde','noite','madrugada'],EN=['A','B','C'];
+function draw(){const c=SC.get(),h=SH.get(),e=SE.get(),T=TOT();let g='';const top=14,H=220,xs=[22,104,192,276];
+ const yl=i=>top+H*(i+0.5)/T;g+=RC(xs[0]-18,top+H/2-10,40,20,'#0E2354','rx="5"')+TX(xs[0]+2,top+H/2+4,'abrigo',{fs:8,c:'#fff'});
+ for(let a=0;a<c;a++){const ya=(yl(a*h*e)+yl((a+1)*h*e-1))/2;g+=LN(xs[0]+22,top+H/2,xs[1]-24,ya,ORANGE,1.6)+RC(xs[1]-24,ya-9,48,18,'#FDE9D8','rx="4" stroke="#F7821F"')+TX(xs[1],ya+4,CN[a],{fs:8.5});
+  for(let b=0;b<h;b++){const i0=(a*h+b)*e,yb=(yl(i0)+yl(i0+e-1))/2;g+=LN(xs[1]+24,ya,xs[2]-26,yb,'#9AA7BD',1.2)+TX(xs[2]-22,yb+3,HN[b],{fs:h*c>8?7:8.5,a:'start',w:500});
+   for(let k=0;k<e;k++){const yk=yl(i0+k);if(e>1)g+=LN(xs[2]+28,yb,xs[3]-10,yk,'#D7DEEA',1)+TX(xs[3]-6,yk+3,EN[k],{fs:7,a:'start',w:500});g+=CI(xs[3]+(e>1?6:-8),yk,T>18?2.2:3,ORANGE);}}}
+ g+=TX(330,top+H+16,T+' pontas',{fs:10,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(342,252,g);$('kc').textContent=c+' × '+h+' × '+e;$('kt').textContent=T;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
