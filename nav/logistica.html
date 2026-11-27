@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva em S · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A curva em S</h1></header>
+<main>
+<div class="card"><h2>A tripulação é finita</h2><p class="muted" style="margin-top:0">A curva laranja é a logística L(t) = C ÷ (1 + k · 2<sup>−t/d</sup>), que começa com a doentes (k = C ÷ a − 1). A tracejada é a exponencial a · 2<sup>t/d</sup>, que não tem teto. Arraste o marcador azul pelo tempo e veja quantos adoecem por dia naquele momento.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Capacidade C (tripulação)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Doentes no início (a)</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dias para dobrar no começo (d)</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Marcador: dia</b><input type="range"><span></span></div>
+<div class="kpi"><div>Já adoeceram no dia<b id="kl"></b></div><div class="o">Novos doentes por dia<b id="kv"></b></div><div>Ponto do meio (C ÷ 2) no dia<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o marcador até o dia em que a febre cresce <b>mais depressa</b> (o maior número de novos doentes por dia). Quantos já adoeceram nesse momento?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w||280,h=o.h||180,X=x=>ox+x/xmax*w,Y=y=>oy-y/ymax*h;
+ let g='';xt.forEach(v=>{g+=LN(X(v),oy,X(v),oy-h,'#EEF2F7',1)+TX(X(v),oy+13,fmt(v),{fs:9,c:GRAY,w:500});});
+ yt.forEach(v=>{g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-5,Y(v)+3,fmt(v),{fs:9,c:GRAY,w:500,a:'end'});});
+ g+=LN(ox,oy,ox+w+6,oy,NAVY,1.5)+LN(ox,oy,ox,oy-h-6,NAVY,1.5)+TX(ox+w,oy+26,xl,{fs:9,a:'end'})+TX(ox+4,oy-h-8,yl,{fs:9,a:'start'});
+ const linha=(f,x0,x1,cor,lw,dash,n)=>{n=n||160;let p=[];for(let i=0;i<=n;i++){const x=x0+(x1-x0)*i/n,y=f(x);if(y==null||y>ymax*1.02||y<-1e-9)continue;p.push(X(x).toFixed(1)+','+Y(y).toFixed(1));}
+  return p.length>1?`<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}"${dash?` stroke-dasharray="${dash}"`:''} stroke-linejoin="round"/>`:'';};
+ const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
+ return {g,X,Y,linha,pts};}
+const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const C=SL('sc',60,200,10,120,draw),A=SL('sa',1,10,1,2,draw),D=SL('sd',1,6,0.5,3,draw,v=>fmt(v)+' dias'),Tm=SL('st',0,40,0.5,8,draw,v=>fmt(v));
+function draw(){const c=C.get(),a=A.get(),d=D.get(),k=c/a-1,L=t=>c/(1+k*Math.pow(2,-t/d)),Ex=t=>a*Math.pow(2,t/d),t=Tm.get();
+ const G0=G(40,200,[0,10,20,30,40],[0,50,100,150,200],'dias','já adoeceram');
+ let g=G0.g+LN(G0.X(0),G0.Y(c),G0.X(40),G0.Y(c),GRAY,1.2,'5 4')+TX(G0.X(40),G0.Y(c)-5,'C = '+c,{fs:9,a:'end',c:GRAY});
+ g+=G0.linha(Ex,0,40,LIGHT,2,'5 4')+G0.linha(L,0,40,ORANGE,3);
+ const vel=t=>L(t+0.5)-L(t-0.5),tm=d*Math.log2(k);
+ g+=LN(G0.X(t),G0.Y(0),G0.X(t),G0.Y(L(t)),BLUE,1.5,'3 3')+BOLA(G0.X(t),G0.Y(L(t)),BLUE,6);
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kl').textContent=r1(L(t));$('kv').textContent=r1(vel(t));$('km').textContent=tm>0?r1(tm):'0';
+ const ok=Math.abs(t-tm)<=0.5;
+ missao('m',ok,'Aí! No dia '+r1(tm)+' metade da capacidade ('+fmt(c/2)+') já adoeceu e a curva cresce mais rápido: '+r1(vel(t))+' novos doentes por dia. Depois disso, a curva freia.',
+  'No dia '+fmt(t)+': '+r1(vel(t))+' novos doentes por dia. Ande com o marcador e procure o maior valor.');}
+draw();
+})();
+</script>
+</body>
+</html>
