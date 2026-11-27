@@ -186,7 +186,23 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
 6:()=>{const t=R(0,2);
  if(t==0){const p=P([.7,.8,.9]),n=P([200,500,1000]);return{q:`Com chance de volta <b>${fmt(p)}</b>, quantas voltas se espera em <b>${n}</b> viagens?`,a:Math.round(p*n),exp:`${fmt(p)} · ${n} = ${Math.round(p*n)}.`};}
  if(t==1){const [n,o]=P([[100,.08],[400,.04],[1600,.02],[6400,.01]]);return{q:`Com p = 0,8 e <b>${n}</b> viagens, qual a oscilação típica 2 · √(p(1 − p) ÷ n)? (2 casas)`,a:o,tol:.001,exp:`2 · √(0,16 ÷ ${n}) = ${fmt(o)}.`};}
- return{q:`Depois de cinco naus perdidas seguidas, a chance de a próxima voltar:`,opts:['aumenta','fica a mesma','diminui'],a:'fica a mesma',exp:'Cada viagem é independente: o mar não tem memória.'};}}}};
+ return{q:`Depois de cinco naus perdidas seguidas, a chance de a próxima voltar:`,opts:['aumenta','fica a mesma','diminui'],a:'fica a mesma',exp:'Cada viagem é independente: o mar não tem memória.'};}}},'nav8':{T:["A parte de cada sócio", "Capital e tempo", "Mais rápido, mais prêmio", "Cruzados e florins", "O empréstimo", "Juros sobre juros"],G:{1:()=>{const [a,b,c]=P([[1,2,3],[2,3,5],[1,3,4],[3,4,5],[2,5,3]]),k=P([50,100,120,200]),N=(a+b+c)*k,t=R(0,2),v=[a,b,c][t];return{q:`Divida <b>${fmt(N)}</b> em partes diretamente proporcionais a ${a}, ${b} e ${c}. Qual a parte que corresponde a <b>${v}</b>?`,a:v*k,exp:`k = ${fmt(N)} ÷ ${a+b+c} = ${k}; parte = ${v} · ${k} = ${fmt(v*k)}.`};},
+2:()=>{const c1=P([2000,3000,4000,6000]),m1=P([6,8,10,12]),c2=P([1000,2000,3000,4000]),m2=P([3,4,6,9]),a1=c1*m1,a2=c2*m2,L=P([1000,2000,3000,6000]);const p=Math.round(L*a1/(a1+a2));return{q:`A pôs ${fmt(c1)} por ${m1} meses; B pôs ${fmt(c2)} por ${m2} meses. Num lucro de <b>${fmt(L)}</b>, quanto cabe a A? (arredonde)`,a:p,tol:1,exp:`Produtos: ${fmt(a1)} e ${fmt(a2)}. A: ${fmt(L)} · ${fmt(a1)} ÷ ${fmt(a1+a2)} ≈ ${fmt(p)}.`};},
+3:()=>{const t=R(0,1);
+ if(t==0){const [d,r,s]=P([[[1,2],[2,1],3],[[2,3,4],[6,4,3],13],[[100,150,300],[3,2,1],6],[[120,150,200],[5,4,3],12]]),k=P([50,100]),N=s*k,j=R(0,d.length-1);return{q:`Divida <b>${fmt(N)}</b> em partes inversamente proporcionais a ${d.join(', ')}. Qual a parte de <b>${d[j]}</b>?`,a:r[j]*k,exp:`Inversos na razão ${r.join(' : ')}; cada parte ${k}: ${fmt(r[j]*k)}.`};}
+ const [h,d,h2]=P([[30,8,40],[20,6,30],[40,9,60],[12,10,15],[24,5,40],[10,12,20]]);return{q:`<b>${h}</b> carregadores descarregam a nau em <b>${d}</b> dias. Quantos dias levam <b>${h2}</b>?`,a:h*d/h2,tol:.01,exp:`${h} · ${d} = ${h2} · x → x = ${fmt(h*d/h2)}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const f=P([1000,2000,3000,4000,6000]);return{q:`Com 1 florim = 1,05 cruzado, quanto valem <b>${fmt(f)} florins</b> em cruzados?`,a:f*1.05,tol:.01,exp:`${fmt(f)} · 1,05 = ${fmt(f*1.05)}.`};}
+ if(t==1){const f=P([1000,2000,4000]);return{q:`Quantos florins valem <b>${fmt(f*1.05)} cruzados</b>? (1 florim = 1,05 cruzado)`,a:f,tol:.01,exp:`${fmt(f*1.05)} ÷ 1,05 = ${fmt(f)}.`};}
+ const v=P([1000,2000,5000]),c=P([1,2,5]);return{q:`Trocando <b>${fmt(v)} florins</b> por cruzados (1 florim = 1,05 cruzado), com comissão de <b>${c}%</b>, quantos cruzados se recebe?`,a:Math.round(v*1.05*(100-c))/100,tol:.01,exp:`${fmt(v*1.05)} · ${fmt((100-c)/100)} = ${fmt(Math.round(v*1.05*(100-c))/100)}.`};},
+5:()=>{const C=P([1000,2000,4000,5000]),i=P([2,5,8,10,12]),t=R(1,5),tp=R(0,2);
+ if(tp==0)return{q:`Quanto rendem <b>${fmt(C)}</b> a <b>${i}% ao ano</b>, juros simples, em <b>${t}</b> ano(s)?`,a:C*i*t/100,exp:`${fmt(C)} · ${fmt(i/100)} · ${t} = ${fmt(C*i*t/100)}.`};
+ if(tp==1)return{q:`Qual o montante de <b>${fmt(C)}</b> a <b>${i}% ao ano</b>, juros simples, em <b>${t}</b> ano(s)?`,a:C*(1+i*t/100),exp:`${fmt(C)} · (1 + ${fmt(i/100)} · ${t}) = ${fmt(C*(1+i*t/100))}.`};
+ return{q:`<b>${fmt(C)}</b> renderam <b>${fmt(C*i*t/100)}</b> em ${t} ano(s), juros simples. Qual a taxa anual, em %?`,a:i,exp:`i = ${fmt(C*i*t/100)} ÷ (${fmt(C)} · ${t}) = ${i}%.`};},
+6:()=>{const tp=R(0,2);
+ if(tp==0){const C=P([1000,2000,5000]),i=P([5,10,20]),t=R(2,3),M=Math.round(C*Math.pow(1+i/100,t)*100)/100;return{q:`Montante de <b>${fmt(C)}</b> a <b>${i}% ao ano</b>, juros compostos, em <b>${t}</b> anos?`,a:M,tol:.01,exp:`${fmt(C)} · ${fmt(1+i/100)}<sup>${t}</sup> = ${fmt(M)}.`};}
+ if(tp==1){const i=P([4,6,8,9,12,18]);return{q:`Pela regra de 72, em quantos anos um capital dobra a <b>${i}% ao ano</b>?`,a:72/i,exp:`72 ÷ ${i} = ${fmt(72/i)} anos.`};}
+ return{q:`Nos juros compostos, o montante cresce como:`,opts:['uma reta','uma exponencial','uma constante'],a:'uma exponencial',exp:'A cada período, multiplica pelo mesmo fator (1 + i).'};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

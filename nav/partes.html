@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A parte de cada sócio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A parte de cada sócio</h1></header>
+<main>
+<div class="card"><h2>Duas barras, a mesma proporção</h2><p class="muted" style="margin-top:0">A barra de cima é o que cada sócio investiu; a de baixo, a parte de cada um no lucro. Mude os valores: as duas barras se redividem juntas, porque cada cruzado investido rende o mesmo k.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Bartolomeo investiu</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Dona Leonor investiu</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Gaspar investiu</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Enzo investiu</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Lucro a dividir</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">k (lucro por cruzado)<b id="kk"></b></div><div>Gaspar + Enzo recebem<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com lucro de <b>8 400</b> e sem mexer em Bartolomeo (7 200) e Dona Leonor (3 000), faça Gaspar e Enzo receberem juntos <b>um quarto do lucro</b> (2 100).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RED='#B91C1C',PURPLE='#7C3AED',CORES=[NAVY,ORANGE,GREEN,PURPLE];
+const f0=v=>fmt(Math.round(v));
+function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
+function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
+ vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
+  if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const S=[SL('s0',0,10000,100,7200,draw,f0),SL('s1',0,10000,100,3000,draw,f0),SL('s2',0,5000,100,1200,draw,f0),SL('s3',0,5000,100,600,draw,f0)],Ls=SL('sl',1000,12000,100,8400,draw,f0);
+const N=['Bartolomeo','Leonor','Gaspar','Enzo'];
+function draw(){const v=S.map(s=>s.get()),tot=v.reduce((a,b)=>a+b,0),L=Ls.get(),k=tot?L/tot:0,p=v.map(x=>x*k);
+ let g=BARRA(30,v,N,tot,'investiu (total '+f0(tot)+')')+BARRA(135,p,null,L,'recebe do lucro (total '+f0(L)+')');
+ g+=TX(170,210,'k = '+f0(L)+' ÷ '+f0(tot)+' = '+r2(k),{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,225,g);
+ $('kk').textContent=r2(k);$('kg').textContent=f0(p[2]+p[3]);
+ const ok=L==8400&&v[0]==7200&&v[1]==3000&&Math.abs(p[2]+p[3]-2100)<0.5;
+ missao('m',ok,'Gaspar e Enzo investiram juntos '+f0(v[2]+v[3])+': um quarto de '+f0(tot)+'. Por isso recebem um quarto do lucro, 2 100.',
+  L!=8400||v[0]!=7200||v[1]!=3000?'Volte Bartolomeo a 7 200, Dona Leonor a 3 000 e o lucro a 8 400.':'Gaspar e Enzo recebem '+f0(p[2]+p[3])+'. Para um quarto do lucro, eles precisam ter um quarto do capital.');}
+draw();
+})();
+</script>
+</body>
+</html>
