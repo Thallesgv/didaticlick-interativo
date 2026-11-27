@@ -47,7 +47,30 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
 6:()=>{const t=R(0,2);
  if(t==0){const L=P([1000,2080,3000,4000,-1440,-2000]),c=P([5,10,25,60]);return{q:`A viagem deu <b>${L>=0?'lucro':'prejuízo'} de ${fmt(Math.abs(L))}</b> cruzados. Quanto cabe ao sócio com cota de <b>${c}%</b>? (prejuízo: responda com sinal de menos)`,a:L*c/100,tol:.01,exp:`${fmt(c/100)} · ${L<0?'(−'+fmt(-L)+')':fmt(L)} = ${fmt(L*c/100)}.`};}
  if(t==1){const n=P([4,8,10,13]),k=P([1,2,3,4].filter(x=>x<n));return{q:`De <b>${n}</b> navios, <b>${k}</b> se perderam. Que porcentagem se perdeu? (1 casa decimal)`,a:Math.round(1000*k/n)/10,tol:.11,exp:`${k} ÷ ${n} ≈ ${fmt(Math.round(1000*k/n)/10)}%.`};}
- const [a,b]=P([[798,22],[612,19],[903,18],[495,31]]),e=Math.round(a/100)*100*Math.round(b/10)*10;return{q:`Estime <b>${a} × ${b}</b> arredondando ${a} para a centena e ${b} para a dezena mais próximas.`,a:e,exp:`${Math.round(a/100)*100} × ${Math.round(b/10)*10} = ${fmt(e)}. Exato: ${fmt(a*b)}.`};}}}};
+ const [a,b]=P([[798,22],[612,19],[903,18],[495,31]]),e=Math.round(a/100)*100*Math.round(b/10)*10;return{q:`Estime <b>${a} × ${b}</b> arredondando ${a} para a centena e ${b} para a dezena mais próximas.`,a:e,exp:`${Math.round(a/100)*100} × ${Math.round(b/10)*10} = ${fmt(e)}. Exato: ${fmt(a*b)}.`};}}},'nav2':{T:["O porão", "Tonéis e pipas", "A água de bordo", "As balas de canhão", "Mastros e velas", "A linha d'água"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const a=R(2,12),b=R(1,6),c=R(1,4);return{q:`Qual o volume de uma caixa de <b>${a} m × ${b} m × ${c} m</b>, em m³?`,a:a*b*c,exp:`${a} · ${b} · ${c} = ${a*b*c} m³.`};}
+ if(t==1){const B=R(4,8),b=B-P([1,2]),h=R(2,4),L=R(8,16),S=(B+b)/2*h;return{q:`Um porão tem seção trapezoidal com <b>${B} m</b> em cima, <b>${b} m</b> no fundo e <b>${h} m</b> de altura, e <b>${L} m</b> de comprimento. Qual o volume, em m³?`,a:S*L,tol:.01,exp:`Seção: (${B} + ${b}) ÷ 2 · ${h} = ${fmt(S)} m². Volume: ${fmt(S)} · ${L} = ${fmt(S*L)} m³.`};}
+ const v=P([0.5,1.2,2.5,3.5,12,40]);return{q:`Quantos litros cabem em <b>${fmt(v)} m³</b>?`,a:v*1000,exp:`1 m³ = 1.000 L: ${fmt(v)} · 1.000 = ${fmt(v*1000)} L.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const r=P([0.1,0.2,0.3,0.5]),h=P([0.5,1,2]),v=Math.round(3.14*r*r*h*1000)/1000;return{q:`Volume de um cilindro de raio <b>${fmt(r)} m</b> e altura <b>${fmt(h)} m</b>, em m³? (π ≈ 3,14; 3 casas)`,a:v,tol:.0015,exp:`3,14 · ${fmt(r)}² · ${fmt(h)} ≈ ${fmt(v)} m³.`};}
+ if(t==1){const k=P([2,3]);return{q:`Se o raio de um cilindro fica <b>${k} vezes</b> maior (altura igual), o volume fica quantas vezes maior?`,a:k*k,exp:`O raio aparece ao quadrado: ${k}² = ${k*k}.`};}
+ const Rr=P([3,4]),r=Rr-1,h=P([3,6]),v=Math.round(3.14*h*(Rr*Rr+Rr*r+r*r)/3*10)/10;return{q:`Tronco de cone com R = <b>${Rr} dm</b>, r = <b>${r} dm</b> e h = <b>${h} dm</b>. Volume em litros? (1 casa)`,a:v,tol:.11,exp:`3,14 · ${h} · (${Rr*Rr} + ${Rr*r} + ${r*r}) ÷ 3 ≈ ${fmt(v)} dm³ = ${fmt(v)} L.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const h=P([20,30,40,50]),r=P([1,1.5,2]),d=P([10,20,30,60]);return{q:`<b>${h}</b> homens bebem <b>${fmt(r)} L</b> por dia cada um. Quantos litros em <b>${d}</b> dias?`,a:h*r*d,exp:`${h} · ${fmt(r)} · ${d} = ${fmt(h*r*d)} L.`};}
+ if(t==1){const L=P([600,1100,2400,4500,5200]);return{q:`Quantas pipas de 250 L são necessárias para <b>${fmt(L)} L</b>? (a última pode ir incompleta)`,a:Math.ceil(L/250),exp:`${fmt(L)} ÷ 250 = ${fmt(L/250)} → ${Math.ceil(L/250)} pipas.`};}
+ const p=P([20,30,40]),h=P([40,50,60]),r=1.5,d=Math.floor(p*250/(h*r));return{q:`A nau leva <b>${p}</b> pipas de 250 L e <b>${h}</b> homens bebem 1,5 L por dia cada. A água dura quantos dias completos?`,a:d,exp:`${fmt(p*250)} L ÷ ${fmt(h*r)} L por dia ≈ ${fmt(Math.round(p*250/(h*r)*10)/10)} → ${d} dias.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const n=R(2,9),T=n*(n+1)*(2*n+1)/6;return{q:`Quantas balas há numa pirâmide de base quadrada com <b>${n}</b> camadas?`,a:T,exp:`${n} · ${n+1} · ${2*n+1} ÷ 6 = ${T}.`};}
+ if(t==1){const r=P([2,3,5,6,10]),v=Math.round(4*3.14*r**3/3*10)/10;return{q:`Volume de uma esfera de raio <b>${r} cm</b>, em cm³? (π ≈ 3,14; 1 casa)`,a:v,tol:.11,exp:`4 · 3,14 · ${r**3} ÷ 3 ≈ ${fmt(v)} cm³.`};}
+ const k=P([2,3]);return{q:`Se o raio de uma bala fica <b>${k} vezes</b> maior, a massa fica quantas vezes maior?`,a:k**3,exp:`Volume (e massa) cresce com o cubo: ${k}³ = ${k**3}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const r=P([0.2,0.25,0.3,0.4]),h=P([10,12,16,20]),a=Math.round(2*3.14*r*h*100)/100;return{q:`Área lateral de um mastro cilíndrico de raio <b>${fmt(r)} m</b> e altura <b>${h} m</b>, em m²? (π ≈ 3,14)`,a:a,tol:.01,exp:`2 · 3,14 · ${fmt(r)} · ${h} = ${fmt(a)} m².`};}
+ if(t==1){const b=R(4,10),h=R(6,14);return{q:`Uma vela triangular tem base <b>${b} m</b> e altura <b>${h} m</b>. Qual a área, em m²?`,a:b*h/2,exp:`${b} · ${h} ÷ 2 = ${fmt(b*h/2)} m².`};}
+ const L=P([9,12,15]),f=0.6,H=P([8,10]);return{q:`A lona vem em faixas de 0,6 m. Uma vela de <b>${L} m</b> de largura e <b>${H} m</b> de altura usa faixas verticais. Quantos metros de lona?`,a:L/f*H,tol:.01,exp:`${L} ÷ 0,6 = ${L/f} faixas · ${H} m = ${fmt(L/f*H)} m.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const v=P([10,20,30,50]);return{q:`Um barco desloca <b>${v} m³</b> de água do mar (1.025 kg/m³). Qual a massa do barco com a carga, em kg?`,a:v*1025,exp:`${v} · 1.025 = ${fmt(v*1025)} kg.`};}
+ if(t==1){const c=P([12.3,24.6,36.9,61.5]),d=Math.round(c*1000/(120*1025)*100);return{q:`A nau (20 m × 6 m na linha d'água) recebe <b>${fmt(c)} t</b> de carga no mar. Quantos centímetros ela desce?`,a:d,tol:1,exp:`${fmt(c*1000)} ÷ (120 · 1.025) ≈ ${fmt(d/100)} m = ${d} cm.`};}
+ const m=P([200,300,400,500,800]);return{q:`Uma caixa oca de 1 m × 1 m × 1 m tem massa de <b>${m} kg</b>. Quantos centímetros ela afunda na água doce?`,a:m/10,exp:`Precisa deslocar ${fmt(m/1000)} m³; com base de 1 m², afunda ${fmt(m/1000)} m = ${m/10} cm.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

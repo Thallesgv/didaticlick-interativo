@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O porão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O porão</h1></header>
+<main>
+<div class="card"><h2>Um prisma de madeira</h2><p class="muted" style="margin-top:0">A seção do porão é um trapézio. Mude as medidas: o prisma se redesenha e o volume é a área da seção vezes o comprimento.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Largura em cima</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Largura no fundo</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Comprimento</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Volume<b id="kv"></b></div><div>Área da seção<b id="ks"></b></div><div>Em litros<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte o porão da nau de Enzo: <b>6 m</b> em cima, <b>4 m</b> no fundo, <b>3 m</b> de altura e <b>14 m</b> de comprimento. Compare o volume com o de uma caixa de 6 × 3 × 14.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const A=SL('sa',2,10,0.5,8,draw,v=>r1(v)+' m'),B=SL('sb',1,10,0.5,3,draw,v=>r1(v)+' m'),Hh=SL('sh',1,5,0.5,2,draw,v=>r1(v)+' m'),C=SL('sc',5,25,1,10,draw,v=>v+' m');
+function draw(){const a=A.get(),b=B.get(),h=Hh.get(),c=C.get(),S=(a+b)/2*h,V=S*c;
+ const m0=Math.max(a,b),k=Math.min(28,230/(m0+c*0.3),120/(h+c*0.18)),ox=40,oy=110+h*k/2+c*k*0.04,dx=.6*k,dy=.36*k,X=(x,z)=>ox+x*k+z*dx/2,Y=(y,z)=>oy-y*k-z*dy/2;
+ const m=Math.max(a,b),fr=[[ (m-a)/2+0,h],[(m+a)/2,h],[(m+b)/2,0],[(m-b)/2,0]];
+ const pt=(p,z)=>X(p[0],z)+','+Y(p[1],z);
+ let g=`<polygon points="${fr.map(p=>pt(p,c)).join(' ')}" fill="${PEACH}" stroke="${NAVY}" stroke-width="1"/>`;
+ fr.forEach(p=>g+=LN(X(p[0],0),Y(p[1],0),X(p[0],c),Y(p[1],c),NAVY,1));
+ g+=`<polygon points="${fr.map(p=>pt(p,0)).join(' ')}" fill="${LIGHT}" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=TX(X(m/2,0),Y(h,0)-6,r1(a)+' m',{fs:11})+TX(X(m/2,0),Y(0,0)+14,r1(b)+' m',{fs:11})+TX(X(0,0)-6,Y(h/2,0),r1(h)+' m',{fs:11,a:'end'});
+ g+=TX(X(m,c)+6,Y(h,c)+12,c+' m',{fs:11,a:'start'});
+ $('fig').innerHTML=SVG(340,230,g);
+ $('kv').textContent=fmt(Math.round(V*10)/10)+' m³';$('ks').textContent=r2(S)+' m²';$('kl').textContent=fmt(Math.round(V*1000))+' L';
+ const ok=a==6&&b==4&&h==3&&c==14;
+ missao('m',ok,'Porão de Enzo: (6 + 4) ÷ 2 × 3 = 15 m², vezes 14 = 210 m³. A caixa de 6 × 3 × 14 teria 252 m³: 42 m³ a mais.','Volume atual: '+fmt(Math.round(V*10)/10)+' m³. Ajuste as quatro medidas da missão.');}
+draw();
+})();
+</script>
+</body>
+</html>

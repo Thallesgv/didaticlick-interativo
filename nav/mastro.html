@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mastro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O mastro</h1></header>
+<main>
+<div class="card"><h2>Abrir o mastro</h2><p class="muted" style="margin-top:0">À esquerda, o mastro; à direita, a superfície dele aberta (planificada). Com raios iguais é um cilindro e a superfície vira um retângulo; com o topo mais fino, é um tronco de cone.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sR"><b>Raio de baixo</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Raio de cima</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área de breu<b id="ka"></b></div><div>Volume de madeira<b id="kv"></b></div><div>Volta embaixo (2πR)<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o mastro reto de Enzo (raio 0,3 m, altura 20 m) e anote o volume. Depois afine o topo até 0,2 m: quanto por cento de madeira se economiza?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=SL('sR',0.1,0.5,0.01,0.3,draw,v=>r2(v)+' m'),r=SL('sr',0.1,0.5,0.01,0.3,draw,v=>r2(v)+' m'),H=SL('sh',5,30,1,20,draw,v=>v+' m');
+let vcil=null;
+function draw(){let b=R.get(),a=r.get();if(a>b){a=b;r.set(b);}const h=H.get();
+ const g1=Math.hypot(h,b-a),Al=3.14*(b+a)*g1,V=3.14*h*(b*b+a*b+a*a)/3,Vc=3.14*b*b*h;
+ const ky=170/30,kx=60,cx=50,y0=200;let g='';
+ g+=`<polygon points="${cx-b*kx},${y0} ${cx+b*kx},${y0} ${cx+a*kx},${y0-h*ky} ${cx-a*kx},${y0-h*ky}" fill="#B7793F" stroke="#7A4E26" stroke-width="2"/>`;
+ g+=TX(cx,y0-h*ky-6,'h = '+h+' m',{fs:10});
+ // planificação: trapézio de largura 2πR embaixo e 2πr em cima (aproximação visual da faixa)
+ const wb=2*3.14*b*kx*0.35,wa=2*3.14*a*kx*0.35,px=225;
+ g+=`<polygon points="${px-wb/2},${y0} ${px+wb/2},${y0} ${px+wa/2},${y0-h*ky} ${px-wa/2},${y0-h*ky}" fill="${PEACH}" stroke="${ORANGE}" stroke-width="2"/>`;
+ g+=TX(px,y0+14,'2πR = '+r2(2*3.14*b)+' m',{fs:10})+TX(px,y0-h*ky-6,'2πr = '+r2(2*3.14*a)+' m',{fs:10});
+ g+=LN(110,110,150,110,ORANGE,2)+`<polygon points="150,105 158,110 150,115" fill="${ORANGE}"/>`+TX(132,102,'abrir',{fs:9,c:ORANGE});
+ $('fig').innerHTML=SVG(340,220,g);
+ $('ka').textContent=r1(Al)+' m²';$('kv').textContent=r2(V)+' m³';$('kc').textContent=r2(2*3.14*b)+' m';
+ const reto=Math.abs(b-0.3)<.001&&Math.abs(a-0.3)<.001&&h==20,af=Math.abs(b-0.3)<.001&&Math.abs(a-0.2)<.001&&h==20;
+ missao('m',af,'Afunilado: 3,98 m³ contra 5,65 m³ do cilindro. Economia de (5,65 − 3,98) ÷ 5,65 ≈ 29,6% de madeira.',
+  reto?'Mastro reto: 5,65 m³ e 37,7 m² de breu. Agora afine o topo até 0,2 m.':'Volume do cilindro com esse raio de baixo: '+r2(Vc)+' m³.');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A pipa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A pipa</h1></header>
+<main>
+<div class="card"><h2>Cilindro ou troncos de cone?</h2><p class="muted" style="margin-top:0">Mude o raio das tampas, o raio do meio e o comprimento. Compare o volume calculado de três jeitos com o desenho da pipa.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Raio das tampas (r)</b><input type="range"><span></span></div>
+<div class="sl" id="sR"><b>Raio do meio (R)</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Comprimento</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Dois troncos<b id="kt"></b></div><div>Cilindro pelo raio médio<b id="km"></b></div><div>Cilindro pelo meio<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça a pipa de Enzo: tampas com raio de <b>28 cm</b>, meio com <b>35 cm</b> e comprimento de <b>90 cm</b>. Quantos litros ela guarda? Qual cilindro chega mais perto?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const r=SL('sr',10,40,1,25,draw,v=>v+' cm'),R=SL('sR',10,50,1,30,draw,v=>v+' cm'),H=SL('sh',40,120,5,80,draw,v=>v+' cm');
+const PI=3.14;
+function draw(){let a=r.get(),b=R.get();const h=H.get();if(b<a){b=a;R.set(a);}
+ const tr=2*PI*(h/2)*(b*b+a*b+a*a)/3/1000,cm=PI*((a+b)/2)**2*h/1000,cc=PI*b*b*h/1000,cf=PI*a*a*h/1000;
+ const k=2,cx=150,cy=110,hh=h/2*k;
+ let g=`<rect x="${cx-hh}" y="${cy-b*k}" width="${2*hh}" height="${2*b*k}" fill="none" stroke="${GRAY}" stroke-dasharray="4 3"/>`;
+ g+=`<polygon points="${cx-hh},${cy-a*k} ${cx},${cy-b*k} ${cx+hh},${cy-a*k} ${cx+hh},${cy+a*k} ${cx},${cy+b*k} ${cx-hh},${cy+a*k}" fill="#B7793F" stroke="#7A4E26" stroke-width="2"/>`;
+ [-.6,.6].forEach(f=>{const x=cx+f*hh,y=b+(a-b)*Math.abs(f);g+=LN(x,cy-y*k,x,cy+y*k,'#7A4E26',2);});
+ g+=LN(cx,cy-b*k,cx,cy+b*k,ORANGE,2,'4 3')+`<circle cx="${cx}" cy="${cy-b*k}" r="3" fill="${NAVY}"/>`;
+ g+=TX(cx,cy+b*k+16,h+' cm',{fs:11})+TX(cx+hh+6,cy,'r = '+a,{fs:10,a:'start'})+TX(cx+4,cy-b*k+14,'R = '+b,{fs:10,a:'start',c:'#fff'});
+ g+=TX(10,14,'tracejado: cilindro pelo raio do meio',{fs:9,a:'start',c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,220,g);
+ $('kt').textContent=fmt(Math.round(tr))+' L';$('km').textContent=fmt(Math.round(cm))+' L';$('kc').textContent=fmt(Math.round(cc))+' L';
+ const ok=a==28&&b==35&&h==90;missao('m',ok,'Pipa de Enzo: cerca de 282 L pelos troncos. O cilindro pelo raio médio (31,5 cm) dá 280 L, quase igual; pelo raio do meio, 346 L (22,7% a mais).',
+  'Pelas tampas o cilindro daria '+fmt(Math.round(cf))+' L; pelo meio, '+fmt(Math.round(cc))+' L. A pipa de verdade fica entre os dois.');}
+draw();
+})();
+</script>
+</body>
+</html>
