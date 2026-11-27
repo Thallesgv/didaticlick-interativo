@@ -19,6 +19,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 const NS=[1.4,2,2.8,4,5.6,8,11,16,22],ab=chips('ab',NS.map(v=>'f/'+String(v).replace('.',',')),2,draw),FF=SL('ff',24,200,1,50,draw,v=>v+' mm');
+const N_=()=>NS[ab.get()],f_=()=>FF.get(),d_=()=>r1(f_()/N_())+' mm com '+f_()+' mm a f/'+String(N_()).replace('.',',')+'.';
+MIS.def(()=>[
+ ['Com uma lente de <b>100 mm</b>, deixe o furo com <b>25 mm</b> de diâmetro. Quantos stops você perdeu em relação a f/1,4?',()=>f_()===100&&N_()===4,'25 mm: 100 ÷ 4 = 25, ou seja, f/4. São 3 stops a menos que f/1,4 (1/8 da luz).',()=>'Agora: '+d_()],
+ ['Com a lente de <b>50 mm</b>, que abertura deixa entrar só <b>1/16 da luz</b> de f/1,4?',()=>f_()===50&&ab.get()===4,'f/5,6: 4 stops depois de f/1,4, e 2⁴ = 16. A luz cai pela metade a cada stop.',()=>f_()!==50?'Ponha a focal em 50 mm.':'Luz agora: '+(ab.get()?'1/'+2**ab.get():'100%')+'.'],
+ ['Faça um furo de <b>10 mm</b> usando <b>f/8</b>.',()=>N_()===8&&f_()===80,'f/8 com 80 mm: 80 ÷ 8 = 10 mm.',()=>'Agora: '+d_()],
+ ['Com <b>f/2,8</b>, troque a lente de 50 mm por uma de <b>100 mm</b>. O que acontece com o furo?',()=>N_()===2.8&&f_()===100,'O diâmetro dobra (de 17,9 para 35,7 mm) e a área fica 4 vezes maior. Mas a lente de 100 mm também espalha a luz numa imagem 4 vezes maior: por isso f/2,8 dá a mesma exposição em qualquer lente.',()=>'Agora: '+d_()]]);
 function draw(){const i=ab.get(),N=NS[i],f=FF.get(),d=f/N,ar=Math.PI*d*d/4;
  $('k1').textContent=r1(d)+' mm';$('k2').textContent=fmt(Math.round(ar))+' mm²';$('k3').textContent=i===0?'100%':'1/'+(2**i)+' ('+i+(i===1?' stop':' stops')+' a menos)';
  const cx=170,cy=95,R=82,r=Math.min(78,d*1.6),n=7;let g=`<circle cx="${cx}" cy="${cy}" r="${R+6}" fill="${NAVY}"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="#26324F"/>`;
@@ -27,7 +33,7 @@ function draw(){const i=ab.get(),N=NS[i],f=FF.get(),d=f/N,ar=Math.PI*d*d/4;
  for(let k=0;k<n;k++){const a=2*Math.PI*k/n+i*0.12;g+=`<line x1="${cx+r*Math.cos(a)}" y1="${cy+r*Math.sin(a)}" x2="${cx+R*Math.cos(a+0.9)}" y2="${cy+R*Math.sin(a+0.9)}" stroke="#4B5A7A" stroke-width="1.5"/>`;}
  g+=TX(cx,cy+5,'f/'+String(N).replace('.',','),{fs:14,c:NAVY});if(d*1.6>78)g+=TX(cx,190,'(furo maior que o desenho)',{fs:10,c:'#6B7280'});
  $('fig').innerHTML=SVG(340,195,g);
- missao('m',f===100&&N===4,'25 mm: 100 ÷ 4 = 25, ou seja, f/4. São 3 stops a menos que f/1,4 (1/8 da luz).','Agora: '+r1(d)+' mm com '+f+' mm a f/'+String(N).replace('.',',')+'.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

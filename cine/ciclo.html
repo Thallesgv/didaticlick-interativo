@@ -19,14 +19,20 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const AA=SL('aa',0,20,1,10,null,v=>v+' px'),TP=SL('tp',6,96,1,24,null,v=>v+' quadros'),FA=SL('fa',0,360,15,45,null,v=>v+'°');let n=0;const sen=a=>Math.sin(a*Math.PI/180);
+const vm=()=>MIS.ver('m');
+MIS.def(()=>[
+ ['Faça o personagem respirar como no exemplo do livro: o peito sobe e desce <b>6 px</b>, com período de <b>48 quadros</b> (2 s).',()=>AA.get()===6&&TP.get()===48,'Respiração calma: 6 px de amplitude e 24 ÷ 48 = 0,5 ciclo por segundo.','Ajuste a amplitude para 6 e o período para 48.'],
+ ['Agora descubra qual atraso faz as bandeirinhas <b>subirem todas juntas</b>.',()=>FA.get()%360===0,'Atraso de 0° (ou 360°, uma volta inteira): todas ficam em sincronia.','Mexa no atraso entre bandeirinhas.'],
+ ['Deixe cada bandeirinha <b>sempre oposta</b> à vizinha: uma em cima, a outra embaixo.',()=>FA.get()===180,'180°: meia volta de atraso. Quando o seno de uma vale 1, o da vizinha vale −1.','Que atraso é meia volta?'],
+ ['Faça a animação ter <b>2 ciclos por segundo</b>.',()=>TP.get()===12,'T = 12 quadros: 24 ÷ 12 = 2 ciclos por segundo, uma respiração ofegante.',()=>'Agora: '+r2(24/TP.get())+' ciclo(s) por segundo. Lembre: são 24 quadros por segundo.']]);
+const AA=SL('aa',0,20,1,10,vm,v=>v+' px'),TP=SL('tp',6,96,1,24,vm,v=>v+' quadros'),FA=SL('fa',0,360,15,45,vm,v=>v+'°');vm();let n=0;const sen=a=>Math.sin(a*Math.PI/180);
 setInterval(()=>{n++;const A=AA.get(),T=TP.get(),fs=FA.get(),h=A*sen(360*n/T);let g='';
  g+=`<rect x="20" y="${150-60-h}" width="46" height="${60+h}" rx="20" fill="${ORANGE}"/><circle cx="43" cy="${150-78-h}" r="16" fill="#F2C9A0"/><line x1="10" y1="150" x2="80" y2="150" stroke="${NAVY}" stroke-width="2"/>`;
  for(let k=0;k<8;k++){const x=105+k*28,y=70-A*0.9*sen(360*n/T-k*fs);g+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+26}" stroke="${NAVY}" stroke-width="2"/><path d="M${x},${y} l18,6 l-18,6 z" fill="${k%2?BLUE:ORANGE}"/>`;}
  const gx=105,gw=225,gy=150;let pts='';for(let k=0;k<=96;k++)pts+=`${gx+k/96*gw},${gy-A*1.2*sen(360*k/T)} `;
  g+=`<line x1="${gx}" y1="${gy}" x2="${gx+gw}" y2="${gy}" stroke="${GRAYL}"/><polyline points="${pts}" fill="none" stroke="${ORANGE}" stroke-width="2"/><circle cx="${gx+(n%96)/96*gw}" cy="${gy-A*1.2*sen(360*(n%96)/T)}" r="4" fill="${NAVY}"/>`+TX(gx+gw,gy+30,'96 quadros (4 s)',{fs:9,a:'end',c:'#6B7280'});
  $('fig').innerHTML=SVG(340,185,g);$('k1').textContent=n%T+' de '+T;$('k2').textContent=r2(24/T);$('k3').textContent=r1(h)+' px';
- const ok1=A===6&&T===48;missao('m',ok1&&fs%360===0,'Respiração certa e bandeirinhas em sincronia: atraso de 0° (ou 360°, uma volta inteira).',ok1?'Respiração certa! Agora ache o atraso que deixa as bandeirinhas juntas.':'Ajuste a amplitude para 6 e o período para 48.');},1000/24);
+},1000/24);
 </script>
 </body>
 </html>

@@ -17,7 +17,12 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-let vx=4,vy=5,grav=true,qd=-1,tm;const SX=u=>20+u*9,SY=v=>205-v*9,ALV=[25,5];
+let vx=4,vy=5,grav=true,qd=-1,tm,HIT=false,MY=0,NQ=0;const SX=u=>20+u*9,SY=v=>205-v*9,ALV=[25,5];
+MIS.def(()=>[
+ ['Acerte a estrela em (25, 5), saindo de (1, 1), com a <b>gravidade ligada</b>. Dica: com velocidade horizontal 3, quantos quadros a bola leva para chegar a x = 25?',()=>grav&&HIT,()=>'Na mosca! Com velocidade ('+vx+', '+vy+') a bola passa pela estrela.','Ainda não acertou. Escreva as alturas quadro a quadro: elas sobem vy, depois vy − 1, vy − 2...'],
+ ['Agora <b>desligue a gravidade</b> e acerte a estrela em linha reta.',()=>!grav&&HIT,()=>'Sem gravidade a bola anda em linha reta: ('+vx+', '+vy+') somado 4 vezes dá (24, 4), de (1, 1) até (25, 5).',()=>grav?'Desligue a gravidade.':'Pense: de (1, 1) até (25, 5) são 24 para o lado e 4 para cima.'],
+ ['Com a gravidade ligada, faça a bola chegar à <b>altura 16</b> ou mais.',()=>grav&&MY>=16,()=>'Com vy = '+vy+', a bola sobe '+vy+' + '+(vy-1)+' + ... + 1 = '+(vy*(vy+1)/2)+' e chega a '+MY+'.',()=>grav?'Altura máxima agora: '+MY+'. Aumente vy.':'Ligue a gravidade.'],
+ ['Com a gravidade ligada, lance a bola <b>para baixo</b> (vy negativo). Quantos quadros ela fica no ar?',()=>grav&&vy<0,()=>'Com vy = '+vy+', a bola já sai descendo e fica só '+NQ+' quadro(s) no ar. A gravidade acelera a queda.',()=>grav?'Arraste a ponta da seta para baixo da linha da bola.':'Ligue a gravidade.']]);
 function caminho(){const p=[];let x=1,y=1,a=vx,b=vy;for(let k=0;k<60;k++){p.push([x,y,a,b]);x+=a;y+=b;if(grav)b-=1;if(y<0||x>35)break;}return p;}
 function draw(){const p=caminho();let g='';for(let i=0;i<=35;i++)g+=`<line x1="${SX(i)}" y1="${SY(0)}" x2="${SX(i)}" y2="${SY(22)}" stroke="#EEF1F6"/>`;for(let j=0;j<=22;j++)g+=`<line x1="${SX(0)}" y1="${SY(j)}" x2="${SX(35)}" y2="${SY(j)}" stroke="#EEF1F6"/>`;
  g+=`<line x1="${SX(0)}" y1="${SY(0)}" x2="${SX(35)}" y2="${SY(0)}" stroke="${NAVY}" stroke-width="1.5"/><text x="${SX(ALV[0])}" y="${SY(ALV[1])+6}" font-size="18" text-anchor="middle" fill="${ORANGE}">★</text>`;
@@ -26,8 +31,8 @@ function draw(){const p=caminho();let g='';for(let i=0;i<=35;i++)g+=`<line x1="$
  g+=`<line x1="${SX(1)}" y1="${SY(1)}" x2="${SX(1+vx)}" y2="${SY(1+vy)}" stroke="${ORANGE}" stroke-width="3"/><circle id="tip" cx="${SX(1+vx)}" cy="${SY(1+vy)}" r="9" fill="${ORANGE}" opacity="0.85"/>`;
  $('fig').innerHTML=SVG(340,215,g);const s=$('fig').querySelector('svg');arrastar(s,s.querySelector('#tip'),(x,y)=>{vx=clamp(Math.round((x-20)/9-1),0,10);vy=clamp(Math.round((205-y)/9-1),-3,12);qd=-1;draw();});
  $('k1').textContent='('+vx+', '+vy+')';$('k2').textContent=r2(Math.hypot(vx,vy));$('k3').textContent=p.length;
- const ok=grav&&p.some(([x,y])=>Math.hypot(x-ALV[0],y-ALV[1])<0.6);
- missao('m',ok,'Na mosca! Com velocidade ('+vx+', '+vy+') a bola passa pela estrela.','Ainda não acertou. Escreva as alturas quadro a quadro: elas sobem vy, depois vy − 1, vy − 2...');}
+ const ok=p.some(([x,y])=>Math.hypot(x-ALV[0],y-ALV[1])<0.6);HIT=ok;MY=Math.max(...p.map(q=>q[1]));NQ=p.length;
+MIS.ver('m');}
 $('gv').onclick=()=>{grav=!grav;$('gv').textContent='Gravidade: '+(grav?'ligada':'desligada');qd=-1;draw();};
 $('pl').onclick=()=>{clearInterval(tm);qd=0;draw();tm=setInterval(()=>{qd++;draw();if(qd>=caminho().length-1){clearInterval(tm);}},120);};
 draw();

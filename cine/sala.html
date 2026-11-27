@@ -11,7 +11,8 @@
 <main>
 <div class="card"><h2>Escolha a sua poltrona</h2><p class="muted" style="margin-top:0">A sala vista de cima. Arraste a poltrona laranja. A linha tracejada é o arco capaz: quem está sobre ele vê a tela com o mesmo ângulo.</p>
 <div class="fig"><svg id="sv" viewBox="0 0 320 300" width="320"></svg></div>
-<div class="kpi"><div class="o">Ângulo de visão<b id="k1"></b></div><div>Distância da tela<b id="k2"></b></div><div>Avaliação<b id="k3"></b></div></div><div id="m"></div></div>
+<div class="kpi"><div class="o">Ângulo de visão<b id="k1"></b></div><div>Distância da tela<b id="k2"></b></div><div>Avaliação<b id="k3"></b></div></div></div>
+<div class="card"><h2>Missão</h2><div id="m"></div></div>
 <div class="card"><h2>A câmera em cena</h2><p class="muted" style="margin-top:0">O mesmo arco vale para a câmera no set. Vista de cima: dois atores a 3 m um do outro. Escolha a lente e arraste a câmera. Sobre o arco tracejado, os dois atores enchem o quadro de ponta a ponta.</p>
 <div class="chips" id="ln"></div>
 <div class="fig"><svg id="cs" viewBox="0 0 320 300" width="320"></svg></div>
@@ -19,10 +20,15 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const sv=$('sv'),A=[70,30],B=[250,30],esc=20/180;let P={x:200,y:190};
+const sv=$('sv'),A=[70,30],B=[250,30],esc=20/180;let P={x:200,y:190},AN=0,CJ=false,CAN=0,ln;
+MIS.def(()=>[
+ ['Na sala: encontre um lugar com ângulo de <b>36°</b>. Depois ande sobre o arco e confira que o ângulo não muda.',()=>Math.abs(AN-36)<1,'36°: a recomendação THX. Veja que todo o arco tracejado dá o mesmo ângulo.',()=>'Ângulo agora: '+r1(AN)+'°.'],
+ ['Agora sente <b>no meio da sala</b>, de frente para o centro da tela, num lugar <b>ótimo</b> (de 30° a 45°).',()=>AN>=30&&AN<=45&&Math.abs(P.x-160)<20,()=>'No centro, o ótimo fica lá no fundo: a '+r1((P.y-30)*esc)+' m da tela. Só a partir de uns 24 m o ângulo cai para 45°.',()=>Math.abs(P.x-160)>=20?'Vá para o meio da sala.':'Ângulo agora: '+r1(AN)+'°.'],
+ ['No set, mais abaixo: com a lente <b>50 mm</b>, ache um ponto em que os dois atores enchem o quadro exatamente.',()=>ln&&ln.get()===1&&CJ,'Na mosca: a câmera está sobre o arco da lente 50 mm. Ande pelo arco: o enquadramento continua justo.',()=>ln&&ln.get()!==1?'Escolha a lente 50 mm.':CAN>40?'Ângulo dos atores: '+r1(CAN)+'°. Alguém fica cortado: afaste a câmera.':'Ângulo dos atores: '+r1(CAN)+'°. Sobra espaço: aproxime a câmera.'],
+ ['Troque para a <b>24 mm</b> e encha o quadro de novo. A câmera ficou mais perto ou mais longe dos atores?',()=>ln&&ln.get()===0&&CJ,'Mais perto: a 24 mm vê um ângulo maior (74°), então o seu arco é menor e passa mais perto dos atores.',()=>ln&&ln.get()!==0?'Escolha a lente 24 mm.':'Ângulo dos atores: '+r1(CAN)+'°. A lente vê 74°.']]);
 sv.innerHTML='<g id="bg"></g><circle id="pp" r="10" fill="'+ORANGE+'" stroke="'+NAVY+'" stroke-width="2"/>';
 arrastar(sv,$('pp'),(x,y)=>{P={x:clamp(x,15,305),y:clamp(y,45,290)};draw();});
-function draw(){const a1=Math.atan2(A[1]-P.y,A[0]-P.x),a2=Math.atan2(B[1]-P.y,B[0]-P.x);let ang=Math.abs(a1-a2)*180/Math.PI;if(ang>180)ang=360-ang;
+function draw(){const a1=Math.atan2(A[1]-P.y,A[0]-P.x),a2=Math.atan2(B[1]-P.y,B[0]-P.x);let ang=Math.abs(a1-a2)*180/Math.PI;if(ang>180)ang=360-ang;AN=ang;
  // circunferência por A, B e P
  const ax=A[0],ay=A[1],bx=B[0],by=B[1],cx=P.x,cy=P.y,d=2*(ax*(by-cy)+bx*(cy-ay)+cx*(ay-by));
  const ux=((ax*ax+ay*ay)*(by-cy)+(bx*bx+by*by)*(cy-ay)+(cx*cx+cy*cy)*(ay-by))/d,uy=((ax*ax+ay*ay)*(cx-bx)+(bx*bx+by*by)*(ax-cx)+(cx*cx+cy*cy)*(bx-ax))/d,R=Math.hypot(ax-ux,ay-uy);
@@ -32,16 +38,16 @@ function draw(){const a1=Math.atan2(A[1]-P.y,A[0]-P.x),a2=Math.atan2(B[1]-P.y,B[
  g+=`<rect x="${A[0]}" y="${A[1]-6}" width="${B[0]-A[0]}" height="6" fill="${NAVY}"/>`+TX(160,18,'TELA · 20 m',{fs:10});
  $('bg').innerHTML=g;$('pp').setAttribute('cx',P.x);$('pp').setAttribute('cy',P.y);
  $('k1').textContent=r1(ang)+'°';$('k2').textContent=r1((P.y-30)*esc)+' m';$('k3').textContent=ang>60?'perto demais':ang>=30&&ang<=45?'ótimo':ang<30?'longe':'bom';
- missao('m',Math.abs(ang-36)<1,'36°: a recomendação THX. Veja que todo o arco tracejado dá o mesmo ângulo.','Missão: encontre um lugar com ângulo de 36°. Depois ande sobre o arco e confira que o ângulo não muda.');}
+MIS.ver('m');}
 draw();
 const LEN=[['24 mm',74],['50 mm',40],['100 mm',20]],CA=[130,60],CB=[190,60];let CP={x:160,y:230};
-const ln=chips('ln',LEN.map(l=>l[0]+' ('+l[1]+'°)'),1,()=>dc());
+ln=chips('ln',LEN.map(l=>l[0]+' ('+l[1]+'°)'),1,()=>dc());
 $('cs').innerHTML='<g id="cbg"></g><g id="cam"><rect x="-11" y="-8" width="22" height="16" rx="3" fill="'+NAVY+'"/><circle r="4" fill="'+ORANGE+'"/></g>';
 arrastar($('cs'),$('cam'),(x,y)=>{CP={x:clamp(x,12,308),y:clamp(y,75,292)};dc();});
 function dc(){const f=LEN[ln.get()][1],th=f*Math.PI/180,c=CB[0]-CA[0],R=c/(2*Math.sin(th)),hy=c/(2*Math.tan(th)),ox=(CA[0]+CB[0])/2,oy=CA[1]+hy;
  const a1=Math.atan2(CA[1]-CP.y,CA[0]-CP.x),a2=Math.atan2(CB[1]-CP.y,CB[0]-CP.x);let an=Math.abs(a1-a2)*180/Math.PI;if(an>180)an=360-an;
  const dir=Math.atan2(CA[1]-CP.y+0,ox-CP.x),L=500,r1x=CP.x+L*Math.cos(dir-th/2),r1y=CP.y+L*Math.sin(dir-th/2),r2x=CP.x+L*Math.cos(dir+th/2),r2y=CP.y+L*Math.sin(dir+th/2);
- const cabe=an<=f+1.5,justo=Math.abs(an-f)<=1.5;
+ const cabe=an<=f+1.5,justo=Math.abs(an-f)<=1.5;CJ=justo;CAN=an;
  let g=`<rect width="320" height="300" fill="#F5F7FB"/><polygon points="${CP.x},${CP.y} ${r1x},${r1y} ${r2x},${r2y}" fill="${ORANGE}" fill-opacity=".16" stroke="${ORANGE}" stroke-width="1"/>`;
  g+=`<clipPath id="cq"><rect x="0" y="0" width="320" height="300"/></clipPath><circle cx="${ox}" cy="${oy}" r="${R}" fill="none" stroke="${NAVY}" stroke-width="1.5" stroke-dasharray="5 4" clip-path="url(#cq)"/>`;
  g+=`<line x1="${CA[0]}" y1="${CA[1]}" x2="${CP.x}" y2="${CP.y}" stroke="${NAVY}" stroke-width=".8"/><line x1="${CB[0]}" y1="${CB[1]}" x2="${CP.x}" y2="${CP.y}" stroke="${NAVY}" stroke-width=".8"/>`;
@@ -49,7 +55,7 @@ function dc(){const f=LEN[ln.get()][1],th=f*Math.PI/180,c=CB[0]-CA[0],R=c/(2*Mat
  g+=TX(160,24,'ATORES · 3 m entre eles',{fs:10});
  $('cbg').innerHTML=g;$('cam').setAttribute('transform',`translate(${CP.x},${CP.y}) rotate(${dir*180/Math.PI+90})`);
  $('q1').textContent=r1(an)+'°';$('q2').textContent=f+'°';$('q3').textContent=justo?'justinho':cabe?'os dois, com folga':'ator cortado';$('q3').style.color=justo?GREEN:cabe?NAVY:'#C0392B';
- missao('qm',justo,'Na mosca: a câmera está sobre o arco da lente '+LEN[ln.get()][0]+'. Ande pelo arco: o enquadramento continua justo.','Missão: ache um ponto em que os dois atores enchem o quadro exatamente. Dentro do arco, alguém fica cortado. Fora dele, sobra espaço. Depois troque a lente: o arco muda de tamanho.');}
+MIS.ver('m');}
 dc();
 </script>
 </body>

@@ -19,7 +19,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 const np=chips('np',['2','3','4','5','8'],1,draw),F=SL('f',0,30,0.1,7.5,draw,v=>r1(v)+' voltas/s'),QS=SL('q',12,60,1,24,draw,v=>v+' q/s');
-let tReal=0,ang=0,last=performance.now(),acc=0;const sv=$('sv');
+let tReal=0,ang=0,last=performance.now(),acc=0,RS=1,GQ=0;const sv=$('sv');
+const par_=()=>Math.abs(RS)<0.5&&F.get()>0;
+MIS.def(()=>[
+ ['Deixe a hélice <b>parada no vídeo</b>, com ela girando de verdade.',par_,()=>'Hélice parada! O giro por quadro ('+r1(GQ)+'°) é múltiplo de 360° ÷ '+[2,3,4,5,8][np.get()]+'.','Mude a rotação ou os quadros por segundo até o giro por quadro bater com o passo entre as pás.'],
+ ['Agora faça a hélice <b>parecer girar para trás</b>, mesmo girando para a frente de verdade.',()=>F.get()>0&&RS<=-0.5,'Para trás: a cada quadro, cada pá anda um pouco menos que o passo até a posição da pá seguinte.','Procure um giro por quadro um pouco abaixo de um múltiplo do passo entre as pás.'],
+ ['Com <b>24 q/s</b> e hélice de <b>3 pás</b>, qual é a <b>menor rotação</b> que deixa a hélice parada?',()=>par_()&&QS.get()===24&&np.get()===1&&Math.abs(F.get()-8)<0.05,'8 voltas/s: 360° × 8 ÷ 24 = 120°, exatamente o passo entre 3 pás.',()=>QS.get()!==24||np.get()!==1?'Escolha 3 pás e 24 q/s.':par_()?'Parada, mas existe uma rotação menor.':'Procure um giro por quadro de 120°.'],
+ ['Escolha <b>4 pás</b> e deixe a hélice parada mudando <b>só os quadros por segundo</b>.',()=>par_()&&np.get()===2,()=>'Parada: '+r1(GQ)+'° por quadro, múltiplo de 90°. Com 7,5 voltas/s, isso acontece com 30 q/s e com 15 q/s.',()=>np.get()!==2?'Escolha 4 pás.':'Mexa nos quadros por segundo.']]);
 function helice(cx,cy,a,n){let g=`<circle cx="${cx}" cy="${cy}" r="62" fill="${PEACH}"/>`;for(let k=0;k<n;k++){const b=(a+360*k/n)*Math.PI/180;
  g+=`<path d="M${cx},${cy} L${cx+58*Math.cos(b-0.2)},${cy+58*Math.sin(b-0.2)} L${cx+60*Math.cos(b)},${cy+60*Math.sin(b)} L${cx+58*Math.cos(b+0.2)},${cy+58*Math.sin(b+0.2)}Z" fill="${NAVY}"/>`;
  if(k===0)g+=`<circle cx="${cx+48*Math.cos(b)}" cy="${cy+48*Math.sin(b)}" r="5" fill="${ORANGE}"/>`;}return g+`<circle cx="${cx}" cy="${cy}" r="7" fill="${ORANGE}"/>`;}
@@ -28,9 +34,9 @@ function loop(t){const dt=(t-last)/1000;last=t;const n=[2,3,4,5,8][np.get()];
  // tempo do mundo 10x mais lento na tela, para dar para ver
  const ds=dt/10;tReal+=ds;acc+=ds;const per=1/QS.get();while(acc>=per){acc-=per;camA=(camA+360*F.get()*per)%360;}
  ang=(360*F.get()*tReal)%360;sv.innerHTML=helice(80,78,ang,n)+helice(240,78,camA,n)+TX(80,156,'real (10× mais lento)',{fs:10})+TX(240,156,'o que a câmera grava',{fs:10});requestAnimationFrame(loop);}
-function draw(){const n=[2,3,4,5,8][np.get()],g=360*F.get()/QS.get(),passo=360/n;let r=((g%passo)+passo)%passo;if(r>passo/2)r-=passo;
+function draw(){const n=[2,3,4,5,8][np.get()],g=360*F.get()/QS.get(),passo=360/n;let r=((g%passo)+passo)%passo;if(r>passo/2)r-=passo;RS=r;GQ=g;
  $('k1').textContent=r1(g)+'°';$('k2').textContent=Math.abs(r)<0.5?'parada':r>0?'girar para a frente ('+r1(r)+'°/quadro)':'girar para trás ('+r1(-r)+'°/quadro)';
- missao('m',Math.abs(r)<0.5&&F.get()>0,'Hélice parada! O giro por quadro ('+r1(g)+'°) é múltiplo de 360° ÷ '+n+' = '+r1(passo)+'°.','Missão: deixe a hélice parada no vídeo com ela girando de verdade.');}
+MIS.ver('m');}
 draw();requestAnimationFrame(loop);
 </script>
 </body>

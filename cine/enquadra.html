@@ -17,7 +17,13 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const sv=$('sv');let P={x:160,y:105},S={x:260,y:40};const cg=chips('cg',['Terços','Áurea','Sem grade'],0,draw);
+const sv=$('sv');let P={x:160,y:105},S={x:260,y:40},NT=0;const cg=chips('cg',['Terços','Áurea','Sem grade'],0,draw);
+const perto_=(q,x,y)=>Math.hypot(q.x-x,q.y-y)<12;
+MIS.def(()=>[
+ ['Consiga <b>nota 9 ou mais</b>: ponha o rosto do personagem e o sol sobre pontos de interesse.',()=>NT>=9,'Composição de cinema! Os dois estão perto de pontos de interesse.','Dica: o rosto do personagem e o sol ficam mais fortes sobre os cruzamentos da grade.'],
+ ['Agora use a <b>grade áurea</b> e consiga nota 9 ou mais.',()=>cg.get()==1&&NT>=9,'Na grade áurea os pontos ficam a 38,2% e 61,8% da tela, um pouco mais perto do centro que os terços.',()=>cg.get()!=1?'Escolha a grade Áurea.':'Nota '+NT+'. Procure os novos cruzamentos.'],
+ ['Com os <b>terços</b>: sol no ponto de <b>cima à direita</b> e rosto do personagem no ponto de <b>baixo à esquerda</b>.',()=>cg.get()==0&&perto_(S,640/3,60)&&perto_({x:P.x,y:P.y-20},320/3,120),'Uma diagonal de interesse. Em Full HD: sol em (1280, 360) e rosto em (640, 720), os terços de 1920 e de 1080.',()=>cg.get()!=0?'Escolha a grade dos terços.':'Confira as coordenadas: o sol deve ir para (1280, 360) e o rosto para (640, 720).'],
+ ['Agora faça uma composição <b>ruim de propósito</b>: nota 3 ou menos.',()=>NT<=3,'Longe dos pontos, a cena fica sem foco. Às vezes o diretor quer isso, para incomodar quem assiste.',()=>'Nota '+NT+'. Afaste os dois dos cruzamentos.']]);
 sv.innerHTML=`<rect width="320" height="180" fill="${PEACH}"/><rect y="120" width="320" height="60" fill="${LIGHT}"/><g id="gr"></g>
 <g id="so"><circle r="15" fill="${ORANGE}"/></g><g id="pe"><circle cy="-34" r="8" fill="${NAVY}"/><rect x="-9" y="-26" width="18" height="34" rx="6" fill="${NAVY}"/></g>`;
 arrastar(sv,$('pe'),(x,y)=>{P={x:clamp(x,10,310),y:clamp(y,40,175)};draw();});arrastar(sv,$('so'),(x,y)=>{S={x:clamp(x,15,305),y:clamp(y,15,165)};draw();});
@@ -28,8 +34,8 @@ function draw(){const t=cg.get();let g='';if(t<2){const f=t===1?[0.382,0.618]:[1
  pts(t).forEach(([x,y])=>g+=`<circle cx="${x}" cy="${y}" r="3" fill="${ORANGE}"/>`);}
  $('gr').innerHTML=g;$('pe').setAttribute('transform',`translate(${P.x},${P.y})`);$('so').setAttribute('transform',`translate(${S.x},${S.y})`);
  const c=q=>'('+Math.round(q.x*6)+', '+Math.round(q.y*6)+')';$('k1').textContent=c({x:P.x,y:P.y-20});$('k2').textContent=c(S);
- const tt=t===2?0:t,d=(dist({x:P.x,y:P.y-20},tt)+dist(S,tt))/2,nota=clamp(Math.round(10-d/8),0,10);$('k3').textContent=nota+' / 10';
- missao('m',nota>=9,'Composição de cinema! Os dois estão perto de pontos de interesse.','Dica: o rosto do personagem e o sol ficam mais fortes sobre os cruzamentos da grade.');}
+ const tt=t===2?0:t,d=(dist({x:P.x,y:P.y-20},tt)+dist(S,tt))/2,nota=clamp(Math.round(10-d/8),0,10);NT=nota;$('k3').textContent=nota+' / 10';
+MIS.ver('m');}
 draw();
 </script>
 </body>

@@ -23,9 +23,15 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const T=SL('tot',50,2000,10,300,draw,v=>'R$ '+v),P=[40,30,20,10].map((v,i)=>SL('p'+i,0,100,5,v,draw,x=>x+'%'));
+const T=SL('tot',50,2000,10,300,draw,v=>'R$ '+v),P=[40,30,20,20].map((v,i)=>SL('p'+i,0,100,5,v,draw,x=>x+'%'));
 const DU=SL('du',1,10,0.5,4,draw,v=>r1(v)+' min'),PL=SL('pl',1,15,0.5,4,draw,v=>r1(v)+' s'),EN=SL('en',4,16,1,8,draw);
 const NOM=['Arte','Lanche','Transporte','Reserva'];
+const ps_=()=>P.map(x=>x.get()),soma_=()=>ps_().reduce((a,b)=>a+b,0);
+MIS.def(()=>[
+ ['Ajuste as porcentagens até o orçamento <b>fechar em 100%</b>.',()=>soma_()===100,'As porcentagens somam 100%. Orçamento fechado!',()=>'As porcentagens somam '+soma_()+'%. Ajuste até dar exatamente 100%.'],
+ ['Feche em 100% com a <b>reserva em pelo menos 15%</b> e a <b>arte com a maior fatia</b>.',()=>{const p=ps_();return soma_()===100&&p[3]>=15&&p[0]>=Math.max(p[1],p[2],p[3]);},'Orçamento com folga: a reserva cobre os imprevistos da filmagem.',()=>'Soma: '+soma_()+'%. Reserva: '+ps_()[3]+'%.'],
+ ['Com <b>R$ 500</b> no total, deixe <b>exatamente R$ 100 para o lanche</b>, fechando em 100%.',()=>T.get()===500&&ps_()[1]===20&&soma_()===100,'100 ÷ 500 = 0,2 = 20%. Porcentagem é uma fração com denominador 100.',()=>T.get()!==500?'Ponha o orçamento total em R$ 500.':'Lanche: R$ '+fmt(5*ps_()[1])+'. Soma: '+soma_()+'%.'],
+ ['Planeje um curta de <b>5 minutos</b> com <b>75 planos</b>. Quanto dura cada plano?',()=>DU.get()===5&&Math.round(300/PL.get())===75,'5 min = 300 s, e 300 ÷ 75 = 4 s por plano. São 120 quadros a 30 q/s em cada plano.',()=>DU.get()!==5?'Ponha a duração do curta em 5 min.':'Agora são '+Math.round(300/PL.get())+' planos.']]);
 function fita(d,pl){const L=320,x0=10,np=Math.round(d*60/pl),w=L/(d*60/pl);let g=TX(x0,12,'O filme inteiro: '+r1(d)+' min',{fs:11,a:'start'});
  g+=`<rect x="${x0}" y="18" width="${L}" height="28" fill="${NAVY}" rx="3"/>`;
  for(let i=0;i<np;i++){const x=x0+i*w,ww=Math.min(w,x0+L-x);if(ww<=0)break;g+=`<rect x="${x+(w>3?1:0)}" y="22" width="${Math.max(0.6,ww-(w>3?2:0.4))}" height="20" fill="${i%2?PEACH:ORANGE}"/>`;}
@@ -39,7 +45,7 @@ function fita(d,pl){const L=320,x0=10,np=Math.round(d*60/pl),w=L/(d*60/pl);let g
  $('dp').innerHTML=SVG(340,188,g);}
 function draw(){const t=T.get(),p=P.map(s=>s.get()),s=p.reduce((a,b)=>a+b,0);
  $('pz').innerHTML=pizza(p.map((v,i)=>({v,cor:CORES_FIN[i],nome:NOM[i]+': R$ '+fmt(Math.round(t*v)/100*1)})),70);
- missao('m',s===100,'As porcentagens somam 100%. Orçamento fechado!','As porcentagens somam '+s+'%. Ajuste até dar exatamente 100%.');
+MIS.ver('m');
  const d=DU.get();$('c1').textContent='≈ '+r1(d);$('c2').textContent='≈ '+Math.round(d*60/PL.get());$('c3').textContent=fmt(d*60*30);fita(d,PL.get());
  const n=EN.get(),pre=Math.round(n*3/8),pro=Math.round(n/4),pos=n-pre-pro;let g='';
  for(let i=0;i<n;i++){const c=i<pre?BLUE:i<pre+pro?ORANGE:NAVY;g+=`<rect x="${6+i*(326/n)}" y="10" width="${326/n-3}" height="30" rx="4" fill="${c}"/>`+TX(6+i*(326/n)+(326/n-3)/2,30,i+1,{fs:10,c:'#fff'});}

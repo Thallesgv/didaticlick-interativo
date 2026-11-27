@@ -21,6 +21,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 const HH=SL('hh',0.5,30,0.5,6,draw,v=>r1(v)+' m'),PP=SL('pp',1,50,1,20,draw,v=>v+' m'),CC=SL('cc',5,100,1,30,draw,v=>v+' cm'),FF=SL('ff',0.5,10,0.5,2,draw,v=>r1(v)+' mm');
+const hi_=()=>HH.get()*CC.get()/PP.get();
+MIS.def(()=>[
+ ['Um prédio de 30 m está a 50 m do furo. Ajuste a caixa para a imagem do prédio ter <b>exatamente 15 cm</b>.',()=>HH.get()===30&&PP.get()===50&&Math.abs(hi_()-15)<0.3,'Isso! A caixa de 25 cm dá 30 × 25 ÷ 50 = 15 cm. Semelhança de triângulos.',()=>'Ponha o objeto com 30 m, a 50 m, e procure a profundidade da caixa. Agora a imagem tem '+r1(hi_())+' cm.'],
+ ['Com a mesma caixa de 25 cm, aproxime o prédio de 30 m: a que distância a imagem fica com <b>30 cm</b>?',()=>HH.get()===30&&CC.get()===25&&PP.get()===25,'Metade da distância, o dobro do tamanho: 30 × 25 ÷ 25 = 30 cm.',()=>HH.get()!==30||CC.get()!==25?'Prédio de 30 m e caixa de 25 cm.':'Imagem agora: '+r1(hi_())+' cm.'],
+ ['Deixe a imagem <b>16 vezes mais brilhante</b> que com um furo de 1 mm. O que acontece com a nitidez?',()=>FF.get()===4,'Furo 4 vezes mais largo, área 4² = 16 vezes maior: 16 vezes mais luz. Mas a mancha de cada ponto também cresce, e a imagem borra.',()=>'Brilho agora: '+r1(FF.get()**2)+'×. O brilho cresce com o quadrado do diâmetro.'],
+ ['Uma pessoa de <b>1,5 m</b> está a <b>10 m</b> do furo. Que caixa faz a imagem ter <b>9 cm</b>?',()=>HH.get()===1.5&&PP.get()===10&&Math.abs(hi_()-9)<0.1,'Caixa de 60 cm: 1,5 × 60 ÷ 10 = 9 cm.',()=>HH.get()!==1.5||PP.get()!==10?'Ponha o objeto com 1,5 m, a 10 m.':'Imagem agora: '+r1(hi_())+' cm.']]);
 function draw(){const h=HH.get(),p=PP.get(),c=CC.get(),fu=FF.get(),hi=h*c/p,br=fu*fu;
  $('k1').textContent=r1(hi)+' cm';$('k2').textContent='≈ '+r1(fu)+' mm';$('k3').textContent=r1(br)+'×';
  const y0=95,ho=Math.min(70,20+h*2),xo=20,xf=150,xc=xf+c*0.4;
@@ -34,7 +40,7 @@ function draw(){const h=HH.get(),p=PP.get(),c=CC.get(),fu=FF.get(),hi=h*c/p,br=f
  g+=`<g filter="url(#bl)" opacity="${op}"><rect x="${wx-3}" y="${y0-hp/2}" width="6" height="${hp*0.45}" fill="#B07A43"/><circle cx="${wx}" cy="${y0+hp*0.2}" r="${hp*0.3}" fill="#4ADE80"/></g>`;
  g+=TX(wx,185,'parede do fundo',{fs:10});
  $('fig').innerHTML=SVG(340,192,g);
- missao('m',h===30&&p===50&&Math.abs(hi-15)<0.3,'Isso! A caixa de 25 cm dá 30 × 25 ÷ 50 = 15 cm. Semelhança de triângulos.','Ponha o objeto com 30 m, a 50 m, e procure a profundidade da caixa. Agora a imagem tem '+r1(hi)+' cm.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

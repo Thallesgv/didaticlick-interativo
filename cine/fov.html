@@ -18,11 +18,16 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const SEN=[36,24.9,23.6,9.8],se=chips('se',['Full frame 36 mm','Super 35 24,9 mm','APS-C 23,6 mm','Celular 9,8 mm'],0,draw),FF=SL('ff',4,300,1,50,draw,v=>v+' mm');let m90=false;
+const SEN=[36,24.9,23.6,9.8],se=chips('se',['Full frame 36 mm','Super 35 24,9 mm','APS-C 23,6 mm','Celular 9,8 mm'],0,draw),FF=SL('ff',4,300,1,50,draw,v=>v+' mm');let m90=false,AG=0;
+MIS.def(()=>[
+ ['Com o sensor full frame, encontre a focal que dá um ângulo de <b>exatamente 90°</b>.',()=>se.get()===0&&Math.abs(AG-90)<0.6,'90° com 18 mm: tan 45° = 1 = 18 ÷ 18.',()=>se.get()?'Escolha o full frame.':'Ângulo atual: '+r1(AG)+'°.'],
+ ['Agora mostre só o rosto do ator do centro, com <b>menos de 10°</b>.',()=>AG<10,'Um close com teleobjetiva: focal grande, ângulo pequeno.',()=>'Ângulo atual: '+r1(AG)+'°. Aumente a focal.'],
+ ['No <b>celular</b>, que focal dá o mesmo ângulo de uma <b>50 mm no full frame</b> (cerca de 40°)?',()=>se.get()===3&&Math.abs(AG-39.6)<1.2,()=>'Uns '+FF.get()+' mm no celular valem uma 50 mm no full frame: a razão focal ÷ largura do sensor é quase a mesma (14 ÷ 9,8 ≈ 50 ÷ 36).',()=>se.get()!==3?'Escolha o sensor de celular.':'Ângulo atual: '+r1(AG)+'°. Procure cerca de 40°.'],
+ ['Grande angular extrema: no <b>full frame</b>, passe de <b>120°</b>.',()=>se.get()===0&&AG>120,'Passou de 120°: a metade do sensor ficou maior que 1,73 vez a focal (tan 60° ≈ 1,73).',()=>'Ângulo atual: '+r1(AG)+'°. Diminua a focal.']]);
 function cena(){let g=`<rect x="10" y="10" width="320" height="110" fill="#DBEAFE"/><rect x="10" y="95" width="320" height="25" fill="#C7D7A8"/>`;
  [[14,40],[40,62],[70,30],[96,70],[128,48],[200,55],[226,80],[262,38],[288,64],[312,46]].forEach(([x,h],i)=>{g+=`<rect x="${x}" y="${95-h}" width="22" height="${h}" fill="${i%2?NAVY:'#4B5A7A'}"/>`;});
  g+=`<circle cx="170" cy="62" r="7" fill="#F2C9A0"/><rect x="163" y="69" width="14" height="26" rx="4" fill="${ORANGE}"/><circle cx="148" cy="72" r="5" fill="#F2C9A0"/><rect x="143" y="77" width="10" height="18" rx="3" fill="${BLUE}"/><circle cx="192" cy="72" r="5" fill="#F2C9A0"/><rect x="187" y="77" width="10" height="18" rx="3" fill="${GREEN}"/>`;return g;}
-function draw(){const L=SEN[se.get()],f=FF.get(),a=2*Math.atan(L/2/f)*180/Math.PI;
+function draw(){const L=SEN[se.get()],f=FF.get(),a=2*Math.atan(L/2/f)*180/Math.PI;AG=a;
  $('k1').textContent=r1(a)+'°';$('k2').textContent=r2(L/2/f);$('k3').textContent=a>75?'grande angular':a>30?'normal':a>10?'teleobjetiva':'super tele';
  const w=Math.min(320,a/180*320);let g=cena()+`<rect x="10" y="10" width="320" height="110" fill="none" stroke="${GRAYL}"/>`;
  g+=`<rect x="${170-w/2}" y="${Math.max(12,65-w*0.33)}" width="${w}" height="${Math.min(106,w*0.66)}" fill="none" stroke="${ORANGE}" stroke-width="3"/>`;
@@ -30,7 +35,7 @@ function draw(){const L=SEN[se.get()],f=FF.get(),a=2*Math.atan(L/2/f)*180/Math.P
  g+=`<rect x="${cx-14}" y="${cy-4}" width="28" height="16" rx="3" fill="${NAVY}"/>`+TX(cx,cy-R-6+((a>150)?40:0),r1(a)+'°',{fs:11,c:ORANGE});
  $('fig').innerHTML=SVG(340,222,g);
  if(se.get()===0&&Math.abs(a-90)<0.6)m90=true;
- missao('m',m90&&a<10,'Missão completa: 90° com 18 mm (tan 45° = 1 = 18 ÷ 18) e um close com teleobjetiva.',m90?'90° encontrado: f = 18 mm, pois tan 45° = 1. Agora feche abaixo de 10°.':'Ângulo atual: '+r1(a)+'°. Procure 90° no full frame.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

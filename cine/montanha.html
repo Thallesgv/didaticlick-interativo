@@ -18,12 +18,18 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const RU=SL('ru',0.3,0.8,0.05,0.5,null,v=>r2(v));let pts,rod,amp;
-function nova(){pts=[[10,150],[330,150]];rod=0;amp=70;draw();}
-function mais(){if(rod>=10)return;const np=[];for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];np.push(a,[(a[0]+b[0])/2,(a[1]+b[1])/2-(Math.random()*2-1)*amp]);}np.push(pts[pts.length-1]);pts=np;amp*=RU.get();rod++;draw();}
+const RU=SL('ru',0.3,0.8,0.05,0.5,null,v=>r2(v));let pts,rod,amp,rus=[];
+const so_=v=>rus.length>0&&rus.every(x=>Math.abs(x-v)<0.01);
+MIS.def(()=>[
+ ['Faça <b>6 rodadas</b>. Antes de clicar, preveja quantos segmentos e quantos pontos a montanha terá.',()=>rod>=6,'Depois de 6 rodadas: 2⁶ = 64 segmentos e 65 pontos.',()=>'Rodadas: '+rod+'. Segmentos: 2 elevado ao número de rodadas.'],
+ ['Faça uma montanha nova e pare quando ela tiver <b>17 pontos</b>. Quantas rodadas foram?',()=>pts.length===17,'17 pontos = 2⁴ + 1: foram 4 rodadas e 16 segmentos.',()=>'Pontos agora: '+pts.length+'.'+(pts.length>17?' Passou: aperte Montanha nova.':'')],
+ ['Faça uma montanha nova com rugosidade <b>0,3</b> em todas as rodadas, até <b>8 rodadas</b>.',()=>rod>=8&&so_(0.3),'Rugosidade baixa: o sorteio encolhe rápido e a montanha fica suave, como colinas.',()=>rus.length&&!so_(0.3)?'Teve rodada com outra rugosidade. Aperte Montanha nova.':'Rodadas com 0,3: '+rod+' de 8.'],
+ ['Agora uma montanha nova com rugosidade <b>0,8</b>, também com 8 rodadas.',()=>rod>=8&&so_(0.8),'Rugosidade alta: os detalhes pequenos continuam grandes e a montanha fica cheia de picos, como rocha.',()=>rus.length&&!so_(0.8)?'Teve rodada com outra rugosidade. Aperte Montanha nova.':'Rodadas com 0,8: '+rod+' de 8.']]);
+function nova(){pts=[[10,150],[330,150]];rod=0;amp=70;rus=[];draw();}
+function mais(){if(rod>=10)return;rus.push(RU.get());const np=[];for(let i=0;i<pts.length-1;i++){const a=pts[i],b=pts[i+1];np.push(a,[(a[0]+b[0])/2,(a[1]+b[1])/2-(Math.random()*2-1)*amp]);}np.push(pts[pts.length-1]);pts=np;amp*=RU.get();rod++;draw();}
 function draw(){const p=pts.map(q=>q[0]+','+clamp(q[1],8,195)).join(' ');const g=`<rect x="0" y="0" width="340" height="200" fill="#DBEAFE"/><polygon points="10,200 ${p} 330,200" fill="#5B6B8C"/><polyline points="${p}" fill="none" stroke="${NAVY}" stroke-width="2"/>`+(rod<4?pts.map(q=>`<circle cx="${q[0]}" cy="${clamp(q[1],8,195)}" r="3" fill="${ORANGE}"/>`).join(''):'');
  $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=rod;$('k2').textContent=pts.length-1;$('k3').textContent=pts.length;
- missao('m',rod>=6,'Depois de 6 rodadas: 2⁶ = 64 segmentos e 65 pontos.','Rodadas: '+rod+'. Segmentos: 2 elevado ao número de rodadas.');}
+MIS.ver('m');}
 $('mais').onclick=mais;$('nova').onclick=nova;nova();
 </script>
 </body>
