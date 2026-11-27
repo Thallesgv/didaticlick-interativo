@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'res1':{T:["A mina em escala", "A rampa: inclinação em %", "Coordenadas em 3D", "Pitágoras no espaço", "O ângulo do furo", "Um grau de erro a 700 m"],G:{1:()=>{const t=R(0,2),E=P([1000,2000,5000,10000,20000]);
+ if(t==0){const c=P([2,3,4,5,7,8,12]);return{q:`Na escala <b>1 : ${fmt(E)}</b>, quantos metros valem <b>${c} cm</b> do desenho?`,a:c*E/100,exp:`${c} × ${fmt(E)} = ${fmt(c*E)} cm = ${fmt(c*E/100)} m.`};}
+ if(t==1){const m=P([100,200,400,500,700,800]);return{q:`Na escala <b>1 : ${fmt(E)}</b>, quantos centímetros de papel ocupam <b>${m} m</b>?`,a:m*100/E,tol:0.001,exp:`${m} m = ${fmt(m*100)} cm; ${fmt(m*100)} ÷ ${fmt(E)} = ${fmt(m*100/E)} cm.`};}
+ const m=P([500,700,1000]),c=P([5,7,10,14]);return{q:`Um desenho mostra <b>${m} m</b> com <b>${c} cm</b>. A escala é 1 : N. Quanto vale N?`,a:m*100/c,tol:0.5,exp:`${m} m = ${fmt(m*100)} cm; ${fmt(m*100)} ÷ ${c} = ${fmt(Math.round(m*100/c))}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const i=P([5,8,10,12,15,20,25]),h=P([100,200,500,1000]);return{q:`Uma rampa avança <b>${h} m</b> na horizontal e desce <b>${h*i/100} m</b>. Qual é a inclinação, em %?`,a:i,exp:`${h*i/100} ÷ ${h} = ${i/100} = ${i}%.`};}
+ if(t==1){const i=P([5,7,10,14,20,25]),d=P([350,700,140,280]);return{q:`Quantos metros na horizontal uma rampa de <b>${i}%</b> precisa para descer <b>${d} m</b>?`,a:d/(i/100),tol:0.5,exp:`${d} ÷ ${fmt(i/100)} = ${fmt(Math.round(d/(i/100)))} m.`};}
+ const i=P([5,10,20,30,50,100]);return{q:`Uma rampa tem <b>${i}%</b> de inclinação. Qual é o ângulo dela com o chão, em graus? (uma casa decimal)`,a:Math.round(atg(i/100)*10)/10,tol:0.11,exp:`tg θ = ${fmt(i/100)}; θ = tg⁻¹(${fmt(i/100)}) ≈ ${r1(atg(i/100))}°.`};},
+3:()=>{const t=R(0,2),a=[R(-5,30)*10,R(-5,30)*10,-R(1,14)*50],b=[R(-5,30)*10,R(-5,30)*10,-R(1,14)*50],k=R(0,2),n=['x','y','z'][k];
+ if(t==0)return{q:`Qual é o <b>Δ${n}</b> do deslocamento de A = (${a.join(', ')}) até B = (${b.join(', ')})?`,a:b[k]-a[k],exp:`Δ${n} = ${b[k]} − (${a[k]}) = ${b[k]-a[k]}.`};
+ if(t==1)return{q:`Quantos metros o ponto A = (${a.join(', ')}) está <b>abaixo</b> da boca da mina (0, 0, 0)?`,a:-a[2],exp:`z = ${a[2]}: ${-a[2]} m abaixo.`};
+ return{q:`Qual é a coordenada <b>${n}</b> do ponto médio entre A = (${a.join(', ')}) e B = (${b.join(', ')})?`,a:(a[k]+b[k])/2,exp:`(${a[k]} + ${b[k]}) ÷ 2 = ${fmt((a[k]+b[k])/2)}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const [p,q]=P([[3,4],[6,8],[5,12],[8,15],[9,12],[7,24]]),k=P([10,20,30]);return{q:`Calcule a distância horizontal h para Δx = <b>${p*k}</b> e Δy = <b>${q*k}</b>.`,a:Math.hypot(p*k,q*k),tol:0.5,exp:`√(${p*k}² + ${q*k}²) = ${fmt(Math.hypot(p*k,q*k))} m.`};}
+ if(t==1){const h=P([100,150,200,240,300,400]),z=P([500,600,700,800]);const D=Math.hypot(h,z);return{q:`Distância horizontal <b>${h} m</b> e profundidade <b>${z} m</b>. Quanto mede o furo? (uma casa decimal)`,a:Math.round(D*10)/10,tol:0.11,exp:`√(${h}² + ${z}²) = √${fmt(h*h+z*z)} ≈ ${r1(D)} m.`};}
+ const a=R(1,9)*10,b=R(1,9)*10,c=R(1,9)*10;const D=Math.hypot(a,b,c);return{q:`Calcule a distância entre (0, 0, 0) e (${a}, ${b}, −${c}). (uma casa decimal)`,a:Math.round(D*10)/10,tol:0.11,exp:`√(${a}² + ${b}² + ${c}²) = √${fmt(a*a+b*b+c*c)} ≈ ${r1(D)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const h=P([100,200,300,400]),z=P([500,600,700]);return{q:`Um furo avança <b>${h} m</b> na horizontal e desce <b>${z} m</b>. Qual é o ângulo dele com a <b>vertical</b>? (uma casa decimal)`,a:Math.round(atg(h/z)*10)/10,tol:0.11,exp:`tg θ = ${h} ÷ ${z} ≈ ${fmt(Math.round(h/z*1000)/1000)}; θ ≈ ${r1(atg(h/z))}°.`};}
+ if(t==1){const x=R(1,30)*10,y=R(1,30)*10;return{q:`O furo precisa andar Δx = <b>${x}</b> (leste) e Δy = <b>${y}</b> (norte). Qual é o azimute? (uma casa decimal)`,a:Math.round(atg(x/y)*10)/10,tol:0.11,exp:`tg α = ${x} ÷ ${y}; α ≈ ${r1(atg(x/y))}° a partir do norte.`};}
+ const L=P([500,600,800,1000]),g=P([10,20,30,40]);return{q:`Um furo de <b>${L} m</b> faz <b>${g}°</b> com a vertical. Quanto ele desce? (uma casa decimal)`,a:Math.round(L*Math.cos(g*RAD)*10)/10,tol:0.11,exp:`${L} × cos ${g}° ≈ ${r1(L*Math.cos(g*RAD))} m.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const L=P([100,200,300,500,700,800]),e=P([0.5,1,2,3]);return{q:`Um furo de <b>${L} m</b> desviou <b>${fmt(e)}°</b>. Qual o erro lateral no fundo? (uma casa decimal)`,a:Math.round(L*tg(e)*10)/10,tol:0.11,exp:`${L} × tg ${fmt(e)}° ≈ ${L} × ${fmt(Math.round(tg(e)*10000)/10000)} ≈ ${r1(L*tg(e))} m.`};}
+ if(t==1){const w=P([6,8,10,12]),L=P([400,600,700,800]);return{q:`Um alvo de <b>${w} m</b> de largura está a <b>${L} m</b>. Mirando no centro, qual o maior erro de ângulo aceitável, em graus? (duas casas)`,a:Math.round(atg(w/2/L)*100)/100,tol:0.011,exp:`tg(erro) = ${w/2} ÷ ${L}; erro ≈ ${r2(atg(w/2/L))}°.`};}
+ const e=P([1,2]),L=P([200,400]),k=P([2,3]);return{q:`Com ${e}° de erro, um furo de ${L} m erra por ${r1(L*tg(e))} m. Se o furo fosse <b>${k} vezes</b> mais comprido, o erro seria quantas vezes maior?`,a:k,exp:`O erro é proporcional ao comprimento: ${k} vezes.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='res1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>

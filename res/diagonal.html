@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A diagonal da sonda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A diagonal da sonda</h1></header>
+<main>
+<div class="card"><h2>Arraste a sonda</h2><p class="muted" style="margin-top:0">No mapa de cima (à esquerda), toque ou arraste para mudar o lugar da sonda na superfície. À direita, o furo em 3D até o refúgio, 700 m abaixo. Cada quadradinho do mapa tem 20 m.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Sonda S<b id="k0"></b></div><div>Horizontal h<b id="k1"></b></div><div class="o">Furo D<b id="k2"></b></div><div>Hastes de 3 m<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Arraste a sonda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let S=[60,80];const R=[240,320,-700];const M0=10,MK=0.3;// mapa: x de -100 a 400 (150 px), y igual
+const dd=()=>[R[0]-S[0],R[1]-S[1]],hh=()=>Math.hypot(...dd()),DD=()=>Math.hypot(hh(),700);
+toque('fig',(x,y)=>{if(x>165)return;S=[clamp(Math.round(((x-M0)/MK-100)/10)*10,-100,400),clamp(Math.round(((M0+150-y)/MK-100)/10)*10,-100,400)];draw();});
+MIS.def(()=>[
+ ['Monte a sonda onde o furo fica <b>o mais curto possível</b>.',()=>Math.abs(DD()-700)<0.01,'700 m: a sonda bem em cima do refúgio. O furo vertical é o mais curto, mas ali é encosta: na vida real não dá para montar a máquina.',()=>'Agora o furo tem '+r1(DD())+' m.'],
+ ['Volte a sonda para <b>S = (60, 80)</b> e confira o furo do livro.',()=>S[0]==60&&S[1]==80,'h = 300 m e D ≈ 761,6 m: 180 e 240 formam o triângulo 3-4-5 vezes 60.',()=>'A sonda está em ('+S.join(', ')+').'],
+ ['Ache um lugar em que o furo tenha comprimento <b>inteiro, 740 m</b>.',()=>Math.abs(DD()-740)<0.01,()=>'740 m! h = 240 e 240² + 700² = 740². É o terno 24-70-74 (o 12-35-37 dobrado).',()=>'Furo atual: '+r1(DD())+' m. Tente h = 240 m.'],
+ ['A máquina só tem <b>750 m</b> de hastes. Coloque a sonda o mais longe possível do refúgio, com o furo cabendo nos 750 m.',()=>DD()<=750&&hh()>=260,()=>'Isso: h = '+r1(hh())+' m, perto do máximo de 269,3 m.',()=>DD()>750?'Furo de '+r1(DD())+' m: hastes insuficientes. Chegue mais perto.':'Cabe, mas dá para ir mais longe (h = '+r1(hh())+' m).']]);
+function draw(){let g='';const mx=v=>M0+(v+100)*MK,my=v=>M0+150-(v+100)*MK;
+ g+=RC(M0,M0,150,150,'#F6EEDF','stroke="#C9A27A"');for(let v=-100;v<=400;v+=20){g+=LN(mx(v),M0,mx(v),M0+150,'#E6D6BC',.6)+LN(M0,my(v),M0+150,my(v),'#E6D6BC',.6);}
+ g+=LN(mx(S[0]),my(S[1]),mx(R[0]),my(R[1]),ORANGE,2,'4 3')+REFUGIO(mx(R[0]),my(R[1]),8,6)+`<circle cx="${mx(S[0])}" cy="${my(S[1])}" r="6" fill="${NAVY}" stroke="#fff" stroke-width="2"/>`;
+ g+=TX(85,176,'mapa de cima',{fs:9,c:GRAY,w:500})+TX(M0+150,M0+158,'N ↑',{fs:9,a:'end'});
+ // 3D
+ const [dx,dy]=dd();const iso=ISO(210,40,0.16);const b=(x,y,z)=>iso(x-Math.min(0,dx),y-Math.min(0,dy),z);
+ const p0=b(0,0,0),p1=b(dx,0,0),p2=b(dx,dy,0),p3=b(0,dy,0),q2=b(dx,dy,-700),q1=b(dx,0,-700),q0=b(0,0,-700);
+ g+=POLY([p0,p1,q1,q0],'#EFE3CF','stroke="#C9A27A"')+POLY([p1,p2,q2,q1],'#E9DCC6','stroke="#C9A27A"')+POLY([p0,p1,p2,p3],'#F6EEDF','stroke="#C9A27A"');
+ g+=LN(p0[0],p0[1],p2[0],p2[1],ORANGE,2,'4 3')+LN(p0[0],p0[1],q2[0],q2[1],VERM,3)+REFUGIO(q2[0],q2[1],12,7)+`<circle cx="${p0[0]}" cy="${p0[1]}" r="5" fill="${NAVY}"/>`;
+ g+=TX(275,262,'h = '+r1(hh())+' m · D = '+r1(DD())+' m',{fs:10,c:VERM});
+ $('fig').innerHTML=SVG(340,272,g);$('k0').textContent='('+S.join(', ')+', 0)';$('k1').textContent=r1(hh())+' m';$('k2').textContent=r1(DD())+' m';$('k3').textContent=Math.ceil(DD()/3-1e-9);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

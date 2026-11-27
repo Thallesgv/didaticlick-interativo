@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O ponto no espaço · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O ponto no espaço</h1></header>
+<main>
+<div class="card"><h2>Três números, um lugar</h2><p class="muted" style="margin-top:0">A boca da mina é a origem (0, 0, 0). Mova x (leste), y (norte) e z (altura) e veja o ponto andar dentro do bloco de rocha. As linhas tracejadas mostram a sombra do ponto na superfície.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sx"><b>x (metros para o leste)</b><input type="range"><span></span></div>
+<div class="sl" id="sy"><b>y (metros para o norte)</b><input type="range"><span></span></div>
+<div class="sl" id="sz"><b>z (altura; negativo = abaixo da boca)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">O ponto<b id="k1"></b></div><div>Deslocamento até o refúgio<b id="k2"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o ponto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const X=SL('sx',-100,400,20,0,draw),Y=SL('sy',-100,400,20,0,draw),Z=SL('sz',-800,0,50,0,draw);
+const R=[240,320,-700];const pt=()=>[X.get(),Y.get(),Z.get()];const igual=(a,b)=>a.every((v,i)=>v==b[i]);
+MIS.def(()=>[
+ ['Leve o ponto até o <b>refúgio</b>, em (240, 320, −700).',()=>igual(pt(),R),'Chegou! 240 m para o leste, 320 m para o norte e 700 m para baixo.',()=>'O ponto está em ('+pt().join(', ')+').'],
+ ['Agora vá para o ponto da <b>superfície</b> bem em cima do refúgio.',()=>igual(pt(),[240,320,0]),'(240, 320, 0): mesmo x e y, z = 0. Uma sonda aqui faria um furo vertical de 700 m.',()=>'Só o z precisa mudar.'],
+ ['Leve o ponto até a <b>oficina</b>, 40 m a oeste, 20 m ao sul e 50 m acima do refúgio.',()=>igual(pt(),[200,300,-650]),'(200, 300, −650). O deslocamento da oficina até o refúgio é (40, 20, −50).',()=>'Comece no refúgio e ande: x − 40, y − 20, z + 50.'],
+ ['Coloque o ponto na <b>primeira sonda</b>: o deslocamento dela até o refúgio é (180, 240, −700).',()=>igual(pt(),[60,80,0]),'S = (60, 80, 0): refúgio menos deslocamento.',()=>'Deslocamento atual: ('+R.map((v,i)=>v-pt()[i]).join(', ')+').']]);
+function draw(){const iso=ISO(100,92,0.19);const p=pt();let g='';
+ const top=[[-100,-100,0],[400,-100,0],[400,400,0],[-100,400,0]].map(q=>iso(...q)),fr=[[400,-100,0],[400,400,0],[400,400,-800],[400,-100,-800]].map(q=>iso(...q)),fl=[[-100,-100,0],[400,-100,0],[400,-100,-800],[-100,-100,-800]].map(q=>iso(...q));
+ g+=POLY(fl,'#E9DCC6','stroke="#C9A27A"')+POLY(fr,'#EFE3CF','stroke="#C9A27A"')+POLY(top,'#F6EEDF','stroke="#C9A27A"');
+ for(let zz=-200;zz>=-800;zz-=200){const a=iso(400,-100,zz),b=iso(400,400,zz),c=iso(-100,-100,zz);g+=LN(c[0],c[1],a[0],a[1],'#D9C3A0',1)+LN(a[0],a[1],b[0],b[1],'#D9C3A0',1)+TX(c[0]-4,c[1]+3,zz,{fs:8,a:'end',c:GRAY,w:500});}
+ const o=iso(0,0,0),ex=iso(380,0,0),ey=iso(0,380,0);g+=LN(o[0],o[1],ex[0],ex[1],NAVY,1.5)+TX(ex[0]+4,ex[1]+10,'x leste',{fs:9,a:'start'})+LN(o[0],o[1],ey[0],ey[1],NAVY,1.5)+TX(ey[0]+2,ey[1]-4,'y norte',{fs:9,a:'start'});
+ const r=iso(...R),rs=iso(R[0],R[1],0);g+=LN(rs[0],rs[1],r[0],r[1],'#B45309',1,'3 3')+REFUGIO(r[0],r[1],16,8)+TX(r[0]+12,r[1]+4,'refúgio',{fs:9,a:'start',c:'#B45309'});
+ const of=iso(200,300,-650);g+=RC(of[0]-5,of[1]-3,10,6,'#7A4BB5')+TX(of[0]-8,of[1]+3,'oficina',{fs:8,a:'end',c:'#7A4BB5'});
+ const a1=iso(p[0],0,0),a2=iso(p[0],p[1],0),q=iso(...p);
+ g+=LN(o[0],o[1],a1[0],a1[1],ORANGE,1.5,'4 3')+LN(a1[0],a1[1],a2[0],a2[1],ORANGE,1.5,'4 3')+LN(a2[0],a2[1],q[0],q[1],ORANGE,1.5,'4 3');
+ g+=`<circle cx="${o[0]}" cy="${o[1]}" r="4" fill="${NAVY}"/>`+`<circle cx="${q[0]}" cy="${q[1]}" r="7" fill="${VERM}" stroke="#fff" stroke-width="2"/>`;
+ $('fig').innerHTML=SVG(340,300,g);$('k1').textContent='('+p.join(', ')+')';$('k2').textContent='('+R.map((v,i)=>v-p[i]).join(', ')+')';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
