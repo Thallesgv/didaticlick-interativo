@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A linha de máquinas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A linha de máquinas</h1></header>
+<main>
+<div class="card"><h2>Duas máquinas em fila</h2><p class="muted" style="margin-top:0">Escolha a 1ª e a 2ª máquina e o número que entra. Embaixo, a mesma dupla na ordem trocada, para comparar.</p>
+<b style="font-size:14px">1ª máquina</b><div id="c1" style="margin:4px 0"></div>
+<b style="font-size:14px">2ª máquina</b><div id="c2" style="margin:4px 0"></div>
+<div class="sl" id="sx"><b>Número que entra</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a linha.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MQ=[['f','× 3, + 7',x=>3*x+7],['g','× 2',x=>2*x],['s','+ 5',x=>x+5],['t','− 4',x=>x-4],['m','× 3',x=>3*x],['d','÷ 10',x=>x/10]];
+const nomes=MQ.map(q=>q[0]+': '+q[1]);const C1=chips('c1',nomes,0,draw),C2=chips('c2',nomes,1,draw),SX=SL('sx',0,40,1,5,draw);
+const nf=v=>fmt(Math.round(v*100)/100);
+const comuta=(i,j)=>{for(let x=0;x<=40;x++)if(Math.abs(MQ[j][2](MQ[i][2](x))-MQ[i][2](MQ[j][2](x)))>1e-9)return false;return true;};
+MIS.def(()=>[
+ ['Ache a <b>prateleira do lote 31</b>: primeiro o código (f), depois o dobro (g).',()=>C1.get()==0&&C2.get()==1&&SX.get()==31,()=>'g(f(31)) = 2 × 100 = 200. A prateleira é a 200.',()=>C1.get()==0&&C2.get()==1?'Agora faça entrar o lote 31.':'1ª máquina f, 2ª máquina g.'],
+ ['Escolha duas máquinas <b>diferentes</b> cuja ordem <b>muda</b> o resultado.',()=>C1.get()!=C2.get()&&!comuta(C1.get(),C2.get()),()=>'A ordem importa: '+MQ[C2.get()][0]+'('+MQ[C1.get()][0]+'(x)) e '+MQ[C1.get()][0]+'('+MQ[C2.get()][0]+'(x)) são funções diferentes.',()=>C1.get()==C2.get()?'Escolha máquinas diferentes.':comuta(C1.get(),C2.get())?'Essas duas dão o mesmo nas duas ordens. Tente outra dupla.':'Toque numa das máquinas para escolher a dupla.'],
+ ['Agora ache duas máquinas <b>diferentes</b> cuja ordem <b>não muda</b> nada, para <b>qualquer</b> número.',()=>C1.get()!=C2.get()&&comuta(C1.get(),C2.get()),()=>'Para todo número de 0 a 40, as duas ordens dão igual. Duas multiplicações (ou duas somas) trocam de ordem sem problema.',()=>C1.get()==C2.get()?'Escolha máquinas diferentes.':'Para algum número as ordens dão diferente. Teste outra dupla.']]);
+function linhaM(y,i,j,x){const a=MQ[i],b=MQ[j],m=a[2](x),o=b[2](m);let g='';
+ g+=TX(22,y+5,nf(x),{fs:13})+LN(38,y,52,y,NAVY,2)+RC(54,y-22,82,44,ORANGE,'rx="7"')+TX(95,y-4,a[0],{fs:14,c:'#fff'})+TX(95,y+12,a[1],{fs:9.5,c:'#fff'});
+ g+=LN(138,y,152,y,NAVY,2)+TX(166,y-8,nf(m),{fs:11,c:GRAY})+LN(180,y,194,y,NAVY,2)+RC(196,y-22,82,44,NAVY,'rx="7"')+TX(237,y-4,b[0],{fs:14,c:'#fff'})+TX(237,y+12,b[1],{fs:9.5,c:'#fff'});
+ g+=LN(280,y,292,y,NAVY,2)+TX(316,y+5,nf(o),{fs:15,c:ORANGE});return [g,o];}
+function draw(){const i=C1.get(),j=C2.get(),x=SX.get();const [g1,o1]=linhaM(44,i,j,x),[g2,o2]=linhaM(142,j,i,x);let g='';
+ g+=TX(8,14,'na ordem escolhida: '+MQ[j][0]+'('+MQ[i][0]+'(x))',{fs:10,c:GRAY,a:'start',w:500})+g1;
+ g+=TX(8,112,'na ordem trocada: '+MQ[i][0]+'('+MQ[j][0]+'(x))',{fs:10,c:GRAY,a:'start',w:500})+g2;
+ g+=TX(171,196,Math.abs(o1-o2)<1e-9?'mesmo resultado nas duas ordens (para este número)':'resultados diferentes: a ordem importa',{fs:10.5,c:Math.abs(o1-o2)<1e-9?'#15803D':'#C0504D'});
+ $('fig').innerHTML=SVG(342,204,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

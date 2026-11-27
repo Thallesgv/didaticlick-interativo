@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O espelho · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O espelho</h1></header>
+<main>
+<div class="card"><h2>O reflexo na reta y = x</h2><p class="muted" style="margin-top:0">O ponto laranja anda no gráfico da função. O azul é o seu espelho na reta y = x: troca x por y. O rastro azul é o gráfico da inversa. Use o controle do código para voltar do código ao lote.</p>
+<div id="cf" style="margin:4px 0"></div>
+<div class="sl" id="sx"><b>Lote x</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Código (volta ao lote)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Ponto<b id="kp"></b></div><div class="o">Espelho<b id="ke"></b></div></div>
+<div id="info" style="font-size:14px;margin:4px 0"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o ponto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const FS=[{n:'f(x) = 3x + 7',f:x=>3*x+7,inv:y=>(y-7)/3,lo:-20,hi:34,st:0.5},{n:'g(x) = 2x',f:x=>2*x,inv:y=>y/2,lo:-10,hi:55,st:0.5},{n:'p(x) = (x − 50)² ÷ 25',f:x=>(x-50)*(x-50)/25,inv:null,lo:0,hi:100,st:1}];
+const nf=v=>fmt(Math.round(v*100)/100);let SX,SC;
+const CF=chips('cf',FS.map(q=>q.n),0,()=>{const q=FS[CF.get()];SX=SL('sx',q.lo,q.hi,q.st,q.lo<0?0:q.lo,draw);SC=SL('sc',-20,110,1,Math.round(q.f(SX.get())),codigo);draw();});
+function codigo(c){const q=FS[CF.get()];if(q.inv){const x=Math.round(q.inv(c)/q.st)*q.st;if(x>=q.lo&&x<=q.hi)SX.set(x);}draw(true);}
+SX=SL('sx',-20,34,0.5,0,draw);SC=SL('sc',-20,110,1,7,codigo);
+const X0=48,Y0=250,K=230/130,PX=v=>X0+(v+20)*K,PY=v=>Y0-(v+20)*K;
+MIS.def(()=>[
+ ['Com f(x) = 3x + 7, ache o <b>lote do código 100</b> (use o controle do código).',()=>CF.get()==0&&SX.get()==31,()=>'f⁻¹(100) = (100 − 7) ÷ 3 = 31. O espelho de (31, 100) é (100, 31).',()=>CF.get()!=0?'Escolha f(x) = 3x + 7.':'Agora o lote é '+nf(SX.get())+', código '+nf(FS[0].f(SX.get()))+'.'],
+ ['Ainda com f, ache o ponto que é o <b>seu próprio espelho</b>.',()=>CF.get()==0&&Math.abs(SX.get()+3.5)<1e-9,()=>'(−3,5; −3,5) está na reta y = x: o reflexo cai em cima dele. É onde o gráfico de f cruza o da inversa.',()=>CF.get()!=0?'Escolha f.':'Ponto ('+nf(SX.get())+'; '+nf(FS[0].f(SX.get()))+'). Ele precisa ficar na reta tracejada.'],
+ ['Descubra uma função <b>sem inversa</b>: escolha uma e ache dois lotes com o mesmo código.',()=>CF.get()==2&&SX.get()!=50,()=>'p('+nf(SX.get())+') = p('+nf(100-SX.get())+') = '+nf(FS[2].f(SX.get()))+'. Do código não dá para voltar a um lote só: o espelho de p não é função.',()=>CF.get()==2?'Mova o ponto para fora do x = 50.':'Com essa função cada código vem de um lote só. Tente outra.']]);
+function draw(){const q=FS[CF.get()],x=SX.get(),y=q.f(x);let g='';
+ for(let v=-20;v<=110;v+=10){const c=v==0?NAVY:'#E5E7EB',w=v==0?1.6:1;g+=LN(PX(v),Y0,PX(v),Y0-230,c,w)+LN(X0,PY(v),X0+230,PY(v),c,w);if(v%20==0){g+=TX(PX(v),Y0+12,v,{fs:8,c:GRAY,w:500})+TX(X0-4,PY(v)+3,v,{fs:8,c:GRAY,w:500,a:'end'});}}
+ g+=LN(PX(-20),PY(-20),PX(110),PY(110),GRAY,1.5,'5 4')+TX(PX(104),PY(110)+12,'y = x',{fs:9,c:GRAY});
+ const pf=[],pi=[];for(let t=q.lo;t<=q.hi+1e-9;t+=0.5){const v=q.f(t);if(v>=-20&&v<=110){pf.push([t,v]);pi.push([v,t]);}}
+ const pl=(pts,c,w)=>'<polyline points="'+pts.map(p=>PX(p[0]).toFixed(1)+','+PY(p[1]).toFixed(1)).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="'+w+'"/>';
+ g+=pl(pf,ORANGE,2.5);const ri=pi.filter(p=>p[1]<=x+1e-9);if(q.inv)g+=pl(ri,'#2457D6',2.5);else g+=pl(ri,'#2457D6',2.5);
+ if(y>=-20&&y<=110){g+=LN(PX(x),PY(y),PX(y),PY(x),'#9AA7BD',1.2,'3 3')+CI(PX(x),PY(y),6,ORANGE,'stroke="#fff" stroke-width="2"')+CI(PX(y),PY(x),6,'#2457D6','stroke="#fff" stroke-width="2"');
+  if(!q.inv&&x!=50)g+=CI(PX(100-x),PY(y),6,ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+ g+=TX(X0+6,16,'laranja: '+q.n,{fs:9.5,c:ORANGE,a:'start'})+TX(X0+6,30,'azul: o espelho',{fs:9.5,c:'#2457D6',a:'start'});
+ $('fig').innerHTML=SVG(300,268,g);$('kp').textContent='('+nf(x)+'; '+nf(y)+')';$('ke').textContent='('+nf(y)+'; '+nf(x)+')';
+ $('info').innerHTML=q.inv?'Código '+nf(y)+' → lote '+nf(q.inv(y))+'.':(x==50?'Código 0 só vem do lote 50.':'Código '+nf(y)+' vem de <b>dois</b> lotes: '+nf(x)+' e '+nf(100-x)+'.');
+ if(arguments[0]!==true)SC.set(Math.round(y));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

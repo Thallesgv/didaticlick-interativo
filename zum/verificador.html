@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O leitor de códigos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O leitor de códigos</h1></header>
+<main>
+<div class="card"><h2>O código de 13 dígitos</h2><p class="muted" style="margin-top:0">Toque num dígito para escolhê-lo e use <b>−</b> e <b>+</b> para mudá-lo. Os pesos são 1 e 3 alternados (o último dígito, o verificador, tem peso 1). O leitor aceita quando a soma total é múltiplo de 10.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button class="alt" id="bm">−</button><button class="alt" id="bp">+</button><button class="alt" id="bt">Trocar com o vizinho da direita</button></div>
+<div class="row"><button class="alt" id="bg">Exemplo da GS1</button><button class="alt" id="bb">Código borrado</button><button class="alt" id="bs">Sortear</button></div>
+<div class="kpi"><div>Soma ponderada<b id="ks"></b></div><div class="o">Leitor<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia um código.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const GS=[6,2,9,1,0,4,1,5,0,0,2,1,3],BOR=[7,8,9,0,1,2,3,4,5,6,7,8,9];
+let D=[...GS].map(()=>0),sel=0,borrado=false,trocaOk=false,ult=null;
+const W=i=>i%2?3:1,soma=()=>D.reduce((s,v,i)=>s+v*W(i),0),valido=()=>soma()%10==0;
+const ok12=()=>{const s=D.slice(0,12).reduce((s,v,i)=>s+v*W(i),0);return (10-s%10)%10;};
+$('bm').onclick=()=>{D[sel]=(D[sel]+9)%10;mexe();};$('bp').onclick=()=>{D[sel]=(D[sel]+1)%10;mexe();};
+$('bt').onclick=()=>{if(sel>=12)return;const antes=valido(),a=D[sel],b=D[sel+1];D[sel]=b;D[sel+1]=a;if(antes&&a!=b&&valido()){trocaOk=true;ult=[sel,a,b];}draw();};
+$('bg').onclick=()=>{D=[...GS];borrado=false;sel=0;draw();};$('bb').onclick=()=>{D=[...BOR];borrado=true;sel=3;draw();};
+$('bs').onclick=()=>{D=Array.from({length:12},()=>Math.floor(Math.random()*10));D.push(ok12());borrado=false;draw();};
+function mexe(){if(borrado&&D.some((v,i)=>i!=3&&v!=BOR[i]))borrado=false;draw();}
+MIS.def(()=>[
+ ['Confira o <b>exemplo da GS1</b>: 6 2 9 1 0 4 1 5 0 0 2 1 e o verificador 3.',()=>D.every((v,i)=>v==GS[i]),()=>'Soma dos 12 primeiros: 57. 57 + 3 = 60, múltiplo de 10: aceito.',()=>'Toque em "Exemplo da GS1" ou monte o código dígito por dígito.'],
+ ['Toque em <b>Código borrado</b>: o 4º dígito (peso 3) apagou. Mude só ele até o leitor aceitar.',()=>borrado&&valido(),()=>'O dígito era 5: sem ele a soma é 125, e 125 + 3 × 5 = 140. Só um valor de 0 a 9 funciona.',()=>borrado?'4º dígito agora: '+D[3]+'. Soma '+soma()+'.':'Toque em "Código borrado".'],
+ ['Com um código <b>aceito</b>, troque dois dígitos vizinhos <b>diferentes</b> e consiga que o leitor <b>continue aceitando</b>.',()=>trocaOk,()=>'Trocou '+ult[1]+' e '+ult[2]+', que diferem em 5: a soma muda 2 × 5 = 10 e o erro passa. É a falha conhecida dos pesos 1 e 3.',()=>valido()?'Escolha um dígito e troque com o da direita. Dica: procure vizinhos que diferem em 5.':'Comece de um código aceito (o exemplo da GS1 serve).']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const i=Math.floor((x-6)/25.4);if(i>=0&&i<13&&y>10&&y<60){sel=i;draw();}});
+function draw(){let g='';const v=valido();
+ D.forEach((d,i)=>{const x=6+i*25.4;g+=RC(x,16,22,34,i==sel?ORANGE:(i==12?'#E7EEFB':'#fff'),'rx="4" stroke="'+(i==12?'#2457D6':NAVY)+'" stroke-width="1.5"')+TX(x+11,39,borrado&&i==3&&!v?'?':d,{fs:15,c:i==sel?'#fff':NAVY});
+  g+=TX(x+11,66,'×'+W(i),{fs:9,c:GRAY,w:500})+TX(x+11,82,d*W(i),{fs:10,c:W(i)==3?ORANGE:NAVY});});
+ g+=TX(6+12*25.4+11,10,'verif.',{fs:7.5,c:'#2457D6'});
+ g+=RC(70,96,200,44,v?'#DFF3E4':'#FBE3E2','rx="8" stroke="'+(v?'#15803D':'#C0504D')+'" stroke-width="2"')+TX(170,124,v?'BIP! CÓDIGO ACEITO':'CÓDIGO RECUSADO',{fs:14,c:v?'#15803D':'#C0504D'});
+ g+=TX(171,160,'soma ponderada '+soma()+(v?' (múltiplo de 10)':' (o próximo múltiplo de 10 é '+Math.ceil(soma()/10)*10+')'),{fs:10,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(342,170,g);$('ks').textContent=soma();$('kl').textContent=v?'aceito':'recusado';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

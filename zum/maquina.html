@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A máquina</h1></header>
+<main>
+<div class="card"><h2>A máquina de códigos</h2><p class="muted" style="margin-top:0">A máquina faz <b>a × lote + b</b>. Escolha a e b, escolha um lote e aperte <b>Jogar na máquina</b>. Cada lote jogado vira uma linha da tabela e um ponto do gráfico. Mudar a regra limpa a tabela.</p>
+<p style="margin:4px 0 8px;font-size:14px">Pares do caderno de Otávio: <b>lote 10 → 37</b>, <b>lote 12 → 43</b>, <b>lote 20 → 67</b>.</p>
+<div class="sl" id="sa"><b>a (multiplica)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>b (soma)</b><input type="range"><span></span></div>
+<div class="sl" id="sx"><b>Lote</b><input type="range"><span></span></div>
+<div class="row"><button id="bj">Jogar na máquina</button><button class="alt" id="bl">Limpar a tabela</button></div>
+<div class="fig" id="maq"></div>
+<div class="fig" id="fig"></div>
+<div id="tab" style="font-size:14px;margin:6px 0"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Jogue lotes na máquina.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let T=[],viuRep=false;const limpa=()=>{T=[];draw();};
+const SA=SL('sa',0,5,1,1,limpa),SB=SL('sb',0,10,1,0,limpa),SX=SL('sx',1,40,1,10,draw);
+const f=x=>SA.get()*x+SB.get();
+$('bj').onclick=()=>{const x=SX.get();if(!T.some(t=>t[0]==x))T.push([x,f(x)]);T.sort((p,q)=>p[0]-q[0]);if(SA.get()==0&&T.length>=2)viuRep=true;draw();};
+$('bl').onclick=limpa;
+const caderno=()=>SA.get()==3&&SB.get()==7;
+MIS.def(()=>[
+ ['Descubra a <b>regra do caderno</b>: ache a e b que dão 10 → 37, 12 → 43 e 20 → 67, e jogue esses três lotes.',()=>caderno()&&[10,12,20].every(x=>T.some(t=>t[0]==x)),()=>'f(x) = 3x + 7. Cada lote a mais soma 3 ao código (a), e o 7 é o que sobra (b).',()=>{const e=[[10,37],[12,43],[20,67]].filter(p=>f(p[0])!=p[1]).length;return e?'Com a regra atual, '+e+' dos 3 pares não batem.':'A regra bate! Agora jogue os lotes 10, 12 e 20.';}],
+ ['Com a regra do caderno, ache o <b>código do lote 31</b>.',()=>caderno()&&T.some(t=>t[0]==31),()=>'f(31) = 3 × 31 + 7 = 100. O código 100 do frasco é o lote 31.',()=>caderno()?'Jogue o lote 31.':'Volte para a regra do caderno (a = 3, b = 7).'],
+ ['Ponha <b>a = 0</b> e jogue dois lotes: veja o código se repetir. Depois volte a um a diferente de 0 e jogue <b>3 lotes</b>.',()=>viuRep&&SA.get()!=0&&T.length>=3,()=>'Com a = 0 todo lote dá o mesmo código: inútil para identificar. Com a diferente de 0, lotes diferentes nunca têm o mesmo código.',()=>!viuRep?'Primeiro: a = 0 e dois lotes diferentes.':'Agora a diferente de 0 e 3 lotes. Lotes na tabela: '+T.length+'.']]);
+function draw(){const a=SA.get(),b=SB.get(),x=SX.get();let g='';
+ g+=RC(6,26,70,34,'#FDE9D8','rx="6" stroke="#0E2354"')+TX(41,40,'lote',{fs:9,c:GRAY,w:500})+TX(41,54,x,{fs:13});
+ g+=LN(78,43,112,43,NAVY,2)+PG([[112,38],[120,43],[112,48]],NAVY);
+ g+=RC(122,12,98,62,ORANGE,'rx="8"')+TX(171,34,'× '+a,{fs:14,c:'#fff'})+TX(171,54,'+ '+b,{fs:14,c:'#fff'})+CI(134,20,3,'#fff')+CI(208,20,3,'#fff');
+ g+=LN(222,43,256,43,NAVY,2)+PG([[256,38],[264,43],[256,48]],NAVY);
+ g+=RC(266,26,70,34,'#E7EEFB','rx="6" stroke="#0E2354"')+TX(301,40,'código',{fs:9,c:GRAY,w:500})+TX(301,54,f(x),{fs:13,c:ORANGE});
+ $('maq').innerHTML=SVG(342,84,g);
+ $('fig').innerHTML=PLOT({xmin:0,xmax:40,ymin:0,ymax:210,dx:5,dy:30,xl:'lote',yl:'código'},(X,Y)=>{let h=linha([[0,b],[40,f(40)]],X,Y,'#FBB57A',2,'5 4');
+  [[10,37],[12,43],[20,67]].forEach(p=>h+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="6" fill="none" stroke="${NAVY}" stroke-width="1.5"/>`);
+  T.forEach(t=>h+=ponto(t[0],t[1],X,Y,ORANGE));h+=`<circle cx="${X(x)}" cy="${Y(f(x))}" r="3" fill="${NAVY}"/>`;return h;});
+ $('tab').innerHTML=T.length?'<table style="border-collapse:collapse;width:100%"><tr><th style="text-align:left">lote</th>'+T.map(t=>'<td style="padding:2px 6px;text-align:center">'+t[0]+'</td>').join('')+'</tr><tr><th style="text-align:left;color:#F7821F">código</th>'+T.map(t=>'<td style="padding:2px 6px;text-align:center;font-weight:700">'+t[1]+'</td>').join('')+'</tr></table>':'<span class="muted">Tabela vazia. Círculos azuis: pares do caderno.</span>';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

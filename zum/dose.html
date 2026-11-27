@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A dose · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A dose</h1></header>
+<main>
+<div class="card"><h2>Uma regra para cada faixa</h2><p class="muted" style="margin-top:0">A receita: <b>0,5 mL por kg</b>, mas nunca menos que o mínimo nem mais que o máximo. Arraste o peso e veja a dose. As dobras do gráfico são onde a regra muda.</p>
+<div class="sl" id="sp"><b>Peso (kg)</b><input type="range"><span></span></div>
+<div class="sl" id="smin"><b>Dose mínima (mL)</b><input type="range"><span></span></div>
+<div class="sl" id="smax"><b>Dose máxima (mL)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Regra usada<b id="kr"></b></div><div class="o">Dose<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Arraste o peso.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SP=SL('sp',5,120,1,50,draw),SMI=SL('smin',5,20,1,10,draw),SMA=SL('smax',20,60,1,40,draw);
+const d=p=>Math.max(SMI.get(),Math.min(SMA.get(),0.5*p)),pad=()=>SMI.get()==10&&SMA.get()==40,nf=v=>fmt(Math.round(v*10)/10);const dobras=new Set();
+MIS.def(()=>[
+ ['Com a receita padrão (mínimo 10, máximo 40), ache a dose de <b>Gabi, 36 kg</b>.',()=>pad()&&SP.get()==36,()=>'36 kg está entre 20 e 80: d = 0,5 × 36 = 18 mL.',()=>pad()?'Peso agora: '+SP.get()+' kg.':'Volte à receita padrão: mínimo 10, máximo 40.'],
+ ['Agora a dose de <b>Seu Lauro, 80 kg</b>.',()=>pad()&&SP.get()==80,()=>'0,5 × 80 = 40 mL, bem na dobra: ali as duas regras dão o mesmo, por isso o gráfico não salta.',()=>pad()?'Peso agora: '+SP.get()+' kg.':'Volte à receita padrão.'],
+ ['Descubra a faixa da regra de 0,5 mL por kg: ponha o peso <b>nas duas dobras</b> da receita padrão.',()=>{if(pad()&&(SP.get()==20||SP.get()==80))dobras.add(SP.get());return dobras.size==2;},()=>'A regra de 0,5 mL por kg vale de <b>20 a 80 kg</b>. Abaixo de 20 kg, o mínimo; acima de 80 kg, o máximo.',()=>dobras.size?'Achou a dobra de '+[...dobras][0]+' kg. Falta a outra.':'Procure onde o gráfico muda de inclinação.'],
+ ['Mude o <b>mínimo para 15 mL</b> (máximo 40) e ponha o peso na nova dobra de baixo.',()=>SMI.get()==15&&SMA.get()==40&&SP.get()==30,()=>'15 ÷ 0,5 = 30 kg. A dobra está onde 0,5p = mínimo.',()=>SMI.get()!=15||SMA.get()!=40?'Mínimo 15, máximo 40.':'Peso agora: '+SP.get()+' kg. Onde 0,5 × peso = 15?']]);
+function draw(){const p=SP.get(),mi=SMI.get(),ma=SMA.get(),v=d(p),a=2*mi,b=2*ma;
+ $('fig').innerHTML=PLOT({xmin:0,xmax:120,ymin:0,ymax:60,dx:20,dy:10,xl:'peso (kg)',yl:'dose (mL)'},(X,Y)=>{let h='';
+  h+=`<rect x="${X(Math.min(a,120))}" y="${Y(60)}" width="${Math.max(0,X(Math.min(b,120))-X(Math.min(a,120)))}" height="${Y(0)-Y(60)}" fill="#FFF4EA"/>`;
+  h+=linha([[0,mi],[a,mi]],X,Y,NAVY,3)+linha([[a,mi],[Math.min(b,120),Math.min(b,120)/2]],X,Y,ORANGE,3)+(b<120?linha([[b,ma],[120,ma]],X,Y,'#15803D',3):'');
+  h+=LN(X(p),Y(0),X(p),Y(v),'#9AA7BD',1.2,'3 3')+LN(X(0),Y(v),X(p),Y(v),'#9AA7BD',1.2,'3 3')+ponto(p,v,X,Y,ORANGE);
+  h+=TX(X(a),Y(0)-4,a,{fs:8.5,c:NAVY})+(b<=120?TX(X(b),Y(0)-4,b,{fs:8.5,c:NAVY}):'');
+  [[36,'Gabi'],[80,'Seu Lauro']].forEach(q=>h+=`<circle cx="${X(q[0])}" cy="${Y(d(q[0]))}" r="3" fill="${NAVY}"/>`+TX(X(q[0]),Y(d(q[0]))-8,q[1],{fs:8,c:GRAY,w:500}));return h;});
+ $('kr').textContent=p<a?'mínimo':p>b?'máximo':'0,5 × peso';$('kd').textContent=nf(v)+' mL';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
