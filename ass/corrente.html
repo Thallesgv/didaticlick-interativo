@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A corrente do plano · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>A corrente do plano</h1></header>
+<main>
+<div class="card"><h2>Etapa E etapa E etapa...</h2><p class="muted" style="margin-top:0">Cada elo é uma etapa do plano, com a sua chance de dar certo. Para o plano dar certo, <b>todas</b> as etapas precisam dar certo: as chances se multiplicam.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Etapas do plano</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Chance de cada etapa</b><input type="range"><span></span></div>
+<div class="row"><button id="tt">Testar o plano 100 vezes</button></div>
+<div class="kpi"><div class="o">Tudo dá certo<b id="kt"></b></div><div>Conta<b id="kc"></b></div><div>No teste<b id="ke"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const GRID=(n,cor,x0,y0,col,s)=>{let g='';for(let i=0;i<n.length;i++){const x=x0+(i%col)*s,y=y0+Math.floor(i/col)*s;g+=`<circle cx="${x}" cy="${y}" r="${s*.38}" fill="${n[i]}"/>`;}return g;};
+function maxde(id,m){const i=$(id).querySelector('input');i.max=m;}
+const N=SL('sn',1,8,1,3,novo),Pp=SL('sp',50,100,1,80,novo,v=>v+'%');let teste=null;
+function novo(){teste=null;draw();}
+const t_=()=>Math.pow(Pp.get()/100,N.get());
+$('tt').onclick=()=>{const n=N.get(),p=Pp.get()/100;teste=[];for(let i=0;i<100;i++){let ok=true,ond=-1;for(let j=0;j<n;j++)if(Math.random()>=p){ok=false;ond=j;break;}teste.push(ok?-1:ond);}draw();};
+MIS.def(()=>[
+ ['Monte um plano de <b>5 etapas de 90%</b>. Qual a chance de tudo dar certo?',()=>N.get()==5&&Pp.get()==90,'0,9⁵ ≈ 0,59: cinco etapas "quase certas" dão só 59%!',()=>'Ajuste 5 etapas e 90%.'],
+ ['Com <b>5 etapas</b>, qual a <b>menor chance por etapa</b> que deixa o plano com <b>80% ou mais</b>?',()=>N.get()==5&&Pp.get()==96,'0,96⁵ ≈ 81,5%; com 95% cairia para 77,4%. Cada etapa precisa ser muito confiável.',
+  ()=>N.get()!=5?'Use 5 etapas.':t_()>=.8?'Já passa de 80%. Dá para baixar mais um pouco?':'Ainda abaixo de 80%: aumente a chance de cada etapa.'],
+ ['Com etapas de <b>90%</b>, quantas etapas bastam para a chance de tudo dar certo cair <b>abaixo de 50%</b>?',()=>Pp.get()==90&&N.get()==7,'0,9⁷ ≈ 47,8%. Com 6 etapas ainda seria 53,1%.',
+  ()=>Pp.get()!=90?'Use 90% por etapa.':t_()<.5?'Já está abaixo de 50%. Será que com menos etapas também fica?':'Ainda acima de 50%: acrescente etapas.'],
+ ['Monte <b>8 etapas de 95%</b> e <b>teste o plano 100 vezes</b>. O teste chega perto da conta?',()=>N.get()==8&&Pp.get()==95&&teste,
+  ()=>'Conta: '+pc(t_())+'. Teste: '+teste.filter(x=>x<0).length+' de 100. Repita o teste e veja o número variar perto da conta.',()=>N.get()==8&&Pp.get()==95?'Agora aperte o botão de teste.':'Ajuste 8 etapas e 95%.']]);
+function draw(){const n=N.get(),p=Pp.get(),t=t_();let g='';const w=Math.min(40,300/n),x0=170-n*w/2;
+ for(let i=0;i<n;i++){const x=x0+i*w+w/2,falhas=teste?teste.filter(v=>v==i).length:0;
+  g+=`<ellipse cx="${x}" cy="46" rx="${w*.62}" ry="15" fill="none" stroke="${teste&&falhas?'#B91C1C':i%2?ORANGE:NAVY}" stroke-width="5"/>`+TX(x,80,p+'%',{fs:10});
+  if(teste)g+=TX(x,96,falhas+' ✗',{fs:9,c:'#B91C1C'});}
+ g+=RC(20,112,300,16,'#EEF2F8','rx="8"')+RC(20,112,300*t,16,ORANGE,'rx="8"')+TX(170,146,'tudo dá certo: '+pc(t),{fs:12});
+ if(teste)g+=GRID(teste.map(v=>v<0?GREEN:'#D7DEEA'),20,162,25,12)+TX(170,224,teste.filter(v=>v<0).length+' de 100 testes deram certo (verde)',{fs:10,c:GRAY});
+ $('fig').innerHTML=SVG(340,232,g);
+ $('kt').textContent=pc(t);$('kc').innerHTML=fmt(p/100)+'<sup>'+n+'</sup>';
+ $('ke').textContent=teste?teste.filter(v=>v<0).length+' de 100':'—';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

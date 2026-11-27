@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A urna dos turnos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>A urna dos turnos</h1></header>
+<main>
+<div class="card"><h2>Casos favoráveis ÷ casos possíveis</h2><p class="muted" style="margin-top:0">Cada bola é um turno possível; as <b style="color:#F7821F">laranja</b> são os casos favoráveis. Sorteie e compare a frequência com a probabilidade.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Bolas na urna</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Bolas laranja</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Sortear 1</button><button id="b10">Sortear 10</button><button id="b100">Sortear 100</button><button class="alt" id="bz">Zerar</button></div>
+<div class="kpi"><div class="o">Probabilidade<b id="kp"></b></div><div>Sorteios<b id="ks"></b></div><div>Frequência<b id="kf"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const GRID=(n,cor,x0,y0,col,s)=>{let g='';for(let i=0;i<n.length;i++){const x=x0+(i%col)*s,y=y0+Math.floor(i/col)*s;g+=`<circle cx="${x}" cy="${y}" r="${s*.38}" fill="${n[i]}"/>`;}return g;};
+function maxde(id,m){const i=$(id).querySelector('input');i.max=m;}
+const N=SL('sn',2,20,1,8,()=>{if(K.get()>N.get())K.set(N.get());maxde('sk',N.get());zera();}),K=SL('sk',0,20,1,3,zera);maxde('sk',8);
+let tot=0,fav=0,ult=-1;
+function zera(){tot=0;fav=0;ult=-1;draw();}
+function sorteia(q){const n=N.get(),k=K.get();for(let i=0;i<q;i++){ult=Math.floor(Math.random()*n);tot++;if(ult<k)fav++;}draw();}
+$('b1').onclick=()=>sorteia(1);$('b10').onclick=()=>sorteia(10);$('b100').onclick=()=>sorteia(100);$('bz').onclick=zera;
+const p_=()=>K.get()/N.get(),f_=()=>tot?fav/tot:0;
+MIS.def(()=>[
+ ['Monte uma urna com <b>25% de chance</b> de sair laranja e sorteie <b>pelo menos 100 vezes</b>.',()=>Math.abs(p_()-.25)<1e-9&&tot>=100,
+  ()=>'Probabilidade 25% e frequência '+pc(f_())+' em '+tot+' sorteios: com muitos sorteios, a frequência chega perto da probabilidade.',
+  ()=>Math.abs(p_()-.25)<1e-9?'Urna certa! Agora sorteie até passar de 100.':'Quantas laranja em 4 bolas dão 25%? E em 8? E em 20?'],
+ ['Monte um <b>evento impossível</b> e sorteie pelo menos 10 vezes.',()=>K.get()==0&&tot>=10,'Nenhuma bola laranja: probabilidade 0 e frequência 0, sempre.',
+  ()=>K.get()==0?'Agora sorteie.':'Impossível é quando não há nenhum caso favorável.'],
+ ['Urna de <b>10 bolas com 3 laranja</b>: sorteie <b>200 vezes ou mais</b> e faça a frequência ficar a menos de 5 pontos de 30%.',()=>N.get()==10&&K.get()==3&&tot>=200&&Math.abs(f_()-.3)<=.05,
+  ()=>'Frequência '+pc(f_())+' em '+tot+' sorteios. É a lei dos grandes números.',
+  ()=>N.get()==10&&K.get()==3?(tot<200?'Sorteie mais: faltam '+(200-tot)+'.':'Ainda longe de 30%: continue sorteando.'):'Ajuste 10 bolas e 3 laranja.'],
+ ['Agora o contrário: monte um <b>evento certo</b> e sorteie pelo menos 10 vezes.',()=>K.get()==N.get()&&tot>=10,'Todas as bolas são laranja: probabilidade 1 (100%).',
+  ()=>K.get()==N.get()?'Agora sorteie.':'Certo é quando todos os casos são favoráveis.']]);
+function draw(){const n=N.get(),k=K.get();let g=`<path d="M40 40 L60 200 Q170 222 280 200 L300 40" fill="#EEF2F8" stroke="${NAVY}" stroke-width="3"/>`;
+ const col=5,s=34;for(let i=0;i<n;i++){const x=88+(i%col)*36,y=190-Math.floor(i/col)*36;
+  g+=`<circle cx="${x}" cy="${y}" r="15" fill="${i<k?ORANGE:'#9AA5B8'}" stroke="${i==ult?NAVY:'#fff'}" stroke-width="${i==ult?4:2}"/>`+TX(x,y+4,String(i+1),{fs:10,c:'#fff'});}
+ const bw=40,x0=318,y0=200,hh=170;g+=RC(x0,y0-hh,bw,hh,'#EEF2F8','rx="4"')+RC(x0,y0-hh*p_(),bw/2,hh*p_(),ORANGE)+RC(x0+bw/2,y0-hh*f_(),bw/2,hh*f_(),NAVY);
+ g+=TX(x0+bw/2,y0+14,'P × freq.',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(370,225,g);
+ $('kp').innerHTML=k+'/'+n+' = '+pc(p_());$('ks').textContent=tot;$('kf').textContent=tot?fav+'/'+tot+' = '+pc(f_()):'—';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
