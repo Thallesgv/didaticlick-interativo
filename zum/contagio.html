@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa do contágio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O mapa do contágio</h1></header>
+<main>
+<div class="card"><h2>Vale Verde, dia a dia</h2><p class="muted" style="margin-top:0">Vale Verde tem <b>65 000</b> habitantes. No dia 1 há 1 caso novo; cada zumbi contagia q pessoas no dia seguinte. Cada quadradinho do mapa é um quarteirão com 250 pessoas: ele fica verde quando todos ali viram zumbis.</p>
+<div class="sl" id="sq"><b>Contágios por zumbi q</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Casos novos no dia<b id="kn"></b></div><div>Total de zumbis<b id="kt"></b></div><div>Cidade tomada no dia<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SQ=SL('sq',1.1,3,0.05,2,draw,v=>fmt(v)),SD=SL('sd',1,30,1,1,draw);const POP=65000;
+const an=n=>Math.pow(SQ.get(),n-1),Sn=n=>{let s=0;for(let k=1;k<=n;k++)s+=an(k);return s;},tomada=()=>{for(let n=1;n<=300;n++)if(Sn(n)>=POP)return n;};
+let viu=new Set();
+MIS.def(()=>[
+ ['Com <b>q = 2</b>, arraste os dias até a cidade inteira ser tomada.',()=>Math.abs(SQ.get()-2)<1e-9&&Sn(SD.get())>=POP,()=>'Dia '+SD.get()+'. Total = 2ⁿ − 1: no dia 16, 65 535 passa 65 000.',()=>Math.abs(SQ.get()-2)>1e-9?'Ponha q = 2.':'Dia '+SD.get()+': '+fmt(Math.round(Sn(SD.get())))+' zumbis.'],
+ ['Agora com <b>q = 3</b>: em que dia a cidade cai?',()=>Math.abs(SQ.get()-3)<1e-9&&Sn(SD.get())>=POP&&Sn(SD.get()-1)<POP,()=>'Dia '+SD.get()+': com q = 3, cinco dias antes que com q = 2.',()=>Math.abs(SQ.get()-3)>1e-9?'Ponha q = 3.':'Ache o primeiro dia em que o total passa de 65 000.'],
+ ['Ache a razão q que leva o <b>dia 10</b> a ter entre <b>900 e 1 100</b> casos novos.',()=>an(10)>=900&&an(10)<=1100,()=>'q = '+fmt(SQ.get())+': a₁₀ = q⁹ ≈ '+fmt(Math.round(an(10)))+'.',()=>'Agora a₁₀ = '+fmt(Math.round(an(10)))+'. Lembre: a₁₀ = q⁹.']]);
+function draw(){const d=SD.get(),tot=Math.min(POP,Sn(d)),cheios=Math.floor(tot/250),parc=(tot%250)/250;let g=RC(0,0,340,236,'#E8EEF5');
+ const C=20,Rr=13,s=15.5,ox=15,oy=12;let k=0;
+ const ordem=[];for(let i=0;i<C;i++)for(let j=0;j<Rr;j++)ordem.push([i,j,Math.hypot(i-6,j-8)]);ordem.sort((a,b)=>a[2]-b[2]);
+ ordem.forEach(([i,j],idx)=>{const x=ox+i*s,y=oy+j*s;let f='#FFFFFF';if(idx<cheios)f='#7CC47F';else if(idx==cheios&&parc>0)f='#CDEBCB';
+  g+=RC(x,y,s-2.5,s-2.5,f,'stroke="#C5CFDB" stroke-width=".6" rx="2"');});
+ g+=TX(170,232,tot>=POP?'Vale Verde inteira virou zumbi no dia '+tomada()+'.':'Dia '+d+': '+fmt(Math.round(tot))+' de 65 000',{fs:12,c:tot>=POP?'#3F8F4A':NAVY});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kn').textContent=fmt(Math.round(an(d)));$('kt').textContent=fmt(Math.round(tot));$('kc').textContent='dia '+tomada();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O tabuleiro do trigo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O tabuleiro do trigo</h1></header>
+<main>
+<div class="card"><h2>Dobrando a cada casa</h2><p class="muted" style="margin-top:0">Toque numa casa do tabuleiro (a 1ª é no canto de cima, à esquerda). As casas até ela ficam marcadas, e a pilha mostra o total de grãos acumulado. 20 000 grãos ≈ 1 kg.</p>
+<div id="cr" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Grãos nesta casa<b id="kc"></b></div><div>Total até ela<b id="kt"></b></div><div>Soma das casas anteriores<b id="ka"></b></div></div>
+<p class="muted" id="cmp" style="font-size:14px"></p>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque nas casas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CR=chips('cr',['razão 2','razão 3'],0,draw);let cas=1;
+const q=()=>CR.get()==0?2:3,gr=n=>Math.pow(q(),n-1),tot=n=>(Math.pow(q(),n)-1)/(q()-1);
+const big=v=>{if(v<1e15)return fmt(Math.round(v));const [m,e]=v.toExponential(2).split('e+');return m.replace('.',',')+' × 10'+SUP(e);};
+MIS.def(()=>[
+ ['Com razão 2, ache a <b>primeira casa</b> em que o total passa de <b>1 milhão</b> de grãos.',()=>q()==2&&tot(cas)>1e6&&tot(cas-1)<=1e6,()=>'Casa '+cas+': total 2²⁰ − 1 = 1 048 575 grãos (uns 52 kg).',()=>q()!=2?'Volte para razão 2.':'Casa '+cas+': total '+big(tot(cas))+'.'],
+ ['Toque na <b>casa 20</b> e compare: ela sozinha tem mais que as 19 anteriores juntas?',()=>q()==2&&cas==20,()=>'Casa 20: 524 288. As 19 anteriores: 524 287. Uma casa ganha de todas as anteriores por 1 grão!',()=>'Toque na casa 20 (3ª linha, 4ª coluna).'],
+ ['Mude para <b>razão 3</b> e ache a primeira casa em que o total passa de 1 milhão.',()=>q()==3&&tot(cas)>1e6&&tot(cas-1)<=1e6,()=>'Casa '+cas+': (3¹⁴ − 1) ÷ 2 = 2 391 484 grãos. Com razão 3, seis casas antes.',()=>q()!=3?'Escolha razão 3.':'Casa '+cas+': total '+big(tot(cas))+'.'],
+ ['Toque na <b>casa 64</b> com razão 2.',()=>q()==2&&cas==64,()=>'2⁶⁴ − 1 ≈ 1,8 × 10¹⁹ grãos ≈ 920 bilhões de toneladas: mais de mil anos de toda a colheita de trigo do mundo.',()=>'A última casa, no canto de baixo à direita.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const i=Math.floor((x-8)/26),j=Math.floor((y-8)/26);if(i>=0&&i<8&&j>=0&&j<8){cas=j*8+i+1;draw();}});
+function draw(){let g='';for(let j=0;j<8;j++)for(let i=0;i<8;i++){const n=j*8+i+1,x=8+i*26,y=8+j*26;
+  g+=RC(x,y,26,26,n<=cas?(n==cas?ORANGE:'#FBC58E'):((i+j)%2?'#C9A66B':'#F6E7C8'));g+=TX(x+13,y+16,n,{fs:9,c:n==cas?'#fff':NAVY});}
+ const lg=Math.log10(tot(cas)+1),h=Math.min(196,lg/19.5*196);
+ g+=RC(240,212-h,60,h,'#E8C27A','stroke="#B8923F" stroke-width="1" rx="4"');for(let k=0;k<=18;k+=3){const yy=212-k/19.5*196;g+=LN(232,yy,306,yy,'#CBD5E1',.6)+TX(312,yy+3,'10'+SUP(k),{fs:8,c:GRAY,a:'start'});}
+ g+=TX(270,228,'total (escala log)',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,236,g);
+ $('kc').textContent=big(gr(cas));$('kt').textContent=big(tot(cas));$('ka').textContent=big(tot(cas-1));
+ const kg=tot(cas)/20000;$('cmp').textContent=kg<1?'Menos de 1 kg de trigo.':kg<50000?'≈ '+big(kg)+' kg ('+big(kg/50)+' sacos de 50 kg).':kg<5e10?'≈ '+big(kg/30000)+' caminhões de 30 t.':'≈ '+big(kg/1000)+' toneladas: '+big(kg/1000/7.8e8)+' anos de toda a colheita de trigo do mundo.';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

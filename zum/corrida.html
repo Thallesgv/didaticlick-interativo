@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leitos contra casos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Leitos contra casos</h1></header>
+<main>
+<div class="card"><h2>Somar contra multiplicar</h2><p class="muted" style="margin-top:0">O hospital começa com <b>100 leitos</b> e abre r leitos por dia (PA). Os casos começam em 2 e são multiplicados por q a cada dia (PG). A partir do dia da virada, falta leito.</p>
+<div class="sl" id="sr"><b>Leitos novos por dia r</b><input type="range"><span></span></div>
+<div class="sl" id="sq"><b>Multiplicação diária dos casos q</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Dia da virada<b id="kv"></b></div><div>Leitos no dia 10<b id="kl"></b></div><div>Casos no dia 10<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',10,200,10,50,draw),SQ=SL('sq',1.1,2.5,0.05,2,draw,v=>fmt(v));
+const q=()=>Math.round(SQ.get()*100)/100,L=n=>100+SR.get()*(n-1),C=n=>2*Math.pow(q(),n-1),vira=()=>{for(let n=1;n<=30;n++)if(C(n)>L(n))return n;return null;};
+MIS.def(()=>[
+ ['Com <b>q = 2</b>, mude só os leitos por dia para a virada ser <b>no dia 10 ou depois</b>.',()=>q()==2&&vira()>=10,()=>'r = '+SR.get()+': virada no dia '+vira()+'. Dobrar os leitos por dia só adiou '+(vira()-9==1?'1 dia':(vira()-9)+' dias')+'.',()=>q()!=2?'Volte q para 2.':'Virada no dia '+vira()+'.'],
+ ['Agora volte a <b>r = 50</b> e mude só q para a virada ser <b>no dia 15 ou depois</b>.',()=>SR.get()==50&&vira()!==null&&vira()>=15,()=>'q = '+fmt(q())+': virada no dia '+vira()+'. Baixar a razão adiou muito mais que abrir leitos.',()=>SR.get()!=50?'Volte r para 50.':'Virada no dia '+(vira()||'—')+'.'],
+ ['Faça a virada <b>não acontecer</b> em 30 dias.',()=>vira()===null,()=>'Com q = '+fmt(q())+', os casos não alcançam os leitos em 30 dias. Com q &lt; 1 (módulo 5), não alcançariam nunca.',()=>'Virada no dia '+vira()+'.']]);
+function draw(){const v=vira(),N=30,pl=[],pc=[];const yM=Math.max(L(N)*1.1,600);for(let n=1;n<=N;n++)pl.push([n,L(n)]);
+ const st=Math.pow(10,Math.floor(Math.log10(yM/4))),dy=Math.ceil(yM/4/st)*st,TOP=dy*4;
+ for(let n=1;n<=N;n++){if(C(n)<=TOP)pc.push([n,C(n)]);else{const n0=n-1,c0=C(n0);pc.push([n0+Math.log(TOP/c0)/Math.log(q()),TOP]);break;}}
+ $('fig').innerHTML=PLOT({xmin:0,xmax:30,ymin:0,ymax:dy*4,dx:5,dy:dy,xl:'dia',yl:'leitos e casos',fy:v=>fmt(v)},(X,Y)=>{let g=linha(pl,X,Y,NAVY,2.5)+linha(pc,X,Y,ORANGE,3);
+  if(v){g+=LN(X(v),Y(0),X(v),Y(dy*4),VERM,1.5,'4 3')+TX(X(v)+3,24,'virada: dia '+v,{fs:10,c:VERM,a:X(v)>250?'end':'start'});}
+  g+=TX(X(29),Y(L(29))-8,'leitos',{fs:10,c:NAVY,a:'end'});return g;});
+ $('kv').textContent=v?'dia '+v:'não houve';$('kl').textContent=fmt(L(10));$('kc').textContent=fmt(Math.round(C(10)));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

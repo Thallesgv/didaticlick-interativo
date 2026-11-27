@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A quarentena · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A quarentena</h1></header>
+<main>
+<div class="card"><h2>Casos novos que encolhem</h2><p class="muted" style="margin-top:0">a₁ é o número de casos novos no 1º dia de quarentena; cada dia tem q vezes os casos do dia anterior. As barras azuis são os casos de cada dia; a barra verde, à direita, é o total acumulado em 15 dias, e a linha tracejada é o limite a₁ ÷ (1 − q).</p>
+<div class="sl" id="sa"><b>Casos no 1º dia a₁</b><input type="range"><span></span></div>
+<div class="sl" id="sq"><b>Razão q (contágios por zumbi)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Limite da soma<b id="kl"></b></div><div>Total em 15 dias<b id="kt"></b></div><div>Dia 15<b id="k15"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',2,20,1,8,draw),SQ=SL('sq',0.1,1.5,0.05,0.5,draw,v=>fmt(v));
+const q=()=>Math.round(SQ.get()*100)/100,a=n=>SA.get()*Math.pow(q(),n-1),S=n=>{let s=0;for(let k=1;k<=n;k++)s+=a(k);return s;},lim=()=>q()<1?SA.get()/(1-q()):Infinity;
+MIS.def(()=>[
+ ['Faça o <b>limite</b> do total ser exatamente <b>20</b>.',()=>Math.abs(lim()-20)<1e-6,()=>'a₁ = '+SA.get()+', q = '+fmt(q())+': '+SA.get()+' ÷ '+fmt(1-q())+' = 20.',()=>q()>=1?'Com q ≥ 1 não há limite.':'Agora o limite é '+r1(lim())+'.'],
+ ['Coloque <b>q = 1</b>. O que acontece com o total?',()=>q()==1,()=>'Cada dia repete a₁: o total cresce '+SA.get()+' por dia, sem limite. A soma infinita só existe com q &lt; 1.',()=>'Arraste q até 1.'],
+ ['Com <b>a₁ = 10</b>, ache a <b>maior</b> razão que ainda mantém o limite <b>abaixo de 50</b>.',()=>SA.get()==10&&lim()<50&&q()>=0.75,()=>'q = 0,75: limite 40. Com q = 0,8, o limite seria exatamente 50 (não fica abaixo).',()=>SA.get()!=10?'Ponha a₁ = 10.':lim()>=50?'Limite '+(isFinite(lim())?r1(lim()):'infinito')+': passou.':'Dá para subir mais q.']]);
+function draw(){const vals=[];for(let n=1;n<=15;n++)vals.push(a(n));const s15=S(15),L=lim(),top=Math.max(isFinite(L)?L:0,s15,...vals)*1.08;
+ const Y=v=>200-v/top*180;let g=LN(20,200,330,200,NAVY,1.4);
+ vals.forEach((v,i)=>{const x=24+i*17;g+=RC(x,Y(v),13,200-Y(v),q()>1?'#E8857C':'#6C8CD5','rx="2"');if(i%2==0)g+=TX(x+6.5,213,i+1,{fs:8,c:GRAY});});
+ g+=TX(150,226,'dia',{fs:9,c:GRAY});
+ g+=RC(290,Y(s15),30,200-Y(s15),'#7CC47F','stroke="#3F8F4A" rx="3"')+TX(305,213,'total',{fs:9,c:GRAY});
+ if(isFinite(L))g+=LN(20,Y(L),334,Y(L),ORANGE,2,'5 4')+TX(330,Y(L)-5,'limite '+r1(L),{fs:10,c:ORANGE,a:'end'});
+ else g+=TX(330,16,'sem limite: o total cresce para sempre',{fs:10,c:VERM,a:'end'});
+ $('fig').innerHTML=SVG(340,232,g);
+ $('kl').textContent=isFinite(L)?r1(L):'não existe';$('kt').textContent=r1(s15);$('k15').textContent=a(15)<0.01?'≈ 0':r2(a(15));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
