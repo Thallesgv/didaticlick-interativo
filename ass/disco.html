@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gire o disco · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Gire o disco</h1></header>
+<main>
+<div class="card"><h2>Quantas sequências?</h2><p class="muted" style="margin-top:0">Escolha quantos números tem o disco, quantos entram na sequência e quanto tempo leva cada tentativa. O disco gira mostrando uma sequência sorteada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Números no disco</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Números na sequência</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Segundos por tentativa</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Sequências<b id="kq"></b></div><div>Conta<b id="kc"></b></div><div>Testar todas leva<b id="kt"></b></div></div>
+<div class="row"><button id="gira">Sortear uma sequência</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com <b>3 números na sequência</b> e <b>20 segundos</b> por tentativa, qual o <b>menor disco</b> que faz o teste de todas as sequências passar de <b>um ano</b>?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function tempo(s){if(!isFinite(s))return 'mais que a idade do universo';if(s<60)return r1(s)+' s';if(s<3600)return r1(s/60)+' min';if(s<86400)return r1(s/3600)+' h';
+ if(s<31536000)return r1(s/86400)+' dias';const a=s/31536000;if(a<1e6)return Math.round(a).toLocaleString('pt-BR')+' anos';return grande(a)+' anos';}
+function grande(v){if(v<1e15)return Math.round(v).toLocaleString('pt-BR');const e=Math.floor(Math.log10(v));return fmt(Math.round(v/Math.pow(10,e)*10)/10)+' × 10<sup>'+e+'</sup>';}
+const N=SL('sn',10,150,1,40,draw),K=SL('sk',1,6,1,3,draw),Tt=SL('st',5,60,5,20,draw);let seq=[],ang=0,anim=null;
+function draw(){const n=N.get(),k=K.get(),t=Tt.get(),q=Math.pow(n,k),cx=110,cy=110,R=90;let g=`<circle cx="${cx}" cy="${cy}" r="${R+8}" fill="#5B6577"/><g transform="rotate(${ang} ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#9AA5B8" stroke="${NAVY}" stroke-width="2"/>`;
+ const pas=n>60?10:5;for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n,big=i%pas==0,r1_=R-(big?12:6);g+=LN(cx+R*Math.cos(a),cy+R*Math.sin(a),cx+r1_*Math.cos(a),cy+r1_*Math.sin(a),NAVY,big?1.6:.6);
+  if(big)g+=TX(cx+(R-22)*Math.cos(a),cy+(R-22)*Math.sin(a)+4,String(i),{fs:9});}
+ g+=`<circle cx="${cx}" cy="${cy}" r="32" fill="#5B6577" stroke="${NAVY}"/></g>`+PG([[cx,cy-R-4],[cx-7,cy-R-16],[cx+7,cy-R-16]],ORANGE);
+ for(let j=0;j<k;j++){const x=230+(j%3)*36,y=40+Math.floor(j/3)*70;g+=RC(x,y,30,40,j<seq.length?ORANGE:NAVY,'rx="6"')+TX(x+15,y+26,j<seq.length?String(seq[j]):'?',{fs:14,c:'#fff'})+TX(x+15,y+54,String(n),{fs:9,c:GRAY});}
+ g+=TX(282,200,k+' casas de '+n+' opções',{fs:10});
+ $('fig').innerHTML=SVG(340,225,g);
+ $('kq').innerHTML=grande(q);$('kc').innerHTML=n+'<sup>'+k+'</sup>';const s=q*t;$('kt').textContent=tempo(s);
+ const ano=s>31536000;missao('m',k==3&&t==20&&n==117,'Isso! 117³ = 1.601.613 sequências, a 20 s cada, passam de um ano. Com 116 números ainda não passa.',
+  k==3&&t==20?(ano?'Passou de um ano. Mas será que um disco menor também passa? Diminua os números.':'Ainda não chega a um ano. Aumente os números do disco.'):'Para a missão, use 3 números na sequência e 20 segundos.');}
+$('gira').onclick=()=>{const n=N.get(),k=K.get();seq=[];let j=0;clearInterval(anim);anim=setInterval(()=>{if(j>=k){clearInterval(anim);return;}const v=rint(0,n-1);seq.push(v);ang=-v*360/n;j++;draw();},450);draw();};
+draw();
+})();
+</script>
+</body>
+</html>

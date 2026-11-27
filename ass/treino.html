@@ -77,7 +77,29 @@ const LIV={'ass1':{T:["A planta do banco", "Escala e medidas reais", "Perímetro
 7:()=>{const t=R(0,2),f=[R(2,12),R(2,12),R(2,12),R(2,12),R(2,12)],tot=f.reduce((a,b)=>a+b,0);
  if(t==0){const k=R(2,4);return{q:`As frequências das classes são <b>${f.join(', ')}</b>. Qual a frequência acumulada até a ${k}ª classe?`,a:f.slice(0,k).reduce((a,b)=>a+b,0),exp:`${f.slice(0,k).join(' + ')} = ${f.slice(0,k).reduce((a,b)=>a+b,0)}.`};}
  if(t==1){const k=R(0,4),fr=Math.round(1000*f[k]/tot)/10;return{q:`As frequências das classes são <b>${f.join(', ')}</b> (total ${tot}). Qual a frequência relativa da classe com ${f[k]}, em %? (1 casa)`,a:fr,tol:.06,exp:`${f[k]} ÷ ${tot} ≈ ${fmt(fr)}%.`};}
- const mn=Math.min(...f),k=f.indexOf(mn),h=['14h00','14h10','14h20','14h30','14h40'];return{q:`Pessoas no saguão por intervalo de 10 min a partir das 14h00: <b>${f.join(', ')}</b>. Quantas pessoas há na janela mais calma?`,a:mn,exp:`O menor valor é ${mn}, no intervalo que começa às ${h[k]}.`};}}}};
+ const mn=Math.min(...f),k=f.indexOf(mn),h=['14h00','14h10','14h20','14h30','14h40'];return{q:`Pessoas no saguão por intervalo de 10 min a partir das 14h00: <b>${f.join(', ')}</b>. Quantas pessoas há na janela mais calma?`,a:mn,exp:`O menor valor é ${mn}, no intervalo que começa às ${h[k]}.`};}}},'ass3':{T:["O disco do cofre", "Árvores e caminhos", "Senhas sem repetição", "Anagramas e palavras-código", "Quem desce ao cofre", "A senha fraca"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const n=P([10,20,30,40,50]),k=R(2,3);return{q:`Um disco tem <b>${n}</b> números e a sequência tem <b>${k}</b> números (pode repetir). Quantas sequências existem?`,a:Math.pow(n,k),exp:`${Array(k).fill(n).join(' · ')} = ${Math.pow(n,k).toLocaleString('pt-BR')}.`};}
+ if(t==1){const a=R(2,5),b=R(2,6),c=R(2,4);return{q:`Uma lanchonete tem <b>${a}</b> pães, <b>${b}</b> recheios e <b>${c}</b> bebidas. Quantos lanches (um de cada) dá para montar?`,a:a*b*c,exp:`${a} · ${b} · ${c} = ${a*b*c}.`};}
+ const r=R(2,4),s=P([2,3,5,6,10]);const q=Math.pow(10,r);return{q:`Um cadeado tem <b>${r}</b> rodas de 0 a 9 e cada tentativa leva <b>${s} s</b>. Quantos segundos leva testar todas as senhas?`,a:q*s,exp:`10^${r} = ${q.toLocaleString('pt-BR')} senhas; ${q.toLocaleString('pt-BR')} · ${s} = ${(q*s).toLocaleString('pt-BR')} s.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const a=R(2,5),b=R(2,5);return{q:`Do galpão à praça há <b>${a}</b> ruas e da praça à garagem, <b>${b}</b> caminhos. Quantas rotas do galpão à garagem passando pela praça?`,a:a*b,exp:`Uma etapa E a outra: ${a} · ${b} = ${a*b}.`};}
+ if(t==1){const a=R(2,6),b=R(2,6);return{q:`Você escolhe <b>um</b> doce: ${a} sabores de sorvete <b>ou</b> ${b} de torta. Quantas escolhas?`,a:a+b,exp:`Uma OU outra: ${a} + ${b} = ${a+b}.`};}
+ const m=R(2,4);return{q:`Lançando <b>${m}</b> moedas, quantos resultados (sequências de cara e coroa) há?`,a:Math.pow(2,m),exp:`${Array(m).fill(2).join(' · ')} = ${Math.pow(2,m)}.`};},
+3:()=>{const fat=n=>n<2?1:n*fat(n-1),t=R(0,2);
+ if(t==0){const n=R(3,7);return{q:`Calcule <b>${n}!</b>.`,a:fat(n),exp:`${[...Array(n)].map((_,i)=>n-i).join(' · ')} = ${fat(n)}.`};}
+ if(t==1){const k=R(2,4);let p=1,f=[];for(let i=0;i<k;i++){p*=10-i;f.push(10-i);}return{q:`Quantas senhas de <b>${k}</b> dígitos, <b>todos diferentes</b>, existem?`,a:p,exp:`${f.join(' · ')} = ${p.toLocaleString('pt-BR')}.`};}
+ const n=R(5,8),k=R(2,3);let p=1,f=[];for(let i=0;i<k;i++){p*=n-i;f.push(n-i);}return{q:`<b>${n}</b> atletas disputam ${k==3?'ouro, prata e bronze':'ouro e prata'}. Quantos pódios diferentes são possíveis?`,a:p,exp:`A ordem importa: ${f.join(' · ')} = ${p}.`};},
+4:()=>{const fat=n=>n<2?1:n*fat(n-1),W=P(['CASA','LIVRO','OURO','BANANA','ARARA','COFRE','AURORA','PRATA','SALA','BOLA','ASSALTO','MALA']);
+ const c={};[...W].forEach(l=>c[l]=(c[l]||0)+1);const rep=Object.entries(c).filter(e=>e[1]>1),tot=fat(W.length)/rep.reduce((a,e)=>a*fat(e[1]),1);
+ return{q:`Quantos anagramas tem a palavra <b>${W}</b>?`,a:tot,exp:`${W.length}!${rep.length?' ÷ ('+rep.map(e=>e[1]+'! dos '+e[0]).join(' · ')+')':''} = ${tot.toLocaleString('pt-BR')}.`};},
+5:()=>{const fat=n=>n<2?1:n*fat(n-1),C=(n,k)=>fat(n)/(fat(k)*fat(n-k)),t=R(0,2);
+ if(t==0){const n=R(4,9),k=R(2,Math.min(4,n-1));return{q:`Calcule <b>C(${n}, ${k})</b>.`,a:C(n,k),exp:`${n}! ÷ (${k}! · ${n-k}!) = ${C(n,k)}.`};}
+ if(t==1){const n=R(4,12);return{q:`<b>${n}</b> pessoas se cumprimentam, cada par uma vez. Quantos apertos de mão?`,a:C(n,2),exp:`C(${n}, 2) = ${n} · ${n-1} ÷ 2 = ${C(n,2)}.`};}
+ const n=R(5,10);return{q:`Uma comissão de <b>3</b> será escolhida entre <b>${n}</b> pessoas. Quantas comissões são possíveis?`,a:C(n,3),exp:`A ordem não importa: C(${n}, 3) = ${n*(n-1)*(n-2)} ÷ 6 = ${C(n,3)}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const s=P([[10,'algarismos'],[26,'letras minúsculas']]),l=R(2,s[0]==10?6:4),q=Math.pow(s[0],l);return{q:`Quantas senhas de <b>${l}</b> ${s[1]} existem?`,a:q,exp:`${s[0]}^${l} = ${q.toLocaleString('pt-BR')}.`};}
+ if(t==1){const n=P([10,26,36,62]);return{q:`Numa senha com <b>${n}</b> símbolos possíveis por caractere, acrescentar um caractere multiplica o número de senhas por quanto?`,a:n,exp:`Mais uma etapa com ${n} opções: × ${n}.`};}
+ const l=R(3,5),q=Math.pow(10,l);return{q:`A 1.000 tentativas por segundo, quantos segundos leva testar todas as senhas de <b>${l}</b> algarismos?`,a:q/1000,tol:.001,exp:`10^${l} = ${q.toLocaleString('pt-BR')}; ÷ 1.000 = ${fmt(q/1000)} s.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ass1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

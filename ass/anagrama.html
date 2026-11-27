@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Máquina de anagramas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Máquina de anagramas</h1></header>
+<main>
+<div class="card"><h2>Embaralhe as letras</h2><p class="muted" style="margin-top:0">Escolha uma palavra. A máquina conta as letras repetidas e calcula quantos anagramas existem. Cada vez que você embaralha, o anagrama novo entra na coleção.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Anagramas<b id="kq"></b></div><div>Conta<b id="kc"></b></div><div>Na coleção<b id="kn"></b></div></div>
+<div class="row"><button id="emb">Embaralhar</button><button id="dez" class="alt">Embaralhar 10 vezes</button></div>
+<div id="col" style="margin-top:8px;font-family:monospace;font-size:14px;line-height:1.7"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre <b>todos os 12 anagramas de OURO</b>. Repare: trocar os dois O de lugar não cria um anagrama novo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PAL=['OURO','CASA','COFRE','AURORA','BANANA','ASSALTO'];const fat=n=>n<2?1:n*fat(n-1);let col={},atual='';
+const C=chips('ch',PAL,0,()=>{atual=PAL[C.get()];draw();});
+function conta(p){const c={};[...p].forEach(l=>c[l]=(c[l]||0)+1);return c;}
+function total(p){const c=conta(p);return fat(p.length)/Object.values(c).reduce((a,v)=>a*fat(v),1);}
+function draw(){const p=PAL[C.get()],c=conta(p),L=Object.keys(c);col[p]=col[p]||new Set();let g='';
+ const w=Math.min(44,320/(atual||p).length);[...(atual||p)].forEach((l,i)=>{const x=170-((atual||p).length*w)/2+i*w;g+=RC(x+2,20,w-4,44,c[l]>1?ORANGE:NAVY,'rx="6"')+TX(x+w/2,50,l,{fs:20,c:'#fff'});});
+ L.forEach((l,i)=>g+=TX(20+i*55,90,l+': '+c[l]+'×',{fs:11,a:'start',c:c[l]>1?ORANGE:NAVY}));
+ $('fig').innerHTML=SVG(340,100,g);const t=total(p),rep=L.filter(l=>c[l]>1);
+ $('kq').textContent=t.toLocaleString('pt-BR');$('kc').textContent=p.length+'!'+(rep.length?' ÷ ('+rep.map(l=>c[l]+'!').join(' · ')+')':'')+' = '+t.toLocaleString('pt-BR');
+ $('kn').textContent=col[p].size+' de '+t.toLocaleString('pt-BR');$('col').innerHTML=[...col[p]].sort().map(a=>`<span style="display:inline-block;margin:2px 6px;padding:0 4px;background:${a==atual?'#FDE9D8':'none'}">${a}</span>`).join('');
+ missao('m',p=='OURO'&&col[p].size==12,'Coleção completa: os 12 anagramas de OURO, como diz a conta 4! ÷ 2!.',p=='OURO'?'Faltam '+(12-col[p].size)+' anagramas de OURO.':'Para a missão, escolha OURO.');}
+function emb(){const p=PAL[C.get()],a=[...p];for(let i=a.length-1;i>0;i--){const j=rint(0,i);[a[i],a[j]]=[a[j],a[i]];}atual=a.join('');col[p]=col[p]||new Set();col[p].add(atual);}
+$('emb').onclick=()=>{emb();draw();};$('dez').onclick=()=>{for(let i=0;i<10;i++)emb();draw();};
+atual=PAL[0];draw();
+})();
+</script>
+</body>
+</html>
