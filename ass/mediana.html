@@ -34,7 +34,7 @@ function reta(id,vals,lo,hi,passo,extra,depois){
 const media=v=>v.reduce((a,b)=>a+b,0)/v.length;
 const mediana=v=>{const s=[...v].sort((a,b)=>a-b),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
 const v=[3,5,4,2,9];let mi=0;const feitas=new Set();
-const MIS=[
+const MSS=[
  ['Faça a <b>média ficar maior que o dobro da mediana</b>. Que tipo de valor provoca isso?',(m,md)=>m>2*md,
   m=>'Um único valor atípico puxou a média para '+r1(m)+', mas a mediana quase não mudou. A mediana é "robusta".','Leve um só ponto para bem longe dos outros.'],
  ['Agora o contrário: faça a <b>mediana ficar maior que a média</b>, com diferença de pelo menos 5 minutos.',(m,md)=>md-m>=5,
@@ -48,17 +48,17 @@ const MIS=[
  ['Desafio final: <b>média, mediana e moda iguais a 25</b>, sem que os cinco valores sejam todos iguais.',(m,md)=>Math.abs(m-25)<1e-9&&md==25&&moda()==25&&new Set(v).size>1,
   ()=>'As três medidas de centro no mesmo lugar: dados bem equilibrados em torno de 25.','Ponha dois ou três pontos no 25 e os outros em posições simétricas.']];
 function moda(){const c={};v.forEach(a=>c[a]=(c[a]||0)+1);const mx=Math.max(...Object.values(c)),ks=Object.keys(c).filter(k=>c[k]==mx);return mx>1&&ks.length==1?+ks[0]:null;}
-function painel(){$('mt').textContent='Missão '+(mi+1)+' de '+MIS.length;$('mx').innerHTML=MIS[mi][0];
- $('mp').innerHTML=MIS.map((_,i)=>`<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i)?'#15803D':i==mi?'#F7821F':'#D7DEEA'}"></span>`).join('');}
+function painel(){$('mt').textContent='Missão '+(mi+1)+' de '+MSS.length;$('mx').innerHTML=MSS[mi][0];
+ $('mp').innerHTML=MSS.map((_,i)=>`<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i)?'#15803D':i==mi?'#F7821F':'#D7DEEA'}"></span>`).join('');}
 const draw=reta('fig',v,0,60,5,(X,y0)=>{const m=media(v),md=mediana(v);
  return LN(X(m),18,X(m),y0,ORANGE,2,'5 3')+LN(X(md),30,X(md),y0,GREEN,2,'5 3')+TX(X(m)>250?X(m)-4:X(m)+4,14,'média '+r1(m),{fs:10,c:ORANGE,a:X(m)>250?'end':'start'})+TX(X(md)<90?X(md)+4:X(md)-4,26,'mediana '+r1(md),{fs:10,c:GREEN,a:X(md)<90?'start':'end'});},()=>{
  const m=media(v),md=mediana(v),c={};v.forEach(a=>c[a]=(c[a]||0)+1);const mx=Math.max(...Object.values(c));
  $('km').textContent=r1(m)+' min';$('kd').textContent=r1(md)+' min';$('ko').textContent=mx==1?'não há':Object.keys(c).filter(k=>c[k]==mx).join(' e ');
- const M=MIS[mi],ok=M[1](m,md);if(ok)feitas.add(mi);painel();
- $('prox').style.display=feitas.has(mi)&&mi<MIS.length-1?'':'none';
- if(ok&&feitas.size==MIS.length)missao('m',true,'Todas as missões cumpridas! '+M[2](m,md),'');
+ const M=MSS[mi],ok=M[1](m,md);if(ok)feitas.add(mi);painel();
+ $('prox').style.display=feitas.has(mi)&&mi<MSS.length-1?'':'none';
+ if(ok&&feitas.size==MSS.length)missao('m',true,'Todas as missões cumpridas! '+M[2](m,md),'');
  else missao('m',ok,M[2](m,md),'Média '+r1(m)+' e mediana '+r1(md)+'. '+M[3]);});
-$('prox').onclick=()=>{mi=Math.min(mi+1,MIS.length-1);draw();};
+$('prox').onclick=()=>{mi=Math.min(mi+1,MSS.length-1);draw();};
 draw();
 })();
 </script>
