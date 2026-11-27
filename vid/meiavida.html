@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As moléculas que somem · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>As moléculas que somem</h1></header>
+<main>
+<div class="card"><h2>Metade por sorteio</h2><p class="muted" style="margin-top:0">Sessenta e quatro bolinhas de remédio. Em cada meia-vida, cada bolinha tem chance de 1/2 de ser eliminada: é como jogar uma moeda para cada uma. O gráfico compara o sorteio (laranja) com a conta 64 × (1/2)^n (azul).</p>
+<div class="row"><button id="b1">Passar 1 meia-vida</button><button id="bh">Passar meia meia-vida</button><button class="alt" id="br">Recomeçar</button></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="fig" id="fg" style="flex-direction:column"></div>
+<div class="kpi"><div>Meias-vidas<b id="kt"></b></div><div>Pela conta<b id="kc"></b></div><div class="o">Bolinhas que restam<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Passe as meias-vidas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let viva=[],t=0,hist=[],ult='';
+function reset(){viva=Array(64).fill(true);t=0;hist=[[0,64]];ult='';draw();}
+const vivas=()=>viva.filter(x=>x).length;
+function passa(f,dt){viva=viva.map(v=>v&&Math.random()<f);t+=dt;hist.push([t,vivas()]);ult=dt;draw();}
+$('b1').onclick=()=>passa(0.5,1);$('bh').onclick=()=>passa(Math.SQRT1_2,0.5);$('br').onclick=reset;
+MIS.def(()=>[
+ ['Passe meias-vidas até sobrarem <b>menos de 5 bolinhas</b>.',()=>vivas()<5&&t>0,()=>'Foram '+fmt(t)+' meias-vidas. Pela conta, 64 vira 2 em 5 meias-vidas: 64 → 32 → 16 → 8 → 4 → 2.',()=>'Restam '+vivas()+'. Continue.'],
+ ['Recomece e passe <b>exatamente 3 meias-vidas</b>. O sorteio chegou perto da conta (8)?',()=>t==3&&hist.every(h=>Number.isInteger(h[0])),()=>'Sobraram '+vivas()+' bolinhas; a conta diz 64 ÷ 8 = 8. Com poucas bolinhas, a sorte desvia um pouco; com bilhões de moléculas, a conta acerta em cheio.',()=>t>3?'Passou de 3. Recomece.':'Agora: '+fmt(t)+' meia(s)-vida(s). Use o botão de 1 meia-vida.'],
+ ['Recomece e passe só <b>meia meia-vida</b>. Quantas sobram de 64?',()=>t==0.5&&hist.length==2,()=>'Sobraram '+vivas()+'. A conta: 64 × (1/2)^(1/2) ≈ 64 × 0,71 ≈ 45. Em meia meia-vida não sai um quarto, sai uns 29%.',()=>t>0.5?'Recomece e aperte uma vez o botão de meia meia-vida.':'Aperte o botão de meia meia-vida.']]);
+function draw(){let g=RC(0,0,340,200,'#F7F9FC','rx="10"')+`<path d="M120 20 h100 v20 q30 20 30 60 v80 q0 14 -14 14 h-132 q-14 0 -14 -14 v-80 q0 -40 30 -60z" fill="#E8F1FB" stroke="${NAVY}" stroke-width="2"/>`;
+ viva.forEach((v,i)=>{const x=108+(i%8)*18,y=70+Math.floor(i/8)*15;g+=v?CI(x,y,6,ORANGE,'stroke="#fff" stroke-width="1"'):CI(x,y,6,'none','stroke="#CBD2DC" stroke-dasharray="2 2"');});
+ $('fig').innerHTML=SVG(340,200,g);
+ const T=Math.max(6,Math.ceil(t)),teo=[];for(let s=0;s<=T*20;s++)teo.push([s/20,64*Math.pow(0.5,s/20)]);
+ $('fg').innerHTML=PLOT({xmin:0,xmax:T,dx:1,ymin:0,ymax:64,dy:16,xl:'meias-vidas',yl:'bolinhas'},(X,Y)=>linha(teo,X,Y,'#2457D6',2,'5 4')+linha(hist,X,Y,ORANGE,2.6)+hist.map(h=>ponto(h[0],h[1],X,Y,ORANGE)).join(''));
+ $('kt').textContent=fmt(t);$('kc').textContent=fmt(Math.round(64*Math.pow(0.5,t)*10)/10);$('kr').textContent=vivas();MIS.ver('m');}
+reset();
+})();
+</script>
+</body>
+</html>

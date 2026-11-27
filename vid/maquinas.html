@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A fila de máquinas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A fila de máquinas</h1></header>
+<main>
+<div class="card"><h2>Uma conta dentro da outra</h2><p class="muted" style="margin-top:0">Escolha o número que entra. Depois toque nas máquinas para pôr em fila (até 3): o número atravessa uma por uma. <b>Trocar a ordem</b> inverte a fila.</p>
+<div id="ce" style="margin:6px 0"></div>
+<div id="cm" style="margin:6px 0"></div>
+<div class="row"><button id="bt">Trocar a ordem</button><button class="alt" id="bl">Limpar a fila</button></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Entra<b id="ki"></b></div><div>Fórmula<b id="kf"></b></div><div class="o">Sai<b id="ko"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a fila.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EN=[0.3,0.4,38,100,450];let ei=-1;const CE=chips('ce',['0,3 kg','0,4 kg','38 °C','100 °C','450 g'],-1,i=>{ei=i;draw();});
+const MQ=[['× 20',x=>x*20,'#F7821F'],['÷ 2',x=>x/2,'#15803D'],['× 1,8',x=>x*1.8,'#2457D6'],['+ 32',x=>x+32,'#7C3AED'],['÷ 1.000',x=>x/1000,'#0E7490'],['− 32',x=>x-32,'#B45309']];
+let fila=[];$('cm').innerHTML=MQ.map((m,i)=>`<button class="alt" data-q="${i}" style="padding:5px 11px;font-size:13px;margin:2px">${m[0]}</button>`).join('');
+document.querySelectorAll('#cm button').forEach(b=>b.onclick=()=>{if(fila.length<3){fila.push(+b.dataset.q);draw();}});
+$('bt').onclick=()=>{fila.reverse();draw();};$('bl').onclick=()=>{fila=[];draw();};
+const ent=()=>ei<0?null:EN[ei],vals=()=>{let v=ent();const r=[v];fila.forEach(q=>{v=MQ[q][1](v);r.push(v);});return r;};
+const sai=()=>{const r=vals();return r[r.length-1];},nomes=()=>fila.map(q=>MQ[q][0]).join(', '),is=(a)=>fila.length==a.length&&fila.every((q,i)=>q==a[i]);
+const fx=v=>v===null?'—':fmt(Math.round(v*1000)/1000);
+MIS.def(()=>[
+ ['Faça a máquina do Pipoca: entra <b>0,3 kg</b> e saem os <b>mililitros</b> (20 mg/kg e xarope de 2 mg/mL).',()=>ei==0&&is([0,1]),'0,3 → 6 → 3. Juntas, as duas máquinas fazem "vezes 10": g(f(x)) = 10x.',()=>ei!=0?'Escolha a entrada 0,3 kg.':'Fila agora: '+(nomes()||'vazia')+'. Primeiro a dose, depois o xarope.'],
+ ['Converta a febre de <b>38 °C</b> para Fahrenheit (F = 1,8 × C + 32).',()=>ei==2&&is([2,3]),'38 × 1,8 = 68,4; 68,4 + 32 = 100,4 °F.',()=>ei!=2?'Escolha a entrada 38 °C.':'Fila agora: '+(nomes()||'vazia')+'. Sai '+fx(sai())+'.'],
+ ['Com 38 °C e as mesmas duas máquinas, aperte <b>Trocar a ordem</b>. O que sai?',()=>ei==2&&is([3,2]),'(38 + 32) × 1,8 = 126. As mesmas máquinas, em outra ordem, dão outra função: g(f(x)) ≠ f(g(x)).',()=>ei!=2?'Escolha a entrada 38 °C.':'Monte × 1,8 e + 32 e troque a ordem.'],
+ ['Entra <b>450 g</b> e saem os mL do remédio do Pipoca: três máquinas em fila.',()=>ei==4&&fila.length==3&&Math.abs(sai()-4.5)<1e-9,'450 → 0,45 → 9 → 4,5 mL. A fórmula única é mL = gramas ÷ 100.',()=>ei!=4?'Escolha a entrada 450 g.':'Sai '+fx(sai())+'. Precisa passar para kg, dar a dose e virar mL.']]);
+function draw(){const r=vals(),n=fila.length;let g=RC(0,0,340,150,'#F7F9FC','rx="10"');
+ const W=Math.min(70,300/(2*n+1)),gap=(320-(2*n+1)*W)/(2*n)||0;let x=10;
+ for(let k=0;k<=n;k++){g+=RC(x,52,W,40,'#fff','rx="8" stroke="#CBD2DC" stroke-width="1.5"')+TX(x+W/2,77,fx(r[k]),{fs:11});x+=W+gap;
+  if(k<n){g+=LN(x-gap,72,x-2,72,NAVY,1.5);const m=MQ[fila[k]];g+=RC(x,46,W,52,m[2],'rx="10"')+TX(x+W/2,77,m[0],{fs:12,c:'#fff'})+TX(x+W/2,40,String.fromCharCode(102+k),{fs:10,c:GRAY});x+=W+gap;g+=LN(x-gap,72,x-2,72,NAVY,1.5);}}
+ if(!n)g+=TX(170,125,'toque nas máquinas para montar a fila',{fs:10,c:GRAY});
+ $('fig').innerHTML=SVG(340,150,g);
+ $('ki').textContent=fx(ent());$('ko').textContent=fx(sai());$('kf').textContent=n?nomes():'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

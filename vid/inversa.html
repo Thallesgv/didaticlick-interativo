@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O relógio ao contrário · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O relógio ao contrário</h1></header>
+<main>
+<div class="card"><h2>Do nível para a hora</h2><p class="muted" style="margin-top:0">O remédio no corpo do Pipoca depois de 6 mg, com meia-vida de 4 horas. Escolha o nível que você quer e siga a seta até a hora: é a função lida ao contrário.</p>
+<div class="sl" id="sq"><b>Nível desejado</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Quantas vezes caiu<b id="kv"></b></div><div>Meias-vidas (log₂)<b id="kl"></b></div><div class="o">Hora<b id="kt"></b></div></div>
+</div>
+<div class="card"><h2>O espelho</h2><p class="muted" style="margin-top:0">Escolha uma função e mova o ponto. O ponto refletido na reta y = x desenha a função inversa.</p>
+<div id="cf" style="margin:6px 0"></div>
+<div class="sl" id="sx"><b>x do ponto</b><input type="range"><span></span></div>
+<div class="fig" id="fe" style="flex-direction:column"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia ao contrário.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SQ=SL('sq',0.25,6,0.25,4,draw,v=>fmt(v)+' mg'),SX=SL('sx',0,4,0.25,1,draw,v=>fmt(v));
+const FN=[['y = 2^x',x=>Math.pow(2,x),'log₂'],['y = 2x',x=>2*x,'y ÷ 2'],['y = x + 1',x=>x+1,'y − 1']];let fi=-1;const CF=chips('cf',FN.map(f=>f[0]),-1,i=>{fi=i;draw();});
+const hora=q=>4*Math.log2(6/q);
+MIS.def(()=>[
+ ['A regra da Dra. Rosa: dar a dose seguinte quando sobrarem <b>1,5 mg</b>. Que horas são?',()=>SQ.get()==1.5,'6 ÷ 1,5 = 4 = 2²: duas meias-vidas, 4 × 2 = 8 horas.',()=>'Nível '+fmt(SQ.get())+' mg: '+r1(hora(SQ.get()))+' h. Ajuste para 1,5 mg.'],
+ ['E para sobrar <b>0,75 mg</b>?',()=>SQ.get()==0.75,'6 ÷ 0,75 = 8 = 2³: três meias-vidas, 12 horas.',()=>'Ajuste o nível para 0,75 mg.'],
+ ['No espelho, escolha <b>y = 2^x</b> e leve o ponto até <b>x = 3</b>. Onde cai o ponto refletido?',()=>fi==0&&SX.get()==3,'O ponto (3, 8) vira (8, 3): log₂ 8 = 3. A curva refletida é a do logaritmo.',()=>fi!=0?'Escolha y = 2^x no espelho.':'Mova o ponto até x = 3.'],
+ ['Agora escolha <b>y = 2x</b> e veja a reflexão. Qual é a inversa?',()=>fi==1,'A reflexão de y = 2x é y = x ÷ 2: a inversa de "vezes 2" é "dividir por 2".',()=>'Escolha y = 2x.']]);
+function draw(){const q=SQ.get(),th=hora(q),pts=[];for(let s=0;s<=160;s++)pts.push([s/10,6*Math.pow(0.5,s/40)]);
+ $('fig').innerHTML=PLOT({xmin:0,xmax:16,dx:4,ymin:0,ymax:6,dy:1.5,xl:'horas',yl:'remédio (mg)'},(X,Y)=>linha(pts,X,Y,ORANGE,2.6)+LN(X(0),Y(q),X(Math.min(th,16)),Y(q),NAVY,1.6,'5 3')+LN(X(Math.min(th,16)),Y(q),X(Math.min(th,16)),Y(0),NAVY,1.6,'5 3')+ponto(Math.min(th,16),q,X,Y,NAVY)+TX(X(Math.min(th,16))+5,Y(0)-8,r1(th)+' h',{fs:11,a:'start',c:NAVY}));
+ $('kv').textContent=fmt(Math.round(6/q*100)/100)+' vezes';$('kl').textContent=r2(Math.log2(6/q));$('kt').textContent=r1(th)+' h';
+ let e='';if(fi<0)e=SVG(340,60,TX(170,34,'escolha uma função acima',{fs:11,c:GRAY}));else{const f=FN[fi][1],x=SX.get(),y=f(x),c=[],ci=[];for(let s=0;s<=80;s++){const xx=s/20,yy=f(xx);if(yy<=9){c.push([xx,yy]);ci.push([yy,xx]);}}
+  e=PLOT({xmin:0,xmax:9,dx:1,ymin:0,ymax:9,dy:1,xl:'x',yl:'y'},(X,Y)=>LN(X(0),Y(0),X(9),Y(9),'#94A3B8',1.2,'4 4')+linha(c,X,Y,ORANGE,2.4)+linha(ci,X,Y,'#15803D',2.4)+(y<=9?LN(X(x),Y(y),X(y),Y(x),NAVY,1,'2 3')+ponto(x,y,X,Y,ORANGE)+ponto(y,x,X,Y,'#15803D')+TX(X(y)+6,Y(x)-6,'('+fmt(Math.round(y*100)/100)+'; '+fmt(x)+')',{fs:10,a:'start',c:'#15803D'})+TX(X(x)-6,Y(y)-6,'('+fmt(x)+'; '+fmt(Math.round(y*100)/100)+')',{fs:10,a:'end',c:ORANGE}):'')+TX(X(9),Y(9)+12,'y = x',{fs:9,a:'end',c:GRAY}));}
+ $('fe').innerHTML=e;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

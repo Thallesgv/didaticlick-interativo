@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A seringa do Pipoca · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A seringa do Pipoca</h1></header>
+<main>
+<div class="card"><h2>A dose pelo peso</h2><p class="muted" style="margin-top:0">Ponha o mico na balança, escolha a dose por quilo e o xarope. A seringa enche sozinha com o volume certo. (Remédio e números de exemplo.)</p>
+<div class="sl" id="sp"><b>Peso do mico (gramas)</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dose por quilo (mg/kg)</b><input type="range"><span></span></div>
+<div id="cx" style="margin:6px 0"></div>
+<div id="ce" style="margin:6px 0"></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Peso em kg<b id="kk"></b></div><div>Dose<b id="km"></b></div><div class="o">Na seringa<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Prepare a seringa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SP=SL('sp',100,1000,50,500,draw,v=>v+' g'),SD=SL('sd',5,40,5,10,draw,v=>v+' mg/kg');
+const XS=[1,2,4,5];let xi=0,err=0;const CX=chips('cx',XS.map(v=>'xarope de '+v+' mg/mL'),0,i=>{xi=i;draw();});
+const CE=chips('ce',['conta certa','esqueci de passar para kg'],0,i=>{err=i;draw();});
+const kg=()=>SP.get()/1000,mg=()=>SD.get()*(err?SP.get():kg()),ml=()=>mg()/XS[xi];
+MIS.def(()=>[
+ ['Prepare a dose do <b>Pipoca</b>: 300 g, 20 mg/kg, xarope de 2 mg/mL, com a conta certa.',()=>!err&&SP.get()==300&&SD.get()==20&&XS[xi]==2,'300 g = 0,3 kg; 20 × 0,3 = 6 mg; 6 ÷ 2 = 3 mL. É a seringa da Lívia.',()=>'Ajuste: 300 g, 20 mg/kg, xarope de 2 mg/mL e conta certa.'],
+ ['Para o mesmo Pipoca (300 g, 20 mg/kg), qual xarope deixa a <b>seringa com menos líquido</b>?',()=>!err&&SP.get()==300&&SD.get()==20&&XS[xi]==5,'Xarope de 5 mg/mL: 6 ÷ 5 = 1,2 mL. Xarope mais concentrado, menos volume para a mesma dose.',()=>SP.get()!=300||SD.get()!=20?'Volte para 300 g e 20 mg/kg.':'Agora são '+r2(ml())+' mL. Tente outro xarope.'],
+ ['Com 300 g, 20 mg/kg e xarope de 2 mg/mL, escolha <b>esqueci de passar para kg</b>. De quanto é o erro?',()=>err&&SP.get()==300&&SD.get()==20&&XS[xi]==2,'20 × 300 = 6.000 mg, ou 3.000 mL: mil vezes a dose certa! A unidade junto da conta evita esse desastre.',()=>!err?'Escolha "esqueci de passar para kg".':'Ajuste 300 g, 20 mg/kg e xarope de 2 mg/mL.']]);
+function draw(){let g=RC(0,0,340,250,'#F7F9FC','rx="10"');
+ const s=0.9+SP.get()/400;g+=RC(30,186,120,14,'#94A3B8','rx="4"')+RC(40,200,100,30,'#CBD2DC','rx="6"')+TX(90,220,SP.get()+' g',{fs:13})+BICHO.mico(90,180-12*s,s*2.2);
+ const cap=10,v=ml(),cheio=Math.min(v,cap)/cap,x0=180,y0=60,L=150;
+ g+=RC(x0,y0,40,L,'#fff','stroke="'+NAVY+'" stroke-width="2" rx="4"')+RC(x0+2,y0+L-L*cheio,36,L*cheio,v>cap?'#D9342B':'#F7821F','opacity="1"');
+ for(let k=0;k<=cap;k++){const y=y0+L-L*k/cap;g+=LN(x0+40,y,x0+(k%5?46:52),y,NAVY,1)+(k%5?'':TX(x0+62,y+4,k+' mL',{fs:9,a:'start',c:GRAY}));}
+ g+=RC(x0+14,y0+L,12,22,NAVY)+RC(x0+4,y0-8-L*0,32,8,NAVY,'rx="2"')+RC(x0+17,y0+L-L*cheio-4,6,4,NAVY);
+ g+=TX(270,232,v>cap?'não cabe na seringa!':r2(v)+' mL',{fs:14,c:v>cap?'#D9342B':ORANGE});
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kk').textContent=fmt(kg())+' kg';$('km').textContent=fmt(Math.round(mg()*100)/100)+' mg';$('kv').textContent=fmt(Math.round(v*100)/100)+' mL';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
