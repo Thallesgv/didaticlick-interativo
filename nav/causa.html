@@ -9,11 +9,12 @@
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Contágio ou falta?</h1></header>
 <main>
-<div class="card"><h2>De que a doença depende?</h2><p class="muted" style="margin-top:0">Cada ponto é um dos 40 marinheiros (dados fictícios). No eixo vertical, os sinais da doença das gengivas (0 a 10). Escolha o que vai no eixo horizontal e veja se aparece um padrão.</p>
+<div class="card"><h2>De que a doença depende?</h2><p class="muted" style="margin-top:0">Cada ponto é um dos 40 marinheiros (dados fictícios). No eixo vertical, os sinais da doença das gengivas (0 a 10). Escolha o que vai no eixo horizontal e veja se aparece um padrão. A reta verde é a reta de regressão dos pontos à direita da linha de corte, com o coeficiente de correlação r.</p>
 <div class="fig" id="fig"></div>
 <div class="chips" id="ch"></div>
 <div class="sl" id="sl"><b>Linha de corte</b><input type="range"><span></span></div>
 <div class="kpi"><div>Doentes à esquerda da linha<b id="ke"></b></div><div class="o">Doentes à direita da linha<b id="kd"></b></div></div>
+<div class="kpi"><div>Reta de regressão<b id="kq"></b></div><div>Correlação r<b id="kr"></b></div></div>
 <div id="m"></div></div>
 <div class="card"><h2>Missão</h2><p style="margin:0">Descubra qual variável explica a doença e coloque a linha de corte no valor a partir do qual ela aparece: <b>nenhum doente à esquerda</b>, com a linha o mais à direita possível.</p></div>
 </main>
@@ -37,6 +38,11 @@ const Lc=SL('sl',0,70,1,0,draw,v=>fmt(v));
 function draw(){const v=VAR[Cv.get()],cut=Math.min(Lc.get(),v.max),G0=G(v.max,10,v.t,[0,5,10],v.n,'sinais');let g=G0.g,e=0,d=0;
  M.forEach(m=>{const x=m[v.k],doe=m.g>=1;if(doe){if(x<cut)e++;else d++;}g+=BOLA(G0.X(x),G0.Y(m.g),doe?ORANGE:BLUE,4.5);});
  g+=LN(G0.X(cut),G0.Y(0),G0.X(cut),G0.Y(10),'#B91C1C',2,'5 4');
+ const Q=M.filter(m=>m[v.k]>=cut).map(m=>[m[v.k],m.g]);
+ if(Q.length>=3){const n=Q.length,mx=Q.reduce((s,p)=>s+p[0],0)/n,my=Q.reduce((s,p)=>s+p[1],0)/n;let sxy=0,sxx=0,syy=0;Q.forEach(p=>{sxy+=(p[0]-mx)*(p[1]-my);sxx+=(p[0]-mx)**2;syy+=(p[1]-my)**2;});
+  const b=sxx?sxy/sxx:0,a=my-b*mx,r=(sxx&&syy)?sxy/Math.sqrt(sxx*syy):0;g+=G0.linha(x=>a+b*x,cut,v.max,GREEN,3,null,20);
+  $('kq').textContent='y ≈ '+fmt(Math.round(b*100)/100)+'x '+(a<0?'− ':'+ ')+fmt(Math.abs(Math.round(a*10)/10));$('kr').textContent=fmt(Math.round(r*100)/100);}
+ else{$('kq').textContent='—';$('kr').textContent='—';}
  $('fig').innerHTML=SVG(340,250,g);$('ke').textContent=e;$('kd').textContent=d;
  const lim=Math.min(...M.filter(m=>m.g>=1).map(m=>m.dias));
  const ok=Cv.get()==1&&e==0&&cut>=lim-1&&cut<=lim;

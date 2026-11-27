@@ -138,7 +138,32 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
 6:()=>{const t=R(0,2);
  if(t==0){const v=P([40,50,60]),n=P([2,3,4,5]);return{q:`Se cada laranja desse ${v} mg de vitamina C, quantos mg dariam <b>${n}</b> laranjas?`,a:v*n,exp:`V(n) = ${v}n: ${v*n} mg.`};}
  if(t==1){const h=P([60,100,120]),d=P([50,100,150]);return{q:`<b>${h}</b> homens, <b>${d}</b> dias, 0,2 laranja por homem por dia. Quantas laranjas?`,a:h*d*0.2,tol:.01,exp:`${h} · ${d} · 0,2 = ${h*d*0.2}.`};}
- const x=R(35,70);return{q:`Os sinais valem 0 até 30 dias sem fruta e depois s(d) = 0,25 · (d − 30). Quanto vale s(${x})?`,a:0.25*(x-30),tol:.01,exp:`0,25 · (${x} − 30) = ${fmt(0.25*(x-30))}.`};}}}};
+ const x=R(35,70);return{q:`Os sinais valem 0 até 30 dias sem fruta e depois s(d) = 0,25 · (d − 30). Quanto vale s(${x})?`,a:0.25*(x-30),tol:.01,exp:`0,25 · (${x} − 30) = ${fmt(0.25*(x-30))}.`};}}},'nav6':{T:["A grade da Terra", "A carta plana", "O rumo que espirala", "As latitudes crescentes", "O tamanho que engana", "Triângulos na esfera", "O caminho mais curto"],G:{1:()=>{const C={0:1,30:.866,45:.707,60:.5},t=R(0,2);
+ if(t==0){const n=R(2,40);return{q:`Quantos km há, aproximadamente, em <b>${n}°</b> de latitude? (1° ≈ 111 km)`,a:n*111,exp:`${n} · 111 = ${n*111} km.`};}
+ if(t==1){const l=P([0,30,45,60]);return{q:`Quanto vale 1° de longitude a <b>${l}°</b> de latitude? (cos ${l}° ≈ ${fmt(C[l])}; 1 casa)`,a:Math.round(111*C[l]*10)/10,tol:.15,exp:`111 · ${fmt(C[l])} ≈ ${fmt(Math.round(111*C[l]*10)/10)} km.`};}
+ const a=R(-40,40),b=R(-40,40);return{q:`Dois pontos no mesmo meridiano, latitudes ${a}° e ${b}° (negativo = sul). Qual a distância? (1° ≈ 111 km)`,a:Math.abs(a-b)*111,exp:`|${a} − (${b})| = ${Math.abs(a-b)}° → ${Math.abs(a-b)*111} km.`};},
+2:()=>{const C={0:1,45:.707,60:.5},t=R(0,1),l=P([0,45,60]);
+ if(t==0)return{q:`Qual o fator de estiramento leste-oeste da carta plana a <b>${l}°</b>? (cos ${l}° ≈ ${fmt(C[l])}; 2 casas)`,a:Math.round(100/C[l])/100,tol:.02,exp:`1 ÷ ${fmt(C[l])} ≈ ${fmt(Math.round(100/C[l])/100)}.`};
+ const d=P([100,200,300,400]);return{q:`A ${l}°, a carta plana mostra <b>${d} km</b> entre dois portos no mesmo paralelo. Qual a distância real? (cos ${l}° ≈ ${fmt(C[l])})`,a:Math.round(d*C[l]*10)/10,tol:.6,exp:`${d} · ${fmt(C[l])} ≈ ${fmt(Math.round(d*C[l]*10)/10)} km.`};},
+3:()=>{const C={30:[.5,.866],45:[.707,.707],60:[.866,.5]},t=R(0,2),r=P([30,45,60]),d=P([100,200,222,300]);
+ if(t==0)return{q:`Rumo <b>${r}°</b>, <b>${d} km</b>. Quanto a nau avança para o norte? (cos ${r}° ≈ ${fmt(C[r][1])})`,a:Math.round(d*C[r][1]*10)/10,tol:.6,exp:`${d} · ${fmt(C[r][1])} ≈ ${fmt(Math.round(d*C[r][1]*10)/10)} km.`};
+ if(t==1){const n=R(1,6);return{q:`Quantos graus de latitude a nau sobe ao avançar <b>${n*111} km</b> para o norte?`,a:n,exp:`${n*111} ÷ 111 = ${n}°.`};}
+ const [rr,tp]=P([[0,'meridiano'],[90,'paralelo'],[45,'espiral'],[30,'espiral'],[180,'meridiano'],[270,'paralelo']]);return{q:`A loxodromia de rumo <b>${rr}°</b> é:`,opts:['meridiano','paralelo','espiral'],a:tp,exp:tp=='espiral'?'Rumo oblíquo: espirala para o polo.':'Rumo '+rr+'°: '+tp+'.'};},
+4:()=>{const C={0:1,45:.707,60:.5},Y={20:.36,40:.76,60:1.32,80:2.44},t=R(0,2);
+ if(t==0){const l=P([0,45,60]);return{q:`Qual o fator de escala da carta de Mercator a <b>${l}°</b>? (cos ${l}° ≈ ${fmt(C[l])}; 2 casas)`,a:Math.round(100/C[l])/100,tol:.02,exp:`1 ÷ ${fmt(C[l])} ≈ ${fmt(Math.round(100/C[l])/100)}.`};}
+ if(t==1){const l=P([20,40,60,80]),Rr=P([5,10,20]);return{q:`Globo de raio <b>${Rr} cm</b>. A que distância do equador fica o paralelo de ${l}° na carta de Mercator? (y = ${fmt(Y[l])} R)`,a:Math.round(Rr*Y[l]*100)/100,tol:.02,exp:`${Rr} · ${fmt(Y[l])} = ${fmt(Math.round(Rr*Y[l]*100)/100)} cm.`};}
+ const [l,n,r]=P([[4,4,45],[3,3,45],[4,6.93,30],[6.93,4,60]]);return{q:`Na carta de Mercator, B está ${fmt(l)} cm a leste e ${fmt(n)} cm ao norte de A. Qual o rumo de A até B, em graus?`,a:r,tol:.6,exp:`tg(rumo) = leste ÷ norte = ${fmt(Math.round(l/n*1000)/1000)} → ${r}°.`};},
+5:()=>{const C2={0:1,30:.75,45:.5,60:.25},t=R(0,1),l=P([0,30,45,60]);
+ if(t==0)return{q:`Qual o fator de área da carta de Mercator a <b>${l}°</b>? (cos² ${l}° = ${fmt(C2[l])}; 2 casas)`,a:Math.round(100/C2[l])/100,tol:.02,exp:`1 ÷ ${fmt(C2[l])} ≈ ${fmt(Math.round(100/C2[l])/100)}.`};
+ const A=P([10000,20000,50000]);return{q:`Uma ilha de <b>${fmt(A)} km²</b> a ${l}°. Que área ela parece ter na carta de Mercator? (fator ${fmt(Math.round(100/C2[l])/100)})`,a:Math.round(A/C2[l]),tol:A/100,exp:`${fmt(A)} · ${fmt(Math.round(100/C2[l])/100)} ≈ ${fmt(Math.round(A/C2[l]))} km².`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const a=R(60,100),b=R(60,100),c=R(60,100);return{q:`Um triângulo esférico tem ângulos ${a}°, ${b}° e ${c}°. Qual o excesso esférico, em graus?`,a:a+b+c-180,exp:`${a+b+c} − 180 = ${a+b+c-180}°.`};}
+ if(t==1){const d=P([30,45,60,90,120]);return{q:`Vértice no polo e dois no equador, separados por <b>${d}°</b> de longitude. Qual a soma dos ângulos?`,a:180+d,exp:`90 + 90 + ${d} = ${180+d}°.`};}
+ const [e,f]=P([[90,8],[60,12],[45,16],[120,6]]);return{q:`Um triângulo esférico tem excesso de <b>${e}°</b>. Que fração da esfera ele ocupa? (responda 1/n: dê o n)`,a:f,exp:`Área = R² · E; a esfera tem 4πR² = R² · 720°. ${e} ÷ 720 = 1/${f}.`};},
+7:()=>{const t=R(0,2);
+ if(t==0){const c=R(5,60);return{q:`Um ângulo central de <b>${c}°</b> corresponde a quantos km? (1° ≈ 111 km)`,a:c*111,exp:`${c} · 111 = ${c*111} km.`};}
+ if(t==1){const d=P([30,60,90,120,180]);return{q:`Dois pontos no equador, separados por <b>${d}°</b> de longitude. Qual o ângulo central, em graus?`,a:d,exp:`cos c = cos ${d}° → c = ${d}°.`};}
+ return{q:`Qual é o caminho mais curto entre dois pontos da esfera?`,opts:['a loxodromia','o arco de círculo máximo','o paralelo'],a:'o arco de círculo máximo',exp:'A ortodromia.'};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
