@@ -121,7 +121,29 @@ const LIV={'ass1':{T:["A planta do banco", "Escala e medidas reais", "Perímetro
  const ini=R(30,80),d=R(4,9);let x=ini,n=0;while(x>0){x-=d;n++;}return{q:`x = ${ini}. ENQUANTO x &gt; 0: x = x − ${d}. Quantas vezes o laço repete?`,a:n,exp:`Depois de ${n} voltas, x = ${x} e a condição fica falsa.`};},
 6:()=>{const t=R(0,1);
  if(t==0){const a=R(10,50),b=R(3,9);return{q:`a = ${a}, b = ${b}. ENQUANTO a ≥ b: a = a − b. Faça o teste de mesa. Qual o valor final de a?`,a:a%b,exp:`a vai diminuindo de ${b} em ${b} até ficar menor que ${b}: termina em ${a%b} (o resto de ${a} ÷ ${b}).`};}
- const ini=R(1,3),L=R(4,8);return{q:`i = ${ini}. ENQUANTO i &lt; ${L}: ...; i = i + 1. Quantas vezes o laço roda?`,a:Math.max(0,L-ini),exp:`i assume ${ini}, ..., ${L-1}: são ${L-ini} voltas.`};}}}};
+ const ini=R(1,3),L=R(4,8);return{q:`i = ${ini}. ENQUANTO i &lt; ${L}: ...; i = i + 1. Quantas vezes o laço roda?`,a:Math.max(0,L-ini),exp:`i assume ${ini}, ..., ${L-1}: são ${L-ini} voltas.`};}}},'ass5':{T:["O cronômetro do ensaio", "Uma regra para cada entrada", "A reta do cronômetro", "O encontro na avenida", "O gráfico do ensaio", "A moeda na torre"],G:{1:()=>{const t=R(0,3);
+ if(t==0){const v=R(2,12),s=R(5,60);return{q:`Um corredor percorre <b>${v*s} m</b> em <b>${s} s</b>. Qual a velocidade média em m/s?`,a:v,exp:`${v*s} ÷ ${s} = ${v} m/s.`};}
+ if(t==1){const v=P([5,10,15,20,25,30]);return{q:`Converta <b>${v} m/s</b> em km/h.`,a:v*3.6,tol:.001,exp:`${v} · 3,6 = ${fmt(v*3.6)} km/h.`};}
+ if(t==2){const k=P([18,36,54,72,90,108]);return{q:`Converta <b>${k} km/h</b> em m/s.`,a:k/3.6,tol:.001,exp:`${k} ÷ 3,6 = ${fmt(k/3.6)} m/s.`};}
+ const d=P([600,900,1200,1800]),v=P([2,3,4,5,6]);return{q:`Quanto tempo leva para percorrer <b>${d} m</b> a <b>${v} m/s</b>? (em segundos)`,a:d/v,tol:.001,exp:`t = ${d} ÷ ${v} = ${fmt(d/v)} s.`};},
+2:()=>{const t=R(0,2),a=R(2,6),b=R(-5,10),x=R(-3,9);
+ if(t==0)return{q:`f(x) = ${a}x ${b<0?'−':'+'} ${Math.abs(b)}. Calcule <b>f(${x})</b>.`,a:a*x+b,exp:`${a} · ${x} ${b<0?'−':'+'} ${Math.abs(b)} = ${a*x+b}.`};
+ if(t==1){const y=a*x+b;return{q:`f(x) = ${a}x ${b<0?'−':'+'} ${Math.abs(b)}. Para qual x temos <b>f(x) = ${y}</b>?`,a:x,exp:`${a}x = ${y} ${b<0?'+':'−'} ${Math.abs(b)} = ${y-b}; x = ${x}.`};}
+ return{q:`A tabela de uma função afim dá 0 → <b>${b}</b>, 1 → <b>${a+b}</b>, 2 → <b>${2*a+b}</b>. Quanto vale f(10)?`,a:10*a+b,exp:`Regra f(x) = ${a}x ${b<0?'−':'+'} ${Math.abs(b)}; f(10) = ${10*a+b}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,6),b=R(0,15),tt=R(1,10);return{q:`d(t) = ${a}t + ${b}. Calcule <b>d(${tt})</b>.`,a:a*tt+b,exp:`${a} · ${tt} + ${b} = ${a*tt+b} m.`};}
+ if(t==1){const a=R(1,6),b=R(-5,10),x1=R(0,3),x2=x1+R(1,4);return{q:`Uma reta passa por <b>(${x1}, ${a*x1+b})</b> e <b>(${x2}, ${a*x2+b})</b>. Qual o coeficiente angular?`,a:a,exp:`(${a*x2+b} − ${a*x1+b}) ÷ (${x2} − ${x1}) = ${a}.`};}
+ const d0=P([30,40,50,60,80]),v=P([2,2.5,4,5]);return{q:`Lara está a <b>${d0} m</b> da porta e se aproxima a <b>${fmt(v)} m/s</b>. Em quantos segundos chega?`,a:d0/v,tol:.001,exp:`${d0} − ${fmt(v)}t = 0; t = ${fmt(d0/v)} s.`};},
+4:()=>{const t=R(0,1);
+ if(t==0){const va=R(2,6),vb=R(1,4),D=(va+vb)*R(50,300);return{q:`Duas pessoas a <b>${D} m</b> uma da outra caminham uma em direção à outra, a ${va} m/s e a ${vb} m/s. Em quantos segundos se encontram?`,a:D/(va+vb),exp:`${D} ÷ (${va} + ${vb}) = ${D/(va+vb)} s.`};}
+ const vb=R(1,4),va=vb+R(1,4),dv=R(100,500);return{q:`Íris anda a ${vb} m/s com <b>${dv} m</b> de vantagem. Bento sai atrás, a ${va} m/s, no mesmo sentido. Em quantos segundos ele a alcança?`,a:dv/(va-vb),tol:.01,exp:`${va}t = ${dv} + ${vb}t; t = ${dv} ÷ ${va-vb} = ${fmt(Math.round(dv/(va-vb)*100)/100)} s.`};},
+5:()=>{const e=R(1,5),v=P([300,450,600,900]),t3=8+e+900/v,t=R(0,1);
+ if(t==0){const tt=P([2,4,6,8]);return{q:`No ensaio, Lara anda a 75 m/min nos primeiros 8 min. Onde ela está em <b>t = ${tt} min</b>?`,a:75*tt,exp:`75 · ${tt} = ${75*tt} m.`};}
+ return{q:`A equipe anda 8 min a pé, espera <b>${e} min</b> na praça e faz 900 m de carro a <b>${v} m/min</b>. Em que minuto chega ao banco?`,a:t3,tol:.001,exp:`8 + ${e} + 900 ÷ ${v} = ${fmt(t3)} min.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const tt=P([1,1.5,2,2.5,3,4]);return{q:`Com d(t) = 5t², quantos metros a moeda cai em <b>${fmt(tt)} s</b>?`,a:5*tt*tt,tol:.001,exp:`5 · ${fmt(tt)}² = ${fmt(5*tt*tt)} m.`};}
+ if(t==1){const tt=P([1,2,3,4,5]);return{q:`Com d = 5t², quanto tempo leva uma queda de <b>${5*tt*tt} m</b>? (em s)`,a:tt,exp:`t² = ${5*tt*tt} ÷ 5 = ${tt*tt}; t = ${tt} s.`};}
+ const k=P([2,3,4]);return{q:`Se o tempo de queda fica multiplicado por <b>${k}</b>, a distância fica multiplicada por quanto?`,a:k*k,exp:`d cresce com o quadrado do tempo: ${k}² = ${k*k}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ass1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

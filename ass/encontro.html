@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Encontro marcado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Encontro marcado</h1></header>
+<main>
+<div class="card"><h2>Duas retas, um cruzamento</h2><p class="muted" style="margin-top:0">Bento (laranja) sai do galpão, na posição 0. Lara (azul) sai da posição que você escolher. Mude velocidades e sentido; arraste o tempo para ver os dois na avenida.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="av"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="va"><b>Bento: velocidade (m/s)</b><input type="range"><span></span></div>
+<div class="sl" id="vb"><b>Lara: velocidade (m/s)</b><input type="range"><span></span></div>
+<div class="sl" id="pb"><b>Lara: posição inicial (m)</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>tempo (s)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Encontro<b id="ke"></b></div><div>Equação<b id="kq"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça os dois se encontrarem <b>exatamente na praça</b>, a <b>600 m</b> do galpão.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function PLOT(o,f){const x0=40,y0=200,W=290,H=180,X=v=>x0+(v-o.xmin)/(o.xmax-o.xmin)*W,Y=v=>y0-(v-o.ymin)/(o.ymax-o.ymin)*H;let g='';
+ for(let v=o.xmin;v<=o.xmax+1e-9;v+=o.dx)g+=LN(X(v),y0,X(v),y0-H,'#E5E7EB',1)+TX(X(v),y0+13,fmt(Math.round(v*100)/100),{fs:9,c:GRAY,w:500});
+ for(let v=o.ymin;v<=o.ymax+1e-9;v+=o.dy)g+=LN(x0,Y(v),x0+W,Y(v),'#E5E7EB',1)+TX(x0-4,Y(v)+3,fmt(Math.round(v*100)/100),{fs:9,c:GRAY,w:500,a:'end'});
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.6)+LN(x0,y0,x0,y0-H,NAVY,1.6)+TX(x0+W,y0+26,o.xl,{fs:10,a:'end'})+TX(x0+2,12,o.yl,{fs:10,a:'start'});
+ return SVG(340,230,g+f(X,Y));}
+const linha=(pts,X,Y,c,w)=>`<polyline points="${pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${w||2.5}"/>`;
+const ponto=(x,y,X,Y,c)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+const C=chips('ch',['Lara vem em direção ao galpão','Lara vai em direção ao banco'],0,draw),VA=SL('va',.5,8,.5,4.5,draw,v=>fmt(v)),VB=SL('vb',.5,8,.5,1.5,draw,v=>fmt(v)),PB=SL('pb',0,1500,50,1500,draw,String),Ts=SL('st',0,400,5,100,draw,String);
+function draw(){const va=VA.get(),vb=(C.get()==0?-1:1)*VB.get(),pb=PB.get(),t=Ts.get(),fa=x=>va*x,fb=x=>pb+vb*x;
+ const te=(va-vb)!=0?pb/(va-vb):NaN,ok=te>=0&&isFinite(te),de=ok?fa(te):NaN;
+ $('fig').innerHTML=PLOT({xmin:0,xmax:400,ymin:0,ymax:1800,dx:50,dy:300,xl:'tempo (s)',yl:'distância do galpão (m)'},(X,Y)=>{let g=`<clipPath id="cp"><rect x="40" y="20" width="290" height="180"/></clipPath><g clip-path="url(#cp)">`+linha([[0,0],[400,fa(400)]],X,Y,ORANGE)+linha([[0,pb],[400,fb(400)]],X,Y,BLUE)+'</g>';
+  if(ok&&te<=400&&de<=1800&&de>=0)g+=ponto(te,de,X,Y,GREEN);g+=LN(X(t),20,X(t),200,GRAY,1,'3 3');return g;});
+ const Xa=v=>20+clamp(v,0,1800)/1800*300;let g=RC(20,30,300,26,'#D7DEEA','rx="4"')+LN(20,43,320,43,'#fff',2,'8 6');
+ [[0,'galpão'],[600,'praça'],[1500,'banco']].forEach(([v,n])=>g+=LN(Xa(v),24,Xa(v),62,NAVY,1.5)+TX(Xa(v),18,n,{fs:9}));
+ g+=`<circle cx="${Xa(fa(t))}" cy="37" r="7" fill="${ORANGE}" stroke="#fff" stroke-width="2"/><circle cx="${Xa(fb(t))}" cy="50" r="7" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`;
+ $('av').innerHTML=SVG(340,70,g);
+ $('ke').textContent=ok?'t = '+r1(te)+' s, a '+r1(de)+' m':'não se encontram';$('kq').textContent=fmt(va)+'t = '+pb+(vb<0?' − ':' + ')+fmt(Math.abs(vb))+'t';
+ missao('m',ok&&Math.abs(de-600)<1e-6,'Encontro na praça: t = '+r1(te)+' s, a 600 m do galpão.',ok?'Hoje o encontro é a '+r1(de)+' m. Leve-o para 600 m.':'Assim eles não se encontram (retas paralelas ou se afastando).');}
+draw();
+})();
+</script>
+</body>
+</html>
