@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Régua de ondas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Régua de ondas</h1></header>
+<main>
+<div class="card"><h2>v = λ · f</h2><p class="muted" style="margin-top:0">Escolha o meio. A velocidade da onda depende só dele. Mude a frequência e veja as cristas se apertarem ou se afastarem na régua, enquanto a velocidade fica igual.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>Frequência</b><input type="range"><span></span></div>
+<div class="kpi"><div>Velocidade (do meio)<b id="kv"></b></div><div>Frequência f<b id="kf"></b></div><div class="o">Comprimento de onda λ<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a frequência.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MEIOS=[['ar',340,4,[20,2000,10],170],['água do mar',1500,16,[50,5000,50],750],['rocha da ilha',3000,6000,[0.5,10,0.5],1],['onda P na crosta',6000,12000,[0.5,10,0.5],1]];
+let mi=0;
+const unid=v=>v>=1000?r2(v/1000)+' km':v>=1?r2(v)+' m':r1(v*100)+' cm';
+const C=chips('ch',MEIOS.map(m=>m[0]),0,i=>{mi=i;const m=MEIOS[i];F.lim(m[3],m[4]);draw();});
+const F=(()=>{const el=$('sf'),inp=el.querySelector('input'),sp=el.querySelector('span');inp.oninput=()=>draw();
+ return{get:()=>+inp.value,lim:(r,v)=>{inp.min=r[0];inp.max=r[1];inp.step=r[2];inp.value=v;},show:()=>sp.textContent=r1(+inp.value)+' Hz'};})();
+F.lim(MEIOS[0][3],MEIOS[0][4]);
+MIS.def(()=>[
+ ['No meio <b>rocha da ilha</b> (3 km/s), deixe o zumbido do vulcão com <b>2 Hz</b>. Qual o tamanho de cada onda?',()=>mi==2&&F.get()==2,'λ = 3.000 ÷ 2 = 1.500 m: cada ondulação do chão tem um quilômetro e meio.',()=>mi!=2?'Escolha "rocha da ilha".':'Ajuste a frequência para 2 Hz.'],
+ ['No <b>ar</b>, faça um som com λ = <b>1 m</b>.',()=>mi==0&&F.get()==340,'340 ÷ 340 = 1 m. Um som de 340 Hz é uma nota grave.',()=>mi!=0?'Escolha "ar".':'λ = 340 ÷ f. Que f dá 1 m?'],
+ ['Ainda no ar, <b>dobre</b> a frequência da missão anterior. O que acontece com λ? E com v?',()=>mi==0&&F.get()==680,'λ caiu pela metade (0,5 m) e a velocidade continuou 340 m/s. Frequência e comprimento de onda são inversamente proporcionais.',()=>mi!=0?'Escolha "ar".':'O dobro de 340 Hz.'],
+ ['Na <b>água do mar</b>, faça um som de 1.500 Hz. Compare o λ com o do mesmo som no ar.',()=>mi==1&&F.get()==1500,'Na água, λ = 1 m. No ar, o mesmo som teria 340 ÷ 1.500 ≈ 0,23 m. A frequência é a mesma; muda o meio, muda a velocidade, muda o λ.',()=>mi!=1?'Escolha "água do mar".':'Ajuste para 1.500 Hz.']]);
+let t0=performance.now();
+function quadro(){const m=MEIOS[mi],v=m[1],Wm=m[2],f=F.get(),lam=v/f,t=(performance.now()-t0)/1000;let g=RC(0,0,340,190,'#F8FAFC','rx="10"');
+ const x0=20,x1=320,px=(x1-x0)/Wm;const fase=((t*0.6)%1);
+ let pts=[];for(let i=0;i<=300;i++){const x=i/300*Wm;pts.push([x0+x*px,85-45*Math.sin(2*Math.PI*(x/lam-fase))]);}
+ g+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${BLUE}" stroke-width="2.5"/>`;
+ // marca um comprimento de onda a partir da primeira crista visível
+ let xc=(0.25+fase)*lam;while(xc>lam)xc-=lam;if(xc+lam<=Wm){const a=x0+xc*px,b=x0+(xc+lam)*px;g+=LN(a,34,b,34,ORANGE,2)+LN(a,28,a,40,ORANGE,2)+LN(b,28,b,40,ORANGE,2)+TX((a+b)/2,24,'λ = '+unid(lam),{fs:11,c:ORANGE});}
+ for(let k=0;k<=8;k++){const x=x0+k*(x1-x0)/8;g+=LN(x,150,x,158,NAVY,1)+TX(x,172,unid(k*Wm/8),{fs:8.5,c:GRAY,w:500});}g+=LN(x0,154,x1,154,NAVY,1.2);
+ g+=TX(330,185,'régua de '+unid(Wm),{fs:9,c:GRAY,a:'end',w:500});
+ $('fig').innerHTML=SVG(340,190,g);}
+function draw(){F.show();const m=MEIOS[mi];$('kv').textContent=unid(m[1])+'/s';$('kf').textContent=r1(F.get())+' Hz';$('kl').textContent=unid(m[1]/F.get());MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>

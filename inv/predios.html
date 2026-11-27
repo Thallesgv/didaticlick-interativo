@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prédios e tremor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Prédios e tremor</h1></header>
+<main>
+<div class="card"><h2>Quem entra em ressonância?</h2><p class="muted" style="margin-top:0">O chão de Porto Morena vibra com a frequência que você escolher. Cada prédio tem sua frequência natural (período ≈ 0,1 s por andar). O que tem frequência natural igual à do chão balança muito mais.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>Frequência do chão</b><input type="range"><span></span></div>
+<div id="ch" style="margin:6px 0"></div>
+<div class="kpi" id="tab"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a frequência do chão.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PR=[['casa',2,'#CBD5E1'],['escola',3,'#A7C4E8'],['prédio',6,'#CBD5E1'],['Hotel Mirante',10,'#F2B36B'],['torre',20,'#CBD5E1']];
+let amort=false;
+const F=SL('sf',0.2,6,0.05,2,draw,v=>r2(v)+' Hz');
+chips('ch',['Sem amortecedor','Com amortecedor nos prédios'],0,i=>{amort=i==1;draw();});
+const f0=n=>1/(0.1*n),amp=(n,f)=>{const r=f/f0(n),z=amort?0.3:0.05;return 1/Math.sqrt((1-r*r)**2+(2*z*r)**2);};
+const maior=()=>{let b=0;PR.forEach((p,i)=>{if(amp(p[1],F.get())>amp(PR[b][1],F.get()))b=i;});return b;};
+MIS.def(()=>[
+ ['Faça o <b>Hotel Mirante</b> (10 andares) balançar ao máximo.',()=>!amort&&Math.abs(F.get()-1)<0.06,'1 Hz: período de 1 s, igual ao do hotel. Repare que a casa e a escola quase não sentem.',()=>'O hotel tem período ≈ 1 s. Qual frequência é essa?'],
+ ['Agora escolha a frequência que mais sacode a <b>torre de 20 andares</b>.',()=>!amort&&Math.abs(F.get()-0.5)<0.06,'0,5 Hz, período de 2 s: o mesmo da Cidade do México em 1985.',()=>'A torre tem período ≈ 2 s.'],
+ ['Que frequência deixa a <b>escola</b> (3 andares) em maior perigo?',()=>!amort&&maior()==1&&amp(3,F.get())>5,'Perto de 3,3 Hz (período de 0,3 s). Os prédios altos nem percebem.',()=>'Período da escola ≈ 0,3 s. f = 1 ÷ 0,3.'],
+ ['Com o chão a 1 Hz, ligue o <b>amortecedor</b>. Quanto caiu o balanço do hotel?',()=>amort&&Math.abs(F.get()-1)<0.06,()=>'Com o amortecedor, o hotel balança '+r1(amp(10,1))+' vezes o movimento do chão, contra 10 vezes sem ele. É a ideia da bola do Taipei 101.',()=>!amort?'Escolha "Com amortecedor".':'Deixe o chão em 1 Hz.']]);
+let t0=performance.now();
+function quadro(){const t=(performance.now()-t0)/1000,f=F.get(),ch=3*Math.sin(2*Math.PI*f*t);let g=RC(0,0,340,240,'#EEF4FA','rx="10"');
+ g+=RC(0,212,340,28,'#C9A57A');g+=LN(0,212,340,212,'#9C7A50',2);
+ PR.forEach(([n,a,c],i)=>{const x=34+i*68,A=amp(a,f),d=Math.max(-30,Math.min(30,A*3*Math.sin(2*Math.PI*f*t)));
+  const perigo=A>5;g+=`<g transform="translate(${ch.toFixed(2)} 0)">`+PREDIO(x,212,a,a>8?30:36,a>8?9:a>3?14:18,d,perigo?'#F87171':c)+'</g>';
+  g+=TX(x,232,a+' and.',{fs:9,c:'#fff'});});
+ g+=TX(170,18,'o chão vibra a '+r2(f)+' Hz',{fs:11,c:NAVY});
+ $('fig').innerHTML=SVG(340,240,g);}
+function draw(){const f=F.get();$('tab').innerHTML=PR.map(([n,a],i)=>{const A=amp(a,f);return `<div${A>5?' class="o"':''}>${n} (${a} and.)<b>× ${r1(A)}</b>natural: ${r2(f0(a))} Hz</div>`;}).join('');MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>

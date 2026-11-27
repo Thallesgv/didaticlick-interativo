@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A corda e a mola · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A corda e a mola</h1></header>
+<main>
+<div class="card"><h2>Faça uma onda</h2><p class="muted" style="margin-top:0">A onda anda para a direita a 2 m/s. Mude a amplitude e a frequência e acompanhe a <b>bolinha laranja</b>: ela só vibra em torno do seu lugar. Quem viaja é a energia.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Amplitude</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Frequência (oscilações por segundo)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Frequência f<b id="kf"></b></div><div>Período T = 1 ÷ f<b id="kt"></b></div><div>Comprimento de onda λ = v ÷ f<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça uma onda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const V=2;let tipo=0,t0=performance.now();
+const C=chips('ch',['Transversal (corda)','Longitudinal (mola)'],0,i=>{tipo=i;MIS.ver('m');});
+const A=SL('sa',0.2,1,0.1,0.6,()=>MIS.ver('m'),v=>r1(v*20)+' cm');
+const F=SL('sf',0.5,4,0.5,1,()=>{t0=performance.now();MIS.ver('m');},v=>r1(v)+' Hz');
+MIS.def(()=>[
+ ['Faça uma onda de <b>2 Hz</b>. Quanto tempo dura cada oscilação da bolinha?',()=>F.get()==2,'Isso: 2 oscilações por segundo, então cada uma dura T = 1 ÷ 2 = 0,5 s.',()=>'A frequência está em '+r1(F.get())+' Hz.'],
+ ['Agora faça a bolinha levar <b>1 segundo</b> inteiro para subir e descer.',()=>F.get()==1,'T = 1 s quer dizer f = 1 Hz. Veja como as cristas ficaram mais longe umas das outras: λ = 2 m.',()=>'T = 1 ÷ f. Que f dá T = 1 s?'],
+ ['Deixe o comprimento de onda com <b>0,5 m</b> (cristas bem juntinhas).',()=>Math.abs(V/F.get()-0.5)<1e-9,'λ = v ÷ f = 2 ÷ 4 = 0,5 m. Frequência alta, cristas juntas.',()=>'Agora λ = '+r2(V/F.get())+' m. Para diminuir λ, aumente a frequência.'],
+ ['Troque para a <b>mola</b> (longitudinal) com amplitude de pelo menos 16 cm. Para que lado a bolinha vibra agora?',()=>tipo==1&&A.get()>=0.8,'Na mola, cada pedaço vai e volta na mesma direção em que a onda anda: aparecem as compressões. O som no ar é assim.',()=>tipo!=1?'Escolha "Longitudinal (mola)".':'Aumente a amplitude.']]);
+function quadro(){const t=(performance.now()-t0)/1000,f=F.get(),k=2*Math.PI*f/V,w=2*Math.PI*f,a=A.get();let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ const x0=20,x1=320,px=(x1-x0)/4;g+=LN(x0,100,x1,100,'#E5E7EB',1,'4 4');
+ for(let m=0;m<=4;m++)g+=LN(x0+m*px,178,x0+m*px,186,NAVY,1)+TX(x0+m*px,197,m+' m',{fs:9,c:GRAY,w:500});g+=LN(x0,182,x1,182,NAVY,1.2);
+ if(tipo==0){let pts=[];for(let i=0;i<=120;i++){const x=i/120*4;pts.push([x0+x*px,100-a*60*Math.sin(w*t-k*x)]);}
+  g+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${BLUE}" stroke-width="3"/>`;
+  for(let i=0;i<=24;i++){const x=i/24*4,y=100-a*60*Math.sin(w*t-k*x);g+=CI(x0+x*px,y,i==12?7:4,i==12?ORANGE:NAVY);}
+  g+=LN(x0+2*px,100-a*60-6,x0+2*px,100+a*60+6,ORANGE,1,'2 3');}
+ else{for(let i=0;i<=80;i++){const x=i/80*4,dx=a*0.35*Math.sin(w*t-k*x);const X=x0+(x+dx*0.5)*px;g+=LN(X,60,X,140,i==40?ORANGE:BLUE,i==40?3:1.6);}
+  g+=LN(x0+2*px-a*0.175*px,150,x0+2*px+a*0.175*px,150,ORANGE,1,'2 3');}
+ g+=TX(330,22,'a onda anda →',{fs:10,c:GREEN,a:'end'});
+ $('fig').innerHTML=SVG(340,200,g);}
+function loop(){quadro();requestAnimationFrame(loop);}
+function kpi(){$('kf').textContent=r1(F.get())+' Hz';$('kt').textContent=r2(1/F.get())+' s';$('kl').textContent=r2(V/F.get())+' m';}
+const _ver=MIS.ver;setInterval(kpi,200);kpi();MIS.ver('m');loop();
+})();
+</script>
+</body>
+</html>
