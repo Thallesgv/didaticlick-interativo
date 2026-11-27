@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Barras ou pizza? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Barras ou pizza?</h1></header>
+<main>
+<div class="card"><h2>Barras ou pizza?</h2><p class="muted" style="margin-top:0">Os mesmos casos de quatro bairros aparecem em barras e em setores. Cada fatia tem ângulo = porcentagem × 3,6°.</p>
+<div class="sl" id="b0"><b>Moinho</b><input type="range"><span></span></div>
+<div class="sl" id="b1"><b>Centro</b><input type="range"><span></span></div>
+<div class="sl" id="b2"><b>Vila Nova</b><input type="range"><span></span></div>
+<div class="sl" id="b3"><b>Horizonte</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<p class="muted" id="ang" style="font-size:14px"></p>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR5=['#F7821F','#0E2354','#7CC47F','#FBB57A','#9AA7BD'],BAI=['Moinho','Centro','Vila Nova','Horizonte','Ribeira'];
+function pizza(cx,cy,r,vals,cores,rot){const t=vals.reduce((a,b)=>a+b,0);let a=-Math.PI/2,g='';if(!t)return CI(cx,cy,r,'#E5E7EB');
+ vals.forEach((v,i)=>{if(!v)return;const da=v/t*2*Math.PI;if(da>=2*Math.PI-1e-9){g+=CI(cx,cy,r,cores[i]);a+=da;return;}const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(a+da),y2=cy+r*Math.sin(a+da);
+  g+=`<path d="M${cx} ${cy} L${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${da>Math.PI?1:0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${cores[i]}" stroke="#fff" stroke-width="1.5"/>`;
+  if(rot&&v/t>=0.08){const m=a+da/2;g+=TX(cx+0.62*r*Math.cos(m),cy+0.62*r*Math.sin(m)+4,rot(v,t),{fs:10,c:'#fff'});}a+=da;});return g;}
+const INI=[48,30,12,6],S=INI.map((v,i)=>SL('b'+i,0,60,1,v,draw));
+const v=()=>S.map(s=>s.get()),tot=()=>v().reduce((a,b)=>a+b,0),ang=i=>tot()?360*v()[i]/tot():0;
+MIS.def(()=>[
+ ['Faça uma fatia de exatamente <b>90°</b> (um quarto da pizza).',()=>tot()>0&&v().some((x,i)=>Math.abs(ang(i)-90)<1e-9),()=>'Uma fatia de 90° = 25% do total.',()=>'Ângulos: '+v().map((x,i)=>r1(ang(i))+'°').join(' · ')],
+ ['Faça uma fatia ocupar <b>meia pizza</b> (180°).',()=>tot()>0&&v().some((x,i)=>Math.abs(ang(i)-180)<1e-9),()=>'Meia pizza = 50%: esse bairro tem tantos casos quanto os outros três juntos.',()=>'Maior fatia: '+r1(Math.max(...v().map((x,i)=>ang(i))))+'°.'],
+ ['Deixe <b>Centro</b> e <b>Vila Nova</b> com diferença de só <b>1 caso</b>, ambos com pelo menos 20. Na pizza dá para ver qual é maior? E nas barras?',()=>Math.abs(v()[1]-v()[2])==1&&Math.min(v()[1],v()[2])>=20,()=>'Na pizza, as fatias parecem iguais; nas barras, a diferença aparece na ponta. Para comparar, barras.',()=>'Centro '+v()[1]+', Vila Nova '+v()[2]+'.']]);
+function draw(){const x=v(),mx=Math.max(1,...x);let g='';
+ x.forEach((c,i)=>{const h=c/mx*150;g+=RC(14+i*38,180-h,28,h,COR5[i],'rx="2"')+TX(28+i*38,194,BAI[i].slice(0,4)+'.',{fs:9,c:GRAY})+TX(28+i*38,175-h,c,{fs:10});});
+ g+=LN(8,180,166,180,NAVY,1.2)+TX(85,14,'barras',{fs:11,c:ORANGE});
+ g+=pizza(258,104,72,x,COR5,(a,t)=>Math.round(100*a/t)+'%')+TX(258,14,'setores',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,204,g);$('ang').textContent='Ângulos: '+x.map((c,i)=>BAI[i]+' '+r1(ang(i))+'°').join(' · ');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

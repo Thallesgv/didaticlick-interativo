@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A sala 7 · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A sala 7</h1></header>
+<main>
+<div class="card"><h2>Média, mediana e moda</h2><p class="muted" style="margin-top:0">Cada bolinha é uma pessoa da sala 7. Arraste as bolinhas pela régua de idades (de 0 a 100 anos) e veja a <b style="color:#D9342B">média</b>, a <b style="color:#2E7D4F">mediana</b> e a <b style="color:#F7821F">moda</b> mudarem.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Média<b id="ka"></b></div><div>Mediana<b id="kd"></b></div><div>Moda<b id="ko"></b></div></div>
+<p class="muted" id="lista" style="font-size:14px"></p>
+<div class="row"><button class="alt" id="br">Voltar à sala original</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Arraste as bolinhas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ORIG=[8,11,13,13,14,15,38,41,67];let A=ORIG.slice(),sel=null;
+const X=v=>20+v*3,ord=()=>A.slice().sort((a,b)=>a-b),med=()=>A.reduce((a,b)=>a+b,0)/A.length,mdn=()=>{const o=ord();return o[4];},
+ moda=()=>{const c={};A.forEach(v=>c[v]=(c[v]||0)+1);const mx=Math.max(...Object.values(c));return mx<2?[]:Object.keys(c).filter(k=>c[k]==mx).map(Number);};
+let fez3=false;
+MIS.def(()=>[
+ ['Mexa nas idades para a <b>média</b> ficar entre 19,5 e 20,5 <b>sem mudar a mediana</b> (14).',()=>Math.abs(med()-20)<=0.5&&mdn()==14,()=>'Média '+r1(med())+' e mediana 14. Dá para puxar a média mexendo só nos extremos.',()=>'Média '+r1(med())+', mediana '+mdn()+'.'],
+ ['Crie uma sala com <b>média igual à mediana</b> (diferença menor que 0,5).',()=>Math.abs(med()-mdn())<0.5,()=>'Média '+r1(med())+' e mediana '+mdn()+': idades bem equilibradas em volta do meio.',()=>'Média '+r1(med())+', mediana '+mdn()+'.'],
+ ['Volte à sala original e leve <b>só o Seu Lauro</b> (67) até <b>100 anos</b>. Quanto a média sobe? E a mediana?',()=>{const o=A.slice();return o.filter((v,i)=>v!==ORIG[i]).length==1&&A[8]==100;},()=>'A média foi de 24,4 para '+r1(med())+'; a mediana continuou 14. Um único extremo puxa a média; a mediana nem se mexe.',()=>'Use o botão "Voltar à sala original" e arraste só a bolinha do 67.']]);
+toque('fig',(x,y,ini)=>{const v=Math.max(0,Math.min(100,Math.round((x-20)/3)));if(ini){let b=0,d=1e9;A.forEach((a,i)=>{const dd=Math.abs(X(a)-x);if(dd<d){d=dd;b=i;}});sel=d<18?b:null;}if(sel!==null){A[sel]=v;draw();}});
+$('br').onclick=()=>{A=ORIG.slice();draw();};
+function draw(){let g=LN(20,150,320,150,NAVY,1.5);for(let v=0;v<=100;v+=10)g+=LN(X(v),150,X(v),155,NAVY,1)+TX(X(v),168,v,{fs:9,c:GRAY});
+ const cnt={};A.forEach((a,i)=>{const k=cnt[a]||0;cnt[a]=k+1;g+=CI(X(a),138-k*16,7,moda().includes(a)?ORANGE:NAVY,'stroke="#fff" stroke-width="1.5"');});
+ g+=LN(X(med()),150,X(med()),40,'#D9342B',2,'5 3')+TX(X(med()),34,'média '+r1(med()),{fs:10,c:'#D9342B'});
+ g+=LN(X(mdn()),150,X(mdn()),64,'#2E7D4F',2,'5 3')+TX(X(mdn()),58,'mediana '+mdn(),{fs:10,c:'#2E7D4F'});
+ g+=TX(320,184,'idade (anos)',{fs:10,c:GRAY,a:'end'});
+ $('fig').innerHTML=SVG(340,192,g);$('ka').textContent=r1(med());$('kd').textContent=mdn();$('ko').textContent=moda().length?moda().join(' e '):'não há';
+ $('lista').textContent='Idades em ordem: '+ord().join(', ');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

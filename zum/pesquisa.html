@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A pesquisa do abrigo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A pesquisa do abrigo</h1></header>
+<main>
+<div class="card"><h2>Quem perguntar?</h2><p class="muted" style="margin-top:0">O abrigo tem 100 pessoas (cada quadradinho). Algumas querem sair, mas você não sabe quantas. Escolha o jeito de escolher a amostra e o tamanho dela e faça pesquisas. O histograma guarda o resultado de cada pesquisa.</p>
+<div id="cm" style="margin:6px 0"></div>
+<div class="sl" id="sn"><b>Tamanho da amostra</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Fazer 1 pesquisa</button><button id="b50">Fazer 50 pesquisas</button><button class="alt" id="bl">Limpar</button><button class="alt" id="bv">Revelar o abrigo</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Última pesquisa<b id="ku"></b></div><div>Média das pesquisas<b id="km"></b></div><div>Pesquisas feitas<b id="kn"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça pesquisas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SN=SL('sn',5,40,5,10,()=>{res=[];draw();}),CM=chips('cm',['na quadra','no refeitório','por sorteio'],2,()=>{res=[];draw();});
+let r=17;const rnd=()=>{r=(r*9301+49297)%233280;return r/233280;};
+const QUER=new Set();for(let i=0;i<15;i++)QUER.add(i);while(QUER.size<30){const k=15+Math.floor(rnd()*85);QUER.add(k);}
+let res=[],ult=null,ver=false,feitas={};
+function amostra(n){const id=[...Array(100).keys()];
+ if(CM.get()==0){return id.slice(0,Math.max(n,0)).map(i=>i<15?i:15+((i*7)%85));}
+ if(CM.get()==1){const pool=id.slice(40,100);for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}return pool.slice(0,n);}
+ for(let i=99;i>0;i--){const j=Math.floor(Math.random()*(i+1));[id[i],id[j]]=[id[j],id[i]];}return id.slice(0,n);}
+function pesq(){const n=SN.get(),a=amostra(n);ult=a;const p=Math.round(100*a.filter(i=>QUER.has(i)).length/n);res.push(p);const k=CM.get()+'-'+n;feitas[k]=(feitas[k]||0)+1;}
+$('b1').onclick=()=>{pesq();draw();};$('b50').onclick=()=>{for(let k=0;k<50;k++)pesq();draw();};$('bl').onclick=()=>{res=[];ult=null;draw();};$('bv').onclick=()=>{ver=!ver;draw();};
+const media=()=>res.length?res.reduce((a,b)=>a+b,0)/res.length:null,amp=()=>res.length?Math.max(...res)-Math.min(...res):0;
+MIS.def(()=>[
+ ['Faça uma pesquisa <b>na quadra</b>, onde os corredores treinam.',()=>CM.get()==0&&res.length>=1,()=>'Resultado: '+res[res.length-1]+'% querem sair. Amostra com viés: na quadra estão justamente os que querem correr para fora.',()=>'Escolha "na quadra" e faça 1 pesquisa.'],
+ ['Faça <b>50 pesquisas por sorteio</b> com amostras de <b>5</b> pessoas. Os resultados variam muito?',()=>CM.get()==2&&SN.get()==5&&res.length>=50,()=>'Foram de '+Math.min(...res)+'% a '+Math.max(...res)+'%. Amostras pequenas variam demais.',()=>CM.get()!=2?'Escolha "por sorteio".':SN.get()!=5?'Ponha a amostra em 5.':'Faça mais pesquisas ('+res.length+' de 50).'],
+ ['Agora <b>50 pesquisas por sorteio</b> com <b>40</b> pessoas. A média fica perto da verdade? Use "Revelar".',()=>CM.get()==2&&SN.get()==40&&res.length>=50&&ver,()=>'Média das pesquisas: '+r1(media())+'%. No abrigo, 30 de 100 querem sair. Com sorteio e amostra maior, as pesquisas se apertam em volta da verdade.',()=>CM.get()!=2||SN.get()!=40?'Sorteio com 40 pessoas.':res.length<50?'Faça 50 pesquisas.':'Aperte "Revelar o abrigo".']]);
+function draw(){let g='';const sel=new Set(ult||[]);
+ for(let i=0;i<100;i++){const x=8+(i%10)*15,y=10+Math.floor(i/10)*15;g+=RC(x,y,12,12,ver?(QUER.has(i)?ORANGE:'#C7D2E3'):'#D7DEEA',sel.has(i)?'stroke="#0E2354" stroke-width="2" rx="2"':'rx="2"');}
+ g+=TX(83,170,CM.get()==0?'quadra: 1ª e 2ª fileiras':CM.get()==1?'refeitório: fileiras de baixo':'sorteio: qualquer um',{fs:9,c:GRAY});
+ const bins=Array(11).fill(0);res.forEach(p=>bins[Math.min(10,Math.floor(p/10))]++);const mx=Math.max(1,...bins);
+ for(let b=0;b<11;b++){const h=bins[b]/mx*120;g+=RC(170+b*15,150-h,13,h,'#7CC47F');if(b%2==0)g+=TX(176+b*15,162,b*10,{fs:8,c:GRAY});}
+ g+=LN(168,150,336,150,NAVY,1)+TX(252,176,'% que quer sair (cada pesquisa)',{fs:9,c:GRAY});
+ if(ver)g+=LN(170+3*15,150,170+3*15,22,ORANGE,2,'4 3')+TX(170+3*15,18,'verdade: 30%',{fs:9,c:ORANGE});
+ $('fig').innerHTML=SVG(340,182,g);$('ku').textContent=res.length?res[res.length-1]+'%':'—';$('km').textContent=res.length?r1(media())+'%':'—';$('kn').textContent=res.length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
