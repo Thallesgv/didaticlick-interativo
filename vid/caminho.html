@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A viagem do Pipoca · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A viagem do Pipoca</h1></header>
+<main>
+<div class="card"><h2>Da Estação ao Rio</h2><p class="muted" style="margin-top:0">O Pipoca sai da Estação (E) e precisa chegar ao bando do Rio (R). Toque nos corredores, em ordem, para traçar a viagem. Ou rode o algoritmo de Dijkstra passo a passo e veja as anotações de distância.</p>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Caminho<b id="kp"></b></div><div>Corredores<b id="kn"></b></div><div class="o">Km<b id="kk"></b></div></div>
+<div class="row"><button class="alt" id="bl">Apagar o caminho</button><button id="bd">Dijkstra: próximo passo</button><button class="alt" id="br">Zerar o Dijkstra</button></div>
+<div id="dj"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leve o Pipoca.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VX={E:[64,74],G:[121,46],M:[143,126],B:[209,98],C:[253,164],R:[301,98]},NM={E:'Estação',G:'Grota',M:'Morro',B:'Brejo',C:'Capoeira',R:'Rio'};
+const AR=[['E','G',3],['E','M',6],['G','M',2],['G','B',7],['M','B',4],['M','C',8],['B','C',3],['B','R',6],['C','R',2]],VS=Object.keys(VX);
+function comps(on){const pai={};VS.forEach(v=>pai[v]=v);const f=v=>pai[v]==v?v:(pai[v]=f(pai[v]));AR.forEach((a,i)=>{if(on[i])pai[f(a[0])]=f(a[1]);});const g={};VS.forEach(v=>{const r=f(v);(g[r]=g[r]||[]).push(v);});return Object.values(g);}
+const LB={E:[0,26,'middle'],G:[0,-17,'middle'],M:[0,26,'middle'],B:[0,-17,'middle'],C:[20,4,'start'],R:[0,26,'middle']};
+const CORES=['#7CC47F','#7FA9E8','#F7B267','#C59BE0','#F28B82','#9AD3D6'];
+function desenhaMapa(on,o){o=o||{};let g=RC(0,0,340,200,'#F3EBCF','rx="10"')+LN(0,188,340,176,'#9CA3AF',3)+TX(14,181,'estrada',{fs:9,a:'start',c:GRAY});
+ AR.forEach((a,i)=>{const[p,q,w]=a,[x1,y1]=VX[p],[x2,y2]=VX[q],mx=(x1+x2)/2,my=(y1+y2)/2,c=o.cor?o.cor(i):(on[i]?'#2E7D4F':'#94A3B8');
+  g+=`<g data-e="${i}" style="cursor:pointer">`+LN(x1,y1,x2,y2,'#000',14,'').replace('stroke="#000"','stroke="#000" stroke-opacity="0"')+LN(x1,y1,x2,y2,c,on[i]?5:1.6,on[i]?'':'4 3')+CI(mx,my,9,'#fff','stroke="'+c+'" stroke-width="1.5"')+TX(mx,my+3.5,w,{fs:10})+'</g>';});
+ const cs=comps(on),ci={};cs.forEach((c,k)=>c.forEach(v=>ci[v]=k));
+ VS.forEach(v=>{const[x,y]=VX[v];g+=`<ellipse cx="${x}" cy="${y}" rx="17" ry="13" fill="${o.vcor?o.vcor(v):CORES[ci[v]%6]}" stroke="#2E7D4F" stroke-width="1.5"/>`+TX(x,y+4,v,{fs:12,c:'#14532D'})+(()=>{const[dx,dy,an]=LB[v];return `<text x="${x+dx}" y="${y+dy}" font-size="9.5" font-weight="700" text-anchor="${an}" fill="${o.rot?NAVY:'#475569'}" stroke="#F3EBCF" stroke-width="3.5" paint-order="stroke" font-family="inherit">${o.rot?o.rot(v):NM[v]}</text>`;})();});
+ return SVG(340,200,g);}
+function ligaArestas(id,cb){$(id).querySelectorAll('[data-e]').forEach(el=>el.onclick=()=>cb(+el.dataset.e));}
+let cam=['E'],usadas=[],dist=null,firm=new Set(),aviso='';
+$('bl').onclick=()=>{cam=['E'];usadas=[];aviso='';draw();};
+function zera(){dist={};VS.forEach(v=>dist[v]=Infinity);dist.E=0;firm=new Set();}zera();
+$('br').onclick=()=>{zera();draw();};
+$('bd').onclick=()=>{const liv=VS.filter(v=>!firm.has(v));if(!liv.length)return;const u=liv.sort((a,b)=>dist[a]-dist[b])[0];firm.add(u);
+ AR.forEach(([p,q,w])=>{const v=p==u?q:(q==u?p:null);if(v&&!firm.has(v)&&dist[u]+w<dist[v])dist[v]=dist[u]+w;});draw();};
+const kmC=()=>usadas.reduce((s,i)=>s+AR[i][2],0),fim=()=>cam[cam.length-1]=='R';
+MIS.def(()=>[
+ ['Trace à mão o caminho <b>mais curto</b> da Estação ao Rio.',()=>fim()&&kmC()==14,()=>cam.join('–')+': 14 km. É o menor.',()=>fim()?cam.join('–')+': '+kmC()+' km. Dá para fazer menos.':'Toque nos corredores a partir de '+cam[cam.length-1]+'.'],
+ ['Agora trace um caminho com o <b>menor número de corredores</b>. Ele é o mais curto?',()=>fim()&&usadas.length==3,()=>cam.join('–')+': só 3 corredores, mas '+kmC()+' km. Menos corredores não quer dizer menos quilômetros.',()=>fim()?'Esse usa '+usadas.length+' corredores. Dá com menos.':'Apague e trace de novo.'],
+ ['Rode o <b>Dijkstra</b> até firmar o Rio. A anotação final confere com o seu caminho?',()=>firm.has('R'),'Anotações finais: G 3, M 5, B 9, C 12, R 14. O algoritmo acha o mesmo 14 sem testar todos os caminhos.',()=>'Firmados: '+([...firm].join(', ')||'nenhum')+'. Aperte "próximo passo".']]);
+function draw(){const usa=new Set(usadas);$('fig').innerHTML=desenhaMapa(AR.map(()=>true),{cor:i=>usa.has(i)?ORANGE:'#94A3B8',vcor:v=>firm.has(v)?'#FFC93C':(cam.includes(v)?'#FDE9D8':'#E6F2DC'),rot:v=>dist[v]==Infinity?'∞':(firm.has(v)?'✔ ':'')+dist[v]+' km'});
+ ligaArestas('fig',i=>{const[p,q]=AR[i],u=cam[cam.length-1];if(fim()){aviso='O Pipoca já chegou. Apague para traçar outro.';}else if(p!=u&&q!=u){aviso='Esse corredor não sai de '+u+'.';}else{const v=p==u?q:p;if(cam.includes(v)){aviso='O Pipoca já passou por '+v+'.';}else{cam.push(v);usadas.push(i);aviso='';}}draw();});
+ $('kp').textContent=cam.join('–');$('kn').textContent=usadas.length;$('kk').textContent=kmC();MIS.ver('m');if(aviso)$('m').innerHTML='<div class="msg info">'+aviso+'</div>'+$('m').innerHTML;}
+draw();
+})();
+</script>
+</body>
+</html>

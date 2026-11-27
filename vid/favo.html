@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O favo da jataí · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O favo da jataí</h1></header>
+<main>
+<div class="card"><h2>Quais formas cobrem o chão?</h2><p class="muted" style="margin-top:0">Escolha um polígono regular. O simulador encaixa peças em volta de um vértice (o ponto vermelho) e mostra se sobra fresta. Embaixo, o perímetro de cada forma com a mesma área.</p>
+<div id="cp" style="margin:6px 0"></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="fig" id="fb" style="flex-direction:column"></div>
+<div class="kpi"><div>Ângulo interno<b id="ka"></b></div><div>Peças no vértice<b id="kn"></b></div><div class="o">Fresta<b id="kf"></b></div></div>
+</div>
+<div class="card"><h2>O plantio do corredor</h2><p class="muted" style="margin-top:0">Um trecho de corredor com mudas a 2 m umas das outras. Compare as duas malhas.</p>
+<div id="cm" style="margin:6px 0"></div>
+<div class="fig" id="fp" style="flex-direction:column"></div>
+<div class="kpi"><div class="o">Mudas no trecho<b id="km"></b></div><div>Distância entre vizinhas<b>2 m</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste as formas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NS=[3,4,5,6,8],NOME=['triângulo','quadrado','pentágono','hexágono','octógono'];let pi=-1,ma=-1,vistos=new Set(),malhas=new Set();
+const CP=chips('cp',NOME,-1,i=>{pi=i;vistos.add(i);draw();}),CM=chips('cm',['malha quadrada','malha de hexágonos'],-1,i=>{ma=i;malhas.add(i);draw();});
+const ang=n=>(n-2)*180/n,per=n=>Math.sqrt(4*n*Math.tan(Math.PI/n));
+function mudas(hex){const W=300,H=100,s=16;let p=[];if(!hex){for(let x=10;x<=W;x+=s)for(let y=10;y<=H;y+=s)p.push([x,y]);}else{let r=0;for(let y=10;y<=H;y+=s*0.866){for(let x=10+(r%2)*s/2;x<=W;x+=s)p.push([x,y]);r++;}}return p;}
+MIS.def(()=>[
+ ['Ache um polígono regular que <b>deixa fresta</b> em volta do vértice.',()=>pi==2||pi==4,()=>NOME[pi]+': ângulo de '+fmt(ang(NS[pi]))+'°; 360 ÷ '+fmt(ang(NS[pi]))+' não é inteiro, e sobra uma fresta.',()=>pi<0?'Escolha uma forma.':'O '+NOME[pi]+' fecha a volta certinho. Tente outro.'],
+ ['Entre os que <b>ladrilham</b>, escolha o que tem <b>menos perímetro</b> para a mesma área.',()=>pi==3,'Hexágono: 3,72 contra 4 do quadrado e 4,56 do triângulo. A abelha gasta menos cera.',()=>pi==2||pi==4?'Esse não ladrilha. Escolha entre triângulo, quadrado e hexágono.':'Olhe as barras: qual dos que ladrilham é o menor?'],
+ ['Plante o trecho nas <b>duas malhas</b> e termine na que cabe mais mudas.',()=>malhas.size==2&&ma==1,()=>'Quadrada: '+mudas(false).length+' mudas; hexágonos: '+mudas(true).length+'. Mesma distância entre vizinhas, uns 15% mais mudas.',()=>malhas.size<2?'Experimente as duas malhas.':'Volte para a malha que coube mais.']]);
+function draw(){let g=RC(0,0,340,200,'#FFF8E7','rx="10"');
+ if(pi>=0){const n=NS[pi],a=ang(n),k=Math.floor(360/a+1e-9),cx=170,cy=100,s=58,R=s/(2*Math.sin(Math.PI/n));
+  for(let j=0;j<k;j++){const t1=(-90+j*a)*Math.PI/180,c=[cx+R*Math.cos(t1+a/2*Math.PI/180),cy+R*Math.sin(t1+a/2*Math.PI/180)],a0=Math.atan2(cy-c[1],cx-c[0]);
+   const pts=[];for(let q=0;q<n;q++)pts.push([c[0]+R*Math.cos(a0+q*2*Math.PI/n),c[1]+R*Math.sin(a0+q*2*Math.PI/n)]);g+=PG(pts,j%2?'#FFD27A':'#FDE9A8','stroke="#C98A12" stroke-width="1.5"');}
+  const fr=360-k*a;if(fr>0.01){const t1=(-90+k*a)*Math.PI/180,t2=(-90+360)*Math.PI/180;g+=`<path d="M${cx} ${cy} L${cx+40*Math.cos(t1)} ${cy+40*Math.sin(t1)} A40 40 0 0 1 ${cx+40*Math.cos(t2)} ${cy+40*Math.sin(t2)}Z" fill="#F6C2BD" stroke="#D9342B"/>`+TX(cx+52*Math.cos((t1+t2)/2),cy+52*Math.sin((t1+t2)/2)+4,'fresta',{fs:10,c:'#D9342B'});}
+  g+=CI(cx,cy,4,'#D9342B');$('ka').textContent=fmt(Math.round(a*10)/10)+'°';$('kn').textContent=k;$('kf').textContent=fr>0.01?fmt(Math.round(fr*10)/10)+'°':'nenhuma';}
+ else{g+=TX(170,104,'escolha uma forma acima',{fs:12,c:GRAY});['ka','kn','kf'].forEach(i=>$(i).textContent='—');}
+ $('fig').innerHTML=SVG(340,200,g);
+ let b=RC(0,0,340,150,'#fff','rx="10"')+TX(200,16,'perímetro para a mesma área (1 cm²)',{fs:9,c:GRAY});
+ NS.forEach((n,i)=>{const p=per(n),h=(p-3)*55,x=20+i*62,lad=360%ang(n)<1e-9;b+=RC(x,120-h,46,h,i==pi?ORANGE:(lad?'#FFD27A':'#E5E7EB'),'stroke="#C98A12"')+TX(x+23,115-h,fmt(Math.round(p*100)/100),{fs:9.5})+TX(x+23,134,NOME[i],{fs:8.5,c:GRAY})+TX(x+23,146,lad?'ladrilha':'não ladrilha',{fs:8,c:lad?'#15803D':'#D9342B'});});
+ $('fb').innerHTML=SVG(340,150,b);
+ let p=RC(0,0,340,130,'#F3EBCF','rx="10"')+RC(4,4,332,112,'#E6F2DC','rx="6"');if(ma>=0)mudas(ma==1).forEach(([x,y])=>p+=CI(x+10,y+4,4.5,'#2E7D4F','stroke="#fff" stroke-width="1"'));else p+=TX(170,64,'escolha uma malha',{fs:12,c:GRAY});
+ $('fp').innerHTML=SVG(340,130,p);$('km').textContent=ma<0?'—':mudas(ma==1).length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

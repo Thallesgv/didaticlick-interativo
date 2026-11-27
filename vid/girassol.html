@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O girassol giratório · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O girassol giratório</h1></header>
+<main>
+<div class="card"><h2>Uma semente de cada vez</h2><p class="muted" style="margin-top:0">Cada semente nova nasce girada de um ângulo fixo em relação à anterior e um pouco mais longe do centro. Mude o ângulo e veja a cabeça do girassol mudar de desenho.</p>
+<div class="sl" id="sa"><b>Ângulo entre sementes</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Sementes</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Fração de volta<b id="kf"></b></div><div class="o">Desenho<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Gire as sementes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',120,160,0.1,130,draw,v=>fmt(Math.round(v*10)/10)+'°'),SN=SL('sn',50,600,10,400,draw);
+const raios=a=>{for(let q=1;q<=21;q++){const p=a*q/360;if(Math.abs(p-Math.round(p))<0.004)return q;}return 0;};
+MIS.def(()=>[
+ ['Ajuste o ângulo até a cabeça ficar <b>cheia, sem buracos nem raios</b>: o ângulo de ouro.',()=>Math.abs(SA.get()-137.5)<=0.1,'137,5°: as sementes nunca se alinham, e os olhos veem espirais de Fibonacci.',()=>raios(SA.get())?'Com '+fmt(SA.get())+'° aparecem '+raios(SA.get())+' raios. Mude o ângulo.':'Quase. Procure perto de 137,5°.'],
+ ['Faça aparecerem exatamente <b>8 raios</b>.',()=>raios(SA.get())==8,()=>fmt(SA.get())+'° × 8 = '+fmt(Math.round(SA.get()*8))+'°, um número inteiro de voltas: a cada 8 sementes, a direção se repete.',()=>'Agora: '+(raios(SA.get())||'nenhum raio claro')+'. Experimente 135°.'],
+ ['Agora faça aparecerem <b>5 raios</b>.',()=>raios(SA.get())==5,()=>fmt(SA.get())+'° = 2/5 de volta: 5 sementes completam 2 voltas.',()=>'Experimente 144°.']]);
+function draw(){const a=SA.get(),n=SN.get(),sc=150/Math.sqrt(600);let g=RC(0,0,340,330,'#FFF8E7','rx="10"');
+ for(let k=0;k<14;k++){const t=k*Math.PI/7;g+=`<ellipse cx="${170+160*Math.cos(t)*0.98}" cy="${165+160*Math.sin(t)*0.98}" rx="20" ry="8" fill="#FFC93C" transform="rotate(${k*180/7} ${170+160*Math.cos(t)*0.98} ${165+160*Math.sin(t)*0.98})"/>`;}
+ g+=CI(170,165,152*Math.sqrt(n/600)+6,'#8B5A2B');
+ for(let k=1;k<=n;k++){const r=sc*Math.sqrt(k),t=k*a*Math.PI/180;g+=CI(170+r*Math.cos(t),165+r*Math.sin(t),2.6+0.06*Math.sqrt(k),'#3B2412');}
+ $('fig').innerHTML=SVG(340,330,g);const q=raios(a);$('kf').textContent=fmt(Math.round(a/360*1000)/1000);$('kd').textContent=q?q+' raios':(Math.abs(a-137.5)<=0.1?'espirais, sem buracos':'espirais');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
