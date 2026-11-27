@@ -163,7 +163,30 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
 7:()=>{const t=R(0,2);
  if(t==0){const c=R(5,60);return{q:`Um ângulo central de <b>${c}°</b> corresponde a quantos km? (1° ≈ 111 km)`,a:c*111,exp:`${c} · 111 = ${c*111} km.`};}
  if(t==1){const d=P([30,60,90,120,180]);return{q:`Dois pontos no equador, separados por <b>${d}°</b> de longitude. Qual o ângulo central, em graus?`,a:d,exp:`cos c = cos ${d}° → c = ${d}°.`};}
- return{q:`Qual é o caminho mais curto entre dois pontos da esfera?`,opts:['a loxodromia','o arco de círculo máximo','o paralelo'],a:'o arco de círculo máximo',exp:'A ortodromia.'};}}}};
+ return{q:`Qual é o caminho mais curto entre dois pontos da esfera?`,opts:['a loxodromia','o arco de círculo máximo','o paralelo'],a:'o arco de círculo máximo',exp:'A ortodromia.'};}}},'nav7':{T:["A chance de voltar", "Várias naus", "Toda a pimenta", "Vale a pena arriscar?", "O seguro", "Grandes números"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const n=P([20,25,40,50]),v=R(Math.ceil(n*.5),n-1);return{q:`De <b>${n}</b> naus que partiram, <b>${v}</b> voltaram. Qual a frequência de volta? (2 casas)`,a:Math.round(v/n*100)/100,tol:.011,exp:`${v} ÷ ${n} ≈ ${fmt(Math.round(v/n*100)/100)}.`};}
+ if(t==1){const p=P([.65,.7,.75,.8,.85,.9,.95]);return{q:`Se a chance de uma nau voltar é <b>${fmt(p)}</b>, qual a chance de ela não voltar?`,a:Math.round((1-p)*100)/100,tol:.001,exp:`1 − ${fmt(p)} = ${fmt(Math.round((1-p)*100)/100)}.`};}
+ const n=P([10,20,40]),m=R(1,Math.floor(n/2));return{q:`Num porão há <b>${n}</b> sacas e <b>${m}</b> estão molhadas. Sorteando uma, qual a probabilidade de ser molhada? (2 casas)`,a:Math.round(m/n*100)/100,tol:.011,exp:`${m} ÷ ${n} = ${fmt(Math.round(m/n*100)/100)}.`};},
+2:()=>{const p=P([.7,.8,.9]),q=Math.round((1-p)*10)/10,t=R(0,2),n=R(2,3);
+ if(t==0)return{q:`<b>${n}</b> naus independentes, cada uma voltando com chance <b>${fmt(p)}</b>. Qual a chance de todas voltarem? (3 casas)`,a:Math.round(Math.pow(p,n)*1000)/1000,tol:.0011,exp:`${fmt(p)}<sup>${n}</sup> = ${fmt(Math.round(Math.pow(p,n)*1000)/1000)}.`};
+ if(t==1)return{q:`<b>${n}</b> naus independentes, cada uma voltando com chance <b>${fmt(p)}</b>. Qual a chance de pelo menos uma voltar? (3 casas)`,a:Math.round((1-Math.pow(q,n))*1000)/1000,tol:.0011,exp:`1 − ${fmt(q)}<sup>${n}</sup> = ${fmt(Math.round((1-Math.pow(q,n))*1000)/1000)}.`};
+ return{q:`Duas naus, cada uma com chance <b>${fmt(p)}</b> de voltar. Qual a chance de exatamente uma voltar? (2 casas)`,a:Math.round(2*p*q*100)/100,tol:.0011,exp:`${fmt(p)} · ${fmt(q)} + ${fmt(q)} · ${fmt(p)} = ${fmt(Math.round(2*p*q*100)/100)}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const [n,k,c]=P([[4,1,4],[4,2,6],[5,2,10],[5,3,10],[6,2,15],[3,1,3]]);return{q:`Quanto vale C(${n}, ${k})?`,a:c,exp:`${n}! ÷ (${k}! · ${n-k}!) = ${c}.`};}
+ if(t==1){const n=R(2,5),q=P([.1,.2,.3]);const v=Math.pow(q,n);return{q:`<b>${n}</b> naus, cada uma com chance <b>${fmt(q)}</b> de se perder. Qual a chance de perder todas? (dê com 5 casas)`,a:Math.round(v*1e5)/1e5,tol:.000011,exp:`${fmt(q)}<sup>${n}</sup> = ${fmt(Math.round(v*1e5)/1e5)}.`};}
+ const S=P([600,1200,1800,2400]),p=P([.7,.8,.9]),n=P([2,3,4,6]);return{q:`<b>${S}</b> sacas divididas igualmente em <b>${n}</b> naus, cada uma voltando com chance <b>${fmt(p)}</b>. Quantas sacas se espera receber?`,a:Math.round(S*p),exp:`${n} · ${fmt(p)} · ${S/n} = ${fmt(Math.round(S*p))} (o mesmo que numa nau só).`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const c=P([500,1000,2000]),k=P([2,3]),p=P([.6,.7,.8,.9]),l=c*(k-1);const E=Math.round(p*l-(1-p)*c);return{q:`Cota de <b>${c}</b>. Se a nau volta (chance ${fmt(p)}), o lucro é <b>${l}</b>; se não, perde a cota. Qual o valor esperado?`,a:E,tol:1,exp:`${fmt(p)} · ${l} − ${fmt(Math.round((1-p)*10)/10)} · ${c} = ${E}.`};}
+ if(t==1){const [l,c,f]=P([[2000,1000,3],[1000,500,3],[3000,1000,4],[1000,1000,2]]);return{q:`Lucro de <b>${l}</b> se a nau volta, perda de <b>${c}</b> se não volta. Que chance de volta deixa o valor esperado em zero? (responda 1/n: dê o n)`,a:f,exp:`p · ${l} = (1 − p) · ${c} → p = ${c} ÷ ${l+c} = 1/${f}.`};}
+ const [a,b,ga,gb]=P([[2,1,60,20],[2,0,70,10],[1,0,55,25]]);return{q:`Jogo até 3 pontos, valendo 80, interrompido com <b>${a} a ${b}</b>. Cada ponto é meio a meio. Quanto cabe ao jogador que está na frente?`,a:ga,exp:`O outro precisa vencer todos os pontos que faltam: divisão ${ga} e ${gb}.`};},
+5:()=>{const t=R(0,2),V=P([2000,4000,5000,8000,10000]),p=P([.05,.1,.15,.2]);
+ if(t==0)return{q:`Carga de <b>${fmt(V)}</b> com chance de perda <b>${fmt(p)}</b>. Qual o prêmio justo do seguro?`,a:Math.round(V*p),exp:`${fmt(p)} · ${fmt(V)} = ${fmt(Math.round(V*p))}.`};
+ if(t==1){const m=P([10,20,25,50]);return{q:`Prêmio justo de <b>${fmt(Math.round(V*p))}</b> e margem de <b>${m}%</b>. Qual o prêmio cobrado?`,a:Math.round(V*p*(1+m/100)),exp:`${fmt(Math.round(V*p))} · ${fmt(1+m/100)} = ${fmt(Math.round(V*p*(1+m/100)))}.`};}
+ const [a,b,j]=P([[4000,1000,1000],[6000,4000,2000],[3000,1000,800]]),f=j/(a+b);return{q:`Avaria grossa: cargas de <b>${fmt(a)}</b> e <b>${fmt(b)}</b>. Jogam ao mar <b>${fmt(j)}</b> da primeira. Quanto o segundo mercador arca?`,a:Math.round(b*f),exp:`Perda de ${fmt(j)} ÷ ${fmt(a+b)} = ${fmt(Math.round(f*1000)/10)}%: ${fmt(Math.round(b*f))}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const p=P([.7,.8,.9]),n=P([200,500,1000]);return{q:`Com chance de volta <b>${fmt(p)}</b>, quantas voltas se espera em <b>${n}</b> viagens?`,a:Math.round(p*n),exp:`${fmt(p)} · ${n} = ${Math.round(p*n)}.`};}
+ if(t==1){const [n,o]=P([[100,.08],[400,.04],[1600,.02],[6400,.01]]);return{q:`Com p = 0,8 e <b>${n}</b> viagens, qual a oscilação típica 2 · √(p(1 − p) ÷ n)? (2 casas)`,a:o,tol:.001,exp:`2 · √(0,16 ÷ ${n}) = ${fmt(o)}.`};}
+ return{q:`Depois de cinco naus perdidas seguidas, a chance de a próxima voltar:`,opts:['aumenta','fica a mesma','diminui'],a:'fica a mesma',exp:'Cada viagem é independente: o mar não tem memória.'};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

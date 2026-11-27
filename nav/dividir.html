@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dividir a carga · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Dividir a carga</h1></header>
+<main>
+<div class="card"><h2>Uma nau ou várias?</h2><p class="muted" style="margin-top:0">1 200 sacas divididas igualmente entre as naus. As barras mostram a chance de voltarem 0, 1, 2… naus (distribuição binomial). A barra vermelha é perder tudo. Repare: as sacas esperadas não mudam; o que muda é o risco.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Em quantas naus dividir</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Chance de cada nau voltar</b><input type="range"><span></span></div>
+<div class="kpi"><div>Sacas por nau<b id="ks"></b></div><div>Sacas esperadas<b id="ke"></b></div><div class="o">Chance de perder tudo<b id="kz"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com chance <b>0,8</b>, ache o <b>menor número de naus</b> que deixa a chance de perder tudo <b>abaixo de 0,1%</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RED='#B91C1C';
+function BARCO(x,y,s,c,x_){let g=`<polygon points="${x-.5*s},${y} ${x+.5*s},${y} ${x+.36*s},${y+.22*s} ${x-.36*s},${y+.22*s}" fill="${c}"/>`+LN(x,y,x,y-.75*s,c,1.3)+
+ `<polygon points="${x+.04*s},${y-.72*s} ${x+.04*s},${y-.12*s} ${x+.42*s},${y-.2*s}" fill="${c}"/>`;if(x_)g+=LN(x-.4*s,y+.2*s,x+.4*s,y-.8*s,RED,2);return g;}
+function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
+function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
+function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
+const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const Ns=SL('sn',1,8,1,1,draw,v=>v+(v>1?' naus':' nau')),Ps=SL('sp',0.5,0.95,0.05,0.8,draw,v=>fmt(v));
+function draw(){const n=Ns.get(),p=Ps.get(),B=BIN(n,p);let g='';
+ for(let i=0;i<n;i++){const x=170+(i-(n-1)/2)*34;g+=BARCO(x,30,22,NAVY)+TX(x,52,fmt(Math.round(1200/n)),{fs:8,c:GRAY});}
+ const ox=40,oy=225,w=280,h=140,bw=w/(n+1);
+ [0,0.25,0.5,0.75,1].forEach(v=>{g+=LN(ox,oy-v*h,ox+w,oy-v*h,'#EEF2F7',1)+TX(ox-5,oy-v*h+3,fmt(v),{fs:9,c:GRAY,w:500,a:'end'});});
+ B.forEach((pr,k)=>{const x=ox+k*bw+bw*.15,hh=Math.max(pr*h,pr>0?1.5:0);g+=`<rect x="${x}" y="${oy-hh}" width="${bw*.7}" height="${hh}" fill="${k==0?RED:k==n?ORANGE:NAVY}"/>`+TX(x+bw*.35,oy+13,k,{fs:9});
+  if(n<=5||k==0)g+=TX(x+bw*.35,oy-hh-4,pct(pr),{fs:8,c:k==0?RED:NAVY});});
+ g+=LN(ox,oy,ox+w,oy,NAVY,1.5)+TX(ox+w,oy+26,'naus que voltam',{fs:9,a:'end'});
+ $('fig').innerHTML=SVG(340,255,g);
+ $('ks').textContent=fmt(Math.round(1200/n));$('ke').textContent=fmt(Math.round(1200*p));$('kz').textContent=pct(B[0]);
+ const ok=Math.abs(p-0.8)<1e-9&&n==5;
+ missao('m',ok,'Cinco naus: 0,2⁵ = 0,00032, ou 0,032%. Com quatro, eram 0,16%. E as sacas esperadas continuam 960.',
+  Math.abs(p-0.8)>1e-9?'Coloque a chance em 0,8.':(B[0]<0.001?'Abaixo de 0,1%, mas dá com menos naus.':'Perder tudo: '+pct(B[0])+'. Ainda acima de 0,1%.'));}
+draw();
+})();
+</script>
+</body>
+</html>
