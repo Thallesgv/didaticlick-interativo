@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O teto da várzea · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O teto da várzea</h1></header>
+<main>
+<div class="card"><h2>A curva em S</h2><p class="muted" style="margin-top:0">A cada ano: P(próximo) = P + r · P · (1 − P/K). A linha verde é o teto K; a cinza, a metade dele. As barras mostram quanto a população mudou em cada ano.</p>
+<div class="sl" id="sr"><b>Taxa r</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Teto K (capacidade de suporte)</b><input type="range"><span></span></div>
+<div class="sl" id="s0"><b>População inicial</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Maior crescimento<b id="kg"></b></div><div>População nesse ano<b id="kp"></b></div><div>Ano 30<b id="k30"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SRr=SL('sr',0.1,2.8,0.1,0.5,draw,v=>fmt(Math.round(v*10)/10)),SK=SL('sk',50,500,10,120,draw),S0=SL('s0',1,300,1,10,draw);
+function serie(){const r=SRr.get(),K=SK.get(),p=[S0.get()];for(let t=0;t<30;t++){const P=p[t];p.push(Math.max(0,P+r*P*(1-P/K)));}return p;}
+function maior(){const p=serie();let b=0;for(let t=1;t<30;t++)if(p[t+1]-p[t]>p[b+1]-p[b])b=t;return b;}
+const ok99=()=>{const p=serie(),K=SK.get();for(let t=0;t<=10;t++)if(Math.abs(p[t]-K)<=0.01*K){for(let u=t;u<=30;u++)if(Math.abs(p[u]-K)>0.01*K)return false;return true;}return false;};
+MIS.def(()=>[
+ ['Coloque o teto em <b>K = 300</b> (comece abaixo dele). Em que população o crescimento do ano é máximo?',()=>SK.get()==300&&S0.get()<150,()=>'O maior crescimento foi do ano '+maior()+' para o '+(maior()+1)+', partindo de '+Math.round(serie()[maior()])+'. Perto de K/2 = 150.',()=>SK.get()!=300?'Ajuste K para 300.':'Comece com menos de 150.'],
+ ['Faça a população chegar a <b>1% do teto até o ano 10</b> e ficar lá.',()=>ok99()&&SRr.get()<=2,()=>'Com r = '+fmt(Math.round(SRr.get()*10)/10)+', em 10 anos ela encostou no teto e parou.',()=>SRr.get()>2?'Com r acima de 2 ela não sossega. Use r até 2.':'Ainda não encostou até o ano 10. Aumente r ou a população inicial.'],
+ ['Comece <b>acima do teto</b> (P₀ maior que K). O que acontece?',()=>S0.get()>SK.get()&&SRr.get()<=1.5,'O freio (1 − P/K) fica negativo: a população diminui até o teto. As barras ficam abaixo de zero.',()=>SRr.get()>1.5?'Use r até 1,5 para ver com calma.':'Aumente a população inicial ou baixe K.'],
+ ['Agora deixe <b>r em 2 ou mais</b>. A população ainda para no teto?',()=>SRr.get()>=2,()=>'Com r = '+fmt(Math.round(SRr.get()*10)/10)+', a população passa do teto, despenca, passa de novo… O modelo simples pode oscilar e até virar caos.',()=>'Aumente r.']]);
+function draw(){const p=serie(),K=SK.get(),ym=Math.max(K*1.3,...p)*1.02,b=maior();
+ const st=Math.pow(10,Math.floor(Math.log10(ym/4))),dy=Math.ceil(ym/4/st)*st;
+ $('fig').innerHTML=PLOT({xmin:0,xmax:30,ymin:0,ymax:dy*4,dx:5,dy:dy,xl:'anos',yl:'população'},(X,Y)=>{let g='';
+  for(let t=0;t<30;t++){const d=p[t+1]-p[t],y1=Y(Math.max(0,d)),y2=Y(Math.max(0,-d));g+=d>=0?RC(X(t)+1,y1,X(1)-X(0)-2,Y(0)-y1,t==b?ORANGE:PEACH,'stroke="'+LIGHT+'"'):RC(X(t)+1,Y(0),X(1)-X(0)-2,Math.min(30,Y(0)-y2),'#FCA5A5');}
+  g+=LN(X(0),Y(K),X(30),Y(K),GREEN,2,'6 4')+TX(X(30),Y(K)-4,'K = '+K,{fs:10,a:'end',c:GREEN})+LN(X(0),Y(K/2),X(30),Y(K/2),GRAY,1.2,'3 3')+TX(X(30),Y(K/2)-4,'K/2',{fs:9,a:'end',c:GRAY});
+  return g+linha(p.map((v,t)=>[t,v]),X,Y,ORANGE,2.5)+p.map((v,t)=>`<circle cx="${X(t)}" cy="${Y(v)}" r="2.5" fill="${ORANGE}"/>`).join('');});
+ $('kg').textContent='ano '+b+' → '+(b+1)+' (+'+r1(p[b+1]-p[b])+')';$('kp').textContent=r1(p[b]);$('k30').textContent=r1(p[30]);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

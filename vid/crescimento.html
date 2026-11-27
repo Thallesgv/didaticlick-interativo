@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrida de populações · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Corrida de populações</h1></header>
+<main>
+<div class="card"><h2>Linear contra exponencial</h2><p class="muted" style="margin-top:0">As duas populações começam iguais. A <b style="color:#0E2354">linear</b> soma a por ano; a <b style="color:#F7821F">exponencial</b> cresce r% ao ano (multiplica por 1 + r). Veja 20 anos.</p>
+<div class="sl" id="sp"><b>População inicial P₀</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Linear: soma a por ano</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Exponencial: cresce r% ao ano</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Ultrapassagem<b id="ku"></b></div><div>Ano 20: linear<b id="kl"></b></div><div>Ano 20: exponencial<b id="kx"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const S0=SL('sp',10,100,10,40,draw),SA=SL('sa',0,40,1,8,draw),SR=SL('sr',1,40,1,15,draw,v=>v+'%');
+const lin=t=>S0.get()+SA.get()*t,ex=t=>S0.get()*Math.pow(1+SR.get()/100,t);
+function cruza(){for(let t=1;t<=60;t++)if(ex(t)>lin(t)+1e-9)return t;return null;}
+const emp1=()=>Math.abs(S0.get()*SR.get()/100-SA.get())<1e-9;
+MIS.def(()=>[
+ ['Mude os valores para a exponencial só passar a linear <b>depois do ano 10</b>.',()=>cruza()>10&&cruza()<=20,()=>'Passa no ano '+cruza()+'. Com taxa pequena ou soma grande, a exponencial demora, mas sempre chega.',()=>cruza()===null||cruza()>20?'Agora ela não passa em 20 anos. Aumente um pouco r.':'Agora passa no ano '+cruza()+'. Aumente a ou diminua r.'],
+ ['Faça as duas terem <b>o mesmo valor no ano 1</b>.',()=>emp1()&&SA.get()>0,()=>'No ano 1, as duas valem '+r1(lin(1))+': a = P₀ × r. Depois, a exponencial dispara: no ano 20, '+fmt(Math.round(ex(20)))+' contra '+fmt(Math.round(lin(20)))+'.',()=>'No ano 1: linear '+r1(lin(1))+', exponencial '+r1(ex(1))+'. Dica: a = P₀ × r.'],
+ ['Com <b>a de pelo menos 10</b>, faça a exponencial passar <b>antes do ano 3</b>.',()=>SA.get()>=10&&cruza()!==null&&cruza()<3,()=>'Passou no ano '+cruza()+': com r alto, a exponencial ganha logo.',()=>SA.get()<10?'Deixe a em 10 ou mais.':'Agora passa no ano '+(cruza()||'—')+'.'],
+ ['Deixe a exponencial <b>10 vezes maior</b> que a linear no ano 20.',()=>ex(20)>=10*lin(20),()=>fmt(Math.round(ex(20)))+' contra '+fmt(Math.round(lin(20)))+': '+r1(ex(20)/lin(20))+' vezes.',()=>'Agora é '+r1(ex(20)/lin(20))+' vezes.']]);
+function draw(){const ym=Math.max(lin(20),ex(20))*1.05,st=Math.pow(10,Math.floor(Math.log10(ym/4))),dy=Math.ceil(ym/4/st)*st,yM=dy*4;
+ const L=[],X=[];for(let t=0;t<=20;t+=0.25){L.push([t,lin(t)]);X.push([t,Math.min(ex(t),yM*1.02)]);}const c=cruza();
+ $('fig').innerHTML=PLOT({xmin:0,xmax:20,ymin:0,ymax:yM,dx:2,dy:dy,xl:'anos',yl:'população',fy:v=>fmt(v)},(Xf,Yf)=>linha(L,Xf,Yf,NAVY,2.5)+linha(X,Xf,Yf,ORANGE,3)+
+  (c&&c<=20?`<circle cx="${Xf(c)}" cy="${Yf(ex(c))}" r="8" fill="none" stroke="${GREEN}" stroke-width="2.5"/>`+TX(Xf(c),Yf(ex(c))-12,'ano '+c,{fs:10,c:GREEN}):''));
+ $('ku').textContent=c?'ano '+c:'não passa';$('kl').textContent=fmt(Math.round(lin(20)));$('kx').textContent=fmt(Math.round(ex(20)));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
