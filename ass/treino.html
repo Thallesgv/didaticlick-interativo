@@ -126,7 +126,8 @@ const LIV={'ass1':{T:["A planta do banco", "Escala e medidas reais", "Perímetro
  if(t==1){const v=P([5,10,15,20,25,30]);return{q:`Converta <b>${v} m/s</b> em km/h.`,a:v*3.6,tol:.001,exp:`${v} · 3,6 = ${fmt(v*3.6)} km/h.`};}
  if(t==2){const k=P([18,36,54,72,90,108]);return{q:`Converta <b>${k} km/h</b> em m/s.`,a:k/3.6,tol:.001,exp:`${k} ÷ 3,6 = ${fmt(k/3.6)} m/s.`};}
  const d=P([600,900,1200,1800]),v=P([2,3,4,5,6]);return{q:`Quanto tempo leva para percorrer <b>${d} m</b> a <b>${v} m/s</b>? (em segundos)`,a:d/v,tol:.001,exp:`t = ${d} ÷ ${v} = ${fmt(d/v)} s.`};},
-2:()=>{const t=R(0,2),a=R(2,6),b=R(-5,10),x=R(-3,9);
+2:()=>{const t=R(0,3),a=R(2,6),b=R(-5,10),x=R(-3,9);
+ if(t==3){const p=R(2,5),q=R(1,6),x=R(1,6);return{q:`f(x) = ${p}x e g(x) = x + ${q}. Calcule <b>g(f(${x}))</b>.`,a:p*x+q,exp:`Primeiro f: f(${x}) = ${p*x}. Depois g: ${p*x} + ${q} = ${p*x+q}. (Na ordem contrária, f(g(${x})) = ${p*(x+q)}.)`};}
  if(t==0)return{q:`f(x) = ${a}x ${b<0?'−':'+'} ${Math.abs(b)}. Calcule <b>f(${x})</b>.`,a:a*x+b,exp:`${a} · ${x} ${b<0?'−':'+'} ${Math.abs(b)} = ${a*x+b}.`};
  if(t==1){const y=a*x+b;return{q:`f(x) = ${a}x ${b<0?'−':'+'} ${Math.abs(b)}. Para qual x temos <b>f(x) = ${y}</b>?`,a:x,exp:`${a}x = ${y} ${b<0?'+':'−'} ${Math.abs(b)} = ${y-b}; x = ${x}.`};}
  return{q:`A tabela de uma função afim dá 0 → <b>${b}</b>, 1 → <b>${a+b}</b>, 2 → <b>${2*a+b}</b>. Quanto vale f(10)?`,a:10*a+b,exp:`Regra f(x) = ${a}x ${b<0?'−':'+'} ${Math.abs(b)}; f(10) = ${10*a+b}.`};},
