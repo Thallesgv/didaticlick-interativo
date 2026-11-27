@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O boletim pirata · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O boletim pirata</h1></header>
+<main>
+<div class="card"><h2>Onde começa o eixo?</h2><p class="muted" style="margin-top:0">Os casos foram <b>98</b> (segunda), <b>100</b> (terça) e <b>104</b> (quarta). Escolha onde o eixo vertical começa e o tipo de desenho. O medidor compara quantas vezes a quarta <b>parece</b> maior que a segunda com quantas vezes ela <b>é</b> maior.</p>
+<div class="sl" id="se"><b>O eixo começa em</b><input type="range"><span></span></div>
+<div id="ct" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Parece maior<b id="kp"></b></div><div>É maior<b id="kr"></b></div><div>Fator de exagero<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SE=SL('se',0,97,1,0,draw),CT=chips('ct',['barras','figuras (galões)'],0,draw);const V=[98,100,104],D=['seg','ter','qua'];
+const h=i=>V[i]-SE.get(),parece=()=>CT.get()==0?h(2)/h(0):Math.pow(h(2)/h(0),2),real=104/98,fat=()=>(parece()-1)/(real-1);
+MIS.def(()=>[
+ ['Com barras, faça a quarta <b>parecer 4 vezes</b> maior que a segunda.',()=>CT.get()==0&&Math.abs(parece()-4)<1e-9,()=>'Eixo começando em '+SE.get()+': alturas '+h(0)+' e '+h(2)+'. O aumento real foi só de 6%.',()=>CT.get()!=0?'Escolha barras.':'Agora parece '+r2(parece())+' vezes.'],
+ ['Agora deixe o gráfico <b>honesto</b>: eixo no zero, com barras.',()=>CT.get()==0&&SE.get()==0,()=>'Parece '+r2(parece())+' vez, e é '+r2(real)+' vez: fator de exagero 1. As barras quase iguais são a verdade.',()=>'O eixo começa em '+SE.get()+'.'],
+ ['Use <b>figuras</b> que crescem em altura e largura e faça a quarta parecer <b>mais de 10 vezes</b> maior.',()=>CT.get()==1&&parece()>10,()=>'A área cresce ao quadrado: altura '+r1(h(2)/h(0))+' vezes → área '+r1(parece())+' vezes.',()=>CT.get()!=1?'Escolha figuras.':'Agora parece '+r1(parece())+' vezes.']]);
+function galao(x,yb,w,hh,c){return RC(x-w/2,yb-hh,w,hh,c,'rx="'+(w*0.12)+'"')+RC(x-w*0.15,yb-hh-w*0.14,w*0.3,w*0.14,c);}
+function draw(){const top=106-SE.get(),Y=v=>200-v/top*170;let g=LN(40,200,330,200,NAVY,1.4)+LN(40,200,40,25,NAVY,1.4);
+ const passo=top>40?Math.ceil(top/5/10)*10:top>10?2:1;for(let v=SE.get();v<=106;v+=passo)g+=LN(36,Y(v-SE.get()),330,Y(v-SE.get()),'#E5E7EB',1)+TX(32,Y(v-SE.get())+3,v,{fs:9,c:GRAY,a:'end'});
+ for(let i=0;i<3;i++){const x=95+i*85,hh=200-Y(h(i)),c=i==2?'#D9342B':'#6C8CD5';
+  if(CT.get()==0)g+=RC(x-24,Y(h(i)),48,hh,c,'rx="2"');else{const w=Math.max(4,48*hh/(200-Y(h(0))))*0.5;g+=galao(x,200,Math.min(w,80),hh,c);}
+  g+=TX(x,Math.max(20,Y(h(i))-6),V[i],{fs:11})+TX(x,214,D[i],{fs:10,c:GRAY});}
+ $('fig').innerHTML=SVG(340,222,g);$('kp').textContent=r2(parece())+'×';$('kr').textContent=r2(real)+'×';$('kf').textContent=r1(fat());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa do surto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O mapa do surto</h1></header>
+<main>
+<div class="card"><h2>Procure o foco</h2><p class="muted" style="margin-top:0">Cada ponto verde é um caso do boletim. Toque no mapa para mover o círculo de busca e mude o raio. O contador mostra quantos casos ficam dentro do círculo.</p>
+<div class="sl" id="sr"><b>Raio do círculo (metros)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Casos no círculo<b id="kc"></b></div><div>Porcentagem do total<b id="kp"></b></div><div>Total de casos<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o círculo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',100,600,50,300,draw,v=>v+' m');const M=0.25;// px por metro
+let r=11;const rnd=()=>{r=(r*9301+49297)%233280;return r/233280;},gs=()=>{let u=0,v=0;while(!u)u=rnd();v=rnd();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const CO=[110,95],CX=[262,170];let C=[170,110];const PTS=[];
+for(let k=0;k<38;k++){const d=Math.abs(gs())*38,a=rnd()*2*Math.PI;PTS.push([CO[0]+d*Math.cos(a),CO[1]+d*0.8*Math.sin(a)]);}
+for(let k=0;k<6;k++)PTS.push([12+rnd()*316,12+rnd()*196]);
+const dentro=()=>PTS.filter(p=>Math.hypot(p[0]-C[0],p[1]-C[1])<=SR.get()*M).length;
+toque('fig',(x,y)=>{C=[Math.max(0,Math.min(340,x)),Math.max(0,Math.min(220,y))];draw();});
+MIS.def(()=>[
+ ['Ache um lugar onde o círculo de 300 m pegue <b>30 casos ou mais</b>.',()=>SR.get()==300&&dentro()>=30,()=>dentro()+' casos perto do coreto, onde houve o show de sábado.',()=>'Agora: '+dentro()+' casos. Raio de 300 m.'],
+ ['Ponha o círculo de 300 m <b>em cima da caixa d\'água</b>.',()=>SR.get()==300&&Math.hypot(C[0]-CX[0],C[1]-CX[1])<12,()=>'Perto da caixa d\'água: '+dentro()+(dentro()==1?' caso':' casos')+'. Se pegasse pela água, haveria muitos aqui. O boato cai.',()=>'Toque bem em cima do quadrado azul.'],
+ ['Qual o <b>menor raio</b> que, no lugar certo, contém <b>metade</b> dos casos (22 ou mais)?',()=>dentro()>=22&&SR.get()<=150,()=>'Com '+SR.get()+' m de raio já cabem '+dentro()+' casos: o surto está bem concentrado.',()=>'Agora: '+dentro()+' casos com '+SR.get()+' m. Diminua o raio e ajuste o centro.']]);
+function draw(){let g=RC(0,0,340,220,'#EEF2E6');for(let i=1;i<5;i++)g+=LN(i*68,0,i*68,220,'#fff',6);for(let j=1;j<3;j++)g+=LN(0,j*73,340,j*73,'#fff',6);
+ PTS.forEach(p=>g+=CI(p[0].toFixed(1),p[1].toFixed(1),3,'#3F8F4A'));
+ g+=CI(CO[0],CO[1],7,ORANGE,'stroke="#0E2354" stroke-width="1"')+TX(CO[0],CO[1]-12,'coreto',{fs:9})+RC(CX[0]-7,CX[1]-7,14,14,'#4A90C8','stroke="#0E2354"')+TX(CX[0],CX[1]-12,"caixa d'água",{fs:9});
+ g+=`<circle cx="${C[0]}" cy="${C[1]}" r="${SR.get()*M}" fill="rgba(247,130,31,0.12)" stroke="#F7821F" stroke-width="2" stroke-dasharray="5 3"/>`;
+ $('fig').innerHTML=SVG(340,220,g);$('kc').textContent=dentro();$('kp').textContent=Math.round(100*dentro()/PTS.length)+'%';$('kt').textContent=PTS.length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

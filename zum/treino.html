@@ -44,7 +44,29 @@ const LIV={'zum1':{T:["Contar dia a dia", "A barricada", "O contágio dobra", "A
  const a=P([6,8,10,12,15]),L=P([20,24,30,40,60]).filter?P([20,24,30,40,60]):30;return{q:`A quarentena começou com ${a} casos novos. Qual razão q faz o total ser exatamente <b>${L}</b>? (2 casas)`,a:Math.round((1-a/L)*100)/100,tol:0.006,exp:`${a} ÷ (1 − q) = ${L} → 1 − q = ${fmt(Math.round(a/L*1000)/1000)} → q = ${fmt(Math.round((1-a/L)*100)/100)}.`};},
 6:()=>{const t=R(0,1);
  if(t==0){const r=P([10,20,30,50]);let n=1;while(r*n>=2**(n-1))n++;return{q:`A PA ${r}, ${2*r}, ${3*r}… e a PG 1, 2, 4…: em que termo a PG passa a PA pela primeira vez?`,a:n,exp:`Termo ${n}: PA ${r*n} e PG ${fmt(2**(n-1))}.`};}
- const r=P([50,100,150,200]);let n=1;while(2**n<=100+r*(n-1))n++;return{q:`Os leitos são 100, ${100+r}, ${100+2*r}… (+${r} por dia) e os casos são 2, 4, 8… (2<sup>n</sup>). Em que dia os casos passam os leitos?`,a:n,exp:`Dia ${n}: ${fmt(100+r*(n-1))} leitos e ${fmt(2**n)} casos.`};}}}};
+ const r=P([50,100,150,200]);let n=1;while(2**n<=100+r*(n-1))n++;return{q:`Os leitos são 100, ${100+r}, ${100+2*r}… (+${r} por dia) e os casos são 2, 4, 8… (2<sup>n</sup>). Em que dia os casos passam os leitos?`,a:n,exp:`Dia ${n}: ${fmt(100+r*(n-1))} leitos e ${fmt(2**n)} casos.`};}}},'zum2':{T:["A tabela do boletim", "O gráfico certo", "A idade da sala 7", "O boletim pirata", "A pesquisa do abrigo", "O mapa do surto"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const T=P([20,25,40,50,80,200]),p=P([10,20,25,40,50,60,75]),c=T*p/100;return{q:`Num boletim com <b>${T}</b> casos, um bairro tem <b>${c}</b>. Qual a porcentagem desse bairro?`,a:p,exp:`${c} ÷ ${T} = ${fmt(p/100)} = ${p}%.`};}
+ if(t==1){const a=R(5,30),b=R(5,30),c=R(5,30),d=100-a-b-c;if(d<=0)return G[1]();return{q:`Uma tabela tem frequências relativas ${a}%, ${b}%, ${c}% e x. Quanto vale x (em %)?`,a:d,exp:`100 − ${a} − ${b} − ${c} = ${d}.`};}
+ const T=P([40,60,80,120,160]),p=P([10,15,20,25,30,40]);return{q:`Num abrigo de <b>${T}</b> pessoas, <b>${p}%</b> são crianças. Quantas crianças há?`,a:T*p/100,exp:`${p}% de ${T} = ${fmt(T*p/100)}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const p=P([5,10,15,20,25,30,40,50,75]);return{q:`Num gráfico de setores, quantos graus mede a fatia de <b>${p}%</b>?`,a:p*3.6,tol:0.01,exp:`${p} × 3,6° = ${fmt(p*3.6)}°.`};}
+ if(t==1){const g=P([18,36,72,90,108,144,180,270]);return{q:`Uma fatia mede <b>${g}°</b>. Que porcentagem ela representa?`,a:g/3.6,tol:0.01,exp:`${g} ÷ 3,6 = ${fmt(g/3.6)}%.`};}
+ const ops=['barras','setores','linha'],k=R(0,2),ps=['comparar a água guardada em 5 abrigos','mostrar que fatia do surto é de cada bairro','mostrar os casos dia a dia durante um mês'];return{q:`Que gráfico usar para <b>${ps[k]}</b>?`,opts:ops,a:ops[k],exp:['Barras comparam categorias.','Setores mostram parte do todo.','Linha mostra mudança no tempo.'][k]};},
+3:()=>{const t=R(0,2);
+ if(t==0){const n=P([4,5,6]),v=Array.from({length:n},()=>R(2,20));const s=v.reduce((a,b)=>a+b,0);return{q:`Calcule a média de ${v.join(', ')}.`,a:Math.round(s/n*100)/100,tol:0.01,exp:`${s} ÷ ${n} = ${fmt(Math.round(s/n*100)/100)}.`};}
+ if(t==1){const n=P([5,6,7]),v=Array.from({length:n},()=>R(1,30));const o=v.slice().sort((a,b)=>a-b);const m=n%2?o[(n-1)/2]:(o[n/2-1]+o[n/2])/2;return{q:`Ache a mediana de ${v.join(', ')}.`,a:m,exp:`Em ordem: ${o.join(', ')} → mediana ${fmt(m)}.`};}
+ const n=P([4,5,6]),m=R(6,15),s=n*m,mx=R(m+1,m+8);return{q:`A média de <b>${n}</b> números é <b>${m}</b>. Qual a soma deles?`,a:s,exp:`${n} × ${m} = ${s}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const a=P([20,40,50,80,100,200]),p=P([5,10,20,25,50]);const b=a*(1+p/100);return{q:`Os casos foram de <b>${a}</b> para <b>${b}</b>. Qual o aumento percentual?`,a:p,exp:`(${b} − ${a}) ÷ ${a} = ${p}%.`};}
+ if(t==1){const k=R(2,4);return{q:`Um desenho tem <b>${k}</b> vezes a altura e <b>${k}</b> vezes a largura de outro. Quantas vezes a área parece maior?`,a:k*k,exp:`${k} × ${k} = ${k*k}.`};}
+ const e=P([40,45,90,95]),a=e+P([2,4,5]),b=a+P([2,4,6,8,10]);const hr=Math.round((b-e)/(a-e)*100)/100;return{q:`Os casos foram <b>${a}</b> e <b>${b}</b>, e o eixo começa em <b>${e}</b>. Quantas vezes a segunda barra parece maior que a primeira?`,a:hr,tol:0.01,exp:`Alturas ${a-e} e ${b-e}: ${fmt(hr)} vezes.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const n=P([10,20,25,40,50]),p=P([10,20,30,40,60]);const k=n*p/100;return{q:`Numa amostra sorteada de <b>${n}</b> pessoas, <b>${k}</b> querem sair. Estime a porcentagem no abrigo.`,a:p,exp:`${k} ÷ ${n} = ${p}%.`};}
+ if(t==1){const N=P([100,150,200,300]),p=P([10,20,30,40]);return{q:`Uma pesquisa honesta estimou <b>${p}%</b>. O abrigo tem <b>${N}</b> pessoas. Quantas devem querer sair?`,a:N*p/100,exp:`${p}% de ${N} = ${N*p/100}.`};}
+ const q=P([[60,40,20],[70,30,10],[50,50,20],[80,20,10]]);return{q:`O abrigo tem ${q[0]}% de jovens e ${q[1]}% de adultos. Numa amostra de <b>${q[2]}</b> que respeite isso, quantos jovens?`,a:q[0]*q[2]/100,exp:`${q[0]}% de ${q[2]} = ${q[0]*q[2]/100}.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const T=P([20,40,50,60,80]),p=P([25,50,60,75,80]);const k=T*p/100;return{q:`Num mapa com <b>${T}</b> casos, <b>${k}</b> estão perto da feira. Qual a porcentagem?`,a:p,exp:`${k} ÷ ${T} = ${p}%.`};}
+ const m=P([200,400,500,800,1000]),p=P([2,4,5,8,10]);return{q:`Uma região tem <b>${m}</b> moradores e <b>${m*p/100}</b> casos. Qual a proporção de doentes (em %)?`,a:p,exp:`${m*p/100} ÷ ${m} = ${p}%.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='zum1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O boletim do abrigo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O boletim do abrigo</h1></header>
+<main>
+<div class="card"><h2>Monte o boletim</h2><p class="muted" style="margin-top:0">Mude os casos de cada bairro. A tabela calcula o total e a porcentagem (frequência relativa) de cada um, e as barras acompanham.</p>
+<div class="sl" id="b0"><b>Moinho</b><input type="range"><span></span></div>
+<div class="sl" id="b1"><b>Centro</b><input type="range"><span></span></div>
+<div class="sl" id="b2"><b>Vila Nova</b><input type="range"><span></span></div>
+<div class="sl" id="b3"><b>Horizonte</b><input type="range"><span></span></div>
+<div class="sl" id="b4"><b>Ribeira</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR5=['#F7821F','#0E2354','#7CC47F','#FBB57A','#9AA7BD'],BAI=['Moinho','Centro','Vila Nova','Horizonte','Ribeira'];
+function pizza(cx,cy,r,vals,cores,rot){const t=vals.reduce((a,b)=>a+b,0);let a=-Math.PI/2,g='';if(!t)return CI(cx,cy,r,'#E5E7EB');
+ vals.forEach((v,i)=>{if(!v)return;const da=v/t*2*Math.PI;if(da>=2*Math.PI-1e-9){g+=CI(cx,cy,r,cores[i]);a+=da;return;}const x1=cx+r*Math.cos(a),y1=cy+r*Math.sin(a),x2=cx+r*Math.cos(a+da),y2=cy+r*Math.sin(a+da);
+  g+=`<path d="M${cx} ${cy} L${x1.toFixed(1)} ${y1.toFixed(1)} A${r} ${r} 0 ${da>Math.PI?1:0} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z" fill="${cores[i]}" stroke="#fff" stroke-width="1.5"/>`;
+  if(rot&&v/t>=0.08){const m=a+da/2;g+=TX(cx+0.62*r*Math.cos(m),cy+0.62*r*Math.sin(m)+4,rot(v,t),{fs:10,c:'#fff'});}a+=da;});return g;}
+const INI=[48,30,12,6,4],S=INI.map((v,i)=>SL('b'+i,0,100,1,v,draw));
+const v=()=>S.map(s=>s.get()),tot=()=>v().reduce((a,b)=>a+b,0),pc=i=>tot()?100*v()[i]/tot():0;
+MIS.def(()=>[
+ ['Faça o <b>Moinho</b> ter exatamente <b>50%</b> dos casos.',()=>tot()>0&&Math.abs(pc(0)-50)<1e-9,()=>'Moinho '+v()[0]+' de '+tot()+': metade exata.',()=>'Agora: '+r1(pc(0))+'%. O Moinho precisa ter o mesmo número que os outros quatro juntos.'],
+ ['Monte um boletim em que <b>dois bairros</b> tenham exatamente <b>25%</b> cada.',()=>tot()>0&&v().filter((x,i)=>Math.abs(pc(i)-25)<1e-9).length>=2,()=>'Dois bairros com 25%: juntos, metade do total.',()=>'Porcentagens agora: '+v().map((x,i)=>r1(pc(i))+'%').join(' · ')],
+ ['Volte ao boletim nº 3 (48, 30, 12, 6) e descubra quantos casos a <b>Ribeira</b> precisa para ter exatamente <b>20%</b>.',()=>v()[0]==48&&v()[1]==30&&v()[2]==12&&v()[3]==6&&Math.abs(pc(4)-20)<1e-9,()=>'Ribeira '+v()[4]+' de '+tot()+' = 20%. Conta: R ÷ (96 + R) = 0,2 → R = 24.',()=>v()[0]!=48||v()[1]!=30||v()[2]!=12||v()[3]!=6?'Ponha Moinho 48, Centro 30, Vila Nova 12 e Horizonte 6.':'Ribeira: '+r1(pc(4))+'%.']]);
+function draw(){const x=v(),T=tot(),mx=Math.max(1,...x);let g=TX(10,16,'bairro',{fs:10,c:GRAY,a:'start'})+TX(130,16,'casos',{fs:10,c:GRAY,a:'end'})+TX(180,16,'%',{fs:10,c:GRAY,a:'end'});
+ x.forEach((c,i)=>{const y=36+i*26;g+=TX(10,y,BAI[i],{fs:11,a:'start',w:500})+TX(130,y,c,{fs:11,a:'end'})+TX(180,y,r1(pc(i))+'%',{fs:11,c:ORANGE,a:'end'});
+  g+=RC(192,y-12,c/mx*140,16,COR5[i],'rx="3"');});
+ g+=LN(8,170,334,170,NAVY,1)+TX(10,188,'total',{fs:11,a:'start'})+TX(130,188,T,{fs:11,a:'end'})+TX(180,188,T?'100%':'—',{fs:11,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(340,200,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
