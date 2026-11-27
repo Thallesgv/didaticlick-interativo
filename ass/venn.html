@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o Venn · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Monte o Venn</h1></header>
+<main>
+<div class="card"><h2>Manhã e sábado</h2><p class="muted" style="margin-top:0">Escolha quantos funcionários há no banco (U), quantos trabalham de manhã (M), no sábado (S) e nos dois. Depois escolha uma operação: a região certa acende.</p>
+<div class="fig" id="fig"></div>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="su"><b>Total de funcionários n(U)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Manhã n(M)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Sábado n(S)</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Nos dois n(M ∩ S)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Região acesa<b id="kr"></b></div><div>Quantos<b id="kn"></b></div><div>Conta<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a escala do Banco Aurora: <b>20 funcionários</b>, <b>12 de manhã</b>, <b>8 no sábado</b>, <b>5 nos dois</b>. Quantos <b>não trabalham nem de manhã nem no sábado</b>? Acenda essa região.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OPS=['M ∪ S','M ∩ S','M − S','S − M','(M ∪ S)ᶜ','Mᶜ'];
+const C=chips('ch',OPS,0,draw),U=SL('su',1,40,1,24,draw),A=SL('sa',0,20,1,10,draw),B=SL('sb',0,20,1,6,draw),I=SL('si',0,20,1,2,draw);
+function draw(){let u=U.get(),a=A.get(),b=B.get(),i=I.get();if(i>Math.min(a,b)){i=Math.min(a,b);I.set(i);}
+ const so_a=a-i,so_b=b-i,uni=a+b-i,fora=u-uni,op=C.get();
+ const cA=[130,105],cB=[210,105],r=68;
+ const regFix=[[1,1,1,0],[0,1,0,0],[1,0,0,0],[0,0,1,0],[0,0,0,1],[0,0,1,1]][op];
+ const n=[so_a,i,so_b,fora],qt=regFix.reduce((s,k,j)=>s+k*n[j],0);
+ const AC=ORANGE;let g=`<defs><clipPath id="ca"><circle cx="${cA[0]}" cy="${cA[1]}" r="${r}"/></clipPath>
+ <mask id="semB"><rect width="340" height="210" fill="#fff"/><circle cx="${cB[0]}" cy="${cB[1]}" r="${r}" fill="#000"/></mask>
+ <mask id="semA"><rect width="340" height="210" fill="#fff"/><circle cx="${cA[0]}" cy="${cA[1]}" r="${r}" fill="#000"/></mask></defs>`;
+ g+=RC(6,6,328,198,regFix[3]?LIGHT:'#F3F4F6','stroke="'+NAVY+'" stroke-width="2" rx="6"');
+ g+=`<circle cx="${cA[0]}" cy="${cA[1]}" r="${r}" fill="${regFix[0]?AC:'#fff'}" mask="url(#semB)"/>`;
+ g+=`<circle cx="${cB[0]}" cy="${cB[1]}" r="${r}" fill="${regFix[2]?AC:'#fff'}" mask="url(#semA)"/>`;
+ g+=`<circle cx="${cB[0]}" cy="${cB[1]}" r="${r}" fill="${regFix[1]?AC:'#fff'}" clip-path="url(#ca)"/>`;
+ g+=`<circle cx="${cA[0]}" cy="${cA[1]}" r="${r}" fill="none" stroke="${NAVY}" stroke-width="2.5"/><circle cx="${cB[0]}" cy="${cB[1]}" r="${r}" fill="none" stroke="${BLUE}" stroke-width="2.5"/>`;
+ g+=TX(18,24,'U',{fs:13,a:'start'})+TX(cA[0]-40,30,'Manhã',{fs:11})+TX(cB[0]+40,30,'Sábado',{fs:11,c:BLUE});
+ g+=TX(cA[0]-30,110,String(so_a),{fs:18})+TX(170,110,String(i),{fs:18})+TX(cB[0]+30,110,String(so_b),{fs:18})+TX(312,192,String(fora),{fs:18,c:fora<0?'#B91C1C':NAVY});
+ $('fig').innerHTML=SVG(340,210,g);
+ $('kr').textContent=OPS[op];$('kn').textContent=fora<0?'impossível':qt;
+ const contas=[`${a} + ${b} − ${i} = ${uni}`,`${i}`,`${a} − ${i} = ${so_a}`,`${b} − ${i} = ${so_b}`,`${u} − ${uni} = ${fora}`,`${u} − ${a} = ${u-a}`];$('kc').textContent=contas[op];
+ if(fora<0){$('m').innerHTML='<div class="msg info">Assim não cabe: M ∪ S teria '+uni+' pessoas, mais do que as '+u+' do banco. Aumente n(U).</div>';return;}
+ missao('m',u==20&&a==12&&b==8&&i==5&&op==4,'Isso! 20 − (12 + 8 − 5) = 20 − 15 = 5 funcionários só trabalham à tarde em dias úteis.',
+  u==20&&a==12&&b==8&&i==5?'A escala está montada. Agora acenda a região de quem não está em M nem em S.':'Monte primeiro a escala do Banco Aurora: 20, 12, 8 e 5.');}
+draw();
+})();
+</script>
+</body>
+</html>

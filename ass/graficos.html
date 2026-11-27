@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mesmo dado, vários gráficos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O mesmo dado, vários gráficos</h1></header>
+<main>
+<div class="card"><h2>Movimento no banco, de segunda a sexta</h2><p class="muted" style="margin-top:0">A tabela é sempre a mesma: 30, 31, 33, 32 e 34 pessoas por hora. Troque o tipo de gráfico e mova o início do eixo vertical.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>O eixo vertical começa em</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Diferença real (sexta ÷ segunda)<b id="kr"></b></div><div>Diferença que o desenho mostra<b id="kv"></b></div><div>Gráfico honesto?<b id="kh"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça a coluna da <b>sexta parecer 3 vezes maior</b> que a da segunda, sem mudar nenhum número. Depois volte o eixo para 0 e compare.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DIA=['Seg','Ter','Qua','Qui','Sex'],V=[30,31,33,32,34],COR=[NAVY,NAVY,NAVY,NAVY,ORANGE];let feito=false;
+const C=chips('ch',['Colunas','Linhas','Setores'],0,draw),E=SL('se',0,29,1,0,draw,v=>String(v));
+function draw(){const t=C.get(),e=E.get(),x0=40,y0=170,W=286,H=140,Y=v=>y0-(v-e)/(36-e)*H;let g='';
+ if(t==2){$('fig').innerHTML=pizza(V.map((v,i)=>({v,cor:[NAVY,BLUE,GREEN,'#7A4BB5',ORANGE][i],nome:DIA[i]+': '+v})));
+  $('kv').textContent='quase iguais';$('kh').textContent='sim (mas setores servem para partes de um todo)';$('kr').textContent='34 ÷ 30 ≈ 1,13';
+  missao('m',false,'','No gráfico de setores, as fatias quase não mudam. Ele mostra partes de um todo, não a variação no tempo. Volte para colunas.');return;}
+ const passo=36-e>12?5:1;for(let v=Math.ceil(e/passo)*passo;v<=36;v+=passo)g+=LN(x0,Y(v),x0+W,Y(v),GRAYL,1)+TX(x0-5,Y(v)+3,String(v),{fs:9,a:'end',c:GRAY,w:500});
+ const bw=W/5;
+ if(t==0)V.forEach((v,i)=>g+=RC(x0+i*bw+bw*.2,Y(v),bw*.6,y0-Y(v),COR[i])+TX(x0+i*bw+bw/2,Y(v)-4,String(v),{fs:10}));
+ else{for(let i=0;i<4;i++)g+=LN(x0+i*bw+bw/2,Y(V[i]),x0+(i+1)*bw+bw/2,Y(V[i+1]),BLUE,2.5);V.forEach((v,i)=>g+=`<circle cx="${x0+i*bw+bw/2}" cy="${Y(v)}" r="5" fill="${COR[i]}" stroke="#fff" stroke-width="2"/>`+TX(x0+i*bw+bw/2,Y(v)-9,String(v),{fs:10}));}
+ V.forEach((v,i)=>g+=TX(x0+i*bw+bw/2,y0+16,DIA[i],{fs:10,c:GRAY,w:500}));
+ g+=LN(x0,y0,x0+W,y0,NAVY,2);if(e>0)g+=`<path d="M${x0-6},${y0-6} l12,-5 M${x0-6},${y0-1} l12,-5" stroke="${ORANGE}" stroke-width="2"/>`+TX(x0+4,14,'eixo cortado em '+e,{fs:10,c:ORANGE,a:'start'});
+ $('fig').innerHTML=SVG(340,195,g);
+ const ap=(34-e)/(30-e);$('kr').textContent='34 ÷ 30 ≈ 1,13';$('kv').textContent=r1(ap)+' vezes';$('kh').textContent=e==0?'sim':'não: o eixo foi cortado';
+ if(ap>=3)feito=true;
+ missao('m',ap>=3,'Pronto: a sexta parece '+r1(ap)+' vezes maior, mas a diferença real é de só 13%. Agora volte o eixo para 0 e veja a verdade.',
+  feito&&e==0?'Com o eixo em 0, as colunas quase se igualam: esse é o retrato honesto dos dados.':'Hoje a sexta parece '+r1(ap)+' vez(es) maior. Suba o início do eixo.');}
+draw();
+})();
+</script>
+</body>
+</html>
