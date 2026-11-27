@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A gangorra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A gangorra</h1></header>
+<main>
+<div class="card"><h2>Preás e jaguatiricas</h2><p class="muted" style="margin-top:0">Modelo de Lotka-Volterra com a = 0,6, b = 0,02, c = 0,01 e d = 0,5. Escolha as populações iniciais e veja 40 anos. Embaixo, o "retrato" da gangorra: cada ponto é um momento, com preás no eixo horizontal e jaguatiricas no vertical.</p>
+<div class="sl" id="sh"><b>Preás no começo</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Jaguatiricas no começo</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="fig" id="fas"></div>
+<div class="kpi"><div class="o">Maior nº de preás<b id="kh"></b></div><div>Período<b id="kp"></b></div><div>Atraso do predador<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SH=SL('sh',0,150,1,80,draw),SLp=SL('sl',0,60,1,20,draw);
+function sim(){let H=SH.get(),L=SLp.get();const a=0.6,b=0.02,c=0.01,d=0.5,dt=0.02,f=(h,l)=>[a*h-b*h*l,c*h*l-d*l],sh=[[0,H]],sl=[[0,L]];
+ for(let i=1;i<=2000;i++){const k1=f(H,L),k2=f(H+dt/2*k1[0],L+dt/2*k1[1]),k3=f(H+dt/2*k2[0],L+dt/2*k2[1]),k4=f(H+dt*k3[0],L+dt*k3[1]);
+  H+=dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]);L+=dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]);H=Math.min(H,1e6);if(i%5==0){sh.push([i*dt,H]);sl.push([i*dt,L]);}}return [sh,sl];}
+const picos=s=>{const p=[];for(let i=1;i<s.length-1;i++)if(s[i][1]>s[i-1][1]&&s[i][1]>=s[i+1][1]&&s[i][1]>1)p.push(s[i][0]);return p;};
+let S;const hmax=()=>Math.max(...S[0].map(p=>p[1])),hmin=()=>Math.min(...S[0].map(p=>p[1])),lmax=()=>Math.max(...S[1].map(p=>p[1]));
+MIS.def(()=>[
+ ['Faça uma <b>gangorra grande</b>: os preás passando de <b>150</b> em algum momento.',()=>SLp.get()>0&&SH.get()>0&&hmax()>150,()=>'Os preás chegaram a '+Math.round(hmax())+'. Quanto mais longe do equilíbrio você começa, maior a gangorra.',()=>'O máximo agora é '+Math.round(hmax())+'. Afaste as populações de 50 preás e 30 jaguatiricas.'],
+ ['Encontre o <b>equilíbrio</b>: as duas linhas retas, sem gangorra.',()=>SH.get()==50&&SLp.get()==30,'50 preás e 30 jaguatiricas: H = d/c = 0,5/0,01 = 50 e L = a/b = 0,6/0,02 = 30. Nascimentos e mortes se anulam.',()=>'Variação dos preás agora: de '+Math.round(hmin())+' a '+Math.round(hmax())+'. Use as contas d/c e a/b.'],
+ ['Tire <b>todas as jaguatiricas</b> (deixe preás). O que acontece?',()=>SLp.get()==0&&SH.get()>0,'Sem predador, os preás crescem de forma exponencial (×1,82 por ano), sem freio. Na vida real, faltaria capim: lembra do teto?',()=>'Zere as jaguatiricas.'],
+ ['Agora tire <b>todos os preás</b> (deixe jaguatiricas).',()=>SH.get()==0&&SLp.get()>0,'Sem comida, as jaguatiricas caem 0,5 por ano e somem. Predador depende da presa.',()=>'Zere os preás.']]);
+function draw(){S=sim();const ym=Math.min(400,Math.max(100,Math.ceil(Math.max(hmax(),lmax())/50)*50));const cl=s=>s.map(p=>[p[0],Math.min(p[1],ym*1.03)]);
+ $('fig').innerHTML=PLOT({xmin:0,xmax:40,ymin:0,ymax:ym,dx:5,dy:ym/4,xl:'anos',yl:'animais'},(X,Y)=>linha(cl(S[0]),X,Y,VERDE_E,2.5)+linha(cl(S[1]),X,Y,ORANGE,2.5)+
+  RC(240,22,10,4,VERDE_E)+TX(254,27,'preás',{fs:10,a:'start'})+RC(240,36,10,4,ORANGE)+TX(254,41,'jaguatiricas',{fs:10,a:'start'}));
+ const hm=Math.min(ym,Math.max(160,hmax())),lm=Math.max(70,Math.min(200,lmax()*1.1));let g=RC(0,0,340,150,'#fff');const x0=40,y0=130,W=280,Hh=115,Xf=v=>x0+Math.min(v,hm)/hm*W,Yf=v=>y0-Math.min(v,lm)/lm*Hh;
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.4)+LN(x0,y0,x0,y0-Hh,NAVY,1.4)+TX(x0+W,y0+14,'preás →',{fs:9,a:'end'})+TX(x0+4,y0-Hh-3,'↑ jaguatiricas',{fs:9,a:'start'});
+ g+=`<polyline points="${S[0].map((p,i)=>Xf(p[1]).toFixed(1)+','+Yf(S[1][i][1]).toFixed(1)).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="1.8"/>`;
+ g+=CI(Xf(50),Yf(30),4,GREEN)+TX(Xf(50)+6,Yf(30)+4,'equilíbrio',{fs:9,a:'start',c:GREEN})+CI(Xf(S[0][0][1]),Yf(S[1][0][1]),4.5,ORANGE);
+ $('fas').innerHTML=SVG(340,150,g);
+ const ph=picos(S[0]),pl=picos(S[1]);$('kh').textContent=hmax()>9e5?'explode':Math.round(hmax());
+ $('kp').textContent=ph.length>=2&&hmax()-hmin()>2?r1(ph[1]-ph[0])+' anos':'—';
+ const at=ph.length&&pl.length&&hmax()-hmin()>2?(()=>{const q=pl.find(t=>t>ph[0]);return q!==undefined?r1(q-ph[0])+' anos':'—';})():'—';$('ka').textContent=at;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

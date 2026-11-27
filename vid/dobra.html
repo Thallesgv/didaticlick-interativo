@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relógio das dobras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Relógio das dobras</h1></header>
+<main>
+<div class="card"><h2>Quanto tempo para dobrar?</h2><p class="muted" style="margin-top:0">Uma população de 100 cresce (ou cai) r% ao ano. Cada barra é um ano; as barras laranja marcam cada vez que a população dobra (ou cai pela metade). Compare o tempo exato com a regra dos 70.</p>
+<div class="sl" id="sr"><b>Taxa anual r</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Tempo exato<b id="kt"></b></div><div>Regra dos 70<b id="kr"></b></div><div>Fator em 30 anos<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa na taxa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',-20,30,0.5,3,draw,v=>(v>0?'+':'')+fmt(v)+'% ao ano');
+const r=()=>SR.get()/100,T=()=>r()==0?Infinity:Math.abs(Math.log(2)/Math.log(1+r())),f30=()=>Math.pow(1+r(),30);
+MIS.def(()=>[
+ ['Escolha uma taxa que faça a população <b>dobrar em cerca de 10 anos</b> (entre 9,5 e 10,5).',()=>r()>0&&T()>=9.5&&T()<=10.5,()=>'Com '+fmt(SR.get())+'%, dobra em '+r1(T())+' anos. A regra dos 70 diz '+r1(70/SR.get())+'.',()=>r()<=0?'Use uma taxa positiva.':'Agora dobra em '+r1(T())+' anos.'],
+ ['Chegue a <b>1.000 vezes</b> o inicial em <b>menos de 50 anos</b>.',()=>r()>0&&Math.log(1000)/Math.log(1+r())<50,()=>'1.000 ≈ 2¹⁰: são 10 dobras de '+r1(T())+' anos = '+r1(10*T())+' anos.',()=>r()<=0?'Use uma taxa positiva.':'Com essa taxa, levaria '+r1(Math.log(1000)/Math.log(1+r()))+' anos.'],
+ ['Faça a população <b>cair pela metade em cerca de 7 anos</b> (entre 6,5 e 7,5).',()=>r()<0&&T()>=6.5&&T()<=7.5,()=>'Caindo '+fmt(-SR.get())+'% ao ano, cai pela metade em '+r1(T())+' anos. Regra dos 70: '+r1(70/-SR.get())+'.',()=>r()>=0?'Use uma taxa negativa.':'Agora cai pela metade em '+r1(T())+' anos.'],
+ ['Encontre a taxa que deixa a população <b>8 vezes maior em 30 anos</b> (fator entre 7,5 e 8,5).',()=>f30()>=7.5&&f30()<=8.5,()=>'Fator '+r1(f30())+' com '+fmt(SR.get())+'%: são 3 dobras de uns 10 anos. 2³ = 8.',()=>'Agora o fator em 30 anos é '+r1(f30())+'.']]);
+function draw(){const n=40,v=[];for(let t=0;t<=n;t++)v.push(100*Math.pow(1+r(),t));const ym=Math.max(...v),mk=new Set();
+ if(r()!=0){let alvo=r()>0?200:50;for(let t=0;t<=n;t++){if(r()>0?v[t]>=alvo:v[t]<=alvo){mk.add(t);while(r()>0?v[t]>=alvo:v[t]<=alvo)alvo=r()>0?alvo*2:alvo/2;}}}
+ let g=RC(0,0,340,240,'#fff');const x0=36,y0=210,H=180,w=(340-x0-6)/(n+1);
+ v.forEach((p,t)=>{const h=p/ym*H;g+=RC(x0+t*w+0.5,y0-h,w-1,h,mk.has(t)?ORANGE:LIGHT);if(mk.has(t))g+=TX(x0+t*w+w/2,y0-h-4,r()>0?'×'+fmt(Math.round(p/100*10)/10):'÷'+fmt(Math.round(100/p*10)/10),{fs:8,c:NAVY});});
+ g+=LN(x0,y0,334,y0,NAVY,1.5)+LN(x0,y0,x0,y0-H,NAVY,1.5);[0,10,20,30,40].forEach(t=>g+=TX(x0+t*w+w/2,y0+14,t,{fs:9,c:GRAY}));g+=TX(334,y0+27,'anos',{fs:10,a:'end'});
+ g+=TX(x0-4,y0-H+4,fmt(Math.round(ym)),{fs:9,c:GRAY,a:'end'})+TX(x0-4,y0+3,'0',{fs:9,c:GRAY,a:'end'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kt').textContent=r()==0?'nunca':r1(T())+' anos';$('kr').textContent=r()==0?'—':r1(70/Math.abs(SR.get()))+' anos';$('kf').textContent='× '+r2(f30());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

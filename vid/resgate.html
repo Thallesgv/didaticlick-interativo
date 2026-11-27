@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plano de resgate · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Plano de resgate</h1></header>
+<main>
+<div class="card"><h2>O futuro do mico-leão-dourado</h2><p class="muted" style="margin-top:0">Modelo simples: 3.700 micos em 2014, crescendo r% ao ano. Nos anos do surto (2017 e 2018) não há crescimento e a febre amarela leva a perda escolhida. Os pontos azuis são os censos reais; a linha verde é a meta de 8.000.</p>
+<div class="sl" id="sr"><b>Crescimento anual r</b><input type="range"><span></span></div>
+<div><b style="color:var(--navy)">Febre amarela</b><div id="cs" style="margin:4px 0"></div></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Modelo em 2023<b id="k23"></b></div><div>Modelo em 2040<b id="k40"></b></div><div>Chega a 8.000 em<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',0,20,0.5,8,draw,v=>fmt(v)+'% ao ano'),PERDA=[0,0.32,0.10];
+const CS=chips('cs',['sem surto','surto: perda de 32%','surto com vacina: perda de 10%'],1,draw);
+function serie(r,k){const p={2014:3700};for(let a=2015;a<=2040;a++){const s=(a==2017||a==2018)&&PERDA[k]>0;p[a]=s?p[a-1]*Math.sqrt(1-PERDA[k]):p[a-1]*(1+r/100);}return p;}
+const S=()=>serie(SR.get(),CS.get()),meta=p=>{for(let a=2014;a<=2040;a++)if(p[a]>=8000)return a;return null;};
+MIS.def(()=>[
+ ['Com o <b>surto de 32%</b>, ache a taxa que reproduz o censo de 2023 (4.800, com erro de até 5%).',()=>CS.get()==1&&Math.abs(S()[2023]-4800)<=240,()=>'Com '+fmt(SR.get())+'% ao ano, o modelo dá '+fmt(Math.round(S()[2023]))+' em 2023. (No modelo há crescimento também em 2015 e 2016, por isso a taxa sai menor que os 13,8% do livro.)',()=>CS.get()!=1?'Escolha o surto de 32%.':'O modelo dá '+fmt(Math.round(S()[2023]))+' em 2023.'],
+ ['Mantenha a taxa e troque para o <b>surto com vacina</b>. Quantos micos a mais em 2023?',()=>CS.get()==2,()=>{const a=serie(SR.get(),1)[2023],b=S()[2023];return 'Com vacina: '+fmt(Math.round(b))+' contra '+fmt(Math.round(a))+', ou '+fmt(Math.round(b-a))+' micos a mais ('+Math.round(100*(b/a-1))+'%). Perder 10% em vez de 32% muda tudo.';},()=>'Escolha "surto com vacina".'],
+ ['Com o <b>surto de 32%</b>, encontre a <b>menor taxa</b> que chega a 8.000 micos até 2040.',()=>CS.get()==1&&meta(S())!==null&&meta(serie(SR.get()-0.5,1))===null,()=>'Com '+fmt(SR.get())+'% ao ano, chega em '+meta(S())+'. Meio ponto a menos e não chega.',()=>CS.get()!=1?'Escolha o surto de 32%.':meta(S())===null?'Com essa taxa não chega. Aumente.':'Chega, mas dá para usar uma taxa menor.'],
+ ['Volte ao mundo <b>sem surto</b> com <b>5% ao ano</b>. Em que ano a meta seria alcançada?',()=>CS.get()==0&&SR.get()==5,()=>'Sem surto e a 5%, chegaria a 8.000 em '+(meta(S())||'—')+'. Com o surto e a mesma taxa: '+(meta(serie(5,1))||'depois de 2040')+'.',()=>'Escolha "sem surto" e r = 5%.']]);
+function draw(){const p=S(),pts=[];for(let a=2014;a<=2040;a++)pts.push([a,p[a]]);const yM=Math.min(30000,Math.max(10000,Math.ceil(p[2040]/5000)*5000));
+ $('fig').innerHTML=PLOT({xmin:2014,xmax:2040,ymin:0,ymax:yM,dx:4,dy:yM/5,xl:'ano',yl:'micos',fy:v=>fmt(v),fx:v=>String(v)},(X,Y)=>{let g=`<rect x="${X(2016)}" y="${Y(yM)}" width="${X(2018)-X(2016)}" height="${Y(0)-Y(yM)}" fill="#FDE2E2"/>`+TX((X(2016)+X(2018))/2,Y(yM)+12,'surto',{fs:9,c:VERM});
+  g+=LN(X(2014),Y(8000),X(2040),Y(8000),GREEN,2,'6 4')+TX(X(2019),Y(8000)-5,'meta: 8.000',{fs:10,a:'start',c:GREEN});
+  g+=linha(pts.map(q=>[q[0],Math.min(q[1],yM)]),X,Y,ORANGE,3);[[2014,3700],[2018,2516],[2023,4800]].forEach(([a,v])=>g+=`<circle cx="${X(a)}" cy="${Y(v)}" r="5" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`);return g;});
+ $('k23').textContent=fmt(Math.round(p[2023]));$('k40').textContent=fmt(Math.round(p[2040]));$('km').textContent=meta(p)||'não chega';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

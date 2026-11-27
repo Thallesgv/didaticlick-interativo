@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A lagoa escondida · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A lagoa escondida</h1></header>
+<main>
+<div class="card"><h2>Marque e recapture</h2><p class="muted" style="margin-top:0">A lagoa tem um número secreto de peixes. 1) Escolha M e aperte <b>Marcar</b>: M peixes ganham um ponto laranja e voltam para a água. 2) Escolha C e aperte <b>Pescar</b>: a rede pega C peixes ao acaso (contornados em azul) e conta R, os marcados. A estimativa é N ≈ M × C ÷ R.</p>
+<div class="sl" id="sm"><b>M: quantos marcar</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>C: quantos pescar na recaptura</b><input type="range"><span></span></div>
+<div class="row"><button id="bm">Marcar</button><button id="bp">Pescar</button><button class="alt" id="bv">Revelar N</button><button class="alt" id="bn">Nova lagoa</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Última pesca: R de C<b id="kr"></b></div><div>Estimativa M × C ÷ R<b id="ke"></b></div><div>Média das estimativas<b id="km"></b></div></div>
+<div id="hist" class="muted" style="font-size:13px"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Marque e pesque.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SM=SL('sm',5,150,1,60),SC=SL('sc',10,150,1,50);
+let N,pos,marc=new Set(),rede=new Set(),est=[],Mus=0,ver=false,R=null;
+function nova(){N=rint(150,600);pos=[];for(let i=0;i<N;i++){const a=Math.random()*2*Math.PI,r=Math.sqrt(Math.random())*0.93;pos.push([170+Math.cos(a)*r*155,118+Math.sin(a)*r*98,Math.random()<0.5]);}marc=new Set();rede=new Set();est=[];Mus=0;ver=false;R=null;draw();}
+const sorteia=(k)=>{const id=[...Array(N).keys()];for(let i=N-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[id[i],id[j]]=[id[j],id[i]];}return new Set(id.slice(0,Math.min(k,N)));};
+$('bm').onclick=()=>{Mus=SM.get();marc=sorteia(Mus);rede=new Set();est=[];R=null;
+ pos.forEach(p=>{const a=Math.random()*2*Math.PI,r=Math.sqrt(Math.random())*0.93;p[0]=170+Math.cos(a)*r*155;p[1]=118+Math.sin(a)*r*98;});draw();};
+$('bp').onclick=()=>{if(!Mus){$('hist').textContent='Primeiro marque alguns peixes.';return;}const C=SC.get();rede=sorteia(C);R=[...rede].filter(i=>marc.has(i)).length;
+ if(R>0)est.push(Mus*C/R);draw();};
+$('bv').onclick=()=>{ver=!ver;draw();};$('bn').onclick=nova;
+const media=()=>est.length?est.reduce((a,b)=>a+b,0)/est.length:null,erro=v=>Math.abs(v-N)/N;
+MIS.def(()=>[
+ ['Faça uma <b>marcação</b> e uma <b>recaptura</b> com pelo menos um marcado na rede, e veja a estimativa.',()=>est.length>=1,()=>'Estimativa: '+fmt(Math.round(est[est.length-1]))+' peixes. A lagoa tem '+N+': erro de '+Math.round(100*erro(est[est.length-1]))+'%.',()=>!Mus?'Aperte Marcar primeiro.':'Aperte Pescar.'],
+ ['Consiga uma estimativa com <b>erro menor que 10%</b>.',()=>est.length&&erro(est[est.length-1])<0.1,()=>'Estimativa de '+fmt(Math.round(est[est.length-1]))+' para '+N+' peixes reais: erro de '+r1(100*erro(est[est.length-1]))+'%.',()=>est.length?'A última errou '+Math.round(100*erro(est[est.length-1]))+'%. Tente marcar e pescar mais peixes.':'Faça uma pesca.'],
+ ['Marque <b>só 10 peixes ou menos</b> e faça <b>3 recapturas</b>. As estimativas concordam?',()=>Mus<=10&&est.length>=3,()=>'Foram de '+fmt(Math.round(Math.min(...est)))+' a '+fmt(Math.round(Math.max(...est)))+'. Com poucos marcados, um peixe a mais ou a menos na rede muda tudo.',()=>Mus>10?'Coloque M em 10 ou menos e aperte Marcar.':'Já foram '+est.length+' recapturas com marcados.'],
+ ['Agora marque <b>60 ou mais</b> e faça <b>5 recapturas</b>. A <b>média</b> erra menos de 5%?',()=>Mus>=60&&est.length>=5&&erro(media())<0.05,()=>'Média de '+fmt(Math.round(media()))+' para '+N+' reais: erro de '+r1(100*erro(media()))+'%. Muitas pescas e muitos marcados dão estimativas firmes.',()=>Mus<60?'Marque pelo menos 60.':est.length<5?'Faça mais recapturas ('+est.length+' de 5).':'A média errou '+r1(100*erro(media()))+'%. Faça mais pescas ou aumente C.']]);
+function draw(){let g=`<ellipse cx="170" cy="118" rx="166" ry="108" fill="#BFE0F7" stroke="#4A90C8" stroke-width="2.5"/>`;
+ pos.forEach((p,i)=>{const [x,y,d]=p,s=d?1:-1;g+=`<path d="M${x+5*s} ${y} q ${-5*s} -4 ${-9*s} 0 q ${4*s} 4 ${9*s} 0 l ${2.5*s} -2.5 l 0 5 z" fill="${marc.has(i)?ORANGE:'#8AA2BA'}" ${rede.has(i)?'stroke="'+NAVY+'" stroke-width="1.6"':''}/>`;});
+ g+=TX(170,236,ver?'N real = '+N+' peixes':'N = ?',{fs:13,c:ver?ORANGE:NAVY});
+ $('fig').innerHTML=SVG(340,244,g);
+ $('kr').textContent=R===null?'—':R+' de '+SC.get();$('ke').textContent=R===null?'—':R?fmt(Math.round(Mus*SC.get()/R)):'R = 0: não dá';
+ $('km').textContent=est.length?fmt(Math.round(media()))+' ('+est.length+')':'—';
+ $('hist').textContent=est.length?'Estimativas com M = '+Mus+': '+est.map(v=>fmt(Math.round(v))).join(' · '):'';MIS.ver('m');}
+nova();
+})();
+</script>
+</body>
+</html>
