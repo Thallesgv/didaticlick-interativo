@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O campo da câmera · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O campo da câmera</h1></header>
+<main>
+<div class="card"><h2>Câmera no canto do saguão</h2><p class="muted" style="margin-top:0">A câmera está no canto (0, 10) do saguão de 14 m × 10 m. Gire a câmera e mude o ângulo da lente: o setor laranja é o que ela vê.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Direção (graus abaixo da parede de cima)</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Ângulo da lente</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Saguão coberto<b id="kc"></b></div><div>A lente vê de<b id="kv"></b></div><div>Tipo de ângulo<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Descubra o <b>menor ângulo de lente</b> que cobre 100% do saguão e para onde a câmera deve apontar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=SL('sd',0,90,1,30,draw,v=>v+'°'),Lt=SL('sl',10,180,5,60,draw,v=>v+'°');
+function draw(){const d=D.get(),l=Lt.get(),a0=d-l/2,a1=d+l/2,k=21,ox=23,oy=12;
+ let g=RC(ox,oy,14*k,10*k,PEACH,'stroke="'+NAVY+'" stroke-width="3"');for(let i=1;i<14;i++)g+=LN(ox+i*k,oy,ox+i*k,oy+10*k,'#F3D3B5',1);for(let j=1;j<10;j++)g+=LN(ox,oy+j*k,ox+14*k,oy+j*k,'#F3D3B5',1);
+ // setor recortado pelas paredes
+ let pts=[[ox,oy]];for(let i=0;i<=80;i++){const t=(a0+(a1-a0)*i/80)*RAD,dx=Math.cos(t),dy=Math.sin(t);let r=1e9;if(dx>1e-9)r=Math.min(r,14/dx);if(dy>1e-9)r=Math.min(r,10/dy);if(dx<-1e-9||dy<-1e-9)r=0;pts.push([ox+r*k*dx,oy+r*k*dy]);}
+ g+=PG(pts,'rgba(247,130,31,.55)','stroke="'+ORANGE+'"');
+ // cobertura por amostragem
+ let cob=0,n=0;for(let x=.25;x<14;x+=.5)for(let y=.25;y<10;y+=.5){n++;const t=Math.atan2(y,x)*DEG;if(t>=a0-1e-6&&t<=a1+1e-6)cob++;}
+ g+=`<circle cx="${ox}" cy="${oy}" r="8" fill="${NAVY}"/>`+TX(ox+14*k/2,oy+10*k+16,'saguão: 14 m × 10 m',{fs:11});
+ $('fig').innerHTML=SVG(340,240,g);const pc=Math.round(100*cob/n);$('kc').textContent=pc+'%';
+ $('kv').textContent=Math.max(0,a0)+'° a '+Math.min(90,a1)+'°';$('kt').textContent=l<90?'agudo':l==90?'reto':l<180?'obtuso':'raso';
+ missao('m',pc==100&&l==90,'Isso! Lente de 90° apontada a 45°: ela vai de 0° a 90°, exatamente o ângulo do canto da sala.',pc==100?'Cobre tudo, mas com lente de '+l+'°. Dá para usar um ângulo menor?':'Faltam '+(100-pc)+'% do saguão.');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O atalho de Pitágoras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O atalho de Pitágoras</h1></header>
+<main>
+<div class="card"><h2>Catetos e hipotenusa</h2><p class="muted" style="margin-top:0">Bento sai do ponto (0, 0). Arraste o ponto laranja: o caminho em L (catetos) e o atalho em linha reta (hipotenusa) aparecem com seus quadrados.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Atalho (c)<b id="kc"></b></div><div>a² + b²<b id="ks"></b></div><div>Caminho em L<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache <b>três pontos diferentes</b> em que a hipotenusa dá um número <b>inteiro</b> de metros (sem os pontos sobre os eixos).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let a=12,b=9;const achados=new Set();const k=14,ox=20,oy=225;
+function draw(){const c=Math.hypot(a,b),X=ox+a*k,Y=oy-b*k;let g='';
+ for(let i=0;i<=22;i++)g+=LN(ox+i*k,oy,ox+i*k,oy-15*k,'#EEF1F6',1);for(let j=0;j<=15;j++)g+=LN(ox,oy-j*k,ox+22*k,oy-j*k,'#EEF1F6',1);
+ const s=.45;g+=RC(ox,oy,a*k*s,0,'none');
+ g+=PG([[ox,oy],[X,oy],[X,Y]],PEACH,'stroke="'+NAVY+'" stroke-width="2"');
+ g+=LN(ox,oy,X,oy,BLUE,4)+LN(X,oy,X,Y,BLUE,4)+LN(ox,oy,X,Y,ORANGE,4);
+ g+=TX((ox+X)/2,oy+14,'a = '+a,{fs:11,c:BLUE})+TX(X+6,(oy+Y)/2,'b = '+b,{fs:11,c:BLUE,a:'start'})+TX((ox+X)/2-8,(oy+Y)/2-6,'c = '+r2(c),{fs:12,c:ORANGE,a:'end'});
+ g+=`<circle cx="${X}" cy="${Y}" r="9" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
+ $('fig').innerHTML=SVG(340,240,g);$('kc').textContent=r2(c)+' m';$('ks').textContent=a*a+' + '+b*b+' = '+(a*a+b*b);$('kl').textContent=(a+b)+' m';
+ const inteiro=a>0&&b>0&&Math.abs(c-Math.round(c))<1e-9;if(inteiro)achados.add(a+','+b);
+ missao('m',achados.size>=3,'Você achou '+achados.size+' pontos com hipotenusa inteira: '+[...achados].map(p=>'('+p+')').join(', ')+'.',
+  (inteiro?'Inteiro! ':'')+'Pontos encontrados: '+achados.size+' de 3. Dica: pense em 3-4-5 e nos múltiplos.');}
+toque('fig',(x,y)=>{a=clamp(Math.round((x-ox)/k),0,22);b=clamp(Math.round((oy-y)/k),0,15);draw();});draw();
+})();
+</script>
+</body>
+</html>

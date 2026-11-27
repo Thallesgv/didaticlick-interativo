@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'ass1':{T:["A planta do banco", "Escala e medidas reais", "Perímetro e área das salas", "Ângulos e campo de visão", "Pitágoras e o atalho", "Semelhança: a altura do prédio"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const x1=R(0,10),x2=x1+R(2,12),y=R(0,16);return{q:`Os pontos <b>(${x1}, ${y})</b> e <b>(${x2}, ${y})</b> estão na mesma horizontal. Qual a distância entre eles, em metros?`,a:x2-x1,exp:`Mesmo y: ${x2} − ${x1} = ${x2-x1} m.`};}
+ if(t==1){const x=R(0,20),y=R(0,12),dx=R(1,4),dy=R(1,4);return{q:`Lara parte de <b>(${x}, ${y})</b>, anda <b>${dx} m</b> para a direita e <b>${dy} m</b> para cima. Qual o novo x? (o novo y será ${y+dy})`,a:x+dx,exp:`(${x} + ${dx}, ${y} + ${dy}) = (${x+dx}, ${y+dy}).`};}
+ const a=R(0,8),b=R(0,8),w=R(3,10),h=R(2,8);return{q:`Uma sala vai de <b>(${a}, ${b})</b> a <b>(${a+w}, ${b+h})</b>. Quanto mede a largura (na horizontal)?`,a:w,exp:`${a+w} − ${a} = ${w} m (e a altura é ${b+h} − ${b} = ${h} m).`};},
+2:()=>{const t=R(0,2),e=P([50,100,200,250,500]);
+ if(t==0){const c=P([2,3,4,5,6,8,12]);return{q:`Na escala <b>1 : ${e}</b>, quanto vale na realidade uma medida de <b>${c} cm</b> no papel, em metros?`,a:c*e/100,tol:.001,exp:`${c} · ${e} = ${c*e} cm = ${fmt(c*e/100)} m.`};}
+ if(t==1){const m=P([4,8,10,12,20,24,30]);return{q:`Um corredor de <b>${m} m</b> vai ser desenhado na escala <b>1 : ${e}</b>. Quantos centímetros ele terá no papel?`,a:m*100/e,tol:.001,exp:`${m} m = ${m*100} cm; ${m*100} ÷ ${e} = ${fmt(m*100/e)} cm.`};}
+ const c=P([2,4,5]),m=c*e/100;return{q:`Um corredor de <b>${fmt(m)} m</b> foi desenhado com <b>${c} cm</b>. A escala é 1 : ? (escreva o número)`,a:e,exp:`${c} cm : ${fmt(m*100)} cm = 1 : ${e}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=R(3,15),b=R(2,12);return{q:`Qual o perímetro de uma sala de <b>${a} m × ${b} m</b>?`,a:2*(a+b),exp:`2 · ${a} + 2 · ${b} = ${2*(a+b)} m.`};}
+ if(t==1){const a=R(3,15),b=R(2,12);return{q:`Qual a área de uma sala de <b>${a} m × ${b} m</b>, em m²?`,a:a*b,exp:`${a} · ${b} = ${a*b} m².`};}
+ const p=P([20,24,28,32,40]),a=R(2,p/2-2);return{q:`Um retângulo tem perímetro <b>${p} m</b> e um lado de <b>${a} m</b>. Qual a área, em m²?`,a:a*(p/2-a),exp:`Outro lado: ${p/2} − ${a} = ${p/2-a}; área ${a} · ${p/2-a} = ${a*(p/2-a)} m².`};},
+4:()=>{const t=R(0,3);
+ if(t==0){const x=R(5,85);return{q:`Qual o <b>complemento</b> de ${x}°?`,a:90-x,exp:`90 − ${x} = ${90-x}°.`};}
+ if(t==1){const x=R(5,175);return{q:`Qual o <b>suplemento</b> de ${x}°?`,a:180-x,exp:`180 − ${x} = ${180-x}°.`};}
+ if(t==2){const a=R(20,80),b=R(20,80);return{q:`Um triângulo tem ângulos de <b>${a}°</b> e <b>${b}°</b>. Quanto mede o terceiro?`,a:180-a-b,exp:`180 − ${a} − ${b} = ${180-a-b}°.`};}
+ const x=P([30,45,60,90,100,120,150]);return{q:`Um ângulo de <b>${x}°</b> é:`,opts:['agudo','reto','obtuso'],a:x<90?'agudo':x==90?'reto':'obtuso',exp:'Agudo: menor que 90°. Reto: 90°. Obtuso: entre 90° e 180°.'};},
+5:()=>{const t=R(0,2),[a,b,c]=P([[3,4,5],[6,8,10],[5,12,13],[9,12,15],[8,15,17],[12,16,20],[7,24,25]]);
+ if(t==0)return{q:`Os catetos medem <b>${a} m</b> e <b>${b} m</b>. Quanto mede a hipotenusa?`,a:c,exp:`√(${a*a} + ${b*b}) = √${c*c} = ${c} m.`};
+ if(t==1)return{q:`A hipotenusa mede <b>${c} m</b> e um cateto, <b>${a} m</b>. Quanto mede o outro cateto?`,a:b,exp:`√(${c*c} − ${a*a}) = √${b*b} = ${b} m.`};
+ const x=R(2,9),y=R(2,9),d=Math.round(Math.hypot(x,y)*10)/10;return{q:`Qual a diagonal de uma sala de <b>${x} m × ${y} m</b>? (1 casa decimal)`,a:d,tol:.06,exp:`√(${x*x} + ${y*y}) = √${x*x+y*y} ≈ ${fmt(d)} m.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const [h,s]=P([[1.5,2],[1,0.8],[2,3],[1.6,2],[1,1.25]]),S=P([4,8,10,12,16,20]);return{q:`Um bastão de <b>${fmt(h)} m</b> faz sombra de <b>${fmt(s)} m</b>. No mesmo instante, um prédio faz sombra de <b>${S} m</b>. Qual a altura do prédio, em m? (até 2 casas)`,a:Math.round(h/s*S*100)/100,tol:.011,exp:`h = ${S} · ${fmt(h)} ÷ ${fmt(s)} ≈ ${fmt(Math.round(h/s*S*100)/100)} m.`};}
+ if(t==1){const k=P([2,3,4,5]);return{q:`Os lados de uma figura foram multiplicados por <b>${k}</b>. A área fica quantas vezes maior?`,a:k*k,exp:`A área multiplica por k² = ${k*k}.`};}
+ const [a,b,c]=P([[3,4,5],[5,12,13],[6,8,10]]),k=P([2,3,4]);return{q:`Um triângulo de lados ${a}, ${b} e ${c} é semelhante a outro cujo menor lado mede <b>${a*k}</b>. Quanto mede o maior lado do outro?`,a:c*k,exp:`Razão ${k}: ${c} · ${k} = ${c*k}.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ass1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>

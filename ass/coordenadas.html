@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Endereços na planta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Endereços na planta</h1></header>
+<main>
+<div class="card"><h2>Toque na planta</h2><p class="muted" style="margin-top:0">O canto da entrada é o ponto (0, 0). Cada quadradinho é 1 m. Toque em qualquer lugar e veja o par ordenado (x, y): primeiro a distância na horizontal, depois na vertical.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Ponto tocado<b id="kp">—</b></div><div>Cômodo<b id="kc">—</b></div><div>Acertos<b id="ka">0 de 0</b></div></div>
+<div class="msg info" id="alvo"></div><div id="m"></div>
+<div class="row"><button id="novo">Outro lugar</button></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const k=13,ox=14,oy=226;let pt=null,ok=0,tot=0,alvo,feito=false;
+const LUG=[['a porta da entrada principal (meio dela)',7,0],['o canto do saguão junto ao arquivo (a câmera)',0,10],['o pé da escada ao cofre',16,8],['o centro da gerência',19,13],
+ ['o canto de cima, à direita, do prédio',24,16],['a porta entre o saguão e os caixas',14,4],['o centro do saguão',7,5],['o canto de baixo dos caixas, junto à rua, à direita',24,0],['o centro do arquivo',7,13]];
+function comodo(x,y){if(x<0||x>24||y<0||y>16)return 'fora do prédio';if(x<14)return y<10?'Saguão':'Arquivo';return y<6?'Caixas':y<10?'Escada ao cofre':'Gerência';}
+function sorteia(){alvo=P(LUG);feito=false;$('alvo').innerHTML='Missão: toque em <b>'+alvo[0]+'</b>.';$('m').innerHTML='';pt=null;draw();}
+function draw(){let g=plantaBanco(ox,oy,k);g+=TX(ox,oy+14,'(0, 0)',{fs:9,a:'start'})+TX(ox+24*k,oy+14,'x = 24',{fs:9,a:'end'})+TX(ox-4,oy-16*k+4,'16',{fs:9,a:'end'});
+ if(pt){const X=ox+pt[0]*k,Y=oy-pt[1]*k;g+=LN(ox,Y,X,Y,ORANGE,1.5,'4 3')+LN(X,oy,X,Y,ORANGE,1.5,'4 3')+`<circle cx="${X}" cy="${Y}" r="6" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
+  g+=TX(clamp(X,40,300),Y-10,'('+pt[0]+', '+pt[1]+')',{fs:12,c:'#fff'});}
+ $('fig').innerHTML=SVG(340,240,g);}
+toque('fig',(x,y,ini)=>{const a=clamp(Math.round((x-ox)/k),0,24),b=clamp(Math.round((oy-y)/k),0,16);pt=[a,b];$('kp').textContent='('+a+', '+b+')';$('kc').textContent=comodo(a+.01,b+.01);draw();
+ if(!feito&&ini===false)return;});
+$('fig').addEventListener('pointerup',()=>{if(!pt||feito)return;feito=true;tot++;const d=Math.hypot(pt[0]-alvo[1],pt[1]-alvo[2]);const c=d<=1.5;if(c)ok++;$('ka').textContent=ok+' de '+tot;
+ missao('m',c,'Isso! O lugar fica em ('+alvo[1]+', '+alvo[2]+').','Quase: o lugar certo é ('+alvo[1]+', '+alvo[2]+'). Você tocou em ('+pt[0]+', '+pt[1]+'). Aperte "Outro lugar".');});
+$('novo').onclick=sorteia;sorteia();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua da escala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>A régua da escala</h1></header>
+<main>
+<div class="card"><h2>O banco numa folha A4</h2><p class="muted" style="margin-top:0">O prédio tem 24 m × 16 m. Escolha a escala e veja o desenho dele numa folha A4 deitada (29,7 cm × 21 cm), com 1 cm de margem.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Uma medida no papel</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">No papel, o prédio fica com<b id="kd"></b></div><div>A medida acima vale, na realidade<b id="kr"></b></div><div>Cabe na folha?<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre a escala que faz o desenho ficar o <b>maior possível</b> sem sair da área útil da folha (27,7 cm × 19 cm).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ESC=[50,100,150,200,250,500];let vistos=new Set();const C=chips('ch',ESC.map(e=>'1 : '+e),3,draw);const S=SL('sp',0.5,20,0.5,4,draw,v=>fmt(v)+' cm');
+function draw(){const e=ESC[C.get()],w=2400/e,h=1600/e,k=10.5;vistos.add(e);
+ let g=RC(14,10,29.7*k,21*k,'#fff','stroke="'+GRAYL+'" stroke-width="2"')+RC(14+k,10+k,27.7*k,19*k,'none','stroke="'+GRAYL+'" stroke-dasharray="4 3"');
+ const cabe=w<=27.7&&h<=19;const ww=Math.min(w,40)*k,hh=Math.min(h,40)*k;
+ g+=`<g clip-path="url(#cl)"><defs><clipPath id="cl"><rect x="0" y="0" width="340" height="240"/></clipPath></defs>`+RC(14+k,10+k,ww,hh,cabe?PLANTA:ORANGE,'opacity=".9"')+'</g>';
+ g+=TX(14+k+Math.min(ww,27.7*k)/2,10+k+Math.min(hh,19*k)/2+4,fmt(Math.round(w*10)/10)+' cm × '+fmt(Math.round(h*10)/10)+' cm',{fs:11,c:'#fff'});
+ const p=S.get(),pk=Math.min(p,27.7)*k;g+=RC(14+k,10+20*k,pk,6,ORANGE)+TX(14+k,10+20*k-3,'régua: '+fmt(p)+' cm',{fs:9,a:'start'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kd').textContent=r1(w)+' × '+r1(h)+' cm';const real=p*e/100;$('kr').textContent=r2(real)+' m';$('kc').textContent=cabe?'sim':'não';
+ missao('m',e==100&&cabe,'Isso! Em 1 : 100 o prédio fica com 24 cm × 16 cm. Em 1 : 50 seriam 48 cm (não cabe); em 1 : 150 caberia, mas menor.',
+  cabe?'Cabe, mas será que dá para desenhar maior? Experimente uma escala que reduza menos.':'Não cabe! Escolha uma escala com o número de baixo maior.');}
+draw();
+})();
+</script>
+</body>
+</html>

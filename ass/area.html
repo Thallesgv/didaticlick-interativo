@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a sala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Monte a sala</h1></header>
+<main>
+<div class="card"><h2>Rodapé e piso</h2><p class="muted" style="margin-top:0">Mude a largura e o comprimento da sala. Cada quadradinho é 1 m². O <b>perímetro</b> é o contorno (o rodapé); a <b>área</b> é o piso.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Largura (m)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Comprimento (m)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Perímetro<b id="kp"></b></div><div>Área<b id="ka"></b></div><div>Pessoas (1 a cada 2 m²)<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Vicente tem <b>40 m de fita</b>. Monte a sala com perímetro de 40 m e a <b>maior área possível</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const A=SL('sa',1,20,1,14,draw,v=>v+' m'),B=SL('sb',1,20,1,6,draw,v=>v+' m');let melhor=0;
+function draw(){const a=A.get(),b=B.get(),Pm=2*(a+b),Ar=a*b,k=Math.min(15,300/a,200/b),x0=(340-a*k)/2,y0=10;let g='';
+ for(let i=0;i<a;i++)for(let j=0;j<b;j++)g+=RC(x0+i*k,y0+j*k,k,k,Pm==40?ORANGE:LIGHT,'stroke="#fff" stroke-width="1"');
+ g+=RC(x0,y0,a*k,b*k,'none','stroke="'+NAVY+'" stroke-width="3"');g+=TX(170,y0+b*k+16,a+' m × '+b+' m',{fs:12});
+ $('fig').innerHTML=SVG(340,y0+b*k+24,g);$('kp').textContent=Pm+' m';$('ka').textContent=Ar+' m²';$('kg').textContent=Math.floor(Ar/2);
+ if(Pm==40)melhor=Math.max(melhor,Ar);
+ missao('m',Pm==40&&Ar==100,'Perfeito: 10 m × 10 m = 100 m². Com o mesmo perímetro, o quadrado tem a maior área.',
+  Pm==40?'Perímetro de 40 m, área de '+Ar+' m². Dá para fazer melhor? (seu recorde: '+melhor+' m²)':'Perímetro atual: '+Pm+' m. Ajuste para 40 m.');}
+draw();
+})();
+</script>
+</body>
+</html>
