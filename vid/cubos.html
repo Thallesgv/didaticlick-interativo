@@ -27,10 +27,18 @@ MIS.def(()=>[
  ['Faça o <b>volume</b> ser exatamente <b>1.000 cm³</b> (um litro). Quanto vale A/V?',()=>LL.get()==10,'L = 10 cm: 1.000 cm³ = 1 litro, com A/V = 0,6.',()=>'Volume atual: '+r1(V())+' cm³.']]);
 function draw(){const L=LL.get(),s=Math.min(110,10+L*9),k=s*0.5,x=40,y=200;let g='';
  g+=PG([[x,y],[x+s,y],[x+s,y-s],[x,y-s]],'#FBB57A','stroke="'+NAVY+'" stroke-width="1.5"')+PG([[x,y-s],[x+s,y-s],[x+s+k,y-s-k*0.6],[x+k,y-s-k*0.6]],PEACH,'stroke="'+NAVY+'" stroke-width="1.5"')+PG([[x+s,y],[x+s+k,y-k*0.6],[x+s+k,y-s-k*0.6],[x+s,y-s]],ORANGE,'stroke="'+NAVY+'" stroke-width="1.5"');
+ {const u=s/L,P=(o,e1,e2,a,b)=>[o[0]+e1[0]*a+e2[0]*b,o[1]+e1[1]*a+e2[1]*b],F=[[[x,y],[1,0],[0,-1]],[[x,y-s],[1,0],[k/s,-k*0.6/s]],[[x+s,y],[k/s,-k*0.6/s],[0,-1]]];
+  F.forEach(([o,e1,e2])=>{for(let i=1;i<L;i++){const a=P(o,e1,e2,i*u,0),b=P(o,e1,e2,i*u,s),c=P(o,e1,e2,0,i*u),d=P(o,e1,e2,s,i*u);g+=LN(a[0],a[1],b[0],b[1],'#B45309',0.6)+LN(c[0],c[1],d[0],d[1],'#B45309',0.6);}});}
  g+=TX(x+s/2,y+16,'L = '+fmt(L)+' cm',{fs:11});
+ g+=TX(x+s/2,30,'cada quadradinho = 1 cm²',{fs:9,c:GRAY});
  const gx=205,gy=200,gw=125,gh=160,X=v=>gx+v/12*gw,Y=v=>gy-Math.min(v,12)/12*gh;g+=LN(gx,gy,gx+gw,gy,NAVY,1.5)+LN(gx,gy,gx,gy-gh,NAVY,1.5)+TX(gx+gw/2,gy+14,'aresta L',{fs:9})+TX(gx,gy-gh-6,'A/V',{fs:9,a:'start'});
  let pl='';for(let v=0.5;v<=12;v+=0.25)pl+=X(v).toFixed(1)+','+Y(6/v).toFixed(1)+' ';g+=`<polyline points="${pl}" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`+CI(X(L),Y(6/L),5,NAVY,'stroke="#fff" stroke-width="2"');
- $('fig').innerHTML=SVG(340,225,g);$('ka').textContent=fmt(Math.round(A()*100)/100)+' cm²';$('kv').textContent=fmt(Math.round(V()*1000)/1000)+' cm³';$('kr').textContent=r2(6/L);MIS.ver('m');}
+ {const q=Math.min(120,24+L*8),fx=110-q/2,fy=255,b=Math.min(q/2,q*0.5/L),pc=L<=1?100:Math.round(100*(1-((L-1)/L)**3));
+  g+=RC(fx,fy,q,q,ORANGE,'rx="3"')+(q-2*b>0?RC(fx+b,fy+b,q-2*b,q-2*b,'#E5E7EB','rx="2"'):'');
+  for(let i=0;i<14;i++){const ang=i*2.4,rr=(q/2-b)*Math.sqrt((i+0.5)/14);if(q-2*b>8)g+=CI(fx+q/2+rr*Math.cos(ang),fy+q/2+rr*Math.sin(ang),1.6,'#9CA3AF');}
+  g+=TX(110,fy-8,'Fatia do meio do cubo',{fs:10,c:NAVY});
+  g+=TX(190,fy+20,'laranja: até 0,5 cm da casca,',{fs:10,a:'start',c:ORANGE})+TX(190,fy+34,'onde o alimento chega fácil',{fs:10,a:'start',c:ORANGE})+TX(190,fy+58,pc+'% do volume',{fs:15,a:'start',c:NAVY})+TX(190,fy+76,'cinza: miolo, longe da casca',{fs:10,a:'start',c:GRAY})+TX(190,fy+90,(100-pc)+'% do volume',{fs:12,a:'start',c:GRAY});}
+ $('fig').innerHTML=SVG(340,400,g);$('ka').textContent=fmt(Math.round(A()*100)/100)+' cm²';$('kv').textContent=fmt(Math.round(V()*1000)/1000)+' cm³';$('kr').textContent=r2(6/L);MIS.ver('m');}
 draw();
 })();
 </script>
