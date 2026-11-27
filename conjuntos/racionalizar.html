@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escolha o fator · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+svg{max-width:100%;height:auto;touch-action:manipulation}
+.fig{background:#fff;border:2px dashed #D7DEEA;border-radius:12px;padding:8px 4px;display:flex;align-items:center;justify-content:center;overflow-x:auto;margin:8px 0}
+.placar{font-weight:700;color:var(--navy);text-align:right;font-size:14px}
+.dq{font-size:17px;font-weight:600;color:var(--navy);line-height:1.6;margin:4px 0 6px}
+.dq .k,.k{color:var(--orange)}
+.lv{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;border-radius:6px;padding:2px 8px;margin-bottom:4px;letter-spacing:.3px}
+input.n{font-family:inherit;font-size:18px;padding:6px 8px;border:2px solid #D7DEEA;border-radius:10px;text-align:center}
+.ask{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:8px 0;font-size:16px;color:var(--navy);font-weight:500}
+.sl{display:grid;grid-template-columns:auto 1fr 64px;align-items:center;gap:8px;margin:8px 0}
+.sl b{color:var(--navy);font-size:14px}.sl span{font-weight:700;color:var(--orange);text-align:right}
+.sl input{width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:#fff;color:var(--navy);border:2px solid #D7DEEA;min-width:46px;padding:8px 10px}
+.chips button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chips button.okk{background:#DCFCE7;border-color:var(--ok);color:var(--ok)}
+.chips button.bad{background:#FEE2E2;border-color:var(--bad);color:var(--bad)}
+.hide{display:none!important}
+table.t{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.t th{background:var(--navy);color:#fff;padding:6px;font-weight:600}
+table.t td{border-bottom:1px solid #E5E7EB;padding:6px;text-align:center}
+</style>
+<script src="../assets/desafio.js"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Números irracionais</div><h1 id="title">Escolha o fator</h1></header>
+<main>
+<div class="card"><div class="placar" id="placar">Acertos: 0 de 0</div>
+<p class="muted" style="margin-top:0">Para tirar a raiz do denominador, multiplique em cima e embaixo pelo mesmo fator. Escolha o fator certo, depois o resultado simplificado, e toque em OK.</p>
+<div id="lv" class="lv hide">QUESTÃO DA APOSTILA</div>
+<div class="dq" id="dq"></div>
+<div id="area"><div class="fig" style="flex-direction:column"><div id="fr" style="font-size:30px;font-weight:700;color:var(--navy);font-family:'DejaVu Sans',sans-serif"></div><div class="muted" id="sub"></div></div>
+<div class="ask">1) Multiplique em cima e embaixo por:</div><div class="chips" id="fa"></div>
+<div class="ask">2) O resultado é:</div><div class="chips" id="rs2"></div></div>
+<div class="row" style="margin-top:10px"><button class="or" id="ok">OK</button><button class="alt" id="novo">Outro desafio</button></div><div id="dm"></div>
+</div>
+<div class="card hide" id="rs"><p style="margin:0">Quer ver a questão da apostila resolvida passo a passo? <a href="../resolucao.html?id=irracionais-q5-6">Abrir a resolução comentada</a></p></div>
+<div class="card"><h2>Dica</h2><p style="margin:0">√b pede √b; ∛b pede ∛b² (para completar o cubo); a + √b pede o conjugado a − √b, porque (a + √b)(a − √b) = a² − b.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+
+const g=(a,b)=>b?g(b,a%b):Math.abs(a);
+const R2=b=>'√'+b,R3=b=>'∛'+b;
+const frq=(num,den)=>den===1?num:(/[ +−]/.test(num)?'('+num+')':num)+'/'+den;
+const coef=(c,r)=>c===1?r:(c===-1?'−'+r:c+r);
+function sq(a,b){const k=g(a,b);return {t:`${a}/${R2(b)}`,f:R2(b),r:frq(coef(a/k,R2(b)),b/k),fs:[R2(b),String(b),R3(b*b),'∛'+b],rs:[frq(coef(a,R2(b)),1),frq(String(a),b),frq(coef(a/k,R2(b)),b*b/k)],why:`√${b} × √${b} = ${b}, então ${a}/√${b} = ${coef(a,R2(b))}/${b}${k>1?' = '+frq(coef(a/k,R2(b)),b/k):''}.`,tipo:'raiz quadrada'};}
+function cb(a,b){const k=g(a,b),b2=b*b;return {t:`${a}/${R3(b)}`,f:R3(b2),r:frq(coef(a/k,R3(b2)),b/k),fs:[R3(b),R3(b2),R2(b),String(b)],rs:[frq(coef(a/k,R3(b)),b/k),frq(coef(a,R3(b2)),b*b),frq(coef(a/k,R2(b)),b/k)],why:`∛${b} × ∛${b2} = ∛${b*b2} = ${b}: é preciso completar o cubo. ${a}/∛${b} = ${coef(a,R3(b2))}/${b}${k>1?' = '+frq(coef(a/k,R3(b2)),b/k):''}.`,tipo:'raiz cúbica'};}
+const N=n=>n<0?'−'+(-n):String(n);
+function lin(p,q,d){const qs=(Math.abs(q)===1?'':Math.abs(q))+'√'+d;if(p===0)return (q<0?'−':'')+qs;
+ if(p<0&&q>0)return `${qs} − ${-p}`;return `${N(p)} ${q<0?'−':'+'} ${qs}`;}
+function cj(a,c,d,s){// a/(c + s√d), s = +1 ou −1
+ const den=c*c-d,conj=lin(c,-s,d),orig=lin(c,s,d);
+ const k=g(a,den);let nn=a/k,dd=den/k;if(dd<0){nn=-nn;dd=-dd;}
+ const r=frq(lin(nn*c,-nn*s,d),dd);
+ const passo=`${a===1?'':a}(${conj})/${N(den)}`;
+ return {t:`${a}/(${orig})`,f:conj,r,fs:[conj,orig,'√'+d,'∛'+d],
+  rs:[frq(lin(-nn*c,nn*s,d),dd),frq(lin(nn*c,nn*s,d),dd),frq(lin(a*c,a*s,d),c*c+d),frq(lin(a*c,-a*s,d),Math.abs(den))],
+  why:`O conjugado de ${orig} é ${conj}. (${orig})(${conj}) = ${c}² − (√${d})² = ${c*c} − ${d} = ${N(den)}. Fica ${passo}${passo!==r?' = '+r:''}.`,tipo:'conjugado'};}
+const uniq=l=>[...new Set(l)];
+let cur,ef=null,er=null;
+function draw(){const q=cur;$('fr').textContent=q.t;$('sub').textContent=q.livro?'questão da apostila':'';
+ const btn=(id,list,sel,cor,set)=>{$(id).innerHTML=list.map(v=>{let c=sel===v?'on':'';if(D.feito)c=v===cor?'okk':(sel===v?'bad':'');return `<button data-v="${v}" class="${c}">${v}</button>`;}).join('');
+  $(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{if(D.feito)return;set(b.dataset.v);draw();});};
+ btn('fa',q.FS,ef,q.f,v=>ef=v);btn('rs2',q.RS,er,q.r,v=>er=v);}
+function prep(q){q.FS=shuffle(uniq(q.fs).slice(0,4));q.RS=shuffle(uniq([q.r].concat(q.rs.filter(x=>x!==q.r))).slice(0,4));return q;}
+function sortear(){const t=rnd(0,2);
+ if(t===0){const b=pick([2,3,5,6,7]);return prep(sq(pick([1,2,3,4,b,2*b,3*b]),b));}
+ if(t===1){const b=pick([2,3,5]);return prep(cb(pick([1,2,b,2*b]),b));}
+ const P=[[1,1,2,1],[1,1,3,1],[2,1,3,-1],[1,2,3,1],[4,3,5,-1],[2,3,5,1],[1,3,7,-1],[6,3,7,1],[1,2,5,1],[3,4,7,-1],[2,1,2,-1]];const [a,c,d,s]=pick(P);return prep(cj(a,c,d,s));}
+D.ciclo({
+ livros:new URLSearchParams(location.search).get('livre')?[]:[()=>prep(sq(5,5)),()=>prep(cb(6,3)),()=>prep(cj(4,3,5,-1))].map(f=>f()),
+ sortear,
+ montar(q){cur=q;ef=null;er=null;$('dq').innerHTML=`Tire a raiz do denominador (${q.tipo}).`;draw();},
+ conferir(q){if(ef===null||er===null){msg('dm','Escolha o fator e o resultado, depois toque em OK.','info');return null;}const ok=ef===q.f&&er===q.r;setTimeout(draw,0);
+  return {ok,exp:`Fator: <b>${q.f}</b>. ${q.why} Resultado: <b>${q.r}</b>.`};},
+ res:true});
+
+</script>
+</body>
+</html>
