@@ -19,10 +19,16 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-let auto=true;const B=10,F0=24,D0=2;const DS=SL('dd',1,10,0.1,2,mud,v=>r1(v)+' m'),FL=SL('fl',12,200,1,24,mudf,v=>v+' mm');
+let auto=true,RA=1,RB=1;const B=10,F0=24,D0=2;
+const a1_=()=>Math.abs(RA-1)<0.03,st_=()=>'Ator: '+r2(RA)+'×, prédio: '+r2(RB)+'×.';
+MIS.def(()=>[
+ ['O prédio está 10 m atrás do ator. Começando com 24 mm a 2 m, faça o prédio ficar <b>2 vezes maior</b> com o ator do mesmo tamanho.',()=>a1_()&&Math.abs(RB-2)<0.05,'Prédio 2× maior e ator igual: d = 5 m e f = 60 mm. Confira: 60 ÷ 15 = 4 = 2 × (24 ÷ 12).',()=>st_()+' Mantenha o ator em 1× e leve o prédio a 2×.'],
+ ['Com o ator do mesmo tamanho, leve a câmera <b>o mais perto possível</b> dele (1 m). O prédio cresce ou diminui?',()=>a1_()&&DS.get()===1,'Diminui para 0,55×: com a câmera colada no ator e uma lente bem aberta (12 mm), o fundo parece mais longe.',()=>st_()],
+ ['Desligue o ajuste e faça um <b>zoom comum</b>: câmera parada a 2 m e focal dobrada (48 mm).',()=>!auto&&DS.get()===2&&FL.get()===48,'Ator e prédio dobram juntos (2×): o zoom só amplia o quadro, sem mudar a perspectiva.',()=>auto?'Desligue o ajuste automático.':st_()],
+ ['Ligue o ajuste de novo e leve o prédio a <b>3 vezes</b> o tamanho do início.',()=>a1_()&&Math.abs(RB-3)<0.06,'d = 10 m e f = 120 mm: 120 ÷ 20 = 6 = 3 × 2. Quanto mais longe a câmera, maior o fundo fica.',()=>st_()]]);const DS=SL('dd',1,10,0.1,2,mud,v=>r1(v)+' m'),FL=SL('fl',12,200,1,24,mudf,v=>v+' mm');
 function mud(){if(auto)FL.set(Math.round(F0/D0*DS.get()));draw();}function mudf(){if(auto){auto=false;$('aj').textContent='Ajuste automático: desligado';}draw();}
 $('aj').onclick=()=>{auto=!auto;$('aj').textContent='Ajuste automático: '+(auto?'ligado':'desligado');mud();};
-function draw(){const d=DS.get(),f=FL.get(),ra=(f/d)/(F0/D0),rb=(f/(d+B))/(F0/(D0+B));
+function draw(){const d=DS.get(),f=FL.get(),ra=(f/d)/(F0/D0),rb=(f/(d+B))/(F0/(D0+B));RA=ra;RB=rb;
  $('k1').textContent=f+' mm';$('k2').textContent=r2(ra)+'×';$('k3').textContent=r2(rb)+'×';
  let g=`<defs><clipPath id="cq"><rect x="20" y="8" width="300" height="150" rx="5"/></clipPath></defs><g clip-path="url(#cq)"><rect x="20" y="8" width="300" height="150" fill="#DBEAFE"/><rect x="20" y="128" width="300" height="30" fill="#C7D7A8"/>`;
  const hb=60*rb,wb=50*rb;g+=`<rect x="${170-wb}" y="${128-hb}" width="${wb*2}" height="${hb}" fill="#5B6B8C"/>`;
@@ -32,7 +38,7 @@ function draw(){const d=DS.get(),f=FL.get(),ra=(f/d)/(F0/D0),rb=(f/(d+B))/(F0/(D
  const X=m=>40+m*13.5,yv=190;g+=`<line x1="20" y1="${yv}" x2="330" y2="${yv}" stroke="${GRAYL}"/><circle cx="${X(10)}" cy="${yv}" r="7" fill="${ORANGE}"/>`+TX(X(10),yv-12,'ator',{fs:10})+`<rect x="${X(20)-8}" y="${yv-8}" width="16" height="16" fill="#5B6B8C"/>`+TX(X(20),yv+20,'prédio',{fs:10});
  g+=`<g id="cam"><rect x="${X(10-d)-12}" y="${yv-8}" width="24" height="16" rx="3" fill="${NAVY}"/><path d="M${X(10-d)+12},${yv} l12,-9 v18 z" fill="${NAVY}"/></g>`+TX(X(10-d),yv+20,'câmera',{fs:10});
  const svg=$('fig');svg.innerHTML=SVG(340,215,g);const s=svg.querySelector('svg');arrastar(s,s.querySelector('#cam'),x=>{DS.set(clamp(Math.round((10-(x-40)/13.5)*10)/10,1,10));mud();});
- missao('m',Math.abs(ra-1)<0.03&&Math.abs(rb-2)<0.05,'Prédio 2× maior e ator igual: d = 5 m e f = 60 mm. Confira: 60 ÷ 15 = 4 = 2 × (24 ÷ 12).','Ator: '+r2(ra)+'×, prédio: '+r2(rb)+'×. Mantenha o ator em 1× e leve o prédio a 2×.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

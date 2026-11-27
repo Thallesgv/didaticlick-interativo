@@ -18,13 +18,18 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 const FS=[t=>t,t=>t*t,t=>1-(1-t)*(1-t),t=>3*t*t-2*t*t*t],fu=chips('fu',['linear: t','ease in: t²','ease out: 1 − (1 − t)²','ease in-out: 3t² − 2t³'],1,()=>{});let t0=performance.now();
+MIS.def(()=>[
+ ['Encontre a função que <b>sai devagar e chega devagar</b>, mas está na metade do caminho na metade do tempo.',()=>fu.get()===3,'Isso: 3t² − 2t³ vale 0,5 em t = 0,5 e começa e termina com velocidade zero.','Compare os pontinhos: a escolhida precisa ficar juntinha nas duas pontas.'],
+ ['Qual função está em <b>só 1/4 do caminho</b> na metade do tempo?',()=>fu.get()===1,'Ease in, t²: em t = 0,5 vale 0,25. Ela sai devagar e vai acelerando.','Olhe o valor de s(0,5) de cada função.'],
+ ['Qual função <b>sai rápido e chega devagar</b>, como um carro freando?',()=>fu.get()===2,'Ease out, 1 − (1 − t)²: em t = 0,5 ela já está em 0,75 do caminho, e depois freia.','Procure os pontinhos juntos só no fim.'],
+ ['Qual função tem os pontinhos <b>igualmente espaçados</b>?',()=>fu.get()===0,'Linear, s(t) = t: velocidade constante, sem acelerar nem frear. Por isso parece de robô.','Procure a função em que s(0,25), s(0,5) e s(0,75) crescem de 0,25 em 0,25.']]);
 function frame(now){const f=FS[fu.get()],tt=((now-t0)/2000)%1.4,t=Math.min(1,tt);let g='';
  const gx=20,gy=20,gw=130,gh=130;g+=`<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" fill="none" stroke="${GRAYL}"/>`;let pts='';for(let k=0;k<=40;k++){const u=k/40;pts+=`${gx+u*gw},${gy+gh-f(u)*gh} `;}
  g+=`<polyline points="${pts}" fill="none" stroke="${ORANGE}" stroke-width="3"/><line x1="${gx}" y1="${gy+gh}" x2="${gx+gw}" y2="${gy}" stroke="${GRAYL}" stroke-dasharray="3 3"/><circle cx="${gx+t*gw}" cy="${gy+gh-f(t)*gh}" r="5" fill="${NAVY}"/>`+TX(gx+gw/2,gy+gh+16,'tempo t',{fs:10})+TX(gx-8,gy+8,'s',{fs:10});
  const x0=175,w=150;[[60,t=>t,'linear',NAVY],[130,f,'escolhida',ORANGE]].forEach(([y,fn,nm,c])=>{g+=`<line x1="${x0}" y1="${y}" x2="${x0+w}" y2="${y}" stroke="${GRAYL}"/>`;for(let k=0;k<=8;k++)g+=`<circle cx="${x0+fn(k/8)*w}" cy="${y+14}" r="2.5" fill="${c}"/>`;
   g+=`<circle cx="${x0+fn(t)*w}" cy="${y}" r="9" fill="${c}"/>`+TX(x0,y-14,nm,{fs:10,a:'start'});});
  $('fig').innerHTML=SVG(340,175,g);requestAnimationFrame(frame);}
-function kp(){const f=FS[fu.get()];$('k1').textContent=r2(f(0.25)).replace(/^0,0625$/,'0,0625');$('k2').textContent=r2(f(0.5));$('k3').textContent=r2(f(0.75));missao('m',fu.get()===3,'Isso: 3t² − 2t³ vale 0,5 em t = 0,5 e começa e termina com velocidade zero.','Compare os pontinhos: a escolhida precisa ficar juntinha nas duas pontas.');}
+function kp(){const f=FS[fu.get()];$('k1').textContent=r2(f(0.25)).replace(/^0,0625$/,'0,0625');$('k2').textContent=r2(f(0.5));$('k3').textContent=r2(f(0.75));MIS.ver('m');}
 $('fu').addEventListener('click',kp);kp();requestAnimationFrame(frame);
 </script>
 </body>

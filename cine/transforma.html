@@ -18,11 +18,17 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const O=[[1,1],[1,5],[4,4],[1,3]];let P=O.map(p=>p.slice()),cont=0;const sv=$('sv'),u=15,c=150;
+const O=[[1,1],[1,5],[4,4],[1,3]];let P=O.map(p=>p.slice()),cont=0,rot=0;
+const igual_=Q=>P.every((p,k)=>p[0]===Q[k][0]&&p[1]===Q[k][1]);const sv=$('sv'),u=15,c=150;
 const ap=f=>{P=P.map(f);cont++;draw();};
 $('t1').onclick=()=>ap(([x,y])=>[x+1,y]);$('t2').onclick=()=>ap(([x,y])=>[x,y+1]);$('t3').onclick=()=>ap(([x,y])=>[-x,y]);$('t4').onclick=()=>ap(([x,y])=>[x,-y]);
-$('t5').onclick=()=>ap(([x,y])=>[-y,x]);$('t6').onclick=()=>ap(([x,y])=>[2*x,2*y]);$('t7').onclick=()=>ap(([x,y])=>[x/2,y/2]);$('t8').onclick=()=>{P=O.map(p=>p.slice());cont=0;draw();};
+$('t5').onclick=()=>{rot++;ap(([x,y])=>[-y,x]);};$('t6').onclick=()=>ap(([x,y])=>[2*x,2*y]);$('t7').onclick=()=>ap(([x,y])=>[x/2,y/2]);$('t8').onclick=()=>{P=O.map(p=>p.slice());cont=0;rot=0;draw();};
 const alvo=[[-1,-1],[-1,-5],[-4,-4],[-1,-3]];
+MIS.def(()=>[
+ ['Leve a bandeira até o quadrado laranja, de cabeça para baixo, usando no máximo 4 botões.',()=>igual_(alvo)&&cont<=4,'Bandeira no lugar! Era uma rotação de 180°: (x, y) → (−x, −y).',()=>igual_(alvo)?'Chegou, mas com '+cont+' botões. Recomece e use no máximo 4.':'A bandeira tem de ficar dentro do quadrado laranja, de cabeça para baixo.'],
+ ['Recomece e leve a bandeira ao quadrado laranja usando <b>só 2 botões</b>.',()=>igual_(alvo)&&cont===2,'Duas reflexões, (−x, y) e depois (x, −y), dão a rotação de 180°. Duas rotações de 90° também.',()=>cont>2?'Já foram '+cont+' botões. Aperte Recomeçar.':'Pense em duas reflexões.'],
+ ['Deixe a bandeira <b>com o dobro do tamanho</b>, com A em (2, 2). Quantas vezes a área aumenta?',()=>igual_(O.map(([x,y])=>[2*x,2*y])),'Ampliar (2x, 2y) dobra cada lado, então a área fica 2 × 2 = 4 vezes maior.','Recomece e procure o botão que dobra as duas coordenadas.'],
+ ['Use <b>só a rotação de 90°</b> até a bandeira voltar ao começo. Quantos toques são?',()=>igual_(O)&&rot>=4&&rot===cont,()=>rot+' toques: cada 4 rotações de 90° dão 360°, uma volta completa.',()=>rot!==cont?'Aperte Recomeçar e use só a rotação.':'Rotações até agora: '+rot+'.']]);
 function draw(){let g='';for(let k=-9;k<=9;k++){g+=`<line x1="${c+k*u}" y1="10" x2="${c+k*u}" y2="290" stroke="#EEF1F6"/><line x1="10" y1="${c+k*u}" x2="290" y2="${c+k*u}" stroke="#EEF1F6"/>`;}
  g+=`<line x1="10" y1="${c}" x2="290" y2="${c}" stroke="#9CA3AF"/><line x1="${c}" y1="10" x2="${c}" y2="290" stroke="#9CA3AF"/>`;
  g+=`<rect x="${c-4*u-6}" y="${c+1*u-6}" width="${3*u+12}" height="${4*u+12}" fill="none" stroke="${ORANGE}" stroke-width="2" stroke-dasharray="5 3"/>`;
@@ -30,7 +36,7 @@ function draw(){let g='';for(let k=-9;k<=9;k++){g+=`<line x1="${c+k*u}" y1="10" 
  g+=`<polygon points="${P.map(([x,y])=>(c+x*u)+','+(c-y*u)).join(' ')}" fill="${ORANGE}" stroke="${NAVY}" stroke-width="2"/>`;
  P.forEach(([x,y],k)=>g+=`<circle cx="${c+x*u}" cy="${c-y*u}" r="3" fill="${NAVY}"/>`+TX(c+x*u+10,c-y*u-4,'ABCD'[k],{fs:9}));sv.innerHTML=g;
  $('co').innerHTML=P.map(([x,y],k)=>'ABCD'[k]+' = ('+fmt(x)+', '+fmt(y)+')').join('<br>')+'<br>Botões usados: '+cont;
- const ok=P.every((p,k)=>p[0]===alvo[k][0]&&p[1]===alvo[k][1]);missao('m',ok,'Bandeira no lugar! Era uma rotação de 180°: (x, y) → (−x, −y).','A bandeira tem de ficar dentro do quadrado laranja, de cabeça para baixo.');}
+ MIS.ver('m');}
 draw();
 </script>
 </body>

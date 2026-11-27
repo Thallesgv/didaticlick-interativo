@@ -20,6 +20,12 @@
 <script>
 const Bb=SL('b',0.5,6,0.5,3,draw,v=>r1(v)+' m'),Aa=SL('a',1,12,0.5,9,draw,v=>r1(v)+' m'),Dd=SL('d',0.5,25,0.1,10,draw,v=>r1(v)+' m');
 const ang=(d,a,b)=>(Math.atan((a+b)/d)-Math.atan(b/d))*180/Math.PI;
+const best_=()=>Math.sqrt(Bb.get()*(Aa.get()+Bb.get())),noBest=()=>Math.abs(Dd.get()-best_())<0.15;
+MIS.def(()=>[
+ ['Ande até o <b>ponto verde</b> do gráfico, onde o ângulo é o maior possível.',noBest,'Você achou o ângulo máximo! Ali a circunferência que passa pela base e pelo topo da tela toca a linha dos seus olhos.',()=>'Melhor distância: √(b(a + b)) = '+r2(best_())+' m. Você está a '+r1(Dd.get())+' m.'],
+ ['Suba a tela: com <b>b = 6 m</b> e <b>a = 9 m</b>, onde fica o melhor lugar? Vá até lá.',()=>Bb.get()===6&&Aa.get()===9&&noBest(),'Tela mais alta, melhor lugar mais longe: √(6 × 15) = √90 ≈ 9,5 m.',()=>Bb.get()!==6||Aa.get()!==9?'Ponha b = 6 m e a = 9 m.':'Ande até o ponto verde.'],
+ ['Monte uma tela cuja melhor distância seja <b>exatamente 4 m</b>, e fique nela.',()=>Math.abs(best_()-4)<0.01&&noBest(),'b = 2 e a = 6: 2 × (6 + 2) = 16, e √16 = 4.',()=>'Melhor distância agora: '+r2(best_())+' m. Você precisa de b × (a + b) = 16.'],
+ ['Fique <b>colado na parede</b> da tela (0,5 m). O ângulo é bom?',()=>Dd.get()<=0.5,()=>'Só '+r1(ang(Dd.get(),Aa.get(),Bb.get()))+'°: colado na parede você vê a tela de baixo, quase de lado. O melhor fica longe dali.','Leve a sua distância até o mínimo.']]);
 function draw(){const a=Aa.get(),b=Bb.get(),d=Dd.get(),best=Math.sqrt(b*(a+b)),s=150/25,sy=120/20;
  let g=`<line x1="10" y1="150" x2="170" y2="150" stroke="${GRAYL}"/><rect x="160" y="${140-(a+b)*sy}" width="6" height="${a*sy}" fill="${NAVY}"/>`;
  const ex=160-d*s,ey=140;g+=`<circle cx="${ex}" cy="${ey}" r="5" fill="${ORANGE}"/><line x1="${ex}" y1="${ey}" x2="160" y2="${140-(a+b)*sy}" stroke="${ORANGE}"/><line x1="${ex}" y1="${ey}" x2="160" y2="${140-b*sy}" stroke="${ORANGE}"/>`;
@@ -29,7 +35,7 @@ function draw(){const a=Aa.get(),b=Bb.get(),d=Dd.get(),best=Math.sqrt(b*(a+b)),s
  g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
  g+=`<circle cx="${190+best*5.6}" cy="${150-ang(best,a,b)*1.6}" r="4" fill="${GREEN}"/><circle cx="${190+d*5.6}" cy="${150-ang(d,a,b)*1.6}" r="5" fill="${ORANGE}"/>`+TX(260,168,'distância (m)',{fs:9,w:400})+TX(205,12,'ângulo',{fs:9,w:400,a:'start'});
  $('fig').innerHTML=SVG(340,175,g);$('k1').textContent=r1(ang(d,a,b))+'°';$('k2').textContent=r2(best)+' m · '+r1(ang(best,a,b))+'°';
- missao('m',Math.abs(d-best)<0.15,'Você achou o ângulo máximo! Ali a circunferência que passa pela base e pelo topo da tela toca a linha dos seus olhos.','Missão: ande até o ponto verde do gráfico, onde o ângulo é o maior possível.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

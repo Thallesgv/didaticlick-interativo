@@ -19,7 +19,12 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const FO=[24,35,50,85,135],NS=[1.4,2,2.8,4,5.6,8,11,16],fo=chips('fo',FO.map(v=>v+' mm'),2,draw),ab=chips('ab',NS.map(v=>'f/'+String(v).replace('.',',')),1,draw),SS=SL('ss',0.5,15,0.1,4,draw,v=>r1(v)+' m');let todos=false;
+const FO=[24,35,50,85,135],NS=[1.4,2,2.8,4,5.6,8,11,16],fo=chips('fo',FO.map(v=>v+' mm'),2,draw),ab=chips('ab',NS.map(v=>'f/'+String(v).replace('.',',')),1,draw),SS=SL('ss',0.5,15,0.1,4,draw,v=>r1(v)+' m');let todos=false,NIT=[1,1,1],LO=0;
+MIS.def(()=>[
+ ['Deixe <b>os três atores</b> nítidos ao mesmo tempo.',()=>NIT.every(v=>v),'Os três nítidos: abertura fechada e focal curta aumentam a faixa nítida.','Dica: feche o diafragma e use uma focal curta.'],
+ ['Agora o contrário: só o <b>ator do meio</b> nítido, com os outros dois desfocados.',()=>!NIT[0]&&NIT[1]&&!NIT[2],'Abertura grande e teleobjetiva isolam o ator: a frente e o fundo borram.','Dica: abra o diafragma e use uma focal maior.'],
+ ['Com a lente de <b>24 mm</b>, faça a faixa nítida ir <b>até o infinito</b>.',()=>fo.get()===0&&!isFinite(LO),'Você focou na hiperfocal ou depois dela: dali até o infinito, tudo fica nítido.',()=>fo.get()?'Escolha 24 mm.':'Compare a distância de foco com a hiperfocal.'],
+ ['Desafio: com <b>85 mm</b>, só o ator <b>do fundo</b> (8 m) nítido.',()=>fo.get()===3&&!NIT[0]&&!NIT[1]&&NIT[2],'Com 85 mm e o diafragma aberto, a faixa nítida fica estreita, só em volta dos 8 m.',()=>fo.get()!==3?'Escolha 85 mm.':'Foque no fundo e abra o diafragma.']]);
 function draw(){const f=FO[fo.get()],N=NS[ab.get()],s=SS.get()*1000,c=0.03,H=f*f/(N*c)+f,pe=s*(H-f)/(H+s-2*f),lo=s<H-f?s*(H-f)/(H-s):Infinity;
  $('k1').textContent=r2(pe/1000)+' m';$('k2').textContent=isFinite(lo)?r2(lo/1000)+' m':'infinito';$('k3').textContent=r2(H/1000)+' m';
  const X=m=>30+m*19,y0=150;let g=`<line x1="10" y1="${y0}" x2="335" y2="${y0}" stroke="${NAVY}" stroke-width="2"/>`;
@@ -30,8 +35,8 @@ function draw(){const f=FO[fo.get()],N=NS[ab.get()],s=SS.get()*1000,c=0.03,H=f*f
   const bmm=f*f*Math.abs(mm-s)/(N*mm*(s-f)),fora=ok?0:Math.min(6,bmm/c*0.5);defs+=`<filter id="b${k}" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${fora.toFixed(2)}"/></filter>`;
   g+=`<g filter="url(#b${k})"><circle cx="${X(d)}" cy="${y0-62}" r="9" fill="#F2C9A0"/><rect x="${X(d)-9}" y="${y0-52}" width="18" height="52" rx="6" fill="${cor}"/></g>`+TX(X(d),y0+16,d+' m',{fs:10});});
  $('fig').innerHTML=SVG(340,172,'<defs>'+defs+'</defs>'+g);
- if(nit.every(v=>v))todos=true;const meio=!nit[0]&&nit[1]&&!nit[2];
- missao('m',todos&&meio,'As duas! Abertura fechada e focal curta aumentam a faixa nítida; abertura grande e teleobjetiva isolam o ator.',todos?'Os três nítidos: feito. Agora isole só o ator do meio (dica: abra o diafragma e use uma focal maior).':'Faça os três ficarem nítidos (dica: feche o diafragma e use uma focal curta).');}
+ NIT=nit;LO=lo;if(nit.every(v=>v))todos=true;const meio=!nit[0]&&nit[1]&&!nit[2];
+MIS.ver('m');}
 draw();
 </script>
 </body>

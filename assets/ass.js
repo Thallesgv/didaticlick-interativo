@@ -23,14 +23,20 @@ function missao(id, ok, txtOk, txtNao) { $(id).innerHTML = `<div class="msg ${ok
 // Várias missões por simulador. MIS.def(()=>[[texto, ok(), msgOk, dica], ...]) no início do script; MIS.ver('m') a cada desenho.
 // msgOk e dica podem ser texto ou função. O cartão "Missão" vira "Missão k de N" com barrinha de progresso e botão "Próxima missão".
 const MIS = (() => {
-  let fn = null, L = null, mi = 0, card = null, id = 'm', fresco = false; const feitas = new Set();
+  let fn = null, L = null, mi = 0, card = null, id = 'm', fresco = false, keep = null; const feitas = new Set();
   const v = x => typeof x === 'function' ? x() : x;
-  function monta() { if (L) return; L = fn(); card = [...document.querySelectorAll('.card')].find(c => { const h = c.querySelector('h2'); return h && /^Missão/.test(h.textContent.trim()); }); }
+  function monta() {
+    if (L) return; L = fn(); card = [...document.querySelectorAll('.card')].find(c => { const h = c.querySelector('h2'); return h && /^Missão/.test(h.textContent.trim()); });
+    const alvo = $(id);
+    if (!card && alvo) { const host = alvo.closest('.card'); card = document.createElement('div'); card.className = 'card'; (host || alvo).after(card); }
+    if (card && alvo && card.contains(alvo)) keep = alvo;
+  }
   const bot = () => feitas.has(mi) && mi < L.length - 1 ? '<button class="alt msprox" style="margin-top:8px">Próxima missão →</button>' : '';
   function liga() { document.querySelectorAll('.msprox').forEach(b => b.onclick = () => { mi++; fresco = true; MIS.ver(); try { $(id).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) {} }); }
   function pinta() {
     if (!card) return;
-    card.innerHTML = `<h2>Missão ${mi + 1} de ${L.length}</h2><div style="display:flex;gap:5px;margin:4px 0 10px">${L.map((_, i) => `<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i) ? '#15803D' : i === mi ? '#F7821F' : '#D7DEEA'}"></span>`).join('')}</div><p style="margin:0">${L[mi][0]}</p>${bot()}`;
+    card.innerHTML = `<h2>Missão ${mi + 1} de ${L.length}</h2><div style="display:flex;gap:5px;margin:4px 0 10px">${L.map((_, i) => `<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i) ? '#15803D' : i === mi ? '#F7821F' : '#D7DEEA'}"></span>`).join('')}</div><p style="margin:0">${L[mi][0]}</p>${keep ? '' : bot()}`;
+    if (keep) card.appendChild(keep);
   }
   return {
     def(f) { fn = f; },

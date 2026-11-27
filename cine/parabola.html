@@ -19,13 +19,18 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const VV=SL('vv',2,25,0.5,14,draw,v=>r1(v)+' m/s'),AN=SL('an',10,80,1,45,draw,v=>v+'°'),GS=[10,1.6,16],gr=chips('gr',['Terra (10)','Lua (1,6)','Desenho (16)'],0,draw);let feito=new Set();
+const VV=SL('vv',2,25,0.5,14,draw,v=>r1(v)+' m/s'),AN=SL('an',10,80,1,45,draw,v=>v+'°'),GS=[10,1.6,16],gr=chips('gr',['Terra (10)','Lua (1,6)','Desenho (16)'],0,draw);let feito=new Set(),PO=null,TA=0,VY=0;
+MIS.def(()=>[
+ ['Faça a bola cair <b>em cima da plataforma</b> laranja (de 20 m a 24 m, a 3 m de altura) na gravidade da <b>Terra</b>.',()=>PO&&gr.get()===0,()=>'Na plataforma, com '+r1(VV.get())+' m/s a '+AN.get()+'°.',()=>gr.get()?'Escolha a gravidade da Terra.':'Ainda não pousou na plataforma.'],
+ ['Agora acerte a plataforma <b>nas três gravidades</b>.',()=>feito.size===3,'As três gravidades! Gravidade menor pede menos velocidade para o mesmo alvo.',()=>(PO?'Na plataforma! ':'')+'Gravidades feitas: '+feito.size+' de 3.'],
+ ['Na Terra, deixe a bola <b>1 segundo no ar</b> (24 quadros).',()=>gr.get()===0&&Math.abs(TA-1)<0.03,()=>'1 s no ar: a velocidade vertical é '+r1(VY)+' m/s, e 2 × 5 ÷ 10 = 1 s.',()=>gr.get()?'Escolha a Terra.':'Tempo no ar: '+r2(TA)+' s. Ele só depende da velocidade vertical.'],
+ ['Na <b>Lua</b>, com <b>10 m/s</b>, ache o ângulo de <b>maior alcance</b>.',()=>gr.get()===1&&VV.get()===10&&AN.get()===45,'45°: alcance de v² ÷ g = 100 ÷ 1,6 = 62,5 m na Lua.',()=>gr.get()!==1||VV.get()!==10?'Escolha a Lua e 10 m/s.':'Alcance agora: '+r1(VV.get()**2*Math.sin(2*AN.get()*Math.PI/180)/1.6)+' m.']]);
 function draw(){const v=VV.get(),a=AN.get()*Math.PI/180,g0=GS[gr.get()],vx=v*Math.cos(a),vy=v*Math.sin(a),T=2*vy/g0,H=vy*vy/(2*g0);
  const X=m=>15+m*10.5,Y=m=>200-m*10.5;let g=`<line x1="5" y1="${Y(0)}" x2="335" y2="${Y(0)}" stroke="${NAVY}" stroke-width="2"/><rect x="${X(20)}" y="${Y(3)}" width="${X(24)-X(20)}" height="${Y(0)-Y(3)}" fill="${PEACH}" stroke="${ORANGE}" stroke-width="2"/>`;
  let pouso=null;for(let k=0;k<2000;k++){const t=k/12,x=vx*t,y=vy*t-g0*t*t/2;if(y<0)break;if(k%1===0&&x<31&&y<19)g+=`<circle cx="${X(x)}" cy="${Y(y)}" r="3" fill="${NAVY}"/>`;}
  const td=(vy+Math.sqrt(Math.max(0,vy*vy-2*g0*3)))/g0;if(vy*vy>=2*g0*3){const xd=vx*td;if(xd>=20&&xd<=24)pouso=xd;}
  $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=r2(T)+' s ('+Math.round(T*24)+' quadros)';$('k2').textContent=r2(H)+' m';$('k3').textContent=r1(vx*T)+' m';
- if(pouso)feito.add(gr.get());missao('m',feito.size===3,'As três gravidades! Gravidade menor pede menos velocidade para o mesmo alvo.',pouso?'Na plataforma! Já foram '+feito.size+' de 3 gravidades.':'Ainda não pousou na plataforma ('+feito.size+' de 3 gravidades feitas).');}
+ if(pouso)feito.add(gr.get());PO=pouso;TA=T;VY=vy;MIS.ver('m');}
 draw();
 </script>
 </body>

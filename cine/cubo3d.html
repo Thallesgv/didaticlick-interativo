@@ -24,13 +24,19 @@
 const SOL=[{v:[[-1,-1,-1],[1,-1,-1],[1,1,-1],[-1,1,-1],[-1,-1,1],[1,-1,1],[1,1,1],[-1,1,1]],a:[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]],f:6},
  {v:[[-1,-1,-1],[1,-1,-1],[1,-1,1],[-1,-1,1],[0,1.2,0]],a:[[0,1],[1,2],[2,3],[3,0],[0,4],[1,4],[2,4],[3,4]],f:5},
  {v:[[-1,-1,-1],[1,-1,-1],[0,0.8,-1],[-1,-1,1],[1,-1,1],[0,0.8,1]],a:[[0,1],[1,2],[2,0],[3,4],[4,5],[5,3],[0,3],[1,4],[2,5]],f:5}];
-let vistos=new Set();const so=chips('so',['cubo','pirâmide','prisma'],0,draw),RG=SL('rg',0,360,1,30,draw,v=>v+'°'),IG=SL('ig',-60,60,1,20,draw,v=>v+'°'),FF=SL('ff',1,6,0.1,2.5,draw,v=>r1(v)),DZ=SL('dz',2.2,12,0.1,5,draw,v=>r1(v));
+let vistos=new Set();
+MIS.def(()=>[
+ ['Veja os <b>três sólidos</b> e confira a relação de Euler em cada um.',()=>vistos.size===3,'Os três dão V − A + F = 2.',()=>'Sólidos vistos: '+vistos.size+' de 3.'],
+ ['Aproxime bem a câmera (distância <b>2,5 ou menos</b>). O que acontece com a face mais próxima?',()=>DZ.get()<=2.5,'A face mais próxima fica enorme: z pequeno, divisão por um número pequeno.',()=>'Distância agora: '+r1(DZ.get())+'.'],
+ ['Afaste a câmera até <b>12</b> e ache a focal que deixa o sólido do tamanho do começo (f = 2,5 a uma distância de 5).',()=>DZ.get()>=11.95&&Math.abs(FF.get()/DZ.get()-0.5)<0.01,'f = 6 a uma distância de 12: 6 ÷ 12 = 2,5 ÷ 5. Mesmo tamanho, mas quase sem perspectiva. É o dolly zoom de novo.',()=>DZ.get()<11.95?'Leve a distância até 12.':'f ÷ distância agora: '+r2(FF.get()/DZ.get())+'. No começo era 2,5 ÷ 5 = 0,5.'],
+ ['Ponha o <b>cubo</b> de frente: giro de <b>90°</b> e inclinação <b>0°</b>. O que você vê?',()=>so.get()===0&&RG.get()===90&&IG.get()===0,'Dois quadrados, um dentro do outro: a face da frente, mais perto, fica maior que a de trás.','Escolha o cubo, gire até 90° e zere a inclinação.']]);
+const so=chips('so',['cubo','pirâmide','prisma'],0,draw),RG=SL('rg',0,360,1,30,draw,v=>v+'°'),IG=SL('ig',-60,60,1,20,draw,v=>v+'°'),FF=SL('ff',1,6,0.1,2.5,draw,v=>r1(v)),DZ=SL('dz',2.2,12,0.1,5,draw,v=>r1(v));
 function draw(){const s=SOL[so.get()],ra=RG.get()*Math.PI/180,ri=IG.get()*Math.PI/180,f=FF.get(),dz=DZ.get();vistos.add(so.get());
  const pr=s.v.map(([x,y,z])=>{let X=x*Math.cos(ra)+z*Math.sin(ra),Z=-x*Math.sin(ra)+z*Math.cos(ra);let Y=y*Math.cos(ri)-Z*Math.sin(ri);Z=y*Math.sin(ri)+Z*Math.cos(ri)+dz;return [170+f*X/Z*110,115-f*Y/Z*110];});
  let g='';s.a.forEach(([i,j])=>{g+=`<line x1="${pr[i][0]}" y1="${pr[i][1]}" x2="${pr[j][0]}" y2="${pr[j][1]}" stroke="${NAVY}" stroke-width="2.5"/>`;});pr.forEach(p=>g+=`<circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="${ORANGE}"/>`);
  $('fig').innerHTML=SVG(340,230,`<defs><clipPath id="cc"><rect x="0" y="0" width="340" height="230"/></clipPath></defs><g clip-path="url(#cc)">${g}</g>`);
  const V=s.v.length,A=s.a.length,F=s.f;$('k1').textContent=V;$('k2').textContent=A;$('k3').textContent=F;$('k4').textContent=V-A+F;
- missao('m',vistos.size===3,'Os três dão V − A + F = 2. E bem perto da câmera, a face mais próxima fica enorme: z pequeno, divisão por um número pequeno.','Sólidos vistos: '+vistos.size+' de 3.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

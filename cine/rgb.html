@@ -20,10 +20,17 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 const R=SL('r',0,255,1,14,draw),G=SL('g',0,255,1,35,draw),B=SL('b',0,255,1,84,draw);
+const cor_=(r,g,b)=>R.get()==r&&G.get()==g&&B.get()==b;
+MIS.def(()=>[
+ ['Encontre o laranja da DidatiClick: R = 247, G = 141, B = 51 (vale chegar a 10 de distância em cada luz).',()=>Math.abs(R.get()-247)<=10&&Math.abs(G.get()-141)<=10&&Math.abs(B.get()-51)<=10,'Achou o laranja DidatiClick!',
+  ()=>'Distância até o laranja: R '+(R.get()-247)+', G '+(G.get()-141)+', B '+(B.get()-51)+'.'],
+ ['Que cor sai de <b>R = 255, G = 255 e B = 0</b>? Monte e veja.',()=>cor_(255,255,0),'Amarelo! Na luz, vermelho + verde = amarelo. Em binário: 11111111, 11111111, 00000000.','Leve R e G até 255 e B até 0.'],
+ ['Monte um <b>cinza</b>: as três luzes com o mesmo valor, entre 100 e 155.',()=>R.get()==G.get()&&G.get()==B.get()&&R.get()>=100&&R.get()<=155,'Luzes iguais dão cinza. Com 0, 0, 0 sai preto; com 255, 255, 255, branco.','As três luzes precisam ter exatamente o mesmo valor.'],
+ ['Desafio em binário: monte <b>R = 10000000, G = 00000000, B = 10000000</b>.',()=>cor_(128,0,128),'Isso é 128, 0, 128: um roxo. O primeiro bit da esquerda vale 2⁷ = 128.','Quanto vale 10000000 em decimal? Confira na caixa de binários.']]);
 const bn=v=>v.toString(2).padStart(8,'0');
 function draw(){const r=R.get(),g=G.get(),b=B.get();$('fig').style.background=`rgb(${r},${g},${b})`;$('fig').innerHTML='';
  $('bin').innerHTML=`R = ${r} = <b>${bn(r)}</b><br>G = ${g} = <b>${bn(g)}</b><br>B = ${b} = <b>${bn(b)}</b><br>Hex: #${[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('').toUpperCase()}`;
- missao('m',Math.abs(r-247)<=10&&Math.abs(g-141)<=10&&Math.abs(b-51)<=10,'Achou o laranja DidatiClick!','Distância até o laranja: R '+(r-247)+', G '+(g-141)+', B '+(b-51)+'.');}
+MIS.ver('m');}
 draw();
 </script>
 </body>

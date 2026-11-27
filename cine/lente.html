@@ -19,7 +19,12 @@
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
-const FF=SL('ff',2,10,0.5,5,draw,v=>r1(v)+' cm'),PP=SL('pp',1,30,0.5,12,draw,v=>r1(v)+' cm');let feitos=new Set();
+const FF=SL('ff',2,10,0.5,5,draw,v=>r1(v)+' cm'),PP=SL('pp',1,30,0.5,12,draw,v=>r1(v)+' cm');let feitos=new Set(),AA=0,RL=false;
+MIS.def(()=>[
+ ['Faça a imagem ficar <b>do mesmo tamanho</b> do objeto (aumento 1). Onde o objeto precisa ficar?',()=>RL&&Math.abs(AA-1)<0.03,()=>'Aumento 1 com p = '+r1(PP.get())+' cm = 2 × f.',()=>'Aumento agora: '+r2(Math.abs(AA))+'×. Dica: experimente p igual ao dobro de f.'],
+ ['Confira com <b>outra lente</b>: consiga aumento 1 com duas focais diferentes.',()=>feitos.size>=2,()=>'Você testou '+feitos.size+' lentes: sempre p = 2f, e a imagem também fica a 2f, do outro lado.','Mude a focal e procure de novo o aumento 1.'],
+ ['Faça uma imagem real <b>2 vezes maior</b> que o objeto.',()=>RL&&Math.abs(AA-2)<0.05,()=>'Aumento 2 com p = '+r1(PP.get())+' cm = 1,5 × f. A imagem fica a 3f da lente.',()=>'Aumento agora: '+r2(Math.abs(AA))+'×. Aproxime o objeto do foco, sem passar dele.'],
+ ['Transforme a lente em <b>lupa</b>: imagem virtual e direita.',()=>!RL&&PP.get()<FF.get(),'Objeto antes do foco: os raios saem abertos e a imagem aparece do mesmo lado, maior e direita. É a lupa.','Ponha o objeto mais perto da lente que o foco F.']]);
 function draw(){const f=FF.get(),p=PP.get(),k=6,xl=170,y0=100,ho=30,xo=xl-p*k;
  let g='';for(let x=xl%(5*k);x<340;x+=5*k)g+=`<line x1="${x}" y1="20" x2="${x}" y2="180" stroke="#E5EAF2"/>`;
  g+=`<line x1="0" y1="${y0}" x2="340" y2="${y0}" stroke="${GRAYL}" stroke-width="1.5"/><ellipse cx="${xl}" cy="${y0}" rx="6" ry="70" fill="#DBEAFE" stroke="${BLUE}" stroke-width="1.5"/>`;
@@ -36,8 +41,8 @@ function draw(){const f=FF.get(),p=PP.get(),k=6,xl=170,y0=100,ho=30,xo=xl-p*k;
   t1=(real?'':'−')+r1(Math.abs(pi))+' cm';t2=r2(Math.abs(A))+'×';t3=real?'real, invertida':'virtual, direita (lupa)';}
  g+=TX(xo,y0-ho-6,'objeto',{fs:10});
  $('fig').innerHTML=SVG(340,190,g);$('k1').textContent=t1;$('k2').textContent=t2;$('k3').textContent=t3;
- const ok=real&&Math.abs(A-1)<0.03;if(ok)feitos.add(f);
- missao('m',ok,'Aumento 1 com p = '+r1(p)+' cm = 2 × f. '+(feitos.size>1?'Você testou '+feitos.size+' lentes: sempre p = 2f.':'Troque a lente e confira de novo.'),'Agora o aumento é '+t2+'. Dica: experimente p igual ao dobro de f.');}
+ const ok=real&&Math.abs(A-1)<0.03;if(ok)feitos.add(f);AA=A;RL=real;
+MIS.ver('m');}
 draw();
 </script>
 </body>
