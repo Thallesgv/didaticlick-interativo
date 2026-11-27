@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ache a janela · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Ache a janela</h1></header>
+<main>
+<div class="card"><h2>O saguão das 10h às 16h</h2><p class="muted" style="margin-top:0">Cada coluna é um intervalo de 10 minutos, com a média de pessoas no saguão em 10 dias. Toque ou arraste sobre o histograma para mover a janela laranja.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Janela<b id="kj"></b></div><div>Pessoas na janela<b id="kp"></b></div><div>Frequência acumulada até o fim dela<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com a janela de <b>10 minutos</b>, encontre o intervalo <b>mais calmo</b> do dia. Depois teste janelas de 20 e 30 minutos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=[8,9,10,11,12,13,14,15,17,18,19,20,22,24,25,23,21,20,19,18,17,16,15,16,16,12,9,3,5,11,10,9,8,7,6,5],TOT=D.reduce((a,b)=>a+b,0);
+const hora=i=>(10+Math.floor(i/6))+'h'+((i%6)*10||'00');let ini=6,vistos=new Set();
+const C=chips('ch',['10 min','20 min','30 min'],0,draw);
+const x0=26,W=306,y0=170,H=140,bw=W/36,Y=v=>y0-v/26*H;
+function draw(){const L=C.get()+1;ini=clamp(ini,0,36-L);let g='';
+ for(let v=0;v<=25;v+=5)g+=LN(x0,Y(v),x0+W,Y(v),GRAYL,1)+TX(x0-4,Y(v)+3,String(v),{fs:9,a:'end',c:GRAY,w:500});
+ g+=RC(x0+ini*bw,14,L*bw,y0-14,PEACH);
+ D.forEach((v,i)=>g+=RC(x0+i*bw,Y(v),bw-1,y0-Y(v),i>=ini&&i<ini+L?ORANGE:NAVY));
+ for(let h=0;h<=6;h++)g+=LN(x0+h*6*bw,y0,x0+h*6*bw,y0+5,NAVY,1.2)+TX(x0+h*6*bw,y0+17,(10+h)+'h',{fs:9,c:GRAY,w:500});
+ g+=LN(x0,y0,x0+W,y0,NAVY,2)+RC(x0+ini*bw,14,L*bw,y0-14,'none','stroke="'+ORANGE+'" stroke-width="2"');
+ $('fig').innerHTML=SVG(340,195,g);
+ const s=D.slice(ini,ini+L).reduce((a,b)=>a+b,0),ac=D.slice(0,ini+L).reduce((a,b)=>a+b,0);
+ $('kj').textContent=hora(ini)+' a '+hora(ini+L);$('kp').textContent=s+' ('+pct(100*s/TOT,1)+' do dia)';$('ka').textContent=ac+' de '+TOT;
+ let melhor=0,mv=1e9;for(let i=0;i+L<=36;i++){const t=D.slice(i,i+L).reduce((a,b)=>a+b,0);if(t<mv){mv=t;melhor=i;}}
+ if(ini==melhor)vistos.add(L);
+ missao('m',L==1&&ini==melhor,'Achou: das 14h30 às 14h40 só há 3 pessoas em média, a janela mais calma do dia.',
+  ini==melhor?'Essa é a janela de '+(L*10)+' minutos mais calma ('+s+' pessoas). Volte para 10 minutos para a missão principal.':'Nessa janela há '+s+' pessoas. Procure onde as colunas são mais baixas.');}
+toque('fig',(x)=>{const L=C.get()+1;ini=clamp(Math.floor((x-x0)/bw-L/2+.5),0,36-L);draw();});
+draw();
+})();
+</script>
+</body>
+</html>

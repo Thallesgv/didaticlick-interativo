@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O contador da porta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O contador da porta</h1></header>
+<main>
+<div class="card"><h2>Quem entrou no banco?</h2><p class="muted" style="margin-top:0">Uma pessoa acaba de passar pela porta. Olhe o desenho e a descrição e marque o tipo: <b>C</b> cliente, <b>E</b> entregador, <b>M</b> manutenção, <b>O</b> outros. Cada marca vira um risco na tabela.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="bC">C · cliente</button><button id="bE" class="alt">E · entregador</button><button id="bM" class="alt">M · manutenção</button><button id="bO" class="alt">O · outros</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>A tabela de frequência</h2><div class="fig" id="tab"></div><div class="fig" id="piz"></div>
+<div class="kpi"><div class="o">Visitantes anotados<b id="kt">0</b></div><div>Acertos seguidos<b id="ks">0</b></div><div>Tipo mais frequente<b id="km">—</b></div></div>
+<div class="row"><button id="zera" class="alt">Recomeçar</button></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Anote <b>20 visitantes seguidos sem errar</b>. Depois confira: as frequências relativas sempre somam 100%.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const TIP=['C','E','M','O'],NOM=['Cliente','Entregador','Manutenção','Outros'],COR=[NAVY,ORANGE,BLUE,GREEN];
+const DESC=[['Senhora com bolsa e cartão do banco na mão','Rapaz de terno indo pagar um boleto','Estudante que vai abrir a primeira conta','Senhor que vem sacar a aposentadoria'],
+ ['Motoboy com mochila térmica e uma caixa','Carteiro com uma pilha de envelopes','Moça entregando um pacote com nota fiscal'],
+ ['Técnico de capacete e caixa de ferramentas','Eletricista com uma escada','Moço da limpeza do ar-condicionado com maleta'],
+ ['Turista perguntando onde fica a praça','Criança procurando a mãe','Pessoa que só entrou para fugir da chuva']];
+let cont=[0,0,0,0],seq=0,cur=0,resp=false;
+function sorteia(){const r=Math.random();cur=r<.6?0:r<.75?1:r<.85?2:3;resp=false;desenha();}
+function pessoa(t){let g=RC(0,0,340,150,PEACH,'rx="12"')+RC(250,20,60,130,'#fff','stroke="'+NAVY+'" stroke-width="3"')+TX(280,14,'PORTA',{fs:9});
+ const x=150,c=COR[t];g+=`<circle cx="${x}" cy="45" r="15" fill="#F2C9A0"/>`+RC(x-16,62,32,48,c,'rx="8"')+RC(x-14,110,10,32,NAVY)+RC(x+4,110,10,32,NAVY);
+ if(t==0)g+=RC(x+18,80,16,20,'#7A4BB5','rx="4"')+RC(x-30,72,14,9,'#fff','stroke="'+NAVY+'"');
+ if(t==1)g+=RC(x-50,66,34,30,'#C8A27A','stroke="#8B6B4A" stroke-width="2"')+LN(x-50,81,x-16,81,'#8B6B4A',1.5);
+ if(t==2)g+=`<path d="M${x-17},40 A17,17 0 0 1 ${x+17},40 Z" fill="#FACC15"/>`+RC(x+18,88,30,18,'#B91C1C','rx="3"')+LN(x+26,88,x+40,88,'#B91C1C',3);
+ if(t==3)g+=`<circle cx="${x+34}" cy="70" r="10" fill="#FFF" stroke="${GRAY}" stroke-width="2"/>`+TX(x+34,74,'?',{fs:12});
+ return g;}
+function desenha(){const d=DESC[cur][Math.floor((seq*7+cont.reduce((a,b)=>a+b,0)*3)%DESC[cur].length)];
+ $('fig').innerHTML=SVG(340,175,pessoa(cur)+TX(150,168,d,{fs:11}));
+ const tot=cont.reduce((a,b)=>a+b,0);let g='';const cols=['Tipo','Riscos','Freq. abs.','Freq. rel.'],cx=[8,90,225,295];
+ cols.forEach((c,i)=>g+=TX(cx[i],16,c,{fs:10,a:i?'middle':'start'}));
+ for(let i=0;i<4;i++){const y=40+i*26;g+=TX(8,y+4,TIP[i]+' · '+NOM[i],{fs:10,a:'start',c:COR[i]});
+  let xs=60;for(let k=0;k<Math.min(cont[i],25);k++){const grupo=Math.floor(k/5),pos=k%5,bx=xs+grupo*18;if(pos<4)g+=LN(bx+pos*3.5,y-8,bx+pos*3.5,y+6,COR[i],1.6);else g+=LN(bx-2,y+4,bx+13,y-6,COR[i],1.6);}
+  if(cont[i]>25)g+=TX(150,y+4,'…',{fs:12});
+  g+=TX(cx[2],y+4,String(cont[i]),{fs:11})+TX(cx[3],y+4,tot?pct(100*cont[i]/tot,0):'—',{fs:11});}
+ g+=LN(4,146,336,146,GRAYL,1)+TX(8,162,'Total',{fs:10,a:'start'})+TX(cx[2],162,String(tot),{fs:11})+TX(cx[3],162,tot?'100%':'—',{fs:11});
+ $('tab').innerHTML=SVG(340,170,g);
+ $('piz').innerHTML=tot?pizza(cont.map((v,i)=>({v,cor:COR[i],nome:NOM[i]+' ('+v+')'}))):'';
+ $('kt').textContent=tot;$('ks').textContent=seq;const mx=Math.max(...cont);$('km').textContent=tot?NOM[cont.indexOf(mx)]:'—';}
+TIP.forEach((t,i)=>$('b'+t).onclick=()=>{if(resp)return;resp=true;const ok=i==cur;
+ if(ok){cont[i]++;seq++;}else seq=0;
+ if(seq>=20)missao('m',true,'Vinte seguidos sem errar! Veja na tabela: as frequências relativas somam 100%.','');
+ else $('m').innerHTML=`<div class="msg ${ok?'ok':'info'}">${ok?'✔ Anotado como '+NOM[i]+'.':'Ops: era '+NOM[cur]+'. A sequência voltou a zero (a marca errada não entra na tabela).'}</div>`;
+ setTimeout(sorteia,ok?450:1300);});
+$('zera').onclick=()=>{cont=[0,0,0,0];seq=0;$('m').innerHTML='';sorteia();};sorteia();
+})();
+</script>
+</body>
+</html>

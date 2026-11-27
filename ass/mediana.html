@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Puxe a média · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Puxe a média</h1></header>
+<main>
+<div class="card"><h2>Atrasos do carro-forte</h2><p class="muted" style="margin-top:0">Cinco atrasos, em minutos depois das 14h. A linha <b style="color:#F7821F">laranja</b> é a média; a <b style="color:#15803D">verde</b> é a mediana. Arraste um ponto para bem longe e compare quem se mexe mais.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Média<b id="km"></b></div><div>Mediana<b id="kd"></b></div><div>Moda<b id="ko"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça a <b>média ficar maior que o dobro da mediana</b>. Que tipo de valor provoca isso?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function reta(id,vals,lo,hi,passo,extra,depois){
+ const x0=22,x1=318,y0=128,X=v=>x0+(v-lo)/(hi-lo)*(x1-x0),V=x=>clamp(Math.round(lo+(x-x0)/(x1-x0)*(hi-lo)),lo,hi);let sel=-1,pos=[];
+ function draw(){let g='';const H=170;
+  g+=extra(X,y0);g+=LN(x0,y0,x1,y0,NAVY,2.5);
+  for(let v=lo;v<=hi;v+=passo)g+=LN(X(v),y0-4,X(v),y0+4,NAVY,1.2)+TX(X(v),y0+38,String(v),{fs:9,c:GRAY,w:500});
+  const cont={};pos=vals.map(v=>{const k=cont[v]||0;cont[v]=k+1;return[X(v),y0-11-k*17];});
+  pos.forEach((p,i)=>g+=`<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="${i===sel?ORANGE:BLUE}" stroke="#fff" stroke-width="2"/>`);
+  $(id).innerHTML=SVG(340,H,g);depois&&depois();}
+ toque(id,(x,y,ini)=>{if(ini){sel=-1;let m=28;pos.forEach((p,i)=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<m){m=d;sel=i;}});if(sel<0){let mx=20;pos.forEach((p,i)=>{const d=Math.abs(p[0]-x);if(d<mx){mx=d;sel=i;}});}}
+  if(sel<0)return;vals[sel]=V(x);draw();});
+ $(id).addEventListener('pointerup',()=>{sel=-1;draw();});
+ return draw;}
+const media=v=>v.reduce((a,b)=>a+b,0)/v.length;
+const mediana=v=>{const s=[...v].sort((a,b)=>a-b),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
+const v=[3,5,4,2,9];
+const draw=reta('fig',v,0,60,5,(X,y0)=>{const m=media(v),md=mediana(v);
+ return LN(X(m),18,X(m),y0,ORANGE,2,'5 3')+LN(X(md),30,X(md),y0,GREEN,2,'5 3')+TX(X(m)+4,14,'média '+r1(m),{fs:10,c:ORANGE,a:'start'})+TX(X(md)-4,26,'mediana '+r1(md),{fs:10,c:GREEN,a:'end'});},()=>{
+ const m=media(v),md=mediana(v),c={};v.forEach(a=>c[a]=(c[a]||0)+1);const mx=Math.max(...Object.values(c));
+ $('km').textContent=r1(m)+' min';$('kd').textContent=r1(md)+' min';$('ko').textContent=mx==1?'não há':Object.keys(c).filter(k=>c[k]==mx).join(' e ');
+ missao('m',m>2*md,'Isso! Um único valor atípico puxou a média para '+r1(m)+', mas a mediana continua em '+r1(md)+'. É por isso que a mediana é "robusta".',
+  'Média '+r1(m)+' e mediana '+r1(md)+'. Leve um só ponto para bem longe dos outros.');});
+draw();
+})();
+</script>
+</body>
+</html>
