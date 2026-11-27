@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A meia corda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A meia corda</h1></header>
+<main>
+<div class="card"><h2>O seno é uma meia corda</h2><p class="muted" style="margin-top:0">Circunferência de raio 1. Mude o ângulo α: a corda do ângulo 2α aparece tracejada, a meia corda (seno) em laranja e a distância do centro até a corda (cosseno) em verde.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo α</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">sen α (meia corda)<b id="ks"></b></div><div>cos α<b id="kc"></b></div><div>corda inteira<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre o ângulo α em que a meia corda mede exatamente <b>metade do raio</b>. Depois, o ângulo em que a meia corda e a distância ao centro ficam iguais.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const A=SL('sa',0,90,1,40,draw,v=>v+'°');let achou30=false;
+function draw(){const a=A.get(),s=Math.sin(a*RAD),c=Math.cos(a*RAD),R=95,cx=130,cy=120;
+ const px=cx+R*c,py=cy-R*s,qy=cy+R*s;
+ let g=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=`<path d="M${cx},${cy} L${cx+30},${cy} A30,30 0 0 0 ${cx+30*c},${cy-30*s} Z" fill="${PEACH}"/>`;
+ g+=LN(cx,cy,px,py,NAVY,2)+LN(cx,cy,px,qy,NAVY,1.5)+LN(px,py,px,qy,GRAY,1.5,'4 3');
+ g+=LN(px,py,px,cy,ORANGE,5)+LN(cx,cy,px,cy,GREEN,4);
+ g+=TX(cx+38,cy-6,'α',{fs:12,a:'start'})+TX(px+6,(py+cy)/2,'sen α',{fs:11,a:'start',c:ORANGE})+TX((cx+px)/2,cy+16,'cos α',{fs:11,c:GREEN});
+ g+=TX(cx-R/2-4,cy-R/2,'r = 1',{fs:10,c:GRAY});
+ // barras ao lado
+ g+=`<rect x="262" y="${cy-R*s}" width="22" height="${R*s}" fill="${ORANGE}"/><rect x="296" y="${cy-R*c}" width="22" height="${R*c}" fill="${GREEN}"/>`+LN(255,cy,325,cy,NAVY,1);
+ g+=TX(273,cy+14,'sen',{fs:9})+TX(307,cy+14,'cos',{fs:9})+LN(255,cy-R,325,cy-R,GRAYL,1,'3 3')+TX(326,cy-R+3,'1',{fs:9,a:'start',c:GRAY});
+ $('fig').innerHTML=SVG(340,230,g);
+ $('ks').textContent=fmt(Math.round(s*1000)/1000);$('kc').textContent=fmt(Math.round(c*1000)/1000);$('kd').textContent=fmt(Math.round(2*s*1000)/1000);
+ if(a==30)achou30=true;
+ missao('m',a==45&&achou30,'As duas! α = 30°: a meia corda é 0,5 (metade do raio). α = 45°: sen 45° = cos 45° ≈ 0,707.',
+  a==30?'Isso: sen 30° = 0,5, metade do raio. Agora ache o ângulo em que seno e cosseno ficam iguais.':'Meia corda atual: '+fmt(Math.round(s*1000)/1000)+'.');}
+draw();
+})();
+</script>
+</body>
+</html>

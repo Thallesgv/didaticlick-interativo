@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balestilha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A balestilha</h1></header>
+<main>
+<div class="card"><h2>A circunferência escondida na madeira</h2><p class="muted" style="margin-top:0">Deslize a soalha pelo virote (arraste a soalha ou use o controle). A circunferência com centro no olho passa pelas duas pontas da soalha: a soalha é uma corda, a meia soalha é r · sen(α/2) e a distância no virote é r · cos(α/2).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância da soalha ao olho</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Ângulo medido α<b id="ka"></b></div><div>tg(α/2) = 30 ÷ d<b id="kt"></b></div><div>Raio r da circunferência<b id="kr"></b></div></div>
+<div class="kpi"><div>r · sen(α/2)<b id="ks"></b></div><div>r · cos(α/2)<b id="kc"></b></div></div>
+<div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Outra estrela</button></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">A meia soalha tem 30 cm. Mova a soalha até a ponta de baixo ficar no horizonte e a de cima na estrela. Leia o ângulo: essa é a altura da estrela.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let ALT=50;const D=SL('sd',25,90,0.5,70,draw,v=>r1(v)+' cm');
+$('nova').onclick=()=>{ALT=rint(40,95);draw();};
+function draw(){const d=D.get(),h=30,half=Math.atan(h/d),al=2*half*DEG,r=Math.hypot(d,h),k=3.1,ex=26,ey=200;
+ // o virote aponta para a bissetriz: ângulo al/2 acima do horizonte
+ const ang=half,ux=Math.cos(ang),uy=Math.sin(ang),nx=-uy,ny=ux;
+ const P=(t,s)=>[ex+(t*ux+s*nx)*k,ey-(t*uy+s*ny)*k];
+ let g=`<rect x="0" y="${ey}" width="340" height="60" fill="#BFD7F2"/>`+LN(0,ey,340,ey,'#2457D6',2)+TX(336,ey+14,'horizonte',{fs:9,a:'end',c:'#2457D6',w:500});
+ // estrela
+ const sx=ex+300*Math.cos(ALT*RAD),sy=ey-300*Math.sin(ALT*RAD);
+ g+=`<circle cx="${Math.min(sx,330)}" cy="${Math.max(sy,10)}" r="6" fill="${ORANGE}"/>`;
+ // circunferência (arco) centrada no olho
+ const R=r*k;g+=`<circle cx="${ex}" cy="${ey}" r="${R}" fill="none" stroke="${LIGHT}" stroke-width="2" stroke-dasharray="6 4"/>`;
+ // virote
+ const v1=P(0,0),v2=P(95,0);g+=LN(v1[0],v1[1],v2[0],v2[1],'#7A4E26',6);
+ // raios até as pontas
+ const t1=P(d,h),t2=P(d,-h),m=P(d,0);
+ g+=LN(ex,ey,t1[0],t1[1],NAVY,1.2,'4 3')+LN(ex,ey,t2[0],t2[1],NAVY,1.2,'4 3');
+ // soalha
+ g+=`<line id="soalha" x1="${t1[0]}" y1="${t1[1]}" x2="${t2[0]}" y2="${t2[1]}" stroke="#B7793F" stroke-width="9" stroke-linecap="round"/>`;
+ g+=LN(m[0],m[1],t1[0],t1[1],ORANGE,4)+LN(ex,ey,m[0],m[1],GREEN,4);
+ const lab=P(d+6,h/2);g+=TX(lab[0],lab[1],'r·sen(α/2)',{fs:10,a:'start',c:ORANGE});
+ const lb2=P(d/2,-8);g+=TX(lb2[0],lb2[1],'r·cos(α/2)',{fs:10,c:GREEN});
+ g+=`<circle cx="${ex}" cy="${ey}" r="5" fill="${NAVY}"/>`+TX(ex,ey+16,'olho',{fs:9});
+ $('fig').innerHTML=SVG(340,260,g);
+ $('ka').textContent=r1(al)+'°';$('kt').textContent=fmt(Math.round(h/d*1000)/1000);$('kr').textContent=r1(r)+' cm';
+ $('ks').textContent=r1(r*Math.sin(half))+' cm';$('kc').textContent=r1(r*Math.cos(half))+' cm';
+ const ok=Math.abs(al-ALT)<=1;
+ missao('m',ok,'Na mira! A estrela está a '+ALT+'° do horizonte. Com d = '+r1(d)+' cm: tg(α/2) = 30 ÷ '+r1(d)+' ≈ '+fmt(Math.round(h/d*1000)/1000)+', e α ≈ '+r1(al)+'°.',
+  al<ALT?'A ponta de cima está abaixo da estrela: traga a soalha para mais perto do olho.':'A ponta de cima passou da estrela: afaste a soalha do olho.');
+ arrastar($('fig').querySelector('svg'),$('fig').querySelector('#soalha'),(x,y)=>{const t=((x-ex)*ux+(ey-y)*uy)/k;D.set(clamp(Math.round(t*2)/2,25,90));draw();});}
+draw();
+})();
+</script>
+</body>
+</html>
