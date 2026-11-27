@@ -1,17 +1,40 @@
 <!--T: Desenhe os distritos-->
-<div class="card"><h2>Gerrymandering na prática</h2><p class="muted">São 25 eleitores: 15 laranja e 10 azuis (40%). Escolha uma cor de distrito e toque nos quadrados para formar <b>5 distritos de 5 quadrados</b>, cada um formando um bloco só (vizinhos pelos lados). Consegue fazer o azul vencer 3 distritos?</p>
-<div class="row" id="cores"></div><div class="row" style="margin-top:6px"><button class="alt" id="col">Colunas</button><button class="alt" id="lin">Linhas</button><button class="alt" id="lim">Limpar</button></div>
-<svg id="sv" viewBox="0 0 300 300"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>Gerrymandering na prática</h2>
+<b id="nivel"></b>
+<p class="muted" id="enun"></p>
+<div class="row" id="cores"></div><div class="row" style="margin-top:6px"><button class="alt" id="col">Colunas</button><button class="alt" id="lin">Linhas</button><button class="alt" id="lim">Limpar</button><button class="alt" id="dica">Dica</button></div>
+<svg id="sv" viewBox="0 0 300 300"></svg><div class="row" style="margin-top:8px"><button class="alt" id="ant">Anterior</button><button id="prox">Próximo desafio</button></div><div class="out" id="out"></div></div>
 <script>
-const $=i=>document.getElementById(i);const V=['AALLL','AALLL','LALAL','LLALA','ALLLA'];const CORES=['#FCA5A5','#93C5FD','#86EFAC','#FDE68A','#C4B5FD'];let D=[...Array(5)].map(()=>Array(5).fill(-1)),cur=0;
+const $=i=>document.getElementById(i);
+const NIV=[
+ {t:'Desafio 1 · A minoria vence',v:['AALLL','AALLL','LALAL','LLALA','ALLLA'],meta:3,txt:'Consegue fazer o <b>azul vencer 3 distritos</b>, mesmo com menos votos?',sol:['01222','01122','00133','40133','44443']},
+ {t:'Desafio 2 · O azul some do mapa',v:['AALLL','AALLL','LALAL','LLALA','ALLLA'],meta:0,txt:'Mesmo mapa, outro dono da caneta: faça o <b>laranja vencer os 5 distritos</b>. O azul tem 40% dos votos e fica sem nenhuma cadeira.',sol:['00001','22031','23331','22431','44441']},
+ {t:'Desafio 3 · Quase empate',v:['LLAAA','LLALL','LLLAA','LLLAA','LAAAA'],meta:4,txt:'Cidade nova, eleição apertada. Faça o <b>azul vencer 4 dos 5 distritos</b>.',sol:['01111','02221','00322','40333','44443']},
+ {t:'Desafio 4 · Virando o jogo',v:['LLAAA','LLALL','LLLAA','LLLAA','LAAAA'],meta:1,txt:'Mesma cidade, agora a caneta é do laranja: faça o <b>azul vencer só 1 distrito</b>.',sol:['00001','02211','32114','32244','33344']},
+ {t:'Desafio 5 · Mestre do mapa',v:['LALLL','AAAAL','LLLAL','LALLL','ALALL'],meta:3,txt:'Só 9 azuis (36%). Faça o <b>azul vencer 3 distritos</b>. Só existem 6 jeitos de conseguir!',sol:['00111','00221','02221','33444','33344']}];
+const CORES=['#FCA5A5','#93C5FD','#86EFAC','#FDE68A','#C4B5FD'];let n=0,V,D,cur=0,feitos={};
+try{feitos=JSON.parse(localStorage.getItem('geo-distritos')||'{}')}catch(e){}
 $('cores').innerHTML=CORES.map((c,i)=>`<button data-c="${i}" style="background:${c};color:#0E2354">Distrito ${i+1}</button>`).join('');
 document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{cur=+b.dataset.c;document.querySelectorAll('[data-c]').forEach(x=>x.style.outline='');b.style.outline='3px solid #0E2354'});
+function carrega(k){n=(k+NIV.length)%NIV.length;const N=NIV[n];V=N.v;D=[...Array(5)].map(()=>Array(5).fill(-1));
+ let a=0;V.forEach(r=>[...r].forEach(x=>{if(x=='A')a++}));
+ $('nivel').innerHTML=N.t+(feitos[n]?' ✓':'');
+ $('enun').innerHTML=`São 25 eleitores: ${25-a} laranja e ${a} azuis (${a*4}%). Escolha uma cor de distrito e toque nos quadrados para formar <b>5 distritos de 5 quadrados</b>, cada um formando um bloco só (vizinhos pelos lados). Vence o distrito quem tiver 3 ou mais eleitores nele. `+N.txt;
+ $('ant').style.display=n?'':'none';draw()}
 function conexo(k){const c=[];for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k)c.push([i,j]);if(!c.length)return false;const vis=new Set([c[0].join()]),st=[c[0]];while(st.length){const[i,j]=st.pop();for(const[a,b]of[[i+1,j],[i-1,j],[i,j+1],[i,j-1]])if(a>=0&&a<5&&b>=0&&b<5&&D[a][b]==k&&!vis.has(a+','+b)){vis.add(a+','+b);st.push([a,b])}}return vis.size==c.length}
 function draw(){let s='';for(let i=0;i<5;i++)for(let j=0;j<5;j++){const k=D[i][j];s+=`<rect x="${j*60}" y="${i*60}" width="60" height="60" fill="${k<0?'#fff':CORES[k]}" stroke="#E5E7EB" data-i="${i}" data-j="${j}"/><circle cx="${j*60+30}" cy="${i*60+30}" r="16" fill="${V[i][j]=='A'?'#0E2354':'#F78D33'}" pointer-events="none"/>`}
- $('sv').innerHTML=s;let ok=true,A=0,L=0,msg=[];for(let k=0;k<5;k++){let n=0,a=0;for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k){n++;if(V[i][j]=='A')a++}
-  if(n!=5||!conexo(k)){ok=false;msg.push(`Distrito ${k+1}: ${n} quadrados${n&&!conexo(k)?' (separado)':''}`)}else{if(a>=3)A++;else L++}}
- $('out').innerHTML=ok?`Resultado: <b>azul ${A} × ${L} laranja</b>. ${A>=3?'O azul, com 40% dos votos, ganhou a maioria das cadeiras!':A==2?'Resultado proporcional aos votos.':'O azul ficou com menos cadeiras que votos.'}`:'Ainda falta: '+msg.join(' · ');}
+ for(let i=0;i<5;i++)for(let j=0;j<5;j++){const k=D[i][j];if(k<0)continue;if(j<4&&D[i][j+1]>=0&&D[i][j+1]!=k)s+=`<line x1="${j*60+60}" y1="${i*60}" x2="${j*60+60}" y2="${i*60+60}" stroke="#0E2354" stroke-width="4" pointer-events="none"/>`;if(i<4&&D[i+1][j]>=0&&D[i+1][j]!=k)s+=`<line x1="${j*60}" y1="${i*60+60}" x2="${j*60+60}" y2="${i*60+60}" stroke="#0E2354" stroke-width="4" pointer-events="none"/>`}
+ $('sv').innerHTML=s;let ok=true,A=0,L=0,msg=[];for(let k=0;k<5;k++){let q=0,a=0;for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k){q++;if(V[i][j]=='A')a++}
+  if(q!=5||!conexo(k)){ok=false;msg.push(`Distrito ${k+1}: ${q} quadrados${q&&!conexo(k)?' (separado)':''}`)}else{if(a>=3)A++;else L++}}
+ if(!ok){$('out').innerHTML='Ainda falta: '+msg.join(' · ');return}
+ const meta=NIV[n].meta;
+ if(A==meta){feitos[n]=1;try{localStorage.setItem('geo-distritos',JSON.stringify(feitos))}catch(e){}
+  $('nivel').innerHTML=NIV[n].t+' ✓';
+  $('out').innerHTML=`Resultado: <b>azul ${A} × ${L} laranja</b>. <b>Desafio cumprido!</b> Os votos são os mesmos; só a fronteira mudou. `+(n<NIV.length-1?'Toque em <b>Próximo desafio</b>.':'Você completou todos os desafios. Quem desenha o mapa tem muito poder.')}
+ else $('out').innerHTML=`Resultado: <b>azul ${A} × ${L} laranja</b>. A meta é azul ${meta} × ${5-meta} laranja. Tente de novo!`}
 $('sv').addEventListener('click',e=>{const r=e.target;if(r.dataset.i===undefined)return;D[+r.dataset.i][+r.dataset.j]=cur;draw()});
 $('col').onclick=()=>{D=D.map(r=>r.map((_,j)=>j));draw()};$('lin').onclick=()=>{D=D.map((r,i)=>r.map(()=>i));draw()};$('lim').onclick=()=>{D=D.map(r=>r.map(()=>-1));draw()};
-document.querySelector('[data-c]').click();draw();
+$('dica').onclick=()=>{D=NIV[n].sol.map(r=>[...r].map(Number));draw()};
+$('prox').onclick=()=>carrega(n+1);$('ant').onclick=()=>carrega(n-1);
+document.querySelector('[data-c]').click();carrega(0);
 </script>
