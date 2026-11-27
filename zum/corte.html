@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O corte da ração · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O corte da ração</h1></header>
+<main>
+<div class="card"><h2>Cortar e aumentar</h2><p class="muted" style="margin-top:0">A ração era de 100 g. Escolha o corte e depois o aumento, em porcentagem. As barras mostram a ração em cada etapa, e o contador diz quantos dias os 120 kg de arroz duram para 150 pessoas com a ração cortada.</p>
+<div class="sl" id="sc"><b>Corte</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Aumento depois do corte</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Com o corte<b id="k1"></b></div><div>Depois do aumento<b id="k2"></b></div><div class="o">Dias de arroz (com o corte)<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o corte.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SC=SL('sc',0,50,5,0,draw,v=>v+'%'),SA=SL('sa',0,50,5,0,draw,v=>v+'%');
+const R1=()=>100*(1-SC.get()/100),R2=()=>R1()*(1+SA.get()/100),DIAS=()=>800/R1();
+MIS.def(()=>[
+ ['Escolha o corte que faz o arroz durar <b>10 dias</b>.',()=>Math.abs(DIAS()-10)<1e-9,()=>'Corte de 20%: 80 g e 10 dias. A ração caiu 20%, mas os dias subiram 25%.',()=>'Agora: '+r1(DIAS())+' dias.'],
+ ['Qual o <b>menor corte</b> (de 5 em 5%) que faz o arroz durar <b>pelo menos 12 dias</b>?',()=>DIAS()>=12&&800/(100*(1-(SC.get()-5)/100))<12,()=>'Corte de '+SC.get()+'%: '+r1(DIAS())+' dias. O corte exato seria de 33,3%.',()=>'Agora: corte de '+SC.get()+'% e '+r1(DIAS())+' dias.'],
+ ['Com o corte de <b>20%</b>, que aumento traz a ração de volta a <b>100 g</b>?',()=>SC.get()==20&&Math.abs(R2()-100)<1e-9,()=>'Aumento de 25%: 80 × 1,25 = 100. Aumentar 20% daria só 96 g.',()=>SC.get()!=20?'Ponha o corte em 20%.':'Agora: '+r1(R2())+' g.']]);
+function draw(){const k=1.3,base=170,v=[100,R1(),R2()],c=['#0E2354',ORANGE,'#7CC47F'],t=['ração antiga','com o corte','depois do aumento'];let g=LN(10,base-100*k,330,base-100*k,'#9AA7BD',1,'4 3')+TX(330,base-100*k-4,'100 g',{fs:9,c:GRAY,a:'end'});
+ v.forEach((x,i)=>{const X=30+i*105;g+=RC(X,base-x*k,70,x*k,c[i])+TX(X+35,base-x*k-6,r1(x)+' g',{fs:12})+TX(X+35,base+14,t[i],{fs:10,c:GRAY});});
+ $('fig').innerHTML=SVG(340,190,g);$('k1').textContent=r1(R1())+' g';$('k2').textContent=r1(R2())+' g';$('kd').textContent=r1(DIAS());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

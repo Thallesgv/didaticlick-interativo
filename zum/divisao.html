@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A divisão justa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A divisão justa</h1></header>
+<main>
+<div class="card"><h2>Divida a doação</h2><p class="muted" style="margin-top:0">Mude o número de pessoas de cada cozinha e o total da doação. A doação é dividida na proporção das pessoas: cada pessoa vale o mesmo tanto.</p>
+<div class="sl" id="s0"><b>Cozinha do ginásio</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Cozinha das salas</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Cozinha da enfermaria</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Doação</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Pessoas<b id="kp"></b></div><div class="o">Cada pessoa vale<b id="kv"></b></div><div>Partes<b id="kq"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function SACO(x,y,w,h,cor){return `<path d="M${x} ${y+h} L${x+w} ${y+h} L${x+w*0.92} ${y} L${x+w*0.08} ${y} Z" fill="${cor||'#E8D3A8'}" stroke="#A9875A" stroke-width="1.2"/>`;}
+const S=[SL('s0',10,100,5,30,draw),SL('s1',10,100,5,30,draw),SL('s2',10,100,5,30,draw)],ST=SL('st',30,240,10,60,draw,v=>v+' kg');
+const NP=()=>S.reduce((a,s)=>a+s.get(),0),VAL=()=>ST.get()/NP(),PT=i=>Math.round(S[i].get()*VAL()*100)/100;
+MIS.def(()=>[
+ ['Monte as cozinhas do livro (<b>60, 50 e 40</b>) e divida a doação de <b>90 kg</b>.',()=>S[0].get()==60&&S[1].get()==50&&S[2].get()==40&&ST.get()==90,()=>'36, 30 e 24 kg: 0,6 kg por pessoa.',()=>'Agora: '+S.map(s=>s.get()).join(', ')+' pessoas e '+ST.get()+' kg.'],
+ ['Faça as três cozinhas receberem <b>exatamente o mesmo tanto</b>, com uma doação de <b>90 kg</b>.',()=>ST.get()==90&&PT(0)==PT(1)&&PT(1)==PT(2),()=>'Com o mesmo número de pessoas, a divisão proporcional é igual: '+fmt(PT(0))+' kg para cada.',()=>'Agora: '+[0,1,2].map(i=>fmt(PT(i))).join(', ')+' kg.'],
+ ['Faça a cozinha do ginásio receber <b>exatamente a metade</b> da doação.',()=>Math.abs(PT(0)-ST.get()/2)<1e-9,()=>'O ginásio tem '+S[0].get()+' pessoas, a mesma quantidade das outras duas juntas ('+(S[1].get()+S[2].get())+').',()=>'Agora o ginásio recebe '+fmt(PT(0))+' kg de '+ST.get()+' kg.']]);
+function draw(){const cor=[ORANGE,NAVY,'#7CC47F'],nome=['ginásio','salas','enfermaria'];let g='';
+ S.forEach((s,i)=>{const y=14+i*58,p=s.get(),q=PT(i);g+=TX(8,y+10,nome[i],{fs:11,a:'start'})+TX(8,y+26,p+' pessoas',{fs:10,c:GRAY,a:'start'});
+  for(let j=0;j<Math.round(p/10);j++)g+=CI(96+j*12,y+12,4.5,cor[i]);
+  const w=q/ST.get()*150;g+=RC(96,y+24,w,16,'#E8D3A8','stroke="#A9875A"')+TX(100+w,y+37,fmt(q)+' kg',{fs:11,c:ORANGE,a:'start'});});
+ $('fig').innerHTML=SVG(340,182,g);$('kp').textContent=NP();$('kv').textContent=r2(VAL())+' kg';$('kq').textContent=[0,1,2].map(i=>fmt(PT(i))).join(' · ');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
