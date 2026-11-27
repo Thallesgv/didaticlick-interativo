@@ -143,7 +143,34 @@ const LIV={'ass1':{T:["A planta do banco", "Escala e medidas reais", "Perímetro
 6:()=>{const t=R(0,2);
  if(t==0){const tt=P([1,1.5,2,2.5,3,4]);return{q:`Com d(t) = 5t², quantos metros a moeda cai em <b>${fmt(tt)} s</b>?`,a:5*tt*tt,tol:.001,exp:`5 · ${fmt(tt)}² = ${fmt(5*tt*tt)} m.`};}
  if(t==1){const tt=P([1,2,3,4,5]);return{q:`Com d = 5t², quanto tempo leva uma queda de <b>${5*tt*tt} m</b>? (em s)`,a:tt,exp:`t² = ${5*tt*tt} ÷ 5 = ${tt*tt}; t = ${tt} s.`};}
- const k=P([2,3,4]);return{q:`Se o tempo de queda fica multiplicado por <b>${k}</b>, a distância fica multiplicada por quanto?`,a:k*k,exp:`d cresce com o quadrado do tempo: ${k}² = ${k*k}.`};}}}};
+ const k=P([2,3,4]);return{q:`Se o tempo de queda fica multiplicado por <b>${k}</b>, a distância fica multiplicada por quanto?`,a:k*k,exp:`d cresce com o quadrado do tempo: ${k}² = ${k*k}.`};}}},'ass6':{T:["Os sólidos do cofre", "Quanto cabe no cofre", "A barra de ouro", "O peso do ouro", "A pele do cofre", "Pilhas de moedas"],G:{1:()=>{const t=R(0,3),n=R(3,12);
+ if(t==0)return{q:`Um prisma tem base com <b>${n} lados</b>. Quantas arestas ele tem?`,a:3*n,exp:`${n} em cima, ${n} embaixo e ${n} laterais: 3 · ${n} = ${3*n}.`};
+ if(t==1)return{q:`Um prisma tem base com <b>${n} lados</b>. Quantos vértices ele tem?`,a:2*n,exp:`${n} em cima e ${n} embaixo: 2 · ${n} = ${2*n}.`};
+ if(t==2)return{q:`Uma pirâmide tem base com <b>${n} lados</b>. Quantas faces ela tem?`,a:n+1,exp:`${n} triângulos laterais mais a base: ${n+1}.`};
+ const V=2*n,A=3*n;return{q:`Um poliedro convexo tem <b>${V} vértices</b> e <b>${A} arestas</b>. Quantas faces ele tem? (V + F = A + 2)`,a:A+2-V,exp:`F = A + 2 − V = ${A} + 2 − ${V} = ${A+2-V}.`};},
+2:()=>{const t=R(0,3);
+ if(t==0){const a=R(2,9),b=R(2,8),c=R(1,5);return{q:`Qual o volume de uma caixa de <b>${a} m × ${b} m × ${c} m</b>? (em m³)`,a:a*b*c,exp:`${a} · ${b} · ${c} = ${a*b*c} m³.`};}
+ if(t==1){const v=R(2,90);return{q:`Quantos litros cabem em <b>${v} m³</b>?`,a:v*1000,exp:`1 m³ = 1.000 L: ${v} · 1.000 = ${fmt(v*1000)} L.`};}
+ if(t==2){const a=P([20,30,40,50]),b=P([10,20,30]),c=P([10,20,40]);return{q:`Uma gaveta mede <b>${a} cm × ${b} cm × ${c} cm</b>. Quantos litros ela tem?`,a:a*b*c/1000,tol:.001,exp:`${a} · ${b} · ${c} = ${fmt(a*b*c)} cm³ = ${fmt(a*b*c/1000)} L (1 L = 1.000 cm³). Em dm: ${a/10} · ${b/10} · ${c/10} dá o mesmo.`};}
+ const a=R(2,6),b=R(2,6),c=R(2,6);return{q:`Um cofre tem <b>${a*b*c} m³</b>, ${a} m de comprimento e ${b} m de largura. Qual a altura (m)?`,a:c,exp:`${a*b*c} ÷ (${a} · ${b}) = ${a*b*c} ÷ ${a*b} = ${c} m.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const B=R(6,14),b=R(2,B-1),h=2*R(1,4);return{q:`Calcule a área de um trapézio de bases <b>${B} cm</b> e <b>${b} cm</b> e altura <b>${h} cm</b>.`,a:(B+b)*h/2,exp:`(${B} + ${b}) · ${h} ÷ 2 = ${(B+b)*h/2} cm².`};}
+ if(t==1){const A=R(10,40),L=R(5,30);return{q:`Uma barra tem base trapezoidal de <b>${A} cm²</b> e <b>${L} cm</b> de comprimento. Qual o volume (cm³)?`,a:A*L,exp:`${A} · ${L} = ${A*L} cm³.`};}
+ const A=R(10,40),L=R(5,30);return{q:`Uma barra tem volume <b>${A*L} cm³</b> e base de <b>${A} cm²</b>. Qual o comprimento (cm)?`,a:L,exp:`${A*L} ÷ ${A} = ${L} cm.`};},
+4:()=>{const t=R(0,3);
+ if(t==0){const d=P([2,4,5,8,10]),v=R(5,60);return{q:`Um objeto tem <b>${d*v} g</b> e <b>${v} cm³</b>. Qual a densidade em g/cm³?`,a:d,exp:`${d*v} ÷ ${v} = ${d} g/cm³.`};}
+ if(t==1){const v=P([5,10,20,50,100]);return{q:`Qual a massa, em gramas, de <b>${v} cm³</b> de ouro (19,3 g/cm³)?`,a:19.3*v,tol:.01,exp:`19,3 · ${v} = ${fmt(Math.round(193*v)/10)} g.`};}
+ if(t==2){const a=R(100,600),dv=R(10,90);return{q:`Ao mergulhar uma pedra, o nível de um copo sobe de <b>${a} mL</b> para <b>${a+dv} mL</b>. Qual o volume da pedra (cm³)?`,a:dv,exp:`${a+dv} − ${a} = ${dv} mL = ${dv} cm³.`};}
+ const v=P([200,400,500,600]),d=P([19.3,11.3,10.5,7.9]);return{q:`Uma barra de <b>${v} cm³</b> pesa <b>${fmt(Math.round(v*d)/1000)} kg</b>. Qual a densidade em g/cm³? (É ouro se der 19,3.)`,a:d,tol:.05,exp:`${fmt(Math.round(v*d))} g ÷ ${v} cm³ = ${fmt(d)} g/cm³: ${d==19.3?'é ouro':'não é ouro'}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,9);return{q:`Qual a área total de um cubo de aresta <b>${a} m</b>? (m²)`,a:6*a*a,exp:`6 · ${a}² = 6 · ${a*a} = ${6*a*a} m².`};}
+ if(t==1){const a=R(2,8),b=R(1,6),c=R(1,5);return{q:`Qual a área total de uma caixa de <b>${a} × ${b} × ${c} m</b>? (m²)`,a:2*(a*b+a*c+b*c),exp:`2 · (${a*b} + ${a*c} + ${b*c}) = ${2*(a*b+a*c+b*c)} m².`};}
+ const a=R(3,8),b=R(2,6),c=R(2,4);return{q:`Qual a área das 4 paredes (sem piso e teto) de uma sala <b>${a} m × ${b} m</b> com <b>${c} m</b> de altura?`,a:2*(a+b)*c,exp:`Perímetro ${2*(a+b)} m · altura ${c} m = ${2*(a+b)*c} m².`};},
+6:()=>{const t=R(0,3);
+ if(t==0){const r=R(1,5),h=R(1,10);return{q:`Volume de um cilindro de raio <b>${r} cm</b> e altura <b>${h} cm</b> (π ≈ 3,14), em cm³:`,a:3.14*r*r*h,tol:.01,exp:`3,14 · ${r}² · ${h} = 3,14 · ${r*r*h} = ${fmt(Math.round(314*r*r*h)/100)} cm³.`};}
+ if(t==1){const r=R(1,4),h=R(2,10);return{q:`Área lateral de um cilindro de raio <b>${r} cm</b> e altura <b>${h} cm</b> (π ≈ 3,14), em cm²:`,a:2*3.14*r*h,tol:.01,exp:`2 · 3,14 · ${r} · ${h} = ${fmt(Math.round(628*r*h)/100)} cm².`};}
+ if(t==2){const n=R(10,80),e=P([.1,.2,.25,.3]);return{q:`Uma pilha tem <b>${n} moedas</b> de <b>${fmt(e)} cm</b> de espessura. Qual a altura (cm)?`,a:n*e,tol:.001,exp:`${n} · ${fmt(e)} = ${fmt(Math.round(n*e*100)/100)} cm.`};}
+ const k=P([2,3,4]);return{q:`Se o raio de um cilindro fica multiplicado por <b>${k}</b> (altura igual), o volume fica multiplicado por quanto?`,a:k*k,exp:`O raio aparece ao quadrado: ${k}² = ${k*k}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ass1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

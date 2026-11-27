@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Encha o cofre · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Encha o cofre</h1></header>
+<main>
+<div class="card"><h2>Cubos de 1 m³</h2><p class="muted" style="margin-top:0">Escolha as medidas do cofre e aperte "Encher" para ver os cubos de 1 m³ entrarem camada por camada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="a"><b>Comprimento (m)</b><input type="range"><span></span></div>
+<div class="sl" id="b"><b>Largura (m)</b><input type="range"><span></span></div>
+<div class="sl" id="c"><b>Altura (m)</b><input type="range"><span></span></div>
+<div class="row"><button id="go">Encher</button></div>
+<div class="kpi"><div class="o">Volume<b id="kv"></b></div><div>Em litros<b id="kl"></b></div><div>Por camada<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte <b>três cofres diferentes</b> com exatamente <b>36 m³</b>. Medidas trocadas de lugar não contam como cofre novo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OUROF=s=>`hsl(44,85%,${32+38*s}%)`,ACOF=s=>`hsl(218,22%,${52+34*s}%)`;
+function VIEW(ang,elev){const ca=Math.cos(ang),sa=Math.sin(ang),ce=Math.cos(elev),se=Math.sin(elev);
+ return p=>{const x=p[0]*ca-p[1]*sa,y=p[0]*sa+p[1]*ca,z=p[2];return [x,y*se+z*ce,-y*ce+z*se];};}
+function DESENHA(faces,o){const V=VIEW(o.ang,o.elev),k=o.k,cx=o.cx,cy=o.cy,all=faces.flatMap(f=>f.p.map(V));
+ const cc=[0,1,2].map(i=>all.reduce((s,p)=>s+p[i],0)/all.length);let g='';
+ const L=faces.map(f=>{const q=f.p.map(V),m=[0,1,2].map(i=>q.reduce((s,p)=>s+p[i],0)/q.length),a=q[0],b=q[1],d=q[2];
+  let n=[(b[1]-a[1])*(d[2]-a[2])-(b[2]-a[2])*(d[1]-a[1]),(b[2]-a[2])*(d[0]-a[0])-(b[0]-a[0])*(d[2]-a[2]),(b[0]-a[0])*(d[1]-a[1])-(b[1]-a[1])*(d[0]-a[0])];
+  if(o.cull&&n[0]*(m[0]-cc[0])+n[1]*(m[1]-cc[1])+n[2]*(m[2]-cc[2])<0)n=n.map(v=>-v);
+  if(!o.cull&&n[2]<0)n=n.map(v=>-v);
+  const nl=Math.hypot(...n)||1;return{q,m,vis:n[2]/nl,lum:(-.4*n[0]+.6*n[1]+.7*n[2])/nl,f};});
+ L.sort((a,b)=>a.m[2]-b.m[2]);
+ const pts=q=>q.map(p=>[r2(cx+p[0]*k).replace(',','.'),r2(cy-p[1]*k).replace(',','.')]);
+ if(o.cull)L.filter(x=>x.vis<=1e-6).forEach(x=>g+=PG(pts(x.q),'none',`stroke="${NAVY}" stroke-width="1" stroke-dasharray="4 3" opacity=".55"`));
+ L.filter(x=>!o.cull||x.vis>1e-6).forEach(x=>g+=PG(pts(x.q),(x.f.cor||OUROF)(clamp(.45+.55*x.lum,0,1)),`stroke="${NAVY}" stroke-width="1.3" stroke-linejoin="round" fill-opacity="${o.cull?.86:.95}"`));
+ return g;}
+// Projeção isométrica fixa para os cubinhos.
+const ISO=(cx,cy,k)=>(x,y,z)=>[cx+(x-y)*.866*k,cy-((x+y)*.5+z)*k];
+const A_=SL('a',1,8,1,6,()=>{cam=99;draw();}),B_=SL('b',1,6,1,4,()=>{cam=99;draw();}),C_=SL('c',1,5,1,3,()=>{cam=99;draw();});let cam=99,anim=null;const ach=new Set();
+function draw(){const a=A_.get(),b=B_.get(),c=C_.get(),k=Math.min(300/((a+b)*.866),190/((a+b)*.5+c)),I=ISO(20+b*.866*k,210,k);let g='';
+ const box=(x,y,z,cr)=>{const f=[[[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]],[[x,y,z],[x+1,y,z],[x+1,y,z+1],[x,y,z+1]],[[x,y,z],[x,y+1,z],[x,y+1,z+1],[x,y,z+1]]];
+  f.forEach((q,i)=>g+=PG(q.map(p=>I(...p)),cr[i],`stroke="${NAVY}" stroke-width=".8"`));};
+ const fr=[[0,0,0],[a,0,0],[a,b,0],[0,b,0]];g+=PG(fr.map(p=>I(...p)),'#E5E7EB',`stroke="${GRAY}" stroke-dasharray="3 3"`);
+ if(cam<c)[[a,0,0],[a,0,c],[0,0,c],[0,b,c],[0,b,0]].reduce((p,q)=>{g+=LN(...I(...p),...I(...q),GRAY,1,'4 3');return q;});
+ if(cam<c)g+=LN(...I(a,0,c),...I(a,b,c),GRAY,1,'4 3')+LN(...I(a,b,c),...I(0,b,c),GRAY,1,'4 3')+LN(...I(a,b,0),...I(a,b,c),GRAY,1,'4 3');
+ const top=Math.min(c,cam),L=[];for(let z=0;z<top;z++)for(let x=0;x<a;x++)for(let y=0;y<b;y++)L.push([x,y,z]);
+ L.sort((p,q)=>p[2]-q[2]||(q[0]+q[1])-(p[0]+p[1])||q[0]-p[0]).forEach(p=>box(...p,p[2]==top-1?['#F6D86B','#E8B923','#B8860B']:['#E3E8F0','#C9D1DE','#8E9AAF']));
+ g+=TX(...I(a/2,-.6,0),a+' m',{fs:11})+TX(...I(-.7,b/2,0),b+' m',{fs:11})+TX(I(a,0,c/2)[0]+16,I(a,0,c/2)[1],c+' m',{fs:11,a:'start'});
+ $('fig').innerHTML=SVG(340,230,g);const V=a*b*c;$('kv').textContent=(top>=c?V:a*b*top)+' m³';$('kl').textContent=((top>=c?V:a*b*top)*1000).toLocaleString('pt-BR')+' L';$('kc').textContent=a+' · '+b+' = '+a*b;
+ if(V==36)ach.add([a,b,c].sort((x,y)=>x-y).join('×'));
+ missao('m',ach.size>=3,'Três cofres de 36 m³: '+[...ach].join(', ')+'. Formas diferentes, mesmo volume.',ach.size?'Já achou: '+[...ach].join(', ')+'. Faltam '+(3-ach.size)+'.':'Volume agora: '+a+' · '+b+' · '+c+' = '+V+' m³.');}
+$('go').onclick=()=>{clearInterval(anim);cam=0;draw();anim=setInterval(()=>{cam++;draw();if(cam>=C_.get())clearInterval(anim);},450);};
+draw();
+})();
+</script>
+</body>
+</html>

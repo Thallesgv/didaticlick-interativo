@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A forma da barra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>A forma da barra</h1></header>
+<main>
+<div class="card"><h2>Um prisma de base trapezoidal</h2><p class="muted" style="margin-top:0">Mude as medidas e veja a barra se transformar. Arraste o desenho para girar.</p>
+<div class="fig" id="fig" style="cursor:grab"></div>
+<div class="sl" id="B"><b>Base maior B (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="b"><b>Base menor b (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="h"><b>Altura do trapézio h (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="L"><b>Comprimento (cm)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área da base<b id="ka"></b></div><div>Volume<b id="kv"></b></div><div>Massa em ouro<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desenhe uma barra com exatamente <b>644 cm³</b> (como a do livro), mas com <b>comprimento diferente de 23 cm</b>. Dica: 644 = 28 · 23 = 46 · 14 = 92 · 7.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OUROF=s=>`hsl(44,85%,${32+38*s}%)`,ACOF=s=>`hsl(218,22%,${52+34*s}%)`;
+function VIEW(ang,elev){const ca=Math.cos(ang),sa=Math.sin(ang),ce=Math.cos(elev),se=Math.sin(elev);
+ return p=>{const x=p[0]*ca-p[1]*sa,y=p[0]*sa+p[1]*ca,z=p[2];return [x,y*se+z*ce,-y*ce+z*se];};}
+function DESENHA(faces,o){const V=VIEW(o.ang,o.elev),k=o.k,cx=o.cx,cy=o.cy,all=faces.flatMap(f=>f.p.map(V));
+ const cc=[0,1,2].map(i=>all.reduce((s,p)=>s+p[i],0)/all.length);let g='';
+ const L=faces.map(f=>{const q=f.p.map(V),m=[0,1,2].map(i=>q.reduce((s,p)=>s+p[i],0)/q.length),a=q[0],b=q[1],d=q[2];
+  let n=[(b[1]-a[1])*(d[2]-a[2])-(b[2]-a[2])*(d[1]-a[1]),(b[2]-a[2])*(d[0]-a[0])-(b[0]-a[0])*(d[2]-a[2]),(b[0]-a[0])*(d[1]-a[1])-(b[1]-a[1])*(d[0]-a[0])];
+  if(o.cull&&n[0]*(m[0]-cc[0])+n[1]*(m[1]-cc[1])+n[2]*(m[2]-cc[2])<0)n=n.map(v=>-v);
+  if(!o.cull&&n[2]<0)n=n.map(v=>-v);
+  const nl=Math.hypot(...n)||1;return{q,m,vis:n[2]/nl,lum:(-.4*n[0]+.6*n[1]+.7*n[2])/nl,f};});
+ L.sort((a,b)=>a.m[2]-b.m[2]);
+ const pts=q=>q.map(p=>[r2(cx+p[0]*k).replace(',','.'),r2(cy-p[1]*k).replace(',','.')]);
+ if(o.cull)L.filter(x=>x.vis<=1e-6).forEach(x=>g+=PG(pts(x.q),'none',`stroke="${NAVY}" stroke-width="1" stroke-dasharray="4 3" opacity=".55"`));
+ L.filter(x=>!o.cull||x.vis>1e-6).forEach(x=>g+=PG(pts(x.q),(x.f.cor||OUROF)(clamp(.45+.55*x.lum,0,1)),`stroke="${NAVY}" stroke-width="1.3" stroke-linejoin="round" fill-opacity="${o.cull?.86:.95}"`));
+ return g;}
+// Projeção isométrica fixa para os cubinhos.
+const ISO=(cx,cy,k)=>(x,y,z)=>[cx+(x-y)*.866*k,cy-((x+y)*.5+z)*k];
+let ang=-.5,elev=.45;const up=()=>{if(b_.get()>B_.get())b_.set(B_.get());draw();};
+const B_=SL('B',4,12,1,8,up),b_=SL('b',1,12,1,6,up),H_=SL('h',1,8,1,4,draw),L_=SL('L',5,30,1,23,draw);
+toque('fig',(x,y,ini)=>{if(ini){toque.x0=x;toque.a0=ang;}ang=toque.a0+(x-toque.x0)/60;draw();});
+function draw(){const B=B_.get(),b=b_.get(),h=H_.get(),L=L_.get(),m=(B-b)/2,s=.1,tr=[[-B/2,0],[B/2,0],[B/2-m,h],[-B/2+m,h]];
+ const p=(q,y)=>[q[0]*s,(y-L/2)*s,(q[1]-h/2)*s],F=[{p:tr.map(q=>p(q,0)),cor:s=>`hsl(40,80%,${28+30*s}%)`},{p:tr.map(q=>p(q,L))}];
+ for(let i=0;i<4;i++){const a=tr[i],c=tr[(i+1)%4];F.push({p:[p(a,0),p(c,0),p(c,L),p(a,L)]});}
+ const A=(B+b)*h/2,V=A*L;
+ $('fig').innerHTML=SVG(340,230,DESENHA(F,{ang,elev,k:Math.min(115,210/Math.max(L*s,B*s,1)),cx:170,cy:120,cull:true})+TX(170,224,'trapézio '+B+' · '+b+' · '+h+' cm, comprimento '+L+' cm',{fs:11,c:GRAY}));
+ $('ka').textContent=r1(A)+' cm²';$('kv').textContent=r1(V)+' cm³';$('km').textContent=r1(V*19.3/1000)+' kg';
+ missao('m',Math.abs(V-644)<1e-9&&L!=23,'644 cm³ com comprimento '+L+' cm: ('+B+' + '+b+') · '+h+' ÷ 2 = '+r1(A)+' cm², e '+r1(A)+' · '+L+' = 644 cm³.',
+  'Agora: ('+B+' + '+b+') · '+h+' ÷ 2 = '+r1(A)+' cm²; '+r1(A)+' · '+L+' = '+r1(V)+' cm³.');}
+draw();
+})();
+</script>
+</body>
+</html>
