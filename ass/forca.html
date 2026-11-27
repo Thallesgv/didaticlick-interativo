@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O medidor de senha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O medidor de senha</h1></header>
+<main>
+<div class="card"><h2>N elevado a L</h2><p class="muted" style="margin-top:0">Escolha os tipos de caracteres (N) e o comprimento (L). O medidor mostra quantas senhas existem e quanto tempo levaria testar todas, a 1.000 por segundo.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sl"><b>Comprimento L</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Senhas possíveis<b id="kq"></b></div><div>Conta<b id="kc"></b></div><div>Testar todas leva<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o teste passar de <b>1.000 anos</b> com o <b>menor comprimento possível</b>. Qual tipo de senha permite isso?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function tempo(s){if(!isFinite(s))return 'mais que a idade do universo';if(s<60)return r1(s)+' s';if(s<3600)return r1(s/60)+' min';if(s<86400)return r1(s/3600)+' h';
+ if(s<31536000)return r1(s/86400)+' dias';const a=s/31536000;if(a<1e6)return Math.round(a).toLocaleString('pt-BR')+' anos';return grande(a)+' anos';}
+function grande(v){if(v<1e15)return Math.round(v).toLocaleString('pt-BR');const e=Math.floor(Math.log10(v));return fmt(Math.round(v/Math.pow(10,e)*10)/10)+' × 10<sup>'+e+'</sup>';}
+const TIP=[['algarismos',10],['minúsculas',26],['minúsc. + algarismos',36],['maiúsc. + minúsc. + algarismos',62],['com símbolos',94]];
+const C=chips('ch',TIP.map(t=>t[0]+' ('+t[1]+')'),0,draw),L=SL('sl',1,16,1,4,draw,String);
+const MARC=[[60,'1 min'],[86400,'1 dia'],[31536000,'1 ano'],[31536000000,'1.000 anos']];
+function draw(){const n=TIP[C.get()][1],l=L.get(),q=Math.pow(n,l),s=q/1000,lg=Math.log10(Math.max(s,.001)),X=v=>20+clamp((v+3)/(32+3),0,1)*300;let g='';
+ g+=RC(20,50,300,26,'#E8EDF7','rx="6"')+RC(20,50,Math.max(4,X(lg)-20),26,s>31536000000?GREEN:s>31536000?ORANGE:'#B91C1C','rx="6"');
+ MARC.forEach(([v,t],i)=>{const x=X(Math.log10(v));g+=LN(x,44,x,82,NAVY,1.2,'3 2')+TX(x,i%2?100:38,t,{fs:9});});
+ g+=TX(170,124,'(escala de potências de 10: cada passo é 10 vezes mais)',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,132,g);
+ $('kq').innerHTML=grande(q);$('kc').innerHTML=n+'<sup>'+l+'</sup>';$('kt').textContent=tempo(s);
+ missao('m',n==94&&l==7,'Isso! Com símbolos (N = 94), 7 caracteres bastam: 94⁷ ≈ 6,5 × 10¹³ senhas, cerca de 2 mil anos. Com N = 62 seriam precisos 8.',
+  s>31536000000?'Passou de 1.000 anos com '+l+' caracteres. Dá para usar menos com outro tipo de senha?':'Ainda não chega a 1.000 anos. Aumente L ou N.');}
+draw();
+})();
+</script>
+</body>
+</html>

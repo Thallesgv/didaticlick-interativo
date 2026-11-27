@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a equipe · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Monte a equipe</h1></header>
+<main>
+<div class="card"><h2>Quem desce ao cofre?</h2><p class="muted" style="margin-top:0">Escolha o tamanho do grupo. A lista mostra todos os grupos possíveis com os 6 da equipe, e o triângulo de Pascal acende o número certo. Toque nos nomes para montar o seu grupo.</p>
+<div class="sl" id="sk"><b>Pessoas no grupo</b><input type="range"><span></span></div>
+<div id="nomes" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Grupos possíveis<b id="kq"></b></div><div>Conta<b id="kc"></b></div><div>Seu grupo é o nº<b id="kg">—</b></div></div>
+<div id="lista" style="font-size:13px;line-height:1.6;max-height:260px;overflow:auto"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Para qual tamanho de grupo há <b>mais combinações</b>? Teste todos de 0 a 6.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NOM=['Vicente','Lara','Íris','Dante','Nina','Bento'],INI=['V','L','I','D','N','B'];let meu=new Set(),vistos=new Set();
+const K=SL('sk',0,6,1,3,()=>{meu.clear();draw();},String);
+const fat=n=>n<2?1:n*fat(n-1),Cn=(n,k)=>fat(n)/(fat(k)*fat(n-k));
+function grupos(k){const r=[];(function g(i,a){if(a.length==k){r.push([...a]);return;}for(let j=i;j<6;j++){a.push(j);g(j+1,a);a.pop();}})(0,[]);return r;}
+function draw(){const k=K.get(),gs=grupos(k);vistos.add(k);
+ $('nomes').innerHTML=NOM.map((n,i)=>`<button data-i="${i}" class="${meu.has(i)?'':'alt'}" style="padding:4px 10px;font-size:13px;margin:2px">${n}</button>`).join('');
+ document.querySelectorAll('#nomes button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(meu.has(i))meu.delete(i);else if(meu.size<k)meu.add(i);draw();});
+ const alvo=[...meu].sort().join(','),pos=meu.size==k?gs.findIndex(g=>g.join(',')==alvo):-1;
+ $('lista').innerHTML=gs.map((g,i)=>`<div style="padding:1px 6px;border-radius:6px;background:${i==pos?'#F7821F':'none'};color:${i==pos?'#fff':'inherit'}">${i+1}. ${g.length?g.map(j=>NOM[j]).join(', '):'(grupo vazio)'}</div>`).join('');
+ let g='';for(let n=0;n<=6;n++)for(let j=0;j<=n;j++){const x=170+(j-n/2)*40,y=18+n*26,on=n==6&&j==k;g+=`<circle cx="${x}" cy="${y}" r="12" fill="${on?ORANGE:(j==0||j==n?PEACH:'#E8EDF7')}"/>`+TX(x,y+4,String(Cn(n,j)),{fs:10,c:on?'#fff':NAVY});}
+ $('fig').innerHTML=SVG(340,190,g);
+ $('kq').textContent=gs.length;$('kc').textContent='C(6, '+k+') = '+gs.length;$('kg').textContent=pos>=0?String(pos+1):'—';
+ missao('m',k==3&&vistos.size>=4,'Isso! C(6, 3) = 20 é o maior número da linha 6: o meio do triângulo é sempre o maior.',k==3?'20 grupos. Compare com os outros tamanhos antes de decidir.':'C(6, '+k+') = '+gs.length+'. Continue testando.');}
+draw();
+})();
+</script>
+</body>
+</html>
