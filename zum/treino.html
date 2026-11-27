@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'zum1':{T:["Contar dia a dia", "A barricada", "O contágio dobra", "A soma que explode", "A quarentena", "A corrida"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,9),r=R(2,7),n=R(5,30);return{q:`Na sequência a<sub>n</sub> = ${r}n + ${a}, quanto vale a<sub>${n}</sub>?`,a:r*n+a,exp:`${r} × ${n} + ${a} = ${r*n+a}.`};}
+ if(t==1){const a=R(1,6),r=R(2,5);return{q:`a<sub>1</sub> = ${a} e a<sub>n+1</sub> = a<sub>n</sub> + ${r}. Quanto vale a<sub>4</sub>?`,a:a+3*r,exp:`${a}, ${a+r}, ${a+2*r}, <b>${a+3*r}</b>.`};}
+ const a=R(1,6),r=R(2,5),alvo=a+r*R(10,30);return{q:`O termo geral é a<sub>n</sub> = ${a} + (n − 1) · ${r}. Em que posição n o termo vale <b>${alvo}</b>?`,a:(alvo-a)/r+1,exp:`${alvo} − ${a} = ${alvo-a}; ÷ ${r} = ${(alvo-a)/r}; + 1 = ${(alvo-a)/r+1}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const a=R(2,20),r=P([-5,-3,2,3,4,5,6]),n=R(6,20);return{q:`Uma PA tem a<sub>1</sub> = ${a} e razão ${r}. Quanto vale a<sub>${n}</sub>?`,a:a+(n-1)*r,exp:`${a} + ${n-1} × (${r}) = ${a+(n-1)*r}.`};}
+ if(t==1){const n=P([10,20,30,40,50,60,100]);return{q:`Quanto vale 1 + 2 + 3 + … + ${n}?`,a:n*(n+1)/2,exp:`(1 + ${n}) × ${n} ÷ 2 = ${fmt(n*(n+1)/2)}.`};}
+ const a=R(3,10),r=R(2,6),per=a+r*R(10,25)+R(0,r-1);let n=1;while(a+(n-1)*r<per)n++;return{q:`A barricada tem ${a} m no dia 1 e ganha ${r} m por dia. O contorno tem <b>${per} m</b>. Em que dia ela fecha?`,a:n,exp:`${a} + (n − 1) · ${r} ≥ ${per} → n = ${n} (${a+(n-1)*r} m).`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,5),q=R(2,4),n=R(3,6);return{q:`Uma PG tem a<sub>1</sub> = ${a} e razão ${q}. Quanto vale a<sub>${n}</sub>?`,a:a*q**(n-1),exp:`${a} · ${q}${SUP(n-1)} = ${fmt(a*q**(n-1))}.`};}
+ if(t==1){const a=R(2,6),q=R(2,5);return{q:`Qual é a razão da PG ${a}, ${a*q}, ${a*q*q}…?`,a:q,exp:`${a*q} ÷ ${a} = ${q}.`};}
+ const alvo=P([100,500,1000,5000,10000]);let n=1;while(2**(n-1)<=alvo)n++;return{q:`Com 1 caso novo no dia 1 e os casos novos dobrando, em que dia os casos novos passam de <b>${fmt(alvo)}</b> pela primeira vez?`,a:n,exp:`2${SUP(n-2)} = ${fmt(2**(n-2))} e 2${SUP(n-1)} = ${fmt(2**(n-1))}: dia ${n}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const n=R(4,15);return{q:`Quanto vale 1 + 2 + 4 + … + 2${SUP(n-1)} (${n} parcelas)?`,a:2**n-1,exp:`2${SUP(n)} − 1 = ${fmt(2**n-1)}.`};}
+ if(t==1){const a=R(1,5),q=P([2,3]),n=R(4,7);const s=a*(q**n-1)/(q-1);return{q:`Some os ${n} primeiros termos da PG com a<sub>1</sub> = ${a} e razão ${q}.`,a:s,exp:`${a} · (${q}${SUP(n)} − 1) ÷ ${q-1} = ${fmt(s)}.`};}
+ const n=R(5,20);return{q:`No tabuleiro do trigo, quantos grãos há na casa <b>${n}</b> sozinha?`,a:2**(n-1),exp:`2${SUP(n-1)} = ${fmt(2**(n-1))}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const [q,d]=P([[0.5,'1/2'],[0.25,'1/4'],[0.2,'1/5'],[0.75,'3/4'],[0.6,'0,6'],[0.8,'0,8']]),a=P([4,6,8,10,12,20]);const s=Math.round(a/(1-q)*100)/100;return{q:`Calcule a soma infinita da PG com a<sub>1</sub> = ${a} e q = ${d}.`,a:s,tol:0.01,exp:`${a} ÷ (1 − ${d}) = ${fmt(s)}.`};}
+ if(t==1){const a=P([16,32,64,80,160]),n=R(3,5);return{q:`PG com a<sub>1</sub> = ${a} e q = 1/2: quanto vale a<sub>${n}</sub>?`,a:a/2**(n-1),tol:0.001,exp:`${a} ÷ 2${SUP(n-1)} = ${fmt(a/2**(n-1))}.`};}
+ const a=P([6,8,10,12,15]),L=P([20,24,30,40,60]).filter?P([20,24,30,40,60]):30;return{q:`A quarentena começou com ${a} casos novos. Qual razão q faz o total ser exatamente <b>${L}</b>? (2 casas)`,a:Math.round((1-a/L)*100)/100,tol:0.006,exp:`${a} ÷ (1 − q) = ${L} → 1 − q = ${fmt(Math.round(a/L*1000)/1000)} → q = ${fmt(Math.round((1-a/L)*100)/100)}.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const r=P([10,20,30,50]);let n=1;while(r*n>=2**(n-1))n++;return{q:`A PA ${r}, ${2*r}, ${3*r}… e a PG 1, 2, 4…: em que termo a PG passa a PA pela primeira vez?`,a:n,exp:`Termo ${n}: PA ${r*n} e PG ${fmt(2**(n-1))}.`};}
+ const r=P([50,100,150,200]);let n=1;while(2**n<=100+r*(n-1))n++;return{q:`Os leitos são 100, ${100+r}, ${100+2*r}… (+${r} por dia) e os casos são 2, 4, 8… (2<sup>n</sup>). Em que dia os casos passam os leitos?`,a:n,exp:`Dia ${n}: ${fmt(100+r*(n-1))} leitos e ${fmt(2**n)} casos.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='zum1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>

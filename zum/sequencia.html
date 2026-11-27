@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina de sequências · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A máquina de sequências</h1></header>
+<main>
+<div class="card"><h2>Somar ou multiplicar</h2><p class="muted" style="margin-top:0">Escolha o 1º termo e a regra. Cada coluna é um dia; cada bonequinho verde é um caso (quando a coluna fica grande demais, ela vira barra).</p>
+<div class="sl" id="sa"><b>1º termo a₁</b><input type="range"><span></span></div>
+<div id="cr" style="margin:6px 0"></div>
+<div class="sl" id="sr"><b>Quanto somar ou multiplicar</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Ver o termo da posição n</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Termo a<sub>n</sub><b id="kn"></b></div><div>Fórmula<b id="kf" style="font-size:15px"></b></div><div>Sequência<b id="ks" style="font-size:13px"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ZB=(x,y,h,z)=>{const r=h*0.15,c=z?'#7CC47F':'#F2C9A0',b=z?'#3F8F4A':'#B9835A',rp=z?'#8A8F6A':'#5B7BD5';
+ let g=LN(x-h*0.08,y-h*0.42,x-h*0.1,y,NAVY,Math.max(1,h*0.07))+LN(x+h*0.08,y-h*0.42,x+h*0.1,y,NAVY,Math.max(1,h*0.07))+RC(x-h*0.15,y-h*0.74,h*0.3,h*0.34,rp,'rx="'+h*0.05+'"');
+ g+=z?LN(x+h*0.1,y-h*0.68,x+h*0.38,y-h*0.68,c,Math.max(1,h*0.06))+LN(x+h*0.1,y-h*0.6,x+h*0.38,y-h*0.62,c,Math.max(1,h*0.06)):LN(x-h*0.15,y-h*0.7,x-h*0.22,y-h*0.42,c,Math.max(1,h*0.06))+LN(x+h*0.15,y-h*0.7,x+h*0.22,y-h*0.42,c,Math.max(1,h*0.06));
+ return g+CI(x,y-h+r,r,c,'stroke="'+b+'" stroke-width="0.7"');};
+const SA=SL('sa',1,10,1,1,draw),SR=SL('sr',1,5,1,2,draw),SN=SL('sn',1,30,1,7,draw);const CR=chips('cr',['somar (PA)','multiplicar (PG)'],0,draw);
+const soma=()=>CR.get()==0,t=n=>soma()?SA.get()+(n-1)*SR.get():SA.get()*Math.pow(SR.get(),n-1);
+MIS.def(()=>[
+ ['Faça o <b>dia 5</b> ter exatamente <b>13 casos</b>.',()=>t(5)==13,()=>'Dia 5 = '+t(5)+'. '+(soma()?'Com a₁ = '+SA.get()+' e somando '+SR.get()+': '+SA.get()+' + 4 × '+SR.get()+' = 13.':''),()=>'Agora o dia 5 tem '+fmt(t(5))+'. Pense: a₁ + 4 passos = 13.'],
+ ['A sequência misteriosa é <b>3, 6, 12, 24…</b> Monte a regra que gera essa sequência.',()=>!soma()&&SA.get()==3&&SR.get()==2,()=>'É uma PG: a₁ = 3 e multiplica por 2. O dia 10 teria 3 × 2⁹ = 1 536 casos.',()=>'Agora: '+[1,2,3,4].map(t).map(fmt).join(', ')+'…'],
+ ['Somando, faça o <b>dia 20</b> ter exatamente <b>58 casos</b> (use a fórmula, não a força bruta).',()=>soma()&&t(20)==58,()=>'a₂₀ = '+SA.get()+' + 19 × '+SR.get()+' = 58.',()=>soma()?'Agora a₂₀ = '+t(20)+'. Lembre: a₂₀ = a₁ + 19 · r.':'Escolha somar.'],
+ ['Com <b>a₁ = 1</b>, compare: somando 2, o dia 30 tem 59 casos. Multiplicando por 2, quantos? Coloque n = 30 e multiplique por 2.',()=>!soma()&&SA.get()==1&&SR.get()==2&&SN.get()==30,()=>'2²⁹ = 536 870 912 casos: mais que o dobro da população do Brasil. Somar 2 e multiplicar por 2 começam iguais e terminam em mundos diferentes.',()=>'Ajuste a₁ = 1, multiplicar, por 2 e n = 30.']]);
+function draw(){const N=Math.min(SN.get(),10),vals=[];for(let n=1;n<=10;n++)vals.push(t(n));const mx=Math.max(...vals);let g='';
+ const W=340,base=200,cw=W/10;
+ for(let i=0;i<10;i++){const v=vals[i],x=cw*i+cw/2,on=i+1<=SN.get();
+  if(v<=12){for(let k=0;k<v;k++){const col=k%3,row=Math.floor(k/3);g+=ZB(x-9+col*9,base-row*17,15,on).replace(/<g/g,'<g');}}
+  else{const h=Math.max(4,mx<=200?170*v/mx:170*Math.log(v)/Math.log(mx));g+=RC(x-12,base-h,24,h,on?'#7CC47F':'#E5E7EB','stroke="#3F8F4A" stroke-width="1" rx="3"');}
+  g+=TX(x,base+14,'dia '+(i+1),{fs:9,c:GRAY})+TX(x,base+26,fmt(v),{fs:10,c:on?NAVY:GRAY});}
+ if(mx>200)g+=TX(6,14,'barras em escala logarítmica',{fs:9,c:GRAY,a:'start'});
+ $('fig').innerHTML=SVG(W,236,g);
+ const n=SN.get();$('kn').textContent='a'+n+' = '+fmt(t(n));
+ $('kf').textContent=soma()?'aₙ = '+SA.get()+' + (n − 1) · '+SR.get():'aₙ = '+SA.get()+' · '+SR.get()+'ⁿ⁻¹';
+ $('ks').textContent=[1,2,3,4,5].map(t).map(fmt).join(', ')+'…';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

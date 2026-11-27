@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A barricada do pátio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A barricada do pátio</h1></header>
+<main>
+<div class="card"><h2>Fechar o pátio</h2><p class="muted" style="margin-top:0">O contorno do pátio da Escola Horizonte tem <b>82 m</b>. Seu Lauro ergue a₁ metros no 1º dia e depois r metros por dia. Arraste o dia e veja a barricada (marrom) avançar.</p>
+<div class="sl" id="sa"><b>Metros no 1º dia a₁</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Metros por dia r</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Barricada no dia<b id="kb"></b></div><div>Fecha no dia<b id="kf"></b></div><div>Tábuas até hoje (2 por metro novo)<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ZB=(x,y,h,z)=>{const r=h*0.15,c=z?'#7CC47F':'#F2C9A0',b=z?'#3F8F4A':'#B9835A',rp=z?'#8A8F6A':'#5B7BD5';
+ let g=LN(x-h*0.08,y-h*0.42,x-h*0.1,y,NAVY,Math.max(1,h*0.07))+LN(x+h*0.08,y-h*0.42,x+h*0.1,y,NAVY,Math.max(1,h*0.07))+RC(x-h*0.15,y-h*0.74,h*0.3,h*0.34,rp,'rx="'+h*0.05+'"');
+ g+=z?LN(x+h*0.1,y-h*0.68,x+h*0.38,y-h*0.68,c,Math.max(1,h*0.06))+LN(x+h*0.1,y-h*0.6,x+h*0.38,y-h*0.62,c,Math.max(1,h*0.06)):LN(x-h*0.15,y-h*0.7,x-h*0.22,y-h*0.42,c,Math.max(1,h*0.06))+LN(x+h*0.15,y-h*0.7,x+h*0.22,y-h*0.42,c,Math.max(1,h*0.06));
+ return g+CI(x,y-h+r,r,c,'stroke="'+b+'" stroke-width="0.7"');};
+const SA=SL('sa',1,14,1,4,draw),SR=SL('sr',1,8,1,3,draw),SD=SL('sd',1,40,1,1,draw);const PER=82;
+const a=n=>SA.get()+(n-1)*SR.get(),fecha=()=>{for(let n=1;n<=200;n++)if(a(n)>=PER)return n;};
+MIS.def(()=>[
+ ['Com a₁ = 4 e r = 3, arraste os dias até a barricada <b>fechar</b> o pátio.',()=>SA.get()==4&&SR.get()==3&&a(SD.get())>=PER,()=>'Dia '+SD.get()+': '+a(SD.get())+' m. Pela fórmula: 4 + (n − 1) · 3 ≥ 82 → n ≥ 27.',()=>SA.get()!=4||SR.get()!=3?'Ajuste a₁ = 4 e r = 3.':'Dia '+SD.get()+': '+a(SD.get())+' m. Faltam '+(PER-a(SD.get()))+' m.'],
+ ['Escolha a₁ e r para o pátio fechar <b>exatamente no dia 20</b>.',()=>fecha()==20,()=>'Dia 19: '+a(19)+' m; dia 20: '+a(20)+' m. Fechou no dia 20!',()=>'Agora fecha no dia '+fecha()+'. Use a₁ + 19 · r ≥ 82 e a₁ + 18 · r &lt; 82.'],
+ ['Com <b>r = 2</b>, qual o menor a₁ que fecha o pátio até o <b>dia 38</b>?',()=>SR.get()==2&&fecha()<=38&&SA.get()-1+37*2<PER,()=>'a₁ = '+SA.get()+': '+SA.get()+' + 37 × 2 = '+a(38)+' ≥ 82, e com 1 m a menos não daria.',()=>SR.get()!=2?'Coloque r = 2.':fecha()>38?'Ainda fecha só no dia '+fecha()+'.':'Fecha, mas dá para começar com menos.']]);
+function draw(){const d=SD.get(),m=Math.min(a(d),PER),X0=40,Y0=40,W=260,H=150;let g=RC(0,0,340,236,'#EEF2E6');
+ g+=RC(X0,Y0,W,H,'#D9CDB4','stroke="#B8A98A" stroke-width="1"')+TX(X0+W/2,Y0+H/2+4,'pátio',{fs:12,c:'#8A7A5A'});
+ const per=2*(W+H),comp=m/PER*per;const seg=[[X0,Y0,X0+W,Y0],[X0+W,Y0,X0+W,Y0+H],[X0+W,Y0+H,X0,Y0+H],[X0,Y0+H,X0,Y0]];let rest=comp;
+ seg.forEach(([x1,y1,x2,y2])=>{const L=Math.hypot(x2-x1,y2-y1);g+=LN(x1,y1,x2,y2,'#E5E7EB',7);if(rest>0){const f=Math.min(1,rest/L);g+=LN(x1,y1,x1+(x2-x1)*f,y1+(y2-y1)*f,'#A0632E',8);rest-=L;}});
+ for(let k=0;k<4;k++)g+=ZB(14+k*12,232-k%2*3,22,true);
+ g+=ZB(X0+W/2-12,Y0+H-14,28,false)+ZB(X0+W/2+14,Y0+H-14,28,false);
+ g+=TX(170,24,a(d)>=PER?'Pátio fechado no dia '+fecha()+'!':m+' m de 82 m',{fs:13,c:a(d)>=PER?ORANGE:NAVY});
+ $('fig').innerHTML=SVG(340,236,g);
+ $('kb').textContent=fmt(a(d))+' m';$('kf').textContent=fecha();$('kt').textContent=fmt(2*a(d));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
