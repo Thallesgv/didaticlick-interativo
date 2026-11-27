@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A serra dos remédios · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A serra dos remédios</h1></header>
+<main>
+<div class="card"><h2>Três dias de remédio</h2><p class="muted" style="margin-top:0">Cada dose soma com o que sobrou da anterior. Escolha a dose, o intervalo e a meia-vida e veja 72 horas de remédio no corpo do Pipoca. A faixa verde vai de 1,5 a 9 mg. (Modelo de exemplo.)</p>
+<div class="sl" id="sd"><b>Dose</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Intervalo entre doses</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Meia-vida</b><input type="range"><span></span></div>
+<div id="ca" style="margin:6px 0"></div>
+<div class="sl" id="sa"><b>Dose de ataque (a primeira)</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="fig" id="fd" style="flex-direction:column"></div>
+<div class="kpi"><div>Pico no 3º dia<b id="kp"></b></div><div>Vale no 3º dia<b id="kv"></b></div><div class="o">Horas fora da faixa<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Cuide do Pipoca.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SD=SL('sd',2,12,1,6,draw,v=>v+' mg'),SI=SL('si',2,24,2,6,draw,v=>'a cada '+v+' h'),SH=SL('sh',2,8,1,4,draw,v=>v+' h'),SA=SL('sa',2,16,1,8,draw,v=>v+' mg');
+let at=0;const CA=chips('ca',['sem dose de ataque','com dose de ataque'],0,i=>{at=i;draw();});
+function serie(){const D=SD.get(),I=SI.get(),h=SH.get(),k=Math.log(2)/h,pts=[];let a=0,doses=[];
+ for(let s=0;s<=720;s++){const t=s/10;if(Math.abs(t/I-Math.round(t/I))<1e-6){const d=(t==0&&at)?SA.get():D;if(t>0)pts.push([t,a]);a+=d;doses.push(t);}pts.push([t,a]);a*=Math.exp(-k*0.1);}return{pts,doses};}
+function stats(){const {pts}=serie();let pk=0,vl=99,fora=0;pts.forEach(([t,a])=>{if(t>=48){pk=Math.max(pk,a);vl=Math.min(vl,a);}});
+ for(let i=1;i<pts.length;i++){const [t,a]=pts[i];if(pts[i-1][0]!=t&&(a<1.5-1e-9||a>9+1e-9))fora+=0.1;}return{pk,vl,fora};}
+MIS.def(()=>[
+ ['Mantenha o Pipoca <b>dentro da faixa verde</b> durante os 3 dias inteiros (0 hora fora).',()=>stats().fora<0.05,()=>'Dose de '+SD.get()+' mg a cada '+SI.get()+' h com meia-vida de '+SH.get()+' h: sempre entre 1,5 e 9 mg. O platô ficou em '+r1(stats().pk)+' mg nos picos.',()=>'Agora são '+r1(stats().fora)+' h fora da faixa. Mexa no intervalo ou na dose.'],
+ ['Com 6 mg e meia-vida de 4 h, ache um intervalo que <b>intoxica</b>: pico acima de 9 mg.',()=>SD.get()==6&&SH.get()==4&&stats().pk>9,()=>'A cada '+SI.get()+' h, sobra mais da dose anterior e o platô sobe a '+r1(stats().pk)+' mg. Doses perto demais acumulam.',()=>SD.get()!=6||SH.get()!=4?'Ajuste: 6 mg e meia-vida de 4 h.':'Pico: '+r1(stats().pk)+' mg. Encurte o intervalo.'],
+ ['Ainda com 6 mg e 4 h, ache um intervalo que deixa o Pipoca <b>sem efeito</b>: vale abaixo de 1,5 mg.',()=>SD.get()==6&&SH.get()==4&&stats().vl<1.5,()=>'A cada '+SI.get()+' h, o vale cai a '+r1(stats().vl)+' mg: parte do dia sem remédio fazendo efeito.',()=>SD.get()!=6||SH.get()!=4?'Ajuste: 6 mg e meia-vida de 4 h.':'Vale: '+r1(stats().vl)+' mg. Alongue o intervalo.'],
+ ['Volte para 6 mg a cada 8 h (meia-vida 4 h) e use uma <b>dose de ataque</b> que já começa no platô de 8 mg.',()=>at==1&&SA.get()==8&&SD.get()==6&&SI.get()==8&&SH.get()==4,'Começando com 8 mg: depois de 8 h sobram 2, mais 6 dá 8 de novo. O platô desde a primeira dose, sem subir aos poucos.',()=>SD.get()!=6||SI.get()!=8||SH.get()!=4?'Ajuste: 6 mg, a cada 8 h, meia-vida 4 h.':(at!=1?'Escolha "com dose de ataque".':'Ataque de '+SA.get()+' mg. Qual é o pico estável? 6 ÷ (1 − 1/4).')]]);
+function draw(){const {pts,doses}=serie(),st=stats(),ym=Math.max(12,Math.ceil(Math.max(...pts.map(p=>p[1]))/3)*3);
+ $('fig').innerHTML=PLOT({xmin:0,xmax:72,dx:12,ymin:0,ymax:ym,dy:ym/4,xl:'horas',yl:'remédio no corpo (mg)'},(X,Y)=>RC(X(0),Y(9),X(72)-X(0),Y(1.5)-Y(9),'#DDF1E1')+LN(X(0),Y(9),X(72),Y(9),'#D9342B',1.2,'4 3')+LN(X(0),Y(1.5),X(72),Y(1.5),'#15803D',1.2,'4 3')+linha(pts,X,Y,ORANGE,2.2));
+ let d=RC(0,0,340,64,'#F7F9FC','rx="10"')+TX(10,16,'as doses (cada seringa é uma dose)',{fs:9,a:'start',c:GRAY});
+ doses.forEach(t=>{const x=46+t/72*284;d+=RC(x-3,24,6,22,t==0&&at?'#D9342B':ORANGE,'rx="2"')+RC(x-1,46,2,8,NAVY);});
+ $('fd').innerHTML=SVG(340,64,d);
+ $('kp').textContent=r1(st.pk)+' mg';$('kv').textContent=r1(st.vl)+' mg';$('kf').textContent=r1(st.fora)+' h';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

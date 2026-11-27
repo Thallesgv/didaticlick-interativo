@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O remédio por dentro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O remédio por dentro</h1></header>
+<main>
+<div class="card"><h2>Sobe, chega ao pico, desce</h2><p class="muted" style="margin-top:0">Escolha a dose e mova o relógio. Em cima, um vaso de sangue com as bolinhas de remédio daquela hora; embaixo, o nível hora a hora sobre a faixa verde, em que o remédio faz efeito sem fazer mal. (Modelo de exemplo.)</p>
+<div class="sl" id="sd"><b>Dose</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Relógio: horas depois da dose</b><input type="range"><span></span></div>
+<div class="fig" id="fv" style="flex-direction:column"></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Nível agora<b id="kn"></b></div><div>Pico<b id="kp"></b></div><div class="o">Horas na faixa verde<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Acompanhe o remédio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SD=SL('sd',2,16,1,4,draw,v=>v+' mg'),ST=SL('st',0,24,0.25,0,draw,v=>fmt(v)+' h');
+const ka=1.2,ke=Math.log(2)/4,A=t=>SD.get()*1.2/(ka-ke)*(Math.exp(-ke*t)-Math.exp(-ka*t))*0.93;
+let pos=[];(function(){let s=11;const r=()=>{s=(s*16807)%2147483647;return s/2147483647;};for(let i=0;i<160;i++)pos.push([22+r()*296,26+r()*68]);})();
+const pico=()=>{let b=0,tb=0;for(let t=0;t<=24;t+=0.01){const a=A(t);if(a>b){b=a;tb=t;}}return[tb,b];};
+const naFaixa=()=>{let k=0;for(let t=0;t<24;t+=0.05){const a=A(t);if(a>=1.5&&a<=9)k++;}return k*0.05;};
+MIS.def(()=>[
+ ['Com a dose do Pipoca, <b>6 mg</b>, mova o relógio até a hora do <b>pico</b>.',()=>SD.get()==6&&Math.abs(ST.get()-pico()[0])<=0.4,()=>'Pico de '+r1(pico()[1])+' mg perto de '+r1(pico()[0])+' h. Antes disso o remédio entra mais do que sai; depois, sai mais do que entra.',()=>SD.get()!=6?'Ajuste a dose para 6 mg.':'Agora: '+r1(A(ST.get()))+' mg. O pico é o ponto mais alto da curva.'],
+ ['Ainda com 6 mg, ache a hora em que o remédio <b>sai da faixa verde</b> (cai abaixo de 1,5 mg).',()=>SD.get()==6&&ST.get()>=8.25&&ST.get()<=8.75,'Perto de 8,5 h. Por isso a próxima dose vem a cada 8 horas.',()=>SD.get()!=6?'Ajuste a dose para 6 mg.':(A(ST.get())>=1.5?'Ainda '+r1(A(ST.get()))+' mg: dentro da faixa. Avance o relógio.':'Já está abaixo. Volte um pouco o relógio.')],
+ ['Aumente a dose até o pico <b>passar da linha vermelha</b> de 9 mg.',()=>pico()[1]>9,()=>'Com '+SD.get()+' mg, o pico chega a '+r1(pico()[1])+' mg: tóxico. Mais remédio não é mais saúde.',()=>'Pico agora: '+r1(pico()[1])+' mg. Aumente a dose.']]);
+function draw(){const t=ST.get(),a=A(t);let v=RC(0,0,340,120,'#FFF5F4','rx="10"')+RC(10,20,320,80,'#F6C2BD','rx="38" stroke="#D9342B" stroke-width="2"');
+ for(let i=0;i<30;i++){const p=pos[i+120>159?i:i+120];v+=`<ellipse cx="${(30+i*10).toFixed(0)}" cy="${(40+((i*37)%50)).toFixed(0)}" rx="6" ry="3.5" fill="#E88A82"/>`;}
+ const nb=Math.round(a*10);for(let i=0;i<Math.min(nb,160);i++)v+=CI(pos[i][0],pos[i][1],3.2,'#15803D','stroke="#fff" stroke-width="0.8"');
+ v+=TX(170,14,'cada bolinha verde = 0,1 mg de remédio',{fs:9,c:GRAY})+TX(170,114,fmt(t)+' h: '+r1(a)+' mg',{fs:10,c:'#15803D'});
+ $('fv').innerHTML=SVG(340,120,v);
+ const pts=[];for(let s=0;s<=240;s++)pts.push([s/10,A(s/10)]);
+ $('fig').innerHTML=PLOT({xmin:0,xmax:24,dx:4,ymin:0,ymax:12,dy:3,xl:'horas',yl:'remédio no corpo (mg)'},(X,Y)=>RC(X(0),Y(9),X(24)-X(0),Y(1.5)-Y(9),'#DDF1E1')+LN(X(0),Y(9),X(24),Y(9),'#D9342B',1.2,'4 3')+LN(X(0),Y(1.5),X(24),Y(1.5),'#15803D',1.2,'4 3')+TX(X(24),Y(9)-4,'tóxico',{fs:9,a:'end',c:'#D9342B'})+TX(X(24),Y(1.5)-4,'faz efeito',{fs:9,a:'end',c:'#15803D'})+linha(pts,X,Y,NAVY,2.4)+LN(X(t),Y(0),X(t),Y(12),ORANGE,1.2,'3 3')+ponto(t,a,X,Y,ORANGE));
+ $('kn').textContent=r1(a)+' mg';$('kp').textContent=r1(pico()[1])+' mg';$('kf').textContent=r1(naFaixa())+' h';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
