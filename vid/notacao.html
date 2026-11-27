@@ -39,7 +39,11 @@ function draw(){const t=coef(),n=k;let g='';const ch=t.split('');const w=Math.mi
  ch.forEach(c=>{if(c==','){g+=TX(x+w/2,118,',',{fs:34,c:ORANGE});}else if(c=='.'){g+=TX(x+w/2,116,'.',{fs:20,c:GRAY});}else{g+=RC(x+1,86,w-2,40,ok()?VERDE_C:'#F3F4F6','rx="5"')+TX(x+w/2,114,c,{fs:Math.min(22,w),c:NAVY});}x+=w;});
  g+=TX(x+30,114,'× 10'+SUP(n),{fs:20,c:ORANGE});
  g+=TX(170,170,ok()?'✔ notação científica: '+cient():'algarismos antes da vírgula: '+Math.max(0,S.length+z-k),{fs:12,c:ok()?GREEN:GRAY});
- $('fig').innerHTML=SVG(340,200,g);$('ke').textContent=t+' × 10'+SUP(n);$('kc').textContent=ok()?'sim':'ainda não';MIS.ver('m');}
+ {const ex=S=='0'?0:S.length-1+z,X=e=>20+(e+9)*300/23,y=232;g+=LN(X(-9),y,X(14),y,NAVY,2);
+  for(let e=-9;e<=14;e++){g+=LN(X(e),y-(e%3==0?6:3),X(e),y+(e%3==0?6:3),NAVY,1);if(e%3==0)g+=TX(X(e),y+20,'10'+SUP(e),{fs:9,c:GRAY});}
+  [[-7,'vírus',0,'end'],[-6,'bactéria',1,'middle'],[-5,'hemácia',2,'start'],[0,'1 metro',0,'middle'],[13,'células do corpo',0,'end']].forEach(([e,t,l,an])=>g+=LN(X(e),y-6,X(e),y-12-l*11,'#9CA3AF',0.8)+TX(X(e)+(an=='end'?4:an=='start'?-4:0),y-15-l*11,t,{fs:8.5,c:NAVY,a:an}));
+  const xe=X(Math.max(-9,Math.min(14,ex)));g+=`<path d="M${xe} ${y-3} l-6 -9 h12 z" fill="${ORANGE}"/>`+CI(xe,y,5,ORANGE,'stroke="#fff" stroke-width="2"')+TX(170,y+38,'Este número fica perto de 10'+SUP(ex)+' na escada das potências',{fs:10,c:ORANGE});}
+ $('fig').innerHTML=SVG(340,280,g);$('ke').textContent=t+' × 10'+SUP(n);$('kc').textContent=ok()?'sim':'ainda não';MIS.ver('m');}
 draw();
 })();
 </script>
