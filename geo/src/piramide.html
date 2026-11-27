@@ -1,0 +1,20 @@
+<!--T: Monte a pirâmide-->
+<div class="card"><h2>Transição demográfica</h2><p class="muted">Ajuste os filhos por mulher e a esperança de vida. Aperte ▶ para ver a população mudar de 5 em 5 anos.</p>
+<label class="lbl">Filhos por mulher: <span id="vt"></span></label><div class="sl"><input type="range" id="tft" min="1" max="6" step="0.1" value="5.5"></div>
+<label class="lbl">Esperança de vida: <span id="ve"></span></label><div class="sl"><input type="range" id="ev" min="35" max="85" value="45"></div>
+<div class="row"><button class="or" id="play">▶ Avançar no tempo</button><button class="alt" id="br">Caminho do Brasil (automático)</button><button class="alt" id="reset">Recomeçar</button></div>
+<svg id="sv" viewBox="0 0 400 300"></svg><div class="out" id="out"></div></div>
+<script>
+const $=i=>document.getElementById(i);const G=20;let P,ano,timer=null;
+function S(x,L){return 1/(1+Math.exp((x-L-6)/5.5))*(1-0.25*Math.exp(-x/2)*Math.max(0,(70-L)/35))}
+function reset(){P=[];for(let i=0;i<G;i++)P.push(1000*Math.pow(.86,i));ano=0;draw()}
+function passo(){const t=+$('tft').value,L=+$('ev').value;const N=[];for(let i=G-1;i>0;i--){N[i]=P[i-1]*Math.min(1,S(i*5+2.5,L)/S(i*5-2.5,L))}
+ let mulheres=0;for(let i=3;i<=8;i++)mulheres+=P[i]/2;N[0]=mulheres*t/6*S(2.5,L);P=N;ano+=5;draw()}
+function draw(){$('vt').textContent=(+$('tft').value).toLocaleString('pt-BR');$('ve').textContent=$('ev').value+' anos';const T=P.reduce((a,b)=>a+b,0);let s='';
+ for(let i=0;i<G;i++){const w=P[i]/T*100*13;const y=280-i*13.5;s+=`<rect x="${200-w}" y="${y}" width="${w}" height="12" fill="#0E2354"/><rect x="200" y="${y}" width="${w}" height="12" fill="#F78D33"/>`;if(i%2==0)s+=`<text x="4" y="${y+10}" font-size="9" fill="#6B7280">${i*5}-${i*5+4}</text>`}
+ s+=`<text x="120" y="12" font-size="11" fill="#0E2354">homens</text><text x="250" y="12" font-size="11" fill="#C2410C">mulheres</text>`;$('sv').innerHTML=s;
+ const cr=P.slice(0,3).reduce((a,b)=>a+b,0)/T,id=P.slice(13).reduce((a,b)=>a+b,0)/T;
+ $('out').innerHTML=`Ano ${ano} · crianças (0-14): <b>${(cr*100).toFixed(1).replace('.',',')}%</b> · idosos (65+): <b>${(id*100).toFixed(1).replace('.',',')}%</b> · índice de envelhecimento: <b>${(id/cr*100).toFixed(0)}</b>`;}
+$('play').onclick=passo;$('reset').onclick=reset;['tft','ev'].forEach(i=>$(i).oninput=draw);
+$('br').onclick=()=>{reset();let k=0;clearInterval(timer);timer=setInterval(()=>{k++;$('ev').value=Math.min(80,45+k*2.5);$('tft').value=Math.max(1.6,6-k*0.35);passo();if(k>24)clearInterval(timer)},450)};reset();
+</script>

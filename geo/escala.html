@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Régua de mapa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Régua de mapa</h1></header>
+<main>
+<div class="card"><h2>Mude a escala</h2><p class="muted">Arraste os pontos A e B para medir. A régua diz quantos centímetros eles estão afastados no "papel" (o quadro abaixo tem 10 cm de largura) e a escala converte para o terreno.</p>
+<label class="lbl">Escala 1 : <span id="ve"></span></label><div class="sl"><input type="range" id="esc" min="0" max="100" value="40"></div>
+<svg id="sv" viewBox="0 0 400 300" style="background:#FFF8F0;border-radius:10px"></svg>
+<div class="out" id="out"></div></div>
+<div class="card"><h2>Lembre</h2><p>1 : 50 000 quer dizer que 1 cm no papel vale 50 000 cm = 500 m no terreno. Quanto maior o número depois dos dois-pontos, <b>menor</b> a escala e menos detalhes aparecem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);let A={x:80,y:220},B={x:300,y:90},drag=null;
+function rnd(i){const x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)}
+function escala(){const v=+$('esc').value;return Math.round(Math.pow(10,3+v/100*3)/100)*100}
+function draw(){const E=escala();$('ve').textContent=E.toLocaleString('pt-BR');const mpp=E/100/40;// metros por px (40 px = 1 cm)
+ let s='';const quarteirao=100/mpp; // quarteirão de 100 m em px
+ if(quarteirao>6){for(let x=-((A.x*0)%quarteirao);x<400;x+=quarteirao){s+=`<line x1="${x}" y1="0" x2="${x}" y2="300" stroke="#D1D5DB" stroke-width="${Math.min(8,quarteirao/8)}"/>`}for(let y=0;y<300;y+=quarteirao){s+=`<line x1="0" y1="${y}" x2="400" y2="${y}" stroke="#D1D5DB" stroke-width="${Math.min(8,quarteirao/8)}"/>`}}
+ const bairro=2000/mpp;if(quarteirao<=6){for(let i=0;i<30;i++){const x=rnd(i)*400,y=rnd(i+50)*300,r=Math.max(2,bairro/10*rnd(i+9));s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#FBB57A"/>`}}
+ if(quarteirao>25){s+=`<rect x="${200-quarteirao*1.5}" y="${150-quarteirao}" width="${quarteirao}" height="${quarteirao}" fill="#F78D33" opacity=".7"/><text x="${200-quarteirao}" y="${150-quarteirao/2}" font-size="11" text-anchor="middle" fill="#0E2354">escola</text>`;
+  s+=`<rect x="${200+quarteirao*0.5}" y="${150}" width="${quarteirao}" height="${quarteirao}" fill="#A7D7B8"/><text x="${200+quarteirao}" y="${150+quarteirao/2}" font-size="11" text-anchor="middle" fill="#0E2354">praça</text>`}
+ const dpx=Math.hypot(B.x-A.x,B.y-A.y),dcm=dpx/40,dm=dcm*E/100;
+ s+=`<line x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}" stroke="#0E2354" stroke-width="2.5" stroke-dasharray="6 4"/>`;
+ for(const [P,n] of [[A,'A'],[B,'B']])s+=`<circle cx="${P.x}" cy="${P.y}" r="10" fill="#C2410C" data-p="${n}" style="cursor:grab"/><text x="${P.x}" y="${P.y+4}" font-size="11" fill="#fff" text-anchor="middle" pointer-events="none">${n}</text>`;
+ let bar=[1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000].map(k=>k).find(k=>k/mpp>60)||50000;const bw=bar/mpp;
+ s+=`<rect x="12" y="270" width="${bw}" height="8" fill="#0E2354"/><rect x="12" y="270" width="${bw/2}" height="8" fill="#fff" stroke="#0E2354"/><text x="12" y="264" font-size="11" fill="#0E2354">0</text><text x="${12+bw}" y="264" font-size="11" fill="#0E2354" text-anchor="middle">${bar>=1000?bar/1000+' km':bar+' m'}</text>`;
+ $('sv').innerHTML=s;
+ $('out').innerHTML=`No papel: <b>${dcm.toFixed(1).replace('.',',')} cm</b> · no terreno: ${dcm.toFixed(1).replace('.',',')} × ${E.toLocaleString('pt-BR')} cm = <b>${dm>=1000?(dm/1000).toLocaleString('pt-BR',{maximumFractionDigits:2})+' km':Math.round(dm).toLocaleString('pt-BR')+' m'}</b>`+(quarteirao<=6?' · nesta escala as ruas sumiram: só se veem manchas de bairros.':'');}
+const sv=$('sv');function pos(e){const r=sv.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*400/r.width,y:(t.clientY-r.top)*300/r.height}}
+sv.addEventListener('pointerdown',e=>{const p=pos(e);drag=Math.hypot(p.x-A.x,p.y-A.y)<Math.hypot(p.x-B.x,p.y-B.y)?A:B;});
+sv.addEventListener('pointermove',e=>{if(!drag)return;const p=pos(e);drag.x=Math.max(5,Math.min(395,p.x));drag.y=Math.max(5,Math.min(295,p.y));draw()});
+window.addEventListener('pointerup',()=>drag=null);$('esc').oninput=draw;draw();
+</script>
+
+</body>
+</html>

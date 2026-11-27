@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ache o celular · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Ache o celular</h1></header>
+<main>
+<div class="card"><h2>Trilateração</h2><p class="muted">Arraste as três estações. Cada círculo mostra todos os pontos que estão àquela distância da estação. O celular está onde os três se cruzam.</p>
+<div class="row"><button id="m1">Ver os círculos</button><button class="alt" id="m2">Desafio: ache o celular</button></div>
+<svg id="sv" viewBox="0 0 400 300" style="background:#FFF8F0;border-radius:10px"></svg><div class="out" id="out"></div><p class="muted" id="pl"></p></div>
+<div class="card"><h2>Como o GPS mede a distância</h2><p>Distância = velocidade da luz × tempo do sinal. Um erro de um milionésimo de segundo vira 300 m de erro. No espaço os círculos viram esferas, e o receptor usa pelo menos quatro satélites.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const K=0.04;// km por px
+let S=[{x:90,y:70,c:'#F78D33'},{x:320,y:90,c:'#0E2354'},{x:210,y:260,c:'#2E7D4F'}],P={x:220,y:140},modo=1,drag=null,chute=null,ac=0,tot=0;
+const d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function draw(){let s='';for(let i=0;i<20;i++){s+=`<line x1="${i*20}" y1="0" x2="${i*20}" y2="300" stroke="#EEE"/><line x1="0" y1="${i*20}" x2="400" y2="${i*20}" stroke="#EEE"/>`}
+ S.forEach((e,i)=>{if(modo==1||chute)s+=`<circle cx="${e.x}" cy="${e.y}" r="${d(e,P)}" fill="none" stroke="${e.c}" stroke-width="2"/>`;s+=`<rect x="${e.x-9}" y="${e.y-9}" width="18" height="18" rx="4" fill="${e.c}" style="cursor:grab"/><text x="${e.x}" y="${e.y-13}" font-size="11" text-anchor="middle" fill="${e.c}">${'ABC'[i]}: ${(d(e,P)*K).toFixed(2).replace('.',',')} km</text>`});
+ if(modo==1||chute)s+=`<circle cx="${P.x}" cy="${P.y}" r="7" fill="#C2410C" stroke="#fff" stroke-width="2"/>`;
+ if(chute)s+=`<circle cx="${chute.x}" cy="${chute.y}" r="6" fill="none" stroke="#0E2354" stroke-width="3"/>`;
+ $('sv').innerHTML=s;$('out').innerHTML=modo==1?'Arraste as estações: os três círculos sempre passam pelo celular (ponto vermelho).':(chute?`Você errou por <b>${(d(chute,P)*K*1000).toFixed(0)} m</b>. ${d(chute,P)*K<0.4?'Muito bom!':'Use as três distâncias com cuidado.'}`:'O celular sumiu. Toque no mapa onde você acha que ele está, usando as distâncias (cada quadradinho tem 0,8 km).');}
+const sv=$('sv');function pos(e){const r=sv.getBoundingClientRect();return{x:(e.clientX-r.left)*400/r.width,y:(e.clientY-r.top)*300/r.height}}
+sv.addEventListener('pointerdown',e=>{const p=pos(e);const k=S.findIndex(s=>Math.hypot(s.x-p.x,s.y-p.y)<16);if(k>=0){drag=S[k];return}
+ if(modo==2&&!chute){chute=p;tot++;if(d(chute,P)*K<0.4)ac++;$('pl').textContent=`Acertos (erro menor que 400 m): ${ac} de ${tot}`;draw()}});
+sv.addEventListener('pointermove',e=>{if(!drag)return;const p=pos(e);drag.x=Math.max(10,Math.min(390,p.x));drag.y=Math.max(20,Math.min(290,p.y));draw()});
+window.addEventListener('pointerup',()=>drag=null);
+$('m1').onclick=()=>{modo=1;chute=null;$('m1').className='';$('m2').className='alt';draw()};
+$('m2').onclick=()=>{modo=2;chute=null;P={x:60+Math.random()*280,y:40+Math.random()*220};$('m2').className='';$('m1').className='alt';draw()};draw();
+</script>
+
+</body>
+</html>

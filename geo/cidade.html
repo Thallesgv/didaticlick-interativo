@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a cidade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Monte a cidade</h1></header>
+<main>
+<div class="card"><h2>Casas, empregos e ônibus</h2><p class="muted">Escolha a ferramenta e toque nos quarteirões (cada um tem 500 m). Cada casa vai até o emprego mais próximo andando pelas ruas (distância de táxi). A pé: 5 km/h. Se a casa e o emprego ficam a até 1 quarteirão de uma linha de ônibus: 20 km/h mais 10 min de espera.</p>
+<div class="row"><button data-t="casa">🏠 Casa</button><button class="alt" data-t="emp">🏢 Emprego</button><button class="alt" data-t="bus">🚌 Linha de ônibus</button><button class="alt" data-t="vazio">Apagar</button></div>
+<div class="row" style="margin-top:6px"><button class="alt" id="c1">Centro e periferia</button><button class="alt" id="c2">Bairros mistos</button></div>
+<svg id="sv" viewBox="0 0 360 360"></svg><div class="out" id="out"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const N=12;let M=[],B=new Set(),tool='casa';
+function vazio(){M=[...Array(N)].map(()=>Array(N).fill(''));B=new Set()}
+function centro(){vazio();for(let i=0;i<N;i++)for(let j=0;j<N;j++){const d=Math.max(Math.abs(i-5.5),Math.abs(j-5.5));M[i][j]=d<1.6?'emp':d>3.6?'casa':''}}
+function misto(){vazio();for(let i=0;i<N;i++)for(let j=0;j<N;j++)M[i][j]=(i%4==1&&j%4==1)?'emp':((i+j)%2?'casa':'')}
+function tempo(i,j){let best=1e9;for(let a=0;a<N;a++)for(let b=0;b<N;b++)if(M[a][b]=='emp'){const km=(Math.abs(a-i)+Math.abs(b-j))*0.5;const perto=(x,y)=>[...B].some(k=>{const[t,n]=k.split(':');return t=='r'?Math.abs(+n-x)<=1:Math.abs(+n-y)<=1});
+ let t=km/5*60;if(perto(i,j)&&perto(a,b))t=Math.min(t,10+km/20*60);best=Math.min(best,t)}return best}
+function draw(){let s='';const c=30;let soma=0,n=0,max=0;
+ for(let i=0;i<N;i++)for(let j=0;j<N;j++){const v=M[i][j];let f='#F3F4F6',txt='';if(v=='emp'){f='#0E2354';txt='🏢'}if(v=='casa'){const t=tempo(i,j);if(t<1e9){soma+=t;n++;max=Math.max(max,t)}const k=Math.min(1,t/120);f=`rgb(${253-k*60},${233-k*170},${216-k*200})`;txt=t<1e9?Math.round(t):'?'}
+  s+=`<rect x="${j*c+2}" y="${i*c+2}" width="${c-4}" height="${c-4}" rx="4" fill="${f}" data-i="${i}" data-j="${j}"/><text x="${j*c+c/2}" y="${i*c+c/2+4}" font-size="10" text-anchor="middle" fill="${v=='emp'?'#fff':'#0E2354'}" pointer-events="none">${txt}</text>`}
+ for(const k of B){const[t,nn]=k.split(':');s+=t=='r'?`<line x1="0" x2="360" y1="${nn*c+c/2}" y2="${nn*c+c/2}" stroke="#2E7D4F" stroke-width="4" opacity=".7" pointer-events="none"/>`:`<line y1="0" y2="360" x1="${nn*c+c/2}" x2="${nn*c+c/2}" stroke="#2E7D4F" stroke-width="4" opacity=".7" pointer-events="none"/>`}
+ $('sv').innerHTML=s;$('out').innerHTML=n?`Tempo médio de ida ao trabalho: <b>${Math.round(soma/n)} min</b> · o mais longe: <b>${Math.round(max)} min</b>. Ida e volta em 22 dias: <b>${Math.round(soma/n*2*22/60)} h por mês</b>.`:'Coloque casas e empregos.';}
+$('sv').addEventListener('click',e=>{const r=e.target;if(r.dataset.i===undefined)return;const i=+r.dataset.i,j=+r.dataset.j;
+ if(tool=='bus'){const k=(Math.random()<0)?'':(B.has('r:'+i)?'c:'+j:'r:'+i);if(B.has('r:'+i)&&B.has('c:'+j)){B.delete('r:'+i);B.delete('c:'+j)}else B.add(k)}else M[i][j]=tool=='vazio'?'':tool;draw()});
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;document.querySelectorAll('[data-t]').forEach(x=>x.className='alt');b.className=''});
+$('c1').onclick=()=>{centro();draw()};$('c2').onclick=()=>{misto();draw()};centro();draw();
+</script>
+
+</body>
+</html>

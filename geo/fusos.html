@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relógio do mundo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Relógio do mundo</h1></header>
+<main>
+<div class="card"><h2>Que horas são lá?</h2><p class="muted">Escolha a hora em Greenwich. A faixa escura é a noite. Os horários abaixo não consideram horário de verão.</p>
+<label class="lbl">Hora em Greenwich: <span id="vh"></span></label><div class="sl"><input type="range" id="h" min="0" max="23.75" step="0.25" value="12"></div>
+<svg id="sv" viewBox="0 0 480 170"></svg><div id="tab"></div></div>
+<div class="card"><h2>A regra</h2><p>360° ÷ 24 h = 15° por hora. Para cada 15° a leste, some 1 hora; a oeste, subtraia. O Brasil tem quatro fusos: −2 h, −3 h (Brasília), −4 h e −5 h.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+const C=[['Rio Branco (AC)',-68,-5],['Manaus (AM)',-60,-4],['Brasília',-48,-3],['Fernando de Noronha',-32,-2],['Lisboa',-9,0],['Londres (Greenwich)',0,0],['Moscou',37,3],['Nova Délhi',77,5.5],['Pequim',116,8],['Tóquio',140,9],['Nova York',-74,-5],['Cidade do México',-99,-6]];
+const hh=x=>{x=((x%24)+24)%24;const h=Math.floor(x),m=Math.round((x-h)*60);return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')};
+function draw(){const g=+$('h').value;$('vh').textContent=hh(g);let s='';const X=l=>240+l/180*240;
+ for(let i=0;i<24;i++){const l=-180+i*15;s+=`<rect x="${X(l)}" y="20" width="20" height="120" fill="${i%2?'#FFF4E8':'#FDE9D8'}"/><text x="${X(l)+10}" y="15" font-size="8" text-anchor="middle" fill="#6B7280">${i-12>0?'+':''}${i-12}</text>`}
+ // noite: o meio-dia solar está na longitude (12-g)*15
+ const meio=(12-g)*15;for(let l=-180;l<180;l+=2){let d=((l-meio+540)%360)-180;if(Math.abs(d)>90)s+=`<rect x="${X(l)}" y="20" width="2.1" height="120" fill="#0E2354" opacity=".55"/>`}
+ s+=`<line x1="${X(0)}" y1="20" x2="${X(0)}" y2="140" stroke="#F78D33" stroke-width="2"/><circle cx="${X(((meio+540)%360)-180)}" cy="150" r="7" fill="#F2C14E"/><text x="${X(((meio+540)%360)-180)}" y="166" font-size="9" text-anchor="middle" fill="#B4530F">Sol a pino</text>`;
+ for(const[n,l,o]of C){s+=`<circle cx="${X(l)}" cy="${80}" r="3.5" fill="#C2410C"/>`}
+ $('sv').innerHTML=s;$('tab').innerHTML='<table class="t"><tr><th>Lugar</th><th>Fuso</th><th>Hora</th></tr>'+C.map(([n,l,o])=>`<tr><td>${n}</td><td>${o>0?'+':''}${String(o).replace('.',',')} h</td><td><b>${hh(g+o)}</b>${g+o>=24?' (dia seguinte)':g+o<0?' (dia anterior)':''}</td></tr>`).join('')+'</table>';}
+$('h').oninput=draw;draw();
+</script>
+
+</body>
+</html>
