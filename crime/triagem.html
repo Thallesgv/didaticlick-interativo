@@ -26,6 +26,12 @@ let busca=null;const N=SL('sn',3,7,0.5,6,()=>{busca=null;draw();},NOM),X=SL('sx'
 function poisson(l){if(l>40)return Math.max(0,Math.round(l+Math.sqrt(l)*(Math.random()+Math.random()+Math.random()-1.5)*2));let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
 const e=()=>Math.round(Math.pow(10,N.get()))/Math.round(Math.pow(10,X.get()));
 $('bus').onclick=()=>{busca=poisson(e());draw();};
+const pcT=()=>CD.get()==0?1/(1+e()):0,xx=v=>Math.abs(X.get()-v)<0.01,nn=v=>Math.abs(N.get()-v)<0.01;
+MIS.def(()=>[
+ ['Com o culpado no cadastro, faça a chance de o rosto apontado ser o culpado passar de <b>90%</b>.',()=>pcT()>=0.9,()=>'Agora um rosto apontado tem '+r1(100*pcT())+'% de chance de ser o culpado. Foi preciso um cadastro pequeno ou um programa que erra muito pouco.',()=>CD.get()?'Escolha "O culpado está no cadastro".':'Com '+NOM(N.get())+' de fotos e erro de 1 em '+NOM(X.get())+', esperamos '+r2(e())+' falsos alertas.'],
+ ['Escolha <b>O culpado NÃO está no cadastro</b> e faça uma busca. Quem é apontado?',()=>CD.get()==1&&busca!==null,'Todo alerta aponta um inocente. Foi o que aconteceu com Robert Williams, em Detroit, em 2020.','Escolha a opção e aperte Fazer uma busca.'],
+ ['Com <b>10 milhões</b> de fotos, erro de <b>1 em 1 milhão</b> e o culpado no cadastro, quanto vale um alerta?',()=>CD.get()==0&&nn(7)&&xx(6),'10 falsos alertas em média contra 1 culpado: só 9,1% de chance. Um programa "quase perfeito" num cadastro gigante aponta muitos inocentes.','Ajuste o cadastro e o erro.'],
+ ['Com o culpado no cadastro, faça uma busca que dê <b>só o alerta do culpado</b>, sem nenhum falso.',()=>CD.get()==0&&busca===0,'Só o culpado apareceu nesta busca. Mas atenção: nas próximas, falsos alertas podem aparecer.',()=>busca===null?'Aperte Fazer uma busca.':'Vieram '+busca+' falsos alertas. Diminua o cadastro ou o erro e tente de novo.']]);
 function rosto(x,y,c){return `<circle cx="${x}" cy="${y}" r="11" fill="${c}"/><circle cx="${x-4}" cy="${y-2}" r="1.6" fill="#fff"/><circle cx="${x+4}" cy="${y-2}" r="1.6" fill="#fff"/><path d="M${x-4},${y+4} Q${x},${y+7} ${x+4},${y+4}" stroke="#fff" stroke-width="1.4" fill="none"/>`;}
 function draw(){const ee=e(),dentro=CD.get()==0,f=busca===null?Math.round(ee):busca,mostra=Math.min(f,49),tot=mostra+(dentro?1:0),lin=Math.max(1,Math.ceil(tot/10)),H=lin*30+56;
  let g=`<rect width="340" height="${H}" fill="#F8FAFC"/>`;
@@ -35,9 +41,7 @@ function draw(){const ee=e(),dentro=CD.get()==0,f=busca===null?Math.round(ee):bu
  if(f>49)g+=TX(8,H-10,'(aparecem só 49 inocentes; os outros '+fmt(f-49)+' não cabem)',{fs:10,a:'start',c:GRAY,w:500});
  $('fig').innerHTML=SVG(340,H,g);const pc=dentro?1/(1+ee):0;
  $('k1').textContent=ee<0.01?'quase 0':r2(ee);$('k2').textContent=(pc>0.995&&pc<1?r2(100*pc):r1(100*pc))+'%';$('k3').textContent=busca===null?'—':busca+(dentro?1:0);
- if(!dentro)$('m').innerHTML='<div class="msg info">Se o culpado não está no cadastro, todo alerta aponta um inocente. Foi o que aconteceu com Robert Williams, em Detroit, em 2020.</div>';
- else missao('m',pc>=0.9,`Agora um rosto apontado tem ${r1(100*pc)}% de chance de ser o culpado. Repare: foi preciso um cadastro pequeno ou um programa que erra muito pouco.`,
-  `Com ${NOM(N.get())} de fotos e erro de 1 em ${NOM(X.get())}, esperamos ${r2(ee)} falsos alertas. Missão: faça a chance de o rosto apontado ser o culpado passar de 90%.`);}
+MIS.ver('m');if(!dentro)$('m').insertAdjacentHTML('beforeend','<div class="msg info">Se o culpado não está no cadastro, todo alerta aponta um inocente.</div>');}
 draw();
 })();
 </script>

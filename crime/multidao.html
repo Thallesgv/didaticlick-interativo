@@ -25,6 +25,12 @@ const N=SL('sn',1,6.4,0.1,6.3,()=>{sorteio=null;draw();},NOM),X=SL('sx',1,7,0.5,
 function poisson(l){if(l>40)return Math.max(0,Math.round(l+Math.sqrt(l)*(Math.random()+Math.random()+Math.random()-1.5)*2));let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
 $('sor').onclick=()=>{sorteio=poisson(e());draw();};
 const e=()=>(Math.round(Math.pow(10,N.get()))-1)/Math.round(Math.pow(10,X.get()));
+const pcM=()=>1/(1+e()),xx=v=>Math.abs(X.get()-v)<0.01,nn=v=>Math.abs(N.get()-v)<0.01;
+MIS.def(()=>[
+ ['Com coincidência de <b>1 em 1 milhão</b>, reduza o grupo de suspeitos até P(culpado | bate) passar de <b>99%</b>.',()=>xx(6)&&pcM()>=0.99,()=>'Com 1 em 1 milhão e um grupo pequeno, a prova fica fortíssima: '+r2(100*pcM())+'%. O que mudou foi o tamanho da multidão, não o exame.',()=>'O promotor diria que só há 1 chance em '+NOM(X.get())+' de inocência. A conta da multidão dá '+r1(100*pcM())+'% de chance de culpa.'],
+ ['Volte para <b>2 milhões</b> de suspeitos e 1 em 1 milhão, e aperte <b>Sortear uma cidade</b>.',()=>sorteio!==null&&nn(6.3)&&xx(6),()=>'Nesta cidade bateram '+sorteio+' inocente(s). Em média seriam 2, e a chance de culpa cai para cerca de 33%.',()=>!nn(6.3)||!xx(6)?'Ponha o grupo em 2 milhões e a coincidência em 1 em 1 milhão.':'Aperte Sortear uma cidade.'],
+ ['Com <b>1 milhão</b> de suspeitos, ache a coincidência que deixa a chance de culpa em <b>cerca de 50%</b>.',()=>nn(6)&&Math.abs(pcM()-0.5)<0.03,'Um inocente em média, mais o culpado: metade de chance para cada. E o promotor diria "1 em 1 milhão"!',()=>!nn(6)?'Ponha o grupo em 1 milhão.':'Chance agora: '+r1(100*pcM())+'%.'],
+ ['Com só <b>10 suspeitos</b>, qual a coincidência mais comum que ainda deixa a chance de culpa acima de <b>90%</b>?',()=>nn(1)&&xx(2),'1 em 100: 9 inocentes × 1/100 = 0,09 coincidência, e chance de 91,7%. Grupo pequeno: até uma prova fraca pesa.',()=>!nn(1)?'Ponha o grupo em 10 suspeitos.':'Chance agora: '+r1(100*pcM())+'%.']]);
 function draw(){const ee=e(),n=sorteio===null?Math.round(ee):sorteio,mostra=Math.min(n,59),col=12,lin=Math.ceil((mostra+1)/col),H=Math.max(lin*44+70,130);
  let g=`<rect width="340" height="${H}" fill="#F8FAFC"/>`;
  for(let i=0;i<=mostra;i++){const x=22+(i%col)*26,y=48+Math.floor(i/col)*44;g+=bonequinho(x,y,34,i==mostra?'#B91C1C':ORANGE);}
@@ -33,9 +39,7 @@ function draw(){const ee=e(),n=sorteio===null?Math.round(ee):sorteio,mostra=Math
  const pc=1/(1+ee);g+=`<rect x="8" y="${H-16}" width="324" height="10" rx="4" fill="#EEF2F7"/><rect x="8" y="${H-16}" width="${324*pc}" height="10" rx="4" fill="#B91C1C"/>`;
  $('fig').innerHTML=SVG(340,H,g);$('k1').textContent=ee<0.01?'quase 0':r2(ee);$('k2').textContent=(pc>0.9995?r2(100*pc):r1(100*pc))+'%';
  $('k3').textContent='1 em '+NOM(X.get());
- const ok=Math.round(Math.pow(10,X.get()))==1e6&&pc>=0.99;
- missao('m',ok,`Com 1 em 1 milhão e um grupo de suspeitos pequeno, a prova fica fortíssima: ${r2(100*pc)}%. O que mudou foi o tamanho da multidão, não o exame.`,
-  `O promotor diria que só há 1 chance em ${NOM(X.get())} de inocência. A conta da multidão dá ${r1(100*pc)}% de chance de culpa. Missão: com coincidência de 1 em 1 milhão, reduza o grupo de suspeitos até P(culpado | bate) passar de 99%.`);}
+MIS.ver('m');}
 draw();
 })();
 </script>

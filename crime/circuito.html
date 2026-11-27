@@ -18,10 +18,16 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let p=true,q=false,alvo=null;
+let p=true,q=false,alvo=null,acertos=0,contou=false;
+const okF=()=>M.get()==1&&alvo&&p==alvo.p&&q==alvo.q;
+MIS.def(()=>[
+ ['Escolha <b>Frases de depoimento</b> e ajuste as chaves para as três lâmpadas baterem com o que se sabe.',okF,()=>'Isso! p = '+(alvo.p?'V':'F')+' e q = '+(alvo.q?'V':'F')+'. As três lâmpadas batem com o depoimento.',()=>{if(M.get()!=1)return 'Escolha o modo Frases de depoimento.';const a=alvo,f=a.f,v=b=>b?'<b style="color:#15803D">V</b>':'<b style="color:#B91C1C">F</b>';return `p: “${f[0]}”. q: “${f[1]}”.<br>Sabe-se que “${f[0]} e ${f[1]}” é ${v(a.p&&a.q)}, “${f[0]} ou ${f[1]}” é ${v(a.p||a.q)} e “não é verdade que ${f[0]}” é ${v(!a.p)}. Ajuste as chaves.`;}],
+ ['Acerte <b>3 frases</b> (use Outra frase).',()=>acertos>=3,'Três depoimentos traduzidos em chaves: E, OU e NÃO viraram circuitos.',()=>'Frases acertadas: '+acertos+' de 3.'+(okF()?' Aperte Outra frase.':'')],
+ ['No modo Explorar, tente acender <b>as três lâmpadas</b> ao mesmo tempo. Quantas dá para acender no máximo?',()=>M.get()==0&&!p&&q,'No máximo duas (p = F e q = V): p E q precisa de p = V, e NÃO p precisa de p = F. As duas nunca acendem juntas.',()=>M.get()?'Volte ao modo Explorar.':'Teste as quatro combinações das chaves.'],
+ ['Deixe acesa <b>só a lâmpada do OU</b>.',()=>M.get()==0&&p&&!q,'p = V e q = F: o OU acende (basta um caminho), o E não (falta q) e o NÃO apaga (p é V).',()=>M.get()?'Volte ao modo Explorar.':'Teste as combinações.']]);
 const FR=[['Bernardo estava no museu','o alarme tocou'],['a janela estava aberta','o portão estava trancado'],['Heitor viajou','Glória mentiu'],['o carro saiu','a câmera filmou']];
 const M=chips('md',['Explorar','Frases de depoimento'],0,()=>{$('nova').style.display=M.get()?'':'none';if(M.get())sortear();draw();});
-function sortear(){const f=P(FR);let n;do{n=rint(0,3);}while(alvo&&n==alvo.n);alvo={f,n,p:n<2,q:n%2==0};}
+function sortear(){contou=false;const f=P(FR);let n;do{n=rint(0,3);}while(alvo&&n==alvo.n);alvo={f,n,p:n<2,q:n%2==0};}
 $('nova').onclick=()=>{sortear();draw();};
 $('bp').onclick=()=>{p=!p;draw();};$('bq').onclick=()=>{q=!q;draw();};
 $('fig').onclick=e=>{const g=e.target.closest('[data-k]');if(!g)return;if(g.dataset.k=='p')p=!p;else q=!q;draw();};
@@ -45,11 +51,7 @@ function draw(){
  const y1=250;g+=TX(10,y1+12,'NÃO p (a chave p desliga a lâmpada)',{a:'start',fs:12})+TX(330,y1+12,N?'V':'F',{a:'end',fs:14,c:N?GREEN:'#B91C1C'});
  g+=chave(115,y1+45,p,'p')+LN(60,y1+45,115,y1+45,NAVY)+LN(155,y1+45,190,y1+45,NAVY)+TX(225,y1+49,'→',{fs:18})+lampada(290,y1+45,N);
  $('fig').innerHTML=SVG(340,330,g);
- if(M.get()==1){const a=alvo,f=a.f,v=b=>b?'<b style="color:#15803D">V</b>':'<b style="color:#B91C1C">F</b>';
-  const tE=a.p&&a.q,tO=a.p||a.q,tN=!a.p;const ok=p==a.p&&q==a.q;
-  missao('m',ok,`Isso! p = ${a.p?'V':'F'} e q = ${a.q?'V':'F'}. As três lâmpadas batem com o depoimento.`,
-  `p: “${f[0]}”. q: “${f[1]}”.<br>Sabe-se que “${f[0]} e ${f[1]}” é ${v(tE)}, “${f[0]} ou ${f[1]}” é ${v(tO)} e “não é verdade que ${f[0]}” é ${v(tN)}. Ajuste as chaves.`);}
- else $('m').innerHTML='<div class="msg info">No “e”, a corrente precisa passar pelas duas chaves. No “ou”, basta um caminho. No “não”, a lâmpada faz o contrário da chave.</div>';}
+if(okF()&&!contou){contou=true;acertos++;}MIS.ver('m');}
 draw();
 })();
 </script>

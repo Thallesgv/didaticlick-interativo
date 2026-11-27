@@ -25,9 +25,15 @@ const big=v=>v>=1e9?fmt(Math.round(v/1e8)/10)+' bi':v>=1e6?fmt(Math.round(v/1e5)
 const N=SL('sn',1,5,0.1,2,draw,v=>big(Math.round(Math.pow(10,v)))),E=SL('se',2,9,0.5,9,draw,v=>big(Math.pow(10,v)));
 $('pv').innerHTML=PR.map((p,i)=>`<button data-i="${i}">${p[0]} · RV ${big(p[1])}</button>`).join('');
 $('pv').querySelectorAll('button').forEach(b=>b.onclick=()=>{on[+b.dataset.i]^=1;draw();});
+let PRB=0;const nN=v=>Math.abs(N.get()-v)<0.01,pr_=()=>(PRB>0.999?'mais de 99,9':r1(PRB*100))+'%';
+MIS.def(()=>[
+ ['Com <b>100 pessoas</b>, desligue o DNA e chegue a mais de <b>99%</b> combinando as outras provas.',()=>nN(2)&&!on[1]&&PRB>0.99,'Sem o DNA, só com provas independentes, a chance passou de 99%.',()=>'Probabilidade agora: '+pr_()+'.'],
+ ['Ligue o DNA e piore o laboratório até <b>1 em 100</b>. O que acontece com a força do DNA?',()=>on[1]&&E.get()==2,()=>'Com erro de 1 em 100, a prova do DNA vale cerca de 100, não 1 milhão: o elo mais fraco manda. Probabilidade agora: '+pr_()+'.','Ligue o DNA e leve o erro do laboratório a 1 em 100.'],
+ ['Com <b>100 mil</b> pessoas e <b>só a digital</b> ligada, qual é a probabilidade de culpa?',()=>nN(5)&&on.join('')=='10000','Cerca de 0,1%: uma prova forte não basta quando há muitos suspeitos possíveis.',()=>'Probabilidade agora: '+pr_()+'.'],
+ ['Com <b>10 mil</b> pessoas, passe de <b>50%</b> sem usar o DNA.',()=>nN(4)&&!on[1]&&PRB>0.5,'Juntando as quatro provas: 100 × 5 × 10 × 3 = 15 000 contra 9 999. Provas independentes se multiplicam.',()=>'Probabilidade agora: '+pr_()+'.']]);
 function draw(){$('pv').querySelectorAll('button').forEach(b=>b.classList.toggle('on',!!on[+b.dataset.i]));
  const n=Math.round(Math.pow(10,N.get())),er=Math.pow(10,-E.get());let a=1,c=Math.max(1,n-1);
- PR.forEach((p,i)=>{if(!on[i])return;a*=i==1?1/(1e-6+er):p[1];});const pr=a/(a+c),lg=Math.log10(a/c),ang=clamp(lg*4,-28,28);
+ PR.forEach((p,i)=>{if(!on[i])return;a*=i==1?1/(1e-6+er):p[1];});const pr=a/(a+c);PRB=pr;const lg=Math.log10(a/c),ang=clamp(lg*4,-28,28);
  let g=`<rect width="340" height="240" fill="#fff"/>`;const cx=170,cy=70,L=120,ca=Math.cos(ang*RAD),sa=Math.sin(ang*RAD);
  const xl=cx-L*ca,yl=cy+L*sa,xr=cx+L*ca,yr=cy-L*sa;
  g+=`<path d="M${cx-30},205 L${cx+30},205 L${cx},${cy}Z" fill="${NAVY}"/>`+LN(xl,yl,xr,yr,NAVY,6);
@@ -36,7 +42,7 @@ function draw(){$('pv').querySelectorAll('button').forEach(b=>b.classList.toggle
  g+=`<circle cx="${cx}" cy="${cy}" r="7" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
  $('fig').innerHTML=SVG(340,240,g);
  $('kp').textContent=(pr>0.99999?'> 99,999':pr<1e-5?'< 0,001':pr>.999?fmt(Math.floor(pr*1e5)/1e3):r1(pr*100))+'%';$('ko').textContent=big(a)+' contra '+big(c);
- missao('m',!on[1]&&pr>0.99,'Sem o DNA, só com provas independentes, a chance passou de 99%. Agora ligue o DNA e piore o laboratório (1 em 100): o elo mais fraco manda.','Desafio: com 100 pessoas, desligue o DNA e chegue a mais de 99% combinando as outras provas.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

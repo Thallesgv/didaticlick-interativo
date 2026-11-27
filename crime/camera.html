@@ -19,7 +19,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const D=SL('sd',3,12,0.5,9,draw,v=>r1(v)+' m'),H=SL('sh',1.4,2.0,0.01,1.8,draw,v=>r2(v)+' m');let alvo=null;
+const D=SL('sd',3,12,0.5,9,draw,v=>r1(v)+' m'),H=SL('sh',1.4,2.0,0.01,1.8,draw,v=>r2(v)+' m');let alvo=null,EST=0;
+const mesma_=()=>Math.abs(D.get()-6)<0.01;
+MIS.def(()=>[
+ ['Ponha a pessoa <b>na mesma distância da porta</b> (6 m) e confira a altura pela proporção.',mesma_,()=>'Na mesma distância da porta, a proporção acerta a altura: '+r2(EST)+' m.',()=>'Fora da distância da porta, a proporção erra: dá '+r2(EST)+' m para uma pessoa de '+r2(H.get())+' m.'],
+ ['Leve a pessoa para <b>3 m</b> da câmera. Quanto a proporção erra?',()=>Math.abs(D.get()-3)<0.01,()=>'A proporção diz '+r2(EST)+' m para uma pessoa de '+r2(H.get())+' m: a metade da distância da porta, o dobro do tamanho.',()=>'Proporção agora: '+r2(EST)+' m.'],
+ ['Aperte <b>Sortear suspeito</b> e descubra a altura dele com a proporção.',()=>alvo!==null&&mesma_(),()=>'Agora sim: na mesma distância da porta, a proporção dá '+r2(EST)+' m, a altura real do suspeito.',()=>alvo===null?'Aperte Sortear suspeito.':'Leve-o até a mesma distância da porta (6 m) antes de usar a proporção. Agora ela daria '+r2(EST)+' m.'],
+ ['Uma pessoa de <b>1,75 m</b> aparece na imagem com o <b>mesmo tamanho</b> da porta de 2,10 m. A que distância ela está?',()=>Math.abs(H.get()-1.75)<0.005&&Math.abs(D.get()-5)<0.01,'A 5 m: 1,75 ÷ 5 = 2,10 ÷ 6 = 0,35. Mesmo tamanho na imagem não quer dizer mesmo tamanho real.',()=>Math.abs(H.get()-1.75)>=0.005?'Ponha a altura em 1,75 m.':'Compare os pixels da pessoa e da porta.']]);
 $('nova').onclick=()=>{alvo=rint(150,195)/100;H.set(alvo);D.set(rint(6,22)/2);draw();};
 function draw(){const d=D.get(),h=H.get(),f=600;const pp=h/d*f,pd=2.1/6*f,est=2.1*pp/pd;
  let g=`<rect x="0" y="0" width="120" height="230" rx="8" fill="#F8FAFC"/>`+TX(60,16,'DE CIMA',{fs:10,c:GRAY});
@@ -29,10 +35,9 @@ function draw(){const d=D.get(),h=H.get(),f=600;const pp=h/d*f,pd=2.1/6*f,est=2.
  const base=215,s=0.75;g+=`<rect x="150" y="${base-pd*s}" width="${pd*s*0.42}" height="${pd*s}" fill="${LIGHT}" stroke="${NAVY}"/>`;
  g+=bonequinho(270,base-((1/d-1/6)*300),Math.min(pp*s,190),BLUE);
  g+=LN(150+pd*s*0.42+8,base,150+pd*s*0.42+8,base-pd*s,ORANGE,1.5)+TX(150+pd*s*0.42+12,base-pd*s/2,Math.round(pd)+' px',{fs:9,a:'start',c:ORANGE});
- $('fig').innerHTML=SVG(340,235,g);$('kp').textContent=Math.round(pp)+' px';$('kd').textContent=Math.round(pd)+' px';$('kh').textContent=r2(est)+' m';
+ $('fig').innerHTML=SVG(340,235,g);$('kp').textContent=Math.round(pp)+' px';$('kd').textContent=Math.round(pd)+' px';$('kh').textContent=r2(est)+' m';EST=est;
  const mesma=Math.abs(d-6)<0.01;
- if(alvo!==null)missao('m',mesma,'Agora sim: na mesma distância da porta, a proporção dá '+r2(est)+' m, a altura real do suspeito.','Suspeito sorteado. Leve-o até a mesma distância da porta (6 m) antes de usar a proporção. Agora ela daria '+r2(est)+' m.');
- else missao('m',mesma,'Na mesma distância da porta, a proporção acerta a altura: '+r2(est)+' m.','Fora da distância da porta, a proporção erra: dá '+r2(est)+' m para uma pessoa de '+r2(h)+' m.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

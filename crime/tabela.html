@@ -20,7 +20,13 @@
 <script>
 (()=>{
 const EX=[['p ∧ q',(p,q)=>p&&q],['p ∨ q',(p,q)=>p||q],['¬p',(p,q)=>!p],['p → q',(p,q)=>!p||q],['q → p',(p,q)=>!q||p],['¬q → ¬p',(p,q)=>q||!p],['¬p ∨ q',(p,q)=>!p||q],['¬(p ∧ q)',(p,q)=>!(p&&q)],['¬p ∨ ¬q',(p,q)=>!p||!q],['¬(p ∨ q)',(p,q)=>!(p||q)],['¬p ∧ ¬q',(p,q)=>!p&&!q],['p ↔ q',(p,q)=>p==q]];
-const L=[[true,true],[true,false],[false,true],[false,false]];const achados=new Set();let n=0,tm=null;
+const L=[[true,true],[true,false],[false,true],[false,false]];const achados=new Set();let n=0,tm=null,EQ=false;
+const has=(a,b)=>achados.has([a,b].sort().join(' ≡ ')),pares_=()=>achados.size?'Pares achados: '+[...achados].join('; ')+'.':'Nenhum par achado ainda.';
+MIS.def(()=>[
+ ['Ache <b>um par</b> de expressões equivalentes: colunas iguais nas 4 linhas.',()=>achados.size>=1,()=>'Equivalentes! '+pares_(),()=>n<4?'Preenchendo...':'Não são equivalentes ainda. Dica: procure a contrapositiva e as leis de De Morgan.'],
+ ['Ache a <b>contrapositiva</b>: a expressão equivalente a p → q que troca e nega as duas partes.',()=>has('p → q','¬q → ¬p'),'p → q ≡ ¬q → ¬p. "Se estava no museu, o alarme tocou" é o mesmo que "se o alarme não tocou, não estava no museu".',()=>pares_()],
+ ['Ache as <b>duas leis de De Morgan</b>: o NÃO de um E e o NÃO de um OU.',()=>has('¬(p ∧ q)','¬p ∨ ¬q')&&has('¬(p ∨ q)','¬p ∧ ¬q'),'¬(p ∧ q) ≡ ¬p ∨ ¬q e ¬(p ∨ q) ≡ ¬p ∧ ¬q: o NÃO troca E por OU.',()=>pares_()],
+ ['Mostre que <b>p → q</b> e <b>q → p</b> <b>não</b> são equivalentes.',()=>n>=4&&!EQ&&[A.get(),B.get()].sort().join()=='3,4','A recíproca não vale: com p = F e q = V, p → q é V, mas q → p é F.',()=>n<4?'Preenchendo...':'Escolha p → q em uma expressão e q → p na outra.']]);
 const A=chips('ca',EX.map(e=>e[0]),3,inicio),B=chips('cb',EX.map(e=>e[0]),4,inicio);
 function inicio(){n=0;clearInterval(tm);draw();tm=setInterval(()=>{n++;draw();if(n>=4)clearInterval(tm);},450);}
 function cel(x,y,v,w){return `<rect x="${x}" y="${y}" width="${w}" height="34" rx="6" fill="${v?'#DCFCE7':'#F3F4F6'}" stroke="#fff" stroke-width="2"/>`+TX(x+w/2,y+23,v?'V':'F',{fs:15,c:v?GREEN:'#6B7280'});}
@@ -32,13 +38,10 @@ function draw(){const a=EX[A.get()],b=EX[B.get()];let g=`<rect width="340" heigh
   if(r<n){const va=a[1](p,q),vb=b[1](p,q);g+=cel(xs[2],y,va,ws[2])+cel(xs[3],y,vb,ws[3]);if(va==vb)iguais++;else g+=`<rect x="${xs[2]-2}" y="${y-2}" width="${xs[3]+ws[3]-xs[2]+4}" height="38" rx="8" fill="none" stroke="${ORANGE}" stroke-width="3"/>`;}
   else g+=`<rect x="${xs[2]}" y="${y}" width="${xs[3]+ws[3]-xs[2]}" height="34" rx="6" fill="#FAFAFA" stroke="${GRAYL}" stroke-dasharray="4 3"/>`;});
  $('fig').innerHTML=SVG(340,215,g);$('ki').textContent=iguais+' de '+n;
- const eq=n>=4&&iguais==4,dif=A.get()!=B.get();
+ const eq=n>=4&&iguais==4,dif=A.get()!=B.get();EQ=eq;
  if(eq&&dif)achados.add([a[0],b[0]].sort().join(' ≡ '));
  $('kp').textContent=achados.size;
- if(n<4)$('m').innerHTML='<div class="msg info">Preenchendo...</div>';
- else if(!dif)$('m').innerHTML='<div class="msg info">A e B são a mesma expressão. Escolha duas diferentes.</div>';
- else if(eq)missao('m',true,`<b>${a[0]}</b> e <b>${b[0]}</b> são equivalentes: as colunas são iguais nas 4 linhas.`+(achados.size>1?'<br>Pares achados: '+[...achados].join('; '):''),'');
- else $('m').innerHTML=`<div class="msg info">Não são equivalentes: as linhas destacadas em laranja têm valores diferentes. Dica: procure a contrapositiva e as leis de De Morgan.</div>`;}
+MIS.ver('m');}
 inicio();
 })();
 </script>

@@ -20,8 +20,14 @@
 <script>
 (()=>{
 const hm=v=>{const h=Math.floor(v/60)%24,m=v%60;return String(h).padStart(2,'0')+'h'+String(m).padStart(2,'0');};
-const SA=SL('sa',100,130,1,112,draw,hm),SB=SL('sb',105,140,1,123,draw,hm);let Z={x:9,y:5};const k=24,ox=30,oy=230;
-function draw(){const t=(SB.get()-SA.get())/60,d=Math.abs(Z.x)+Math.abs(Z.y),v=t>0?d/t:Infinity;
+const SA=SL('sa',100,130,1,112,draw,hm),SB=SL('sb',105,140,1,140,draw,hm);let Z={x:9,y:5},AL={v:0,d:0,t:0};const k=24,ox=30,oy=230;
+const vt_=()=>isFinite(AL.v)?Math.round(AL.v)+' km/h':'impossível';
+MIS.def(()=>[
+ ['Deixe o álibi <b>forte</b>: a viagem exigiria mais de 60 km/h de média na cidade.',()=>AL.v>60||!isFinite(AL.v),()=>isFinite(AL.v)&&AL.t>0?'Precisaria de '+Math.round(AL.v)+' km/h de média na cidade: o álibi se sustenta.':'O recibo é anterior à saída do museu: álibi perfeito.',()=>'Velocidade necessária agora: '+vt_()+'. Afaste a pizzaria ou aperte os horários.'],
+ ['Com a pizzaria a <b>10 km</b> pelas ruas, ajuste os horários para que dê tempo <b>de bicicleta</b> (de 6 a 20 km/h).',()=>AL.d==10&&AL.v>6&&AL.v<=20,()=>'10 km em '+Math.round(AL.t*60)+' min dá '+Math.round(AL.v)+' km/h: dá de bicicleta, então o álibi é fraco.',()=>AL.d!=10?'Distância agora: '+AL.d+' km. Leve a pizzaria a 10 km pelas ruas.':'Velocidade necessária: '+vt_()+'.'],
+ ['Ponha a pizzaria a <b>5 km</b> pelas ruas, mas <b>sem ficar numa rua só</b> (ande para o lado e para cima).',()=>AL.d==5&&Z.x>0&&Z.y>0,()=>'5 km pelas ruas: '+Z.x+' + '+Z.y+'. Em linha reta seria só √('+Z.x*Z.x+' + '+Z.y*Z.y+') ≈ '+r1(Math.hypot(Z.x,Z.y))+' km.',()=>'Distância pelas ruas: '+AL.d+' km.'],
+ ['Faça o recibo da pizzaria sair <b>antes</b> do alarme.',()=>AL.t<=0,'Recibo antes da saída do museu: álibi perfeito. Ninguém está em dois lugares ao mesmo tempo.','Mexa nos dois horários.']]);
+function draw(){const t=(SB.get()-SA.get())/60,d=Math.abs(Z.x)+Math.abs(Z.y),v=t>0?d/t:Infinity;AL={v,d,t};
  let g='';for(let i=0;i<=12;i++)g+=LN(ox+i*k,oy,ox+i*k,oy-8*k,GRAYL,1);for(let j=0;j<=8;j++)g+=LN(ox,oy-j*k,ox+12*k,oy-j*k,GRAYL,1);
  g+=`<path d="M${ox},${oy} H${ox+Z.x*k} V${oy-Z.y*k}" fill="none" stroke="${ORANGE}" stroke-width="4"/>`+LN(ox,oy,ox+Z.x*k,oy-Z.y*k,NAVY,1.5,'4 3');
  g+=`<circle cx="${ox}" cy="${oy}" r="8" fill="${NAVY}"/>`+TX(ox+4,oy+18,'museu',{fs:10,a:'start'});
@@ -30,8 +36,7 @@ function draw(){const t=(SB.get()-SA.get())/60,d=Math.abs(Z.x)+Math.abs(Z.y),v=t
  g+=bar+TX(10,280,'a pé',{fs:9,a:'start',c:GRAY})+TX(10+20/150*320,280,'bike',{fs:9,c:GRAY})+TX(10+60/150*320,280,'carro na cidade',{fs:9,c:GRAY})+TX(330,280,'150 km/h',{fs:9,a:'end',c:GRAY});
  $('fig').innerHTML=SVG(340,288,g);const svg=$('fig').querySelector('svg');arrastar(svg,svg.querySelector('#z'),(x,y)=>{Z={x:clamp(Math.round((x-ox)/k),0,12),y:clamp(Math.round((oy-y)/k),0,8)};draw();});
  $('kv').textContent=isFinite(v)?Math.round(v)+' km/h':'impossível';$('kd').textContent=d+' km';$('kt').textContent=Math.max(0,Math.round(t*60))+' min';
- const txt=!isFinite(v)||t<=0?'O recibo é anterior à saída do museu: álibi perfeito.':v>60?'Precisaria de '+Math.round(v)+' km/h de média na cidade: o álibi se sustenta.':v>20?'Possível de carro: o álibi não exclui o suspeito.':'Possível até de bicicleta ou a pé: o álibi é fraco.';
- missao('m',v>60||!isFinite(v),txt,txt);}
+MIS.ver('m');}
 draw();
 })();
 </script>

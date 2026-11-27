@@ -22,7 +22,13 @@
 (()=>{
 const brl=v=>'R$ '+fmt(Math.round(v));const pc=v=>r1(v)+'%';
 const M=chips('md',['Explorar','Caso: o telhado'],0,()=>{if(M.get()==1){R.set(40000);A.set(10);}draw();});
-const R=SL('sr',10000,100000,1000,48000,draw,v=>brl(v)),A=SL('sa',0,100,1,25,draw,v=>v+'%');
+const R=SL('sr',10000,100000,1000,48000,draw,v=>brl(v)),A=SL('sa',0,100,1,10,draw,v=>v+'%');
+const n_=()=>R.get()*(1+A.get()/100),d_=()=>n_()-R.get();
+MIS.def(()=>[
+ ['Monte o caso do telhado: preço real de <b>R$ 48.000</b> e nota de <b>R$ 60.000</b>. Qual aumento dá isso?',()=>R.get()==48000&&A.get()==25,'É o caso: R$ 48.000 viraram R$ 60.000. O desvio de R$ 12.000 é 25% do real, mas só 20% da nota.',()=>'Nota agora: '+brl(n_())+'.'],
+ ['Ache o aumento em que o desvio é <b>metade do preço real</b>.',()=>A.get()==50,()=>'50%: o desvio é metade do real, mas só 1/3 da nota ('+brl(d_())+' de '+brl(n_())+').',()=>'Desvio agora: '+brl(d_())+'.'],
+ ['Agora ache o aumento em que o desvio é <b>metade da nota</b>.',()=>A.get()==100,'100%: a nota dobrou. O desvio é 100% sobre o real, mas "só" 50% da nota. A base maior encolhe a porcentagem.',()=>'Desvio agora: '+r1(100*d_()/n_())+'% da nota.'],
+ ['Com preço real de <b>R$ 80.000</b>, faça o desvio ser de <b>R$ 20.000</b>.',()=>R.get()==80000&&A.get()==25,'25% sobre 80 mil = 20 mil. A nota fica em R$ 100.000, e o desvio é 20% dela.',()=>R.get()!=80000?'Ponha o preço real em R$ 80.000.':'Desvio agora: '+brl(d_())+'.']]);
 function draw(){const r=R.get(),a=A.get(),n=r*(1+a/100),d=n-r,mx=200000,y0=230,H=190,Y=v=>y0-v/mx*H;
  let g=`<rect width="340" height="260" fill="#F8FAFC"/>`;
  for(let v=0;v<=mx;v+=50000)g+=LN(40,Y(v),330,Y(v),GRAYL,1)+TX(36,Y(v)+4,v/1000+' mil',{fs:9,a:'end',c:GRAY,w:500});
@@ -31,8 +37,7 @@ function draw(){const r=R.get(),a=A.get(),n=r*(1+a/100),d=n-r,mx=200000,y0=230,H
  g+=TX(240,Y(n)-6,brl(n),{fs:11})+TX(240,y0+16,'nota paga',{fs:10,c:GRAY,w:500})+(Y(r)-Y(n)>16?TX(240,(Y(r)+Y(n))/2+4,'+'+fmt(Math.round(d)),{fs:10,c:'#fff'}):'');
  g+=LN(150,Y(r),200,Y(r),NAVY,1,'4 3');
  $('fig').innerHTML=SVG(340,260,g);$('kd').textContent=brl(d);$('kr').textContent=pc(a);$('kn').textContent=n?pc(100*d/n):'0%';
- if(M.get()==1)missao('m',r==48000&&a==25,'É o caso: R$ 48.000 viraram R$ 60.000. O desvio de R$ 12.000 é 25% do real, mas só 20% da nota.','Monte o caso: preço real R$ 48.000 e nota de R$ 60.000. Qual aumento dá isso?');
- else $('m').innerHTML='<div class="msg info">Repare: a porcentagem sobre o real é sempre maior que a porcentagem da nota. A base maior “encolhe” o desvio.</div>';}
+MIS.ver('m');}
 draw();
 })();
 </script>

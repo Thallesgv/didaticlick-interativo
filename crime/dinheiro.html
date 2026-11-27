@@ -20,6 +20,11 @@
 const brl=v=>'R$ '+fmt(Math.round(v));const pc=v=>r1(v)+'%';
 const NO={as:[40,140,'Associação','paga 60.000'],em:[120,140,'Restaura Já','fica 10%'],a:[205,60,'conta A','fica 5%'],b:[205,140,'conta B','fica 5%'],c:[205,220,'conta C','fica 5%'],f:[295,140,'conta final','?']};
 const ED={as:['em'],em:['a','b','c'],a:['f'],b:['f'],c:['f'],f:[]};let cam,usados,erro='';
+const fimD=()=>usados.length==3&&cam[cam.length-1]=='f';
+MIS.def(()=>[
+ ['Siga o dinheiro pelas <b>três contas de laranjas</b> até a conta final.',fimD,()=>'Os 60.000 viraram 6.000 na empresa, 3 · 900 = 2.700 com os laranjas e R$ 51.300 na conta final. 6.000 + 2.700 + 51.300 = 60.000: nada sumiu.',()=>{const at=cam[cam.length-1];return at=='f'?'Chegou! Agora toque em outra conta de laranja para seguir a próxima parte.':at=='as'?'Comece tocando na empresa que recebeu o pagamento.':'Toque na próxima conta do caminho.';}],
+ ['Aperte Recomeçar e siga <b>só a conta A</b> até a conta final. Quanto chegou por ela?',()=>usados.join('')=='a'&&cam[cam.length-1]=='f','Pela conta A chegaram R$ 17.100: (60.000 − 6.000) ÷ 3 = 18.000, menos os 5% do laranja (900).','Recomece e vá: empresa, conta A, conta final.'],
+ ['Recomece e siga as três contas na ordem <b>C, B, A</b>.',()=>usados.join('')=='cba'&&fimD(),'Mesmo total na conta final: a ordem em que se segue o dinheiro não muda a soma.',()=>'Ordem seguida até agora: '+(usados.join(', ').toUpperCase()||'nenhuma')+'.']]);
 function rec(){cam=['as'];usados=[];erro='';draw();}$('rec').onclick=rec;
 $('fig').onclick=e=>{const g=e.target.closest('[data-n]');if(!g)return;const n=g.dataset.n;let at=cam[cam.length-1];erro='';
  if(at=='f'&&['a','b','c'].includes(n)){cam.push('em');at='em';}
@@ -36,8 +41,7 @@ function draw(){let g=`<rect width="340" height="280" fill="#F8FAFC"/>`;const pa
  $('kv').textContent=brl(che);$('kf').textContent=brl(emp+lar);$('kp').textContent=usados.length+' de 3';
  if(erro){$('m').innerHTML='<div class="msg bad">'+erro+'</div>';return;}
  const fim=usados.length==3&&at=='f';
- missao('m',fim,'Os 60.000 viraram 6.000 na empresa, 3 · 900 = 2.700 com os laranjas e '+brl(che)+' na conta final. 6.000 + 2.700 + 51.300 = 60.000: nada sumiu.',
-  at=='f'?'Chegou! Agora toque em outra conta de laranja para seguir a próxima parte.':at=='as'?'Comece tocando na empresa que recebeu o pagamento.':'Toque na próxima conta do caminho.');}
+MIS.ver('m');}
 rec();
 })();
 </script>

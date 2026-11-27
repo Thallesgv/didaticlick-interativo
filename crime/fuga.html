@@ -19,15 +19,21 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const V=[5,15,30],NM=['a pé (5 km/h)','bicicleta (15 km/h)','carro (30 km/h)'];const M=chips('mo',NM,0,draw);const T=SL('st',1,40,1,10,draw,v=>v+' min');
+const V=[5,15,30],NM=['a pé (5 km/h)','bicicleta (15 km/h)','carro (30 km/h)'];const M=chips('mo',NM,0,draw);const T=SL('st',1,40,1,10,draw,v=>v+' min');let FG={r:0,Ac:0,Al:0},viu10=false;
+const fs_=()=>'Raio de '+r2(FG.r)+' km, círculo de '+r1(FG.Ac)+' km².';
+MIS.def(()=>[
+ ['De <b>carro</b>, descubra até que minuto a área de busca (o círculo) ainda fica <b>abaixo de 50 km²</b>.',()=>M.get()==2&&T.get()==7,'Até 7 min: r = 3,5 km e área ≈ 38,5 km². Com 8 min o círculo já passa de 50 km².',()=>M.get()!=2?'Escolha carro.':FG.Ac<=50?'Ainda dá para cercar: '+r1(FG.Ac)+' km². Dá para ir mais longe no relógio?':'Tarde demais: '+r1(FG.Ac)+' km². Volte o relógio.'],
+ ['A pé, compare <b>10 minutos</b> e <b>20 minutos</b>. Dobrar o tempo dobra a área?',()=>viu10&&M.get()==0&&T.get()==20,'Não: a área quadruplica, de 2,2 para 8,7 km². O raio dobra, e a área depende de r².',()=>M.get()?'Escolha a pé.':viu10?'Agora leve o relógio a 20 min.':'Ponha o relógio em 10 min.'],
+ ['De <b>bicicleta</b>, ache o primeiro minuto em que o <b>losango</b> (só pelas ruas) passa de <b>10 km²</b>.',()=>M.get()==1&&T.get()==9,'Com 9 min: r = 2,25 km e losango de 2 × 2,25² ≈ 10,1 km². Pelas ruas, a área é sempre 2/π ≈ 64% do círculo.',()=>M.get()!=1?'Escolha bicicleta.':'Losango agora: '+r1(FG.Al)+' km².'],
+ ['A pé, quanto tempo o suspeito leva para estar a <b>3 km</b> do museu em linha reta?',()=>M.get()==0&&T.get()==36,'36 min: 5 km/h × 0,6 h = 3 km. A área de busca já é de 28 km².',()=>M.get()?'Escolha a pé.':fs_()]]);
 function draw(){const v=V[M.get()],t=T.get(),r=v*t/60,rmax=v*40/60,esc=150/rmax;const px=r*esc,cx=170,cy=160;
  const q=esc*(v>=30?2:1);let g=`<rect x="0" y="0" width="340" height="320" fill="${PEACH}"/>`;
  for(let x=cx%q;x<340;x+=q)g+=`<rect x="${x-1.5}" y="0" width="3" height="320" fill="#fff"/>`;for(let y=cy%q;y<320;y+=q)g+=`<rect x="0" y="${y-1.5}" width="340" height="3" fill="#fff"/>`;
  g+=`<path d="M${cx+px},${cy} L${cx},${cy-px} L${cx-px},${cy} L${cx},${cy+px}Z" fill="${LIGHT}" stroke="${ORANGE}" stroke-width="2"/>`;
  g+=`<circle cx="${cx}" cy="${cy}" r="${px}" fill="none" stroke="${NAVY}" stroke-width="3"/>`+LN(cx,cy,cx+px*.8,cy-px*.6,ORANGE,2.5);
  g+=`<circle cx="${cx}" cy="${cy}" r="7" fill="${ORANGE}" stroke="${NAVY}" stroke-width="2"/>`+TX(170,312,'escala: 1 quadra = '+(v>=30?2:1)+' km',{fs:10,c:NAVY});
- $('fig').innerHTML=SVG(340,320,g);const Ac=Math.PI*r*r,Al=2*r*r;$('kr').textContent=r2(r)+' km';$('kc').textContent=r1(Ac)+' km²';$('kl').textContent=r1(Al)+' km²';
- missao('m',Ac<=50,'Ainda dá para cercar: a área do círculo é de '+r1(Ac)+' km². Dobre o tempo e veja a área quadruplicar.','Tarde demais: '+r1(Ac)+' km² de busca. Volte o relógio e descubra até que minuto a área fica abaixo de 50 km².');}
+ $('fig').innerHTML=SVG(340,320,g);const Ac=Math.PI*r*r,Al=2*r*r;FG={r,Ac,Al};if(M.get()==0&&t==10)viu10=true;$('kr').textContent=r2(r)+' km';$('kc').textContent=r1(Ac)+' km²';$('kl').textContent=r1(Al)+' km²';
+MIS.ver('m');}
 draw();
 })();
 </script>

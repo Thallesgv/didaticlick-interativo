@@ -22,10 +22,16 @@
 const PV=[['Corte na mão',45],['Câmera da rua',20],['Mensagens',50],['Álibi parcial',0.1],['Testemunha confusa',1],['2ª foto da mesma câmera',1.2]];let on=[false,false,false,false,false,false];
 $('pv').innerHTML=PV.map((t,i)=>`<button data-i="${i}">${t[0]} (RV ${fmt(t[1])})</button>`).join('');
 $('pv').querySelectorAll('button').forEach(b=>b.onclick=()=>{on[+b.dataset.i]=!on[+b.dataset.i];draw();});
-const N=SL('sn',2,1000,1,100,draw,v=>v+' suspeitos');
+const N=SL('sn',2,1000,1,100,draw,v=>v+' suspeitos');let PB=0;
+const tres=()=>on[0]&&on[1]&&on[2];
+MIS.def(()=>[
+ ['Reproduza o exemplo do livro: <b>1 entre 100</b> suspeitos, com <b>corte na mão</b>, <b>câmera da rua</b> e <b>mensagens</b>.',()=>N.get()==100&&tres()&&!on[3],()=>'Com 1 entre 100 suspeitos e as três provas do promotor, a probabilidade chega a '+r1(100*PB)+'%.','Repare que a testemunha confusa (RV 1) não muda nada.'],
+ ['Agora ligue também o <b>álibi parcial</b>. O que acontece?',()=>N.get()==100&&tres()&&on[3],()=>'O álibi tem RV 0,1: divide a chance por 10, e a probabilidade cai para '+r1(100*PB)+'%.','Ligue o álibi parcial junto com as três provas.'],
+ ['Ligue a <b>2ª foto da mesma câmera</b> junto com a câmera da rua e leia o aviso.',()=>on[5]&&on[1],'A 2ª foto não é independente da primeira: multiplicar as duas infla a conta.','Ligue a câmera da rua e a 2ª foto.'],
+ ['Com <b>1 entre 1000</b> suspeitos, ache provas que passem de <b>95%</b>.',()=>N.get()==1000&&PB>0.95,()=>'Com mil suspeitos, só as provas fortes juntas passam de 95%: '+r1(100*PB)+'%.',()=>N.get()!=1000?'Leve o ponto de partida a 1 entre 1000.':'Probabilidade agora: '+r1(100*PB)+'%.']]);
 const chance=o=>o>=1?fmt(Math.round(o*10)/10)+' : 1':'1 : '+fmt(Math.round(10/o)/10);
 function draw(){$('pv').querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',on[i]));
- const rv=PV.reduce((a,t,i)=>a*(on[i]?t[1]:1),1),o=rv/(N.get()-1),p=o/(1+o),ang=clamp(Math.log10(o)*9,-28,28);
+ const rv=PV.reduce((a,t,i)=>a*(on[i]?t[1]:1),1),o=rv/(N.get()-1),p=o/(1+o);PB=p;const ang=clamp(Math.log10(o)*9,-28,28);
  let g=`<rect width="340" height="250" fill="#F8FAFC"/><polygon points="160,190 180,190 170,70" fill="${NAVY}"/><rect x="120" y="190" width="100" height="10" rx="4" fill="${NAVY}"/>`;
  g+=`<g transform="rotate(${-ang} 170 70)">`+LN(60,70,280,70,NAVY,5);
  const pan=(x,txt,c)=>LN(x,70,x-26,112,GRAY,1.5)+LN(x,70,x+26,112,GRAY,1.5)+`<path d="M${x-34},112 L${x+34},112 Q${x},140 ${x-34},112" fill="${c}"/>`;
@@ -35,9 +41,7 @@ function draw(){$('pv').querySelectorAll('button').forEach((b,i)=>b.classList.to
  g+=`<rect x="20" y="222" width="300" height="12" rx="5" fill="#EEF2F7"/><rect x="20" y="222" width="${300*p}" height="12" rx="5" fill="${ORANGE}"/>`+TX(20,246,'0%',{fs:9,a:'start',c:GRAY,w:500})+TX(320,246,'100%',{fs:9,a:'end',c:GRAY,w:500});
  $('fig').innerHTML=SVG(340,250,g);$('k1').textContent=chance(o);$('k2').textContent=(p>0.995&&p<1?r2(100*p):r1(100*p))+'%';$('k3').textContent=rv>=1?fmt(Math.round(rv*10)/10):r2(rv);
  const caso=N.get()==100&&on[0]&&on[1]&&on[2]&&!on[3];
- if(on[5]&&on[1])$('m').innerHTML='<div class="msg info">Cuidado: a 2ª foto da mesma câmera não é independente da primeira. Ela quase não acrescenta nada, e multiplicar as duas infla a conta.</div>';
- else missao('m',caso,`Com 1 entre 100 suspeitos e as três provas do promotor, a probabilidade chega a ${r1(100*p)}%. Experimente agora ligar o álibi parcial.`,
-  'Missão: reproduza o exemplo do livro: 1 entre 100 suspeitos, com corte na mão, câmera da rua e mensagens. Repare que a testemunha confusa (RV 1) não muda nada.');}
+MIS.ver('m');if(on[5]&&on[1])$('m').insertAdjacentHTML('beforeend','<div class="msg info">Cuidado: a 2ª foto da mesma câmera não é independente da primeira. Ela quase não acrescenta nada, e multiplicar as duas infla a conta.</div>');}
 draw();
 })();
 </script>

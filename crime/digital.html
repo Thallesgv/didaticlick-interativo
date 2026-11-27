@@ -23,6 +23,12 @@ const on=new Set();let ridges='';const cx=170,cy=165;
 for(let i=1;i<=13;i++){const rx=8+i*10,ry=12+i*12;const c=2*Math.PI*Math.sqrt((rx*rx+ry*ry)/2);const a=rint(30,80),b=rint(4,10);
  ridges+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#9AA6BD" stroke-width="3" stroke-dasharray="${a} ${b} ${rint(20,60)} ${rint(4,9)}" stroke-dashoffset="${rint(0,c)}"/>`;}
 function fmtN(x){if(x<1e3)return fmt(Math.round(x));const U=[[1e12,'trilhão','trilhões'],[1e9,'bilhão','bilhões'],[1e6,'milhão','milhões'],[1e3,'mil','mil']];for(const [v,s,p] of U)if(x>=v){const q=Math.round(x/v*10)/10;return fmt(q)+' '+(q<2?s:p);}}
+const T8=8e9,mn_=p=>Math.ceil(Math.log(T8)/Math.log(p));
+MIS.def(()=>[
+ ['Marque minúcias até a barra passar da <b>linha azul</b> (a população da Terra).',()=>Math.pow(PP.get(),on.size)>=T8,()=>'Com '+on.size+' minúcias, a chance de coincidência por acaso (1 em '+fmtN(Math.pow(PP.get(),on.size))+') é menor que 1 dividido pela população da Terra, neste modelo simplificado.',()=>'Marque minúcias até a barra passar da linha azul. Quantas são precisas com 1 chance em '+PP.get()+'?'],
+ ['Com chance de <b>1 em 10</b> por minúcia, qual é o <b>menor número</b> de minúcias que passa da linha azul?',()=>PP.get()==10&&on.size==10,'10 minúcias: 10¹⁰ = 10 bilhões. Com 9, seria só 1 bilhão.',()=>PP.get()!=10?'Ponha a chance em 1 em 10.':'Minúcias marcadas: '+on.size+'. Desmarque tocando de novo.'],
+ ['E com <b>1 em 5</b>? Ache o menor número de minúcias.',()=>PP.get()==5&&on.size==15,'15 minúcias: 5¹⁵ ≈ 30 bilhões. Com 14, seriam só 6 bilhões, menos que a população.',()=>PP.get()!=5?'Ponha a chance em 1 em 5.':'Minúcias marcadas: '+on.size+'.'],
+ ['E com <b>1 em 20</b>?',()=>PP.get()==20&&on.size==8,'8 minúcias: 20⁸ ≈ 25,6 bilhões. Quanto mais rara cada coincidência, menos minúcias são precisas.',()=>PP.get()!=20?'Ponha a chance em 1 em 20.':'Minúcias marcadas: '+on.size+'.']]);
 function draw(){const p=PP.get(),n=on.size,X=Math.pow(p,n);
  let g=`<style>text{pointer-events:none}</style><defs><clipPath id="cl"><ellipse cx="${cx}" cy="${cy}" rx="110" ry="130"/></clipPath></defs><rect width="340" height="380" fill="#fff"/>`;
  g+=`<ellipse cx="${cx}" cy="${cy}" rx="112" ry="132" fill="${PEACH}"/><g clip-path="url(#cl)">${ridges}</g>`;
@@ -33,7 +39,7 @@ function draw(){const p=PP.get(),n=on.size,X=Math.pow(p,n);
  g+=LN(L(Math.log10(8e9)),312,L(Math.log10(8e9)),340,BLUE,2,'3 2')+TX(L(Math.log10(8e9)),370,'população da Terra',{fs:8.5,c:BLUE});
  $('fig').innerHTML=SVG(340,380,g);$('fig').querySelectorAll('circle[data-i]').forEach(c=>c.onclick=()=>{const i=+c.dataset.i;on.has(i)?on.delete(i):on.add(i);draw();});
  $('kn').textContent=n;$('kc').textContent=n?'1 em '+fmtN(X):'—';
- missao('m',X>=8e9,'Com '+n+' minúcias, a chance de coincidência por acaso (1 em '+fmtN(X)+') é menor que 1 dividido pela população da Terra, neste modelo simplificado.','Marque minúcias até a barra passar da linha azul. Quantas são precisas com 1 chance em '+p+'? E se cada uma coincidir com 1 chance em 4?');}
+MIS.ver('m');}
 draw();
 })();
 </script>

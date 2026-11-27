@@ -23,17 +23,23 @@
 const AL='ABCDEFGHIJKLMNOPQRSTUVWXYZ';const K=SL('sk',0,25,1,0,draw,v=>v);$('tx').oninput=draw;
 const norm=s=>s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
 const dec=(s,k)=>norm(s).replace(/[A-Z]/g,c=>AL[(AL.indexOf(c)-k+26)%26]);
+let DEC='';
+MIS.def(()=>[
+ ['Gire a roda até o bilhete <b>fazer sentido</b>.',()=>/SEGUNDA/.test(DEC),()=>'Decifrado com a chave '+K.get()+': '+DEC+'.','Dica: a letra mais frequente do texto cifrado (barra laranja) costuma esconder A, E ou O.'],
+ ['Apague o bilhete, escreva <b>WVSPJPH</b> e descubra a chave.',()=>DEC.replace(/ /g,'')==='POLICIA','Chave 7: WVSPJPH vira POLICIA. Cada letra andou 7 casas para trás.',()=>'Decifrado agora: '+(DEC||'—')+'.'],
+ ['Escreva <b>PRFNE</b> e decifre com a chave <b>13</b>.',()=>K.get()==13&&DEC.replace(/ /g,'')==='CESAR','CESAR! A chave 13 é especial: com 26 letras, aplicar 13 duas vezes volta ao começo.',()=>'Decifrado agora: '+(DEC||'—')+'.'],
+ ['Decifre <b>WECOE</b> testando as chaves, sem dica.',()=>DEC.replace(/ /g,'')==='MUSEU','Chave 10. Com só 26 chaves possíveis, a cifra de César cai testando todas: é a força bruta.',()=>'Decifrado agora: '+(DEC||'—')+'.']]);
 function draw(){const k=K.get(),txt=norm($('tx').value);let g=`<rect width="340" height="300" fill="#fff"/>`;const cx=170,cy=150;
  g+=`<circle cx="${cx}" cy="${cy}" r="135" fill="${NAVY}"/><circle cx="${cx}" cy="${cy}" r="100" fill="${PEACH}" stroke="${ORANGE}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="62" fill="#fff"/>`;
  const cnt={};for(const c of txt)if(AL.includes(c))cnt[c]=(cnt[c]||0)+1;
  for(let i=0;i<26;i++){const a=(i/26)*2*Math.PI-Math.PI/2,co=Math.cos(a),si=Math.sin(a);
   g+=TX(cx+118*co,cy+118*si+5,AL[i],{fs:13,c:cnt[AL[i]]?LIGHT:'#fff'});g+=TX(cx+82*co,cy+82*si+5,AL[(i-k+26)%26],{fs:13,c:NAVY});}
  g+=LN(cx,cy-62,cx,cy-140,ORANGE,3)+TX(cx,cy-4,'chave',{fs:11,c:GRAY})+TX(cx,cy+20,k,{fs:24,c:ORANGE});
- $('fig').innerHTML=SVG(340,300,g);const d=dec(txt,k);$('kd').textContent=d||'—';
+ $('fig').innerHTML=SVG(340,300,g);const d=dec(txt,k);DEC=d;$('kd').textContent=d||'—';
  const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,10),mx=top.length?top[0][1]:1;let f=`<rect width="340" height="130" fill="#fff"/>`;
  top.forEach(([c,v],i)=>{const h=v/mx*80,x=20+i*31;f+=`<rect x="${x}" y="${100-h}" width="22" height="${h}" rx="3" fill="${i?NAVY:ORANGE}"/>`+TX(x+11,95-h,v,{fs:9})+TX(x+11,116,c,{fs:11})+TX(x+11,128,'→'+AL[(AL.indexOf(c)-k+26)%26],{fs:8,c:GRAY});});
  $('fr').innerHTML=SVG(340,132,f);
- const ok=/SEGUNDA/.test(d);missao('m',ok,'Decifrado com a chave '+k+': '+d+'.','Gire até o bilhete fazer sentido. Dica: a letra mais frequente do texto cifrado (barra laranja) costuma esconder A, E ou O.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

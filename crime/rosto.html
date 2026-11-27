@@ -20,7 +20,12 @@
 (()=>{
 let P={oe:{x:72,y:110},od:{x:128,y:110},na:{x:100,y:145},bo:{x:100,y:180}};const LW=140;
 const BANCO=[];for(let i=0;i<40;i++)BANCO.push([0.34+Math.random()*0.14,0.75+Math.random()*0.5]);const VERD=[0.40,1.0];BANCO.push(VERD);
-const Lm=SL('sl',0.01,0.12,0.005,0.04,draw,v=>r2(v));
+const Lm=SL('sl',0.01,0.12,0.005,0.04,draw,v=>r2(v));let RO={n:0,dv:1,r2:1};const ach_=()=>RO.dv<Lm.get();
+MIS.def(()=>[
+ ['Deixe <b>só a pessoa certa</b> (ponto com borda azul) entre os "parecidos": ajuste os pontos do rosto e o limiar.',()=>ach_()&&RO.n==1,'Só a pessoa certa foi chamada de parecida.',()=>ach_()?'A pessoa certa está entre os parecidos, mas há '+(RO.n-1)+' falso(s) positivo(s). Diminua o limiar.':'A pessoa certa (borda azul) ainda não foi chamada. Ajuste os pontos do rosto ou o limiar.'],
+ ['Agora <b>aumente o limiar</b> até aparecerem pelo menos <b>5 falsos positivos</b>, com a pessoa certa ainda na lista.',()=>ach_()&&RO.n-1>=5,()=>'Limiar largo: a pessoa certa continua lá, mas com '+(RO.n-1)+' inocentes junto. São os falsos positivos.',()=>'Falsos positivos agora: '+Math.max(0,RO.n-(ach_()?1:0))+'.'],
+ ['Diminua o limiar até <b>ninguém</b> ser chamado de parecido.',()=>RO.n==0,'Limiar estreito demais: nem a pessoa certa aparece. É um falso negativo.',()=>'"Parecidos" agora: '+RO.n+'.'],
+ ['Arraste a boca para longe do nariz até a <b>razão 2 passar de 1,3</b>.',()=>RO.r2>1.3,'Razão 2 alta: boca longe do nariz. Cada razão descreve o rosto sem depender do tamanho da foto.',()=>'Razão 2 agora: '+r2(RO.r2)+'.']]);
 function draw(){const r1v=(P.od.x-P.oe.x)/LW,r2v=(P.bo.y-P.na.y)/(P.na.y-(P.oe.y+P.od.y)/2||1),lim=Lm.get();
  let g=`<ellipse cx="100" cy="135" rx="70" ry="95" fill="${PEACH}" stroke="${NAVY}" stroke-width="2"/>`;
  g+=LN(P.oe.x,P.oe.y,P.od.x,P.od.y,ORANGE,2)+LN(P.oe.x,P.oe.y,P.na.x,P.na.y,ORANGE,1.5)+LN(P.od.x,P.od.y,P.na.x,P.na.y,ORANGE,1.5)+LN(P.na.x,P.na.y,P.bo.x,P.bo.y,ORANGE,2);
@@ -32,9 +37,8 @@ function draw(){const r1v=(P.od.x-P.oe.x)/LW,r2v=(P.bo.y-P.na.y)/(P.na.y-(P.oe.y
  g+=`<circle cx="${sx(r1v)}" cy="${sy(r2v)}" r="5" fill="${NAVY}"/>`;
  $('fig').innerHTML=SVG(340,240,g);const svg=$('fig').querySelector('svg');Object.keys(P).forEach(k=>arrastar(svg,svg.querySelector('#'+k),(x,y)=>{P[k]={x:clamp(x,40,160),y:clamp(y,60,215)};draw();}));
  $('k1').textContent=r2(r1v);$('k2').textContent=r2(r2v);$('kn').textContent=n;
- const dv=Math.hypot(VERD[0]-r1v,VERD[1]-r2v);
- missao('m',dv<lim&&n==1,'Só a pessoa certa (ponto com borda azul) foi chamada de parecida. Agora aumente o limiar e veja os falsos positivos aparecerem.',
-  dv<lim?'A pessoa certa está entre os parecidos, mas há '+(n-1)+' falso(s) positivo(s). Diminua o limiar.':'A pessoa certa (borda azul) ainda não foi chamada. Ajuste os pontos do rosto ou o limiar.');}
+ const dv=Math.hypot(VERD[0]-r1v,VERD[1]-r2v);RO={n,dv,r2:r2v};
+MIS.ver('m');}
 draw();
 })();
 </script>

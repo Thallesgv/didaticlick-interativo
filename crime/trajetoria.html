@@ -18,9 +18,15 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let hv=1.6,hp=1.5;const k=38,y0=215,xv=250,xp=xv+2*k,xm=xv-5*k;
+let hv=1.6,hp=1.5,HM=0;const k=38,y0=215,xv=250,xp=xv+2*k,xm=xv-5*k;
+const st_=()=>'Altura no muro agora: '+r2(HM)+' m.';
+MIS.def(()=>[
+ ['O atirador do estilingue estava em pé sobre o muro de 1,2 m, com a mão erguida a <b>2,6 m</b> do chão. Com o furo do vidro em 1,60 m, onde precisa estar a marca na parede para a reta passar pela mão dele?',()=>Math.abs(hv-1.6)<.03&&Math.abs(HM-2.6)<.03,'Isso! Com a marca a 1,20 m, a reta desce 0,2 m por metro e passa a 2,60 m no muro: a mão do atirador.',()=>'Ajuste os furos. '+st_()],
+ ['Deixe a reta <b>horizontal</b>, como num tiro dado na altura do furo.',()=>Math.abs(hp-hv)<.01,()=>'Inclinação 0: a reta não sobe nem desce, e no muro a altura também é '+r2(hv)+' m.',()=>'Diferença entre os furos: '+r2(Math.abs(hp-hv))+' m.'],
+ ['Com o furo do vidro em 1,60 m, faça a reta chegar ao muro <b>bem no chão</b> (altura 0).',()=>Math.abs(hv-1.6)<.03&&Math.abs(HM)<.04,()=>'A reta sobe '+r2((hp-hv)/2)+' m por metro rumo à parede: a pedra pode ter vindo do chão, junto ao muro.',()=>Math.abs(hv-1.6)>=.03?'Volte o furo do vidro para 1,60 m.':st_()],
+ ['Agora o furo do vidro está em <b>2 m</b>. Onde fica a marca na parede para a reta passar pela mão do atirador (2,6 m)?',()=>Math.abs(hv-2)<.03&&Math.abs(HM-2.6)<.03,()=>'Marca a '+r2(hp)+' m: a reta desce '+r2((hv-hp)/2)+' m por metro, menos inclinada que antes.',()=>Math.abs(hv-2)>=.03?'Leve o furo do vidro para 2 m.':st_()]]);
 function Y(h){return y0-h*k;}
-function draw(){const m=(hp-hv)/2,hm=hv-m*5;let g=LN(5,y0,335,y0,NAVY,3);
+function draw(){const m=(hp-hv)/2,hm=hv-m*5;HM=hm;let g=LN(5,y0,335,y0,NAVY,3);
  g+=`<rect x="${xm-14}" y="${Y(1.2)}" width="28" height="${1.2*k}" fill="${LIGHT}"/>`+TX(xm,y0+14,'muro (−5 m)',{fs:10});
  g+=`<rect x="${xv-3}" y="${Y(4.5)}" width="6" height="${4.5*k}" fill="#BFD7F2"/>`+TX(xv,y0+14,'vidro',{fs:10})+`<rect x="${xp}" y="${Y(5)}" width="14" height="${5*k}" fill="${GRAYL}"/>`+TX(xp+7,y0+14,'parede',{fs:10});
  g+=LN(xm,Y(hm),xp,Y(hp),ORANGE,2,'6 4')+LN(xv,Y(hv),xp,Y(hp),ORANGE,3.5);
@@ -31,7 +37,7 @@ function draw(){const m=(hp-hv)/2,hm=hv-m*5;let g=LN(5,y0,335,y0,NAVY,3);
  $('fig').innerHTML=SVG(340,230,g);const svg=$('fig').querySelector('svg');
  arrastar(svg,svg.querySelector('#a'),(x,y)=>{hv=clamp(Math.round((y0-y)/k*20)/20,0.2,4.4);draw();});arrastar(svg,svg.querySelector('#b'),(x,y)=>{hp=clamp(Math.round((y0-y)/k*20)/20,0.2,4.9);draw();});
  $('km').textContent=r2(hm)+' m';$('ki').textContent=r2(Math.abs(m))+(m<0?' (desce)':m>0?' (sobe)':'');$('ka').textContent=r1(Math.atan(Math.abs(m))*DEG)+'°';
- missao('m',Math.abs(hv-1.6)<.03&&Math.abs(hm-2.6)<.03,'Isso! Com a marca a 1,20 m, a reta desce 0,2 m por metro e passa a 2,60 m no muro: a mão do atirador.','Ajuste os furos. Altura no muro agora: '+r2(hm)+' m.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

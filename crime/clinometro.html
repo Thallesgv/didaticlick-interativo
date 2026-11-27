@@ -19,7 +19,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let H=6.5;const D=SL('sd',2,20,0.5,8,draw,v=>r1(v)+' m'),A=SL('sa',5,75,1,20,draw,v=>v+'°');
+let H=6.5,CH=0,OK=false;const hits={};const D=SL('sd',2,20,0.5,8,draw,v=>r1(v)+' m'),A=SL('sa',5,75,1,20,draw,v=>v+'°');
+MIS.def(()=>[
+ ['Mire o clinômetro no <b>centro da janela</b>: ajuste a distância e o ângulo.',()=>OK,()=>'Na mira! A janela está a '+r2(CH)+' m: '+r1(D.get())+' · tg '+A.get()+'° + 1,5 = '+r2(CH)+' m.','Mire a linha laranja no centro da janela (azul-marinho).'],
+ ['Acerte a mesma janela de <b>dois lugares diferentes</b>.',()=>Object.values(hits).some(z=>z.size>=2),'Distâncias diferentes, ângulos diferentes, mesma altura: d · tg α + 1,5 dá sempre o mesmo resultado.',()=>OK?'Acertou daqui. Mude a distância e mire de novo.':'Mire a linha laranja no centro da janela.'],
+ ['Acerte <b>3 janelas</b> diferentes (use Nova janela misteriosa).',()=>Object.keys(hits).length>=3,'Três janelas medidas sem escada: só com distância, ângulo e tangente.',()=>'Janelas acertadas: '+Object.keys(hits).length+' de 3.'],
+ ['Acerte uma janela ficando a <b>6 m ou menos</b> da parede. O ângulo fica grande ou pequeno?',()=>OK&&D.get()<=6,()=>'Perto da parede o ângulo cresce: '+A.get()+'°. A tangente sobe muito rápido perto de 90°.',()=>D.get()>6?'Chegue mais perto da parede.':'Mire de novo a janela.']]);
 $('nova').onclick=()=>{H=rint(40,140)/10;draw();};
 function draw(){const d=D.get(),a=A.get(),t=Math.tan(a*RAD),h=d*t+1.5;const k=13,y0=220,xw=310,xp=xw-d*k;
  let g=LN(10,y0,335,y0,NAVY,3)+`<rect x="${xw}" y="${y0-16*k}" width="22" height="${16*k}" fill="${PEACH}" stroke="${NAVY}"/>`;
@@ -29,7 +34,7 @@ function draw(){const d=D.get(),a=A.get(),t=Math.tan(a*RAD),h=d*t+1.5;const k=13
  g+=`<path d="M${xp+34},${ey} A34,34 0 0 0 ${xp+34*Math.cos(a*RAD)},${ey-34*Math.sin(a*RAD)}" fill="none" stroke="${NAVY}" stroke-width="2"/>`+TX(xp+44,ey-8,'α',{fs:12,a:'start'});
  g+=LN(xp,y0+10,xw,y0+10,NAVY,1)+TX((xp+xw)/2,y0+22,'d = '+r1(d)+' m',{fs:10});
  $('fig').innerHTML=SVG(340,240,g);$('kh').textContent=r2(h)+' m';$('kt').textContent=r2(t);$('kx').textContent=r2(d*t)+' m';
- const ok=Math.abs(h-H)<0.12;missao('m',ok,'Na mira! A janela está a '+r2(h)+' m: '+r1(d)+' · tg '+a+'° + 1,5 = '+r2(h)+' m.','Mire a linha laranja no centro da janela (azul-marinho).');}
+ const ok=Math.abs(h-H)<0.12;CH=h;OK=ok;if(ok)(hits[H]=hits[H]||new Set()).add(d);MIS.ver('m');}
 draw();
 })();
 </script>
