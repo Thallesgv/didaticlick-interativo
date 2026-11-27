@@ -30,6 +30,12 @@ function PLOT(o,f){const x0=40,y0=200,W=290,H=180,X=v=>x0+(v-o.xmin)/(o.xmax-o.x
 const linha=(pts,X,Y,c,w)=>`<polyline points="${pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${w||2.5}"/>`;
 const ponto=(x,y,X,Y,c)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
 const Ts=SL('st',0,16,.25,9,draw,v=>fmt(v)),Es=SL('se',0,6,.5,2,draw,v=>fmt(v)),Vs=SL('sv',300,900,50,600,draw,String);
+const t3_=()=>8+Es.get()+900/Vs.get();
+MIS.def(()=>[
+ ['Faça a equipe chegar ao banco <b>exatamente aos 12 minutos</b>.',()=>Math.abs(t3_()-12)<1e-9,()=>'Chegada aos 12 min: 8 a pé + '+fmt(Es.get())+' de espera + '+r2(900/Vs.get())+' de carro.',()=>'Hoje a chegada é aos '+r2(t3_())+' min. Ajuste a espera ou o carro.'],
+ ['Com <b>1 minuto</b> de espera, faça a chegada ser aos <b>10 minutos</b>.',()=>Es.get()==1&&Math.abs(t3_()-10)<1e-9,'Carro a 900 m/min: os 900 m levam 1 minuto. 8 + 1 + 1 = 10.',()=>Es.get()!=1?'Ponha a espera em 1 min.':'Chegada aos '+r2(t3_())+' min.'],
+ ['Sem espera e com o carro a <b>300 m/min</b>, arraste o cronômetro até o <b>instante da chegada</b>.',()=>Es.get()==0&&Vs.get()==300&&Ts.get()==11,'8 + 0 + 900 ÷ 300 = 11 min: o gráfico vira horizontal ali.',()=>Es.get()!=0||Vs.get()!=300?'Ajuste espera 0 e carro a 300 m/min.':'Cronômetro em '+fmt(Ts.get())+' min.'],
+ ['Com <b>4 minutos</b> de espera, ponha o cronômetro num momento em que a equipe está <b>parada na praça</b>.',()=>Es.get()==4&&Ts.get()>8&&Ts.get()<12,()=>'Aos '+fmt(Ts.get())+' min, parados: o trecho horizontal do gráfico.',()=>Es.get()!=4?'Ponha a espera em 4 min.':'Procure o trecho horizontal do gráfico.']]);
 function draw(){const t=Ts.get(),e=Es.get(),v=Vs.get(),t1=8,t2=8+e,t3=t2+900/v,d=x=>x<=t1?75*x:x<=t2?600:x<=t3?600+v*(x-t2):1500;
  const tr=t<=t1?'a pé (75 m/min)':t<=t2?'parado na praça':t<=t3?'de carro ('+v+' m/min)':'na porta do banco';
  $('fig').innerHTML=PLOT({xmin:0,xmax:16,ymin:0,ymax:1600,dx:2,dy:400,xl:'tempo (min)',yl:'distância do galpão (m)'},(X,Y)=>linha([[0,0],[t1,600],[t2,600],[t3,1500],[16,1500]],X,Y,ORANGE)+ponto(t,d(t),X,Y,NAVY));
@@ -37,7 +43,7 @@ function draw(){const t=Ts.get(),e=Es.get(),v=Vs.get(),t1=8,t2=8+e,t3=t2+900/v,d
  [[0,'galpão'],[600,'praça'],[1500,'banco']].forEach(([x,n])=>g+=LN(Xm(x),20,Xm(x),54,NAVY,1.5)+TX(Xm(x),14,n,{fs:9}));
  g+=`<circle cx="${Xm(d(t))}" cy="37" r="8" fill="${t>t2&&t<=t3?BLUE:ORANGE}" stroke="#fff" stroke-width="2"/>`;$('mapa').innerHTML=SVG(340,60,g);
  $('kp').textContent=Math.round(d(t))+' m';$('kt').textContent=tr;$('kc').textContent=r2(t3)+' min';
- missao('m',Math.abs(t3-12)<1e-9,'Chegada aos 12 min: 8 a pé + '+fmt(e)+' de espera + '+r2(900/v)+' de carro.','Hoje a chegada é aos '+r2(t3)+' min. Ajuste a espera ou o carro.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

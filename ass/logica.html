@@ -21,7 +21,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let A=true,B=true;const OPS=['A E B','A OU B','NÃO A','NÃO B','NÃO (A E B)'];const C=chips('ch',OPS,0,draw);
+let A=true,B=true;const OPS=['A E B','A OU B','NÃO A','NÃO B','NÃO (A E B)'];
+MIS.def(()=>[
+ ['Encontre a <b>única linha</b> em que <b>A OU B</b> é falsa.',()=>C.get()==1&&!A&&!B,'Isso! A OU B só é falsa quando A e B são falsas ao mesmo tempo: fora dos dois círculos.',
+  ()=>C.get()==1?'A OU B está '+((A||B)?'verdadeira':'falsa')+' aqui. Procure a linha falsa.':'Para a missão, escolha A OU B.'],
+ ['Agora encontre a <b>única linha</b> em que <b>A E B</b> é verdadeira.',()=>C.get()==0&&A&&B,'A E B só é verdadeira com as duas verdadeiras: a interseção dos círculos.',()=>C.get()!=0?'Escolha A E B.':'Mude A e B.'],
+ ['Em que linha <b>NÃO (A E B)</b> é falsa?',()=>C.get()==4&&A&&B,'Só quando A E B é verdadeira. O NÃO inverte tudo: o resto do desenho fica laranja.',()=>C.get()!=4?'Escolha NÃO (A E B).':'Procure a linha falsa.'],
+ ['Encontre a linha em que <b>NÃO A</b> é verdadeira e <b>B</b> também é verdadeira.',()=>C.get()==2&&!A&&B,'A falsa e B verdadeira: o ponto fica só no círculo B.',()=>C.get()!=2?'Escolha NÃO A.':'Ajuste A e B.']]);const C=chips('ch',OPS,0,draw);
 const F_=[(a,b)=>a&&b,(a,b)=>a||b,(a,b)=>!a,(a,b)=>!b,(a,b)=>!(a&&b)];
 function draw(){const op=C.get(),f=F_[op],r=f(A,B);$('bA').textContent='A: '+(A?'V':'F');$('bB').textContent='B: '+(B?'V':'F');$('bA').className=A?'':'alt';$('bB').className=B?'':'alt';
  const ca=[130,90],cb=[210,90],rr=62;
@@ -40,7 +46,7 @@ function draw(){const op=C.get(),f=F_[op],r=f(A,B);$('bA').textContent='A: '+(A?
  let t='';const lin=[[true,true],[true,false],[false,true],[false,false]];const cols=['A','B',OPS[op]];cols.forEach((c,i)=>t+=TX(50+i*110,16,c,{fs:11}));
  lin.forEach(([a,b],k)=>{const on=a==A&&b==B,y=26+k*24;if(on)t+=RC(4,y,332,22,PEACH,'rx="4"');[a,b,f(a,b)].forEach((v,i)=>t+=TX(50+i*110,y+16,v?'V':'F',{fs:13,c:i==2?(v?GREEN:'#B91C1C'):NAVY}));});
  $('tab').innerHTML=SVG(340,126,t);$('kr').textContent=r?'verdadeiro':'falso';$('kl').textContent=lin.filter(([a,b])=>f(a,b)).length+' de 4';
- missao('m',op==1&&!A&&!B,'Isso! A OU B só é falsa quando A e B são falsas ao mesmo tempo: fora dos dois círculos.',op==1?'A OU B está '+(r?'verdadeira':'falsa')+' aqui. Procure a linha falsa.':'Para a missão, escolha A OU B.');}
+MIS.ver('m');}
 $('bA').onclick=()=>{A=!A;draw();};$('bB').onclick=()=>{B=!B;draw();};draw();
 })();
 </script>

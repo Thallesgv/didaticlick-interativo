@@ -26,6 +26,17 @@ function tempo(s){if(!isFinite(s))return 'mais que a idade do universo';if(s<60)
  if(s<31536000)return r1(s/86400)+' dias';const a=s/31536000;if(a<1e6)return Math.round(a).toLocaleString('pt-BR')+' anos';return grande(a)+' anos';}
 function grande(v){if(v<1e15)return Math.round(v).toLocaleString('pt-BR');const e=Math.floor(Math.log10(v));return fmt(Math.round(v/Math.pow(10,e)*10)/10)+' × 10<sup>'+e+'</sup>';}
 const N=SL('sn',10,150,1,40,draw),K=SL('sk',1,6,1,3,draw),Tt=SL('st',5,60,5,20,draw);let seq=[],ang=0,anim=null;
+const q_=()=>Math.pow(N.get(),K.get()),s_=()=>q_()*Tt.get();
+MIS.def(()=>[
+ ['Com <b>3 números na sequência</b> e <b>20 segundos</b> por tentativa, qual o <b>menor disco</b> que faz o teste de todas as sequências passar de <b>um ano</b>?',()=>K.get()==3&&Tt.get()==20&&N.get()==117,
+  'Isso! 117³ = 1.601.613 sequências, a 20 s cada, passam de um ano. Com 116 números ainda não passa.',
+  ()=>K.get()==3&&Tt.get()==20?(s_()>31536000?'Passou de um ano. Mas será que um disco menor também passa? Diminua os números.':'Ainda não chega a um ano. Aumente os números do disco.'):'Para a missão, use 3 números na sequência e 20 segundos.'],
+ ['Disco de <b>40 números</b> e <b>10 s</b> por tentativa: qual o <b>menor tamanho de sequência</b> que passa de <b>um dia</b>?',()=>N.get()==40&&Tt.get()==10&&K.get()==3,
+  '40³ = 64.000 sequências × 10 s = 640.000 s, mais de 7 dias. Com 2 números seriam 1.600 × 10 s = 16.000 s, menos de 5 horas.',
+  ()=>N.get()!=40||Tt.get()!=10?'Ajuste o disco em 40 números e 10 s.':'Tempo agora: '+tempo(s_())+'.'],
+ ['Monte um cofre com <b>exatamente 1.000.000</b> de sequências.',()=>q_()==1e6,()=>N.get()+'<sup>'+K.get()+'</sup> = 1.000.000. Há mais de um jeito!',()=>'Agora: '+grande(q_())+' sequências.'],
+ ['Com <b>4 números</b> e <b>5 s</b> por tentativa, qual o <b>menor disco</b> que passa de <b>10 anos</b>?',()=>K.get()==4&&Tt.get()==5&&N.get()==90,
+  '90⁴ = 65.610.000 × 5 s ≈ 10,4 anos. Com 89 números daria 9,9 anos.',()=>K.get()!=4||Tt.get()!=5?'Use 4 números na sequência e 5 s.':'Tempo agora: '+tempo(s_())+'.']]);
 function draw(){const n=N.get(),k=K.get(),t=Tt.get(),q=Math.pow(n,k),cx=110,cy=110,R=90;let g=`<circle cx="${cx}" cy="${cy}" r="${R+8}" fill="#5B6577"/><g transform="rotate(${ang} ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#9AA5B8" stroke="${NAVY}" stroke-width="2"/>`;
  const pas=n>60?10:5;for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n,big=i%pas==0,r1_=R-(big?12:6);g+=LN(cx+R*Math.cos(a),cy+R*Math.sin(a),cx+r1_*Math.cos(a),cy+r1_*Math.sin(a),NAVY,big?1.6:.6);
   if(big)g+=TX(cx+(R-22)*Math.cos(a),cy+(R-22)*Math.sin(a)+4,String(i),{fs:9});}
@@ -34,8 +45,7 @@ function draw(){const n=N.get(),k=K.get(),t=Tt.get(),q=Math.pow(n,k),cx=110,cy=1
  g+=TX(282,200,k+' casas de '+n+' opções',{fs:10});
  $('fig').innerHTML=SVG(340,225,g);
  $('kq').innerHTML=grande(q);$('kc').innerHTML=n+'<sup>'+k+'</sup>';const s=q*t;$('kt').textContent=tempo(s);
- const ano=s>31536000;missao('m',k==3&&t==20&&n==117,'Isso! 117³ = 1.601.613 sequências, a 20 s cada, passam de um ano. Com 116 números ainda não passa.',
-  k==3&&t==20?(ano?'Passou de um ano. Mas será que um disco menor também passa? Diminua os números.':'Ainda não chega a um ano. Aumente os números do disco.'):'Para a missão, use 3 números na sequência e 20 segundos.');}
+ MIS.ver('m');}
 $('gira').onclick=()=>{const n=N.get(),k=K.get();seq=[];let j=0;clearInterval(anim);anim=setInterval(()=>{if(j>=k){clearInterval(anim);return;}const v=rint(0,n-1);seq.push(v);ang=-v*360/n;j++;draw();},450);draw();};
 draw();
 })();

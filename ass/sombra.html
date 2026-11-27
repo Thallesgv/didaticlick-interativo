@@ -20,17 +20,26 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const S=SL('ss',20,70,1,37,draw,v=>v+'°');let H=12,acertos=0;
+let fb='';MIS.def(()=>[
+ ['A altura do prédio está escondida. Use as sombras para descobrir a altura de <b>três prédios</b>.',()=>acertos>=3,'Três prédios medidos pela sombra, como Tales!',
+  ()=>fb||'Digite a altura e aperte "Conferir". Dica: altura = sombra do prédio × (1,5 ÷ sombra do bastão).'],
+ ['Mova o sol até a sombra do bastão ficar <b>igual à altura dele</b> (1,5 m). Qual é a altura do sol?',()=>S.get()==45,
+  '45°: quando a sombra é igual à altura, o triângulo é isósceles e retângulo, e a sombra do prédio também fica igual à altura dele.',()=>'Sombra do bastão agora: '+r2(1.5/Math.tan(S.get()*RAD))+' m.'],
+ ['Agora faça a sombra do bastão ter o <b>dobro</b> da altura dele (cerca de 3 m).',()=>Math.abs(1.5/Math.tan(S.get()*RAD)-3)<.1,
+  ()=>'Sol a '+S.get()+'°: sombra ≈ 3 m. O prédio também tem sombra de quase o dobro da altura.',()=>'Sombra do bastão: '+r2(1.5/Math.tan(S.get()*RAD))+' m. Sol mais baixo, sombra mais longa.'],
+ ['Desafio: com o sol a <b>30°</b>, meça a altura de mais <b>um prédio</b> (acertos: 4).',()=>acertos>=4&&S.get()==30,'Quatro prédios! Com o sol a 30°, a sombra é cerca de 1,73 vez a altura.',
+  ()=>S.get()!=30?'Ponha o sol em 30° primeiro.':fb||'Aperte "Outro prédio" e meça.']]);
+const S=SL('ss',20,70,1,37,draw,v=>v+'°');let H=12,acertos=0,contado=false;
 function draw(){const ang=S.get()*RAD,sb=1.5/Math.tan(ang),sp=H/Math.tan(ang),k=Math.min(8,150/Math.max(sp,1));
  const y0=210,px=30,bx=250;let g=LN(10,y0,330,y0,NAVY,2);
  g+=RC(px,y0-H*k,40,H*k,NAVY);g+=PG([[px+40,y0],[px+40+sp*k,y0],[px+40,y0-H*k]],'rgba(14,35,84,.15)');g+=LN(px+40,y0-H*k,px+40+sp*k,y0,ORANGE,1.5,'5 3');
  g+=TX(px+20,y0-H*k-8,'h = ?',{fs:12,c:ORANGE});
  const kb=30;g+=LN(bx,y0,bx,y0-1.5*kb,NAVY,4)+PG([[bx,y0],[bx+sb*kb,y0],[bx,y0-1.5*kb]],'rgba(14,35,84,.15)')+TX(bx-4,y0-1.5*kb-6,'1,5 m',{fs:10});
  const sx=330-60*Math.cos(ang),sy=y0-170*Math.sin(ang);g+=`<circle cx="${clamp(sx,20,320)}" cy="${clamp(sy,18,190)}" r="12" fill="${ORANGE}"/>`;
- $('fig').innerHTML=SVG(340,230,g);$('kb').textContent=r2(sb)+' m';$('kp').textContent=r1(sp)+' m';$('kr').textContent=r2(1.5/sb);}
-function novo(){H=P([9,10.5,12,15,18,21,24].filter(x=>x!=H));$('resp').value='';draw();}
-$('conf').onclick=()=>{const v=+$('resp').value.replace(',','.');const ok=Math.abs(v-H)<=.3;if(ok)acertos++;
- missao('m',ok&&acertos>=3,'Três prédios medidos pela sombra, como Tales!',ok?'Certo: '+fmt(H)+' m. Acertos: '+acertos+' de 3. Aperte "Outro prédio".':'Ainda não. Dica: altura = sombra do prédio × (1,5 ÷ sombra do bastão).');};
+ $('fig').innerHTML=SVG(340,230,g);$('kb').textContent=r2(sb)+' m';$('kp').textContent=r1(sp)+' m';$('kr').textContent=r2(1.5/sb);MIS.ver('m');}
+function novo(){contado=false;fb='';H=P([9,10.5,12,15,18,21,24].filter(x=>x!=H));$('resp').value='';draw();}
+$('conf').onclick=()=>{const v=+$('resp').value.replace(',','.');const ok=Math.abs(v-H)<=.3;if(ok&&!contado){acertos++;contado=true;}
+ fb=ok?'Certo: '+fmt(H)+' m. Acertos: '+acertos+'. Aperte "Outro prédio".':'Ainda não. Dica: altura = sombra do prédio × (1,5 ÷ sombra do bastão).';MIS.ver('m');};
 $('novo').onclick=novo;draw();
 })();
 </script>

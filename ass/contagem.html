@@ -12,7 +12,7 @@
 <div class="card"><h2>Quem entrou no banco?</h2><p class="muted" style="margin-top:0">Uma pessoa acaba de passar pela porta. Olhe o desenho e a descrição e marque o tipo: <b>C</b> cliente, <b>E</b> entregador, <b>M</b> manutenção, <b>O</b> outros. Cada marca vira um risco na tabela.</p>
 <div class="fig" id="fig"></div>
 <div class="row"><button id="bC" class="alt">C · cliente</button><button id="bE" class="alt">E · entregador</button><button id="bM" class="alt">M · manutenção</button><button id="bO" class="alt">O · outros</button></div>
-<div id="m"></div></div>
+<div id="m"></div><div id="mm"></div></div>
 <div class="card"><h2>A tabela de frequência</h2><div class="fig" id="tab"></div><div class="fig" id="piz"></div>
 <div class="kpi"><div class="o">Visitantes anotados<b id="kt">0</b></div><div>Acertos seguidos<b id="ks">0</b></div><div>Tipo mais frequente<b id="km">—</b></div></div>
 <div class="row"><button id="zera" class="alt">Recomeçar</button></div></div>
@@ -26,7 +26,13 @@ const DESC=[['Senhora com bolsa e cartão do banco na mão','Rapaz de terno indo
  ['Motoboy com mochila térmica e uma caixa','Carteiro com uma pilha de envelopes','Moça entregando um pacote com nota fiscal'],
  ['Técnico de capacete e caixa de ferramentas','Eletricista com uma escada','Moço da limpeza do ar-condicionado com maleta'],
  ['Turista perguntando onde fica a praça','Criança procurando a mãe','Pessoa que só entrou para fugir da chuva']];
-let cont=[0,0,0,0],seq=0,cur=0,resp=false;
+let cont=[0,0,0,0],seq=0,cur=0,resp=false;const tot_=()=>cont.reduce((a,b)=>a+b,0);
+MIS.def(()=>[
+ ['Anote <b>20 visitantes seguidos sem errar</b>. Depois confira: as frequências relativas sempre somam 100%.',()=>seq>=20,'Vinte seguidos sem errar! Veja na tabela: as frequências relativas somam 100%.',()=>'Acertos seguidos: '+seq+' de 20.'],
+ ['Anote até ter <b>pelo menos um visitante de cada tipo</b> na tabela.',()=>cont.every(c=>c>0),'Os quatro tipos apareceram. Qual deles tem a menor frequência relativa?',()=>'Ainda faltam: '+NOM.filter((n,i)=>!cont[i]).join(', ')+'.'],
+ ['Chegue a <b>40 visitantes anotados</b> e veja se a porcentagem de clientes se estabiliza.',()=>tot_()>=40,()=>'40 anotados: clientes = '+pct(100*cont[0]/tot_(),0)+'. Com mais dados, as porcentagens mudam cada vez menos.',()=>'Anotados: '+tot_()+' de 40.'],
+ ['Com pelo menos <b>20 anotados</b>, os clientes passam de <b>60%</b>?',()=>tot_()>=20&&cont[0]/tot_()>.6,()=>'Sim: '+pct(100*cont[0]/tot_(),0)+' de clientes. A maioria de quem entra no banco é cliente.',
+  ()=>tot_()<20?'Anotados: '+tot_()+' de 20.':'Clientes: '+pct(100*cont[0]/tot_(),0)+'. Continue anotando.']]);
 function sorteia(){const r=Math.random();cur=r<.6?0:r<.75?1:r<.85?2:3;resp=false;desenha();}
 function pessoa(t){let g=RC(0,0,340,150,PEACH,'rx="12"')+RC(250,20,60,130,'#fff','stroke="'+NAVY+'" stroke-width="3"')+TX(280,14,'PORTA',{fs:9});
  const x=150,c=COR[t];g+=`<circle cx="${x}" cy="45" r="15" fill="#F2C9A0"/>`+RC(x-16,62,32,48,c,'rx="8"')+RC(x-14,110,10,32,NAVY)+RC(x+4,110,10,32,NAVY);
@@ -49,10 +55,9 @@ function desenha(){const d=DESC[cur][Math.floor((seq*7+cont.reduce((a,b)=>a+b,0)
  $('kt').textContent=tot;$('ks').textContent=seq;const mx=Math.max(...cont);$('km').textContent=tot?NOM[cont.indexOf(mx)]:'—';}
 TIP.forEach((t,i)=>$('b'+t).onclick=()=>{if(resp)return;resp=true;const ok=i==cur;
  if(ok){cont[i]++;seq++;}else seq=0;
- if(seq>=20)missao('m',true,'Vinte seguidos sem errar! Veja na tabela: as frequências relativas somam 100%.','');
- else $('m').innerHTML=`<div class="msg ${ok?'ok':'info'}">${ok?'✔ Anotado como '+NOM[i]+'.':'Ops: era '+NOM[cur]+'. A sequência voltou a zero (a marca errada não entra na tabela).'}</div>`;
+ MIS.ver('mm');$('m').innerHTML=`<div class="msg ${ok?'ok':'info'}">${ok?'✔ Anotado como '+NOM[i]+'.':'Ops: era '+NOM[cur]+'. A sequência voltou a zero (a marca errada não entra na tabela).'}</div>`;
  setTimeout(sorteia,ok?450:1300);});
-$('zera').onclick=()=>{cont=[0,0,0,0];seq=0;$('m').innerHTML='';sorteia();};sorteia();
+$('zera').onclick=()=>{cont=[0,0,0,0];seq=0;$('m').innerHTML='';sorteia();MIS.ver('mm');};sorteia();MIS.ver('mm');
 })();
 </script>
 </body>

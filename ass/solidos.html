@@ -39,6 +39,13 @@ function DESENHA(faces,o){const V=VIEW(o.ang,o.elev),k=o.k,cx=o.cx,cy=o.cy,all=f
 // Projeção isométrica fixa para os cubinhos.
 const ISO=(cx,cy,k)=>(x,y,z)=>[cx+(x-y)*.866*k,cy-((x+y)*.5+z)*k];
 let ang=.6,elev=.42,achou=false;const TP=chips('tipo',['Prisma','Pirâmide'],0,draw),N=SL('n',3,12,1,4,draw);
+const pr_=()=>TP.get()==0,n_=()=>N.get();
+MIS.def(()=>[
+ ['Encontre o <b>prisma com 30 arestas</b>. Depois, descubra uma pirâmide com o mesmo número de faces que ele.',()=>achou&&!pr_()&&n_()+1==12,'Prisma de base decagonal (30 arestas, 12 faces) e pirâmide de base com 11 lados (12 faces). Euler vale nos dois.',
+  ()=>achou?'Achou o prisma: base com 10 lados, 12 faces. Agora a pirâmide com 12 faces.':'Prisma: A = 3 · n. Qual n dá 30?'],
+ ['Encontre a <b>pirâmide com 10 arestas</b>.',()=>!pr_()&&n_()==5,'Pirâmide pentagonal: 5 arestas na base e 5 subindo até o topo.',()=>pr_()?'Escolha pirâmide.':'Pirâmide: A = 2 · n.'],
+ ['Encontre uma <b>pirâmide com 8 vértices</b>.',()=>!pr_()&&n_()==7,'Base de 7 lados: 7 vértices na base mais o topo.',()=>pr_()?'Escolha pirâmide.':'Pirâmide: V = n + 1.'],
+ ['Qual o prisma com <b>14 faces</b>? Confira Euler nele.',()=>pr_()&&n_()==12,'Base de 12 lados: 24 + 14 = 38 = 36 + 2.',()=>pr_()?'Prisma: F = n + 2.':'Escolha prisma.']]);
 toque('fig',(x,y,ini)=>{if(ini){toque.x0=x;toque.a0=ang;}ang=toque.a0+(x-toque.x0)/60;draw();});
 function draw(){const n=N.get(),pr=TP.get()==0,R=1.25,h=pr?1.7:2.1,base=[];for(let i=0;i<n;i++){const t=2*Math.PI*i/n;base.push([R*Math.cos(t),R*Math.sin(t)]);}
  const F=[];F.push({p:base.map(b=>[b[0],b[1],-h/2]),cor:ACOF});
@@ -48,8 +55,7 @@ function draw(){const n=N.get(),pr=TP.get()==0,R=1.25,h=pr?1.7:2.1,base=[];for(l
  const V=pr?2*n:n+1,A=pr?3*n:2*n,Fc=pr?n+2:n+1;$('kv').textContent=V;$('ka').textContent=A;$('kf').textContent=Fc;
  $('eu').innerHTML='Euler: V + F = '+V+' + '+Fc+' = <b>'+(V+Fc)+'</b> e A + 2 = '+A+' + 2 = <b>'+(A+2)+'</b>. Confere!';
  if(pr&&A==30)achou=true;
- missao('m',achou&&!pr&&Fc==12,'Prisma de base decagonal (30 arestas, 12 faces) e pirâmide de base com 11 lados (12 faces). Euler vale nos dois.',
-  achou?'Achou o prisma: base com 10 lados, 12 faces. Agora a pirâmide com 12 faces.':'Prisma: A = 3 · n. Qual n dá 30?');}
+MIS.ver('m');}
 draw();
 })();
 </script>

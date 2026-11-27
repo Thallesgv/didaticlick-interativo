@@ -21,6 +21,12 @@
 (()=>{
 const D=[8,9,10,11,12,13,14,15,17,18,19,20,22,24,25,23,21,20,19,18,17,16,15,16,16,12,9,3,5,11,10,9,8,7,6,5],TOT=D.reduce((a,b)=>a+b,0);
 const hora=i=>(10+Math.floor(i/6))+'h'+((i%6)*10||'00');let ini=6,vistos=new Set();
+const calma=L=>{let b=0,mv=1e9;for(let i=0;i+L<=36;i++){const t=D.slice(i,i+L).reduce((a,c)=>a+c,0);if(t<mv){mv=t;b=i;}}return b;},soma_=()=>D.slice(ini,ini+C.get()+1).reduce((a,b)=>a+b,0);
+MIS.def(()=>[
+ ['Com a janela de <b>10 minutos</b>, encontre o intervalo <b>mais calmo</b> do dia.',()=>C.get()==0&&ini==calma(1),'Achou: das 14h30 às 14h40 só há 3 pessoas em média, a janela mais calma do dia.',()=>'Nessa janela há '+soma_()+' pessoas. Procure onde as colunas são mais baixas.'],
+ ['Agora com janela de <b>20 minutos</b>: qual o intervalo mais calmo?',()=>C.get()==1&&ini==calma(2),()=>'Janela de 20 min mais calma: '+hora(ini)+' a '+hora(ini+2)+', com '+soma_()+' pessoas.',()=>C.get()!=1?'Escolha a janela de 20 min.':'Nessa janela há '+soma_()+' pessoas.'],
+ ['E com janela de <b>30 minutos</b>? A janela mais calma é a mesma?',()=>C.get()==2&&ini==calma(3),()=>'Janela de 30 min mais calma: '+hora(ini)+' a '+hora(ini+3)+', com '+soma_()+' pessoas.',()=>C.get()!=2?'Escolha a janela de 30 min.':'Nessa janela há '+soma_()+' pessoas.'],
+ ['Para evitar: ache os <b>10 minutos mais movimentados</b> do dia.',()=>C.get()==0&&D[ini]==25,'Das 12h20 às 12h30, 25 pessoas: a hora do almoço lota o saguão.',()=>C.get()!=0?'Volte para a janela de 10 min.':'Nessa janela há '+soma_()+' pessoas. Procure a coluna mais alta.']]);
 const C=chips('ch',['10 min','20 min','30 min'],0,draw);
 const x0=26,W=306,y0=170,H=140,bw=W/36,Y=v=>y0-v/26*H;
 function draw(){const L=C.get()+1;ini=clamp(ini,0,36-L);let g='';
@@ -34,8 +40,7 @@ function draw(){const L=C.get()+1;ini=clamp(ini,0,36-L);let g='';
  $('kj').textContent=hora(ini)+' a '+hora(ini+L);$('kp').textContent=s+' ('+pct(100*s/TOT,1)+' do dia)';$('ka').textContent=ac+' de '+TOT;
  let melhor=0,mv=1e9;for(let i=0;i+L<=36;i++){const t=D.slice(i,i+L).reduce((a,b)=>a+b,0);if(t<mv){mv=t;melhor=i;}}
  if(ini==melhor)vistos.add(L);
- missao('m',L==1&&ini==melhor,'Achou: das 14h30 às 14h40 só há 3 pessoas em média, a janela mais calma do dia.',
-  ini==melhor?'Essa é a janela de '+(L*10)+' minutos mais calma ('+s+' pessoas). Volte para 10 minutos para a missão principal.':'Nessa janela há '+s+' pessoas. Procure onde as colunas são mais baixas.');}
+ MIS.ver('m');}
 toque('fig',(x)=>{const L=C.get()+1;ini=clamp(Math.floor((x-x0)/bw-L/2+.5),0,36-L);draw();});
 draw();
 })();

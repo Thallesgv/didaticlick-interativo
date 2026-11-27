@@ -34,6 +34,12 @@ function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const 
  if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
 const REG=[['x = 2x',x=>2*x],['x = x + 7',x=>x+7],['x = 3x',x=>3*x],['x = x + 50',x=>x+50]];
 const C=chips('ch',REG.map(r=>r[0]),0,zera),I=SL('si',1,20,1,1,zera,String),L=SL('sl',10,1000,10,100,zera,v=>v.toLocaleString('pt-BR'));let x,v,hist,fim;
+MIS.def(()=>[
+ ['Com a regra <b>x = 2x</b>, começando em <b>1</b> e limite <b>1.000</b>: quantas voltas até o laço parar, e qual o x final?',()=>fim&&C.get()==0&&I.get()==1&&L.get()==1000,'Isso: 1, 2, 4, ..., 512, 1.024. São 10 voltas, e x termina em 1.024.',
+  ()=>fim?'O laço terminou com '+v+' voltas.':'Continue dando passos.'],
+ ['Regra <b>x = x + 7</b>, início <b>1</b>, limite <b>100</b>: rode até o fim. Quantas voltas?',()=>fim&&C.get()==1&&I.get()==1&&L.get()==100,'1, 8, 15, ..., 99, 106: 15 voltas. Somar é bem mais lento que dobrar.',()=>C.get()!=1||I.get()!=1||L.get()!=100?'Ajuste regra, início e limite.':'Continue dando passos.'],
+ ['Faça o laço terminar <b>sem dar nenhuma volta</b>.',()=>fim&&v==0,'Se a condição já começa falsa, o laço nem entra: 0 voltas.',()=>'Escolha um início que já não seja menor que o limite.'],
+ ['Com <b>x = 3x</b>, escolha início e limite para o laço dar <b>exatamente 5 voltas</b>.',()=>fim&&C.get()==2&&v==5,()=>'5 voltas: x foi multiplicado por 3⁵ = 243.',()=>C.get()!=2?'Escolha x = 3x.':fim?'Terminou com '+v+' voltas.':'Rode até o fim.']]);
 function zera(){x=I.get();v=0;hist=[[0,x,x<L.get()]];fim=!(x<L.get());draw();}
 function passo(){if(fim)return;x=REG[C.get()][1](x);v++;const c=x<L.get();hist.push([v,x,c]);if(!c)fim=true;draw();}
 function draw(){const lim=L.get(),dentro=!fim;let g='';
@@ -47,7 +53,7 @@ function draw(){const lim=L.get(),dentro=!fim;let g='';
  hs.forEach((h,i)=>{const y=20+i*18;t+=TX(50,y+13,String(h[0]),{fs:11,w:500})+TX(170,y+13,h[1].toLocaleString('pt-BR'),{fs:11,w:500})+TX(290,y+13,h[2]?'sim':'não: sai',{fs:11,c:h[2]?GREEN:ORANGE});});
  $('tab').innerHTML=SVG(340,24+hs.length*18,t);
  $('kx').textContent=x.toLocaleString('pt-BR');$('kv').textContent=v;$('ks').textContent=fim?'laço terminou':'dentro do laço';
- missao('m',fim&&C.get()==0&&I.get()==1&&lim==1000,'Isso: 1, 2, 4, ..., 512, 1.024. São 10 voltas, e x termina em 1.024.',fim?'O laço terminou com '+v+' voltas.':'Continue dando passos.');}
+MIS.ver('m');}
 $('pas').onclick=passo;$('tudo').onclick=()=>{let k=0;while(!fim&&k<500){passo();k++;}};$('zer').onclick=zera;zera();
 })();
 </script>

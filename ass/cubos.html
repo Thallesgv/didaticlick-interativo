@@ -40,6 +40,13 @@ function DESENHA(faces,o){const V=VIEW(o.ang,o.elev),k=o.k,cx=o.cx,cy=o.cy,all=f
 // Projeção isométrica fixa para os cubinhos.
 const ISO=(cx,cy,k)=>(x,y,z)=>[cx+(x-y)*.866*k,cy-((x+y)*.5+z)*k];
 const A_=SL('a',1,8,1,6,()=>{cam=99;draw();}),B_=SL('b',1,6,1,4,()=>{cam=99;draw();}),C_=SL('c',1,5,1,3,()=>{cam=99;draw();});let cam=99,anim=null;const ach=new Set();
+const V_=()=>A_.get()*B_.get()*C_.get(),dims_=()=>[A_.get(),B_.get(),C_.get()].sort((x,y)=>x-y).join('×');
+MIS.def(()=>[
+ ['Monte <b>três cofres diferentes</b> com exatamente <b>36 m³</b>. Medidas trocadas de lugar não contam como cofre novo.',()=>ach.size>=3,()=>'Três cofres de 36 m³: '+[...ach].join(', ')+'. Formas diferentes, mesmo volume.',
+  ()=>ach.size?'Já achou: '+[...ach].join(', ')+'. Faltam '+(3-ach.size)+'.':'Volume agora: '+A_.get()+' · '+B_.get()+' · '+C_.get()+' = '+V_()+' m³.'],
+ ['Monte o cofre do Banco Aurora (<b>6 × 4 × 3</b>) e aperte <b>Encher</b> até o fim.',()=>dims_()=='3×4×6'&&cam>=C_.get()&&cam<99,'72 cubos: 24 por camada, 3 camadas. 72 m³ = 72.000 litros.',()=>dims_()!='3×4×6'?'Ajuste 6, 4 e 3.':'Aperte "Encher" e espere as camadas.'],
+ ['Monte um cofre que caiba <b>60.000 litros</b>.',()=>V_()==60,()=>dims_()+' = 60 m³ = 60.000 L.',()=>'Agora: '+V_()+' m³ = '+(V_()*1000).toLocaleString('pt-BR')+' L.'],
+ ['Monte o <b>maior cofre possível</b>. Quantos litros ele guarda?',()=>V_()==240,'8 · 6 · 5 = 240 m³ = 240.000 litros.',()=>'Agora: '+V_()+' m³.']]);
 function draw(){const a=A_.get(),b=B_.get(),c=C_.get(),k=Math.min(300/((a+b)*.866),190/((a+b)*.5+c)),I=ISO(20+b*.866*k,210,k);let g='';
  const box=(x,y,z,cr)=>{const f=[[[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]],[[x,y,z],[x+1,y,z],[x+1,y,z+1],[x,y,z+1]],[[x,y,z],[x,y+1,z],[x,y+1,z+1],[x,y,z+1]]];
   f.forEach((q,i)=>g+=PG(q.map(p=>I(...p)),cr[i],`stroke="${NAVY}" stroke-width=".8"`));};
@@ -51,7 +58,7 @@ function draw(){const a=A_.get(),b=B_.get(),c=C_.get(),k=Math.min(300/((a+b)*.86
  g+=TX(...I(a/2,-.6,0),a+' m',{fs:11})+TX(...I(-.7,b/2,0),b+' m',{fs:11})+TX(I(a,0,c/2)[0]+16,I(a,0,c/2)[1],c+' m',{fs:11,a:'start'});
  $('fig').innerHTML=SVG(340,230,g);const V=a*b*c;$('kv').textContent=(top>=c?V:a*b*top)+' m³';$('kl').textContent=((top>=c?V:a*b*top)*1000).toLocaleString('pt-BR')+' L';$('kc').textContent=a+' · '+b+' = '+a*b;
  if(V==36)ach.add([a,b,c].sort((x,y)=>x-y).join('×'));
- missao('m',ach.size>=3,'Três cofres de 36 m³: '+[...ach].join(', ')+'. Formas diferentes, mesmo volume.',ach.size?'Já achou: '+[...ach].join(', ')+'. Faltam '+(3-ach.size)+'.':'Volume agora: '+a+' · '+b+' · '+c+' = '+V+' m³.');}
+MIS.ver('m');}
 $('go').onclick=()=>{clearInterval(anim);cam=0;draw();anim=setInterval(()=>{cam++;draw();if(cam>=C_.get())clearInterval(anim);},450);};
 draw();
 })();

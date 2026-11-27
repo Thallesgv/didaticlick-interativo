@@ -32,14 +32,20 @@ function reta(id,vals,lo,hi,passo,extra,depois){
  return draw;}
 const media=v=>v.reduce((a,b)=>a+b,0)/v.length;
 const mediana=v=>{const s=[...v].sort((a,b)=>a-b),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
-const v=[6,9,10,14,18];
+const v=[6,9,10,14,18];const dist=()=>{const m=media(v);let ac=0,ab=0;v.forEach(a=>{if(a>m)ac+=a-m;else ab+=m-a;});return[ac,ab];};
+MIS.def(()=>[
+ ['Faça a média dar <b>exatamente 12</b> usando <b>cinco valores diferentes</b>. Repare que as distâncias acima e abaixo da média ficam iguais.',()=>media(v)==12&&new Set(v).size==5,
+  ()=>'Equilíbrio em 12 com cinco valores diferentes: '+[...v].sort((a,b)=>a-b).join(', ')+' (soma 60).',
+  ()=>media(v)==12?'A média já é 12, mas há valores repetidos. Use cinco valores diferentes.':'Média atual: '+r2(media(v))+'. Para dar 12, a soma tem de ser 60 (agora é '+v.reduce((a,b)=>a+b,0)+').'],
+ ['Mantenha a média em <b>12</b>, mas com uma ronda de <b>20 minutos</b>.',()=>media(v)==12&&v.includes(20),'Um valor alto é compensado por valores abaixo de 12: a gangorra continua equilibrada.',()=>'Média '+r2(media(v))+'. Ponha um ponto no 20 e equilibre com os outros.'],
+ ['Faça a média dar <b>10</b> com as distâncias abaixo da média somando <b>8</b>.',()=>media(v)==10&&Math.abs(dist()[1]-8)<1e-9,'Média 10: as distâncias acima também somam 8. Sempre!',()=>'Média '+r2(media(v))+', distâncias abaixo: '+r2(dist()[1])+'.'],
+ ['Desafio: média <b>16</b> com <b>cinco valores diferentes</b>.',()=>media(v)==16&&new Set(v).size==5,'Soma 80 com cinco valores diferentes: 12, 14, 16, 18, 20 é um jeito.',()=>'Média 16 pede soma 80 (agora '+v.reduce((a,b)=>a+b,0)+').']]);
 const draw=reta('fig',v,4,20,2,(X,y0)=>{const m=media(v),xm=X(m);let g='';
  v.forEach(a=>{const c=a>m?ORANGE:BLUE;g+=LN(xm,y0+12,X(a),y0+12,c,3);});
  g+=PG([[xm,y0+2],[xm-12,y0+24],[xm+12,y0+24]],NAVY)+TX(xm,y0+50,'média '+r2(m),{fs:11,c:ORANGE});return g;},()=>{
  const m=media(v),s=v.reduce((a,b)=>a+b,0);let ac=0,ab=0;v.forEach(a=>{if(a>m)ac+=a-m;else ab+=m-a;});
  $('km').textContent=r2(m)+' min';$('ks').textContent=s+' ÷ 5';$('kd').textContent=r2(ac)+' | '+r2(ab);
- const dif=new Set(v).size==5;missao('m',m==12&&dif,'Equilíbrio em 12 com cinco valores diferentes: '+[...v].sort((a,b)=>a-b).join(', ')+' (soma 60).',
-  m==12?'A média já é 12, mas há valores repetidos. Use cinco valores diferentes.':'Média atual: '+r2(m)+'. Para dar 12, a soma tem de ser 60 (agora é '+s+').');});
+ MIS.ver('m');});
 draw();
 })();
 </script>

@@ -32,6 +32,13 @@ function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const 
  if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
 const Hh=SL('sh',860,885,1,868,zera,v=>Math.floor(v/60)+'h'+String(v%60).padStart(2,'0')),Pp=SL('sp',0,15,1,9,zera,String);
 const hm=v=>Math.floor(v/60)+'h'+String(v%60).padStart(2,'0');let st,h,p,r,log,prev=null,fins=new Set();
+const esp_=()=>log.filter(l=>l[0]=='Esperar 1 min').length,B_=()=>log.some(l=>l[0]=='Plano B');
+MIS.def(()=>[
+ ['Encontre uma situação que termina no <b>plano B</b> e outra que faz as <b>3 conferências</b>.',()=>fins.has('B')&&fins.has('C'),'Você testou os dois finais: o plano B e as 3 conferências. É assim que um teste de mesa cobre os caminhos do fluxograma.',
+  ()=>st=='fim'?(B_()?'Terminou no plano B.':'Terminou com as 3 conferências.')+' Agora busque o outro final.':'Continue dando passos.'],
+ ['Faça a equipe <b>esperar pelo menos 5 minutos</b> e ainda assim conferir o cofre (sem plano B).',()=>st=='fim'&&!B_()&&esp_()>=5,()=>'Esperou '+esp_()+' minutos e a janela abriu. O laço de espera funcionou.',()=>st=='fim'?'Esperas: '+esp_()+'. Comece mais cedo ou com mais gente no saguão.':'Continue dando passos.'],
+ ['Comece <b>já dentro da janela</b> (14h30 a 14h40, com até 5 pessoas) e vá direto às conferências.',()=>st=='fim'&&!B_()&&esp_()==0,'Sem nenhuma espera: a primeira decisão já dá sim.',()=>st=='fim'?'Teve espera ou plano B. Ajuste a hora e as pessoas.':'Continue dando passos.'],
+ ['Comece <b>depois das 14h40</b>. Qual o caminho mais curto até o Fim?',()=>st=='fim'&&Hh.get()>880,'Janela perdida: a decisão manda direto para o plano B.',()=>Hh.get()<=880?'Ponha o relógio depois das 14h40.':'Dê os passos até o Fim.']]);
 const N={ini:{tipo:'term',x:95,y:16,w:110,h:24,t:'Início'},ler:{tipo:'io',x:95,y:56,w:150,h:28,t:'Ler h e p'},d1:{tipo:'dec',x:95,y:120,w:180,h:66,t:'h entre 14h30 e 14h40\nE p ≤ 5 ?'},
  d2:{tipo:'dec',x:260,y:120,w:130,h:60,t:'Já passou\ndas 14h40?'},esp:{tipo:'proc',x:260,y:56,w:120,h:28,t:'Esperar 1 min'},pb:{tipo:'proc',x:260,y:200,w:120,h:30,t:'Plano B'},
  r0:{tipo:'proc',x:95,y:192,w:100,h:26,t:'r = 0'},d3:{tipo:'dec',x:95,y:250,w:110,h:50,t:'r &lt; 3 ?'},conf:{tipo:'proc',x:95,y:310,w:170,h:28,t:'Conferir; r = r + 1'},fim:{tipo:'term',x:260,y:290,w:110,h:26,t:'Fim'}};
@@ -51,8 +58,7 @@ function draw(){let g='';const L=(a,b,pts,rot)=>g+=setaSVG(pts,st==b&&prev==a,ro
  let t=TX(70,14,'Passo',{fs:10})+TX(190,14,'h',{fs:10})+TX(250,14,'p',{fs:10})+TX(310,14,'r',{fs:10});const ls=log.slice(-12);
  ls.forEach((l,i)=>{const y=20+i*17;t+=TX(70,y+12,l[0],{fs:10,w:500})+TX(190,y+12,l[1],{fs:10,w:500})+TX(250,y+12,String(l[2]),{fs:10,w:500})+TX(310,y+12,String(l[3]),{fs:10,w:500});});
  $('tab').innerHTML=SVG(340,24+ls.length*17,t);
- missao('m',fins.has('B')&&fins.has('C'),'Você testou os dois finais: o plano B e as 3 conferências. É assim que um teste de mesa cobre os caminhos do fluxograma.',
-  st=='fim'?(log.some(l=>l[0]=='Plano B')?'Terminou no plano B.':'Terminou com as 3 conferências.')+' Agora busque o outro final.':'Continue dando passos.');}
+MIS.ver('m');}
 $('pas').onclick=passo;$('tudo').onclick=()=>{let k=0;while(st!='fim'&&k<300){passo();k++;}};$('zer').onclick=zera;zera();
 })();
 </script>

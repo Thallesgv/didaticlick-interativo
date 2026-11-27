@@ -21,10 +21,16 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let BS,sel=0,pos=0,anim=null,ver;const DEN=[19.3,19.3,19.3,11.3,10.5,8.9,7.9];
+let fbTxt='';const fb_=()=>fbTxt;let BS,sel=0,pos=0,anim=null,ver,rod=0,contada=false;
+const certo=i=>ver[i]!==null&&ver[i]==(BS[i].d==19.3);
+MIS.def(()=>[
+ ['Descubra <b>quais das cinco barras</b> são de ouro de verdade (19,3 g/cm³). Acerte todas.',()=>rod>=1,'Todas certas! O ouro é o único com 19,3 g/cm³; as falsas têm a forma certa, mas a densidade não engana.',()=>fb_()],
+ ['Mergulhe a barra de <b>maior volume</b> do cofre.',()=>pos>=1&&BS[sel].v==Math.max(...BS.map(b=>b.v)),()=>'Barra '+'ABCDE'[sel]+': '+BS[sel].v+' cm³, o nível subiu mais com ela.',()=>'Mergulhe as barras e compare quanto a água sobe.'],
+ ['Desmascare uma <b>barra falsa</b>: dê o veredito "falsa" para uma barra que não é de ouro.',()=>BS.some((b,i)=>ver[i]===false&&b.d!=19.3),'Pega! A densidade dela é bem menor que 19,3 g/cm³.',()=>fb_()],
+ ['Aperte <b>Novas barras</b> e acerte as cinco de novo.',()=>rod>=2,'Duas rodadas perfeitas: d = m ÷ V nunca falha.',()=>rod<1?'Primeiro acerte uma rodada.':fb_()]]);const DEN=[19.3,19.3,19.3,11.3,10.5,8.9,7.9];
 function novas(){BS=[];for(let i=0;i<5;i++){const v=P([400,500,560,600,644,700]),d=P(DEN);BS.push({v,d,m:Math.round(v*d)});}
  if(!BS.some(b=>b.d==19.3))BS[rint(0,4)].d=19.3;if(BS.every(b=>b.d==19.3))BS[rint(0,4)].d=11.3;BS.forEach(b=>b.m=Math.round(b.v*b.d));
- ver=Array(5).fill(null);sel=0;pos=0;chips('bar',['A','B','C','D','E'],0,i=>{sel=i;pos=0;clearInterval(anim);draw();});draw();}
+ ver=Array(5).fill(null);sel=0;pos=0;contada=false;chips('bar',['A','B','C','D','E'],0,i=>{sel=i;pos=0;clearInterval(anim);draw();});draw();}
 function draw(){const b=BS[sel],x=40,w=170,y0=200,H=170,base=2000,cap=3000,Y=v=>y0-v/cap*H,nv=base+b.v*pos;let g='';
  g+=RC(x,Y(nv),w,y0-Y(nv),'rgba(36,87,214,.25)');
  for(let k=1;k<=3;k++)g+=LN(x+w,Y(k*1000),x+w-10,Y(k*1000),NAVY,1)+TX(x+w+4,Y(k*1000)+4,k+' L',{fs:9,a:'start',c:GRAY});
@@ -35,10 +41,10 @@ function draw(){const b=BS[sel],x=40,w=170,y0=200,H=170,base=2000,cap=3000,Y=v=>
  g+=RC(258,182,72,18,NAVY,'rx="4"')+RC(266,170,56,12,GRAYL,'rx="3"')+TX(294,195,(b.m/1000).toLocaleString('pt-BR')+' kg',{fs:11,c:'#fff'})+TX(294,164,'balança',{fs:9,c:GRAY});
  $('fig').innerHTML=SVG(340,230,g);$('km').textContent=b.m.toLocaleString('pt-BR')+' g';$('kv').textContent=pos>=1?b.v+' cm³':'?';
  $('kc').textContent=ver.filter(v=>v!==null).length+' de 5';
- const ok=ver.every((v,i)=>v!==null&&v==(BS[i].d==19.3)),errs=ver.filter((v,i)=>v!==null&&v!=(BS[i].d==19.3)).length;
+ const ok=ver.every((v,i)=>v!==null&&v==(BS[i].d==19.3));if(ok&&!contada){rod++;contada=true;}const ok_=ok,errs=ver.filter((v,i)=>v!==null&&v!=(BS[i].d==19.3)).length;
  const fb=ver[sel]===null?(pos>=1?'d = '+b.m+' ÷ '+b.v+' = ? Faça a conta e dê o veredito.':'Mergulhe a barra para medir o volume.'):
   'Barra '+'ABCDE'[sel]+': d = '+b.m+' ÷ '+b.v+' ≈ '+r1(b.m/b.v)+' g/cm³: '+(b.d==19.3?'ouro':'falsa')+'. Seu veredito: '+(ver[sel]==(b.d==19.3)?'certo.':'errado.');
- missao('m',ok,'Todas certas! O ouro é o único com 19,3 g/cm³; as falsas têm a forma certa, mas a densidade não engana.',fb+(errs?' ('+errs+' veredito(s) errado(s) até agora.)':''));}
+fbTxt=fb+(errs?' ('+errs+' veredito(s) errado(s) até agora.)':'');MIS.ver('m');}
 $('mg').onclick=()=>{clearInterval(anim);pos=0;anim=setInterval(()=>{pos=Math.min(1,pos+.05);draw();if(pos>=1)clearInterval(anim);},40);};
 const julga=o=>{if(pos<1){$('m').innerHTML='<div class="msg info">Primeiro mergulhe a barra para saber o volume.</div>';return;}ver[sel]=o;draw();};
 $('our').onclick=()=>julga(true);$('fal').onclick=()=>julga(false);$('nv').onclick=novas;

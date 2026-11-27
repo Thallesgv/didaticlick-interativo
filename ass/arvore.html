@@ -22,6 +22,13 @@
 <script>
 (()=>{
 const A=SL('sa',1,4,1,3,draw,String),B=SL('sb',1,4,1,2,draw,String),Cc=SL('sc',1,4,1,1,draw,String);let doze=new Set(),sel=-1,folhas=[];
+const niv_=()=>Cc.get()>1?[A.get(),B.get(),Cc.get()]:[A.get(),B.get()],tot_=()=>niv_().reduce((x,y)=>x*y,1);
+MIS.def(()=>[
+ ['Monte uma árvore com exatamente <b>12 pontas</b> de <b>dois jeitos diferentes</b> (por exemplo, mudando a ordem ou o número de etapas).',()=>doze.size>=2,
+  ()=>'Muito bem: '+[...doze].map(s=>s+' = 12').join(' e ')+'. O total só depende do produto das etapas.',()=>tot_()==12?'12 pontas! Agora monte 12 de outro jeito.':'Esta árvore tem '+tot_()+' pontas. Procure 12.'],
+ ['Monte uma árvore com <b>24 pontas</b>.',()=>tot_()==24,()=>niv_().join(' · ')+' = 24 caminhos.',()=>'Agora: '+niv_().join(' · ')+' = '+tot_()+'.'],
+ ['Monte a <b>maior árvore possível</b>. Quantas pontas ela tem?',()=>tot_()==64,'4 · 4 · 4 = 64 caminhos. A árvore cresce depressa!',()=>'Agora: '+tot_()+' pontas.'],
+ ['Monte <b>18 pontas</b> usando <b>três etapas</b>.',()=>Cc.get()>1&&tot_()==18,()=>niv_().join(' · ')+' = 18.',()=>Cc.get()==1?'Use a terceira etapa (mais de 1 opção).':'Agora: '+niv_().join(' · ')+' = '+tot_()+'.']]);
 const LET='ABCD';
 function draw(){const a=A.get(),b=B.get(),c=Cc.get(),niv=c>1?[a,b,c]:[a,b],tot=niv.reduce((x,y)=>x*y,1),H=Math.max(200,tot*9+20),xs=c>1?[16,110,210,300]:[16,150,300];
  let g='';folhas=[];const ypos=(lvl,idx,cnt)=>10+(idx+.5)*(H-20)/cnt;
@@ -32,8 +39,7 @@ function draw(){const a=A.get(),b=B.get(),c=Cc.get(),niv=c>1?[a,b,c]:[a,b],tot=n
  folhas.forEach((f,i)=>g+=`<circle cx="${f[0]}" cy="${f[1]}" r="${i==sel?6:3.5}" fill="${i==sel?ORANGE:BLUE}"/>`+(tot<=24?TX(f[0]+8,f[1]+3,f[2],{fs:8,a:'start',w:500}):''));
  $('fig').innerHTML=SVG(340,H,g);$('kp').textContent=tot;$('kc').textContent=niv.join(' · ')+' = '+tot;$('kk').textContent=sel>=0&&folhas[sel]?folhas[sel][2].split('').join(' → '):'—';
  if(tot==12)doze.add(niv.join('·'));
- missao('m',doze.size>=2,'Muito bem: '+[...doze].map(s=>s+' = 12').join(' e ')+'. O total só depende do produto das etapas.',
-  tot==12?'12 pontas! Agora monte 12 de outro jeito.':'Esta árvore tem '+tot+' pontas. Procure 12.');}
+MIS.ver('m');}
 toque('fig',(x,y,ini)=>{if(!ini)return;let m=1e9;folhas.forEach((f,i)=>{const d=Math.hypot(f[0]-x,f[1]-y);if(d<m){m=d;sel=i;}});draw();});
 draw();
 })();

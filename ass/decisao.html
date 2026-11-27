@@ -30,6 +30,13 @@ function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const 
  let g=`<path d="${d}" fill="none" stroke="${c}" stroke-width="${on?3:1.4}"/>`+PG([[b[0],b[1]],[b[0]-8*Math.cos(an-.4),b[1]-8*Math.sin(an-.4)],[b[0]-8*Math.cos(an+.4),b[1]-8*Math.sin(an+.4)]],c);
  if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
 const Hh=SL('sh',840,900,1,850,draw,v=>Math.floor(v/60)+'h'+String(v%60).padStart(2,'0')),Pp=SL('sp',0,15,1,3,draw,String);let abertos=new Set();
+const A_=()=>Hh.get()>=870&&Hh.get()<=880,ok_=()=>A_()&&Pp.get()<=5;
+MIS.def(()=>[
+ ['Com 3 pessoas no saguão, descubra <b>todos os minutos</b> em que o aviso "janela aberta" aparece. Teste a fronteira: 14h30 e 14h40 contam?',()=>abertos.size==11,
+  'Isso: com 3 pessoas, de 14h30 a 14h40, incluindo as duas pontas, são 11 minutos (o símbolo ≤ inclui a fronteira).',()=>'Minutos de janela aberta já encontrados (com 3 pessoas): '+abertos.size+'. Varra o relógio devagar.'],
+ ['Encontre um minuto <b>dentro do horário</b> em que o aviso <b>não</b> aparece.',()=>A_()&&Pp.get()>5,()=>'A é verdadeira, mas B é falsa ('+Pp.get()+' pessoas): no E, basta uma falsa para dar falso.',()=>A_()?'O horário está certo. O que mais a decisão confere?':'Ponha o relógio entre 14h30 e 14h40.'],
+ ['Qual o <b>maior número de pessoas</b> com a janela ainda aberta?',()=>ok_()&&Pp.get()==5,'5 pessoas: p ≤ 5 inclui o 5. Com 6, a janela fecha.',()=>ok_()?'Janela aberta com '+Pp.get()+'. Dá com mais?':'Primeiro abra a janela.'],
+ ['Teste a fronteira de cima: <b>14h41</b> com poucas pessoas abre a janela?',()=>Hh.get()==881&&Pp.get()<=5,'Não abre: 14h41 já passou de 14h40, e A fica falsa.',()=>'Ponha o relógio em 14h41 e p ≤ 5.']]);
 function draw(){const h=Hh.get(),p=Pp.get(),A=h>=870&&h<=880,B=p<=5,ok=A&&B;
  const n={ini:{tipo:'term',x:110,y:20,w:100,h:26,t:'Início'},ler:{tipo:'io',x:110,y:70,w:170,h:30,t:'Ler hora h e pessoas p'},
   dec:{tipo:'dec',x:110,y:150,w:200,h:80,t:'14h30 ≤ h ≤ 14h40\nE p ≤ 5 ?'},sim:{tipo:'proc',x:270,y:150,w:110,h:44,t:'Avisar:\njanela aberta'},
@@ -40,8 +47,7 @@ function draw(){const h=Hh.get(),p=Pp.get(),A=h>=870&&h<=880,B=p<=5,ok=A&&B;
  $('fig').innerHTML=SVG(340,262,g);
  $('ka').textContent=A?'V':'F';$('kb').textContent=B?'V':'F';$('ks').textContent=ok?'janela aberta':'esperar';
  if(ok&&p==3)abertos.add(h);
- missao('m',abertos.size==11,'Isso: com 3 pessoas, de 14h30 a 14h40, incluindo as duas pontas, são 11 minutos (o símbolo ≤ inclui a fronteira).',
-  'Minutos de janela aberta já encontrados (com 3 pessoas): '+abertos.size+'. Varra o relógio devagar.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

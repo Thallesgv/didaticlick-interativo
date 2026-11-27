@@ -24,13 +24,21 @@
 <script>
 (()=>{
 const DA=SL('da',50,1000,50,600,draw),TA=SL('ta',10,600,10,480,draw),DB=SL('db',50,1000,50,900,draw),TB=SL('tb',10,600,10,90,draw);let tt=-1,anim=null;
+const va_=()=>DA.get()/TA.get(),vb_=()=>DB.get()/TB.get();
+MIS.def(()=>[
+ ['Faça os dois terem <b>a mesma velocidade</b> com <b>distâncias diferentes</b>. Repare que as três unidades mudam juntas.',()=>Math.abs(va_()-vb_())<1e-9&&DA.get()!=DB.get(),
+  ()=>'Empate de velocidade com distâncias diferentes: '+DA.get()+' ÷ '+TA.get()+' = '+DB.get()+' ÷ '+TB.get()+' = '+r2(va_())+' m/s.',()=>'Laranja '+r2(va_())+' m/s, azul '+r2(vb_())+' m/s. Ajuste até empatar.'],
+ ['Faça o laranja correr a <b>36 km/h</b>.',()=>Math.abs(va_()*3.6-36)<1e-9,()=>DA.get()+' m em '+TA.get()+' s = 10 m/s = 36 km/h.',()=>'Laranja: '+r1(va_()*3.6)+' km/h. Lembre: 36 km/h = 10 m/s.'],
+ ['Faça o azul andar a <b>75 m/min</b>, o passo de Lara no ensaio.',()=>Math.abs(vb_()*60-75)<1e-9,()=>DB.get()+' m em '+TB.get()+' s = 1,25 m/s = 75 m/min.',()=>'Azul: '+r1(vb_()*60)+' m/min. 75 m/min = 1,25 m/s.'],
+ ['O azul deve ser <b>mais rápido</b>, mesmo percorrendo <b>mais distância</b> em <b>mais tempo</b> que o laranja.',()=>vb_()>va_()&&DB.get()>DA.get()&&TB.get()>TA.get(),'Mais distância e mais tempo, e mesmo assim mais rápido: o que importa é a divisão d ÷ t.',
+  ()=>'Azul: '+DB.get()+' m em '+TB.get()+' s; laranja: '+DA.get()+' m em '+TA.get()+' s.']]);
 const un=v=>r2(v)+' m/s · '+r1(v*60)+' m/min · '+r1(v*3.6)+' km/h';
 function draw(){const da=DA.get(),ta=TA.get(),db=DB.get(),tb=TB.get(),va=da/ta,vb=db/tb,dm=Math.max(da,db),X=d=>20+d/dm*300;let g='';
  [[da,ta,ORANGE,40],[db,tb,BLUE,100]].forEach(([d,t,c,y])=>{g+=RC(20,y-14,300,28,'#F3F4F6','rx="6"')+LN(X(d),y-18,X(d),y+18,c,3)+TX(X(d),y-22,d+' m',{fs:10,c});
   const pos=tt<0?0:Math.min(d,d/t*tt);g+=`<circle cx="${X(pos)}" cy="${y}" r="10" fill="${c}" stroke="#fff" stroke-width="2"/>`;});
  g+=TX(170,140,tt<0?'tempo: 0 s':'tempo: '+Math.round(tt)+' s',{fs:12});
  $('fig').innerHTML=SVG(340,150,g);$('ka').textContent=un(va);$('kb').textContent=un(vb);$('kc').textContent=Math.abs(va-vb)<1e-9?'empate':va>vb?'laranja':'azul';
- missao('m',Math.abs(va-vb)<1e-9&&da!=db,'Empate de velocidade com distâncias diferentes: '+da+' ÷ '+ta+' = '+db+' ÷ '+tb+' = '+r2(va)+' m/s.','Laranja '+r2(va)+' m/s, azul '+r2(vb)+' m/s. Ajuste até empatar.');}
+MIS.ver('m');}
 $('go').onclick=()=>{clearInterval(anim);tt=0;const T=Math.max(TA.get(),TB.get());anim=setInterval(()=>{tt+=T/80;if(tt>=T){tt=T;clearInterval(anim);}draw();},40);};
 draw();
 })();

@@ -22,13 +22,20 @@
 <script>
 (()=>{
 const C=chips('ch',['Sem repetição','Com repetição'],0,()=>{sen=[];draw();}),L=SL('sl',1,8,1,4,()=>{sen=[];draw();},String);let sen=[];
+const q_=()=>{let q=1;for(let i=0;i<L.get();i++)q*=C.get()==0?10-i:10;return q;};
+MIS.def(()=>[
+ ['Sem repetição, qual o <b>menor número de dígitos</b> que passa de <b>100.000 senhas</b>?',()=>C.get()==0&&L.get()==6,'Isso! 10 · 9 · 8 · 7 · 6 · 5 = 151.200. Com 5 dígitos seriam só 30.240.',
+  ()=>C.get()==0?(q_()>100000?'Passou de 100.000. Dá com menos dígitos?':'São '+q_().toLocaleString('pt-BR')+' senhas. Aumente os dígitos.'):'Para a missão, escolha "Sem repetição".'],
+ ['E <b>com repetição</b>? Qual o menor número de dígitos que passa de 100.000?',()=>C.get()==1&&L.get()==6,'10⁶ = 1.000.000. Com 5 dígitos seriam exatamente 100.000, que não passa.',()=>C.get()!=1?'Escolha "Com repetição".':'São '+q_().toLocaleString('pt-BR')+' senhas.'],
+ ['Encontre o tamanho que dá <b>exatamente 5.040</b> senhas sem repetição.',()=>C.get()==0&&L.get()==4,'10 · 9 · 8 · 7 = 5.040, o mesmo que 7!.',()=>'Agora: '+q_().toLocaleString('pt-BR')+'.'],
+ ['Sorteie uma senha de <b>8 dígitos sem repetição</b>. Algum algarismo se repetiu?',()=>C.get()==0&&L.get()==8&&sen.length==8,()=>'Senha '+sen.join('')+': 8 algarismos diferentes, entre 1.814.400 possíveis.',()=>C.get()!=0||L.get()!=8?'Escolha sem repetição e 8 dígitos.':'Aperte o botão para sortear.']]);
 function draw(){const sr=C.get()==0,l=L.get(),ops=[...Array(l)].map((_,i)=>sr?10-i:10),q=ops.reduce((a,b)=>a*b,1),w=Math.min(36,300/l-6);let g='';
  ops.forEach((o,i)=>{const x=170-(l*(w+8))/2+i*(w+8);g+=RC(x,30,w,48,sen.length?ORANGE:(sr?ORANGE:NAVY),'rx="6" opacity="'+(sen.length?1:.9)+'"')+TX(x+w/2,60,sen.length?String(sen[i]):String(o),{fs:16,c:'#fff'})+TX(x+w/2,96,(i+1)+'ª',{fs:9,c:GRAY});
   if(i<l-1)g+=TX(x+w+4,58,'·',{fs:16});});
  g+=TX(170,18,sen.length?'senha sorteada':'opções em cada casa',{fs:11,c:GRAY});
  const usados=sr&&sen.length?'':'';$('fig').innerHTML=SVG(340,110,g);
  $('kq').textContent=q.toLocaleString('pt-BR');$('kc').textContent=ops.join(' · ');$('kr').textContent=Math.pow(10,l).toLocaleString('pt-BR');
- missao('m',sr&&l==6,'Isso! 10 · 9 · 8 · 7 · 6 · 5 = 151.200. Com 5 dígitos seriam só 30.240.',sr?(q>100000?'Passou de 100.000. Dá com menos dígitos?':'São '+q.toLocaleString('pt-BR')+' senhas. Aumente os dígitos.'):'Para a missão, escolha "Sem repetição".');}
+MIS.ver('m');}
 $('sor').onclick=()=>{const l=L.get(),sr=C.get()==0;const d=[0,1,2,3,4,5,6,7,8,9];sen=[];for(let i=0;i<l;i++){if(sr){const j=rint(0,d.length-1);sen.push(d.splice(j,1)[0]);}else sen.push(rint(0,9));}draw();};
 draw();
 })();

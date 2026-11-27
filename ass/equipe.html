@@ -23,6 +23,13 @@
 (()=>{
 const NOM=['Vicente','Lara','Íris','Dante','Nina','Bento'],INI=['V','L','I','D','N','B'];let meu=new Set(),vistos=new Set();
 const K=SL('sk',0,6,1,3,()=>{meu.clear();draw();},String);
+const pos_=()=>{const k=K.get();if(meu.size!=k)return -1;const a=[...meu].sort().join(',');return grupos(k).findIndex(g=>g.join(',')==a);};
+MIS.def(()=>[
+ ['Para qual tamanho de grupo há <b>mais combinações</b>? Teste todos de 0 a 6.',()=>K.get()==3&&vistos.size>=4,'Isso! C(6, 3) = 20 é o maior número da linha 6: o meio do triângulo é sempre o maior.',
+  ()=>K.get()==3?'20 grupos. Compare com os outros tamanhos antes de decidir.':'C(6, '+K.get()+') = '+Cn(6,K.get())+'. Continue testando.'],
+ ['Dois tamanhos de grupo dão <b>15 combinações</b>. Ache os dois.',()=>vistos.has(2)&&vistos.has(4)&&(K.get()==2||K.get()==4),'C(6, 2) = C(6, 4) = 15: escolher quem vai é o mesmo que escolher quem fica.',()=>'C(6, '+K.get()+') = '+Cn(6,K.get())+'.'],
+ ['Monte o grupo de 3 que desce ao cofre: <b>Lara, Dante e Nina</b>. Que número ele tem na lista?',()=>K.get()==3&&[...meu].sort().join(',')=='1,3,4','Lara, Dante e Nina: um dos 20 grupos possíveis, a ordem não importa.',()=>K.get()!=3?'Escolha grupos de 3.':'Toque nos nomes para montar o grupo.'],
+ ['Monte o <b>último grupo</b> da lista de 3 (o nº 20).',()=>K.get()==3&&pos_()==19,'Dante, Nina e Bento: o 20º e último grupo de 3.',()=>K.get()!=3?'Escolha grupos de 3.':'Olhe o fim da lista e monte esse grupo.']]);
 const fat=n=>n<2?1:n*fat(n-1),Cn=(n,k)=>fat(n)/(fat(k)*fat(n-k));
 function grupos(k){const r=[];(function g(i,a){if(a.length==k){r.push([...a]);return;}for(let j=i;j<6;j++){a.push(j);g(j+1,a);a.pop();}})(0,[]);return r;}
 function draw(){const k=K.get(),gs=grupos(k);vistos.add(k);
@@ -33,7 +40,7 @@ function draw(){const k=K.get(),gs=grupos(k);vistos.add(k);
  let g='';for(let n=0;n<=6;n++)for(let j=0;j<=n;j++){const x=170+(j-n/2)*40,y=18+n*26,on=n==6&&j==k;g+=`<circle cx="${x}" cy="${y}" r="12" fill="${on?ORANGE:(j==0||j==n?PEACH:'#E8EDF7')}"/>`+TX(x,y+4,String(Cn(n,j)),{fs:10,c:on?'#fff':NAVY});}
  $('fig').innerHTML=SVG(340,190,g);
  $('kq').textContent=gs.length;$('kc').textContent='C(6, '+k+') = '+gs.length;$('kg').textContent=pos>=0?String(pos+1):'—';
- missao('m',k==3&&vistos.size>=4,'Isso! C(6, 3) = 20 é o maior número da linha 6: o meio do triângulo é sempre o maior.',k==3?'20 grupos. Compare com os outros tamanhos antes de decidir.':'C(6, '+k+') = '+gs.length+'. Continue testando.');}
+MIS.ver('m');}
 draw();
 })();
 </script>
