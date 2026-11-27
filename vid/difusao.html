@@ -9,7 +9,7 @@
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A célula que respira</h1></header>
 <main>
-<div class="card"><h2>Oxigênio entrando</h2><p class="muted" style="margin-top:0">As bolinhas azuis são moléculas de oxigênio entrando pela membrana. O abastecimento depende de área ÷ volume (3/r numa esfera): uma célula de raio 20 µm ou menor fica 100% abastecida. O tempo para o oxigênio chegar ao centro cresce com o quadrado do raio.</p>
+<div class="card"><h2>Oxigênio entrando</h2><p class="muted" style="margin-top:0">As duplas de bolinhas vermelhas são moléculas de oxigênio (O₂) entrando pela membrana; dentro da célula aparecem o núcleo (roxo) e as mitocôndrias (laranja), que usam o oxigênio. O abastecimento depende de área ÷ volume (3/r numa esfera): uma célula de raio 20 µm ou menor fica 100% abastecida. O tempo para o oxigênio chegar ao centro cresce com o quadrado do raio.</p>
 <div class="fig" id="fig"></div>
 <div class="sl" id="sr"><b>Raio da célula (µm)</b><input type="range"><span></span></div>
 <div class="kpi"><div class="o">Abastecimento<b id="ka"></b></div><div>Área ÷ volume<b id="kr"></b></div><div>Tempo até o centro (× célula de 10 µm)<b id="kt"></b></div></div>
@@ -29,13 +29,22 @@ let parts=[];let last=0;
 function nova(R){const a=Math.random()*2*Math.PI;return {a,d:R+20+Math.random()*30};}
 function draw(){const R=RR.get()*1.7+18;if(parts.length==0||parts.R!=R){parts=[];parts.R=R;for(let i=0;i<70;i++){const p=nova(R);p.d=Math.random()*(R+50);parts.push(p);}}
  render();$('ka').textContent=Math.round(ab())+'%';$('kr').textContent=r2(3/RR.get())+' por µm';$('kt').textContent=r2(tc())+' ×';MIS.ver('m');}
-function render(){const R=parts.R,cx=170,cy=125,f=ab()/100;const corCentro=f>=1?VERDE_C:f>=0.6?'#FDE68A':'#FCA5A5';
- let g=CI(cx,cy,R,`url(#gr)`,'stroke="'+VERDE_E+'" stroke-width="3"');
- g=`<defs><radialGradient id="gr"><stop offset="0" stop-color="${corCentro}"/><stop offset="1" stop-color="${VERDE_C}"/></radialGradient></defs>`+g;
- parts.forEach(p=>{g+=CI(cx+p.d*Math.cos(p.a),cy+p.d*Math.sin(p.a),2.6,BLUE);});
- g+=CI(cx,cy,4,NAVY)+TX(cx,cy+R+16>240?240:cy+R+16,'raio '+RR.get()+' µm',{fs:11});
+function render(){const R=parts.R,cx=170,cy=125,f=ab()/100;const nucleo=R*0.28;
+ let g=`<defs><radialGradient id="gr"><stop offset="0" stop-color="${f>=1?'#CDEBC4':f>=0.6?'#F4E3A1':'#E9B0A8'}"/><stop offset="${Math.max(0.05,Math.min(0.95,f))}" stop-color="${f>=1?'#D9F2D2':f>=0.6?'#F7EDC0':'#EEC4BC'}"/><stop offset="1" stop-color="#DDF3D6"/></radialGradient>
+ <radialGradient id="gn" cx=".4" cy=".35"><stop offset="0" stop-color="#B9A3E0"/><stop offset="1" stop-color="#6E4FA8"/></radialGradient><radialGradient id="gO" cx=".35" cy=".35"><stop offset="0" stop-color="#FF9A8E"/><stop offset="1" stop-color="#C8322A"/></radialGradient></defs>`;
+ g+=RC(0,0,340,250,'#EEF6FB');
+ g+=CI(cx,cy,R+3,'none','stroke="#7FB069" stroke-width="5"')+CI(cx,cy,R,'url(#gr)','stroke="#3F8F4A" stroke-width="1.5"');
+ let s=5;const rr=()=>{s=(s*9301+49297)%233280;return s/233280;};const nm=Math.min(9,Math.round(R/14));
+ for(let i=0;i<nm;i++){const a=rr()*6.28,d=nucleo+8+rr()*(R-nucleo-16),x=cx+Math.cos(a)*d,y=cy+Math.sin(a)*d,l=Math.min(14,R*0.16);
+  g+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${Math.round(rr()*180)})"><rect x="${-l}" y="${-l*0.42}" width="${2*l}" height="${l*0.84}" rx="${l*0.42}" fill="#F2A65A" stroke="#B5651D" stroke-width="1"/><path d="M${-l*0.7} 0 q${l*0.17} ${-l*0.3} ${l*0.35} 0 t${l*0.35} 0 t${l*0.35} 0 t${l*0.35} 0" stroke="#B5651D" stroke-width="1" fill="none"/></g>`;}
+ g+=CI(cx,cy,nucleo,'url(#gn)','stroke="#4B2E83" stroke-width="1.5"')+CI(cx+nucleo*0.25,cy-nucleo*0.15,nucleo*0.32,'#4B2E83','opacity=".6"');
+ if(f<1)g+=CI(cx,cy,R*(1-f)*0.9+2,'none','stroke="#C8322A" stroke-width="1.5" stroke-dasharray="4 3"')+TX(cx,cy-R*(1-f)*0.9-6,'falta oxigênio',{fs:10,c:'#C8322A'});
+ parts.forEach(p=>{const x=cx+p.d*Math.cos(p.a),y=cy+p.d*Math.sin(p.a),o=p.a*3;g+=`<g transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${Math.round(o*57)%360})"><circle cx="-2.4" r="2.9" fill="url(#gO)"/><circle cx="2.4" r="2.9" fill="url(#gO)"/></g>`;});
+ g+=RC(8,8,120,22,'#fff','rx="6" opacity=".9"')+`<g transform="translate(22 19)"><circle cx="-2.4" r="2.9" fill="url(#gO)"/><circle cx="2.4" r="2.9" fill="url(#gO)"/></g>`+TX(32,23,'= molécula de O₂',{fs:9.5,a:'start'});
+ g+=TX(cx,Math.min(244,cy+R+18),'raio '+RR.get()+' µm',{fs:11});
  $('fig').innerHTML=SVG(340,250,g);}
-function passo(t){if(t-last>50){last=t;const R=parts.R||30,v=1.2*20/Math.max(20,RR.get());parts.forEach(p=>{p.d-=p.d>R?1.5:v*(0.6+Math.random());p.a+=(Math.random()-0.5)*0.08;if(p.d<3)Object.assign(p,nova(R));});render();}requestAnimationFrame(passo);}
+const nucleoR=R=>R*0.3;
+function passo(t){if(t-last>50){last=t;const R=parts.R||30,v=1.2*20/Math.max(20,RR.get());parts.forEach(p=>{p.d-=p.d>R?1.5:v*(0.6+Math.random());p.a+=(Math.random()-0.5)*0.08;if(p.d<Math.max(nucleoR(R),R*(1-ab()/100)*0.9))Object.assign(p,nova(R));});render();}requestAnimationFrame(passo);}
 draw();requestAnimationFrame(passo);
 })();
 </script>

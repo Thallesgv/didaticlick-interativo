@@ -11,6 +11,7 @@
 <main>
 <div class="card"><h2>Bactérias na placa</h2><p class="muted" style="margin-top:0">Cada bactéria se divide em duas a cada intervalo. Mude o tempo, o intervalo de divisão e quantas havia no começo. Quando são muitas, cada pontinho passa a valer várias bactérias.</p>
 <div class="fig" id="fig"></div>
+<div class="row"><button id="play">▶ Ver a colônia crescer</button></div>
 <div class="sl" id="st"><b>Tempo passado (min)</b><input type="range"><span></span></div>
 <div class="sl" id="sd"><b>Uma divisão a cada (min)</b><input type="range"><span></span></div>
 <div class="sl" id="s0"><b>Bactérias no começo</b><input type="range"><span></span></div>
@@ -21,21 +22,27 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const T=SL('st',0,300,10,0,draw,v=>v+' min'),D=SL('sd',10,60,5,20,draw,v=>v+' min'),N0=SL('s0',1,8,1,1,draw);
+const T=SL('st',0,300,5,0,draw,v=>v+' min'),D=SL('sd',10,60,5,20,draw,v=>v+' min'),N0=SL('s0',1,8,1,1,draw);
 const nd=()=>Math.floor(T.get()/D.get()),tot=()=>N0.get()*Math.pow(2,nd());
 MIS.def(()=>[
  ['Começando com <b>1</b> bactéria e divisão a cada <b>20 min</b>, chegue a <b>1.024</b> bactérias.',()=>N0.get()==1&&D.get()==20&&tot()==1024,'1.024 = 2¹⁰: 10 divisões em 200 minutos.',()=>'Agora: '+fmt(tot())+' = '+N0.get()+' × 2'+SUP(nd())+'.'],
  ['Com <b>4</b> bactérias no começo, chegue a exatamente <b>256</b>.',()=>N0.get()==4&&tot()==256,'4 × 2⁶ = 256: seis divisões.',()=>N0.get()!=4?'Ponha 4 bactérias no começo.':'Agora: 4 × 2'+SUP(nd())+' = '+fmt(tot())+'.'],
  ['Passe de <b>um milhão</b> de bactérias, começando com 1.',()=>N0.get()==1&&tot()>1e6,()=>fmt(tot())+' = 2'+SUP(nd())+'. Bastam 20 divisões: 2²⁰ = 1.048.576.',()=>'Agora: 2'+SUP(nd())+' = '+fmt(tot())+'. Você precisa de pelo menos 20 divisões.'],
  ['Divisão a cada <b>30 min</b>, começando com 1: ache o <b>menor tempo</b> para passar de 1.000.',()=>D.get()==30&&N0.get()==1&&tot()>=1000&&T.get()-10<10*30,'300 min = 5 horas: 2¹⁰ = 1.024. Com 9 divisões (270 min) seriam só 512.',()=>D.get()!=30?'Mude o intervalo para 30 min.':'Agora: '+fmt(tot())+' em '+T.get()+' min.']]);
-function draw(){const n=tot(),cx=110,cy=118,R=100;let g=CI(cx,cy,R+6,'#E5E7EB')+CI(cx,cy,R,'#FFF8EE','stroke="#CBD5E1" stroke-width="2"');
+function draw(){const n=tot(),cx=110,cy=118,R=100;let g=`<defs><radialGradient id="gP" cx=".45" cy=".4"><stop offset="0" stop-color="#FFFDF6"/><stop offset="1" stop-color="#F4E6C8"/></radialGradient><linearGradient id="gB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9E39C"/><stop offset=".5" stop-color="#6FB34E"/><stop offset="1" stop-color="#3F7F2C"/></linearGradient></defs>`;
+ g+=CI(cx,cy,R+7,'#D7DEEA','stroke="#9AA8BD" stroke-width="1.5"')+CI(cx,cy,R,'url(#gP)','stroke="#CBD5E1" stroke-width="2"')+`<ellipse cx="${cx-38}" cy="${cy-55}" rx="34" ry="10" fill="#fff" opacity=".55" transform="rotate(-30 ${cx-38} ${cy-55})"/>`;
  const vale=n<=600?1:Math.pow(2,Math.ceil(Math.log2(n/600))),pts=Math.round(n/vale);let s=11;const r=()=>{s=(s*9301+49297)%233280;return s/233280;};
- for(let i=0;i<pts;i++){const a=r()*2*Math.PI,d=Math.sqrt(r())*(R-6);g+=`<ellipse cx="${(cx+d*Math.cos(a)).toFixed(1)}" cy="${(cy+d*Math.sin(a)).toFixed(1)}" rx="3.2" ry="1.7" fill="${VERDE_E}" transform="rotate(${Math.round(a*57)} ${(cx+d*Math.cos(a)).toFixed(1)} ${(cy+d*Math.sin(a)).toFixed(1)})"/>`;}
- g+=TX(cx,236,vale==1?'cada traço = 1 bactéria':'cada traço = '+fmt(vale)+' bactérias',{fs:10,c:GRAY});
+ const sz=pts<=8?9:pts<=40?6.5:pts<=150?4.6:3.4,Rc=Math.min(R-8,sz*1.25*Math.sqrt(pts)+4);const novo=T.get()%D.get()<D.get()*0.25&&nd()>0;
+ if(vale>1)g+=CI(cx,cy,Rc+2,'#CDE8B8','opacity=".55"');
+ for(let i=0;i<pts;i++){const a=r()*2*Math.PI,d=Math.sqrt(r())*Rc,x=(cx+d*Math.cos(a)).toFixed(1),y=(cy+d*Math.sin(a)).toFixed(1),rot=Math.round(r()*180);
+  const pinça=novo&&i%2==0;g+=`<g transform="translate(${x} ${y}) rotate(${rot})">`+(pinça?`<rect x="${-sz*1.05}" y="${-sz*0.42}" width="${sz*1.05}" height="${sz*0.84}" rx="${sz*0.42}" fill="url(#gB)" stroke="#2F6A22" stroke-width=".7"/><rect x="0" y="${-sz*0.42}" width="${sz*1.05}" height="${sz*0.84}" rx="${sz*0.42}" fill="url(#gB)" stroke="#2F6A22" stroke-width=".7"/>`:`<rect x="${-sz}" y="${-sz*0.42}" width="${sz*2}" height="${sz*0.84}" rx="${sz*0.42}" fill="url(#gB)" stroke="#2F6A22" stroke-width=".7"/>`)+'</g>';}
+ g+=TX(cx,236,vale==1?'cada bastonete = 1 bactéria':'cada bastonete = '+fmt(vale)+' bactérias',{fs:10,c:GRAY});
  const nmax=Math.floor(300/D.get()),y0=200,h=170;g+=LN(225,y0,330,y0,NAVY,1.5)+LN(225,y0,225,y0-h,NAVY,1.5)+TX(278,y0+14,'tempo',{fs:9});
  let pl='';for(let t=0;t<=T.get();t+=D.get()){const v=N0.get()*Math.pow(2,Math.floor(t/D.get())),mx=N0.get()*Math.pow(2,Math.max(1,nd()));pl+=(225+t/300*105).toFixed(1)+','+(y0-v/mx*h).toFixed(1)+' ';}
  g+=`<polyline points="${pl}" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`+TX(228,y0-h-4,fmt(n),{fs:10,a:'start',c:ORANGE});
  $('fig').innerHTML=SVG(340,245,g);$('kn').textContent=fmt(n);$('kd').textContent=nd();$('kp').textContent=N0.get()+' × 2'+SUP(nd());MIS.ver('m');}
+let anim=null;$('play').onclick=()=>{if(anim){clearInterval(anim);anim=null;$('play').textContent='▶ Ver a colônia crescer';return;}if(T.get()>=300)T.set(0);$('play').textContent='❚❚ Pausar';
+ anim=setInterval(()=>{const v=Math.min(300,T.get()+5);T.set(v);draw();if(v>=300){clearInterval(anim);anim=null;$('play').textContent='▶ Ver a colônia crescer';}},120);};
 draw();
 })();
 </script>
