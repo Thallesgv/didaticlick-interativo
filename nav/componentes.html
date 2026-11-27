@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decompor e somar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Decompor e somar</h1></header>
+<main>
+<div class="card"><h2>Cada seta vira leste e norte</h2><p class="muted" style="margin-top:0">Escolha módulo e rumo de dois vetores. Cada um se quebra em leste = v · sen θ e norte = v · cos θ. Somando os lestes e os nortes, sai a resultante (laranja).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="am"><b>Módulo de a</b><input type="range"><span></span></div>
+<div class="sl" id="ar"><b>Rumo de a</b><input type="range"><span></span></div>
+<div class="sl" id="bm"><b>Módulo de b</b><input type="range"><span></span></div>
+<div class="sl" id="br"><b>Rumo de b</b><input type="range"><span></span></div>
+<div id="tab"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha <b>a</b> com módulo 3 e <b>b</b> com módulo 4. Ajuste os rumos para a soma ter módulo exatamente <b>5</b>. Depois tente a maior e a menor soma possíveis.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SETA=(x1,y1,x2,y2,c,w)=>{w=w||3;const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),h=Math.min(9+w,L*.6);if(L<1)return '';
+ return LN(x1,y1,x2-Math.cos(a)*h*.7,y2-Math.sin(a)*h*.7,c,w)+`<polygon points="${x2},${y2} ${x2-h*Math.cos(a-.42)},${y2-h*Math.sin(a-.42)} ${x2-h*Math.cos(a+.42)},${y2-h*Math.sin(a+.42)}" fill="${c}"/>`;};
+const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=Math.round(r*100)/100;return r<0?r+360:r;};
+const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
+const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const AM=SL('am',1,5,1,3,draw),AR=SL('ar',0,345,15,0,draw,v=>v+'°'),BM=SL('bm',1,5,1,4,draw),BR=SL('br',0,345,15,60,draw,v=>v+'°');
+const comp=(m,t)=>[m*Math.sin(t*RAD),m*Math.cos(t*RAD)];
+function draw(){const a=comp(AM.get(),AR.get()),b=comp(BM.get(),BR.get()),s=[a[0]+b[0],a[1]+b[1]],m=Math.hypot(s[0],s[1]);
+ const k=12,ox=170,oy=125,X=e=>ox+e*k,Y=n=>oy-n*k;let g='';
+ for(let i=-9;i<=9;i++){g+=LN(X(i),Y(-9),X(i),Y(9),i?'#EEF2F7':GRAYL,1)+LN(X(-9),Y(i),X(9),Y(i),i?'#EEF2F7':GRAYL,1);}
+ g+=LN(X(0),Y(0),X(a[0]),Y(0),BLUE,1.5,'3 3')+LN(X(a[0]),Y(0),X(a[0]),Y(a[1]),BLUE,1.5,'3 3');
+ g+=LN(X(a[0]),Y(a[1]),X(s[0]),Y(a[1]),GREEN,1.5,'3 3')+LN(X(s[0]),Y(a[1]),X(s[0]),Y(s[1]),GREEN,1.5,'3 3');
+ g+=SETA(X(0),Y(0),X(a[0]),Y(a[1]),BLUE,3.5)+SETA(X(a[0]),Y(a[1]),X(s[0]),Y(s[1]),GREEN,3.5)+SETA(X(0),Y(0),X(s[0]),Y(s[1]),ORANGE,4.5);
+ g+=`<circle cx="${ox}" cy="${oy}" r="4" fill="${NAVY}"/>`+ROSA(318,40)+TX(10,20,'a (azul) + b (verde)',{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,250,g);
+ const row=(n,v,c)=>`<tr><td style="color:${c};font-weight:700">${n}</td><td>${SN(v[0])}</td><td>${SN(v[1])}</td><td>${r2(Math.hypot(v[0],v[1]))}</td></tr>`;
+ $('tab').innerHTML=`<table class="t"><tr><th></th><th>leste</th><th>norte</th><th>módulo</th></tr>${row('a',a,BLUE)}${row('b',b,GREEN)}${row('soma',s,ORANGE)}</table>`;
+ const tres=(AM.get()==3&&BM.get()==4)||(AM.get()==4&&BM.get()==3);
+ missao('m',tres&&Math.abs(m-5)<0.005,'Módulo 5! Os rumos diferem 90°: vetores perpendiculares somam por Pitágoras, √(3² + 4²) = 5. A maior soma (7) sai com rumos iguais; a menor (1), com rumos opostos.',
+  'Módulo da soma: √('+SN(s[0])+'² + '+SN(s[1])+'²) ≈ '+r2(m)+'.'+(tres?' Gire um dos rumos.':' Use módulos 3 e 4.'));}
+draw();
+})();
+</script>
+</body>
+</html>

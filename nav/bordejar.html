@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bordejar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Bordejar</h1></header>
+<main>
+<div class="card"><h2>Zigue-zague contra o vento</h2><p class="muted" style="margin-top:0">O vento sopra do norte, e o ponto de chegada está 10 léguas ao norte. Ninguém navega direto contra o vento: escolha o ângulo dos bordos com o vento e quantas viradas fazer. Mais perto do vento, cada bordo avança mais, mas a nau anda mais devagar.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sb"><b>Ângulo do bordo com o vento</b><input type="range"><span></span></div>
+<div class="chips" id="ch"></div>
+<div class="kpi"><div>Velocidade da nau<b id="kv"></b></div><div>Avanço contra o vento<b id="ka"></b></div><div>Distância navegada<b id="kd"></b></div><div class="o">Tempo<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Chegue ao ponto contra o vento no <b>menor tempo</b>. Repare que as viradas mudam o desenho e o afastamento máximo, mas não o tempo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SETA=(x1,y1,x2,y2,c,w)=>{w=w||3;const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),h=Math.min(9+w,L*.6);if(L<1)return '';
+ return LN(x1,y1,x2-Math.cos(a)*h*.7,y2-Math.sin(a)*h*.7,c,w)+`<polygon points="${x2},${y2} ${x2-h*Math.cos(a-.42)},${y2-h*Math.sin(a-.42)} ${x2-h*Math.cos(a+.42)},${y2-h*Math.sin(a+.42)}" fill="${c}"/>`;};
+const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=Math.round(r*100)/100;return r<0?r+360:r;};
+const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
+const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const VP=[[30,1.2],[45,2],[60,2.4],[75,2.6],[90,2.7]];
+const vel=b=>{for(let i=0;i<VP.length-1;i++){const [a0,v0]=VP[i],[a1,v1]=VP[i+1];if(b<=a1)return v0+(v1-v0)*(b-a0)/(a1-a0);}return 2.7;};
+const B=SL('sb',30,85,5,60,draw,v=>v+'°');const NS=[1,3,5,7];const VI=chips('ch',['1 virada','3 viradas','5 viradas','7 viradas'],1,draw);
+let melhor=Infinity;
+function draw(){const b=B.get(),v=vel(b),av=v*Math.cos(b*RAD),D=10,n=NS[VI.get()],nb=n+1,dist=D/Math.cos(b*RAD),tempo=dist/v,L=D/nb*Math.tan(b*RAD);
+ const k=Math.min(19,150/Math.max(L,0.1)),cx=170,by=228,X=e=>cx+e*k,Y=nn=>by-nn*k;
+ let g=`<rect x="0" y="0" width="340" height="250" fill="#EAF2FC"/>`;
+ for(let i=0;i<5;i++){const x=40+i*65;g+=SETA(x,4,x,24,'#2457D6',2);}
+ g+=TX(330,40,'vento do norte',{fs:9,a:'end',c:'#2457D6'});
+ g+=LN(X(0),Y(0),X(0),Y(D),NAVY,1.2,'5 4');
+ const pts=[[0,0]];for(let i=1;i<=nb;i++)pts.push([i%2?L:0,D*i/nb]);
+ for(let i=1;i<pts.length;i++)g+=SETA(X(pts[i-1][0]),Y(pts[i-1][1]),X(pts[i][0]),Y(pts[i][1]),ORANGE,3);
+ g+=`<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="${NAVY}"/><circle cx="${X(0)}" cy="${Y(D)}" r="7" fill="none" stroke="${GREEN}" stroke-width="3"/>`;
+ g+=TX(X(0)-10,Y(D)+4,'chegada',{fs:10,a:'end',c:GREEN})+TX(X(0)-10,Y(0)+4,'saída',{fs:10,a:'end'});
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kv').textContent=r2(v)+' léguas/h';$('ka').textContent=r2(av)+' légua/h';$('kd').textContent=r1(dist)+' léguas';$('kt').textContent=r1(tempo)+' h';
+ melhor=Math.min(melhor,tempo);
+ missao('m',b==45,'Menor tempo: '+r1(tempo)+' h. A 45° a nau faz 2 léguas/h e avança 2 · cos 45° ≈ 1,41 légua/h contra o vento. Mais perto do vento ela fica lenta; mais longe, avança pouco a cada légua.',
+  'Avanço contra o vento = velocidade · cos(ângulo) = '+r2(v)+' · cos '+b+'° ≈ '+r2(av)+' légua/h. Procure o ângulo em que esse avanço é o maior.');}
+draw();
+})();
+</script>
+</body>
+</html>

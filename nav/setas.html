@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Setas no mar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Setas no mar</h1></header>
+<main>
+<div class="card"><h2>Arraste a ponta da seta</h2><p class="muted" style="margin-top:0">A carta tem uma légua por quadradinho, com leste para a direita e norte para cima. A seta sai do ponto de partida. Arraste a ponta (ou toque na carta): as componentes, o módulo e o rumo aparecem na hora.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Componentes (leste; norte)<b id="kc"></b></div><div>Módulo (léguas)<b id="km"></b></div><div>Rumo<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O deslocamento <b>(3; 4)</b> tem módulo 5. Encontre <b>outro</b> deslocamento de exatamente <b>5 léguas</b> com componentes inteiras. Quantos você acha?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SETA=(x1,y1,x2,y2,c,w)=>{w=w||3;const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),h=Math.min(9+w,L*.6);if(L<1)return '';
+ return LN(x1,y1,x2-Math.cos(a)*h*.7,y2-Math.sin(a)*h*.7,c,w)+`<polygon points="${x2},${y2} ${x2-h*Math.cos(a-.42)},${y2-h*Math.sin(a-.42)} ${x2-h*Math.cos(a+.42)},${y2-h*Math.sin(a+.42)}" fill="${c}"/>`;};
+const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=Math.round(r*100)/100;return r<0?r+360:r;};
+const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
+const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+let E=3,N=4;const achados=new Set();const k=20,ox=130,oy=130;
+function draw(){let g='';
+ for(let i=-6;i<=6;i++){g+=LN(ox+i*k,oy-6*k,ox+i*k,oy+6*k,i?GRAYL:GRAY,i?1:1.5)+LN(ox-6*k,oy+i*k,ox+6*k,oy+i*k,i?GRAYL:GRAY,i?1:1.5);}
+ g+=`<circle cx="${ox}" cy="${oy}" r="${5*k}" fill="none" stroke="${LIGHT}" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+ g+=TX(ox+6*k+4,oy+4,'L',{fs:10,a:'start'})+TX(ox,oy-6*k-5,'N',{fs:10});
+ const px=ox+E*k,py=oy-N*k;
+ g+=LN(ox,oy,px,oy,BLUE,2,'4 3')+LN(px,oy,px,py,GREEN,2,'4 3');
+ g+=SETA(ox,oy,px,py,ORANGE,4)+`<circle id="ponta" cx="${px}" cy="${py}" r="9" fill="${ORANGE}" fill-opacity=".35"/>`;
+ g+=`<circle cx="${ox}" cy="${oy}" r="4" fill="${NAVY}"/>`;
+ g+=TX(262,40,'tracejado:',{fs:9,a:'start',c:GRAY})+TX(262,52,'pontas a',{fs:9,a:'start',c:GRAY})+TX(262,64,'5 léguas',{fs:9,a:'start',c:GRAY});
+ g+=TX(262,100,'leste '+SN(E),{fs:11,a:'start',c:BLUE})+TX(262,116,'norte '+SN(N),{fs:11,a:'start',c:GREEN});
+ $('fig').innerHTML=SVG(340,262,g);
+ const m=Math.hypot(E,N);$('kc').textContent=PAR(E,N);$('km').textContent=r2(m);$('kr').textContent=m?r1(RUMO(E,N))+'°':'—';
+ if(E*E+N*N==25&&!(E==3&&N==4))achados.add(E+','+N);
+ missao('m',achados.size>0,'Achou '+achados.size+' de 11 (além do (3; 4)). '+(achados.size<11?'Há mais: troque sinais e a ordem dos números, e não esqueça (5; 0).':'Todos! São 12 pontas inteiras no círculo de raio 5.'),
+  'Módulo atual: √('+E+'² + '+N+'²) = '+r2(m)+'. A ponta precisa cair no círculo tracejado, num cruzamento da grade.');
+ arrastar($('fig').querySelector('svg'),$('fig').querySelector('#ponta'),(x,y)=>{const e=clamp(Math.round((x-ox)/k),-6,6),n=clamp(Math.round((oy-y)/k),-6,6);if(e!=E||n!=N){E=e;N=n;draw();}});}
+draw();
+})();
+</script>
+</body>
+</html>
