@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa de Gabi · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O mapa de Gabi</h1></header>
+<main>
+<div class="card"><h2>Ligue os lugares</h2><p class="muted" style="margin-top:0">Toque num lugar e depois em outro para ligar uma rua entre eles. Tocar de novo nos mesmos dois apaga a rua. O número laranja em cima de cada lugar é o seu <b>grau</b>.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button class="alt" id="bl">Apagar todas</button><button class="alt" id="bg">Mostrar as ruas de Gabi</button></div>
+<div class="kpi"><div>Arestas<b id="ka"></b></div><div class="o">Soma dos graus<b id="ks"></b></div><div>Vértices ímpares<b id="ki"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ligue os lugares.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIDV={A:[40,190,'abrigo'],M:[150,205,'mercado'],Q:[115,110,'praça'],P:[255,160,'ponte'],H:[250,75,'hospital'],R:[100,28,'cais'],F:[303,120,'fábrica']};
+const RUAS=[['A','M',10],['A','Q',8],['M','Q',6],['M','P',12],['Q','P',15],['P','F',14],['Q','R',9],['R','F',30],['Q','H',11],['H','F',18],['H','P',7]];
+const ek=(a,b)=>a<b?a+b:b+a;
+function perto(V,x,y,r){let best=null,bd=r||22;for(const k in V){const d=Math.hypot(V[k][0]-x,V[k][1]-y);if(d<bd){bd=d;best=k;}}return best;}
+function pertoAresta(V,E,x,y){let best=null,bd=14;E.forEach((e,i)=>{const [a,b]=e,ax=V[a][0],ay=V[a][1],bx=V[b][0],by=V[b][1],L=(bx-ax)**2+(by-ay)**2;let t=((x-ax)*(bx-ax)+(y-ay)*(by-ay))/L;t=Math.max(0.1,Math.min(0.9,t));const d=Math.hypot(ax+t*(bx-ax)-x,ay+t*(by-ay)-y);if(d<bd){bd=d;best=i;}});return best;}
+function no(V,k,fill,txt,extra){const [x,y,n]=V[k];return CI(x,y,13,fill||'#FDE9D8','stroke="#0E2354" stroke-width="1.5"'+(extra||''))+TX(x,y+4,txt===undefined?k:txt,{fs:11})+(n?TX(x,y+26,n,{fs:8.5,c:GRAY,w:500}):'');}
+function dijkstra(V,E,s,fora){const d={},pr={},vis={};for(const k in V)d[k]=Infinity;d[s]=0;const ordem=[];
+ for(;;){let u=null;for(const k in V)if(!vis[k]&&d[k]<Infinity&&(u===null||d[k]<d[u]))u=k;if(u===null)break;vis[u]=1;ordem.push(u);
+  E.forEach(e=>{if(fora&&fora.has(ek(e[0],e[1])))return;const [a,b,w]=e;let v=null;if(a==u)v=b;else if(b==u)v=a;else return;if(d[u]+w<d[v]){d[v]=d[u]+w;pr[v]=u;}});}
+ return {d,pr,ordem};}
+function caminho(pr,s,t){const c=[t];while(c[0]!=s){if(!pr[c[0]])return null;c.unshift(pr[c[0]]);}return c;}
+let E=new Set(),sel=null,tentou=false;
+$('bl').onclick=()=>{E.clear();sel=null;draw();};$('bg').onclick=()=>{E=new Set(RUAS.map(r=>ek(r[0],r[1])));sel=null;draw();};
+const grau=k=>[...E].filter(e=>e.includes(k)).length,soma=()=>Object.keys(CIDV).reduce((s,k)=>s+grau(k),0),impares=()=>Object.keys(CIDV).filter(k=>grau(k)%2).length;
+const gabi=()=>E.size==11&&RUAS.every(r=>E.has(ek(r[0],r[1])));
+MIS.def(()=>[
+ ['Ligue as <b>11 ruas</b> do grafo de Gabi (veja a figura do livro) ou toque em "Mostrar as ruas de Gabi".',gabi,()=>'11 arestas, soma dos graus 22 = 2 × 11.',()=>E.size+' ruas ligadas.'],
+ ['Com as ruas de Gabi, ligue <b>mais uma rua</b> de modo que a praça fique com grau <b>6</b>.',()=>grau('Q')==6&&E.size==12,()=>'Grau 6 na praça. A soma dos graus subiu 2: de 22 para 24.',()=>'A praça tem grau '+grau('Q')+'.'],
+ ['Tente fazer a <b>soma dos graus</b> dar um número <b>ímpar</b>. Depois de 5 ruas novas, veja o que acontece.',()=>tentou,()=>'Impossível! Cada rua soma 2 (uma para cada ponta), então a soma é sempre par. E os vértices ímpares vêm sempre aos pares.',()=>'Soma agora: '+soma()+'. Continue tentando.']]);
+let mudancas=0;
+toque('fig',(x,y,ini)=>{if(!ini)return;const k=perto(CIDV,x,y);if(!k)return;if(sel===null){sel=k;}else if(sel==k){sel=null;}else{const e=ek(sel,k);E.has(e)?E.delete(e):E.add(e);sel=null;if(MIS.i==2&&++mudancas>=5)tentou=true;}draw();});
+function draw(){let g='';[...E].forEach(e=>{const a=CIDV[e[0]],b=CIDV[e[1]];g+=LN(a[0],a[1],b[0],b[1],'#9AA7BD',2.5);});
+ for(const k in CIDV){g+=no(CIDV,k,sel==k?ORANGE:'#FDE9D8');const gr=grau(k);g+=CI(CIDV[k][0]+13,CIDV[k][1]-13,8,gr%2?'#F7821F':'#fff','stroke="#F7821F"')+TX(CIDV[k][0]+13,CIDV[k][1]-10,gr,{fs:9,c:gr%2?'#fff':ORANGE});}
+ $('fig').innerHTML=SVG(342,236,g);$('ka').textContent=E.size;$('ks').textContent=soma();$('ki').textContent=impares();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

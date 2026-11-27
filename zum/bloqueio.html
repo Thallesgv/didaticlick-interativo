@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ruas fechadas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Ruas fechadas</h1></header>
+<main>
+<div class="card"><h2>Feche e abra ruas</h2><p class="muted" style="margin-top:0">Toque perto do meio de uma rua para fechá-la (fica tracejada) ou abri-la. O caminho mais curto do abrigo à fábrica é recalculado na hora.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button class="alt" id="bz">Abrir todas</button></div>
+<div class="kpi"><div>Ruas fechadas<b id="kn"></b></div><div class="o">Caminho<b id="kc"></b></div><div>Tempo<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Feche ruas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIDV={A:[40,190,'abrigo'],M:[150,205,'mercado'],Q:[115,110,'praça'],P:[255,160,'ponte'],H:[250,75,'hospital'],R:[100,28,'cais'],F:[303,120,'fábrica']};
+const RUAS=[['A','M',10],['A','Q',8],['M','Q',6],['M','P',12],['Q','P',15],['P','F',14],['Q','R',9],['R','F',30],['Q','H',11],['H','F',18],['H','P',7]];
+const ek=(a,b)=>a<b?a+b:b+a;
+function perto(V,x,y,r){let best=null,bd=r||22;for(const k in V){const d=Math.hypot(V[k][0]-x,V[k][1]-y);if(d<bd){bd=d;best=k;}}return best;}
+function pertoAresta(V,E,x,y){let best=null,bd=14;E.forEach((e,i)=>{const [a,b]=e,ax=V[a][0],ay=V[a][1],bx=V[b][0],by=V[b][1],L=(bx-ax)**2+(by-ay)**2;let t=((x-ax)*(bx-ax)+(y-ay)*(by-ay))/L;t=Math.max(0.1,Math.min(0.9,t));const d=Math.hypot(ax+t*(bx-ax)-x,ay+t*(by-ay)-y);if(d<bd){bd=d;best=i;}});return best;}
+function no(V,k,fill,txt,extra){const [x,y,n]=V[k];return CI(x,y,13,fill||'#FDE9D8','stroke="#0E2354" stroke-width="1.5"'+(extra||''))+TX(x,y+4,txt===undefined?k:txt,{fs:11})+(n?TX(x,y+26,n,{fs:8.5,c:GRAY,w:500}):'');}
+function dijkstra(V,E,s,fora){const d={},pr={},vis={};for(const k in V)d[k]=Infinity;d[s]=0;const ordem=[];
+ for(;;){let u=null;for(const k in V)if(!vis[k]&&d[k]<Infinity&&(u===null||d[k]<d[u]))u=k;if(u===null)break;vis[u]=1;ordem.push(u);
+  E.forEach(e=>{if(fora&&fora.has(ek(e[0],e[1])))return;const [a,b,w]=e;let v=null;if(a==u)v=b;else if(b==u)v=a;else return;if(d[u]+w<d[v]){d[v]=d[u]+w;pr[v]=u;}});}
+ return {d,pr,ordem};}
+function caminho(pr,s,t){const c=[t];while(c[0]!=s){if(!pr[c[0]])return null;c.unshift(pr[c[0]]);}return c;}
+let fora=new Set();$('bz').onclick=()=>{fora.clear();draw();};
+const R=()=>{const r=dijkstra(CIDV,RUAS,'A',fora);return {t:r.d.F,c:r.d.F<Infinity?caminho(r.pr,'A','F'):null};};
+const ponteFech=()=>RUAS.filter(r=>r.includes('P')).every(r=>fora.has(ek(r[0],r[1])));
+MIS.def(()=>[
+ ['Feche as <b>4 ruas da ponte</b> (P) e veja o novo caminho.',()=>ponteFech()&&fora.size==4,()=>'Sem a ponte: A, Q, H, F, com 37 minutos. Só 1 minuto a mais!',()=>'Ruas da ponte fechadas: '+RUAS.filter(r=>r.includes('P')&&fora.has(ek(r[0],r[1]))).length+' de 4.'],
+ ['Feche mais ruas até o caminho mais curto ser <b>pelo rio</b> (47 min).',()=>R().t==47,()=>'A, Q, R, F: 47 minutos. O caminho longo do rio virou a única saída boa.',()=>{const r=R();return r.t==Infinity?'Fechou demais: a fábrica ficou isolada.':'Agora: '+r.t+' min.';}],
+ ['Abra tudo e separe o abrigo da fábrica fechando o <b>menor número</b> de ruas.',()=>R().t==Infinity&&fora.size==2,()=>'2 ruas bastam: o abrigo só tem duas saídas (A-M e A-Q). Nenhuma rua sozinha separa o grafo: ele não tem pontes.',()=>R().t==Infinity?'Separou, mas com '+fora.size+' ruas. Dá com menos.':'Ainda há caminho.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const i=pertoAresta(CIDV,RUAS,x,y);if(i===null)return;const e=ek(RUAS[i][0],RUAS[i][1]);fora.has(e)?fora.delete(e):fora.add(e);draw();});
+function draw(){const r=R(),on=new Set();if(r.c)for(let i=1;i<r.c.length;i++)on.add(ek(r.c[i-1],r.c[i]));let g='';
+ RUAS.forEach(([a,b,w])=>{const A=CIDV[a],B=CIDV[b],e=ek(a,b),f=fora.has(e),h=on.has(e);g+=LN(A[0],A[1],B[0],B[1],f?'#E5A3A1':(h?ORANGE:'#9AA7BD'),h?4:2.5,f?'5 4':'');const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2;
+  g+=f?TX(mx,my+4,'✕',{fs:13,c:'#C0504D'}):RC(mx-10,my-8,20,15,'#fff','rx="3" stroke="#D7DEEA"')+TX(mx,my+4,w,{fs:8.5});});
+ for(const k in CIDV)g+=no(CIDV,k,(k=='A'||k=='F')?ORANGE:'#FDE9D8');
+ $('fig').innerHTML=SVG(342,236,g);$('kn').textContent=fora.size;$('kc').textContent=r.c?r.c.join(' '):'não há';$('kt').textContent=r.t<Infinity?r.t+' min':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

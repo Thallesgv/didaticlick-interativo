@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A rota mais curta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A rota mais curta</h1></header>
+<main>
+<div class="card"><h2>O método de Dijkstra</h2><p class="muted" style="margin-top:0">Toque num lugar para escolher a saída. Depois aperte "Próximo passo": o lugar livre de menor tempo é fixado (fica azul) e os tempos dos vizinhos são atualizados.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="bp">Próximo passo</button><button id="bt">Até o fim</button><button class="alt" id="bz">Recomeçar</button></div>
+<div class="kpi"><div>Saída<b id="ks"></b></div><div class="o">Tempo até a fábrica<b id="kf"></b></div><div>Mais longe<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Siga o método.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIDV={A:[40,190,'abrigo'],M:[150,205,'mercado'],Q:[115,110,'praça'],P:[255,160,'ponte'],H:[250,75,'hospital'],R:[100,28,'cais'],F:[303,120,'fábrica']};
+const RUAS=[['A','M',10],['A','Q',8],['M','Q',6],['M','P',12],['Q','P',15],['P','F',14],['Q','R',9],['R','F',30],['Q','H',11],['H','F',18],['H','P',7]];
+const ek=(a,b)=>a<b?a+b:b+a;
+function perto(V,x,y,r){let best=null,bd=r||22;for(const k in V){const d=Math.hypot(V[k][0]-x,V[k][1]-y);if(d<bd){bd=d;best=k;}}return best;}
+function pertoAresta(V,E,x,y){let best=null,bd=14;E.forEach((e,i)=>{const [a,b]=e,ax=V[a][0],ay=V[a][1],bx=V[b][0],by=V[b][1],L=(bx-ax)**2+(by-ay)**2;let t=((x-ax)*(bx-ax)+(y-ay)*(by-ay))/L;t=Math.max(0.1,Math.min(0.9,t));const d=Math.hypot(ax+t*(bx-ax)-x,ay+t*(by-ay)-y);if(d<bd){bd=d;best=i;}});return best;}
+function no(V,k,fill,txt,extra){const [x,y,n]=V[k];return CI(x,y,13,fill||'#FDE9D8','stroke="#0E2354" stroke-width="1.5"'+(extra||''))+TX(x,y+4,txt===undefined?k:txt,{fs:11})+(n?TX(x,y+26,n,{fs:8.5,c:GRAY,w:500}):'');}
+function dijkstra(V,E,s,fora){const d={},pr={},vis={};for(const k in V)d[k]=Infinity;d[s]=0;const ordem=[];
+ for(;;){let u=null;for(const k in V)if(!vis[k]&&d[k]<Infinity&&(u===null||d[k]<d[u]))u=k;if(u===null)break;vis[u]=1;ordem.push(u);
+  E.forEach(e=>{if(fora&&fora.has(ek(e[0],e[1])))return;const [a,b,w]=e;let v=null;if(a==u)v=b;else if(b==u)v=a;else return;if(d[u]+w<d[v]){d[v]=d[u]+w;pr[v]=u;}});}
+ return {d,pr,ordem};}
+function caminho(pr,s,t){const c=[t];while(c[0]!=s){if(!pr[c[0]])return null;c.unshift(pr[c[0]]);}return c;}
+let s='A',passo=0;const R=()=>dijkstra(CIDV,RUAS,s);
+$('bp').onclick=()=>{passo=Math.min(7,passo+1);draw();};$('bt').onclick=()=>{passo=7;draw();};$('bz').onclick=()=>{passo=0;draw();};
+function estado(){const d={},pr={},fix={};for(const k in CIDV)d[k]=Infinity;d[s]=0;for(let i=0;i<passo;i++){let u=null;for(const k in CIDV)if(!fix[k]&&d[k]<Infinity&&(u===null||d[k]<d[u]))u=k;if(u===null)break;fix[u]=1;
+ RUAS.forEach(([a,b,w])=>{let v=a==u?b:(b==u?a:null);if(v&&!fix[v]&&d[u]+w<d[v]){d[v]=d[u]+w;pr[v]=u;}});}return {d,pr,fix};}
+const fim=()=>passo>=7;
+MIS.def(()=>[
+ ['Saindo do <b>abrigo</b>, siga o método até o fim e confira o tempo até a fábrica.',()=>s=='A'&&fim(),()=>'36 minutos, pelo caminho A, M, P, F. Repare na ordem em que os lugares foram fixados: A, Q, M, R, H, P, F.',()=>s!='A'?'Toque no abrigo (A) para escolher a saída.':'Passo '+passo+' de 7.'],
+ ['Agora saia da <b>fábrica</b>: quanto tempo leva a volta até o abrigo?',()=>s=='F'&&fim(),()=>'Também 36 minutos, no sentido contrário: F, P, M, A.',()=>s!='F'?'Toque na fábrica (F).':'Passo '+passo+' de 7.'],
+ ['Saindo do abrigo, descubra o lugar <b>mais longe</b> dele.',()=>s=='A'&&fim(),()=>'A fábrica, a 36 minutos. O mais perto é a praça, a 8.',()=>s!='A'?'Toque no abrigo.':'Siga até o fim.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const k=perto(CIDV,x,y);if(!k)return;s=k;passo=0;draw();});
+function draw(){const {d,pr,fix}=estado();let g='';const cm=fim()&&s!='F'?caminho(pr,s,'F'):(fim()&&s=='F'?caminho(pr,'F','A'):null),on=new Set();if(cm)for(let i=1;i<cm.length;i++)on.add(ek(cm[i-1],cm[i]));
+ RUAS.forEach(([a,b,w])=>{const A=CIDV[a],B=CIDV[b],h=on.has(ek(a,b));g+=LN(A[0],A[1],B[0],B[1],h?ORANGE:'#9AA7BD',h?4:2);const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2;g+=RC(mx-10,my-8,20,15,'#fff','rx="3" stroke="#D7DEEA"')+TX(mx,my+4,w,{fs:8.5});});
+ for(const k in CIDV){g+=no(CIDV,k,fix[k]?'#2457D6':(k==s?ORANGE:'#FDE9D8'),undefined);const t=d[k]==Infinity?'?':d[k];g+=RC(CIDV[k][0]+8,CIDV[k][1]-27,26,15,'#FFF4D6','rx="3" stroke="#F7821F"')+TX(CIDV[k][0]+21,CIDV[k][1]-16,t,{fs:9,c:ORANGE});}
+ const alvo=s=='F'?'A':'F';$('fig').innerHTML=SVG(342,236,g);$('ks').textContent=CIDV[s][2];$('kf').textContent=fim()?d[alvo]+' min'+(s=='F'?' (até o abrigo)':''):'—';
+ let mx=null;if(fim())for(const k in d)if(mx===null||d[k]>d[mx])mx=k;$('kl').textContent=mx?CIDV[mx][2]+' ('+d[mx]+')':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Todas as ruas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Todas as ruas</h1></header>
+<main>
+<div class="card"><h2>Um caminho, todas as ruas</h2><p class="muted" style="margin-top:0">Escolha o mapa e toque nas esquinas, uma depois da outra, para andar. Cada rua só pode ser usada uma vez. As ruas usadas ficam laranja.</p>
+<div id="cm" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button class="alt" id="bv">Voltar um passo</button><button class="alt" id="bz">Recomeçar</button></div>
+<div class="kpi"><div>Ruas usadas<b id="ku"></b></div><div class="o">Vértices ímpares<b id="ki"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ande pelas ruas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIDV={A:[40,190,'abrigo'],M:[150,205,'mercado'],Q:[115,110,'praça'],P:[255,160,'ponte'],H:[250,75,'hospital'],R:[100,28,'cais'],F:[303,120,'fábrica']};
+const RUAS=[['A','M',10],['A','Q',8],['M','Q',6],['M','P',12],['Q','P',15],['P','F',14],['Q','R',9],['R','F',30],['Q','H',11],['H','F',18],['H','P',7]];
+const ek=(a,b)=>a<b?a+b:b+a;
+function perto(V,x,y,r){let best=null,bd=r||22;for(const k in V){const d=Math.hypot(V[k][0]-x,V[k][1]-y);if(d<bd){bd=d;best=k;}}return best;}
+function pertoAresta(V,E,x,y){let best=null,bd=14;E.forEach((e,i)=>{const [a,b]=e,ax=V[a][0],ay=V[a][1],bx=V[b][0],by=V[b][1],L=(bx-ax)**2+(by-ay)**2;let t=((x-ax)*(bx-ax)+(y-ay)*(by-ay))/L;t=Math.max(0.1,Math.min(0.9,t));const d=Math.hypot(ax+t*(bx-ax)-x,ay+t*(by-ay)-y);if(d<bd){bd=d;best=i;}});return best;}
+function no(V,k,fill,txt,extra){const [x,y,n]=V[k];return CI(x,y,13,fill||'#FDE9D8','stroke="#0E2354" stroke-width="1.5"'+(extra||''))+TX(x,y+4,txt===undefined?k:txt,{fs:11})+(n?TX(x,y+26,n,{fs:8.5,c:GRAY,w:500}):'');}
+function dijkstra(V,E,s,fora){const d={},pr={},vis={};for(const k in V)d[k]=Infinity;d[s]=0;const ordem=[];
+ for(;;){let u=null;for(const k in V)if(!vis[k]&&d[k]<Infinity&&(u===null||d[k]<d[u]))u=k;if(u===null)break;vis[u]=1;ordem.push(u);
+  E.forEach(e=>{if(fora&&fora.has(ek(e[0],e[1])))return;const [a,b,w]=e;let v=null;if(a==u)v=b;else if(b==u)v=a;else return;if(d[u]+w<d[v]){d[v]=d[u]+w;pr[v]=u;}});}
+ return {d,pr,ordem};}
+function caminho(pr,s,t){const c=[t];while(c[0]!=s){if(!pr[c[0]])return null;c.unshift(pr[c[0]]);}return c;}
+const MAP=[
+ {n:'Moinho',V:{A:[50,190],B:[50,40],C:[200,40],D:[200,190],E:[300,115]},E:[['A','B'],['B','C'],['C','D'],['D','A'],['A','C'],['C','E'],['E','D']]},
+ {n:'Praça',V:{A:[50,195],B:[50,45],C:[190,45],D:[190,195],E:[310,30],F:[300,170]},E:[['A','B'],['B','C'],['C','D'],['D','A'],['C','E'],['E','F'],['F','C']]},
+ {n:'Königsberg',V:{N:[170,30],S:[170,205],I:[120,118],L:[290,118]},E:[['N','I'],['N','I'],['S','I'],['S','I'],['N','L'],['S','L'],['I','L']]}];
+let cam=[],usadas=[];const CM=chips('cm',['quarteirão do Moinho','quarteirão da praça','pontes de Königsberg'],0,()=>{cam=[];usadas=[];draw();});
+$('bv').onclick=()=>{cam.pop();usadas.pop();draw();};$('bz').onclick=()=>{cam=[];usadas=[];draw();};
+const mp=()=>MAP[CM.get()],grau=k=>mp().E.filter(e=>e[0]==k||e[1]==k).length,imp=()=>Object.keys(mp().V).filter(k=>grau(k)%2);
+const completo=()=>usadas.length==mp().E.length;let kb=0;
+MIS.def(()=>[
+ ['No <b>quarteirão do Moinho</b>, passe pelas 7 ruas, cada uma uma vez.',()=>CM.get()==0&&completo(),()=>'Conseguiu! O caminho começou num vértice ímpar ('+cam[0]+') e terminou no outro ('+cam[cam.length-1]+').',()=>CM.get()!=0?'Escolha o quarteirão do Moinho.':usadas.length+' de 7 ruas. Dica: comece num vértice de grau ímpar.'],
+ ['No <b>quarteirão da praça</b>, passe por todas as ruas e <b>volte ao começo</b>.',()=>CM.get()==1&&completo()&&cam[0]==cam[cam.length-1],()=>'Um circuito! Ali todos os vértices têm grau par, então o caminho fecha.',()=>CM.get()!=1?'Escolha o quarteirão da praça.':completo()?'Passou por todas, mas não voltou ao começo.':usadas.length+' de 7 ruas.'],
+ ['Tente as <b>pontes de Königsberg</b> (faça pelo menos 3 tentativas recomeçando).',()=>kb>=3,()=>'Não dá: as quatro regiões têm grau ímpar (5, 3, 3, 3). Com mais de 2 vértices ímpares, não há caminho, como Euler provou.',()=>CM.get()!=2?'Escolha Königsberg.':'Tentativas: '+kb+'. Melhor resultado: veja quantas pontes faltam.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const V=mp().V,k=perto(V,x,y,24);if(!k)return;
+ if(!cam.length){cam.push(k);draw();return;}const u=cam[cam.length-1];if(u==k)return;
+ const i=mp().E.findIndex((e,j)=>!usadas.includes(j)&&((e[0]==u&&e[1]==k)||(e[1]==u&&e[0]==k)));if(i<0)return;cam.push(k);usadas.push(i);
+ if(CM.get()==2){const livres=mp().E.some((e,j)=>!usadas.includes(j)&&(e[0]==k||e[1]==k));if(!livres){kb++;}}draw();});
+function draw(){const m=mp(),V=m.V;let g='';const cnt={};
+ m.E.forEach((e,j)=>{const a=V[e[0]],b=V[e[1]],key=ek(e[0],e[1]);cnt[key]=(cnt[key]||0)+1;const off=cnt[key]==1?(m.E.filter(f=>ek(f[0],f[1])==key).length>1?-14:0):14;
+  const mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,nx=-(b[1]-a[1]),ny=b[0]-a[0],L=Math.hypot(nx,ny),cx=mx+nx/L*off*2,cy=my+ny/L*off*2;const us=usadas.includes(j);
+  g+=`<path d="M${a[0]} ${a[1]} Q${cx} ${cy} ${b[0]} ${b[1]}" fill="none" stroke="${us?ORANGE:'#9AA7BD'}" stroke-width="${us?4:2.5}"/>`;
+  const k=usadas.indexOf(j);if(k>=0)g+=CI((mx+cx)/2,(my+cy)/2,8,ORANGE)+TX((mx+cx)/2,(my+cy)/2+3.5,k+1,{fs:8,c:'#fff'});});
+ if(CM.get()==2)g+=`<path d="M0 75 Q170 60 342 75" fill="none" stroke="#9EC9F0" stroke-width="10" opacity="0.6"/><path d="M0 160 Q170 175 342 160" fill="none" stroke="#9EC9F0" stroke-width="10" opacity="0.6"/>`;
+ for(const k in V){const gr=grau(k),ult=cam.length&&cam[cam.length-1]==k;g+=CI(V[k][0],V[k][1],14,ult?ORANGE:(gr%2?'#FDE9D8':'#fff'),'stroke="#0E2354" stroke-width="1.5"')+TX(V[k][0],V[k][1]+4,k,{fs:11,c:ult?'#fff':NAVY})+TX(V[k][0],V[k][1]+(V[k][1]>150?30:-20),'grau '+gr,{fs:8.5,c:gr%2?ORANGE:GRAY});}
+ g+=TX(330,232,cam.length?'caminho: '+cam.join(' '):'toque numa esquina para começar',{fs:9,c:GRAY,a:'end',w:500});
+ $('fig').innerHTML=SVG(342,240,g);$('ku').textContent=usadas.length+' de '+m.E.length;$('ki').textContent=imp().length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

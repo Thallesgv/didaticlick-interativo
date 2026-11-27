@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As portas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>As portas</h1></header>
+<main>
+<div class="card"><h2>Busca em largura</h2><p class="muted" style="margin-top:0">A cor de cada sala mostra quantas portas a separam da entrada. Toque perto do meio de uma porta para trancá-la ou destrancá-la. A sala dos tanques começa proibida (vazamento do FV-7).</p>
+<div id="ct" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Portas até a câmara fria<b id="kc"></b></div><div class="o">Sala mais longe<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Explore as salas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIDV={A:[40,190,'abrigo'],M:[150,205,'mercado'],Q:[115,110,'praça'],P:[255,160,'ponte'],H:[250,75,'hospital'],R:[100,28,'cais'],F:[303,120,'fábrica']};
+const RUAS=[['A','M',10],['A','Q',8],['M','Q',6],['M','P',12],['Q','P',15],['P','F',14],['Q','R',9],['R','F',30],['Q','H',11],['H','F',18],['H','P',7]];
+const ek=(a,b)=>a<b?a+b:b+a;
+function perto(V,x,y,r){let best=null,bd=r||22;for(const k in V){const d=Math.hypot(V[k][0]-x,V[k][1]-y);if(d<bd){bd=d;best=k;}}return best;}
+function pertoAresta(V,E,x,y){let best=null,bd=14;E.forEach((e,i)=>{const [a,b]=e,ax=V[a][0],ay=V[a][1],bx=V[b][0],by=V[b][1],L=(bx-ax)**2+(by-ay)**2;let t=((x-ax)*(bx-ax)+(y-ay)*(by-ay))/L;t=Math.max(0.1,Math.min(0.9,t));const d=Math.hypot(ax+t*(bx-ax)-x,ay+t*(by-ay)-y);if(d<bd){bd=d;best=i;}});return best;}
+function no(V,k,fill,txt,extra){const [x,y,n]=V[k];return CI(x,y,13,fill||'#FDE9D8','stroke="#0E2354" stroke-width="1.5"'+(extra||''))+TX(x,y+4,txt===undefined?k:txt,{fs:11})+(n?TX(x,y+26,n,{fs:8.5,c:GRAY,w:500}):'');}
+function dijkstra(V,E,s,fora){const d={},pr={},vis={};for(const k in V)d[k]=Infinity;d[s]=0;const ordem=[];
+ for(;;){let u=null;for(const k in V)if(!vis[k]&&d[k]<Infinity&&(u===null||d[k]<d[u]))u=k;if(u===null)break;vis[u]=1;ordem.push(u);
+  E.forEach(e=>{if(fora&&fora.has(ek(e[0],e[1])))return;const [a,b,w]=e;let v=null;if(a==u)v=b;else if(b==u)v=a;else return;if(d[u]+w<d[v]){d[v]=d[u]+w;pr[v]=u;}});}
+ return {d,pr,ordem};}
+function caminho(pr,s,t){const c=[t];while(c[0]!=s){if(!pr[c[0]])return null;c.unshift(pr[c[0]]);}return c;}
+const SV={E:[30,120,'entrada'],C:[110,120,'corredor'],V:[190,45,'vestiário'],T:[190,195,'tanques'],K:[270,195,'controle'],L:[270,45,'laboratório'],F:[306,120,'câmara fria']};
+const PT=[['E','C'],['C','V'],['C','T'],['V','L'],['T','K'],['K','L'],['L','F'],['T','F']];let tr=new Set();
+const CT=chips('ct',['tanques proibidos','tanques liberados'],0,draw);
+function bfs(){const nv={E:0},q=['E'],ban=CT.get()==0?'T':null;while(q.length){const u=q.shift();PT.forEach(([a,b])=>{if(tr.has(ek(a,b)))return;const v=a==u?b:(b==u?a:null);if(!v||v==ban||nv[v]!==undefined)return;nv[v]=nv[u]+1;q.push(v);});}return nv;}
+MIS.def(()=>[
+ ['Com os tanques proibidos e todas as portas abertas, quantas portas até a <b>câmara fria</b>?',()=>CT.get()==0&&tr.size==0&&bfs().F==4,()=>'4 portas: entrada, corredor, vestiário, laboratório, câmara fria.',()=>'Destranque tudo e proíba os tanques.'],
+ ['Libere os tanques: qual sala fica <b>mais longe</b> da entrada?',()=>CT.get()==1&&tr.size==0,()=>'Com os tanques liberados, laboratório, controle e câmara fria empatam: 3 portas cada.',()=>'Escolha "tanques liberados" com todas as portas abertas.'],
+ ['Com os tanques proibidos, tranque <b>uma única porta</b> que deixe a câmara fria inalcançável, mas não seja a da entrada.',()=>CT.get()==0&&tr.size==1&&bfs().F===undefined&&!tr.has(ek('E','C')),()=>'Sem os tanques, o único caminho passa por '+[...tr][0].split('').join('-')+'. Ali está um ponto fraco do plano.',()=>tr.size>1?'Use uma porta só.':'A câmara ainda está a '+(bfs().F??'—')+' portas.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const i=pertoAresta(SV,PT,x,y);if(i===null)return;const e=ek(PT[i][0],PT[i][1]);tr.has(e)?tr.delete(e):tr.add(e);draw();});
+function draw(){const nv=bfs(),cor=['#F7821F','#FBB57A','#FDE9D8','#FFF4D6','#FFFFFF'];let g='';
+ PT.forEach(([a,b])=>{const A=SV[a],B=SV[b],t=tr.has(ek(a,b)),proib=CT.get()==0&&(a=='T'||b=='T');g+=LN(A[0],A[1],B[0],B[1],t?'#C0504D':(proib?'#E5E7EB':'#9AA7BD'),3,t||proib?'5 4':'');if(t)g+=TX((A[0]+B[0])/2,(A[1]+B[1])/2+4,'🔒',{fs:11});});
+ for(const k in SV){const n=nv[k],proib=CT.get()==0&&k=='T';g+=CI(SV[k][0],SV[k][1],15,proib?'#FBE3E2':(n===undefined?'#E5E7EB':cor[Math.min(4,n)]),'stroke="#0E2354" stroke-width="1.5"')+TX(SV[k][0],SV[k][1]+4,proib?'✕':(n===undefined?'—':n),{fs:11,c:proib?'#C0504D':NAVY})+TX(SV[k][0],SV[k][1]+(SV[k][1]>150?30:-21),SV[k][2],{fs:8.5,c:GRAY,w:500});}
+ $('fig').innerHTML=SVG(342,236,g);$('kc').textContent=nv.F===undefined?'inalcançável':nv.F;let mx=null;for(const k in nv)if(mx===null||nv[k]>nv[mx])mx=k;$('kl').textContent=mx?SV[mx][2]+' ('+nv[mx]+')':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

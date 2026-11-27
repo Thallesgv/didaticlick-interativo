@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os canais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Os canais</h1></header>
+<main>
+<div class="card"><h2>Pinte os bairros</h2><p class="muted" style="margin-top:0">Cada cor é um canal de rádio. Toque num bairro para trocar o canal. Divisas entre bairros com o mesmo canal ficam vermelhas.</p>
+<div id="cn" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Conflitos<b id="kc"></b></div><div class="o">Canais usados<b id="ku"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Pinte o mapa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const BN=['Moinho','Ribeira','Vila Nova','Serra','Porto','Centro'],COR=['#E5E7EB','#F6B26B','#93C47D','#6FA8DC','#E06666'];
+const ADJ=[[0,1],[1,2],[2,3],[3,4],[4,0],[5,0],[5,1],[5,2],[5,3],[5,4]];let c=[0,0,0,0,0,0];
+const CN=chips('cn',['até 4 canais','só 3 canais'],0,()=>{c=c.map(v=>Math.min(v,lim()));draw();});const lim=()=>CN.get()==0?4:3;
+const conf=()=>ADJ.filter(([a,b])=>c[a]&&c[a]==c[b]).length,cheio=()=>c.every(v=>v>0),usados=()=>new Set(c.filter(v=>v)).size;let t3=0;
+MIS.def(()=>[
+ ['Pinte os 6 bairros <b>sem nenhum conflito</b>.',()=>cheio()&&conf()==0,()=>'Sem conflitos, com '+usados()+' canais.',()=>!cheio()?'Faltam bairros sem canal.':conf()+' divisa(s) em conflito.'],
+ ['Tente economizar: dê ao <b>Centro</b> um canal que já está em algum bairro do anel.',()=>cheio()&&c.slice(0,5).includes(c[5]),()=>'Conflito! O Centro faz divisa com todos os cinco bairros: qualquer canal do anel bate com o dele. O Centro precisa de um canal só seu.',()=>!cheio()?'Pinte todos os bairros.':'Toque no Centro até o canal dele repetir um do anel.'],
+ ['Escolha "só 3 canais" e tente pintar tudo sem conflito (faça pelo menos 10 toques).',()=>CN.get()==1&&t3>=10,()=>'Não dá: com 3 canais, o anel de 5 já usa os 3, e o Centro não tem canal livre. É por isso que este mapa precisa de 4 cores.',()=>CN.get()!=1?'Escolha "só 3 canais".':'Toques: '+t3+'. Conflitos agora: '+conf()+'.']]);
+function setor(i,R1,R2){const a0=(90+i*72-36)*RAD,a1=(90+i*72+36)*RAD,cx=171,cy=120;let p=[];for(let k=0;k<=12;k++){const a=a0+(a1-a0)*k/12;p.push([cx+R2*Math.cos(a),cy-R2*Math.sin(a)]);}for(let k=0;k<=12;k++){const a=a1-(a1-a0)*k/12;p.push([cx+R1*Math.cos(a),cy-R1*Math.sin(a)]);}return p;}
+toque('fig',(x,y,ini)=>{if(!ini)return;const dx=x-171,dy=120-y,r=Math.hypot(dx,dy);let i=null;if(r<40)i=5;else if(r<108){let a=Math.atan2(dy,dx)/RAD-90+36;a=((a%360)+360)%360;i=Math.floor(a/72);}if(i===null)return;c[i]=(c[i]%lim())+1;if(CN.get()==1)t3++;draw();});
+function draw(){let g='';for(let i=0;i<5;i++){g+=PG(setor(i,40,108),COR[c[i]],'stroke="#0E2354" stroke-width="1.5"');const a=(90+i*72)*RAD;g+=TX(171+74*Math.cos(a),120-74*Math.sin(a)+2,BN[i],{fs:10})+TX(171+74*Math.cos(a),120-74*Math.sin(a)+15,c[i]?'canal '+c[i]:'—',{fs:8.5,w:500});}
+ g+=CI(171,120,40,COR[c[5]],'stroke="#0E2354" stroke-width="1.5"')+TX(171,118,'Centro',{fs:10})+TX(171,131,c[5]?'canal '+c[5]:'—',{fs:8.5,w:500});
+ ADJ.forEach(([a,b])=>{if(!(c[a]&&c[a]==c[b]))return;let x,y;if(b==5||a==5){const i=a==5?b:a,an=(90+i*72)*RAD;x=171+40*Math.cos(an);y=120-40*Math.sin(an);}else{const i=Math.max(a,b)==4&&Math.min(a,b)==0?4:Math.min(a,b),an=(90+i*72+36)*RAD;x=171+74*Math.cos(an);y=120-74*Math.sin(an);}g+=CI(x,y,7,'#C0504D','stroke="#fff" stroke-width="2"');});
+ $('fig').innerHTML=SVG(342,240,g);$('kc').textContent=conf();$('ku').textContent=usados();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
