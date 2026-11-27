@@ -19,16 +19,22 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let S,lo,hi,Q;function novo(){S=rint(1,1024);lo=1;hi=1024;Q=[];$('n').value='';draw();}
-$('nova').onclick=novo;$('bm').onclick=()=>{$('n').value=Math.floor((lo+hi)/2);};
-$('bq').onclick=()=>{const v=parseInt(String($('n').value).replace(/\D/g,''),10);if(isNaN(v)||lo==hi)return;const r=S>v;Q.push([v,r]);if(r)lo=Math.max(lo,v+1);else hi=Math.min(hi,v);draw();};
+let S,lo,hi,Q,achados=0,usouMeio=false,contou=false,ruim=false;
+const fim_=()=>lo==hi;
+MIS.def(()=>[
+ ['Ache o armário com <b>no máximo 10 perguntas</b>.',()=>fim_()&&Q.length<=10,()=>`Achou: armário <b>${S}</b> em ${Q.length} perguntas. Cada pergunta no meio corta as possibilidades pela metade: 1 024 → 512 → ... → 1.`,()=>fim_()?`Achou o armário <b>${S}</b>, mas usou ${Q.length} perguntas. Sorteie outro e pergunte sempre pelo meio dos que sobraram.`:`Sobram ${fmt(hi-lo+1)} armários. ${Q.length?'':'Dica: o meio de 1 a 1 024 é 512.'}`],
+ ['Sorteie outro armário e ache de novo, em <b>no máximo 10</b> perguntas.',()=>achados>=2,'Duas vezes em até 10: 2¹⁰ = 1 024, por isso 10 perguntas sempre bastam.',()=>fim_()?'Aperte Sortear outro armário.':'Sobram '+fmt(hi-lo+1)+' armários.'],
+ ['Faça uma pergunta <b>ruim</b> de propósito: num armário novo, comece com "é maior que 1000?".',()=>ruim,()=>Q[0]&&Q[0][1]?'Deu sim, por sorte: sobraram só 24. Mas quase sempre a resposta é não, e aí sobram 1 000 armários.':'Deu não: sobraram 1 000 armários. Uma pergunta que quase sempre dá a mesma resposta ensina pouco.','Sorteie outro armário e pergunte primeiro por 1000.'],
+ ['Ache um armário em até 10 perguntas <b>sem usar o botão</b> Usar o meio: calcule os meios de cabeça.',()=>fim_()&&Q.length<=10&&!usouMeio,'Você fez a busca binária de cabeça: 512, depois 256 ou 768, e assim por diante.',()=>usouMeio?'Você usou o botão. Sorteie outro armário.':'Sobram '+fmt(hi-lo+1)+' armários.']]);
+function novo(){S=rint(1,1024);lo=1;hi=1024;Q=[];usouMeio=false;contou=false;$('n').value='';draw();}
+$('nova').onclick=novo;$('bm').onclick=()=>{usouMeio=true;$('n').value=Math.floor((lo+hi)/2);};
+$('bq').onclick=()=>{const v=parseInt(String($('n').value).replace(/\D/g,''),10);if(isNaN(v)||lo==hi)return;const r=S>v;Q.push([v,r]);if(Q.length==1&&v==1000)ruim=true;if(r)lo=Math.max(lo,v+1);else hi=Math.min(hi,v);draw();};
 function draw(){let g=`<rect width="340" height="340" fill="#F8FAFC"/>`;const s=10.25;
  for(let i=0;i<1024;i++){const n=i+1,x=6+(i%32)*s,y=6+Math.floor(i/32)*s,vivo=n>=lo&&n<=hi,ach=lo==hi&&n==S;
   g+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${s-1.4}" height="${s-1.4}" rx="1.5" fill="${ach?ORANGE:vivo?PEACH:'#334155'}"${ach?` stroke="${NAVY}" stroke-width="2"`:''}/>`;}
  $('fig').innerHTML=SVG(340,340,g);$('kq').textContent=Q.length;$('kr').textContent=fmt(hi-lo+1)+(hi>lo?' (de '+lo+' a '+hi+')':'');
  $('hist').innerHTML=Q.map(([v,r],i)=>`${i+1}) maior que ${v}? <b>${r?'sim':'não'}</b>`).join(' · ');
- if(lo==hi)missao('m',Q.length<=10,`Achou: armário <b>${S}</b> em ${Q.length} perguntas. Cada pergunta no meio corta as possibilidades pela metade: 1 024 → 512 → ... → 1.`,`Achou o armário <b>${S}</b>, mas usou ${Q.length} perguntas. Tente de novo perguntando sempre pelo meio dos que sobraram.`);
- else $('m').innerHTML=`<div class="msg info">Sobram ${fmt(hi-lo+1)} armários. ${Q.length?'':'Dica: o meio de 1 a 1 024 é 512.'}</div>`;}
+if(fim_()&&Q.length<=10&&!contou){contou=true;achados++;}MIS.ver('m');}
 novo();
 })();
 </script>

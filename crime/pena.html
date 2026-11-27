@@ -23,8 +23,13 @@
 const am=m=>{const a=Math.floor(m/12+1e-9),r=m-12*a,me=Math.floor(r+1e-9),d=Math.round((r-me)*30);const p=[];if(a)p.push(a+(a==1?' ano':' anos'));if(me)p.push(me+(me==1?' mês':' meses'));if(d)p.push(d+(d==1?' dia':' dias'));return p.length?p.join(' e ').replace(/ e (?=.* e )/,', '):'0';};
 const F2=[['nenhuma',1,1],['atenuante −1/6',5,6],['agravante +1/6',7,6]],F3=[['nenhuma',1,1],['tentativa −1/3',2,3],['tentativa −1/2',1,2],['tentativa −2/3',1,3],['aumento +1/3',4,3]];
 const B=SL('sb',24,96,1,36,draw,v=>am(v)),C2=chips('f2',F2.map(f=>f[0]),0,draw),C3=chips('f3',F3.map(f=>f[0]),0,draw);
-const mdc=(a,b)=>b?mdc(b,a%b):a;
-function draw(){const b=B.get(),f2=F2[C2.get()],f3=F3[C3.get()],m2=clamp(b*f2[1]/f2[2],24,96),m3=m2*f3[1]/f3[2];
+const mdc=(a,b)=>b?mdc(b,a%b):a;let M3=0;
+MIS.def(()=>[
+ ['Reproduza o cálculo do livro: pena-base de <b>3 anos</b>, <b>atenuante de 1/6</b> e nada na 3ª fase.',()=>B.get()==36&&C2.get()==1&&C3.get()==0,'Exatamente o cálculo fictício do livro: 36 meses, menos 1/6 na 2ª fase, nada na 3ª: 2 anos e 6 meses.','Ajuste a pena-base e as duas fases.'],
+ ['Compare: reduzir <b>1/6</b> na 2ª fase e depois <b>1/3</b> na 3ª é o mesmo que reduzir 1/2?',()=>C2.get()==1&&C3.get()==1,'Não: 5/6 × 2/3 = 10/18 = 5/9 da pena-base. A redução total é de 4/9, menos que 1/2.','Escolha a atenuante de 1/6 e a tentativa de −1/3.'],
+ ['Com tentativa de <b>−2/3</b>, chegue a uma pena final de <b>exatamente 2 anos</b>.',()=>C3.get()==3&&Math.abs(M3-24)<0.01,'Pena de 6 anos e menos 2/3: 72 × 1/3 = 24 meses.',()=>C3.get()!=3?'Escolha a tentativa de −2/3.':'Pena final agora: '+am(M3)+'.'],
+ ['Ache a <b>maior pena possível</b> no simulador.',()=>M3>=128-0.01,'8 anos, agravante (que fica no limite de 8) e aumento de 1/3: 96 × 4/3 = 128 meses, 10 anos e 8 meses. Na 3ª fase a pena pode passar do limite.',()=>'Pena final agora: '+am(M3)+'.']]);
+function draw(){const b=B.get(),f2=F2[C2.get()],f3=F3[C3.get()],m2=clamp(b*f2[1]/f2[2],24,96),m3=m2*f3[1]/f3[2];M3=m3;
  const st=[['limites da lei',96,'até 8 anos'],['1ª fase',b,am(b)],['2ª fase',m2,am(m2)],['3ª fase',m3,am(m3)]],H=250,esc=170/96;
  let g=`<rect width="340" height="${H}" fill="#F8FAFC"/>`;
  st.forEach((s,i)=>{const x=10+i*82,h=s[1]*esc,y=210-h;
@@ -35,9 +40,7 @@ function draw(){const b=B.get(),f2=F2[C2.get()],f3=F3[C3.get()],m2=clamp(b*f2[1]
  const num=f2[1]*f3[1],den=f2[2]*f3[2],q=mdc(num,den);
  $('fig').innerHTML=SVG(340,H,g);$('k1').textContent=(num/q)+'/'+(den/q);$('k2').textContent=am(m3);$('k3').textContent=r1(m3);
  const caso=b==36&&C2.get()==1&&C3.get()==0,limite=b*f2[1]/f2[2]!=m2;
- if(limite)$('m').innerHTML='<div class="msg info">Neste simulador, a 2ª fase não sai dos limites de 2 a 8 anos, como costumam decidir os tribunais. Por isso a fração não foi aplicada inteira.</div>';
- else missao('m',caso,'Exatamente o cálculo fictício do livro: 36 meses, menos 1/6 na 2ª fase, nada na 3ª: 2 anos e 6 meses.',
-  'Missão: reproduza o cálculo do livro (pena-base de 3 anos, atenuante de 1/6 e nada na 3ª fase). Depois compare: reduzir 1/6 e depois 1/3 é o mesmo que reduzir 1/2?');}
+MIS.ver('m');if(limite)$('m').insertAdjacentHTML('beforeend','<div class="msg info">Neste simulador, a 2ª fase não sai dos limites de 2 a 8 anos, como costumam decidir os tribunais. Por isso a fração não foi aplicada inteira.</div>');}
 draw();
 })();
 </script>

@@ -22,6 +22,12 @@
 (()=>{
 let voto=[],tot=0,ac=0;const PP=SL('sp',0.3,0.95,0.05,0.7,reset,v=>Math.round(100*v)+'%'),NN=SL('sn',1,25,2,7,reset,v=>v+(v==1?' jurado':' jurados'));
 function reset(){voto=[];tot=0;ac=0;draw();}
+const C_=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;},maj_=()=>{const n=NN.get(),p=PP.get();let s=0;for(let k=0;k<=n;k++)if(k>n/2)s+=C_(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k);return s;},pp=v=>Math.abs(PP.get()-v)<1e-6;
+MIS.def(()=>[
+ ['Descubra o que acontece com um <b>júri grande</b> (7 ou mais) quando cada jurado acerta <b>menos de 50%</b>.',()=>PP.get()<0.5&&NN.get()>=7,()=>'Com cada jurado errando mais do que acerta, o grupo fica PIOR que uma pessoa sozinha: '+r1(100*maj_())+'% contra '+Math.round(100*PP.get())+'%. O teorema de Condorcet precisa de p maior que 1/2.',()=>'Com '+NN.get()+' jurado(s) e '+Math.round(100*PP.get())+'% cada, a maioria acerta em '+r1(100*maj_())+'%.'],
+ ['Com <b>70%</b> por jurado, ache o <b>menor júri</b> em que a maioria acerta em mais de <b>90%</b>.',()=>pp(0.7)&&NN.get()==9,'9 jurados: a maioria acerta em 90,1%. Com 7 eram 87,4%.',()=>!pp(0.7)?'Ponha 70% por jurado.':'Maioria acerta: '+r1(100*maj_())+'%.'],
+ ['Com <b>50%</b> por jurado, aumente o júri para 15 ou mais. A maioria melhora?',()=>pp(0.5)&&NN.get()>=15,'Não: com 50%, a maioria acerta em 50%, não importa o tamanho. Jurados que chutam não se ajudam.',()=>!pp(0.5)?'Ponha 50% por jurado.':'Aumente o número de jurados.'],
+ ['Faça <b>100 julgamentos</b> e compare o placar com a conta.',()=>tot>=100,()=>'Nos sorteios a maioria acertou em '+r1(100*ac/tot)+'%; a conta dá '+r1(100*maj_())+'%. Quanto mais sorteios, mais perto.','Aperte 100 julgamentos.']]);
 const C=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
 function vota(){const n=NN.get(),p=PP.get();voto=Array.from({length:n},()=>Math.random()<p);tot++;if(voto.filter(x=>x).length>n/2)ac++;}
 $('um').onclick=()=>{vota();draw();};$('cem').onclick=()=>{for(let i=0;i<100;i++)vota();draw();};
@@ -36,10 +42,7 @@ function draw(){const n=NN.get(),p=PP.get(),pr=Array.from({length:n+1},(_,k)=>C(
  g+=TX(170,y0+26,'jurados que acertam (laranja: maioria correta)',{fs:9.5,c:GRAY,w:500});
  $('fig').innerHTML=SVG(340,270,g);$('k1').textContent=r1(100*maj)+'%';
  const nk=voto.filter(x=>x).length;$('k2').textContent=voto.length?nk+' × '+(n-nk):'—';$('k3').textContent=tot?r1(100*ac/tot)+'% de '+tot:'—';
- const caso=n==7&&Math.abs(p-0.7)<1e-9;
- missao('m',p<0.5&&n>=7,`Com cada jurado errando mais do que acerta, o grupo fica PIOR que uma pessoa sozinha: ${r1(100*maj)}% contra ${Math.round(100*p)}%. O teorema de Condorcet precisa de p maior que 1/2.`,
-  caso?`7 jurados, 70% cada: a maioria acerta em ${r1(100*maj)}% das vezes. Aumente o número de jurados e veja a barra laranja crescer. Depois tente p abaixo de 50%.`:
-  `Com ${n} jurado(s) e ${Math.round(100*p)}% cada, a maioria acerta em ${r1(100*maj)}%. Missão: descubra o que acontece com um júri grande quando cada jurado acerta menos de 50%.`);}
+MIS.ver('m');}
 reset();
 })();
 </script>

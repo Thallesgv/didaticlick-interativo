@@ -21,6 +21,12 @@
 (()=>{
 const GS=[[60,60],[280,50],[300,190],[70,200],[170,30],[180,215]];let O={x:150,y:120},S={x:rint(110,230),y:rint(90,160),h:rint(70,130)/100};
 const H=SL('sh',0.3,1.8,0.05,1.0,draw,v=>r2(v)+' m');const M=chips('md',['Explorar','Caso: ache a origem'],0,draw);const k=50; // 50 px = 1 m
+let CV={d:0,a:0,ok:false};
+MIS.def(()=>[
+ ['Escolha <b>Caso: ache a origem</b> e descubra de onde vieram as gotas: posição e altura.',()=>M.get()==1&&CV.ok,()=>'Origem encontrada! A mão estava a '+r2(S.h)+' m do chão. Repare: no ponto certo, as linhas laranjas encaixam exatamente nas manchas azuis.',()=>M.get()?'Arraste a origem e mude a altura até as elipses laranjas coincidirem com as manchas azuis.':'Escolha o modo Caso: ache a origem.'],
+ ['No modo Explorar, ponha a origem <b>bem em cima da gota 1</b> (no alto, à esquerda). Como fica a mancha?',()=>M.get()==0&&CV.d<0.2,'Bem em cima da gota, ela cai quase na vertical (α perto de 90°) e a mancha fica redonda.',()=>M.get()?'Volte ao modo Explorar.':'Distância até a gota 1: '+r2(CV.d)+' m. Aproxime a origem.'],
+ ['Ache uma origem em que a gota 1 tenha <b>α = 45°</b>. Compare d e h.',()=>M.get()==0&&Math.abs(CV.a-45)<1,()=>'Com 45°, tg α = 1, então d = h = '+r2(H.get())+' m.',()=>'Gota 1: α = '+Math.round(CV.a)+'°. Afaste a origem para α diminuir.'],
+ ['Com a altura em <b>1,5 m</b>, ponha a origem onde a gota 1 tem <b>α = 60°</b>.',()=>Math.abs(H.get()-1.5)<0.01&&Math.abs(CV.a-60)<1,'d = 1,5 ÷ tg 60° ≈ 0,87 m: quanto mais íngreme a queda, mais perto da gota está a origem.',()=>Math.abs(H.get()-1.5)>=0.01?'Ponha a altura em 1,5 m.':'Gota 1: α = '+Math.round(CV.a)+'°.']]);
 function manchas(o,h,cor,extra){let g='';GS.forEach(([x,y])=>{const d=Math.hypot(x-o.x,y-o.y)/k,a=Math.atan2(h,d),ang=Math.atan2(y-o.y,x-o.x)*DEG,b=5,al=Math.min(b/Math.sin(a),30);g+=ELI(x,y,al,b,ang,cor,extra);});return g;}
 function draw(){const h=H.get(),caso=M.get()==1;let g=`<rect x="0" y="0" width="340" height="245" rx="10" fill="#fff"/>`;
  if(caso)g+=manchas(S,S.h,NAVY);
@@ -28,9 +34,8 @@ function draw(){const h=H.get(),caso=M.get()==1;let g=`<rect x="0" y="0" width="
  g+=caso?manchas(O,h,'none',`stroke="${ORANGE}" stroke-width="2"`):manchas(O,h,NAVY);
  g+=`<circle id="o" cx="${O.x}" cy="${O.y}" r="11" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`;
  $('fig').innerHTML=SVG(340,245,g);const svg=$('fig').querySelector('svg');arrastar(svg,svg.querySelector('#o'),(x,y)=>{O={x:clamp(x,15,325),y:clamp(y,15,230)};draw();});
- const d=Math.hypot(GS[0][0]-O.x,GS[0][1]-O.y)/k,a=Math.atan2(h,d)*DEG;$('kd').textContent=r2(d)+' m';$('ka').textContent=Math.round(a)+'°';$('kh').textContent=r2(d*Math.tan(a*RAD))+' m';
- if(caso){const ok=Math.hypot(O.x-S.x,O.y-S.y)<12&&Math.abs(h-S.h)<.08;missao('m',ok,'Origem encontrada! A mão estava a '+r2(S.h)+' m do chão. Repare: no ponto certo, as linhas laranjas encaixam exatamente nas manchas azuis.','Arraste a origem e mude a altura até as elipses laranjas coincidirem com as manchas azuis.');}
- else $('m').innerHTML='<div class="msg info">Aproxime a origem de uma gota: ela fica mais redonda (ângulo perto de 90°). Afaste: ela se alonga.</div>';}
+ const d=Math.hypot(GS[0][0]-O.x,GS[0][1]-O.y)/k,a=Math.atan2(h,d)*DEG;$('kd').textContent=r2(d)+' m';$('ka').textContent=Math.round(a)+'°';$('kh').textContent=r2(d*Math.tan(a*RAD))+' m';CV={d,a,ok:caso&&Math.hypot(O.x-S.x,O.y-S.y)<12&&Math.abs(h-S.h)<.08};
+MIS.ver('m');}
 draw();
 })();
 </script>

@@ -21,6 +21,12 @@
 <script>
 (()=>{
 const n=33;let passos=[],k=0;
+const fim_=()=>k==passos.length-1,cv=(md,m)=>fim_()&&M.get()==md&&MM.get()==m,ps_=()=>'Passo '+(k+1)+' de '+passos.length+': cada passo multiplica por '+passos[0]+' e fica com o resto da divisão por 33.';
+MIS.def(()=>[
+ ['Cifre a mensagem <b>4</b> até o último passo.',()=>cv(0,4),'A mensagem 4 cifrada é 31: 4³ = 64, e 64 dá uma volta no relógio de 33 e para em 31.',()=>MM.get()!=4||M.get()?'Escolha a mensagem 4 em Cifrar.':ps_()],
+ ['Troque para <b>Decifrar</b> e confira que o 31 volta a ser 4.',()=>cv(1,4),'Voltou: 31⁷ mod 33 = 4. Só quem conhece d = 7 consegue.',()=>MM.get()!=4||!M.get()?'Escolha a mensagem 4 em Decifrar.':ps_()],
+ ['Cifre a mensagem <b>2</b>. Qual é o texto cifrado?',()=>cv(0,2),'2³ = 8, que nem chega a dar uma volta no relógio: o cifrado é 8.',()=>MM.get()!=2||M.get()?'Escolha a mensagem 2 em Cifrar.':ps_()],
+ ['Decifre a mensagem <b>5</b> e veja os 7 passos voltarem a ela.',()=>cv(1,5),'5³ mod 33 = 26, e 26⁷ mod 33 = 5. Cifrar e decifrar são voltas que se desfazem.',()=>MM.get()!=5||!M.get()?'Escolha a mensagem 5 em Decifrar.':ps_()]]);
 const MM=SL('sm',2,32,1,4,ini,v=>v);const M=chips('md',['Cifrar (e = 3)','Decifrar (d = 7)'],0,ini);
 function base(){const m=MM.get();return M.get()==0?m:Math.pow(m,3)%n;}
 function ini(){const b=base(),ex=M.get()?7:3;passos=[b];for(let i=1;i<ex;i++)passos.push(passos[i-1]*b%n);k=0;draw();}
@@ -34,9 +40,7 @@ function draw(){const cx=170,cy=150,r=120;let g=`<rect width="340" height="300" 
  $('fig').innerHTML=SVG(340,300,g);
  $('hist').innerHTML=passos.slice(0,k+1).map((v,i)=>`${b}<sup>${i+1}</sup> ≡ ${v}`).join(' · ');
  const fim=k==passos.length-1;
- if(!fim)$('m').innerHTML=`<div class="msg info">Passo ${k+1} de ${ex}: cada passo multiplica por ${b} e fica com o resto da divisão por 33.</div>`;
- else if(M.get()==0)missao('m',true,`A mensagem ${b} cifrada é <b>${passos[k]}</b>. Agora troque para Decifrar: o site parte de ${passos[k]} e, com d = 7, deve voltar a ${b}.`,'');
- else missao('m',true,`Voltou: ${b}<sup>7</sup> mod 33 = <b>${passos[k]}</b>, a mensagem original (${MM.get()}). Só quem conhece d = 7 consegue.`,'');}
+MIS.ver('m');}
 ini();
 })();
 </script>

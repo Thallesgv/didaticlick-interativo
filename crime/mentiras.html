@@ -23,7 +23,13 @@ const CASOS=[
  {t:'A chave sumida',n:['Ana','Beto','Caio'],f:['“O Beto não pegou.”','“Fui eu que peguei.”','“Foi a Ana que pegou.”'],W:['Ana','Beto','Caio'],v:[w=>w!='Beto',w=>w=='Beto',w=>w=='Ana'],w:w=>'Quem pegou a chave foi '+w+'.'},
  {t:'Quatro suspeitos',n:['Ana','Beto','Caio','Dora'],f:['“Foi o Caio.”','“Não fui eu.”','“Foi a Dora.”','“O Caio está mentindo.”'],W:['Ana','Beto','Caio','Dora'],v:[w=>w=='Caio',w=>w!='Beto',w=>w=='Dora',w=>w!='Dora'],w:w=>'O culpado é '+w+'.'},
  {t:'O vigia',n:['Davi','Glória','Heitor','Nina'],f:['“A janela estava aberta.”','“O Davi mente.”','“A janela estava fechada.”','“A Glória fala a verdade.”'],W:['aberta','fechada'],v:[w=>w=='aberta',w=>w=='fechada',w=>w=='fechada',w=>w=='fechada'],w:w=>'A janela estava '+w+'.'}];
-let ci=0,L=null,vistos=new Set();
+let ci=0,L=null,vistos=new Set(),RK=null;const resolv=new Set();
+const achou_=()=>RK&&RK.k==0;
+MIS.def(()=>[
+ ['Toque em quem você acha que mente e ache a <b>única hipótese sem contradição</b>.',achou_,()=>{const c=CASOS[ci];return 'Só essa hipótese não gera contradição: <b>'+c.n[L]+'</b> mente. '+c.w(RK.w);},()=>!RK?'Teste uma hipótese de cada vez: toque em uma pessoa.':'Supondo que só '+CASOS[ci].n[L]+' mente, ainda sobram <b>'+RK.k+'</b> contradição(ões). Hipótese descartada.'],
+ ['Teste <b>todas</b> as hipóteses deste caso, para ter certeza de que só uma funciona.',()=>vistos.size==CASOS[ci].n.length&&resolv.has(ci),'Todas testadas: as outras hipóteses geram contradição. Só assim a conclusão fica garantida.',()=>'Hipóteses testadas: '+vistos.size+' de '+CASOS[ci].n.length+'.'],
+ ['Resolva <b>outro caso</b> (use Outro caso).',()=>resolv.size>=2,'Dois casos resolvidos supondo um mentiroso de cada vez.',()=>'Casos resolvidos: '+resolv.size+'.'],
+ ['Resolva <b>4 casos</b> diferentes.',()=>resolv.size>=4,'Quatro casos! Supor, conferir e descartar: é assim que a lógica derruba uma versão.',()=>'Casos resolvidos: '+resolv.size+' de 4.']]);
 $('nova').onclick=()=>{ci=(ci+1)%CASOS.length;L=null;vistos=new Set();draw();};
 $('fig').onclick=e=>{const g=e.target.closest('[data-i]');if(!g)return;L=+g.dataset.i;vistos.add(L);draw();};
 function avaliar(c,L){let best=null;c.W.forEach(w=>{const r=c.v.map((f,i)=>{const deve=i!=L,fica=f(w);return{deve,fica,ok:deve==fica};});const k=r.filter(x=>!x.ok).length;if(!best||k<best.k)best={w,r,k};});return best;}
@@ -34,9 +40,7 @@ function draw(){const c=CASOS[ci],n=c.n.length,W=340/n;let g=`<rect width="340" 
  $('fig').innerHTML=SVG(340,150,g);
  $('fr').innerHTML=c.n.map((nm,i)=>{let s=`<b>${nm}:</b> ${c.f[i]}`;if(res){const r=res.r[i];s+=` <span style="white-space:nowrap">· deveria ser <b>${r.deve?'V':'F'}</b> · fica <b>${r.fica?'V':'F'}</b> ${r.ok?'✔':'✗'}</span>`;}
   return `<div class="msg ${res?(res.r[i].ok?'ok':'bad'):'info'}" style="margin:4px 0">${s}</div>`;}).join('');
- if(!res)$('m').innerHTML='<div class="msg info">Teste uma hipótese de cada vez: toque em uma pessoa.</div>';
- else if(res.k)$('m').innerHTML=`<div class="msg bad">Supondo que só ${c.n[L]} mente, o melhor que se consegue ainda deixa <b>${res.k}</b> contradição(ões). Hipótese descartada.</div>`;
- else missao('m',true,`Só essa hipótese não gera contradição: <b>${c.n[L]}</b> mente. ${c.w(res.w)}`+(vistos.size<n?' Teste as outras para ter certeza de que elas falham.':' Você testou todas as hipóteses.'),'');}
+RK=res;if(achou_())resolv.add(ci);MIS.ver('m');}
 draw();
 })();
 </script>

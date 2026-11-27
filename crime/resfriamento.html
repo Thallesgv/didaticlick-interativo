@@ -25,6 +25,12 @@
 const M=chips('md',['Explorar','Caso: o carro da fuga'],0,()=>{if(M.get()==1){TA.set(15);T0.set(95);H.set(60);TM.set(25);}draw();});
 const TA=SL('sa',0,30,1,20,draw,v=>v+' °C'),T0=SL('s0',40,100,1,90,draw,v=>v+' °C'),H=SL('sh',10,120,5,30,draw,v=>v+' min'),TM=SL('sm',1,99,0.5,50,draw,v=>r1(v)+' °C');
 const hm=v=>{v=((Math.round(v)%1440)+1440)%1440;return String(Math.floor(v/60)).padStart(2,'0')+'h'+String(v%60).padStart(2,'0');};
+let TE=0;const tt_=()=>TE>=60?Math.floor(TE/60)+' h '+Math.round(TE%60)+' min':Math.round(TE)+' min';
+MIS.def(()=>[
+ ['Escolha <b>Caso: o carro da fuga</b> e monte o caso: ambiente 15 °C, motor a 95 °C, meia-vida de 60 min e 25 °C medidos às 06h00. Quando o motor foi desligado?',()=>TA.get()==15&&T0.get()==95&&H.get()==60&&Math.abs(TM.get()-25)<.3,'O motor esfriou 3 meias-vidas (80 → 40 → 20 → 10 °C de diferença): foi desligado por volta das 03h00.','Monte o caso: ambiente 15 °C, motor a 95 °C, meia-vida de 60 min e 25 °C medidos às 06h00.'],
+ ['Com ambiente de <b>20 °C</b> e início em <b>90 °C</b>, a medida dá <b>55 °C</b>. Quantas meias-vidas passaram?',()=>TA.get()==20&&T0.get()==90&&Math.abs(TM.get()-55)<.3,()=>'Uma meia-vida: a diferença para o ambiente caiu de 70 para 35 °C. Passaram '+H.get()+' min.',()=>TA.get()!=20||T0.get()!=90?'Ponha o ambiente em 20 °C e o início em 90 °C.':'Ajuste a temperatura medida.'],
+ ['Com a meia-vida em <b>60 min</b>, escolha a temperatura medida que dá <b>exatamente 2 h</b>.',()=>H.get()==60&&Math.abs(TE-120)<1.5,'Duas meias-vidas: a diferença para o ambiente caiu a 1/4 da inicial.',()=>H.get()!=60?'Ponha a meia-vida em 60 min.':'Tempo agora: '+tt_()+'.'],
+ ['Sem mexer nas temperaturas, leve a meia-vida ao <b>máximo</b> (120 min). O tempo lido aumenta ou diminui?',()=>H.get()==120,()=>'Aumenta: agora são '+tt_()+'. Um corpo que esfria devagar engana: passou mais tempo do que parece.','Mude só a meia-vida.']]);
 function draw(){const ta=TA.get(),t0=T0.get(),h=H.get();let tm=clamp(TM.get(),ta+0.5,t0);
  const tmax=Math.max(240,h*5),x0=40,y0=230,W=285,Hh=200,X=t=>x0+t/tmax*W,Y=T=>y0-T/100*Hh;
  let g=`<rect width="340" height="260" fill="#F8FAFC"/>`;
@@ -34,12 +40,11 @@ function draw(){const ta=TA.get(),t0=T0.get(),h=H.get();let tm=clamp(TM.get(),ta
  let d='';for(let i=0;i<=120;i++){const t=tmax*i/120,T=ta+(t0-ta)*Math.pow(.5,t/h);d+=(i?'L':'M')+X(t).toFixed(1)+','+Y(T).toFixed(1);}
  g+=`<path d="${d}" fill="none" stroke="${NAVY}" stroke-width="3"/>`;
  for(let k=1;k<=4;k++){const t=k*h;if(t>tmax)break;const T=ta+(t0-ta)/Math.pow(2,k);g+=`<circle cx="${X(t)}" cy="${Y(T)}" r="3.5" fill="${LIGHT}"/>`;}
- const n=Math.log2((t0-ta)/(tm-ta)),te=n*h,xe=X(Math.min(te,tmax));
+ const n=Math.log2((t0-ta)/(tm-ta)),te=n*h;TE=te;const xe=X(Math.min(te,tmax));
  g+=LN(x0,Y(tm),xe,Y(tm),ORANGE,2.5)+LN(xe,Y(tm),xe,y0,ORANGE,2.5,'5 4')+`<circle cx="${xe}" cy="${Y(tm)}" r="8" fill="${ORANGE}" stroke="#fff" stroke-width="3"/>`;
  g+=LN(x0,y0,x0+W,y0,NAVY,1.5);$('fig').innerHTML=SVG(340,260,g);
  const mm=Math.round(te%60);$('kt').textContent=te>=60?Math.floor(te/60)+' h'+(mm?' '+mm+' min':''):Math.round(te)+' min';$('kn').textContent=r1(n);$('kh').textContent=hm(360-te);
- if(M.get()==1){const ok=ta==15&&t0==95&&h==60&&Math.abs(tm-25)<.3;missao('m',ok,'O motor esfriou 3 meias-vidas (80 → 40 → 20 → 10 °C de diferença): foi desligado por volta das 03h00.','Monte o caso: ambiente 15 °C, motor a 95 °C, meia-vida de 60 min e 25 °C medidos às 06h00.');}
- else $('m').innerHTML='<div class="msg info">Mude a meia-vida: com ela maior, a mesma temperatura medida significa que passou mais tempo.</div>';}
+MIS.ver('m');}
 draw();
 })();
 </script>

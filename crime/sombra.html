@@ -21,7 +21,13 @@
 const TAB=[0,0,22,35,48,60,66,60,48,35,22,0,0];// 6h a 18h
 function theta(h){const i=clamp(h-6,0,12),a=Math.floor(i),f=i-a;return a>=12?0:TAB[a]+(TAB[a+1]-TAB[a])*f;}
 const Hr=SL('sh',6.5,17.5,0.25,9,draw,v=>{const h=Math.floor(v),mm=Math.round((v-h)*60);return h+'h'+(mm?String(mm).padStart(2,'0'):'');});
-let F;function nova(){const h=P([8,9,10,11,13,14,15,16]);F={h,s:9/Math.tan(theta(h)*RAD),dir:h<12?'oeste':'leste'};$('enun').innerHTML=`Na foto, a sombra do mastro mede <b>${r1(F.s)} m</b> e aponta para o <b>${F.dir}</b>. Ajuste a hora até a sombra ficar igual.`;draw();}
+let F,SB={s:99,ok:false};const res=new Set();
+MIS.def(()=>[
+ ['Ajuste a hora até a sombra ficar <b>igual à da foto</b>: mesmo tamanho e mesma direção.',()=>SB.ok,()=>`É isso: ${F.h}h. tg θ = 9 ÷ ${r1(F.s)} ≈ ${r2(9/F.s)}, θ ≈ ${Math.round(theta(F.h))}°, e a sombra para o ${F.dir} mostra que era ${F.h<12?'manhã':'tarde'}.`,'Ainda não bate. Compare o tamanho e a direção da sombra.'],
+ ['Resolva <b>3 fotos</b> diferentes (use Outra foto).',()=>res.size>=3,'Três horários descobertos só pela sombra: tamanho dá a altura do Sol, direção dá manhã ou tarde.',()=>'Fotos resolvidas: '+res.size+' de 3.'+(SB.ok?' Aperte Outra foto.':'')],
+ ['Ache o horário com a <b>menor sombra</b> do dia.',()=>Math.abs(Hr.get()-12)<0.01,'Meio-dia: o Sol está no ponto mais alto (66°) e a sombra mede 9 ÷ tg 66° ≈ 4,0 m.',()=>'Sombra agora: '+(SB.s>90?'muito longa':r1(SB.s)+' m')+'.'],
+ ['Ache um horário em que a sombra tem <b>o mesmo tamanho do mastro</b> (9 m).',()=>Math.abs(SB.s-9)<0.25,'Sol a cerca de 45°: tg 45° = 1, então sombra = altura.',()=>'Sombra agora: '+(SB.s>90?'muito longa':r1(SB.s)+' m')+'.']]);
+function nova(){const h=P([8,9,10,11,13,14,15,16]);F={h,s:9/Math.tan(theta(h)*RAD),dir:h<12?'oeste':'leste'};$('enun').innerHTML=`Na foto, a sombra do mastro mede <b>${r1(F.s)} m</b> e aponta para o <b>${F.dir}</b>. Ajuste a hora até a sombra ficar igual.`;draw();}
 function draw(){const h=Hr.get(),t=theta(h),s=t>0?9/Math.tan(t*RAD):99,manha=h<12;const x0=170,y0=200,k=9;
  let g=`<rect x="0" y="0" width="340" height="${y0}" fill="#EAF2FF"/>`+LN(0,y0,340,y0,NAVY,3);
  const ang=(h-6)/12*Math.PI,sx=x0+150*Math.cos(ang),sy=y0-150*Math.sin(t*RAD)/Math.sin(66*RAD)*1.0;
@@ -32,7 +38,8 @@ function draw(){const h=Hr.get(),t=theta(h),s=t>0?9/Math.tan(t*RAD):99,manha=h<1
  g+=`<rect x="${x0-3}" y="${y0-9*k}" width="6" height="${9*k}" fill="${NAVY}"/><path d="M${x0+3},${y0-9*k} l20,6 l-20,6z" fill="${ORANGE}"/>`;
  g+=TX(20,y0+16,'OESTE',{fs:10,a:'start',c:GRAY})+TX(320,y0+16,'LESTE',{fs:10,a:'end',c:GRAY});
  $('fig').innerHTML=SVG(340,222,g);$('kt').textContent=Math.round(t)+'°';$('ks').textContent=s>90?'—':r1(s)+' m';$('kd').textContent=manha?'oeste':'leste';
- if(F){const ok=Math.abs(s-F.s)<.25&&(manha?'oeste':'leste')==F.dir;missao('m',ok,`É isso: ${F.h}h. tg θ = 9 ÷ ${r1(F.s)} ≈ ${r2(9/F.s)}, θ ≈ ${Math.round(theta(F.h))}°, e a sombra para o ${F.dir} mostra que era ${F.h<12?'manhã':'tarde'}.`,'Ainda não bate. Compare o tamanho e a direção da sombra.');}}
+ SB={s,ok:!!F&&Math.abs(s-F.s)<.25&&(manha?'oeste':'leste')==F.dir};if(SB.ok)res.add(F.h);
+MIS.ver('m');}
 nova();
 })();
 </script>

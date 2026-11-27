@@ -23,7 +23,13 @@
 const NV=[1e4,1e5,1e6,3e6,1e7,2e8],NN=['10 mil','100 mil','1 milhão','3 milhões','10 milhões','200 milhões'],RV=[1e3,1e5,1e6,1e9],RN=['1 em mil','1 em 100 mil','1 em 1 milhão','1 em 1 bilhão'];
 const N=chips('pn',NN,1,draw),R=chips('pr',RN,1,draw);
 const M=chips('md',['Explorar','Caso: Vila Serena'],0,()=>{if(M.get()==1){$('pn').querySelectorAll('button')[3].click();$('pr').querySelectorAll('button')[2].click();}draw();});
-function draw(){const n=NV[N.get()],r=RV[R.get()],E=n/r,pc=1/(1+E),k=Math.min(Math.round(E),59);
+let DN={E:0,pc:1};
+MIS.def(()=>[
+ ['Escolha <b>Caso: Vila Serena</b>: 3 milhões de pessoas e perfil de 1 em 1 milhão. Qual é a chance de Bernardo ser a fonte, só com o DNA?',()=>N.get()==3&&R.get()==2,'Esperam-se 3 coincidências por acaso. Só com o DNA, a chance de Bernardo ser a fonte é de 1 em 4 (25%), não de 999 999 em 1 milhão: é a falácia do promotor.','Escolha 3 milhões de pessoas e raridade de 1 em 1 milhão.'],
+ ['Ache uma combinação em que se espera <b>menos de 1</b> coincidência por acaso, mas a chance do suspeito <b>não passa de 99%</b>.',()=>DN.E<1&&DN.pc<0.99,()=>'Esperam-se só '+r2(DN.E)+' coincidências, e mesmo assim a chance é de '+r1(DN.pc*100)+'%. Menos de 1 não é zero.',()=>'Coincidências esperadas: '+r2(DN.E)+'. Chance: '+r1(DN.pc*100)+'%.'],
+ ['Com o perfil de <b>1 em 1 bilhão</b>, escolha a <b>maior população</b>. A chance ainda passa de 80%?',()=>R.get()==3&&N.get()==5,'Sim: mesmo com 200 milhões de pessoas, esperam-se 0,2 coincidência e a chance é de 83%.',()=>R.get()!=3?'Escolha 1 em 1 bilhão.':'Escolha a maior população.'],
+ ['Com <b>10 milhões</b> de pessoas e perfil de <b>1 em mil</b>, quantas pessoas têm o mesmo DNA por acaso?',()=>N.get()==4&&R.get()==0,'Dez mil pessoas com o mesmo perfil: sozinho, esse DNA quase não prova nada.','Escolha 10 milhões e 1 em mil.']]);
+function draw(){const n=NV[N.get()],r=RV[R.get()],E=n/r,pc=1/(1+E),k=Math.min(Math.round(E),59);DN={E,pc};
  const tot=k+1,cols=10,rows=Math.ceil(tot/cols),hh=rows>3?34:46,W=340,H=40+rows*(hh+10)+(E>59||E<1?24:0);
  let g=`<rect width="${W}" height="${H}" fill="#fff"/>`+TX(170,22,'quem tem o mesmo perfil entre '+NN[N.get()]+' de pessoas',{fs:11});
  const pos=[...Array(tot).keys()].sort(()=>Math.random()-.5);
@@ -32,8 +38,7 @@ function draw(){const n=NV[N.get()],r=RV[R.get()],E=n/r,pc=1/(1+E),k=Math.min(Ma
  if(E<1)g+=TX(170,H-8,'por acaso, só se espera '+r2(E)+' pessoa: provavelmente nenhuma',{fs:10,c:GRAY});
  $('fig').innerHTML=SVG(W,H,g);
  $('ke').textContent=E<0.01?'≈ 0':E<10?r2(E):fmt(Math.round(E));$('kp').textContent=(pc>0.9999?'> 99,99':r1(pc*100))+'%';
- if(M.get()==1)missao('m',n==3e6&&r==1e6,'Com 3 milhões de pessoas e perfil de 1 em 1 milhão, esperam-se 3 coincidências por acaso. Só com o DNA, a chance de Bernardo ser a fonte é de 1 em 4 (25%), não de 999 999 em 1 milhão: é a falácia do promotor.','Escolha 3 milhões de pessoas e raridade de 1 em 1 milhão.');
- else $('m').innerHTML='<div class="msg info">Esperam-se '+(E<10?r2(E):fmt(Math.round(E)))+' coincidências por acaso. Quanto maior a população, mais "Bernardos" existem; quanto mais raro o perfil, menos.</div>';}
+MIS.ver('m');}
 draw();
 })();
 </script>

@@ -23,7 +23,13 @@
 (()=>{
 const brl=v=>'R$ '+fmt(Math.round(v));const pc=v=>r1(v)+'%';
 const M=chips('md',['Explorar','Caso: o extrato de Heitor'],0,()=>{if(M.get()==1){C.set(50000);I.set(1);T.set(12);}draw();});
-const C=SL('sc',1000,100000,1000,50000,draw,v=>brl(v)),I=SL('si',0.5,10,0.5,2,draw,v=>r1(v)+'%'),T=SL('st',6,120,1,36,draw,v=>v+' meses');
+const C=SL('sc',1000,100000,1000,50000,draw,v=>brl(v)),I=SL('si',0.5,10,0.5,2,draw,v=>r1(v)+'%'),T=SL('st',6,120,1,24,draw,v=>v+' meses');
+const mc_=()=>C.get()*Math.pow(1+I.get()/100,T.get()),ms_=()=>C.get()*(1+I.get()/100*T.get()),m2_=()=>Math.log(2)/Math.log(1+I.get()/100);
+MIS.def(()=>[
+ ['Monte o caso do extrato de Heitor: <b>R$ 50.000</b>, <b>2% ao mês</b>, <b>36 meses</b>. Compare as duas linhas no fim.',()=>C.get()==50000&&Math.abs(I.get()-2)<1e-9&&T.get()==36,'Extrato de Heitor: R$ 86.000 (simples). Aplicação de verdade: cerca de R$ 101.994 (compostos). Sumiram quase R$ 16.000.','Monte o caso: R$ 50.000, 2% ao mês, 36 meses.'],
+ ['Ache a taxa em que o dinheiro <b>dobra em cerca de 12 meses</b> nos compostos.',()=>Math.abs(m2_()-12)<0.5,()=>'A '+r1(I.get())+'% ao mês, dobra em '+r1(m2_())+' meses. Regra do 72: 72 ÷ 6 = 12.',()=>'Agora dobra em '+r1(m2_())+' meses. Regra do 72: 72 ÷ taxa.'],
+ ['Com <b>1% ao mês</b> por <b>12 meses</b>, quanto os compostos rendem a mais que os simples?',()=>Math.abs(I.get()-1)<1e-9&&T.get()==12,()=>'Só '+brl(mc_()-ms_())+': em prazos curtos, a reta e a curva quase coincidem.','Ponha 1% ao mês e 12 meses.'],
+ ['Faça a diferença entre compostos e simples ficar <b>maior que o valor inicial</b>.',()=>mc_()-ms_()>C.get(),'A curva disparou: com prazo longo e taxa alta, os juros sobre juros passam do próprio valor aplicado.',()=>'Diferença agora: '+brl(mc_()-ms_())+'.']]);
 function draw(){const c=C.get(),i=I.get()/100,t=T.get(),ms=c*(1+i*t),mc=c*Math.pow(1+i,t),mx=Math.max(mc,ms)*1.1;
  const x0=48,y0=220,W=270,H=190,X=m=>x0+m/t*W,Y=v=>y0-v/mx*H;let g=`<rect width="340" height="250" fill="#F8FAFC"/>`;
  for(let k=0;k<=4;k++){const v=mx*k/4;g+=LN(x0,Y(v),x0+W,Y(v),GRAYL,1)+TX(x0-4,Y(v)+4,fmt(Math.round(v/1000))+' mil',{fs:9,a:'end',c:GRAY,w:500});}
@@ -33,8 +39,7 @@ function draw(){const c=C.get(),i=I.get()/100,t=T.get(),ms=c*(1+i*t),mc=c*Math.p
  g+=`<path d="${d}" fill="none" stroke="${ORANGE}" stroke-width="3.5"/>`;
  const m2=Math.log(2)/Math.log(1+i);if(m2<=t)g+=LN(X(m2),y0,X(m2),Y(2*c),ORANGE,1.5,'4 3')+`<circle cx="${X(m2)}" cy="${Y(2*c)}" r="6" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`+TX(X(m2),Y(2*c)-10,'dobrou: '+r1(m2)+' meses',{fs:10,c:ORANGE,a:X(m2)>250?'end':'middle'});
  $('fig').innerHTML=SVG(340,250,g);$('ks').textContent=brl(ms);$('kc').textContent=brl(mc);$('kd').textContent=brl(mc-ms);
- if(M.get()==1){const ok=c==50000&&Math.abs(i-0.02)<1e-9&&t==36;missao('m',ok,'Extrato de Heitor: R$ 86.000 (simples). Aplicação de verdade: cerca de R$ 101.994 (compostos). Sumiram quase R$ 16.000.','Monte o caso: R$ 50.000, 2% ao mês, 36 meses. Compare as duas linhas no fim.');}
- else $('m').innerHTML=`<div class="msg info">Regra do 72: a ${r1(I.get())}% ao mês, o valor dobra em cerca de ${r1(72/I.get())} meses. A conta exata dá ${r1(m2)}.</div>`;}
+MIS.ver('m');}
 draw();
 })();
 </script>
