@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Microscópio virtual · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Microscópio virtual</h1></header>
+<main>
+<div class="card"><h2>Olhe pela ocular</h2><p class="muted" style="margin-top:0">Escolha a lâmina e a objetiva (a ocular é de 10×). Gire o <b>foco</b> até a imagem ficar nítida: cada objetiva tem um ponto de foco diferente. Arraste a imagem para passear pela lâmina. A régua mostra o tamanho real.</p>
+<div><b style="color:var(--navy)">Lâmina</b><div id="cl" style="margin:4px 0"></div></div>
+<div><b style="color:var(--navy)">Objetiva</b><div id="co" style="margin:4px 0"></div></div>
+<div class="fig" id="vw" style="position:relative;touch-action:none"><div style="width:340px;height:340px;max-width:100%;margin:10px auto;border-radius:50%;overflow:hidden;background:#111;box-shadow:0 0 0 10px #1F2937,0 6px 18px rgba(0,0,0,.35);transform:translateZ(0)"><canvas id="cv" width="680" height="680" style="width:100%;height:100%;display:block"></canvas></div>
+<div id="rg" style="position:absolute;left:0;right:0;bottom:26px;text-align:center;pointer-events:none"></div></div>
+<div class="sl" id="sf"><b>Foco (parafuso micrométrico)</b><input type="range"><span></span></div>
+<div class="sl" id="sz"><b>Luz</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Aumento total<b id="ka"></b></div><div>Campo de visão<b id="kc"></b></div><div>Foco<b id="kf"></b></div></div>
+<div id="pq" style="display:none;margin-top:8px"><b style="color:var(--navy)">Quanto mede, mais ou menos, uma célula da cebola?</b><div id="cr" style="margin:4px 0"></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha a lâmina.</p></div>
+<div class="card"><h2>Explore também</h2><p class="muted" style="margin-top:0">Outros laboratórios virtuais gratuitos, em inglês:</p>
+<p style="margin:4px 0"><a href="https://learn.genetics.utah.edu/content/cells/scale/" target="_blank" rel="noopener"><b>Cell Size and Scale</b></a> · Learn.Genetics (Univ. de Utah): zoom do grão de café ao átomo.</p>
+<p style="margin:4px 0"><a href="https://phet.colorado.edu/pt_BR/" target="_blank" rel="noopener"><b>PhET</b></a> · Universidade do Colorado: simulações de biologia, química e física em português.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const LAM=['Sangue','Cebola','Elódea (folha)','Bactérias'],OBJ=[4,10,40,100],FOCO=[34,47,61,72];
+let resp=-1;const CL=chips('cl',LAM,0,()=>{cx=0;cy=0;draw();}),CO=chips('co',OBJ.map(v=>v+'×'),1,draw);
+const CR=chips('cr',['cerca de 2 µm','cerca de 20 µm','cerca de 200 µm','cerca de 2 mm'],-1,i=>{resp=i;draw();});
+const SF=SL('sf',0,100,1,20,draw,v=>v),SZ=SL('sz',20,100,1,75,draw,v=>v+'%');
+const cv=$('cv'),ctx=cv.getContext('2d');let cx=0,cy=0;
+const campo=()=>18000/OBJ[CO.get()];  // µm (número de campo 18 mm)
+const borr=()=>Math.abs(SF.get()-FOCO[CO.get()])*OBJ[CO.get()]/40*1.2;
+const nitido=()=>borr()<0.9;
+function rng(a,b){let s=(a*73856093^b*19349663^CL.get()*83492791)>>>0;return()=>{s^=s<<13;s>>>=0;s^=s>>17;s^=s<<5;s>>>=0;return s/4294967296;};}
+// cada lâmina: tamanho do ladrilho (µm) e função que desenha os objetos de um ladrilho
+const TIPO=[
+ {T:24,cor:'#E8B4B0',fundo:'#FBF1EA',obj(r,x0,y0,o){for(let i=0;i<6;i++)o.push(['hem',x0+r()*24,y0+r()*24,3.6+r()*0.5]);if(r()<0.012)o.push(['leu',x0+r()*24,y0+r()*24,6+r()*1.5,r()]);}},
+ {T:240,cor:'#D9B98A',fundo:'#F3E3C4',obj(r,x0,y0,o){const h=60;for(let j=0;j<4;j++){let x=x0-r()*120;const y=y0+j*h;while(x<x0+240){const w=170+r()*110;o.push(['ceb',x,y,w,h,r(),r()]);x+=w;}}}},
+ {T:120,cor:'#9CCB86',fundo:'#EEF6E6',obj(r,x0,y0,o){for(let j=0;j<5;j++)for(let i=0;i<2;i++)o.push(['elo',x0+i*60,y0+j*24,60,24,r()*1000|0]);}},
+ {T:30,cor:'#B48EC8',fundo:'#F7F2FA',obj(r,x0,y0,o){for(let i=0;i<5;i++)o.push(['bac',x0+r()*30,y0+r()*30,1+r()*0.4,r()*Math.PI]);}}];
+function draw(){const t=TIPO[CL.get()],F=campo(),W=680,k=W/F;ctx.save();ctx.fillStyle=t.fundo;ctx.fillRect(0,0,W,W);
+ const x0=cx-F/2,y0=cy-F/2,T=t.T;const px=T*k;
+ if(px<10&&CL.get()!=1){// muito pequeno: textura
+  const r=rng(1,2);ctx.fillStyle=t.cor;const n=CL.get()==0?9000:CL.get()==3?2500:4000;for(let i=0;i<n;i++){ctx.globalAlpha=0.35+0.5*r();ctx.fillRect(r()*W,r()*W,1.6,1.6);}ctx.globalAlpha=1;
+ } else {
+  const o=[];for(let i=Math.floor(x0/T)-1;i<=Math.floor((x0+F)/T);i++)for(let j=Math.floor(y0/T)-1;j<=Math.floor((y0+F)/T);j++)t.obj(rng(i,j),i*T,j*T,o);
+  const X=x=>(x-x0)*k,Y=y=>(y-y0)*k;
+  o.forEach(a=>{if(a[0]=='hem'){const r=a[3]*k,g=ctx.createRadialGradient(X(a[1]),Y(a[2]),r*0.1,X(a[1]),Y(a[2]),r);g.addColorStop(0,'#F7D9D5');g.addColorStop(0.45,'#F1BFB9');g.addColorStop(0.85,'#D9827A');g.addColorStop(1,'#C9665E');ctx.fillStyle=g;ctx.beginPath();ctx.arc(X(a[1]),Y(a[2]),r,0,7);ctx.fill();}
+   else if(a[0]=='leu'){const r=a[3]*k;ctx.fillStyle='#EBDDF0';ctx.beginPath();ctx.arc(X(a[1]),Y(a[2]),r,0,7);ctx.fill();ctx.fillStyle='#5B2C83';for(let q=0;q<3;q++){ctx.beginPath();ctx.arc(X(a[1])+Math.cos(q*2.1+a[4]*6)*r*0.38,Y(a[2])+Math.sin(q*2.1+a[4]*6)*r*0.38,r*0.36,0,7);ctx.fill();}}
+   else if(a[0]=='ceb'){const xa=X(a[1]),ya=Y(a[2]),w=a[3]*k,h=a[4]*k,sk=(a[6]-0.5)*h*0.5;const g=ctx.createLinearGradient(xa,ya,xa,ya+h);g.addColorStop(0,'#F6E7C8');g.addColorStop(0.5,'#FBF1DC');g.addColorStop(1,'#EBD3A6');
+     ctx.fillStyle=g;ctx.strokeStyle='#8E6A3A';ctx.lineWidth=Math.max(1,2.4*k);ctx.beginPath();ctx.moveTo(xa,ya);ctx.lineTo(xa+w,ya+sk*0.3);ctx.lineTo(xa+w,ya+h+sk*0.3);ctx.lineTo(xa,ya+h);ctx.closePath();ctx.fill();ctx.stroke();
+     const nr=Math.max(1.2,11*k),nx=xa+w*(0.25+0.5*a[5]),ny=ya+h*0.5;ctx.fillStyle='#A57A3E';ctx.beginPath();ctx.ellipse(nx,ny,nr,nr*0.78,0,0,7);ctx.fill();
+     if(nr>5){ctx.fillStyle='#6E4A1E';ctx.beginPath();ctx.arc(nx+nr*0.2,ny-nr*0.1,nr*0.28,0,7);ctx.fill();}}
+   else if(a[0]=='elo'){ctx.strokeStyle='#5E8F4A';ctx.lineWidth=Math.max(1,1.6*k);ctx.fillStyle='#E4F1D8';ctx.beginPath();ctx.rect(X(a[1]),Y(a[2]),a[3]*k,a[4]*k);ctx.fill();ctx.stroke();
+     const r=rng(a[5],7);ctx.fillStyle='#3E8E2F';for(let q=0;q<14;q++){const px2=a[1]+2.5+r()*(a[3]-5),py2=a[2]+2.5+r()*(a[4]-5);ctx.beginPath();ctx.ellipse(X(px2),Y(py2),2.6*k,1.9*k,r()*3,0,7);ctx.fill();}}
+   else if(a[0]=='bac'){ctx.save();ctx.translate(X(a[1]),Y(a[2]));ctx.rotate(a[4]);ctx.fillStyle='#7A3E9D';const L=2*k,H=Math.max(0.8,0.5*k);ctx.beginPath();ctx.ellipse(0,0,L/2,H,0,0,7);ctx.fill();ctx.restore();}});
+ }
+ ctx.restore();cv.style.filter=`blur(${borr()}px) brightness(${SZ.get()/75})`;
+ const bar=[1000,500,100,50,20,10,5,2].find(b=>b<=F/3.5)||1,bw=bar*k/2;$('rg').innerHTML=`<div style="display:inline-block;background:rgba(14,35,84,.75);color:#fff;border-radius:8px;padding:3px 8px;font:600 12px Poppins"><div style="height:5px;background:#F7821F;width:${bw}px;margin:2px auto 3px"></div>${bar>=1000?bar/1000+' mm':bar+' µm'}</div>`;
+ $('ka').textContent=10*OBJ[CO.get()]+'×';$('kc').textContent=F>=1000?r2(F/1000)+' mm':fmt(Math.round(F))+' µm';$('kf').textContent=nitido()?'nítido ✔':'desfocado';
+ $('pq').style.display=CL.get()==1?'block':'none';MIS.ver('m');}
+let arr=null;cv.addEventListener('pointerdown',e=>{arr=[e.clientX,e.clientY];cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',e=>{if(!arr)return;const s=campo()/cv.getBoundingClientRect().width;cx-=(e.clientX-arr[0])*s;cy-=(e.clientY-arr[1])*s;arr=[e.clientX,e.clientY];draw();});
+cv.addEventListener('pointerup',()=>arr=null);
+MIS.def(()=>[
+ ['Na lâmina de <b>sangue</b>, use a objetiva de <b>40×</b> e acerte o <b>foco</b>.',()=>CL.get()==0&&CO.get()==2&&nitido(),'Nítido! As hemácias são discos de uns 7 µm, mais claras no meio porque são côncavas dos dois lados.',()=>CL.get()!=0?'Escolha a lâmina de sangue.':CO.get()!=2?'Escolha a objetiva de 40×.':'Gire o foco devagar até as bordas ficarem nítidas.'],
+ ['Ainda no sangue, arraste a lâmina até achar um <b>glóbulo branco</b> (roxo) no 40× ou 100×, com foco.',()=>CL.get()==0&&CO.get()>=2&&nitido()&&leuNoCampo(),'Achou! Os glóbulos brancos são raros: há uns 600 glóbulos vermelhos para cada glóbulo branco no sangue.',()=>'Arraste a imagem e procure um círculo com núcleo roxo.'],
+ ['Na <b>cebola</b>, use a régua para estimar o comprimento de uma célula.',()=>CL.get()==1&&resp==2,'Cerca de 200 µm, ou 0,2 mm: dá para ver com uma lupa forte! As células da cebola são das maiores que se estudam na escola.',()=>CL.get()!=1?'Escolha a lâmina de cebola.':resp<0?'Compare uma célula com a régua e responda embaixo.':'Compare de novo com a régua laranja.'],
+ ['Nas <b>bactérias</b>, encontre a objetiva em que elas aparecem como bastonetes, com foco.',()=>CL.get()==3&&CO.get()==3&&nitido(),'Só no 100× (aumento de 1.000×) dá para ver a forma: uma bactéria tem uns 2 µm. No 40× ela é só um pontinho.',()=>CL.get()!=3?'Escolha a lâmina de bactérias.':CO.get()!=3?'Elas ainda estão pequenas demais. Aumente.':'Acerte o foco.']]);
+function leuNoCampo(){const F=campo(),T=24,x0=cx-F/2,y0=cy-F/2;for(let i=Math.floor(x0/T)-1;i<=Math.floor((x0+F)/T);i++)for(let j=Math.floor(y0/T)-1;j<=Math.floor((y0+F)/T);j++){const o=[];TIPO[0].obj(rng(i,j),i*T,j*T,o);if(o.some(a=>a[0]=='leu'&&Math.hypot(a[1]-cx,a[2]-cy)<F/2-6))return true;}return false;}
+draw();
+})();
+</script>
+</body>
+</html>
