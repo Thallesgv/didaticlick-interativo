@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A conta da doação · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A conta da doação</h1></header>
+<main>
+<div class="card"><h2>Quantos sacos pedir?</h2><p class="muted" style="margin-top:0">Ponto de partida: 150 pessoas em 8 dias comem 120 kg de arroz. Mude as pessoas e os dias e veja cada fator da regra de três composta e os sacos de 10 kg necessários.</p>
+<div class="sl" id="sp"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dias</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Ração (g por pessoa por dia)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">Arroz<b id="kk"></b></div><div>Sacos de 10 kg<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function SACO(x,y,w,h,cor){return `<path d="M${x} ${y+h} L${x+w} ${y+h} L${x+w*0.92} ${y} L${x+w*0.08} ${y} Z" fill="${cor||'#E8D3A8'}" stroke="#A9875A" stroke-width="1.2"/>`;}
+const SP=SL('sp',50,300,10,150,draw),SD=SL('sd',1,20,1,8,draw),SG=SL('sg',50,150,10,100,draw,v=>v+' g');
+const KG=()=>Math.round(120*(SP.get()/150)*(SD.get()/8)*(SG.get()/100)*100)/100;
+MIS.def(()=>[
+ ['Com a ração de 100 g, quanto arroz para <b>200 pessoas</b> em <b>10 dias</b>?',()=>SP.get()==200&&SD.get()==10&&SG.get()==100,()=>'120 × 4/3 × 5/4 = 200 kg: 20 sacos.',()=>'Agora: '+fmt(KG())+' kg.'],
+ ['Ache pessoas e dias (com 100 g) que gastem <b>exatamente 150 kg</b>.',()=>SG.get()==100&&Math.abs(KG()-150)<1e-9,()=>SP.get()+' pessoas em '+SD.get()+' dias: '+SP.get()+' × '+SD.get()+' × 0,1 = 150 kg.',()=>'Agora: '+fmt(KG())+' kg. Pessoas × dias precisa dar 1.500.'],
+ ['A Defesa Civil mandou <b>300 kg</b> para <b>250 pessoas</b>. Com 100 g, quantos dias? E com <b>80 g</b>? Ache os dias em que o arroz gasto é 300 kg com 80 g.',()=>SP.get()==250&&SG.get()==80&&Math.abs(KG()-300)<1e-9,()=>'15 dias com 80 g (eram 12 com 100 g). Menos ração, mais dias.',()=>SP.get()!=250?'Ponha 250 pessoas.':SG.get()!=80?'Ponha a ração em 80 g.':'Agora: '+fmt(KG())+' kg em '+SD.get()+' dias.']]);
+function draw(){const kg=KG(),n=Math.ceil(kg/10-1e-9);let g=RC(0,0,340,170,'#F6EFE3');
+ for(let i=0;i<Math.min(n,60);i++){const x=8+(i%15)*22,y=10+Math.floor(i/15)*38;g+=SACO(x,y,18,30)+TX(x+9,y+20,'10',{fs:8,c:'#A9875A'});}
+ if(n>60)g+=TX(330,165,'+'+(n-60)+' sacos',{fs:10,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(340,170,g);$('kc').textContent='120 × '+SP.get()+'/150 × '+SD.get()+'/8 × '+SG.get()+'/100';$('kk').textContent=fmt(kg)+' kg';$('ks').textContent=n;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

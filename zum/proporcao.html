@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta da proporção · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A reta da proporção</h1></header>
+<main>
+<div class="card"><h2>Mova o ponto na reta</h2><p class="muted" style="margin-top:0">Escolha o par de grandezas e mude o valor de x. O ponto anda sobre a reta, e a razão y ÷ x nunca muda: é isso que quer dizer "diretamente proporcional".</p>
+<div id="cg" style="margin:6px 0"></div>
+<div class="sl" id="sx"><b>x</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>x<b id="kx"></b></div><div class="o">y<b id="ky"></b></div><div>y ÷ x<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o ponto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const G=[{x:'pessoas',y:'kg de arroz por dia',k:0.1,max:300,st:10,uy:'kg'},{x:'litros de água',y:'gotas de hipoclorito',k:2,max:60,st:1,uy:'gotas'}];
+let hist=[];const CG=chips('cg',['pessoas e arroz','litros e gotas de cloro'],0,()=>{hist=[];const g=G[CG.get()],el=$('sx').querySelector('input');el.max=g.max;el.step=g.st;el.value=g.st*5;el.dispatchEvent(new Event('input'));});
+const SX=SL('sx',0,300,10,50,draw);const gg=()=>G[CG.get()],Y=()=>Math.round(SX.get()*gg().k*100)/100;
+MIS.def(()=>[
+ ['Pessoas e arroz: quanto arroz por dia para <b>150 pessoas</b>?',()=>CG.get()==0&&SX.get()==150,()=>'15 kg. A razão é sempre 0,1 kg por pessoa.',()=>CG.get()!=0?'Escolha "pessoas e arroz".':'Agora: '+SX.get()+' pessoas, '+fmt(Y())+' kg.'],
+ ['Litros e gotas: quantas gotas de hipoclorito para um galão de <b>20 L</b>?',()=>CG.get()==1&&SX.get()==20,()=>'40 gotas: 2 por litro.',()=>CG.get()!=1?'Escolha "litros e gotas de cloro".':'Agora: '+SX.get()+' L, '+fmt(Y())+' gotas.'],
+ ['Quantos litros <b>100 gotas</b> tratam? Ache o ponto com y = 100.',()=>CG.get()==1&&Y()==100,()=>'50 L. Regra de três: 2 gotas → 1 L; 100 gotas → 50 L.',()=>'Agora y = '+fmt(Y())+'.']]);
+function draw(){const g0=gg(),x=SX.get(),y=Y(),ox=40,oy=180,W=280,H=150,xm=g0.max,ym=g0.max*g0.k,X=v=>ox+W*v/xm,YY=v=>oy-H*v/ym;
+ if(!hist.some(h=>h[0]==x))hist.push([x,y]);
+ let g=LN(ox,oy,ox+W,oy,NAVY,1.5)+LN(ox,oy,ox,oy-H,NAVY,1.5)+TX(ox+W,oy+16,g0.x,{fs:10,c:GRAY,a:'end'})+TX(ox+4,oy-H-6,g0.y,{fs:10,c:GRAY,a:'start'});
+ for(let i=1;i<=4;i++){g+=TX(X(xm*i/4),oy+12,fmt(xm*i/4),{fs:8,c:GRAY})+TX(ox-4,YY(ym*i/4)+3,fmt(ym*i/4),{fs:8,c:GRAY,a:'end'});}
+ g+=LN(X(0),YY(0),X(xm),YY(ym),ORANGE,1.5,'5 4');
+ hist.forEach(h=>g+=CI(X(h[0]).toFixed(1),YY(h[1]).toFixed(1),3,'#9AA7BD'));
+ g+=LN(X(x),oy,X(x),YY(y),'#2457D6',1,'3 3')+LN(ox,YY(y),X(x),YY(y),'#2457D6',1,'3 3')+CI(X(x),YY(y),6,ORANGE,'stroke="#0E2354" stroke-width="1.5"');
+ $('fig').innerHTML=SVG(340,200,g);$('kx').textContent=fmt(x);$('ky').textContent=fmt(y)+' '+g0.uy;$('kr').textContent=x?fmt(g0.k):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

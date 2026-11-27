@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A despensa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A despensa</h1></header>
+<main>
+<div class="card"><h2>Quanto tempo dura o arroz?</h2><p class="muted" style="margin-top:0">A despensa tem 120 kg de arroz. Escolha quantas pessoas há no abrigo e quantos gramas cada uma come por dia, e avance os dias para ver o estoque baixar.</p>
+<div class="sl" id="sp"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Arroz por pessoa por dia</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Gasto por dia<b id="kg"></b></div><div class="o">O arroz dura<b id="kd"></b></div><div>Sobra no dia escolhido<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function SACO(x,y,w,h,cor){return `<path d="M${x} ${y+h} L${x+w} ${y+h} L${x+w*0.92} ${y} L${x+w*0.08} ${y} Z" fill="${cor||'#E8D3A8'}" stroke="#A9875A" stroke-width="1.2"/>`;}
+const SP=SL('sp',50,250,10,100,draw),SG=SL('sg',50,150,5,120,draw,v=>v+' g'),SD=SL('sd',0,16,1,0,draw);
+const EST=120,GD=()=>SP.get()*SG.get()/1000,DUR=()=>EST/GD(),SOB=()=>Math.max(0,EST-GD()*SD.get());
+MIS.def(()=>[
+ ['Ponha <b>150 pessoas</b> e <b>100 g</b> por pessoa. Avance os dias até o arroz <b>acabar</b>.',()=>SP.get()==150&&SG.get()==100&&SOB()<=1e-9,()=>'15 kg por dia: o arroz acaba no fim do dia 8. 120 ÷ 15 = 8.',()=>SP.get()!=150||SG.get()!=100?'Ponha 150 pessoas e 100 g.':'Dia '+SD.get()+': ainda sobram '+r1(SOB())+' kg.'],
+ ['Com 150 pessoas, ache a ração que faz o arroz durar <b>exatamente 10 dias</b>.',()=>SP.get()==150&&Math.abs(DUR()-10)<1e-9,()=>SG.get()+' g por pessoa: 12 kg por dia, 10 dias. Foi o corte de 20% do livro.',()=>'Agora o arroz dura '+r1(DUR())+' dias.'],
+ ['Chegaram 50 pessoas: são <b>200</b>. Ache a ração para o arroz durar <b>8 dias</b>.',()=>SP.get()==200&&Math.abs(DUR()-8)<1e-9,()=>SG.get()+' g por pessoa: 200 × '+SG.get()+' g = 15 kg por dia, como antes. Mais gente, ração menor.',()=>SP.get()!=200?'Ponha 200 pessoas.':'Agora dura '+r1(DUR())+' dias.']]);
+function draw(){let g=RC(0,0,340,190,'#F6EFE3')+RC(10,170,320,6,'#A9875A');const n=12,fr=SOB()/EST;
+ for(let i=0;i<n;i++){const x=14+i*26,cheio=(i+1)/n<=fr+1e-9?1:Math.max(0,(fr-i/n)*n);g+=SACO(x,110,22,58,'#F3EBDD');if(cheio>0)g+=SACO(x,110+58*(1-cheio),22,58*cheio,'#E8D3A8');}
+ g+=TX(170,24,'Estoque de arroz: '+r1(SOB())+' kg de 120 kg',{fs:13})+TX(170,46,'cada saco: 10 kg',{fs:10,c:GRAY});
+ const pp=Math.round(SP.get()/10);for(let i=0;i<pp;i++)g+=CI(20+(i%25)*12,66+Math.floor(i/25)*12,4,'#5B7BD5');g+=TX(330,100,'(cada bolinha: 10 pessoas)',{fs:9,c:GRAY,a:'end'});
+ $('fig').innerHTML=SVG(340,190,g);$('kg').textContent=r1(GD())+' kg';$('kd').textContent=r1(DUR())+' dias';$('ks').textContent=r1(SOB())+' kg';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
