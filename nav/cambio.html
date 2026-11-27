@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cambista · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O cambista</h1></header>
+<main>
+<div class="card"><h2>Florins viram cruzados</h2><p class="muted" style="margin-top:0">Taxas (inventadas): 1 florim = 1,05 cruzado; 1 florim = 1,01 ducado; 1 ducado = 1,04 cruzado. Cada troca paga a comissão do cambista. As pilhas mostram quanto dinheiro existe em cada etapa do caminho.</p>
+<div class="fig" id="fig"></div>
+<div class="chips" id="ch"></div>
+<div class="sl" id="sf"><b>Florins a trocar</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Comissão de cada troca</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Cruzados no fim<b id="kc"></b></div><div>Comissões pagas (em cruzados)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com <b>4 000 florins</b> e comissão de <b>2%</b>, descubra qual caminho deixa mais cruzados: direto ou passando pelo ducado.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RED='#B91C1C',PURPLE='#7C3AED',CORES=[NAVY,ORANGE,GREEN,PURPLE];
+const f0=v=>fmt(Math.round(v));
+function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
+function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
+ vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
+  if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+let VIU=[false,false];const CH=chips('ch',['Direto: florim → cruzado','Pelo ducado: florim → ducado → cruzado'],0,draw);
+const Fs=SL('sf',500,8000,500,4000,draw,v=>f0(v)+' florins'),Cs=SL('sc',0,5,0.5,2,draw,v=>fmt(v)+'%');
+function pilha(x,valor,nome,cor,esc){let g='';const n=Math.min(16,Math.round(valor*esc));for(let i=0;i<n;i++)g+=`<ellipse cx="${x}" cy="${190-i*7}" rx="24" ry="6" fill="${cor}" stroke="#fff" stroke-width="1"/>`;
+ return g+TX(x,212,nome,{fs:10,c:cor})+TX(x,184-n*7,fmt(Math.round(valor*10)/10),{fs:10,c:cor});}
+function draw(){const F=Fs.get(),c=Cs.get()/100,via=CH.get()==1;let g='',fim,etapas;
+ const esc=14/8800;
+ if(!via){fim=F*1.05*(1-c);etapas=[[F,'florins',NAVY],[fim,'cruzados',ORANGE]];}
+ else{const du=F*1.01*(1-c);fim=du*1.04*(1-c);etapas=[[F,'florins',NAVY],[du,'ducados',GREEN],[fim,'cruzados',ORANGE]];}
+ const xs=etapas.length==2?[90,250]:[60,170,280];etapas.forEach((e,i)=>{g+=pilha(xs[i],e[0],e[1],e[2],esc);if(i)g+=`<path d="M${xs[i-1]+30} 120 L${xs[i]-30} 120" stroke="${GRAY}" stroke-width="2" marker-end="url(#a)"/>`+TX((xs[i-1]+xs[i])/2,112,'− '+fmt(c*100)+'%',{fs:9,c:RED});});
+ g='<defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="'+GRAY+'"/></marker></defs>'+g;
+ $('fig').innerHTML=SVG(340,225,g);
+ $('kc').textContent=fmt(Math.round(fim*10)/10);$('kp').textContent=fmt(Math.round((F*1.05-fim)*10)/10);
+ const base=F==4000&&Math.abs(c-0.02)<1e-9;if(base)VIU[CH.get()]=true;
+ missao('m',base&&VIU[0]&&VIU[1]&&!via,'Direto: 4 116 cruzados. Pelo ducado: cerca de 4 035. Sem comissão, os dois caminhos dariam quase o mesmo; com comissão, cada troca a mais come 2%.',
+  !base?'Coloque 4 000 florins e comissão de 2%.':(!VIU[0]||!VIU[1]?'Experimente os dois caminhos.':'Você já viu os dois caminhos. Volte ao que deixa mais cruzados.'));}
+draw();
+})();
+</script>
+</body>
+</html>

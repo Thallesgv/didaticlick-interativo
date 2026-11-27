@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Juros simples · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Juros simples</h1></header>
+<main>
+<div class="card"><h2>Degraus iguais</h2><p class="muted" style="margin-top:0">Cada ano, o banqueiro cobra a taxa sobre o capital inicial: os degraus laranja de juros são todos do mesmo tamanho, e o montante sobe em linha reta.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Capital</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Taxa ao ano</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Anos</b><input type="range"><span></span></div>
+<div class="kpi"><div>Juros por ano<b id="ka"></b></div><div>Juros totais<b id="kj"></b></div><div class="o">Montante<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com <b>4 000 a 10% ao ano</b>, ache em quantos anos os juros ficam <b>iguais ao capital</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RED='#B91C1C',PURPLE='#7C3AED',CORES=[NAVY,ORANGE,GREEN,PURPLE];
+const f0=v=>fmt(Math.round(v));
+function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
+function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
+ vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
+  if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const Cs=SL('sc',1000,8000,500,4000,draw,f0),Is=SL('si',1,20,1,10,draw,v=>v+'%'),Ts=SL('st',1,15,1,2,draw,v=>v+(v>1?' anos':' ano'));
+function draw(){const C=Cs.get(),i=Is.get()/100,t=Ts.get(),J=C*i*t,M=C+J,ymax=Math.max(C*(1+i*15),C*2)*1.05;
+ const ox=45,oy=215,w=280,h=190,bw=w/15,Y=v=>oy-v/ymax*h;let g='';
+ [0,.25,.5,.75,1].forEach(q=>{const v=ymax*q;g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-4,Y(v)+3,f0(v),{fs:8,c:GRAY,a:'end'});});
+ for(let k=1;k<=15;k++){const x=ox+(k-1)*bw+2,on=k<=t;g+=`<rect x="${x}" y="${Y(C)}" width="${bw-4}" height="${Y(0)-Y(C)}" fill="${on?NAVY:'#D7DEEA'}"/>`;
+  for(let j=0;j<k;j++)g+=`<rect x="${x}" y="${Y(C+C*i*(j+1))}" width="${bw-4}" height="${Y(C+C*i*j)-Y(C+C*i*(j+1))-0.8}" fill="${on?ORANGE:'#FDE9D8'}"/>`;
+  g+=TX(x+bw/2-2,oy+12,k,{fs:8,c:GRAY});}
+ g+=LN(ox,Y(2*C),ox+w,Y(2*C),RED,1.2,'5 4')+TX(ox+w,Y(2*C)-4,'dobro do capital',{fs:8,a:'end',c:RED})+LN(ox,oy,ox+w,oy,NAVY,1.5)+TX(ox+w,oy+25,'anos',{fs:9,a:'end'});
+ $('fig').innerHTML=SVG(340,245,g);
+ $('ka').textContent=f0(C*i);$('kj').textContent=f0(J);$('km').textContent=f0(M);
+ const ok=C==4000&&Math.abs(i-0.1)<1e-9&&t==10;
+ missao('m',ok,'10 anos: 10 degraus de 400 = 4 000 de juros. A juros simples de 10% ao ano, o capital dobra em 100 ÷ 10 = 10 anos.',
+  C!=4000||Math.abs(i-0.1)>1e-9?'Coloque o capital em 4 000 e a taxa em 10%.':'Juros de '+f0(J)+': '+(J<C?'ainda menos':'mais')+' que o capital.');}
+draw();
+})();
+</script>
+</body>
+</html>
