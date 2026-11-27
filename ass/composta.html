@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Máquinas em fila · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Máquinas em fila</h1></header>
+<main>
+<div class="card"><h2>g(f(x)): uma máquina depois da outra</h2><p class="muted" style="margin-top:0">Escolha a primeira máquina (f), a segunda (g) e a entrada x. O número percorre a fila de cima (primeiro f, depois g) e a de baixo (primeiro g, depois f).</p>
+<p style="margin:6px 0 2px"><b>Primeira máquina, f</b></p><div id="cf"></div>
+<p style="margin:8px 0 2px"><b>Segunda máquina, g</b></p><div id="cg"></div>
+<div class="sl" id="sx"><b>Entrada x</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">g(f(x))<b id="k1"></b></div><div>f(g(x))<b id="k2"></b></div><div>Regra de g ∘ f<b id="kr"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MQ=[['× 2',x=>2*x,'2x'],['+ 3',x=>x+3,'x + 3'],['x²',x=>x*x,'x²'],['÷ 2',x=>x/2,'x/2'],['− 1',x=>x-1,'x − 1'],['× 1,2',x=>1.2*x,'1,2x']];
+const F=chips('cf',MQ.map(m=>m[0]),0,draw),Gc=chips('cg',MQ.map(m=>m[0]),1,draw),X=SL('sx',-5,10,1,4,draw);
+const f=x=>MQ[F.get()][1](x),g=x=>MQ[Gc.get()][1](x);
+const comuta=()=>[-3,-1,0,1,2,5].every(x=>Math.abs(g(f(x))-f(g(x)))<1e-9);
+function regra(){const ff=MQ[F.get()][2],gg=MQ[Gc.get()][2];const ins=ff.includes(' ')?'('+ff+')':ff;
+ if(gg=='x²')return ins+'²';if(gg=='x/2')return ins+'/2';if(gg=='2x')return '2'+(ff.includes(' ')||ff=='x/2'?'('+ff+')':'·'+ff);if(gg=='1,2x')return '1,2'+(ff.includes(' ')||ff=='x/2'?'('+ff+')':'·'+ff);return gg.replace('x',ff);}
+MIS.def(()=>[
+ ['Monte a fila da Nina: f = <b>× 1,2</b> (segundos → metros) e g = <b>÷ 2</b> (metros → cm na planta). Onde Lara aparece na planta depois de <b>10 s</b>?',()=>F.get()==5&&Gc.get()==3&&X.get()==10,'1,2 · 10 = 12 m, e 12 ÷ 2 = 6 cm na planta. A regra composta é 0,6t.',()=>F.get()!=5||Gc.get()!=3?'Escolha f = × 1,2 e g = ÷ 2.':'Agora ponha x = 10.'],
+ ['Com f = <b>+ 3</b>, g = <b>× 2</b> e x = <b>2</b>, compare as duas filas. Deu o mesmo?',()=>F.get()==1&&Gc.get()==0&&X.get()==2,'g(f(2)) = 2 · 5 = 10, mas f(g(2)) = 4 + 3 = 7. A ordem importa!',()=>'Ajuste f = + 3, g = × 2 e x = 2.'],
+ ['Encontre duas máquinas <b>diferentes</b> em que a ordem <b>não</b> muda o resultado, para qualquer x.',()=>F.get()!=Gc.get()&&comuta(),'Essas duas comutam: g ∘ f = f ∘ g. Isso é exceção, não regra. Tente achar outro par!',()=>'Agora as filas '+(comuta()?'coincidem só porque f = g. Escolha máquinas diferentes.':'dão resultados diferentes. Pense em duas multiplicações, ou duas somas.')],
+ ['Com f = <b>× 2</b>, escolha a g que <b>desfaz</b> f: a saída tem que voltar a ser x.',()=>F.get()==0&&Gc.get()==3,'÷ 2 desfaz × 2: g(f(x)) = 2x/2 = x. Dizemos que g é a função inversa de f.',()=>F.get()!=0?'Escolha f = × 2.':'Que máquina devolve o número original?']]);
+function draw(){const x=X.get(),a=f(x),b=g(a),c=g(x),d=f(c),nf=MQ[F.get()][0],ng=MQ[Gc.get()][0];let s='';
+ const fila=(y,v0,m1,v1,m2,v2,c1,c2,t)=>{s+=TX(40,y+5,'x = '+fmt(v0),{fs:12})+LN(72,y,92,y,NAVY,2)+PG([[94,y],[86,y-5],[86,y+5]],NAVY)+RC(94,y-18,66,36,c1,'rx="8"')+TX(127,y+5,m1,{fs:13,c:'#fff'})+LN(160,y,250,y,NAVY,2)+PG([[252,y],[244,y-5],[244,y+5]],NAVY)+RC(184,y-30,44,20,'#fff','rx="4" stroke="#D7DEEA"')+TX(206,y-15,fmt(r2(v1)),{fs:12})
+  +RC(252,y-18,66,36,c2,'rx="8"')+TX(285,y+5,m2,{fs:13,c:'#fff'})+LN(318,y,338,y,NAVY,2)+TX(372,y+5,fmt(r2(v2)),{fs:14,c:ORANGE})+TX(205,y+38,t,{fs:10,c:GRAY});};
+ fila(40,x,nf,a,ng,b,ORANGE,NAVY,'primeiro f, depois g: g(f(x))');fila(130,x,ng,c,nf,d,NAVY,ORANGE,'primeiro g, depois f: f(g(x))');
+ s+=TX(205,200,Math.abs(b-d)<1e-9?'as duas filas deram o mesmo':'as duas filas deram resultados diferentes',{fs:11,c:Math.abs(b-d)<1e-9?GREEN:'#B91C1C'});
+ $('fig').innerHTML=SVG(410,210,s);
+ $('k1').textContent=fmt(r2(b));$('k2').textContent=fmt(r2(d));$('kr').textContent=regra();
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
