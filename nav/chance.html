@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A chance de voltar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A chance de voltar</h1></header>
+<main>
+<div class="card"><h2>Mande naus para o mar</h2><p class="muted" style="margin-top:0">Escolha a chance de uma nau voltar e mande naus. As últimas 40 aparecem no alto (azul: voltou; vermelha: perdida). Embaixo, a linha laranja é a frequência de volta, viagem a viagem; a tracejada é a probabilidade.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Chance de uma nau voltar</b><input type="range"><span></span></div>
+<div class="chips" id="bt"></div>
+<div class="kpi"><div>Naus enviadas<b id="kn"></b></div><div>Voltaram<b id="kv"></b></div><div class="o">Frequência de volta<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com chance de <b>0,8</b>, mande <b>pelo menos 100 naus</b> e faça a frequência ficar entre <b>0,78 e 0,82</b>. Com poucas naus, ela pula muito; com muitas, ela se acalma.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RED='#B91C1C';
+function BARCO(x,y,s,c,x_){let g=`<polygon points="${x-.5*s},${y} ${x+.5*s},${y} ${x+.36*s},${y+.22*s} ${x-.36*s},${y+.22*s}" fill="${c}"/>`+LN(x,y,x,y-.75*s,c,1.3)+
+ `<polygon points="${x+.04*s},${y-.72*s} ${x+.04*s},${y-.12*s} ${x+.42*s},${y-.2*s}" fill="${c}"/>`;if(x_)g+=LN(x-.4*s,y+.2*s,x+.4*s,y-.8*s,RED,2);return g;}
+function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
+function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
+function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
+const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+let RES=[];const Ps=SL('sp',0.1,0.95,0.05,0.8,()=>{RES=[];draw();},v=>fmt(v));
+const manda=k=>{for(let i=0;i<k;i++)RES.push(Math.random()<Ps.get());draw();};
+BOT('bt',[['+1 nau',()=>manda(1)],['+10 naus',()=>manda(10)],['+100 naus',()=>manda(100)],['Recomeçar',()=>{RES=[];draw();}]]);
+function draw(){const p=Ps.get(),n=RES.length,v=RES.filter(x=>x).length,f=n?v/n:0;let g='';
+ const ult=RES.slice(-40);ult.forEach((ok,i)=>{const x=22+(i%20)*15.5,y=30+Math.floor(i/20)*30;g+=BARCO(x,y,12,ok?NAVY:RED,!ok);});
+ if(!n)g+=TX(170,40,'Nenhuma nau no mar ainda',{fs:11,c:GRAY});
+ const ox=40,oy=235,w=280,h=140,N=Math.max(10,n),X=i=>ox+i/N*w,Y=q=>oy-q*h;
+ [0,0.25,0.5,0.75,1].forEach(q=>{g+=LN(ox,Y(q),ox+w,Y(q),'#EEF2F7',1)+TX(ox-5,Y(q)+3,fmt(q),{fs:9,c:GRAY,w:500,a:'end'});});
+ g+=LN(ox,oy,ox+w,oy,NAVY,1.5)+LN(ox,oy,ox,oy-h-4,NAVY,1.5)+TX(ox+w,oy+14,N+' naus',{fs:9,a:'end',c:GRAY})+TX(ox,oy+14,'0',{fs:9,c:GRAY});
+ g+=LN(ox,Y(p),ox+w,Y(p),BLUE,1.5,'6 4');
+ if(n){let s=0,pts=[];RES.forEach((ok,i)=>{s+=ok;pts.push(X(i+1).toFixed(1)+','+Y(s/(i+1)).toFixed(1));});g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="2.5" stroke-linejoin="round"/>`;}
+ $('fig').innerHTML=SVG(340,255,g);
+ $('kn').textContent=n;$('kv').textContent=v;$('kf').textContent=n?r2(f):'—';
+ const ok=Math.abs(p-0.8)<1e-9&&n>=100&&Math.abs(f-0.8)<=0.02+1e-9;
+ missao('m',ok,'Frequência '+r2(f)+' em '+n+' naus, colada na probabilidade 0,8. É assim que um registro longo vira uma boa estimativa.',
+  Math.abs(p-0.8)>1e-9?'Coloque a chance em 0,8.':n<100?'Faltam '+(100-n)+' naus para chegar a 100.':'Frequência '+r2(f)+': ainda fora de 0,78 a 0,82. Mande mais naus.');}
+draw();
+})();
+</script>
+</body>
+</html>
