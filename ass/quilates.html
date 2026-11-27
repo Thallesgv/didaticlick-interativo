@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O laboratório de Dante · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O laboratório de Dante</h1></header>
+<main>
+<div class="card"><h2>Partes de 24</h2><p class="muted" style="margin-top:0">Escolha quantos gramas de ouro puro e de outros metais vão na liga. A régua de 24 partes mostra o quilate: quilates = 24 · ouro ÷ total.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="so"><b>Ouro puro (g)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Outros metais (g)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Quilates<b id="kq"></b></div><div>Ouro na peça<b id="kp"></b></div><div>Massa total<b id="kt"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OURO='#E3A72F',PRATA='#AEB7C6';
+const mdc=(a,b)=>b?mdc(b,a%b):a;
+const R$s=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const barra=(x,y,w,h,c)=>`<polygon points="${x},${y+h} ${x+w},${y+h} ${x+w*.82},${y} ${x+w*.18},${y}" fill="${c}" stroke="${NAVY}" stroke-width=".8"/>`;
+function maxde(id,m){$(id).querySelector('input').max=m;}
+const O=SL('so',0,40,.5,10,draw,v=>fmt(v)+' g'),M=SL('sm',0,40,.5,10,draw,v=>fmt(v)+' g');
+const tot=()=>O.get()+M.get(),q=()=>tot()?24*O.get()/tot():0;
+MIS.def(()=>[
+ ['Faça uma peça de <b>18 quilates</b> com <b>30 g</b> no total.',()=>O.get()==22.5&&M.get()==7.5,'30 · 18/24 = 22,5 g de ouro e 7,5 g de outros metais: 75%.',()=>'Total agora: '+fmt(tot())+' g, com '+r1(q())+' quilates.'],
+ ['Com <b>9 g de ouro</b>, faça uma peça de <b>12 quilates</b>.',()=>O.get()==9&&M.get()==9,'12 quilates é metade ouro: 9 g de ouro em 18 g de peça.',()=>O.get()!=9?'Ponha 9 g de ouro.':'Agora: '+r1(q())+' quilates.'],
+ ['Faça <b>ouro puro</b> (24 quilates).',()=>O.get()>0&&M.get()==0,'Nenhum outro metal: 24 partes de ouro em 24.',()=>'O que precisa sair da liga?'],
+ ['Com <b>15 g de ouro</b>, quanto metal juntar para ter <b>18 quilates</b>?',()=>O.get()==15&&M.get()==5,'15 g são 3/4 da peça: total 20 g, então 5 g de outros metais.',()=>O.get()!=15?'Ponha 15 g de ouro.':'Agora: '+r1(q())+' quilates.']]);
+function draw(){const Q=q(),w=15;let g='';
+ for(let j=0;j<24;j++){const f=Math.max(0,Math.min(1,Q-j));g+=RC(14+j*w,20,w-2,40,PRATA,'rx="2"')+RC(14+j*w,20,(w-2)*f,40,OURO,'rx="2"');}
+ for(let j=0;j<=24;j+=6)g+=TX(14+j*w-1,76,String(j),{fs:9,c:GRAY});
+ g+=TX(194,98,r1(Q)+' quilates = '+r1(Q/24*100)+'% de ouro',{fs:13,c:ORANGE});
+ const k=tot()?220/Math.max(tot(),1):0;g+=RC(84,120,O.get()*k*.9,26,OURO,'rx="3"')+RC(84+O.get()*k*.9,120,M.get()*k*.9,26,PRATA,'rx="3"');
+ g+=TX(78,138,'massa',{fs:10,a:'end'})+TX(84,166,fmt(O.get())+' g de ouro + '+fmt(M.get())+' g de outros = '+fmt(tot())+' g',{fs:10,a:'start',c:GRAY});
+ g+=TX(194,192,'joia gravada: '+Math.round(Q/24*1000),{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(390,200,g);
+ $('kq').textContent=r1(Q);$('kp').textContent=r1(Q/24*100)+'%';$('kt').textContent=fmt(tot())+' g';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

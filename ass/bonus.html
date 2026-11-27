@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O bônus da rapidez · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O bônus da rapidez</h1></header>
+<main>
+<div class="card"><h2>Menos tempo, mais bônus</h2><p class="muted" style="margin-top:0">O bônus é dividido em partes <b>inversamente proporcionais</b> ao tempo de cada dupla. Mude os tempos e o valor do bônus.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sb"><b>Bônus (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="t0"><b>Dante e Nina (min)</b><input type="range"><span></span></div>
+<div class="sl" id="t1"><b>Lara e Bento (min)</b><input type="range"><span></span></div>
+<div class="sl" id="t2"><b>Vicente e Íris (min)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Razão dos bônus<b id="kr"></b></div><div>Bônus × tempo<b id="kp"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OURO='#E3A72F',PRATA='#AEB7C6';
+const mdc=(a,b)=>b?mdc(b,a%b):a;
+const R$s=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const barra=(x,y,w,h,c)=>`<polygon points="${x},${y+h} ${x+w},${y+h} ${x+w*.82},${y} ${x+w*.18},${y}" fill="${c}" stroke="${NAVY}" stroke-width=".8"/>`;
+function maxde(id,m){$(id).querySelector('input').max=m;}
+const NM=['Dante e Nina','Lara e Bento','Vicente e Íris'];
+const Bv=SL('sb',3000,24000,1000,6000,draw,v=>R$s(v)),T=[30,30,30].map((v,i)=>SL('t'+i,10,90,5,v,draw));
+const inv=()=>T.map(t=>1/t.get()),sI=()=>inv().reduce((a,b)=>a+b,0),bon=i=>Bv.get()*inv()[i]/sI();
+const ts=()=>T.map(t=>t.get()).join();
+MIS.def(()=>[
+ ['Monte o bônus do livro: <b>R$ 12.000</b> e tempos <b>20, 30 e 60 min</b>.',()=>Bv.get()==12000&&ts()=='20,30,60','R$ 6.000, R$ 4.000 e R$ 2.000: razão 3 : 2 : 1. Repare que bônus × tempo dá 120 000 para todas.',()=>'Bônus agora: '+R$s(Bv.get())+'; tempos: '+ts().replace(/,/g,', ')+'.'],
+ ['Faça a dupla Dante e Nina ficar com <b>metade do bônus</b>, com as outras duas empatadas.',()=>Math.abs(bon(0)-Bv.get()/2)<.5&&T[1].get()==T[2].get(),'Metade para quem tem a metade do tempo das outras: 1/x = 1/(2x) + 1/(2x).',()=>'Dante e Nina: '+R$s(bon(0))+' de '+R$s(Bv.get())+'.'],
+ ['Faça uma dupla receber <b>o triplo</b> de outra.',()=>{const b=[0,1,2].map(bon);return b.some((x,i)=>b.some((y,j)=>i!=j&&Math.abs(x-3*y)<.5));},'Triplo do bônus é um terço do tempo: proporção inversa.',()=>'Uma dupla precisa gastar o triplo do tempo de outra.'],
+ ['Com tempos <b>15, 30 e 45 min</b>, quanto deve ser o bônus para a dupla mais rápida receber <b>R$ 6.000</b>?',()=>ts()=='15,30,45'&&Math.abs(bon(0)-6000)<.5,'Inversos de 15, 30, 45 vezes 90: 6 : 3 : 2. Soma 11 partes de R$ 1.000: bônus de R$ 11.000.',()=>ts()!='15,30,45'?'Ajuste os tempos 15, 30 e 45.':'Mais rápida agora: '+R$s(bon(0))+'.']]);
+function draw(){let g='';const mx=Bv.get();
+ for(let i=0;i<3;i++){const y=20+i*62,t=T[i].get(),b=bon(i);
+  g+=TX(10,y+12,NM[i],{fs:11,a:'start'});
+  g+=RC(10,y+20,t*2.1,16,'#DCE6F7','rx="3" stroke="'+NAVY+'"')+TX(16+t*2.1,y+33,t+' min',{fs:10,a:'start'});
+  g+=RC(10,y+40,200*b/mx,16,ORANGE,'rx="3"')+TX(16+200*b/mx,y+53,R$s(b),{fs:10,a:'start',c:ORANGE});}
+ $('fig').innerHTML=SVG(300,205,g);
+ const ib=inv(),mn=Math.min(...ib);$('kr').textContent=ib.map(v=>r1(v/mn)).join(' : ');$('kp').textContent=[0,1,2].map(i=>fmt(Math.round(bon(i)*T[i].get()))).join(' · ');
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
