@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O rumo que espirala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O rumo que espirala</h1></header>
+<main>
+<div class="card"><h2>A loxodromia no globo</h2><p class="muted" style="margin-top:0">A linha laranja sai do equador e mantém sempre o mesmo rumo, cortando cada meridiano com o mesmo ângulo. Gire e incline o globo para ver o polo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Rumo</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Girar o globo</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Inclinar (ver o polo)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Voltas em torno do polo (até 89°)<b id="kv"></b></div><div>Tipo de linha<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache os <b>dois rumos</b> entre 0° e 90° em que a linha <b>não</b> espirala.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MAR='#DCEBFA',GRD='#9DBDE6',RT=6371;
+function GLOBO(cx,cy,r,lat0,lon0){const p0=lat0*RAD,l0=lon0*RAD;
+ const xy=(la,lo)=>{const p=la*RAD,l=lo*RAD,c=Math.sin(p0)*Math.sin(p)+Math.cos(p0)*Math.cos(p)*Math.cos(l-l0);
+  return [cx+r*Math.cos(p)*Math.sin(l-l0),cy-r*(Math.cos(p0)*Math.sin(p)-Math.sin(p0)*Math.cos(p)*Math.cos(l-l0)),c>=0];};
+ const curva=(pts,cor,w,dash)=>{let out='',seg=[];const fl=()=>{if(seg.length>1)out+=`<polyline points="${seg.join(' ')}" fill="none" stroke="${cor}" stroke-width="${w||1}"${dash?` stroke-dasharray="${dash}"`:''} stroke-linejoin="round" stroke-linecap="round"/>`;seg=[];};
+  pts.forEach(q=>{const [x,y,v]=xy(q[0],q[1]);if(v)seg.push(x.toFixed(1)+','+y.toFixed(1));else fl();});fl();return out;};
+ const grade=st=>{let g=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${MAR}" stroke="${NAVY}" stroke-width="1.5"/>`;
+  for(let la=-90+st;la<90;la+=st){const P=[];for(let lo=-180;lo<=180;lo+=4)P.push([la,lo]);g+=curva(P,la?GRD:NAVY,la?0.8:1.6);}
+  for(let lo=-180;lo<180;lo+=st){const P=[];for(let la=-90;la<=90;la+=4)P.push([la,lo]);g+=curva(P,GRD,0.8);}return g;};
+ const ponto=(la,lo,cor,rr)=>{const [x,y,v]=xy(la,lo);return v?`<circle cx="${x}" cy="${y}" r="${rr||5}" fill="${cor}"/>`:'';};
+ return {xy,curva,grade,ponto};}
+const LOX=(alfa,la0,la1,lo0)=>{const t=Math.tan(alfa*RAD),psi=la=>Math.log(Math.tan(Math.PI/4+la*RAD/2)),P=[];for(let i=0;i<=500;i++){const la=la0+(la1-la0)*i/500;P.push([la,lo0+t*(psi(la)-psi(la0))*DEG]);}return P;};
+const ANGC=(a1,o1,a2,o2)=>{const c=Math.sin(a1*RAD)*Math.sin(a2*RAD)+Math.cos(a1*RAD)*Math.cos(a2*RAD)*Math.cos((o2-o1)*RAD);return Math.acos(Math.max(-1,Math.min(1,c)));};
+const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.cos(a*RAD)*Math.sin(o*RAD),Math.sin(a*RAD)],A=v(a1,o1),B=v(a2,o2),om=ANGC(a1,o1,a2,o2),P=[];n=n||80;
+ for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
+const KM=v=>fmt(Math.round(v))+' km';
+const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const Rm=SL('sr',0,90,1,60,draw,v=>v+'°'),V=SL('sv',-180,180,5,40,draw,v=>v+'°'),I=SL('si',0,90,5,45,draw,v=>v+'°');const vistos=new Set();
+function draw(){const r=Rm.get(),G=GLOBO(170,125,112,I.get(),V.get());let g=G.grade(15),pts,tipo;
+ if(r==90){pts=[];for(let l=-180;l<=180;l+=2)pts.push([0.01,l]);tipo='paralelo (equador)';}
+ else if(r==0){pts=[];for(let a=0;a<=90;a+=1)pts.push([a,0]);tipo='meridiano';}
+ else{pts=LOX(r,0,89,0);tipo='espiral';}
+ g+=G.curva(pts,ORANGE,3)+G.ponto(0,0,NAVY,5);
+ $('fig').innerHTML=SVG(340,250,g);
+ const voltas=(r==0||r==90)?0:Math.tan(r*RAD)*Math.log(Math.tan(Math.PI/4+89*RAD/2))*DEG/360;
+ $('kv').textContent=r==90?'—':r1(voltas);$('kt').textContent=tipo;
+ if(r==0||r==90)vistos.add(r);
+ missao('m',vistos.size==2,'Rumo 0° dá um meridiano e rumo 90° dá um paralelo (aqui, o equador). Qualquer outro rumo espirala em direção ao polo.',
+  vistos.size==1?'Achou um ('+[...vistos][0]+'°). Falta o outro.':'Rumo '+r+'°: '+tipo+(tipo=='espiral'?', com '+r1(voltas)+' voltas até 89° de latitude.':'.'));}
+draw();
+})();
+</script>
+</body>
+</html>
