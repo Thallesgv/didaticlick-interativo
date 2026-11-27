@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O quadro de Punnett · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O quadro de Punnett</h1></header>
+<main>
+<div class="card"><h2>Monte o quadro</h2><p class="muted" style="margin-top:0">Escolha os pais. Os gametas de um vão no alto, os do outro na lateral, e cada casa recebe um alelo de cada. As 4 casas têm a mesma chance: 1/4 cada. Roxa (A) domina branca (a).</p>
+<div><b style="color:var(--navy)">Pai</b><div id="cp" style="margin:4px 0"></div></div>
+<div><b style="color:var(--navy)">Mãe</b><div id="cm" style="margin:4px 0"></div></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Genótipos<b id="kg"></b></div><div>Fenótipos<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha os pais.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AMAR='#F2C94C',AMAR_E='#B98E10',ROXA='#7A4BB5',ROXA_C='#E6DAF5';
+function ervilha(x,y,r,amarela,rugosa){const c=amarela?AMAR:VERDE,e=amarela?AMAR_E:VERDE_E;let g=CI(x,y,r,c,'stroke="'+e+'" stroke-width="1.4"');
+ if(rugosa){for(let k=-1;k<=1;k++)g+=`<path d="M${x+k*r*0.38} ${y-r*0.6} q ${r*0.25} ${r*0.6} 0 ${r*1.2}" stroke="${e}" stroke-width="1.2" fill="none"/>`;}return g;}
+function flor(x,y,r,roxa){let g='';for(let k=0;k<5;k++){const a=k*72*RAD;g+=CI(x+Math.cos(a)*r*0.55,y+Math.sin(a)*r*0.55,r*0.45,roxa?ROXA:'#fff','stroke="'+(roxa?'#4B2A7A':'#9CA3AF')+'" stroke-width="1"');}return g+CI(x,y,r*0.25,AMAR);}
+const G=['AA','Aa','aa'];const CP=chips('cp',G,0,draw),CM=chips('cm',G,2,draw);
+const pai=()=>G[CP.get()],mae=()=>G[CM.get()],ord=g=>g.includes('A')&&g.includes('a')?'Aa':g;
+function casas(){const c=[];for(let i=0;i<2;i++)for(let j=0;j<2;j++)c.push(ord(pai()[j]+mae()[i]));return c;}
+const cont=()=>{const c=casas(),o={AA:0,Aa:0,aa:0};c.forEach(x=>o[x]++);return o;};
+const fen=()=>{const o=cont();return [o.AA+o.Aa,o.aa];};
+const cruz=(a,b)=>(pai()==a&&mae()==b)||(pai()==b&&mae()==a);
+MIS.def(()=>[
+ ['Monte um cruzamento com fenótipos <b>1 : 1</b> (metade roxas, metade brancas).',()=>fen()[0]==2,()=>pai()+' × '+mae()+': 2 casas roxas e 2 brancas. É o cruzamento-teste.',()=>'Agora: '+fen()[0]+' roxas e '+fen()[1]+' brancas em 4 casas.'],
+ ['Faça <b>100% dos filhos Aa</b>.',()=>cont().Aa==4,'AA × aa: um pai só dá A, o outro só dá a. Todos saem Aa, roxos e portadores.',()=>'Hoje há '+cont().Aa+' casas Aa.'],
+ ['Encontre o cruzamento que dá os <b>três genótipos</b>, na razão <b>1 : 2 : 1</b>. Que razão de fenótipos aparece?',()=>cont().AA==1&&cont().Aa==2,'Aa × Aa: 1 AA : 2 Aa : 1 aa. Como AA e Aa são roxos, os fenótipos ficam 3 : 1, a razão de Mendel.',()=>'Agora: '+cont().AA+' AA, '+cont().Aa+' Aa, '+cont().aa+' aa.'],
+ ['Monte um cruzamento com <b>todos roxos</b>, mas com <b>dois genótipos diferentes</b> entre os filhos.',()=>fen()[1]==0&&cont().AA==2&&cont().Aa==2,'AA × Aa: todos roxos, metade AA e metade Aa. Olhando as flores, ninguém percebe os portadores.',()=>fen()[1]>0?'Há casas brancas.':'Todos são roxos, mas com um genótipo só.']]);
+function draw(){let g=RC(0,0,340,270,'#fff');const x0=78,y0=60,t=70,c=casas();
+ for(let j=0;j<2;j++){g+=RC(x0+j*t+4,y0-40,t-8,32,ORANGE,'rx="6"')+TX(x0+j*t+t/2,y0-18,pai()[j],{fs:18,c:'#fff'});}
+ for(let i=0;i<2;i++){g+=RC(x0-40,y0+i*t+4,32,t-8,ORANGE,'rx="6"')+TX(x0-24,y0+i*t+t/2+6,mae()[i],{fs:18,c:'#fff'});}
+ g+=TX(x0+t,y0-48,'gametas do pai',{fs:10,c:GRAY})+TX(x0-24,y0+2*t+18,'gametas',{fs:9,c:GRAY})+TX(x0-24,y0+2*t+29,'da mãe',{fs:9,c:GRAY});
+ c.forEach((k,n)=>{const i=Math.floor(n/2),j=n%2,x=x0+j*t,y=y0+i*t;g+=RC(x,y,t,t,k=='aa'?'#F3F4F6':ROXA_C,'stroke="'+NAVY+'" stroke-width="1.5"')+TX(x+t/2,y+24,k,{fs:16})+flor(x+t/2,y+48,11,k!='aa');});
+ const o=cont();let y=78;[['AA',o.AA],['Aa',o.Aa],['aa',o.aa]].forEach(([k,v])=>{g+=TX(286,y,k+': '+v+'/4 = '+v*25+'%',{fs:11,a:'middle',c:v?NAVY:GRAYL});y+=24;});
+ const f=fen();g+=TX(286,y+14,'roxas '+f[0]*25+'%',{fs:12,c:ROXA})+TX(286,y+34,'brancas '+f[1]*25+'%',{fs:12,c:GRAY});
+ $('fig').innerHTML=SVG(340,270,g);$('kg').textContent=[o.AA&&o.AA+' AA',o.Aa&&o.Aa+' Aa',o.aa&&o.aa+' aa'].filter(Boolean).join(' : ');
+ $('kf').textContent=f[0]&&f[1]?f[0]+' roxa : '+f[1]+' branca':(f[0]?'100% roxas':'100% brancas');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

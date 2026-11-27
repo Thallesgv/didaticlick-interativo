@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O quadro de 16 casas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O quadro de 16 casas</h1></header>
+<main>
+<div class="card"><h2>Forma e cor juntas</h2><p class="muted" style="margin-top:0">Forma: L (lisa) domina l (rugosa). Cor: A (amarela) domina a (verde). Escolha os genes dos pais. Cada pai forma 4 gametas, um alelo de forma com um de cor, e o quadro de 4 × 4 se monta.</p>
+<div class="row" style="gap:14px;align-items:flex-start"><div><b style="color:var(--navy)">Pai · forma</b><div id="pf"></div><b style="color:var(--navy)">Pai · cor</b><div id="pc"></div></div>
+<div><b style="color:var(--navy)">Mãe · forma</b><div id="mf"></div><b style="color:var(--navy)">Mãe · cor</b><div id="mc"></div></div></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Pai × mãe<b id="kx"></b></div><div>Proporção (de 16)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha os pais.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AMAR='#F2C94C',AMAR_E='#B98E10',ROXA='#7A4BB5',ROXA_C='#E6DAF5';
+function ervilha(x,y,r,amarela,rugosa){const c=amarela?AMAR:VERDE,e=amarela?AMAR_E:VERDE_E;let g=CI(x,y,r,c,'stroke="'+e+'" stroke-width="1.4"');
+ if(rugosa){for(let k=-1;k<=1;k++)g+=`<path d="M${x+k*r*0.38} ${y-r*0.6} q ${r*0.25} ${r*0.6} 0 ${r*1.2}" stroke="${e}" stroke-width="1.2" fill="none"/>`;}return g;}
+function flor(x,y,r,roxa){let g='';for(let k=0;k<5;k++){const a=k*72*RAD;g+=CI(x+Math.cos(a)*r*0.55,y+Math.sin(a)*r*0.55,r*0.45,roxa?ROXA:'#fff','stroke="'+(roxa?'#4B2A7A':'#9CA3AF')+'" stroke-width="1"');}return g+CI(x,y,r*0.25,AMAR);}
+const FO=['LL','Ll','ll'],CO=['AA','Aa','aa'];
+const PF=chips('pf',FO,0,draw),PC=chips('pc',CO,0,draw),MF=chips('mf',FO,2,draw),MC=chips('mc',CO,2,draw);
+const gam=(f,c)=>[f[0]+c[0],f[0]+c[1],f[1]+c[0],f[1]+c[1]];
+const NOMES=['lisa amarela','lisa verde','rugosa amarela','rugosa verde'];
+function quadro(){const a=gam(FO[PF.get()],CO[PC.get()]),b=gam(FO[MF.get()],CO[MC.get()]),q=[];
+ b.forEach(y=>a.forEach(x=>{const lisa=(x[0]+y[0]).includes('L'),am=(x[1]+y[1]).includes('A');q.push([lisa,am]);}));return [a,b,q];}
+function cont(){const o=[0,0,0,0];quadro()[2].forEach(([l,a])=>o[(l?0:2)+(a?0:1)]++);return o;}
+const ig=v=>cont().join()==v;
+MIS.def(()=>[
+ ['Obtenha a proporção de Mendel: <b>9 : 3 : 3 : 1</b>.',()=>ig('9,3,3,1'),'LlAa × LlAa: 9 lisas amarelas, 3 lisas verdes, 3 rugosas amarelas e 1 rugosa verde. É 3/4 × 3/4, 3/4 × 1/4, 1/4 × 3/4 e 1/4 × 1/4.',()=>'Agora: '+cont().join(' : ')+'. Os dois pais precisam ser duplo-heterozigotos.'],
+ ['Agora os quatro tipos em partes iguais: <b>4 : 4 : 4 : 4</b> (1 : 1 : 1 : 1).',()=>ig('4,4,4,4'),'Um pai LlAa e outro llaa (ou Llaa × llAa): é o cruzamento-teste dos dois genes.',()=>'Agora: '+cont().join(' : ')+'. Tente cruzar um duplo-heterozigoto com alguém que só tem recessivos.'],
+ ['Faça nascerem <b>só ervilhas lisas</b>, mas com as <b>duas cores</b>.',()=>cont()[2]+cont()[3]==0&&cont()[0]>0&&cont()[1]>0,()=>'Só lisas: algum pai é LL. E as duas cores aparecem: '+cont()[0]+' amarelas e '+cont()[1]+' verdes.',()=>cont()[2]+cont()[3]>0?'Ainda nascem rugosas. Um dos pais precisa ser LL.':'Só uma cor aparece. Mexa nos genes de cor.'],
+ ['Monte um cruzamento com <b>3 : 1</b> só de cor (<b>12 : 4</b>), com todas lisas.',()=>ig('12,4,0,0'),'Todas lisas, e a cor faz 3 : 1 porque os dois pais são Aa. Os genes trabalham cada um no seu canto.',()=>'Agora: '+cont().join(' : ')+'.']]);
+function draw(){const [a,b,q]=quadro();let g=RC(0,0,340,300,'#fff');const x0=44,y0=40,t=46;
+ a.forEach((s,j)=>{g+=RC(x0+j*t+3,y0-30,t-6,24,ORANGE,'rx="5"')+TX(x0+j*t+t/2,y0-13,s,{fs:12,c:'#fff'});});
+ b.forEach((s,i)=>{g+=RC(x0-40,y0+i*t+3,34,t-6,ORANGE,'rx="5"')+TX(x0-23,y0+i*t+t/2+4,s,{fs:12,c:'#fff'});});
+ q.forEach(([l,am],n)=>{const i=Math.floor(n/4),j=n%4,x=x0+j*t,y=y0+i*t;g+=RC(x,y,t,t,'#FBFAF5','stroke="'+GRAYL+'"')+ervilha(x+t/2,y+t/2,14,am,!l);});
+ const o=cont();o.forEach((v,k)=>{const y=y0+18+k*44;g+=ervilha(246,y,10,k%2==0,k>=2)+TX(260,y-2,NOMES[k],{fs:9,a:'start'})+TX(260,y+11,v+' de 16',{fs:11,a:'start',c:v?ORANGE:GRAYL});});
+ g+=TX(170,y0+4*t+30,'proporção '+o.filter(v=>v).join(' : '),{fs:13,c:ORANGE});
+ $('fig').innerHTML=SVG(340,300,g);$('kx').textContent=FO[PF.get()]+CO[PC.get()]+' × '+FO[MF.get()]+CO[MC.get()];$('kp').textContent=o.join(' : ');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O detetive de famílias · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O detetive de famílias</h1></header>
+<main>
+<div class="card"><h2>Descubra os genótipos</h2><p class="muted" style="margin-top:0">A família de Seu Tião, com albinismo (recessivo, aa). Pintado = albino. Toque numa pessoa para trocar o genótipo: ? → AA → Aa → aa. Pessoas com borda vermelha contradizem a família.</p>
+<div class="fig" id="fig"></div>
+<div id="av" style="margin:6px 0"></div>
+<div id="pq"><b style="color:var(--navy)">Qual a chance de III-2 ser portadora (Aa)?</b><div id="ch" style="margin:4px 0"></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque nas pessoas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+// [nome, x, y, homem?, albino?, pai, mãe]
+const PS=[['I-1',60,40,1,0],['I-2',110,40,0,0],['I-3',230,40,1,1],['I-4',280,40,0,0],
+ ['II-1',45,120,0,0,'I-1','I-2'],['II-2',125,120,1,0,'I-1','I-2'],['II-3',215,120,0,0,'I-3','I-4'],['II-4',295,120,1,0,'I-3','I-4'],
+ ['III-1',145,200,1,1,'II-2','II-3'],['III-2',195,200,0,0,'II-2','II-3']];
+const OP=['?','AA','Aa','aa'];const S={};PS.forEach(p=>S[p[0]]=0);let resp=-1;
+const gen=n=>OP[S[n]],pes=n=>PS.find(p=>p[0]==n);
+const pode=(f,a,b)=>{for(const x of a)for(const y of b){const c=(x+y).includes('A')&&(x+y).includes('a')?'Aa':x+y;if(c==f)return true;}return false;};
+function erros(){const e=[];PS.forEach(p=>{const g=gen(p[0]);if(g=='?')return;
+  if(p[4]&&g!='aa')e.push([p[0],p[0]+' é albino(a), então é aa.']);
+  if(!p[4]&&g=='aa')e.push([p[0],p[0]+' não é albino(a), então não pode ser aa.']);
+  if(p[5]){const a=gen(p[5]),b=gen(p[6]);if(a!='?'&&b!='?'&&!pode(g,a,b))e.push([p[0],p[0]+' = '+g+' não pode nascer de '+a+' × '+b+'.']);}});return e;}
+const C=chips('ch',['1/4','1/2','2/3','3/4','1'],-1,i=>{resp=i;draw();});
+toque('fig',(x,y,ini)=>{if(!ini)return;const p=PS.find(p=>Math.abs(x-p[1])<20&&Math.abs(y-p[2])<20);if(p){S[p[0]]=(S[p[0]]+1)%4;draw();}});
+const sem=()=>erros().length==0;
+MIS.def(()=>[
+ ['Descubra os genótipos dos <b>pais do albino III-1</b> (II-2 e II-3), sem contradição.',()=>gen('II-2')=='Aa'&&gen('II-3')=='Aa'&&sem(),'II-2 e II-3 não são albinos, mas tiveram um filho aa: cada um passou um a. Os dois são Aa.',()=>!sem()?'Há contradição na família. Veja o aviso.':'Pense: de onde veio cada a do III-1?'],
+ ['O avô <b>I-3</b> é albino. Qual o genótipo dele e o do filho <b>II-4</b>?',()=>gen('I-3')=='aa'&&gen('II-4')=='Aa'&&sem(),'I-3 é aa e só pode passar a. II-4 não é albino, então tem um A da mãe: é Aa, com certeza.',()=>!sem()?'Há contradição: veja o aviso.':'Marque I-3 e II-4.'],
+ ['Agora a prima <b>III-2</b>: não é albina e é filha de Aa × Aa. Escolha a chance de ela ser portadora.',()=>resp==2,'Dos 4 resultados (AA, Aa, aA, aa), o aa está descartado. Sobram 3, e 2 deles são Aa: chance de 2/3.',()=>resp<0?'Escolha uma resposta abaixo da figura.':'Ainda não. Ela não é aa: quantos resultados sobram, e quantos são Aa?'],
+ ['Preencha <b>todas as 10 pessoas</b> com um genótipo possível, sem nenhuma contradição.',()=>PS.every(p=>gen(p[0])!='?')&&sem(),'Família completa e coerente! Repare que I-1 ou I-2 precisa ter um a, porque II-2 é Aa.',()=>!sem()?'Há contradição: veja o aviso.':'Faltam '+PS.filter(p=>gen(p[0])=='?').length+' pessoas.']]);
+function draw(){const e=erros(),ruim=new Set(e.map(x=>x[0]));let g=RC(0,0,340,270,'#fff');
+ const L=(a,b,c,d)=>LN(a,b,c,d,NAVY,1.6);
+ g+=L(78,40,92,40)+L(85,40,85,78)+L(45,78,125,78)+L(45,78,45,102)+L(125,78,125,102);
+ g+=L(248,40,262,40)+L(255,40,255,78)+L(215,78,295,78)+L(215,78,215,102)+L(295,78,295,102);
+ g+=L(143,120,197,120)+L(170,120,170,160)+L(145,160,195,160)+L(145,160,145,182)+L(195,160,195,182);
+ PS.forEach(p=>{const [n,x,y,h,af]=p,c=af?NAVY:'#fff',st='stroke="'+(ruim.has(n)?VERM:NAVY)+'" stroke-width="'+(ruim.has(n)?3.5:2)+'"';
+  g+=h?RC(x-16,y-16,32,32,c,st):CI(x,y,16,c,st);
+  const gg=gen(n);g+=TX(x,y+5,gg,{fs:gg=='?'?14:12,c:af?'#fff':(gg=='?'?GRAY:ORANGE)})+TX(x,y+31,n,{fs:9,c:GRAY});});
+ g+=RC(20,246,14,14,'#fff','stroke="'+NAVY+'" stroke-width="1.5"')+TX(40,257,'homem',{fs:9,a:'start'})+CI(102,253,7,'#fff','stroke="'+NAVY+'" stroke-width="1.5"')+TX(113,257,'mulher',{fs:9,a:'start'})+RC(170,246,14,14,NAVY)+TX(190,257,'albino (aa)',{fs:9,a:'start'});
+ $('fig').innerHTML=SVG(340,270,g);
+ $('av').innerHTML=e.length?'<div class="msg info" style="border-color:'+VERM+'">⚠ '+e.map(x=>x[1]).join('<br>⚠ ')+'</div>':'';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A loteria dos alelos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A loteria dos alelos</h1></header>
+<main>
+<div class="card"><h2>Sorteie os filhos</h2><p class="muted" style="margin-top:0">Cor da flor da ervilha, como em Mendel: <b>A</b> (roxa) domina <b>a</b> (branca). Escolha os pais. Em cada sorteio, cada pai passa <b>um</b> dos seus dois alelos, com chance de 1/2 para cada.</p>
+<div><b style="color:var(--navy)">Pai</b><div id="cp" style="margin:4px 0"></div></div>
+<div><b style="color:var(--navy)">Mãe</b><div id="cm" style="margin:4px 0"></div></div>
+<div class="row"><button id="s1">Sortear 1 filho</button><button id="s10">+10 filhos</button><button class="alt" id="zr">Zerar filhos</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Filhos<b id="kn"></b></div><div>Roxos<b id="kr"></b></div><div>Brancos<b id="kb"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Sorteie filhos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AMAR='#F2C94C',AMAR_E='#B98E10',ROXA='#7A4BB5',ROXA_C='#E6DAF5';
+function ervilha(x,y,r,amarela,rugosa){const c=amarela?AMAR:VERDE,e=amarela?AMAR_E:VERDE_E;let g=CI(x,y,r,c,'stroke="'+e+'" stroke-width="1.4"');
+ if(rugosa){for(let k=-1;k<=1;k++)g+=`<path d="M${x+k*r*0.38} ${y-r*0.6} q ${r*0.25} ${r*0.6} 0 ${r*1.2}" stroke="${e}" stroke-width="1.2" fill="none"/>`;}return g;}
+function flor(x,y,r,roxa){let g='';for(let k=0;k<5;k++){const a=k*72*RAD;g+=CI(x+Math.cos(a)*r*0.55,y+Math.sin(a)*r*0.55,r*0.45,roxa?ROXA:'#fff','stroke="'+(roxa?'#4B2A7A':'#9CA3AF')+'" stroke-width="1"');}return g+CI(x,y,r*0.25,AMAR);}
+const G=['AA','Aa','aa'];let F=[],ult=null;
+const CP=chips('cp',G,1,()=>{F=[];ult=null;draw();}),CM=chips('cm',G,1,()=>{F=[];ult=null;draw();});
+const pai=()=>G[CP.get()],mae=()=>G[CM.get()],ord=g=>g.includes('A')&&g.includes('a')?'Aa':g;
+function sorteia(n){for(let i=0;i<n;i++){const ip=rint(0,1),im=rint(0,1);ult=[ip,im];F.push(ord(pai()[ip]+mae()[im]));}draw();}
+$('s1').onclick=()=>sorteia(1);$('s10').onclick=()=>sorteia(10);$('zr').onclick=()=>{F=[];ult=null;draw();};
+const nb=()=>F.filter(f=>f=='aa').length,cruz=(a,b)=>(pai()==a&&mae()==b)||(pai()==b&&mae()==a);
+MIS.def(()=>[
+ ['Escolha <b>dois pais roxos</b> e sorteie até nascer um filho <b>branco</b>.',()=>pai()!='aa'&&mae()!='aa'&&nb()>0,'Dois roxos Aa × Aa tiveram um filho aa: cada um passou o a escondido. A chance era 1/2 × 1/2 = 1/4.',()=>pai()=='aa'||mae()=='aa'?'Os dois pais precisam ser roxos.':(pai()=='AA'||mae()=='AA')?'Com um pai AA, nenhum filho recebe a de lá. Troque.':'Continue sorteando.'],
+ ['Encontre um cruzamento em que <b>todos os filhos têm o mesmo genótipo</b>. Sorteie pelo menos 10.',()=>F.length>=10&&pai()!='Aa'&&mae()!='Aa',()=>pai()+' × '+mae()+': cada pai só tem um tipo de alelo, então todo filho sai '+F[0]+'.',()=>F.length<10?'Sorteie pelo menos 10 filhos.':'Apareceram genótipos diferentes. Quem tem dois alelos diferentes?'],
+ ['Cruze <b>AA × Aa</b> e sorteie 20 filhos. Algum sai branco?',()=>cruz('AA','Aa')&&F.length>=20,()=>'Nenhum branco em '+F.length+': o pai AA sempre passa A. Mas metade dos filhos ('+F.filter(f=>f=='Aa').length+' aqui) é Aa, portadora.',()=>!cruz('AA','Aa')?'Escolha AA para um e Aa para o outro.':'Sorteie mais filhos.'],
+ ['Cruze <b>Aa × aa</b> e sorteie 40 filhos. Os brancos ficam perto de metade (entre 35% e 65%)?',()=>cruz('Aa','aa')&&F.length>=40&&nb()/F.length>=0.35&&nb()/F.length<=0.65,()=>nb()+' brancos em '+F.length+' ('+Math.round(100*nb()/F.length)+'%). A chance teórica é 1/2: é o cruzamento-teste.',()=>!cruz('Aa','aa')?'Escolha Aa e aa.':F.length<40?'Sorteie pelo menos 40.':'Deu '+Math.round(100*nb()/F.length)+'%. Sorteie mais.']]);
+function genes(x,y,gen,ip,lab){let g=TX(x,y-30,lab+' '+gen,{fs:12});for(let k=0;k<2;k++){const on=ip===k,cx=x-22+k*44;g+=CI(cx,y,17,on?ORANGE:'#fff','stroke="'+NAVY+'" stroke-width="2"')+TX(cx,y+6,gen[k],{fs:17,c:on?'#fff':NAVY});}return g+flor(x,y+42,13,gen!='aa');}
+function draw(){let g=RC(0,0,340,290,'#fff');
+ g+=genes(80,48,pai(),ult?ult[0]:null,'Pai')+genes(260,48,mae(),ult?ult[1]:null,'Mãe');
+ if(ult){const f=F[F.length-1];g+=LN(80+(ult[0]?22:-22),66,160,128,ORANGE,2,'4 3')+LN(260+(ult[1]?22:-22),66,180,128,ORANGE,2,'4 3');g+=flor(170,140,16,f!='aa')+TX(170,176,'filho '+f,{fs:12,c:ORANGE});}
+ else g+=TX(170,140,'aperte Sortear',{fs:12,c:GRAY});
+ F.slice(-48).forEach((f,i)=>{g+=flor(16+(i%16)*20.5,206+Math.floor(i/16)*24,7.5,f!='aa');});
+ if(F.length>48)g+=TX(170,286,'(mostrando os últimos 48)',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,290,g);$('kn').textContent=F.length;$('kr').textContent=F.length-nb();$('kb').textContent=nb();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
