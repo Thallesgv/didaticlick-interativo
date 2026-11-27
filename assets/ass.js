@@ -35,7 +35,7 @@ const MIS = (() => {
   function liga() { document.querySelectorAll('.msprox').forEach(b => b.onclick = () => { mi++; fresco = true; MIS.ver(); try { $(id).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) {} }); }
   function pinta() {
     if (!card) return;
-    card.innerHTML = `<h2>Missão ${mi + 1} de ${L.length}</h2><div style="display:flex;gap:5px;margin:4px 0 10px">${L.map((_, i) => `<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i) ? '#15803D' : i === mi ? '#F7821F' : '#D7DEEA'}"></span>`).join('')}</div><p style="margin:0">${L[mi][0]}</p>${keep ? '' : bot()}`;
+    card.innerHTML = `<h2>Missão ${mi + 1} de ${L.length}</h2><div style="display:flex;gap:5px;margin:4px 0 10px">${L.map((_, i) => `<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i) ? '#15803D' : i === mi ? '#F7821F' : '#D7DEEA'}"></span>`).join('')}</div><p style="margin:0">${L[mi][0]}</p>`;
     if (keep) card.appendChild(keep);
   }
   return {
