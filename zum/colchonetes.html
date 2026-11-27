@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os colchonetes do ginásio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Os colchonetes do ginásio</h1></header>
+<main>
+<div class="card"><h2>Arrume o ginásio</h2><p class="muted" style="margin-top:0">O ginásio tem 30 m × 20 m, com 0,5 m livre junto às paredes. Cada colchonete mede 0,6 m × 1,9 m. Mude o vão entre os colchonetes e a largura dos corredores entre as fileiras.</p>
+<div class="sl" id="sv"><b>Vão entre colchonetes</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Corredor entre fileiras</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Colchonetes<b id="kn"></b></div><div>Por fileira × fileiras<b id="kf"></b></div><div>Área por pessoa (lotado)<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SV=SL('sv',0.2,1.0,0.1,0.8,draw,v=>fmt(v)+' m'),SC=SL('sc',0.6,2.4,0.1,2.0,draw,v=>fmt(v)+' m');
+const eps=1e-9;
+function conta(){const v=SV.get(),c=SC.get();let col=0,fil=0;for(let x=0.5;x+0.6<=29.5+eps;x+=0.6+v)col++;for(let y=0.5;y+1.9<=19.5+eps;y+=1.9+c)fil++;return[col,fil];}
+const N=()=>{const[a,b]=conta();return a*b;},AP=()=>600/N();
+MIS.def(()=>[
+ ['Faça caber <b>pelo menos 150 colchonetes</b>, com corredores de no mínimo <b>1,2 m</b>.',()=>N()>=150&&SC.get()>=1.2-eps,()=>N()+' colchonetes: cabem os 150 do abrigo.',()=>'Agora: '+N()+' colchonetes. Diminua o vão ou o corredor (sem passar de 1,2 m).'],
+ ['Com vão de pelo menos <b>0,4 m</b> e corredor de pelo menos <b>1,2 m</b>, qual o <b>máximo</b> de colchonetes?',()=>SV.get()>=0.4-eps&&SC.get()>=1.2-eps&&N()==174,()=>'174 colchonetes: 29 por fileira em 6 fileiras, como no livro.',()=>'Agora: '+N()+'. Teste os menores valores permitidos.'],
+ ['O Projeto Esfera indica cerca de <b>3,5 m²</b> por pessoa. Arrume o ginásio para ter <b>entre 150 e 171</b> colchonetes.',()=>N()>=150&&N()<=171,()=>N()+' colchonetes: com o ginásio lotado, '+r1(AP())+' m² por pessoa, acima de 3,5 m².',()=>'Agora: '+N()+' colchonetes, '+r1(AP())+' m² por pessoa.']]);
+function draw(){const v=SV.get(),c=SC.get(),k=11,ox=5,oy=8;let g=RC(ox,oy,30*k,20*k,'#F2E3C9','stroke="#0E2354" stroke-width="2"');
+ for(let y=0.5;y+1.9<=19.5+eps;y+=1.9+c)for(let x=0.5;x+0.6<=29.5+eps;x+=0.6+v)g+=RC((ox+x*k).toFixed(1),(oy+y*k).toFixed(1),(0.6*k).toFixed(1),(1.9*k).toFixed(1),'#5B7BD5','rx="1.5"');
+ g+=TX(ox+15*k,oy+20*k+14,'30 m',{fs:10,c:GRAY});
+ const[a,b]=conta();$('fig').innerHTML=SVG(340,246,g);$('kn').textContent=N();$('kf').textContent=a+' × '+b;$('ka').textContent=r1(AP())+' m²';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

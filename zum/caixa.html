@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A caixa d'água · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A caixa d'água</h1></header>
+<main>
+<div class="card"><h2>Quantos dias dura?</h2><p class="muted" style="margin-top:0">A caixa é um cilindro. Mude o raio e a altura e veja o volume em litros. Depois, escolha quantas pessoas e quantos litros cada uma gasta por dia, e o dia para ver o nível da água baixar.</p>
+<div class="sl" id="sr"><b>Raio</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Litros por pessoa por dia</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Volume<b id="kv"></b></div><div>Gasto por dia<b id="kg"></b></div><div>Dura<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as medidas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',0.5,2.0,0.1,1.0,draw,v=>fmt(v)+' m'),SH=SL('sh',1.0,3.0,0.1,1.5,draw,v=>fmt(v)+' m'),SN=SL('sn',50,200,10,100,draw),SLt=SL('sl',3,20,1,15,draw,v=>v+' L'),SD=SL('sd',0,10,1,0,draw);
+const VOL=()=>Math.round(Math.PI*SR.get()**2*SH.get()*1000),GD=()=>SN.get()*SLt.get(),DUR=()=>VOL()/GD();
+const torre=()=>Math.abs(SR.get()-1.2)<1e-9&&Math.abs(SH.get()-2.2)<1e-9;
+MIS.def(()=>[
+ ['Monte a caixa da torre: <b>raio 1,2 m</b> e <b>altura 2,2 m</b>. Quantos litros cabem?',()=>torre(),()=>'π × 1,2² × 2,2 ≈ 9,95 m³: cerca de '+VOL().toLocaleString('pt-BR')+' litros.',()=>'Volume agora: '+VOL().toLocaleString('pt-BR')+' L.'],
+ ['Com a caixa da torre, <b>150 pessoas</b> e <b>15 L</b> por pessoa, avance os dias até a caixa <b>secar</b>.',()=>torre()&&SN.get()==150&&SLt.get()==15&&SD.get()>=Math.ceil(DUR()),()=>'A caixa dura '+r1(DUR())+' dias: no dia '+Math.ceil(DUR())+' já não tem água.',()=>!torre()?'Volte para a caixa da torre (raio 1,2 e altura 2,2).':SN.get()!=150||SLt.get()!=15?'Ponha 150 pessoas e 15 L.':'Dia '+SD.get()+': ainda há água. Avance.'],
+ ['Projete uma caixa com <b>no máximo 2,5 m de altura</b> que dure <b>7 dias</b> para 150 pessoas com 15 L cada.',()=>SH.get()<=2.5+1e-9&&SN.get()==150&&SLt.get()==15&&DUR()>=7,()=>'Raio '+fmt(SR.get())+' m e altura '+fmt(SH.get())+' m: '+VOL().toLocaleString('pt-BR')+' L, '+r1(DUR())+' dias. São precisos pelo menos 15.750 L.',()=>'Agora: '+r1(DUR())+' dias. Aumente o raio: ele conta ao quadrado.']]);
+function draw(){const r=SR.get(),h=SH.get(),k=50,cx=110,base=196,rx=r*k,ry=rx*0.28,H=h*k;
+ const rest=Math.max(0,VOL()-GD()*SD.get()),fr=rest/VOL(),wl=H*fr;let g='';
+ g+=RC(cx-rx,base-H,2*rx,H,'#F4F7FB')+`<ellipse cx="${cx}" cy="${base}" rx="${rx}" ry="${ry}" fill="#BFE0F5" stroke="#4A90C8" stroke-width="2"/>`;
+ if(wl>0)g+=RC(cx-rx,base-wl,2*rx,wl,'#BFE0F5')+`<ellipse cx="${cx}" cy="${(base-wl).toFixed(1)}" rx="${rx}" ry="${ry}" fill="#9CCCEB" stroke="#4A90C8" stroke-width="1"/>`;
+ g+=LN(cx-rx,base,cx-rx,base-H,'#4A90C8',2)+LN(cx+rx,base,cx+rx,base-H,'#4A90C8',2)+`<ellipse cx="${cx}" cy="${base-H}" rx="${rx}" ry="${ry}" fill="none" stroke="#4A90C8" stroke-width="2"/>`;
+ g+=LN(cx,base-H,cx+rx,base-H,ORANGE,2)+TX(cx+rx/2,base-H-8,'r',{fs:10,c:ORANGE});
+ const bx=230;g+=TX(bx,40,'Dia '+SD.get(),{fs:13,a:'start'})+TX(bx,64,'Restam:',{fs:11,c:GRAY,a:'start'})+TX(bx,84,Math.round(rest).toLocaleString('pt-BR')+' L',{fs:14,c:rest>0?NAVY:'#C0504D',a:'start'})+TX(bx,106,rest>0?r1(100*fr)+'% da caixa':'a caixa secou',{fs:11,c:rest>0?GRAY:'#C0504D',a:'start'});
+ $('fig').innerHTML=SVG(340,212,g);$('kv').textContent=VOL().toLocaleString('pt-BR')+' L';$('kg').textContent=GD().toLocaleString('pt-BR')+' L';$('kd').textContent=r1(DUR())+' dias';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

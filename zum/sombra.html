@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A sombra da torre · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A sombra da torre</h1></header>
+<main>
+<div class="card"><h2>O sol e as sombras</h2><p class="muted" style="margin-top:0">Mude a altura do sol no céu. A vassoura (1,5 m) e a torre da caixa d'água fazem sombras ao mesmo tempo, e a razão altura ÷ sombra é sempre igual para as duas.</p>
+<div class="sl" id="ss"><b>Altura do sol (graus acima do horizonte)</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Seu palpite para a altura do poste</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Sombra da vassoura<b id="kv"></b></div><div>Sombra da torre<b id="kt"></b></div><div class="o">Altura ÷ sombra<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o sol.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SS=SL('ss',20,75,1,35,draw,v=>v+'°'),SP=SL('sp',2,15,0.5,4,draw,v=>fmt(v)+' m');
+const H=12,V=1.5,PO=8,tg=()=>Math.tan(SS.get()*RAD),sv=()=>V/tg(),st=()=>H/tg(),sp=()=>PO/tg();
+MIS.def(()=>[
+ ['Ponha o sol na altura em que <b>a sombra fica igual à altura</b>.',()=>SS.get()==45,()=>'Com o sol a 45°, a vassoura de 1,5 m faz sombra de 1,5 m e a torre, de 12 m. Foi assim que Tales mediu as pirâmides, segundo uma das versões da história.',()=>'Agora a razão é '+r2(tg())+'. Procure a razão 1.'],
+ ['Ponha o sol onde a vassoura faz sombra de <b>1,2 m</b>, como na tarde de Otávio. Quanto mede a sombra da torre?',()=>Math.abs(sv()-1.2)<0.03,()=>'Vassoura 1,5 m com sombra '+r2(sv())+' m; torre 12 m com sombra '+r1(st())+' m. A razão é '+r2(tg())+' nas duas: perto de 1,5 ÷ 1,2 = 1,25, e 1,25 × 9,6 = 12 m.',()=>'Sombra da vassoura agora: '+r2(sv())+' m.'],
+ ['O poste não tem altura marcada, mas a sombra dele aparece. Use a razão da vassoura e escolha o seu <b>palpite</b> para a altura do poste.',()=>SP.get()==PO,()=>'Isso: '+fmt(PO)+' m. Altura do poste = razão × sombra do poste = '+r2(tg())+' × '+r2(sp())+'.',()=>'Razão agora: '+r2(tg())+'. Sombra do poste: '+r2(sp())+' m. Multiplique e ajuste o palpite.']]);
+function draw(){const k=9,chao=196,tx=40,vx=170,px=250;let g=RC(0,0,340,210,'#EAF4FB')+RC(0,chao,340,14,'#D9C7A5');
+ const ang=SS.get()*RAD,sx=330-130*Math.cos(ang)*0.9,sy=chao-170*Math.sin(ang);g+=CI(sx.toFixed(1),sy.toFixed(1),11,'#FFD34D','stroke="#F7821F" stroke-width="2"');
+ const sombra=(x,h,s)=>`<polygon points="${x},${chao} ${(x-s*k).toFixed(1)},${chao} ${x},${(chao-h*k).toFixed(1)}" fill="rgba(247,130,31,0.10)" stroke="#F7821F" stroke-dasharray="4 3"/>`+RC((x-s*k).toFixed(1),chao,(s*k).toFixed(1),5,'#6B7280');
+ g+=sombra(tx+30,H,st())+RC(tx+24,chao-9.6*k,4,9.6*k,'#6B7280')+RC(tx+36,chao-9.6*k,4,9.6*k,'#6B7280')+RC(tx+18,chao-H*k,28,2.4*k,'#BFE0F5','stroke="#4A90C8" stroke-width="1.5"')+TX(tx+32,chao-H*k-5,'torre 12 m',{fs:9});
+ g+=sombra(vx,V,sv())+LN(vx,chao,vx,chao-V*k,'#8A5A2B',3)+TX(vx,chao-V*k-6,'1,5 m',{fs:9});
+ g+=sombra(px,PO,sp())+LN(px,chao,px,chao-PO*k,'#4B5563',3)+CI(px,chao-PO*k,3,'#FBB57A')+TX(px+4,chao-PO*k-6,'poste: ?',{fs:9,a:'start'});
+ if(SP.get())g+=LN(px-12,chao-SP.get()*k,px+12,chao-SP.get()*k,'#2457D6',2,'3 2')+TX(px+14,chao-SP.get()*k+3,'palpite',{fs:8,c:'#2457D6',a:'start'});
+ $('fig').innerHTML=SVG(340,210,g);$('kv').textContent=r2(sv())+' m';$('kt').textContent=r1(st())+' m';$('kr').textContent=r2(tg());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
