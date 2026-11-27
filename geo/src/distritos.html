@@ -1,9 +1,9 @@
 <!--T: Desenhe os distritos-->
 <div class="card"><h2>Gerrymandering na prática</h2>
-<div class="row" style="justify-content:space-between;align-items:center"><b id="nivel"></b><span><button class="alt" id="ant">Anterior</button> <button class="alt" id="prox">Próximo desafio</button></span></div>
+<b id="nivel"></b>
 <p class="muted" id="enun"></p>
 <div class="row" id="cores"></div><div class="row" style="margin-top:6px"><button class="alt" id="col">Colunas</button><button class="alt" id="lin">Linhas</button><button class="alt" id="lim">Limpar</button><button class="alt" id="dica">Dica</button></div>
-<svg id="sv" viewBox="0 0 300 300"></svg><div class="out" id="out"></div></div>
+<svg id="sv" viewBox="0 0 300 300"></svg><div class="row" style="margin-top:8px"><button class="alt" id="ant">Anterior</button><button id="prox">Próximo desafio</button></div><div class="out" id="out"></div></div>
 <script>
 const $=i=>document.getElementById(i);
 const NIV=[
@@ -20,7 +20,7 @@ function carrega(k){n=(k+NIV.length)%NIV.length;const N=NIV[n];V=N.v;D=[...Array
  let a=0;V.forEach(r=>[...r].forEach(x=>{if(x=='A')a++}));
  $('nivel').innerHTML=N.t+(feitos[n]?' ✓':'');
  $('enun').innerHTML=`São 25 eleitores: ${25-a} laranja e ${a} azuis (${a*4}%). Escolha uma cor de distrito e toque nos quadrados para formar <b>5 distritos de 5 quadrados</b>, cada um formando um bloco só (vizinhos pelos lados). Vence o distrito quem tiver 3 ou mais eleitores nele. `+N.txt;
- $('ant').style.visibility=n?'visible':'hidden';draw()}
+ $('ant').style.display=n?'':'none';draw()}
 function conexo(k){const c=[];for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k)c.push([i,j]);if(!c.length)return false;const vis=new Set([c[0].join()]),st=[c[0]];while(st.length){const[i,j]=st.pop();for(const[a,b]of[[i+1,j],[i-1,j],[i,j+1],[i,j-1]])if(a>=0&&a<5&&b>=0&&b<5&&D[a][b]==k&&!vis.has(a+','+b)){vis.add(a+','+b);st.push([a,b])}}return vis.size==c.length}
 function draw(){let s='';for(let i=0;i<5;i++)for(let j=0;j<5;j++){const k=D[i][j];s+=`<rect x="${j*60}" y="${i*60}" width="60" height="60" fill="${k<0?'#fff':CORES[k]}" stroke="#E5E7EB" data-i="${i}" data-j="${j}"/><circle cx="${j*60+30}" cy="${i*60+30}" r="16" fill="${V[i][j]=='A'?'#0E2354':'#F78D33'}" pointer-events="none"/>`}
  for(let i=0;i<5;i++)for(let j=0;j<5;j++){const k=D[i][j];if(k<0)continue;if(j<4&&D[i][j+1]>=0&&D[i][j+1]!=k)s+=`<line x1="${j*60+60}" y1="${i*60}" x2="${j*60+60}" y2="${i*60+60}" stroke="#0E2354" stroke-width="4" pointer-events="none"/>`;if(i<4&&D[i+1][j]>=0&&D[i+1][j]!=k)s+=`<line x1="${j*60}" y1="${i*60+60}" x2="${j*60+60}" y2="${i*60+60}" stroke="#0E2354" stroke-width="4" pointer-events="none"/>`}
