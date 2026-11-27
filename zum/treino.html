@@ -173,7 +173,25 @@ const LIV={'zum1':{T:["Contar dia a dia", "A barricada", "O contágio dobra", "A
 6:()=>{const t=R(0,2);
  if(t==0){const n=R(3,12);return{q:`Quantas cores, no mínimo, precisa um ciclo de <b>${n}</b> vértices (um anel)?`,a:n%2?3:2,exp:n%2?`Ciclo ímpar: alternando 2 cores, o último encosta no primeiro com a mesma cor. São 3.`:`Ciclo par: basta alternar 2 cores.`};}
  if(t==1){const n=R(3,9);return{q:`Num grafo de <b>${n}</b> vértices, todos ligados com todos, quantas cores são necessárias?`,a:n,exp:`Todos são vizinhos de todos: ${n} cores.`};}
- const n=R(3,10);return{q:`Um bairro central faz divisa com um anel de <b>${n}</b> bairros. Quantos canais de rádio, no mínimo, para todos?`,a:(n%2?3:2)+1,exp:`O anel precisa de ${n%2?3:2} (ciclo ${n%2?'ímpar':'par'}), e o centro, de mais um: ${(n%2?3:2)+1}.`};}}}};
+ const n=R(3,10);return{q:`Um bairro central faz divisa com um anel de <b>${n}</b> bairros. Quantos canais de rádio, no mínimo, para todos?`,a:(n%2?3:2)+1,exp:`O anel precisa de ${n%2?3:2} (ciclo ${n%2?'ímpar':'par'}), e o centro, de mais um: ${(n%2?3:2)+1}.`};}}},'zum8':{T:["A máquina do caderno", "A diluição", "Uma etapa depois da outra", "Desfazer a conta", "A dose certa", "O código de verificação"],G:{1:()=>{const t=R(0,2),a=R(2,6),b=R(1,12);
+ if(t==0){const x=R(5,40);return{q:`Uma máquina faz f(x) = <b>${a}x + ${b}</b>. Qual o código do lote <b>${x}</b>?`,a:a*x+b,exp:`f(${x}) = ${a} × ${x} + ${b} = ${a*x+b}.`};}
+ if(t==1){const x1=R(2,10),x2=x1+R(1,5);return{q:`Uma regra do tipo ax + b leva o lote <b>${x1}</b> ao código <b>${a*x1+b}</b> e o lote <b>${x2}</b> ao código <b>${a*x2+b}</b>. Quanto vale a?`,a:a,exp:`(${a*x2+b} − ${a*x1+b}) ÷ (${x2} − ${x1}) = ${a*(x2-x1)} ÷ ${x2-x1} = ${a}.`};}
+ const x=R(2,10);return{q:`Uma regra do tipo ${a}x + b leva o lote <b>${x}</b> ao código <b>${a*x+b}</b>. Quanto vale b?`,a:b,exp:`${a*x+b} − ${a} × ${x} = ${b}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const d=P([2,5,10]),n=R(1,4),c=R(1,9)*Math.pow(d,n)*P([1,10]);return{q:`Uma amostra tem <b>${fmt(c)}</b> por mL. Depois de <b>${n}</b> diluições de 1 : ${d}, qual a concentração?`,a:c/Math.pow(d,n),exp:`${fmt(c)} ÷ ${d}${n>1?'^'+n:''} = ${fmt(c)} ÷ ${fmt(Math.pow(d,n))} = ${fmt(c/Math.pow(d,n))}.`};}
+ if(t==1){const n=R(2,6);return{q:`Quantas diluições de 1 : 10 levam <b>${fmt(Math.pow(10,n+2))}</b> por mL a 100 por mL?`,a:n,exp:`Cada uma tira um zero: de 10^${n+2} para 10^2 são ${n}.`};}
+ const v=P([1,2,5]),d=P([2,5,10]);return{q:`Numa diluição 1 : ${d}, quantos mL de água juntamos a <b>${v} mL</b> de solução?`,a:v*(d-1),exp:`O volume final é ${d} × ${v} = ${v*d} mL; água: ${v*d} − ${v} = ${v*(d-1)} mL.`};},
+3:()=>{const a=R(2,5),b=R(1,9),c=R(2,4),x=R(1,12),t=R(0,1);
+ if(t==0)return{q:`f(x) = ${a}x + ${b} e g(x) = ${c}x. Calcule <b>g(f(${x}))</b>.`,a:c*(a*x+b),exp:`f(${x}) = ${a*x+b}; g(${a*x+b}) = ${c} × ${a*x+b} = ${c*(a*x+b)}.`};
+ return{q:`f(x) = ${a}x + ${b} e g(x) = ${c}x. Calcule <b>f(g(${x}))</b>.`,a:a*c*x+b,exp:`g(${x}) = ${c*x}; f(${c*x}) = ${a} × ${c*x} + ${b} = ${a*c*x+b}.`};},
+4:()=>{const a=R(2,6),b=R(1,15),x=R(1,30),t=R(0,1);
+ if(t==0)return{q:`f(x) = ${a}x + ${b}. Que lote tem o código <b>${a*x+b}</b>?`,a:x,exp:`Desfazendo: (${a*x+b} − ${b}) ÷ ${a} = ${x}.`};
+ const n=R(1,4),y=R(1,9)*10;return{q:`Depois de ${n} diluição(ões) de 1 : 10, um tubo tem <b>${y}</b> por mL. Qual era a concentração da amostra?`,a:y*Math.pow(10,n),exp:`A inversa multiplica: ${y} × 10${n>1?'^'+n:''} = ${fmt(y*Math.pow(10,n))}.`};},
+5:()=>{const mi=P([5,10,15]),ma=P([30,40,50]),p=R(5,120);const d=Math.max(mi,Math.min(ma,p/2));
+ return{q:`A dose é 0,5 mL por kg, com mínimo de <b>${mi} mL</b> e máximo de <b>${ma} mL</b>. Qual a dose para <b>${p} kg</b>?`,a:d,exp:p/2<mi?`0,5 × ${p} = ${fmt(p/2)}, abaixo do mínimo: ${mi} mL.`:p/2>ma?`0,5 × ${p} = ${fmt(p/2)}, acima do máximo: ${ma} mL.`:`Entre ${2*mi} e ${2*ma} kg: 0,5 × ${p} = ${fmt(d)} mL.`};},
+6:()=>{const D=Array.from({length:12},()=>R(0,9)),s=D.reduce((a,v,i)=>a+v*(i%2?3:1),0),c=(10-s%10)%10,t=R(0,1);
+ if(t==0)return{q:`Com pesos 1, 3, 1, 3, …, calcule o dígito verificador de <b>${D.join(' ')}</b>.`,a:c,exp:`Soma ponderada = ${s}; próximo múltiplo de 10: ${Math.ceil(s/10)*10}; dígito = ${c}.`};
+ return{q:`A soma ponderada dos 12 primeiros dígitos de um código é <b>${s}</b>. Qual o dígito verificador?`,a:c,exp:`Próximo múltiplo de 10: ${Math.ceil(s/10)*10}; ${Math.ceil(s/10)*10} − ${s} = ${c}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='zum1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

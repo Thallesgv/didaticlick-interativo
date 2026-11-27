@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os tubos de Sofia · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Os tubos de Sofia</h1></header>
+<main>
+<div class="card"><h2>De tubo em tubo</h2><p class="muted" style="margin-top:0">Escolha a amostra, a diluição de cada etapa e quantos tubos usar. Em cada tubo, a concentração é a do anterior dividida pela diluição. A cor clareia junto.</p>
+<b style="font-size:14px">Amostra (por mL)</b><div id="cc" style="margin:4px 0"></div>
+<b style="font-size:14px">Diluição de cada etapa</b><div id="cd" style="margin:4px 0"></div>
+<div class="sl" id="sn"><b>Tubos depois da amostra</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">No último tubo<b id="ku"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Dilua a amostra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C0=[1000000,100000,12500,800],DD=[2,5,10];
+const CC=chips('cc',['1.000.000','100.000','12.500','800'],0,draw),CD=chips('cd',['1 : 2','1 : 5','1 : 10'],2,draw),SN=SL('sn',0,14,1,1,draw);
+const conc=n=>C0[CC.get()]/Math.pow(DD[CD.get()],n),ult=()=>conc(SN.get()),ig=(a,b)=>Math.abs(a-b)<1e-9;const achou=new Set();
+const nf=v=>v>=1?fmt(Math.round(v*100)/100):fmt(Math.round(v*10000)/10000);
+MIS.def(()=>[
+ ['Partindo de <b>1.000.000 por mL</b>, chegue a <b>exatamente 100 por mL</b> com o menor número de tubos.',()=>CC.get()==0&&ig(ult(),100),()=>'1.000.000 ÷ 10⁴ = 100: 4 tubos de 1 : 10. Com 1 : 2 ou 1 : 5 nunca dá 100 exato.',()=>CC.get()!=0?'Escolha a amostra de 1.000.000.':'Agora: '+nf(ult())+' por mL.'],
+ ['Agora só com diluições de <b>1 : 2</b>: quantos tubos para ficar <b>abaixo de 100</b> por mL, partindo de 1.000.000?',()=>CC.get()==0&&CD.get()==0&&ult()<100&&conc(SN.get()-1)>=100,()=>'14 tubos (sobram cerca de 61 por mL). Com 1 : 10 foram 4: dividir por 2 de cada vez é muito mais lento.',()=>CC.get()!=0||CD.get()!=0?'Use a amostra de 1.000.000 e diluição 1 : 2.':ult()>=100?'Ainda '+nf(ult())+' por mL. Mais tubos.':'Passou de 100, mas dá com menos tubos.'],
+ ['Chegue a <b>100 por mL em exatamente 3 tubos</b>. Depois ache <b>outra</b> amostra e diluição que também fazem isso.',()=>{if(SN.get()==3&&ig(ult(),100))achou.add(CC.get()+'-'+CD.get());return achou.size>=2;},()=>'Achou duas! 100.000 ÷ 10³, 12.500 ÷ 5³ e 800 ÷ 2³ dão 100. Em 3 tubos: amostra ÷ d³.',()=>achou.size?'Uma achada. Falta outra amostra com outra diluição.':'Use 3 tubos. Agora: '+nf(ult())+' por mL.']]);
+function cor(c){const t=Math.max(0,Math.min(1,Math.log10(Math.max(c,1))/6)),a=[243,238,248],b=[91,42,134];return 'rgb('+a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')+')';}
+function draw(){const n=SN.get(),N=n+1,w=Math.min(40,320/N),g0=[];let g='';
+ for(let i=0;i<N;i++){const c=conc(i),x=10+i*(320/N)+(320/N-w*0.7)/2,tw=w*0.7;
+  g+=RC(x,40,tw,110,'#fff','rx="'+(tw/2)+'" stroke="#9AA7BD" stroke-width="1.5"')+RC(x+1.5,72,tw-3,76,cor(c),'rx="'+(tw/2-2)+'"');
+  g+=TX(x+tw/2,30,N>8?(i==0?'am.':i):(i==0?'amostra':'tubo '+i),{fs:N>8?8:8.5,c:GRAY,w:500});
+  if(N<=8)g+=TX(x+tw/2,168,nf(c),{fs:8.5,c:i==n?ORANGE:NAVY});}
+ g+=TX(171,192,'concentração no último tubo: '+nf(ult())+' por mL',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(342,200,g);
+ $('kc').textContent=fmt(C0[CC.get()])+' ÷ '+DD[CD.get()]+(n>1?'^'+n:n==1?'':'^0');$('ku').textContent=nf(ult());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
