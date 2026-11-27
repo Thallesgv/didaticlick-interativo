@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A muralha da vila · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A muralha da vila</h1></header>
+<main>
+<div class="card"><h2>O bebê da dona Cida</h2><p class="muted" style="margin-top:0">Quatrocentas casas. A estrela é a casa do bebê da dona Cida, que ainda não pode tomar a vacina do sarampo. Azul: protegido pela vacina. Branco: sem proteção. Solte um caso e veja se o surto encontra caminho.</p>
+<div class="sl" id="sr"><b>R₀</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Cobertura vacinal</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Eficácia da vacina</b><input type="range"><span></span></div>
+<div id="cb" style="margin:6px 0"></div>
+<div class="row"><button id="bs">Soltar um caso</button></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Protegidos<b id="kp"></b></div><div>Limiar 1 − 1/R₀<b id="kl"></b></div><div class="o">Casas com sarampo<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Proteja o bebê.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',2,18,1,15,monta,v=>v),SC=SL('sc',0,100,0.5,80,monta,v=>fmt(v)+'%'),SE=SL('se',80,100,1,97,monta,v=>v+'%');
+let bairro=0;const CB=chips('cb',['vila toda igual','com um bairro sem vacina'],0,i=>{bairro=i;monta();});
+const BB=210,NB=400,inB=i=>{const x=i%20,y=Math.floor(i/20);return x>=13&&x<=18&&y>=12&&y<=17;};
+let im=[],sick=[],rodou=false,bebe=false,tb=0,anim=null;
+const prot=()=>SC.get()/100*SE.get()/100,lim=()=>1-1/SR.get();
+function monta(){if(anim){clearTimeout(anim);anim=null;}im=Array(NB).fill(false);const c=SC.get()/100,e=SE.get()/100;for(let i=0;i<NB;i++)if(i!=BB&&!(bairro&&inB(i))&&Math.random()<c&&Math.random()<e)im[i]=true;sick=Array(NB).fill(0);rodou=false;bebe=false;tb=0;draw();}
+const pois=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;};
+$('bs').onclick=()=>{if(anim)return;sick=Array(NB).fill(0);rodou=false;bebe=false;let cand=[...Array(NB).keys()].filter(i=>!im[i]&&i!=BB&&(!bairro||inB(i)));if(!cand.length)cand=[...Array(NB).keys()].filter(i=>i!=BB);
+ let ger=[cand[rint(0,cand.length-1)]];sick[ger[0]]=1;
+ const step=()=>{const novos=[];ger.forEach(a=>{const k=pois(SR.get());for(let j=0;j<k;j++){let b;if(Math.random()<0.5){const cx=a%20+rint(-2,2),cy=Math.floor(a/20)+rint(-2,2);if(cx<0||cx>19||cy<0||cy>19)continue;b=cy*20+cx;}else b=rint(0,NB-1);if(!im[b]&&!sick[b]){sick[b]=1;novos.push(b);}}});
+  ger.forEach(a=>sick[a]=2);ger=novos;draw();if(novos.length)anim=setTimeout(step,260);else{anim=null;rodou=true;bebe=sick[BB]>0;tb=[...Array(NB).keys()].filter(i=>inB(i)&&sick[i]).length;draw();}};
+ draw();anim=setTimeout(step,260);};
+const casos=()=>sick.filter(s=>s).length;
+MIS.def(()=>[
+ ['Sarampo: <b>R₀ = 15</b>. Ajuste a cobertura e solte um caso. O surto não pode chegar à casa do bebê (a estrela), e a vila tem de estar <b>acima do limiar</b>.',()=>rodou&&!bebe&&SR.get()>=12&&prot()>=lim(),()=>'Protegidos: '+r1(prot()*100)+'% (limiar '+r1(lim()*100)+'%). O vírus não achou caminho e o bebê ficou a salvo, sem tomar vacina nenhuma.',()=>rodou&&!bebe&&prot()<lim()?'O bebê escapou desta vez, mas foi sorte: a vila está abaixo do limiar. Suba a cobertura.':(rodou&&bebe?'O sarampo chegou ao bebê. Suba a cobertura e solte de novo.':'Ajuste e solte um caso.')],
+ ['Com R₀ = 15 e eficácia de <b>97%</b>, ache a <b>menor</b> cobertura (de meio em meio ponto) que deixa os protegidos acima do limiar.',()=>SR.get()==15&&SE.get()==97&&prot()>=lim()&&SC.get()<=96.5,()=>'Cobertura de '+fmt(SC.get())+'%: protegidos = '+fmt(SC.get())+'% × 97% ≈ '+r1(prot()*100)+'%, logo acima dos 93,3% do limiar. A conta do livro: 0,933 ÷ 0,97 ≈ 96%.',()=>SR.get()!=15||SE.get()!=97?'Ajuste R₀ = 15 e eficácia 97%.':(prot()<lim()?'Protegidos: '+r1(prot()*100)+'%. Ainda abaixo de 93,3%.':'Está acima do limiar, mas dá para baixar mais.')],
+ ['Deixe a cobertura alta (acima do limiar) e escolha <b>com um bairro sem vacina</b>. Solte casos até o surto pegar <b>10 casas</b> ou mais dentro do bairro.',()=>bairro==1&&rodou&&tb>=10&&prot()>=lim(),()=>tb+' casas do bairro adoeceram, mesmo com a vila "acima da meta". A média da cidade esconde os bolsões sem vacina, e é neles que o sarampo volta.',()=>bairro!=1?'Escolha "com um bairro sem vacina".':(prot()<lim()?'Suba a cobertura para ficar acima do limiar.':'Solte um caso (pode precisar de algumas tentativas).')]]);
+function draw(){let g=RC(0,0,340,366,'#F3F8EC','rx="10"');const X=i=>14+(i%20)*16.2,Y=i=>22+Math.floor(i/20)*16.4;
+ if(bairro)g+=RC(X(13)-9,Y(240)-14,6*16.2+2,6*16.4+2,'#FBD3B0','rx="6"')+RC(14,352,10,8,'#FBD3B0','rx="2"')+TX(28,359,'bairro sem vacina',{fs:9,a:'start',c:'#B45309'});
+ g+=CASA(130,360,9,'#9EC5F5','#8A6A4A')+TX(138,359,'protegida',{fs:9,a:'start',c:GRAY})+CASA(200,360,9,'#fff','#8A6A4A')+TX(208,359,'sem proteção',{fs:9,a:'start',c:GRAY})+CASA(282,360,9,'#D9342B','#7A1F1A')+TX(290,359,'doente',{fs:9,a:'start',c:GRAY});
+ for(let i=0;i<NB;i++){if(i==BB)continue;const s=sick[i];g+=CASA(X(i),Y(i),12,s==1?'#D9342B':s==2?'#C98C8C':im[i]?'#9EC5F5':'#FFFFFF',s?'#7A1F1A':'#8A6A4A');}
+ const bx=X(BB),by=Y(BB)-6,st=[];for(let k=0;k<10;k++){const r=k%2?4:9,a=-Math.PI/2+k*Math.PI/5;st.push([bx+r*Math.cos(a),by+r*Math.sin(a)]);}
+ g+=PG(st,sick[BB]?'#D9342B':'#FFC93C','stroke="#B7791F" stroke-width="1"');
+ $('fig').innerHTML=SVG(340,366,g);
+ $('kp').textContent=r1(prot()*100)+'%';$('kl').textContent=r1(lim()*100)+'%';$('kc').textContent=casos();MIS.ver('m');}
+monta();
+})();
+</script>
+</body>
+</html>

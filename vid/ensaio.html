@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O ensaio da vacina · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O ensaio da vacina</h1></header>
+<main>
+<div class="card"><h2>Placebo contra vacina</h2><p class="muted" style="margin-top:0">Dois grupos sorteados do mesmo tamanho. Um recebe placebo (injeção sem vacina), o outro recebe a vacina. Escolha quanto a doença circula, a eficácia de verdade e o tamanho dos grupos, e aperte <b>Acompanhar o ensaio</b>. Cada boneco vermelho adoeceu.</p>
+<div class="sl" id="sa"><b>Doentes no grupo placebo (chance de cada um)</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Eficácia de verdade da vacina</b><input type="range"><span></span></div>
+<div id="cn" style="margin:6px 0"></div>
+<div class="row"><button id="bg">Acompanhar o ensaio</button></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Casos no placebo<b id="kp"></b></div><div>Casos na vacina<b id="kv"></b></div><div class="o">Eficácia medida<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Acompanhe o ensaio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',1,20,1,10,()=>{cp=-1;draw();},v=>v+'%'),SE=SL('se',0,100,5,95,()=>{cp=-1;draw();},v=>v+'%');
+const NS=[200,2000,20000];let ni=0;const CN=chips('cn',['200 por grupo','2.000 por grupo','20.000 por grupo'],0,i=>{ni=i;cp=-1;hist=[];draw();});
+let cp=-1,cv=-1,hist=[];
+const bin=(n,p)=>{if(n<=2000){let k=0;for(let i=0;i<n;i++)if(Math.random()<p)k++;return k;}return Math.max(0,Math.round(n*p+Math.sqrt(n*p*(1-p))*GAUSS()));};
+const efm=()=>cp>0?1-cv/cp:null;
+$('bg').onclick=()=>{const n=NS[ni],a=SA.get()/100,e=SE.get()/100;cp=bin(n,a);cv=bin(n,a*(1-e));hist.push({n,e:SE.get(),m:efm()});draw();};
+const ult3=(e,n)=>{const u=hist.slice(-3);return u.length==3&&u.every(h=>h.e==e&&h.n==n)?u:null;};
+MIS.def(()=>[
+ ['Deixe a eficácia em <b>95%</b>, 200 por grupo, e acompanhe o ensaio até a eficácia medida ficar entre <b>90% e 99%</b>.',()=>SE.get()==95&&NS[ni]==200&&efm()!==null&&efm()>=0.9&&efm()<0.995,()=>'Placebo: '+cp+' casos; vacina: '+cv+'. Eficácia = 1 − '+cv+'/'+cp+' ≈ '+Math.round(efm()*100)+'%. É a mesma conta do ensaio real (1 − 8/162).',()=>SE.get()!=95||NS[ni]!=200?'Ajuste: eficácia 95% e 200 por grupo.':(cp<0?'Aperte o botão.':'Deu '+(efm()===null?'—':Math.round(efm()*100)+'%')+'. Acompanhe de novo.')],
+ ['Agora a vacina <b>não funciona</b> (eficácia 0%), com 200 por grupo e 5% de doentes. Repita até a sorte "medir" eficácia de <b>40% ou mais</b>.',()=>SE.get()==0&&NS[ni]==200&&SA.get()==5&&efm()!==null&&efm()>=0.4,()=>'Uma vacina inútil "mostrou" '+Math.round(efm()*100)+'% de eficácia! Com poucos casos, a sorte engana.',()=>SE.get()!=0||NS[ni]!=200||SA.get()!=5?'Ajuste: eficácia 0%, 5% de doentes, 200 por grupo.':'Deu '+(efm()===null?'—':Math.round(efm()*100)+'%')+'. Repita (pode demorar).'],
+ ['Com eficácia 0% e <b>20.000 por grupo</b>, acompanhe o ensaio <b>3 vezes seguidas</b>. A sorte ainda engana?',()=>!!ult3(0,20000),()=>'Eficácias medidas: '+ult3(0,20000).map(h=>h.m===null?'—':Math.round(h.m*100)+'%').join('; ')+'. Com dezenas de milhares de voluntários, a sorte quase não mexe no resultado. Por isso o ensaio da vacina teve mais de 43 mil pessoas.',()=>{let k=0;for(let i=hist.length-1;i>=0&&hist[i].e==0&&hist[i].n==20000;i--)k++;return SE.get()!=0||NS[ni]!=20000?'Ajuste: eficácia 0% e 20.000 por grupo.':'Ensaios seguidos: '+Math.min(k,3)+' de 3.';}]]);
+function grupo(x0,y0,nome,casos,cor,n){const cada=n/200,ver=cp<0?0:Math.round(casos/cada);let g=TX(x0,y0-6,nome,{fs:11,a:'start'});
+ for(let i=0;i<200;i++){const c=i%20,r=Math.floor(i/20);g+=BONECO(x0+6+c*16,y0+12+r*15,12,i<ver?'#D9342B':(cor),'');}return g;}
+function draw(){const n=NS[ni];let g=RC(0,0,340,350,'#F7F9FC','rx="10"');
+ g+=grupo(10,22,'placebo',cp,'#CBD2DC',n)+grupo(10,192,'vacina',cv,'#9FD3A8',n);
+ g+=TX(330,16,'cada boneco = '+fmt(n/200)+(n==200?' pessoa':' pessoas'),{fs:9,a:'end',c:GRAY});
+ $('fig').innerHTML=SVG(340,350,g);
+ $('kp').textContent=cp<0?'—':fmt(cp);$('kv').textContent=cp<0?'—':fmt(cv);$('ke').textContent=efm()===null?'—':Math.round(efm()*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

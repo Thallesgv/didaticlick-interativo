@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mil pessoas na fila · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Mil pessoas na fila</h1></header>
+<main>
+<div class="card"><h2>Positivo quer dizer doente?</h2><p class="muted" style="margin-top:0">Mil pessoas fazem o teste. Escolha quantas estão doentes de verdade e quão bom é o teste. Vermelho: doente com positivo (acerto). Laranja: sadio com positivo (<b>falso positivo</b>). Rosa: doente com negativo (falso negativo). Cinza: sadio com negativo.</p>
+<div class="sl" id="sp"><b>Doentes de verdade</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Sensibilidade (doentes que dão positivo)</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Especificidade (sadios que dão negativo)</b><input type="range"><span></span></div>
+<div id="cv" style="margin:6px 0"></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Positivos<b id="kp"></b></div><div>Doentes entre eles<b id="kd"></b></div><div class="o">Positivo e doente<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste a fila.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SP=SL('sp',0.5,50,0.5,10,draw,v=>fmt(v)+'%'),SS=SL('ss',50,100,1,90,draw,v=>v+'%'),SE=SL('se',50,100,0.5,95,draw,v=>fmt(v)+'%');
+let so=0;const CV=chips('cv',['mostrar todos','só os positivos'],0,i=>{so=i;draw();});
+function conta(){const D=Math.round(10*SP.get()),VP=Math.round(D*SS.get()/100),FP=Math.round((1000-D)*(1-SE.get()/100));return{D,VP,FN:D-VP,FP,VN:1000-D-FP};}
+const vpp=()=>{const c=conta();return c.VP+c.FP?c.VP/(c.VP+c.FP):0;};
+MIS.def(()=>[
+ ['Monte o caso do Kauã: <b>1%</b> de doentes, sensibilidade <b>90%</b> e especificidade <b>95%</b>.',()=>SP.get()==1&&SS.get()==90&&SE.get()==95,()=>{const c=conta();return 'Positivos: '+c.VP+' + '+c.FP+' = '+(c.VP+c.FP)+'. Só '+c.VP+' doentes: '+Math.round(vpp()*100)+'%. Quase todo positivo é falso!';},'Ajuste: 1% de doentes, 90% e 95%.'],
+ ['Mantenha o teste (90% e 95%) e aumente os doentes até que <b>metade dos positivos</b> esteja doente de verdade.',()=>SS.get()==90&&SE.get()==95&&vpp()>=0.5,()=>'Com '+fmt(SP.get())+'% de doentes, '+Math.round(vpp()*100)+'% dos positivos são verdadeiros. O mesmo teste fica confiável quando a doença é comum.',()=>SS.get()!=90||SE.get()!=95?'Volte o teste para 90% e 95%.':'Agora: '+Math.round(vpp()*100)+'%. Aumente os doentes.'],
+ ['Volte para <b>1%</b> de doentes. Mexa só no teste até que <b>metade dos positivos</b> esteja doente. Qual controle resolve?',()=>SP.get()==1&&vpp()>=0.5,()=>'Especificidade de '+fmt(SE.get())+'%: só '+conta().FP+' falsos positivos. Quando a doença é rara, o que mais importa é o teste quase não errar com os sadios.',()=>SP.get()!=1?'Volte para 1% de doentes.':'Agora: '+Math.round(vpp()*100)+'%. Experimente subir a sensibilidade… e depois a especificidade.']]);
+function draw(){const c=conta();let tipos=[];for(let i=0;i<c.VP;i++)tipos.push(0);for(let i=0;i<c.FP;i++)tipos.push(1);for(let i=0;i<c.FN;i++)tipos.push(2);for(let i=0;i<c.VN;i++)tipos.push(3);
+ const COR=['#D9342B','#F7821F','#F6A8C0','#D7DEEA'];let g=RC(0,0,340,330,'#F7F9FC','rx="10"');
+ if(so){const pos=c.VP+c.FP,cols=Math.min(25,Math.max(10,Math.ceil(Math.sqrt(pos*1.6)))),s=Math.min(28,316/cols);
+  for(let i=0;i<pos;i++){const x=12+(i%cols)*s+s/2,y=26+Math.floor(i/cols)*s*1.15+s;g+=BONECO(x,y,s*0.95,COR[i<c.VP?0:1],'');}
+  g+=TX(170,16,pos+' positivos: '+c.VP+' doentes e '+c.FP+' sadios',{fs:11});}
+ else{for(let i=0;i<1000;i++){const x=10+(i%40)*8+4,y=12+Math.floor(i/40)*12.6+11;g+=BONECO(x,y,10,COR[tipos[i]],'');}}
+ $('fig').innerHTML=SVG(340,330,g);
+ $('kp').textContent=(c.VP+c.FP);$('kd').textContent=c.VP;$('kv').textContent=Math.round(vpp()*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
