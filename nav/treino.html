@@ -93,7 +93,29 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
  if(t==0){const [ang,v,e]=P([[150,.5,'sen 150° = sen 30°'],[120,-.5,'cos 120° = −cos 60°'],[210,-.5,'sen 210° = −sen 30°'],[300,.5,'cos 300° = cos 60°'],[180,-1,'cos 180°'],[270,-1,'sen 270°']]);
   return{q:`Quanto vale ${e.split(' =')[0]}?`,a:v,tol:.001,exp:`${e} = ${fmt(v)}.`};}
  if(t==1){const [r,q]=P([[45,'NE'],[135,'SE'],[225,'SO'],[315,'NO']]);return{q:`O rumo <b>${r}°</b> está em qual quadrante da rosa?`,opts:['NE','SE','SO','NO'],a:q,exp:`${r}° fica entre ${Math.floor(r/90)*90}° e ${Math.floor(r/90)*90+90}°: ${q}.`};}
- const [r,s]=P([[150,.5],[210,-.5],[330,-.5],[30,.5]]),d=P([6,10,20]);return{q:`<b>${d} léguas</b> no rumo <b>${r}°</b>. Quanto a nau anda para leste? (negativo = oeste)`,a:d*s,tol:.01,exp:`leste = ${d} · sen ${r}° = ${d} · ${fmt(s)} = ${fmt(d*s)}.`};}}}};
+ const [r,s]=P([[150,.5],[210,-.5],[330,-.5],[30,.5]]),d=P([6,10,20]);return{q:`<b>${d} léguas</b> no rumo <b>${r}°</b>. Quanto a nau anda para leste? (negativo = oeste)`,a:d*s,tol:.01,exp:`leste = ${d} · sen ${r}° = ${d} · ${fmt(s)} = ${fmt(d*s)}.`};}}},'nav4':{T:["Setas no mar", "Somar setas", "Decompor e somar", "Corrigir o rumo", "Bolina e bordejar", "A estima depois da tempestade"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const [x,y,h]=P([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,5,13]]),sx=P([1,-1]),sy=P([1,-1]);return{q:`Qual o módulo do vetor <b>(${x*sx}; ${y*sy})</b>, em léguas?`,a:h,exp:`√(${x}² + ${y}²) = √${x*x+y*y} = ${h}.`};}
+ if(t==1){const a=R(-6,6),b=R(-6,6),c=R(-6,6),d=R(-6,6);return{q:`A nau sai do ponto A(${a}; ${b}) e chega a B(${c}; ${d}). Qual a componente <b>leste</b> do deslocamento AB?`,a:c-a,exp:`B − A: leste = ${c} − (${a}) = ${c-a}.`};}
+ const n=R(2,5),l=R(1,4);return{q:`A nau faz ${n} trechos iguais de <b>${l} léguas</b> para leste e volta ${n} trechos iguais para oeste. Qual a distância percorrida, em léguas?`,a:2*n*l,exp:`Distância conta todo o caminho: ${n} · ${l} + ${n} · ${l} = ${2*n*l}. O deslocamento é zero.`};},
+2:()=>{const t=R(0,2),v=R(3,6),c=R(1,v-1);
+ if(t==0)return{q:`A nau faz <b>${v} léguas/h</b> para leste e a corrente <b>${c} légua${c>1?'s':''}/h</b> também para leste. Qual a velocidade real?`,a:v+c,exp:`Mesmo sentido: ${v} + ${c} = ${v+c} léguas/h.`};
+ if(t==1)return{q:`A nau faz <b>${v} léguas/h</b> para leste e a corrente <b>${c} légua${c>1?'s':''}/h</b> para oeste. Qual a velocidade real?`,a:v-c,exp:`Sentidos opostos: ${v} − ${c} = ${v-c} léguas/h, para leste.`};
+ const [x,y,h]=P([[3,4,5],[6,8,10],[4,3,5],[8,6,10]]);return{q:`Nau a <b>${x} léguas/h</b> para leste e corrente a <b>${y} léguas/h</b> para o sul. Qual o módulo da velocidade real?`,a:h,exp:`Perpendiculares: √(${x}² + ${y}²) = ${h} léguas/h.`};},
+3:()=>{const S={30:[.5,.866],45:[.707,.707],60:[.866,.5],90:[1,0],180:[0,-1],270:[-1,0]},t=R(0,1),r=P([30,45,60,90,180,270]),v=P([2,4,6,10]);
+ if(t==0){const a=Math.round(v*S[r][0]*100)/100;return{q:`Um vetor de <b>${v}</b> no rumo <b>${r}°</b>. Qual a componente leste? (sen ${r}° ≈ ${fmt(S[r][0])})`,a:a,tol:.02,exp:`leste = ${v} · sen ${r}° = ${fmt(a)}.`};}
+ const a=Math.round(v*S[r][1]*100)/100;return{q:`Um vetor de <b>${v}</b> no rumo <b>${r}°</b>. Qual a componente norte? (cos ${r}° ≈ ${fmt(S[r][1])})`,a:a,tol:.02,exp:`norte = ${v} · cos ${r}° = ${fmt(a)}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const [c,v,th]=P([[1,2,30],[1.5,3,30],[2,4,30],[1,1.414,45],[2,2.828,45]]);return{q:`Corrente de <b>${fmt(c)} léguas/h</b> perpendicular ao caminho, nau a <b>${fmt(v)} léguas/h</b>. Qual o ângulo de correção, em graus? (sen θ = c ÷ v)`,a:th,tol:.6,exp:`sen θ = ${fmt(c)} ÷ ${fmt(v)} ≈ ${fmt(Math.round(c/v*1000)/1000)} → θ = ${th}°.`};}
+ if(t==1){const [c,v,r]=P([[3,5,4],[6,10,8],[5,13,12],[8,10,6]]);return{q:`Nau a <b>${v} léguas/h</b>, corrente de <b>${c} léguas/h</b> perpendicular ao caminho. Com a proa corrigida, qual a velocidade real no caminho?`,a:r,exp:`√(${v}² − ${c}²) = √${v*v-c*c} = ${r} léguas/h.`};}
+ const [c,v,r]=P([[3,5,4],[6,10,8]]),d=r*P([2,3,5]);return{q:`Nau a ${v} léguas/h, corrente de ${c} perpendicular. Com a correção, quantas horas leva para andar <b>${d} léguas</b> no caminho?`,a:d/r,tol:.01,exp:`Velocidade real √(${v}² − ${c}²) = ${r}; tempo = ${d} ÷ ${r} = ${fmt(d/r)} h.`};},
+5:()=>{const C={30:.866,45:.707,60:.5},t=R(0,2),b=P([30,45,60]);
+ if(t==0){const F=P([4,6,10,20]),v=Math.round(F*C[b]*100)/100;return{q:`Força de <b>${F}</b> a <b>${b}°</b> da quilha. Quanto vale a parte que faz a nau avançar? (cos ${b}° ≈ ${fmt(C[b])})`,a:v,tol:.02,exp:`avanço = ${F} · cos ${b}° = ${fmt(v)}.`};}
+ if(t==1){const D=P([5,10,14,20]),v=Math.round(D/C[b]*100)/100;return{q:`Bordejando a <b>${b}°</b> do vento, quantas léguas a nau navega para avançar <b>${D} léguas</b> contra o vento? (cos ${b}° ≈ ${fmt(C[b])})`,a:v,tol:.05,exp:`${D} ÷ ${fmt(C[b])} ≈ ${fmt(v)} léguas.`};}
+ const L=P([4,6,8,10]),v=Math.round(L*C[b]*100)/100;return{q:`Um bordo de <b>${L} léguas</b> a <b>${b}°</b> do vento avança quanto contra o vento? (cos ${b}° ≈ ${fmt(C[b])})`,a:v,tol:.02,exp:`${L} · ${fmt(C[b])} = ${fmt(v)} léguas.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const h=R(2,8),v=P([1.5,2,2.5,3]);return{q:`A nau anda <b>${fmt(v)} léguas/h</b> por <b>${h} horas</b>. Quantas léguas se desloca?`,a:v*h,tol:.01,exp:`${h} · ${fmt(v)} = ${fmt(v*h)} léguas.`};}
+ if(t==1){const a=R(-5,9),b=R(-5,9),c=R(-5,9),d=R(-5,9);return{q:`Some os deslocamentos (${a}; ${b}) e (${c}; ${d}). Qual a componente <b>norte</b> da soma?`,a:b+d,exp:`${b} + (${d}) = ${b+d}.`};}
+ const k=R(2,5),a=R(-4,4),b=R(-4,4);return{q:`A velocidade é (${a}; ${b}) léguas/h. Qual a componente <b>leste</b> do deslocamento em <b>${k} horas</b>?`,a:k*a,exp:`${k} · (${a}; ${b}) = (${k*a}; ${k*b}).`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

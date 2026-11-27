@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrigir a proa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Corrigir a proa</h1></header>
+<main>
+<div class="card"><h2>Apontar para o lado da corrente</h2><p class="muted" style="margin-top:0">O porto está 20 léguas a leste. A nau anda a 2 léguas/h na água, e a corrente empurra para o sul. Escolha o rumo da proa: a nau segue a soma e deixa um rastro laranja na carta.</p>
+<div class="fig" id="fig"></div>
+<div class="chips" id="ch"></div>
+<div class="sl" id="sp"><b>Rumo da proa</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Velocidade real<b id="kv"></b></div><div>Ao chegar à longitude do porto<b id="kd"></b></div><div>Tempo<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Chegue ao porto <b>exatamente a leste</b>, sem passar ao sul nem ao norte dele. Depois troque a corrente e acerte de novo. Confira com sen θ = corrente ÷ velocidade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SETA=(x1,y1,x2,y2,c,w)=>{w=w||3;const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),h=Math.min(9+w,L*.6);if(L<1)return '';
+ return LN(x1,y1,x2-Math.cos(a)*h*.7,y2-Math.sin(a)*h*.7,c,w)+`<polygon points="${x2},${y2} ${x2-h*Math.cos(a-.42)},${y2-h*Math.sin(a-.42)} ${x2-h*Math.cos(a+.42)},${y2-h*Math.sin(a+.42)}" fill="${c}"/>`;};
+const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=Math.round(r*100)/100;return r<0?r+360:r;};
+const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
+const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const CS=[0.5,1,1.5];const C=chips('ch',['Corrente 0,5 légua/h','Corrente 1 légua/h','Corrente 1,5 légua/h'],1,draw);
+const PR=SL('sp',0,180,0.5,90,draw,v=>fmt(v)+'°');
+function draw(){const c=CS[C.get()],t=PR.get()*RAD,vx=2*Math.sin(t),vy=2*Math.cos(t)-c,v=Math.hypot(vx,vy);
+ const k=14,ox=16,oy=125,X=e=>ox+e*k,Y=n=>oy-n*k;
+ let g=`<rect x="0" y="0" width="340" height="250" fill="#EAF2FC"/>`;
+ for(let i=0;i<6;i++){const x=40+i*52;g+=SETA(x,14,x,30,'#9DBDE6',1.5);}
+ g+=TX(330,22,'corrente para o sul',{fs:9,a:'end',c:'#2457D6'});
+ g+=LN(X(0),Y(0),X(20),Y(0),NAVY,1.5,'6 5');
+ let tf=null,yf=null;if(vx>1e-6){tf=20/vx;yf=vy*tf;}
+ const T=tf===null?12:tf,ex=vx*T,ey=vy*T,cl=(e,n)=>{const f=Math.min(1,e>22?22/e:1,Math.abs(n)>8.5?8.5/Math.abs(n):1);return [e*f,n*f];},[fx,fy]=cl(ex,ey);
+ g+=LN(X(0),Y(0),X(fx),Y(fy),ORANGE,3.5);
+ g+=`<rect x="${X(20)-7}" y="${Y(0)-7}" width="14" height="14" rx="3" fill="${GREEN}"/>`+TX(X(20),Y(0)+22,'porto',{fs:10,c:GREEN});
+ const s=26;g+=SETA(X(0),Y(0),X(0)+s*Math.sin(t)*1.4,Y(0)-s*Math.cos(t)*1.4,BLUE,3)+TX(X(0)+s*Math.sin(t)*1.4+4,Y(0)-s*Math.cos(t)*1.4-4,'proa',{fs:9,a:'start',c:BLUE});
+ g+=`<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="${NAVY}"/>`+ROSA(20,200);
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kv').textContent=r2(v)+' léguas/h';
+ if(tf===null){$('kd').textContent='não chega';$('kt').textContent='—';}
+ else{$('kd').textContent=Math.abs(yf)<0.005?'no porto':r2(Math.abs(yf))+' léguas '+(yf<0?'ao sul':'ao norte');$('kt').textContent=r1(tf)+' h';}
+ const ang=Math.asin(c/2)*DEG,ok=tf!==null&&Math.abs(yf)<=0.25;
+ missao('m',ok,'No porto! Com corrente de '+fmt(c)+' légua/h: sen θ = '+fmt(c)+' ÷ 2 = '+fmt(c/2)+', θ ≈ '+r1(ang)+'° para o norte do leste, ou seja, proa no rumo ≈ '+r1(90-ang)+'°.',
+  tf===null?'Com essa proa a nau nem avança para leste. Aponte mais para o leste.':(yf<0?'A corrente ganhou: a nau passa ao sul. Aponte a proa mais para o norte (rumo menor).':'Corrigiu demais: a nau passa ao norte. Aponte a proa mais para o leste (rumo maior).'));}
+draw();
+})();
+</script>
+</body>
+</html>

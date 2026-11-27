@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A estima · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A estima</h1></header>
+<main>
+<div class="card"><h2>O diário da tempestade</h2><p class="muted" style="margin-top:0">Cada trecho é um vetor: horas · velocidade, no rumo escolhido. Os trechos se encadeiam, a posição estimada aparece, e a seta tracejada aponta para o cabo (20 léguas a leste e 5 ao sul da partida).</p>
+<div class="fig" id="fig"></div>
+<div id="tr"></div>
+<div class="kpi"><div class="o">Posição estimada<b id="kp"></b></div><div>Distância ao cabo<b id="kd"></b></div><div>Rumo para o cabo<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O diário começa como o de Enzo. Mude os trechos (quantos e como quiser) para a posição estimada cair <b>a menos de meia légua do cabo</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SETA=(x1,y1,x2,y2,c,w)=>{w=w||3;const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),h=Math.min(9+w,L*.6);if(L<1)return '';
+ return LN(x1,y1,x2-Math.cos(a)*h*.7,y2-Math.sin(a)*h*.7,c,w)+`<polygon points="${x2},${y2} ${x2-h*Math.cos(a-.42)},${y2-h*Math.sin(a-.42)} ${x2-h*Math.cos(a+.42)},${y2-h*Math.sin(a+.42)}" fill="${c}"/>`;};
+const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=Math.round(r*100)/100;return r<0?r+360:r;};
+const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
+const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const CORT=[NAVY,BLUE,GREEN],INI=[[6,2,90],[4,1.5,225],[4,2,0]];
+$('tr').innerHTML=[0,1,2].map(i=>`<div style="border-left:4px solid ${CORT[i]};padding-left:8px;margin:6px 0"><b style="color:${CORT[i]}">Trecho ${i+1}</b>
+<div class="sl" id="h${i}"><b>Horas</b><input type="range"><span></span></div><div class="sl" id="v${i}"><b>Velocidade</b><input type="range"><span></span></div><div class="sl" id="q${i}"><b>Rumo</b><input type="range"><span></span></div></div>`).join('');
+const H=[],V=[],Q=[];for(let i=0;i<3;i++){H.push(SL('h'+i,0,8,1,INI[i][0],draw,v=>v+' h'));V.push(SL('v'+i,0.5,3,0.5,INI[i][1],draw,v=>fmt(v)+' légua/h'));Q.push(SL('q'+i,0,345,15,INI[i][2],draw,v=>v+'°'));}
+const CABO=[20,-5];
+function draw(){let p=[[0,0]];for(let i=0;i<3;i++){const d=H[i].get()*V[i].get(),t=Q[i].get()*RAD,l=p[i];p.push([l[0]+d*Math.sin(t),l[1]+d*Math.cos(t)]);}
+ const f=p[3],all=p.concat([CABO]),xs=all.map(a=>a[0]),ys=all.map(a=>a[1]);
+ const x0=Math.min(...xs)-1,x1=Math.max(...xs)+1,y0=Math.min(...ys)-1,y1=Math.max(...ys)+1,k=Math.min(300/(x1-x0),200/(y1-y0));
+ const X=e=>20+(e-x0)*k,Y=n=>20+(y1-n)*k;let g=`<rect x="0" y="0" width="340" height="240" fill="#EAF2FC"/>`;
+ g+=`<path d="M${X(CABO[0])-18},${Y(CABO[1])-30} q10,20 18,30 q6,8 12,-6 l8,-24 z" fill="#E9D7B5" stroke="#B7793F"/>`;
+ g+=`<circle cx="${X(CABO[0])}" cy="${Y(CABO[1])}" r="6" fill="${GREEN}"/>`+TX(X(CABO[0]),Y(CABO[1])+18,'cabo',{fs:10,c:GREEN});
+ g+=LN(X(0),Y(0),X(f[0]),Y(f[1]),ORANGE,2.5,'7 4');
+ for(let i=0;i<3;i++)g+=SETA(X(p[i][0]),Y(p[i][1]),X(p[i+1][0]),Y(p[i+1][1]),CORT[i],3.5);
+ g+=SETA(X(f[0]),Y(f[1]),X(CABO[0]),Y(CABO[1]),GRAY,1.5);
+ g+=`<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="${NAVY}"/><circle cx="${X(f[0])}" cy="${Y(f[1])}" r="6" fill="${ORANGE}"/>`+ROSA(322,40);
+ $('fig').innerHTML=SVG(340,240,g);
+ const dx=CABO[0]-f[0],dy=CABO[1]-f[1],d=Math.hypot(dx,dy);
+ $('kp').textContent=PAR(f[0],f[1]);$('kd').textContent=r2(d)+' léguas';$('kr').textContent=d>0.005?r1(RUMO(dx,dy))+'°':'—';
+ missao('m',d<0.5,'No cabo! A soma dos trechos dá '+PAR(f[0],f[1])+', a '+r2(d)+' légua do cabo em (20; −5).',
+  'Falta o vetor cabo − posição = '+PAR(dx,dy)+': '+r2(d)+' léguas no rumo '+r1(RUMO(dx,dy))+'°.');}
+draw();
+})();
+</script>
+</body>
+</html>

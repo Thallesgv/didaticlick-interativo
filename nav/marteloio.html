@@ -28,7 +28,7 @@ function draw(){const a=Q.get()*11.25*RAD,d=Dd.get(),b=B.get()*RAD,af=d*Math.sin
  const px=ox+av1*k,py=oy-af*k,qx=px+av2*k;
  g+=`<polygon points="${ox},${oy} ${px},${py} ${px},${oy}" fill="${PEACH}"/>`;
  g+=LN(ox,oy,px,py,ORANGE,3)+LN(px,py,qx,oy,GREEN,3)+LN(px,py,px,oy,GRAY,1,'3 3');
- g+=TX(px+4,(py+oy)/2,'alargar '+r1(af),{fs:10,a:'start',c:GRAY})+TX((ox+px)/2,oy+14,'avanzar '+r1(av1),{fs:10,c:ORANGE})+TX((px+qx)/2,oy+28,'+ '+r1(av2),{fs:10,c:GREEN});
+ g+=TX(px+4,(py+oy)/2,'alargar '+r1(af),{fs:10,a:'start',c:GRAY})+TX((ox+px)/2,oy+14,'avançar '+r1(av1),{fs:10,c:ORANGE})+TX((px+qx)/2,oy+28,'+ '+r1(av2),{fs:10,c:GREEN});
  g+=`<circle cx="${qx}" cy="${oy}" r="5" fill="${GREEN}"/>`;
  $('fig').innerHTML=SVG(340,230,g);
  $('ka').textContent=r2(af)+' léguas';$('kv').textContent=r2(vol)+' léguas';$('kt').textContent=r2(tot)+' léguas';
