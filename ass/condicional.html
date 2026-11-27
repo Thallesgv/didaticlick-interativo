@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O caderno de Íris · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O caderno de Íris</h1></header>
+<main>
+<div class="card"><h2>40 dias de vigia</h2><p class="muted" style="margin-top:0">Cada quadrinho é um dia. Os <b style="color:#2457D6">azuis</b> são dias de chuva; o ponto <b style="color:#F7821F">laranja</b> marca atraso do carro-forte. Escolha o que você já sabe: o espaço amostral encolhe.</p>
+<div id="fil"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Dias de chuva</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Atrasos com chuva</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Atrasos sem chuva</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o" id="kl">Chance<b id="kp"></b></div><div>Casos<b id="kc"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const GRID=(n,cor,x0,y0,col,s)=>{let g='';for(let i=0;i<n.length;i++){const x=x0+(i%col)*s,y=y0+Math.floor(i/col)*s;g+=`<circle cx="${x}" cy="${y}" r="${s*.38}" fill="${n[i]}"/>`;}return g;};
+function maxde(id,m){const i=$(id).querySelector('input');i.max=m;}
+const C=SL('sc',0,40,1,10,lim),A=SL('sa',0,40,1,6,draw),B=SL('sb',0,40,1,3,draw);
+const F=chips('fil',['Todos os dias','Sei que choveu','Sei que não choveu','Sei que atrasou'],0,draw);
+function lim(){const c=C.get();if(A.get()>c)A.set(c);if(B.get()>40-c)B.set(40-c);maxde('sa',c);maxde('sb',40-c);draw();}
+maxde('sa',10);maxde('sb',30);
+const pr=()=>{const c=C.get(),a=A.get(),b=B.get(),f=F.get();
+ if(f==0)return['P(atraso)',a+b,40];if(f==1)return['P(atraso | chuva)',a,c];if(f==2)return['P(atraso | sem chuva)',b,40-c];return['P(chuva | atraso)',a,a+b];};
+const ind=()=>{const c=C.get();return c>0&&c<40&&A.get()>0&&A.get()*(40-c)==B.get()*c;};
+MIS.def(()=>[
+ ['Monte o caderno de Íris (<b>10 dias de chuva</b>, <b>6 atrasos com chuva</b>, <b>3 sem chuva</b>) e descubra a chance de atraso <b>sabendo que choveu</b>.',()=>C.get()==10&&A.get()==6&&B.get()==3&&F.get()==1,
+  'Só os 10 dias de chuva contam: 6/10 = 60%. Sem saber de nada, era 9/40 = 22,5%.',()=>C.get()==10&&A.get()==6&&B.get()==3?'Agora escolha o que você já sabe.':'Ajuste 10, 6 e 3.'],
+ ['Mesmo caderno. Agora inverta a pergunta: <b>sabendo que atrasou</b>, qual a chance de ter chovido?',()=>C.get()==10&&A.get()==6&&B.get()==3&&F.get()==3,
+  'Dos 9 atrasos, 6 foram com chuva: 6/9 ≈ 66,7%. P(chuva | atraso) não é P(atraso | chuva)!',()=>C.get()==10&&A.get()==6&&B.get()==3?'O que você já sabe agora é que atrasou.':'Volte para 10, 6 e 3.'],
+ ['Faça a chuva <b>não mudar nada</b>: a chance de atraso com chuva igual à chance sem chuva (com algum atraso).',ind,
+  ()=>'Com chuva: '+A.get()+'/'+C.get()+'; sem chuva: '+B.get()+'/'+(40-C.get())+'. Iguais: atraso e chuva são independentes.',
+  ()=>{const c=C.get();return c==0||c==40?'Precisa haver dias com e sem chuva.':'Com chuva: '+pc(A.get()/c)+'; sem chuva: '+pc(B.get()/(40-c))+'.';}],
+ ['Agora o extremo: chuva <b>sempre</b> atrasa e sem chuva <b>nunca</b> atrasa.',()=>{const c=C.get();return c>0&&c<40&&A.get()==c&&B.get()==0;},
+  'P(atraso | chuva) = 100% e P(atraso | sem chuva) = 0%: saber da chuva diz tudo.',()=>'Todos os dias de chuva com atraso e nenhum atraso sem chuva.']]);
+function draw(){const c=C.get(),a=A.get(),b=B.get(),f=F.get();let g='';
+ for(let i=0;i<40;i++){const chuva=i<c,atr=chuva?i<a:i-c<b,x=14+(i%10)*32,y=10+Math.floor(i/10)*40;
+  const dentro=f==0||(f==1&&chuva)||(f==2&&!chuva)||(f==3&&atr);
+  g+=RC(x,y,28,32,chuva?BLUE:'#E5E9F0',`rx="5" opacity="${dentro?1:.15}"`);
+  if(chuva)g+=TX(x+14,y+14,'☂',{fs:11,c:'#fff'});if(atr)g+=`<circle cx="${x+14}" cy="${y+23}" r="5" fill="${ORANGE}" opacity="${dentro?1:.2}"/>`;}
+ const [nome,fv,tt]=pr();g+=TX(170,184,nome+' = '+fv+'/'+tt,{fs:12});
+ $('fig').innerHTML=SVG(340,194,g);
+ $('kl').firstChild.textContent=nome;$('kp').textContent=tt?pc(fv/tt):'—';$('kc').textContent=fv+' de '+tt;
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

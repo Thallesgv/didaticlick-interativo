@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os galhos do dia D · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Os galhos do dia D</h1></header>
+<main>
+<div class="card"><h2>A árvore de Íris</h2><p class="muted" style="margin-top:0">Primeiro galho: chove ou não. Segundo galho: o guarda troca de turno ou não. Multiplique ao longo de cada caminho; as folhas somam 100%.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Chance de chuva</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Chance de troca de turno</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Nenhum imprevisto<b id="k0"></b></div><div>Exatamente um<b id="k1"></b></div><div>Os dois<b id="k2"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const GRID=(n,cor,x0,y0,col,s)=>{let g='';for(let i=0;i<n.length;i++){const x=x0+(i%col)*s,y=y0+Math.floor(i/col)*s;g+=`<circle cx="${x}" cy="${y}" r="${s*.38}" fill="${n[i]}"/>`;}return g;};
+function maxde(id,m){const i=$(id).querySelector('input');i.max=m;}
+const C=SL('sc',0,100,5,20,draw,v=>v+'%'),T=SL('st',0,100,5,10,draw,v=>v+'%');
+const c_=()=>C.get()/100,t_=()=>T.get()/100,um=()=>c_()*(1-t_())+(1-c_())*t_();
+MIS.def(()=>[
+ ['Monte a árvore de Íris: <b>30% de chuva</b> e <b>25% de troca</b>. Qual a chance de <b>nenhum imprevisto</b>?',()=>C.get()==30&&T.get()==25,'0,7 · 0,75 = 0,525 = 52,5%. Quase uma moeda!',()=>'Ajuste 30% e 25%.'],
+ ['Faça a folha <b>"chuva e troca"</b> valer exatamente <b>10%</b>.',()=>Math.abs(c_()*t_()-.1)<1e-9,()=>pc(c_())+' · '+pc(t_())+' = 10%. Há vários jeitos: 50% e 20%, 40% e 25%...',()=>'Agora: '+pc(c_()*t_())+'. Que dois números multiplicados dão 0,1?'],
+ ['Faça a chance de <b>exatamente um imprevisto</b> dar <b>50%</b>.',()=>Math.abs(um()-.5)<1e-9,'Some as duas folhas com um imprevisto só. Repare: com chuva em 50%, qualquer troca serve!',()=>'Agora: '+pc(um())+'. Some as folhas "só chuva" e "só troca".'],
+ ['Deixe as <b>quatro folhas com a mesma chance</b>.',()=>C.get()==50&&T.get()==50,'50% · 50% = 25% em cada folha: os quatro cenários são igualmente prováveis.',()=>'Cada folha teria de valer 25%.']]);
+function draw(){const c=c_(),t=t_();const R=[30,118],A=[[140,62],[140,174]],F=[[300,34],[300,90],[300,146],[300,202]];
+ const pa=[c,1-c],pf=[c*t,c*(1-t),(1-c)*t,(1-c)*(1-t)],pt=[t,1-t,t,1-t];
+ const nm=['chuva e troca','só chuva','só troca','nenhum'];let g='';
+ for(let i=0;i<2;i++){g+=LN(R[0],R[1],A[i][0],A[i][1],i?NAVY:BLUE,1+10*pa[i]);g+=TX((R[0]+A[i][0])/2-6,(R[1]+A[i][1])/2+(i?14:-6),pc(pa[i]),{fs:10});}
+ for(let j=0;j<4;j++){const a=A[j>>1];g+=LN(a[0],a[1],F[j][0]-60,F[j][1],j%2?GRAY:ORANGE,1+10*pt[j]);g+=TX((a[0]+F[j][0]-60)/2,(a[1]+F[j][1])/2-5,pc(pt[j]),{fs:9,c:GRAY});
+  g+=RC(F[j][0]-58,F[j][1]-14,120,28,j==3?'#E7F5EC':PEACH,'rx="8"')+TX(F[j][0]+2,F[j][1]-1,nm[j],{fs:9})+TX(F[j][0]+2,F[j][1]+11,pc(pf[j]),{fs:10,c:j==3?GREEN:ORANGE});}
+ g+=`<circle cx="${R[0]}" cy="${R[1]}" r="7" fill="${NAVY}"/>`+TX(A[0][0],A[0][1]-12,'chove',{fs:10,c:BLUE})+TX(A[1][0],A[1][1]+20,'não chove',{fs:10});
+ A.forEach(a=>g+=`<circle cx="${a[0]}" cy="${a[1]}" r="6" fill="${NAVY}"/>`);
+ $('fig').innerHTML=SVG(370,225,g);
+ $('k0').textContent=pc(pf[3]);$('k1').textContent=pc(um());$('k2').textContent=pc(pf[0]);
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

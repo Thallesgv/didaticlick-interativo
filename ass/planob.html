@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plano A, B e C · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Plano A, B e C</h1></header>
+<main>
+<div class="card"><h2>Se falhar, tenta o próximo</h2><p class="muted" style="margin-top:0">A equipe só fracassa se <b>todos</b> os planos falharem. Chance de chegar ao cofre = 1 − (chance de todos falharem).</p>
+<div id="np"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Plano A</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Plano B</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Plano C</b><input type="range"><span></span></div>
+<div class="row"><button id="ex">Executar 100 vezes</button></div>
+<div class="kpi"><div class="o">Chega ao cofre<b id="kp"></b></div><div>Todos falham<b id="kf"></b></div><div>No teste<b id="ke"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const GRID=(n,cor,x0,y0,col,s)=>{let g='';for(let i=0;i<n.length;i++){const x=x0+(i%col)*s,y=y0+Math.floor(i/col)*s;g+=`<circle cx="${x}" cy="${y}" r="${s*.38}" fill="${n[i]}"/>`;}return g;};
+function maxde(id,m){const i=$(id).querySelector('input');i.max=m;}
+const NP=chips('np',['Só o plano A','A e B','A, B e C'],0,novo);
+const pa=SL('sa',0,100,5,70,novo,v=>v+'%'),pb=SL('sb',0,100,5,60,novo,v=>v+'%'),pcS=SL('sc',0,100,5,50,novo,v=>v+'%');let teste=null;
+function novo(){teste=null;draw();}
+const ps=()=>[pa.get(),pb.get(),pcS.get()].slice(0,NP.get()+1).map(v=>v/100);
+const falha=()=>ps().reduce((s,p)=>s*(1-p),1);
+$('ex').onclick=()=>{const p=ps();teste=[];for(let i=0;i<100;i++){let k=-1;for(let j=0;j<p.length;j++)if(Math.random()<p[j]){k=j;break;}teste.push(k);}draw();};
+MIS.def(()=>[
+ ['Com <b>plano A de 70%</b> e <b>plano B de 60%</b>, qual a chance de chegar ao cofre?',()=>NP.get()==1&&pa.get()==70&&pb.get()==60,'0,7 + 0,3 · 0,6 = 0,88. Ou: 1 − 0,3 · 0,4 = 0,88 = 88%.',()=>'Escolha A e B e ajuste 70% e 60%.'],
+ ['Acrescente um <b>plano C de 50%</b>. Quanto sobe a chance?',()=>NP.get()==2&&pa.get()==70&&pb.get()==60&&pcS.get()==50,'1 − 0,3 · 0,4 · 0,5 = 0,94 = 94%: o plano C ganhou mais 6 pontos.',()=>NP.get()!=2?'Escolha os três planos.':'Mantenha 70% e 60% e ponha o C em 50%.'],
+ ['Volte a <b>só dois planos</b>, com <b>A de 70%</b>. Que plano B dá os mesmos <b>94%</b> de três planos?',()=>NP.get()==1&&pa.get()==70&&pb.get()==80,'1 − 0,3 · 0,2 = 0,94. Um plano B melhor vale tanto quanto um plano C a mais.',
+  ()=>NP.get()!=1?'Escolha A e B.':pa.get()!=70?'Deixe o A em 70%.':'Agora: '+pc(1-falha())+'. Queremos 94%.'],
+ ['Com os <b>três planos</b>, aperte <b>Executar 100 vezes</b> e compare com a conta.',()=>NP.get()==2&&teste,
+  ()=>'Conta: '+pc(1-falha())+'. Teste: '+teste.filter(k=>k>=0).length+' de 100 chegaram ao cofre.',()=>NP.get()!=2?'Escolha os três planos.':'Agora execute.']]);
+function draw(){const p=ps(),n=p.length,nm=['A','B','C'];let g='';const cont=[0,0,0,0];if(teste)teste.forEach(k=>cont[k<0?3:k]++);
+ for(let j=0;j<n;j++){const y=22+j*62;
+  g+=RC(20,y,92,34,j?PEACH:'#E7ECF6',`rx="8" stroke="${NAVY}" stroke-width="1.5"`)+TX(66,y+15,'Plano '+nm[j],{fs:11})+TX(66,y+28,pc(p[j]),{fs:10,c:ORANGE});
+  g+=PG([[160,y+17-15],[190,y+17],[160,y+17+15],[130,y+17]],'#fff',`stroke="${NAVY}" stroke-width="1.5"`)+TX(160,y+21,'deu?',{fs:9});
+  g+=LN(112,y+17,130,y+17,NAVY,1.5)+LN(190,y+17,250,y+17,GREEN,2)+TX(220,y+12,'sim',{fs:9,c:GREEN});
+  if(teste)g+=TX(220,y+30,cont[j]+'×',{fs:9,c:GREEN});
+  g+=LN(160,y+32,160,y+50,'#B91C1C',1.5)+TX(172,y+46,'não',{fs:9,c:'#B91C1C',a:'start'});
+  if(j<n-1)g+=LN(160,y+50,66,y+50,'#B91C1C',1.5)+LN(66,y+50,66,y+62,'#B91C1C',1.5);}
+ const yf=22+n*62-12;g+=RC(110,yf,100,26,'#FDECEC','rx="8"')+TX(160,yf+17,'fracasso '+pc(falha()),{fs:10,c:'#B91C1C'});
+ if(teste)g+=TX(220,yf+17,cont[3]+'×',{fs:9,c:'#B91C1C',a:'start'});
+ const yc=22+((n-1)*62)/2;g+=RC(256,yc,74,34,'#E7F5EC',`rx="8" stroke="${GREEN}" stroke-width="2"`)+TX(293,yc+15,'COFRE',{fs:11,c:GREEN})+TX(293,yc+28,pc(1-falha()),{fs:10,c:GREEN});
+ for(let j=0;j<n;j++)g+=LN(250,22+j*62+17,256,yc+17,GREEN,2);
+ $('fig').innerHTML=SVG(340,yf+34,g);
+ $('kp').textContent=pc(1-falha());$('kf').textContent=pc(falha());$('ke').textContent=teste?(100-cont[3])+' de 100':'—';
+ ['sb','sc'].forEach((id,i)=>$(id).style.opacity=n>i+1?1:.35);
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Avenida ou bairro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Avenida ou bairro</h1></header>
+<main>
+<div class="card"><h2>Qual rota é melhor em média?</h2><p class="muted" style="margin-top:0"><b>Avenida (A):</b> ajuste o tempo normal, a chance de engarrafamento e o atraso. <b>Bairro (B):</b> 23 min, com 10% de chance de mais 10 min. Valor esperado = soma de (tempo × chance).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Avenida: tempo normal (min)</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Avenida: chance de engarrafar</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Avenida: atraso no engarrafamento (min)</b><input type="range"><span></span></div>
+<div class="row"><button id="s1">Simular 1 dia</button><button id="s100">Simular 100 dias</button><button class="alt" id="sz">Zerar</button></div>
+<div class="kpi"><div class="o">Esperado A<b id="ka"></b></div><div>Esperado B<b id="kb"></b></div><div>Média simulada A<b id="km"></b></div></div>
+<div id="esc"></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const GRID=(n,cor,x0,y0,col,s)=>{let g='';for(let i=0;i<n.length;i++){const x=x0+(i%col)*s,y=y0+Math.floor(i/col)*s;g+=`<circle cx="${x}" cy="${y}" r="${s*.38}" fill="${n[i]}"/>`;}return g;};
+function maxde(id,m){const i=$(id).querySelector('input');i.max=m;}
+const T=SL('st',10,40,1,20,zera),Pp=SL('sp',0,100,5,25,zera,v=>v+'%'),D=SL('sd',0,40,5,20,zera);let dias=[],escolha=-1;
+function zera(){dias=[];draw();}
+const EA=()=>T.get()+Pp.get()/100*D.get(),EB=24;
+function sim(q){for(let i=0;i<q;i++)dias.push(T.get()+(Math.random()<Pp.get()/100?D.get():0));draw();}
+$('s1').onclick=()=>sim(1);$('s100').onclick=()=>sim(100);$('sz').onclick=zera;
+const med=()=>dias.length?dias.reduce((s,v)=>s+v,0)/dias.length:0;
+MIS.def(()=>[
+ ['Com a avenida em <b>20 min</b>, <b>25%</b> de engarrafar e <b>20 min</b> de atraso: <b>qual rota você escolhe?</b><div class="row" style="margin-top:8px"><button class="alt" id="eA">Avenida</button><button class="alt" id="eB">Bairro</button></div>',
+  ()=>escolha==1&&T.get()==20&&Pp.get()==25&&D.get()==20,'Avenida: 20 + 0,25 · 20 = 25 min em média; bairro: 23 + 0,1 · 10 = 24 min. O bairro ganha, mesmo sendo mais lento num dia bom.',
+  ()=>T.get()!=20||Pp.get()!=25||D.get()!=20?'Volte para 20 min, 25% e 20 min.':escolha==0?'Compare os dois valores esperados: qual é menor?':'Escolha uma rota.'],
+ ['Mantendo <b>20 min</b> e <b>20 min de atraso</b>, que chance de engarrafar deixa as duas rotas <b>empatadas</b>?',()=>T.get()==20&&D.get()==20&&Pp.get()==20,'20 + 0,2 · 20 = 24 = esperado do bairro. Empate!',
+  ()=>T.get()!=20||D.get()!=20?'Use 20 min e 20 min de atraso.':'Esperado A agora: '+r1(EA())+' min. Queremos 24.'],
+ ['Simule <b>100 dias ou mais</b> e faça a média simulada ficar a <b>menos de 1 min</b> do valor esperado da avenida.',()=>dias.length>=100&&Math.abs(med()-EA())<1,
+  ()=>'Média de '+dias.length+' dias: '+r1(med())+' min; esperado: '+r1(EA())+' min. Num dia só, nunca dá o esperado; em muitos, a média chega perto.',
+  ()=>dias.length<100?'Simule mais dias.':'Ainda longe: simule mais 100.'],
+ ['Avenida com <b>20 min</b>, <b>25%</b> de engarrafar e atraso de <b>40 min</b>. Quanto vale o esperado da avenida?',()=>T.get()==20&&Pp.get()==25&&D.get()==40,'20 + 0,25 · 40 = 30 min: 6 min a mais que o bairro, em média.',()=>'Ajuste 20 min, 25% e 40 min.']]);
+function draw(){const ea=EA(),k=4.2,x0=60;let g='';
+ g+=TX(30,40,'A',{fs:14,c:ORANGE})+RC(x0,26,ea*k,22,ORANGE,'rx="5"')+TX(x0+ea*k+6,42,r1(ea)+' min',{fs:11,a:'start'});
+ g+=TX(30,80,'B',{fs:14})+RC(x0,66,EB*k,22,NAVY,'rx="5"')+TX(x0+EB*k+6,82,'24 min',{fs:11,a:'start'});
+ g+=LN(x0,100,x0+80*k,100,GRAY,1);for(let v=0;v<=80;v+=20)g+=TX(x0+v*k,112,String(v),{fs:9,c:GRAY});
+ const cont={};dias.forEach(v=>cont[v]=(cont[v]||0)+1);const mx=Math.max(1,...Object.values(cont));
+ Object.entries(cont).forEach(([v,q])=>{const h=80*q/mx;g+=RC(x0+v*k-6,210-h,12,h,'rgba(247,130,31,.6)','rx="2"')+TX(x0+v*k,206-h,String(q),{fs:9});});
+ g+=LN(x0,210,x0+80*k,210,NAVY,1.5);if(dias.length)g+=LN(x0+med()*k,128,x0+med()*k,214,BLUE,2,'4 3')+TX(x0+med()*k,126,'média '+r1(med()),{fs:9,c:BLUE});
+ g+=TX(x0+40*k,224,dias.length?dias.length+' dias simulados na avenida':'simule dias na avenida',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(410,230,g);
+ $('ka').textContent=r1(ea)+' min';$('kb').textContent='24 min';$('km').textContent=dias.length?r1(med())+' min':'—';
+ MIS.ver('m');
+ ['eA','eB'].forEach((id,i)=>{const b=$(id);if(b){b.className=i==escolha?'':'alt';b.onclick=()=>{escolha=i;draw();};}});}
+draw();
+})();
+</script>
+</body>
+</html>
