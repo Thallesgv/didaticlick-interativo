@@ -43,8 +43,8 @@ function SL(id, lo, hi, st, v, cb, show) {
   const sh = () => { s.textContent = show ? show(+i.value) : fmt(+i.value); }; sh(); i.oninput = () => { sh(); cb && cb(+i.value); };
   return { get: () => +i.value, set: x => { i.value = x; sh(); } };
 }
-// Missões em sequência: MIS.def(()=>[[texto, ok(), msgOk, dica], ...]) e MIS.ver('m') a cada desenho.
-const MIS = (() => {
+// Missões em sequência: FMIS.def(()=>[[texto, ok(), msgOk, dica], ...]) e FMIS.ver('m') a cada desenho.
+const FMIS = (() => {
   let fn = null, L = null, mi = 0, card = null, id = 'm', fresco = false, keep = null; const feitas = new Set();
   const v = x => typeof x === 'function' ? x() : x;
   function monta() {
@@ -54,7 +54,7 @@ const MIS = (() => {
     if (card && alvo && card.contains(alvo)) keep = alvo;
   }
   const bot = () => feitas.has(mi) && mi < L.length - 1 ? '<button class="alt msprox" style="margin-top:8px">Próxima missão →</button>' : '';
-  function liga() { document.querySelectorAll('.msprox').forEach(b => b.onclick = () => { mi++; fresco = true; MIS.ver(); try { $(id).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) {} }); }
+  function liga() { document.querySelectorAll('.msprox').forEach(b => b.onclick = () => { mi++; fresco = true; FMIS.ver(); try { $(id).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) {} }); }
   function pinta() {
     if (!card) return;
     card.innerHTML = `<h2>Missão ${mi + 1} de ${L.length}</h2><div style="display:flex;gap:5px;margin:4px 0 10px">${L.map((_, i) => `<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i) ? '#15803D' : i === mi ? '#F7821F' : '#D7DEEA'}"></span>`).join('')}</div><p style="margin:0">${L[mi][0]}</p>${keep ? '' : bot()}`;
@@ -71,7 +71,7 @@ const MIS = (() => {
       $(id).innerHTML = `<div class="msg ${ok || feita ? 'ok' : 'info'}">${ok ? '✔ ' + (todas ? 'Todas as missões cumpridas! ' : '') + v(M[2]) : feita ? '✔ Missão cumprida!' + (mi < L.length - 1 ? ' Siga para a próxima.' : '') : v(M[3])}</div>${feita ? bot() : ''}`;
       liga();
     },
-    pula() { if (L && mi < L.length - 1) { mi++; fresco = true; MIS.ver(); } },
+    pula() { if (L && mi < L.length - 1) { mi++; fresco = true; FMIS.ver(); } },
     get i() { return mi; }
   };
 })();

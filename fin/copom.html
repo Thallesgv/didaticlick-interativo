@@ -22,20 +22,20 @@
 const NEWS=[['A seca encareceu os alimentos.',0.6],['O preço do petróleo caiu no mundo.',-0.5],['As vendas do comércio dispararam.',0.4],['Safra recorde de grãos.',-0.4],['Conta de luz sobe com bandeira vermelha.',0.5],['O dólar caiu.',-0.3],['Nada de novo: economia estável.',0],['Empresas reajustam preços com custos maiores.',0.4]];
 let r,inf,sel,des,hi,hs,neu,np,fim=false,so={m:true,s:true};
 const res_=()=>`Fim do ano: inflação de ${pct(inf)}, Selic de ${pct(sel)} e desemprego de ${pct(des)}.`,naMeta=()=>inf>=1.5&&inf<=4.5,joga_=()=>fim?res_()+' Aperte Jogar de novo.':'Reunião '+r+' de 8: leia a notícia e decida a Selic.';
-MIS.def(()=>[
+FMIS.def(()=>[
  ['Termine as 8 reuniões com a inflação <b>dentro da meta</b> (entre 1,5% e 4,5%).',()=>fim&&naMeta(),()=>`Inflação de ${pct(inf)}: dentro da meta. Desemprego final: ${pct(des)}.`,()=>fim?res_()+' Fora da meta: o presidente do Copom teria que escrever uma carta explicando por quê! Jogue de novo.':joga_()],
  ['Agora acerte a meta <b>sem estragar o emprego</b>: desemprego final de no máximo 9%.',()=>fim&&naMeta()&&des<=9,()=>`Inflação de ${pct(inf)}, dentro da meta, e desemprego de ${pct(des)}. Remédio na dose certa.`,()=>fim?res_()+(naMeta()?' O remédio foi forte demais.':'')+' Jogue de novo.':joga_()],
  ['E se o Copom não fizer nada? Aperte <b>Manter</b> nas 8 reuniões.',()=>fim&&so.m,()=>`Sem mexer na Selic, a inflação terminou em ${pct(inf)}. O juro real (Selic menos inflação) fica baixo demais, o freio não segura os preços e a inflação foge do controle.`,()=>fim?'Você mexeu na Selic. Jogue de novo apertando só Manter.':(so.m?joga_():'Você já mexeu na Selic. Jogue de novo apertando só Manter.')],
  ['Exagere: <b>suba a Selic</b> em todas as 8 reuniões. O que acontece com o desemprego?',()=>fim&&so.s,()=>`Inflação de ${pct(inf)}, mas o desemprego foi a ${pct(des)}. Juros altos demais freiam a economia inteira.`,()=>fim?'Você não subiu em todas. Jogue de novo apertando só Subir.':(so.s?joga_():'Você não subiu em todas. Jogue de novo apertando só Subir.')]]);
-function ini(){r=1;inf=6;sel=10.5;des=8;hi=[inf];hs=[sel];np=[];neu=pick(NEWS);$('de').classList.add('hide');['sobe','mantem','desce'].forEach(x=>$(x).disabled=false);fim=false;so={m:true,s:true};tela();MIS.ver('m');}
+function ini(){r=1;inf=6;sel=10.5;des=8;hi=[inf];hs=[sel];np=[];neu=pick(NEWS);$('de').classList.add('hide');['sobe','mantem','desce'].forEach(x=>$(x).disabled=false);fim=false;so={m:true,s:true};tela();FMIS.ver('m');}
 function tela(){$('k0').textContent=r+' de 8';$('k1').textContent=pct(inf);$('k2').textContent=pct(sel);$('k3').textContent=pct(des);$('k1').style.color=inf>4.5||inf<1.5?'#B91C1C':'#15803D';
  $('news').innerHTML='📰 '+neu[0];
  $('fig').innerHTML=grafico([{v:hi,cor:'#F7821F',nome:'inflação',pontos:1},{v:hs,cor:'#0E2354',nome:'Selic',pontos:1}],{fy:v=>pct(v,0),max:16,rotX:i=>'R'+(i+1),extra:(sx,sy)=>`<rect x="48" y="${sy(4.5)}" width="282" height="${sy(1.5)-sy(4.5)}" fill="#15803D" fill-opacity=".08"/>`});}
 function jogar(d){if(d)so.m=false;if(d<=0)so.s=false;sel=Math.max(2,sel+d);const real=sel-inf;inf=Math.max(0,inf+neu[1]-0.35*(real-5)+ (Math.random()-0.5)*0.3);des=Math.max(4,des+0.25*(real-5));inf=Math.round(inf*10)/10;des=Math.round(des*10)/10;
  hi.push(inf);hs.push(sel);r++;neu=pick(NEWS);
  if(r>8){r=8;tela();['sobe','mantem','desce'].forEach(x=>$(x).disabled=true);$('de').classList.remove('hide');
-  fim=true;MIS.ver('m');}
- else{tela();MIS.ver('m');}}
+  fim=true;FMIS.ver('m');}
+ else{tela();FMIS.ver('m');}}
 $('sobe').onclick=()=>jogar(0.5);$('mantem').onclick=()=>jogar(0);$('desce').onclick=()=>jogar(-0.5);$('de').onclick=ini;ini();
 </script>
 
