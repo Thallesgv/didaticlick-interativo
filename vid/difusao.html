@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A célula que respira · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A célula que respira</h1></header>
+<main>
+<div class="card"><h2>Oxigênio entrando</h2><p class="muted" style="margin-top:0">As bolinhas azuis são moléculas de oxigênio entrando pela membrana. O abastecimento depende de área ÷ volume (3/r numa esfera): uma célula de raio 20 µm ou menor fica 100% abastecida. O tempo para o oxigênio chegar ao centro cresce com o quadrado do raio.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Raio da célula (µm)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Abastecimento<b id="ka"></b></div><div>Área ÷ volume<b id="kr"></b></div><div>Tempo até o centro (× célula de 10 µm)<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o raio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RR=SL('sr',5,60,5,10,()=>{draw();},v=>v+' µm');const ab=()=>Math.min(100,100*20/RR.get()),tc=()=>(RR.get()/10)**2;
+MIS.def(()=>[
+ ['Encontre o <b>maior raio</b> em que a célula ainda fica <b>100% abastecida</b>.',()=>RR.get()==20,'r = 20 µm: acima disso, a membrana já não dá conta do volume.',()=>'Abastecimento atual: '+Math.round(ab())+'%.'],
+ ['Deixe a célula com só <b>50%</b> do oxigênio de que precisa.',()=>RR.get()==40,'r = 40 µm: o dobro do raio, metade da razão A/V (3/40 contra 3/20).',()=>'Abastecimento atual: '+Math.round(ab())+'%.'],
+ ['Ache o raio em que o oxigênio leva <b>4 vezes</b> mais tempo para chegar ao centro do que na célula de 10 µm.',()=>RR.get()==20,'r = 20 µm: o dobro da distância, (2)² = 4 vezes o tempo.',()=>'Agora: '+r2(tc())+' vezes.'],
+ ['E <b>9 vezes</b> mais tempo?',()=>RR.get()==30,'r = 30 µm: o triplo da distância, 3² = 9 vezes o tempo.',()=>'Agora: '+r2(tc())+' vezes. Tempo ∝ distância².']]);
+let parts=[];let last=0;
+function nova(R){const a=Math.random()*2*Math.PI;return {a,d:R+20+Math.random()*30};}
+function draw(){const R=RR.get()*1.7+18;if(parts.length==0||parts.R!=R){parts=[];parts.R=R;for(let i=0;i<70;i++){const p=nova(R);p.d=Math.random()*(R+50);parts.push(p);}}
+ render();$('ka').textContent=Math.round(ab())+'%';$('kr').textContent=r2(3/RR.get())+' por µm';$('kt').textContent=r2(tc())+' ×';MIS.ver('m');}
+function render(){const R=parts.R,cx=170,cy=125,f=ab()/100;const corCentro=f>=1?VERDE_C:f>=0.6?'#FDE68A':'#FCA5A5';
+ let g=CI(cx,cy,R,`url(#gr)`,'stroke="'+VERDE_E+'" stroke-width="3"');
+ g=`<defs><radialGradient id="gr"><stop offset="0" stop-color="${corCentro}"/><stop offset="1" stop-color="${VERDE_C}"/></radialGradient></defs>`+g;
+ parts.forEach(p=>{g+=CI(cx+p.d*Math.cos(p.a),cy+p.d*Math.sin(p.a),2.6,BLUE);});
+ g+=CI(cx,cy,4,NAVY)+TX(cx,cy+R+16>240?240:cy+R+16,'raio '+RR.get()+' µm',{fs:11});
+ $('fig').innerHTML=SVG(340,250,g);}
+function passo(t){if(t-last>50){last=t;const R=parts.R||30,v=1.2*20/Math.max(20,RR.get());parts.forEach(p=>{p.d-=p.d>R?1.5:v*(0.6+Math.random());p.a+=(Math.random()-0.5)*0.08;if(p.d<3)Object.assign(p,nova(R));});render();}requestAnimationFrame(passo);}
+draw();requestAnimationFrame(passo);
+})();
+</script>
+</body>
+</html>

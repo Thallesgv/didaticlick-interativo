@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O microscópio da estação · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O microscópio da estação</h1></header>
+<main>
+<div class="card"><h2>Escolha as lentes</h2><p class="muted" style="margin-top:0">A lâmina tem sangue (hemácias de 7 µm) e algumas células maiores (20 µm). O círculo é o campo de visão. A régua laranja mostra quanto mede, na lâmina, o trecho que você está vendo.</p>
+<div><b style="color:var(--navy)">Ocular</b><div id="co" style="margin:4px 0"></div></div>
+<div><b style="color:var(--navy)">Objetiva</b><div id="cb" style="margin:4px 0"></div></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Aumento total<b id="ka"></b></div><div>Campo de visão real<b id="kf"></b></div><div>Hemácia parece ter<b id="kh"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha as lentes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OC=[5,10,15],OB=[4,10,40,100];const O1=chips('co',OC.map(v=>v+'×'),1,draw),O2=chips('cb',OB.map(v=>v+'×'),0,draw);
+const tot=()=>OC[O1.get()]*OB[O2.get()],campo=()=>1800*100/tot();
+const cel=[];(()=>{let s=7;const r=()=>{s=(s*9301+49297)%233280;return s/233280;};for(let i=0;i<420;i++)cel.push([r()*2400-1200,r()*2400-1200,r()<0.06?20:7]);})();
+MIS.def(()=>[
+ ['Chegue ao aumento total de <b>400×</b>.',()=>tot()==400,'10 × 40 = 400. As hemácias já aparecem como rodelas.',()=>'Agora: '+OC[O1.get()]+' × '+OB[O2.get()]+' = '+tot()+'×.'],
+ ['Escolha a combinação que mostra o <b>maior pedaço</b> da lâmina.',()=>tot()==20,'5 × 4 = 20×, o menor aumento: campo de '+r2(campo()/1000)+' mm. Menos aumento, mais lâmina.',()=>'Campo atual: '+r2(campo()/1000)+' mm. Dá para ver mais?'],
+ ['Faça a hemácia (7 µm) <b>parecer ter entre 2,5 mm e 3,5 mm</b>.',()=>7*tot()>=2500&&7*tot()<=3500,()=>'7 µm × '+tot()+' = '+fmt(7*tot())+' µm = '+r2(7*tot()/1000)+' mm.',()=>'Agora ela parece ter '+r2(7*tot()/1000)+' mm. Tamanho aparente = tamanho real × aumento.'],
+ ['Chegue a <b>1.000×</b> usando a objetiva de <b>100×</b>. Qual o campo real?',()=>tot()==1000&&OB[O2.get()]==100,()=>'10 × 100 = 1.000×; o campo real tem '+fmt(Math.round(campo()))+' µm = 0,18 mm.','Com a objetiva de 100×, que ocular dá 1.000?']]);
+function draw(){const R=110,cx=170,cy=120,f=campo(),k=2*R/f;let g=`<defs><clipPath id="cc"><circle cx="${cx}" cy="${cy}" r="${R}"/></clipPath></defs>`+RC(0,0,340,250,'#1F2937');
+ g+=CI(cx,cy,R,'#FFF8EE')+'<g clip-path="url(#cc)">';
+ cel.forEach(([x,y,d])=>{const X=cx+x*k,Y=cy+y*k,r=Math.max(0.6,d/2*k);if(Math.abs(X-cx)<R+r&&Math.abs(Y-cy)<R+r){g+=d==7?CI(X,Y,r,'#F6C2BD','stroke="'+VERM+'" stroke-width="'+Math.min(2,r/4)+'"')+(r>6?CI(X,Y,r*0.4,'#F9D6D2'):''):CI(X,Y,r,VERDE_C,'stroke="'+VERDE_E+'" stroke-width="1.5"')+CI(X+r*0.15,Y,r*0.35,VERDE_E);}});
+ g+='</g>'+CI(cx,cy,R,'none','stroke="#111827" stroke-width="4"');
+ const bar=f/4,bw=bar*k;g+=RC(cx-bw/2,cy+R-18,bw,5,ORANGE)+TX(cx,cy+R-24,(bar>=1000?r2(bar/1000)+' mm':fmt(Math.round(bar))+' µm'),{fs:10,c:ORANGE});
+ g+=TX(20,22,tot()+'×',{fs:18,c:'#fff',a:'start'});
+ $('fig').innerHTML=SVG(340,250,g);$('ka').textContent=tot()+'×';$('kf').textContent=f>=1000?r2(f/1000)+' mm':fmt(Math.round(f))+' µm';$('kh').textContent=r2(7*tot()/1000)+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

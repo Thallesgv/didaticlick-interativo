@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cubo que cresce · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O cubo que cresce</h1></header>
+<main>
+<div class="card"><h2>Casca e miolo</h2><p class="muted" style="margin-top:0">Mude a aresta do cubo (em cm). A <b>área</b> da superfície (a casca) é 6L²; o <b>volume</b> (o miolo) é L³. O gráfico mostra a razão área/volume = 6/L.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Aresta L (cm)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área (6L²)<b id="ka"></b></div><div>Volume (L³)<b id="kv"></b></div><div>Área ÷ volume<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a aresta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const LL=SL('sl',0.5,12,0.5,2,draw,v=>fmt(v)+' cm');const A=()=>6*LL.get()**2,V=()=>LL.get()**3;
+MIS.def(()=>[
+ ['Encontre o cubo com <b>área ÷ volume = 1</b>.',()=>LL.get()==6,'L = 6: área 216 cm² e volume 216 cm³. A razão 6/L vale 1.',()=>'Agora a razão é '+r2(6/LL.get())+'. Lembre que A/V = 6/L.'],
+ ['Faça a razão área ÷ volume valer <b>3</b>.',()=>LL.get()==2,'L = 2: 24 ÷ 8 = 3.',()=>'Razão atual: '+r2(6/LL.get())+'.'],
+ ['Faça a <b>área</b> da superfície valer <b>150 cm²</b>.',()=>LL.get()==5,'6 × 5² = 150 cm² (e o volume é 125 cm³).',()=>'Área atual: '+r1(A())+' cm².'],
+ ['Faça o <b>volume</b> ser exatamente <b>1.000 cm³</b> (um litro). Quanto vale A/V?',()=>LL.get()==10,'L = 10 cm: 1.000 cm³ = 1 litro, com A/V = 0,6.',()=>'Volume atual: '+r1(V())+' cm³.']]);
+function draw(){const L=LL.get(),s=Math.min(110,10+L*9),k=s*0.5,x=40,y=200;let g='';
+ g+=PG([[x,y],[x+s,y],[x+s,y-s],[x,y-s]],'#FBB57A','stroke="'+NAVY+'" stroke-width="1.5"')+PG([[x,y-s],[x+s,y-s],[x+s+k,y-s-k*0.6],[x+k,y-s-k*0.6]],PEACH,'stroke="'+NAVY+'" stroke-width="1.5"')+PG([[x+s,y],[x+s+k,y-k*0.6],[x+s+k,y-s-k*0.6],[x+s,y-s]],ORANGE,'stroke="'+NAVY+'" stroke-width="1.5"');
+ g+=TX(x+s/2,y+16,'L = '+fmt(L)+' cm',{fs:11});
+ const gx=205,gy=200,gw=125,gh=160,X=v=>gx+v/12*gw,Y=v=>gy-Math.min(v,12)/12*gh;g+=LN(gx,gy,gx+gw,gy,NAVY,1.5)+LN(gx,gy,gx,gy-gh,NAVY,1.5)+TX(gx+gw/2,gy+14,'aresta L',{fs:9})+TX(gx,gy-gh-6,'A/V',{fs:9,a:'start'});
+ let pl='';for(let v=0.5;v<=12;v+=0.25)pl+=X(v).toFixed(1)+','+Y(6/v).toFixed(1)+' ';g+=`<polyline points="${pl}" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`+CI(X(L),Y(6/L),5,NAVY,'stroke="#fff" stroke-width="2"');
+ $('fig').innerHTML=SVG(340,225,g);$('ka').textContent=fmt(Math.round(A()*100)/100)+' cm²';$('kv').textContent=fmt(Math.round(V()*1000)/1000)+' cm³';$('kr').textContent=r2(6/L);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

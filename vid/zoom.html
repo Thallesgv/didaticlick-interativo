@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Viagem ao micro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Viagem ao micro</h1></header>
+<main>
+<div class="card"><h2>O zoom da expedição</h2><p class="muted" style="margin-top:0">A tela mostra um pedaço do mundo com a largura indicada. Deslize o zoom: a cada passo a largura é dividida por 10 e coisas cada vez menores aparecem. Os tamanhos são aproximados.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sz"><b>Zoom: largura da tela = 10 elevado a…</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Largura da tela<b id="kw"></b></div><div>Em notação científica<b id="kn"></b></div><div>Maior coisa inteira na tela<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ajuste o zoom.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OBJ=[['pessoa',1.7,NAVY],['formiga',5e-3,'#8B5A2B'],['grão de areia',5e-4,'#E0B050'],['óvulo humano',1e-4,'#F2A7A0'],['hemácia',7e-6,VERM],['bactéria',2e-6,VERDE_E],['vírus da gripe',1e-7,'#7A4BB5'],['largura do DNA',2e-9,BLUE]];
+const Z=SL('sz',-9,0.5,0.05,0.4,draw,v=>fmt(Math.round(v*100)/100));
+const W=()=>Math.pow(10,Z.get()),px=s=>s/W()*300;
+const vis=n=>{const o=OBJ.find(o=>o[0]==n);return px(o[1]);};
+MIS.def(()=>[
+ ['Deixe a <b>hemácia</b> (7 µm) ocupando entre <b>metade e toda</b> a largura da tela.',()=>vis('hemácia')>=150&&vis('hemácia')<=300,
+  ()=>'Isso! A tela tem '+larg(W())+' de largura: a hemácia de 7 µm ocupa '+Math.round(vis('hemácia')/3)+'% dela.',()=>'A hemácia está com '+Math.round(vis('hemácia')/3)+'% da largura da tela. Procure perto de 10⁻⁵ m.'],
+ ['Mostre a <b>hemácia</b> e a <b>bactéria</b> juntas: a hemácia cabendo na tela e a bactéria com pelo menos <b>10 px</b>.',()=>vis('hemácia')<=300&&vis('bactéria')>=10,
+  'As duas aparecem: a bactéria (2 µm) é 3,5 vezes menor que a hemácia (7 µm).',()=>vis('hemácia')>300?'A hemácia passou da tela: afaste o zoom.':'A bactéria está pequena demais ('+r1(vis('bactéria'))+' px). Aproxime.'],
+ ['Deixe a tela com exatamente <b>1 mm</b> de largura. Que potência de 10 é essa?',()=>Math.abs(Z.get()+3)<1e-6,'1 mm = 10⁻³ m. Repare que a formiga já não cabe e o grão de areia ocupa metade da tela.',
+  ()=>'Agora a tela tem '+larg(W())+'. 1 mm = 0,001 m.'],
+ ['Aproxime até o <b>vírus da gripe</b> (100 nm) ficar com mais de <b>100 px</b>. Quantas vezes menor que a hemácia ele é?',()=>vis('vírus da gripe')>100,
+  'Com o vírus grande, a hemácia é uma parede gigante: 7 µm ÷ 0,1 µm = 70 vezes maior que ele.',()=>'O vírus está com '+r1(vis('vírus da gripe'))+' px. Ele é 70 vezes menor que a hemácia.']]);
+function larg(w){if(w>=1)return r2(w)+' m';if(w>=1e-3)return r2(w*1e3)+' mm';if(w>=1e-6)return r2(w*1e6)+' µm';return r2(w*1e9)+' nm';}
+function draw(){const cx=170,cy=120;let g=RC(0,0,340,240,'#F8FAFC');let maior='—';
+ const vs=OBJ.map(o=>[o,px(o[1])]).filter(([o,d])=>d>=2&&d<=900).sort((a,b)=>b[1]-a[1]);
+ vs.forEach(([o,d])=>{const r=d/2;g+=CI(cx,cy,r,o[0]=='hemácia'?'#F6C2BD':o[0]=='bactéria'?VERDE_C:'#fff','stroke="'+o[2]+'" stroke-width="2" fill-opacity="0.85"');
+  if(r<=150)g+=TX(cx,Math.max(14,cy-r-4),o[0],{fs:10,c:o[2]});});
+ const cab=OBJ.filter(o=>px(o[1])<=300).sort((a,b)=>b[1]-a[1]);if(cab.length)maior=cab[0][0];
+ g+=LN(20,228,320,228,NAVY,2)+LN(20,222,20,234,NAVY,2)+LN(320,222,320,234,NAVY,2)+TX(170,222,larg(W()),{fs:10});
+ $('fig').innerHTML=SVG(340,240,g);$('kw').textContent=larg(W());$('kn').textContent='10'+SUP(r2(Z.get()).replace(',','.'))+' m';$('kg').textContent=maior;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
