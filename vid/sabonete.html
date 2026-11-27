@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A mão no microscópio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A mão no microscópio</h1></header>
+<main>
+<div class="card"><h2>Quantas sobram?</h2><p class="muted" style="margin-top:0">Uma mão suja, vista de perto. Escolha quantas bactérias há no começo, quanto o sabonete mata em cada lavagem e quantas vezes lavar. Embaixo, a escada mostra o que sobra depois de cada lavagem.</p>
+<div class="sl" id="sn"><b>Bactérias no começo</b><input type="range"><span></span></div>
+<div id="cs" style="margin:6px 0"></div>
+<div class="sl" id="sl"><b>Lavagens</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="fig" id="fe" style="flex-direction:column"></div>
+<div class="kpi"><div>Mata por lavagem<b id="km"></b></div><div class="o">Sobram<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Lave as mãos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SN=SL('sn',3,7,1,6,draw,v=>fmt(Math.pow(10,v))),SLV=SL('sl',0,5,1,0,draw);
+const RT=['90%','99%','99,9%','99,99%'];let nv=2;const CS=chips('cs',RT.map(t=>'mata '+t),2,i=>{nv=i;draw();});
+const N0=()=>Math.pow(10,SN.get()),sob=k=>N0()*Math.pow(10,-(nv+1)*k),fx=v=>v>=1?fmt(Math.round(v)):(v>=0.01?fmt(Math.round(v*100)/100):'menos de 0,01');
+const MAO='M150 330 C110 330 92 300 90 260 L84 170 C82 150 104 148 108 168 L114 214 L112 96 C112 76 136 76 138 96 L142 190 L146 70 C146 50 172 50 172 70 L172 188 L182 84 C184 64 208 66 206 86 L198 196 L212 118 C216 100 238 104 234 124 L218 250 C212 300 190 330 150 330Z';
+let pontos=[];(function(){let s=7;const rnd=()=>{s=(s*16807)%2147483647;return s/2147483647;};let ctx=null,pp=null;try{ctx=document.createElement('canvas').getContext('2d');pp=new Path2D(MAO);}catch(_){}
+ let k=0;while(pontos.length<700&&k<20000){k++;const x=84+rnd()*154,y=52+rnd()*278;if(!ctx||ctx.isPointInPath(pp,x,y))pontos.push([x,y]);}})();
+MIS.def(()=>[
+ ['Comece com <b>1 milhão</b> de bactérias e lave <b>uma vez</b> com o sabonete que mata <b>99,9%</b>. Quantas sobram?',()=>SN.get()==6&&nv==2&&SLV.get()==1,'Sobram 1.000. Matar 99,9% de um milhão ainda deixa mil bactérias na mão!',()=>'Ajuste: 1.000.000 de bactérias, mata 99,9%, 1 lavagem.'],
+ ['Partindo de <b>1 milhão</b>, deixe <b>menos de 10</b> bactérias na mão (escolha o sabonete e as lavagens).',()=>SN.get()==6&&sob(SLV.get())<10,()=>'Sobram '+fx(sob(SLV.get()))+'. Para isso foram precisos '+((nv+1)*SLV.get())+' "noves" ao todo: cada 9 divide por 10.',()=>SN.get()!=6?'Volte para 1.000.000 de bactérias.':'Ainda sobram '+fx(sob(SLV.get()))+'. Mais noves ou mais lavagens.'],
+ ['Com o sabonete fraco, que mata só <b>90%</b>, quantas lavagens deixam a mão igual a <b>uma</b> lavagem com 99,9%?',()=>nv==0&&SLV.get()==3,'Três lavagens de 90%: cada uma divide por 10, e 10 × 10 × 10 = 1.000, o mesmo que uma de 99,9%.',()=>nv!=0?'Escolha o sabonete que mata 90%.':'Com '+SLV.get()+' lavagem(ns) sobram '+fx(sob(SLV.get()))+'; com uma de 99,9% sobrariam '+fx(N0()/1000)+'.']]);
+function draw(){const k=SLV.get(),s=sob(k),N=N0(),cada=N/700;
+ const nd=s>=700?700:Math.round(s),rot=s>=1400?'cada ponto = '+fmt(Math.round(s/700))+' bactérias':s>=700?'cada ponto ≈ '+r1(s/700)+' bactéria':'cada ponto = 1 bactéria';
+ let g=RC(0,0,340,360,'#EEF6FB','rx="10"')+`<path d="${MAO}" fill="#F2C9A0" stroke="#B9875A" stroke-width="2"/>`;
+ for(let i=0;i<nd;i++)g+=CI(pontos[i][0],pontos[i][1],2.2,'#3F8F4A');
+ g+=TX(170,22,rot,{fs:10,c:GRAY})+TX(290,180,fx(s),{fs:16,c:'#3F8F4A'})+TX(290,198,'bactérias',{fs:10,c:GRAY});
+ $('fig').innerHTML=SVG(340,360,g);
+ let e=RC(0,0,340,170,'#fff','rx="10"');const H=v=>v<1?0:(Math.log10(v)/7)*120,bw=44;
+ for(let i=0;i<=5;i++){const v=sob(i),x=16+i*54,h=H(v),on=i<=k;e+=RC(x,140-h,bw,Math.max(h,1),on?(i==k?ORANGE:'#9FD3A8'):'#EEF1F5','stroke="'+NAVY+'" stroke-width="0.8"')+TX(x+bw/2,134-h,v>=1?fmt(Math.round(v)):'<1',{fs:8.5,c:on?NAVY:GRAY})+TX(x+bw/2,156,i==0?'antes':i+'ª',{fs:9,c:GRAY});}
+ e+=TX(170,14,'o que sobra depois de cada lavagem (altura em potências de 10)',{fs:9,c:GRAY});
+ $('fe').innerHTML=SVG(340,170,e);$('km').textContent=RT[nv];$('ks').textContent=fx(s);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

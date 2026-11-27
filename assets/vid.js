@@ -37,5 +37,8 @@ function VASO(x, yb, h, solo, w) {
   return g;
 }
 const FOLHA = (x, y, c, s, ang) => `<g transform="translate(${x} ${y}) rotate(${ang || 0}) scale(${s || 1})"><path d="M-8 0 Q0 -5 8 0 Q0 5 -8 0z" fill="${c || '#7CC47F'}" stroke="#3F8F4A" stroke-width=".8"/><line x1="-8" y1="0" x2="8" y2="0" stroke="#3F8F4A" stroke-width=".6"/></g>`;
+// Bonequinho (pessoa) com centro dos pés em (x, y), altura h.
+const BONECO = (x, y, h, c, extra) => { const r = h * 0.17; return `<g ${extra || ''}><circle cx="${x}" cy="${y - h + r}" r="${r}" fill="${c}"/><rect x="${x - h * 0.2}" y="${y - h + 2.2 * r}" width="${h * 0.4}" height="${h - 2.2 * r}" rx="${h * 0.12}" fill="${c}"/></g>`; };
+const CASA = (x, y, s, c, teto) => `<g><rect x="${x - s / 2}" y="${y - s * 0.55}" width="${s}" height="${s * 0.55}" fill="${c}" stroke="#94A3B8" stroke-width=".6"/><path d="M${x - s * 0.62} ${y - s * 0.5} L${x} ${y - s} L${x + s * 0.62} ${y - s * 0.5}z" fill="${teto || '#B45309'}"/></g>`;
 const GAUSS = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
 const SUP = n => String(n).split('').map(ch => ({ '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' })[ch] || ch).join('');

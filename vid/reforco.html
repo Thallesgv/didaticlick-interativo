@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O calendário dos anticorpos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O calendário dos anticorpos</h1></header>
+<main>
+<div class="card"><h2>Quando tomar o reforço?</h2><p class="muted" style="margin-top:0">Um modelo de exemplo: cada dose leva os anticorpos a 100%, e eles caem pela metade a cada meia-vida. Toque nos anos do calendário para marcar ou tirar doses de reforço. A faixa rosa é a zona sem proteção.</p>
+<div class="sl" id="sh"><b>Meia-vida dos anticorpos (anos)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Nível mínimo de proteção</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="fig" id="fc" style="flex-direction:column"></div>
+<div class="row"><button class="alt" id="bl">Tirar os reforços</button></div>
+<div class="kpi"><div>Doses (com a primeira)<b id="kd"></b></div><div>Intervalo máximo<b id="ki"></b></div><div class="o">Anos sem proteção (0 a 30)<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Marque os reforços.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SH=SL('sh',2,10,1,3,draw,v=>v+' anos'),SM=SL('sm',5,50,5,10,draw,v=>v+'%');
+let doses=new Set([0]);$('bl').onclick=()=>{doses=new Set([0]);draw();};
+const niv=t=>{let u=-1;doses.forEach(d=>{if(d<=t&&d>u)u=d;});return 100*Math.pow(0.5,(t-u)/SH.get());};
+const imax=()=>SH.get()*Math.log2(100/SM.get());
+const semProt=()=>{let k=0;for(let t=0;t<30;t+=0.05)if(niv(t)<SM.get()-0.5)k++;return k*0.05;};
+const ideal=()=>Math.ceil(30/Math.max(1,Math.floor(SH.get()*Math.log2(100/(SM.get()-0.5)))));
+MIS.def(()=>[
+ ['Meia-vida de <b>3 anos</b> e mínimo de <b>10%</b>. Marque os reforços para ficar protegido dos 0 aos 30 anos com o <b>menor número de doses</b>.',()=>SH.get()==3&&SM.get()==10&&semProt()<0.1&&doses.size<=ideal(),()=>'Doses nos anos '+[...doses].sort((a,b)=>a-b).join(', ')+'. A proteção dura cerca de 10 anos (3 × log₂10 ≈ 10), por isso o reforço de 10 em 10 anos.',()=>SH.get()!=3||SM.get()!=10?'Ajuste: meia-vida 3 anos e mínimo 10%.':(semProt()>=0.1?'Ainda há '+r1(semProt())+' ano(s) sem proteção. Marque mais reforços.':'Protegido, mas com '+doses.size+' doses. Dá para usar menos.')],
+ ['Mude a meia-vida (qualquer valor diferente de 3) e, de novo, proteja de 0 a 30 anos com o <b>menor número de doses</b>.',()=>SH.get()!=3&&doses.size>=2&&semProt()<0.1&&doses.size<=ideal(),()=>'Com meia-vida de '+SH.get()+' anos e mínimo de '+SM.get()+'%, o intervalo máximo é '+SH.get()+' × log₂('+fmt(100/SM.get())+') ≈ '+r1(imax())+' anos.',()=>SH.get()==3?'Escolha outra meia-vida.':(semProt()>=0.1?r1(semProt())+' ano(s) sem proteção. Veja o intervalo máximo no painel.':'Protegido, mas dá para usar menos doses.')],
+ ['Volte para 3 anos e 10%. Marque reforços <b>atrasados</b> (pelo menos 2 reforços) e descubra quantos anos fica sem proteção, entre 0 e 30.',()=>SH.get()==3&&SM.get()==10&&doses.size>=3&&semProt()>=1,()=>r1(semProt())+' anos sem proteção. Atrasar o reforço abre uma janela em que a doença pode pegar.',()=>SH.get()!=3||SM.get()!=10?'Ajuste: 3 anos e 10%.':'Marque pelo menos 2 reforços, com algum intervalo maior que 10 anos.']]);
+function draw(){const X=t=>36+t*7.4,Y=v=>170-v*1.5;let g=RC(0,0,340,200,'#fff','rx="10"');
+ g+=RC(X(0),Y(SM.get()),X(40)-X(0),170-Y(SM.get()),'#F6C2BD');
+ for(let v=0;v<=100;v+=25)g+=LN(X(0),Y(v),X(40),Y(v),'#EEF1F5',1)+TX(30,Y(v)+3,v+'%',{fs:8.5,a:'end',c:GRAY});
+ const pts=[];for(let t=0;t<=40.001;t+=0.1){const tt=Math.round(t*10)/10;if(doses.has(tt)&&tt>0)pts.push([X(tt),Y(niv(tt-0.001))]);pts.push([X(tt),Y(niv(tt))]);}
+ g+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="#15803D" stroke-width="2.4"/>`;
+ g+=LN(X(30),Y(100),X(30),170,NAVY,1,'3 3')+TX(X(30),Y(100)-4,'30 anos',{fs:8.5,c:GRAY});
+ for(let t=0;t<=40;t+=10)g+=TX(X(t),184,t,{fs:9,c:GRAY});g+=TX(X(20),197,'anos',{fs:9,c:GRAY})+LN(X(0),170,X(40),170,NAVY,1.4);
+ $('fig').innerHTML=SVG(340,200,g);
+ let c=RC(0,0,340,112,'#F7F9FC','rx="10"');for(let a=0;a<=40;a++){const x=8+(a%14)*23.6,y=8+Math.floor(a/14)*34,d=doses.has(a),ok=niv(a)>=SM.get()-0.5;
+  c+=`<g data-a="${a}" style="cursor:pointer">`+RC(x,y,21,30,d?ORANGE:ok?'#E3F4E6':'#FBE0DD','rx="5" stroke="'+(d?ORANGE:'#CBD2DC')+'"')+TX(x+10.5,y+13,a,{fs:9.5,c:d?'#fff':NAVY})+(d?TX(x+10.5,y+25,'💉',{fs:9}):'')+'</g>';}
+ $('fc').innerHTML=SVG(340,112,c);$('fc').querySelectorAll('[data-a]').forEach(el=>el.onclick=()=>{const a=+el.dataset.a;if(a==0)return;doses.has(a)?doses.delete(a):doses.add(a);draw();});
+ $('kd').textContent=doses.size;$('ki').textContent=r1(imax())+' anos';$('ks').textContent=r1(semProt());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

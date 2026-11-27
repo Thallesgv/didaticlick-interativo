@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A árvore do contágio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A árvore do contágio</h1></header>
+<main>
+<div class="card"><h2>Um caso na vila</h2><p class="muted" style="margin-top:0">Trezentos moradores. Um deles chega doente de sarampo. A cada geração, cada doente encontra em média R₀ pessoas; quem é vacinado (azul) ou já teve a doença não pega. Aperte <b>Próxima geração</b> e acompanhe as linhas do contágio.</p>
+<div class="sl" id="sr"><b>R₀ (quantos cada doente encontra)</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Vacinados</b><input type="range"><span></span></div>
+<div class="row"><button id="bn">Próxima geração</button><button id="bf">Até o fim</button><button class="alt" id="br">Recomeçar</button></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="fig" id="fb" style="flex-direction:column"></div>
+<div class="kpi"><div>Geração<b id="kg"></b></div><div>Casos novos<b id="kn"></b></div><div class="o">Casos ao todo<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Solte o caso.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',0.5,6,0.5,3,reinicia,v=>fmt(v)),SV=SL('sv',0,100,5,0,reinicia,v=>v+'%');
+const NP=300,PX=i=>14+(i%20)*16.2,PY=i=>20+Math.floor(i/20)*15.5;
+let est=[],ger=[],lig=[],g0=0,fim=false,porGer=[];
+const pois=l=>{let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;};
+function reinicia(){est=Array(NP).fill(0);const v=SV.get()/100;const ids=[...Array(NP).keys()].filter(i=>i!=150);for(let i=ids.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ids[i],ids[j]]=[ids[j],ids[i]];}
+ ids.slice(0,Math.round(v*NP)).forEach(i=>est[i]=1);est[150]=2;ger=[150];lig=[];g0=0;fim=false;porGer=[1];draw();}
+function passo(){if(fim)return;const novos=[];ger.forEach(a=>{const k=pois(SR.get());for(let j=0;j<k;j++){let b;if(Math.random()<0.6){const dx=rint(-3,3),dy=rint(-3,3),cx=a%20+dx,cy=Math.floor(a/20)+dy;if(cx<0||cx>19||cy<0||cy>14)continue;b=cy*20+cx;}else b=rint(0,NP-1);
+  if(est[b]==0){est[b]=2;novos.push(b);lig.push([a,b,g0+1]);}}});
+ ger.forEach(a=>est[a]=3);ger=novos;g0++;porGer.push(novos.length);if(!novos.length)fim=true;draw();}
+$('bn').onclick=passo;$('bf').onclick=()=>{let k=0;while(!fim&&k<60){passo();k++;}};$('br').onclick=reinicia;
+const tot=()=>est.filter(s=>s>=2).length;
+MIS.def(()=>[
+ ['Sem ninguém vacinado, faça o sarampo passar de <b>100 casos</b> em até <b>5 gerações</b>.',()=>tot()>100&&g0<=5,()=>tot()+' casos em '+g0+' gerações. É a potência trabalhando contra nós: 1, R₀, R₀², R₀³…',()=>g0>5?'Passaram de 5 gerações. Aumente o R₀ e recomece.':'Agora: '+tot()+' casos na geração '+g0+'.'],
+ ['Faça o surto <b>se apagar sozinho</b>, com menos de <b>20 casos</b> ao todo.',()=>fim&&tot()<20,()=>'Apagou com '+tot()+' casos. Quando cada doente passa para menos de 1, em média, as cadeias morrem.',()=>fim?'O surto acabou com '+tot()+' casos. Tente de novo (R₀ menor ou mais vacinados).':'Aperte Próxima geração ou Até o fim.'],
+ ['Com <b>R₀ = 4</b>, encontre a <b>menor</b> porcentagem de vacinados que segura o surto (menos de 20 casos).',()=>SR.get()==4&&SV.get()>=75&&fim&&tot()<20,()=>'Com '+SV.get()+'% vacinados, cada doente acha em média 4 × '+fmt((100-SV.get())/100)+' = '+fmt(4*(100-SV.get())/100)+' suscetível. O limiar é 1 − 1/4 = 75%.',()=>SR.get()!=4?'Ajuste R₀ = 4.':(fim&&tot()<20?'Segurou, mas teve sorte: com '+SV.get()+'%, cada doente ainda passa para '+fmt(4*(100-SV.get())/100)+'. Aumente e confira.':'Experimente subir os vacinados e solte de novo.')]]);
+function draw(){let g=RC(0,0,340,262,'#F3F8EC','rx="10"');
+ lig.forEach(([a,b])=>g+=LN(PX(a),PY(a)-1,PX(b),PY(b)-1,'#F3A29A',1));
+ for(let i=0;i<NP;i++){const s=est[i];g+=BONECO(PX(i),PY(i)+5,11,s==1?'#7FA9E8':s==2?'#D9342B':s==3?'#8E5B5B':'#CBD2DC','');}
+ $('fig').innerHTML=SVG(340,262,g);
+ let b=RC(0,0,340,142,'#fff','rx="10"');const mx=Math.max(10,...porGer),bw=Math.min(30,300/porGer.length);
+ porGer.forEach((v,i)=>{const h=v/mx*86;b+=RC(24+i*bw,116-h,bw-3,Math.max(h,1),'#D9342B')+TX(24+i*bw+bw/2-1.5,112-h,v,{fs:8.5})+TX(24+i*bw+bw/2-1.5,130,i,{fs:8.5,c:GRAY});});
+ b+=TX(170,13,'casos novos em cada geração',{fs:9,c:GRAY});$('fb').innerHTML=SVG(340,142,b);
+ $('kg').textContent=g0+(fim?' (acabou)':'');$('kn').textContent=porGer[porGer.length-1];$('kt').textContent=tot();MIS.ver('m');}
+reinicia();
+})();
+</script>
+</body>
+</html>
