@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A sombra de Tales · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e História</div><h1 id="title">A sombra de Tales</h1></header>
+<main>
+<div class="card"><h2>Mova o Sol</h2><p class="muted">O bastão mede 1 m. Os raios de Sol chegam paralelos, então o triângulo do bastão e o da pirâmide têm a mesma forma. A sombra da pirâmide é medida a partir do centro da base.</p>
+<label class="lbl">Altura do Sol: <span id="va"></span>°</label><div class="sl"><input type="range" id="a" min="20" max="75" value="45"></div>
+<svg id="sv" viewBox="0 0 400 220" style="background:#FFF8F0;border-radius:10px"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>A ideia de Tales</h2><p>altura da pirâmide ÷ sombra da pirâmide = altura do bastão ÷ sombra do bastão. Quando o Sol está a 45°, as duas razões valem 1: a sombra é igual à altura.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const H=146,mb=115;// pirâmide de 146 m e meia base 115 m (aprox. a Grande Pirâmide)
+function draw(){const a=+$('a').value;$('va').textContent=a;const t=Math.tan(a*Math.PI/180);const sp=H/t,sb=1/t;const k=0.9;const ch=190,x0=20;
+ let s=`<line x1="0" y1="${ch}" x2="400" y2="${ch}" stroke="#9CA3AF" stroke-width="2"/>`;const cx=x0+mb*k;
+ s+=`<polygon points="${x0},${ch} ${x0+2*mb*k},${ch} ${cx},${ch-H*k}" fill="#F2C14E" stroke="#D9A22E"/>`;
+ const fim=cx+sp*k;if(fim>x0+2*mb*k)s+=`<rect x="${x0+2*mb*k}" y="${ch-3}" width="${Math.min(400,fim)-(x0+2*mb*k)}" height="5" fill="#0E2354"/>`;
+ s+=`<line x1="${cx}" y1="${ch-H*k}" x2="${Math.min(fim,400)}" y2="${fim>400?ch-(400-cx)*t*k/k:ch}"  x2="${cx}" y2="${ch-H*k}" stroke="#0E2354" stroke-dasharray="3 3"/>`;
+ const bx=330,bh=40;s+=`<line x1="${bx}" y1="${ch}" x2="${bx}" y2="${ch-bh}" stroke="#8B5A34" stroke-width="4"/><rect x="${bx}" y="${ch-3}" width="${bh/t}" height="5" fill="#0E2354"/>`;
+ s+=`<text x="${bx-4}" y="${ch-bh/2}" font-size="11" text-anchor="end" fill="#0E2354">1 m</text>`;
+ s+=`<circle cx="${380-Math.cos(a*Math.PI/180)*40}" cy="${60-Math.sin(a*Math.PI/180)*30}" r="12" fill="#F78D33"/>`;
+ $('sv').innerHTML=s;const f=x=>x.toLocaleString('pt-BR',{maximumFractionDigits:2});
+ $('out').innerHTML=`Sombra do bastão: <b>${f(sb)} m</b>. Sombra da pirâmide (do centro): <b>${f(sp)} m</b>.<br>Altura = ${f(sp)} × 1 ÷ ${f(sb)} = <b>${f(sp/sb)} m</b>`+(fim>400?' (a sombra saiu do desenho)':'');}
+$('a').oninput=draw;draw();
+</script>
+
+</body>
+</html>

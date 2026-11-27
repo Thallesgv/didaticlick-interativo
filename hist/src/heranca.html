@@ -1,0 +1,18 @@
+<!--T: O juiz da herança-->
+<div class="card"><h2>Divida a herança</h2><p class="muted">Escolha a quantia e a fração de cada herdeiro. Se as frações somarem mais que 1, a conta não fecha: o juiz pode manter as proporções e repartir o que existe.</p>
+<label class="lbl">Herança (dirhams)</label><input type="number" id="t" value="6000" min="1">
+<div id="hs"></div>
+<svg id="sv" viewBox="0 0 400 90" style="background:#fff;border-radius:10px;margin-top:8px"></svg><div class="msg info" id="out"></div></div>
+<script>
+const $=i=>document.getElementById(i);const FR=[[1,2],[1,3],[1,4],[1,6],[1,8],[2,3],[0,1]];const COR=['#0E2354','#F78D33','#0F766E','#7C3AED'];
+const H=[['filha mais velha',0],['filho',1],['filha mais nova',3],['amigo',6]];
+$('hs').innerHTML=H.map((h,i)=>`<label class="lbl" style="color:${COR[i]}">${h[0]}</label><select id="f${i}">${FR.map((f,j)=>`<option value="${j}" ${j==h[1]?'selected':''}>${f[0]?f[0]+'/'+f[1]:'nada'}</option>`).join('')}</select>`).join('');
+const mdc=(a,b)=>b?mdc(b,a%b):a;
+function draw(){const T=Math.max(1,+$('t').value||1);const fs=H.map((h,i)=>FR[+$('f'+i).value]);let num=0,den=1;fs.forEach(([a,b])=>{num=num*b+a*den;den*=b;const g=mdc(num,den);num/=g;den/=g});
+ const soma=num/den,esc=soma>1?1/soma:1;let x=10,s='';fs.forEach(([a,b],i)=>{const w=380*a/b*esc;if(w>0){s+=`<rect x="${x}" y="20" width="${w}" height="40" fill="${COR[i]}" stroke="#fff" stroke-width="2"/>`;if(w>40)s+=`<text x="${x+w/2}" y="45" font-size="11" fill="#fff" text-anchor="middle">${Math.round(T*a/b*esc)}</text>`}x+=w});
+ if(x<390)s+=`<rect x="${x}" y="20" width="${390-x}" height="40" fill="#E5E7EB"/><text x="${(x+390)/2}" y="45" font-size="11" text-anchor="middle" fill="#6B7280">sobra</text>`;$('sv').innerHTML=s;
+ const f=v=>Math.round(v).toLocaleString('pt-BR');
+ $('out').className='msg '+(soma>1?'bad':'info');$('out').innerHTML=`Soma das frações: <b>${num}/${den}</b>. `+(soma>1?`Passa de 1! O juiz mantém as proporções e divide tudo por ${num}/${den}: `:soma<1?`Sobra ${den-num}/${den} = ${f(T*(1-soma))} dirhams. `:'A conta fecha exatamente. ')+
+  H.map((h,i)=>fs[i][0]?`${h[0]}: ${f(T*fs[i][0]/fs[i][1]*esc)}`:'').filter(Boolean).join(' · ');}
+document.querySelectorAll('select,input').forEach(e=>e.oninput=draw);draw();
+</script>

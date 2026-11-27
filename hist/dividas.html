@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fortunas e dívidas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e História</div><h1 id="title">Fortunas e dívidas</h1></header>
+<main>
+<div class="card"><h2>A reta de Brahmagupta</h2><p class="muted">Fortunas (positivos) empurram para a direita; dívidas (negativos) para a esquerda. Tirar uma dívida é o mesmo que ganhar.</p>
+<svg id="sv" viewBox="0 0 400 120" style="background:#fff;border-radius:10px"></svg>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"><button data-v="1">+ fortuna 1</button><button data-v="5">+ fortuna 5</button><button class="or" data-v="-1">+ dívida 1</button><button class="or" data-v="-5">+ dívida 5</button><button class="alt" data-v="r1">tirar dívida 1</button><button class="alt" id="zera">zerar</button></div>
+<div class="out" id="out"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);let v=0,hist=[];
+function draw(prev){const X=k=>200+k*9;let s='<line x1="10" y1="70" x2="390" y2="70" stroke="#0E2354" stroke-width="2"/>';
+ for(let k=-20;k<=20;k++){s+=`<line x1="${X(k)}" y1="${k%5?66:62}" x2="${X(k)}" y2="${k%5?74:78}" stroke="#0E2354"/>`;if(k%5==0)s+=`<text x="${X(k)}" y="94" font-size="11" text-anchor="middle" fill="${k<0?'#B91C1C':k>0?'#0F766E':'#0E2354'}">${k}</text>`}
+ s+='<text x="80" y="20" font-size="12" fill="#B91C1C" font-weight="700">DÍVIDAS</text><text x="270" y="20" font-size="12" fill="#0F766E" font-weight="700">FORTUNAS</text>';
+ if(prev!==undefined&&prev!==v){const y=45;s+=`<line x1="${X(prev)}" y1="${y}" x2="${X(v)}" y2="${y}" stroke="${v>prev?'#0F766E':'#B91C1C'}" stroke-width="3"/><polygon points="${X(v)},${y} ${X(v)-(v>prev?7:-7)},${y-5} ${X(v)-(v>prev?7:-7)},${y+5}" fill="${v>prev?'#0F766E':'#B91C1C'}"/>`}
+ s+=`<circle cx="${X(Math.max(-21,Math.min(21,v)))}" cy="70" r="9" fill="#F78D33" stroke="#0E2354" stroke-width="2"/>`;$('sv').innerHTML=s;
+ $('out').innerHTML=(hist.length?hist.join(' '):'0')+` = <b>${v}</b> ${v<0?'(dívida de '+(-v)+')':v>0?'(fortuna de '+v+')':'(zero: nem fortuna nem dívida)'}`;}
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{const p=v;const d=b.dataset.v;if(d=='r1'){v+=1;hist.push('− (−1)')}else{const n=+d;v+=n;hist.push((n>0?'+ (+':'+ (')+n+')')}if(hist.length>8)hist=hist.slice(-8);draw(p)});
+$('zera').onclick=()=>{v=0;hist=[];draw()};draw();
+</script>
+
+</body>
+</html>

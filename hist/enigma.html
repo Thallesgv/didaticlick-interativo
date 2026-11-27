@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mini-Enigma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e História</div><h1 id="title">Mini-Enigma</h1></header>
+<main>
+<div class="card"><h2>Um rotor que gira</h2><p class="muted">Este é um rotor com a fiação do rotor I da Enigma. A cada letra, ele gira uma posição, então a mesma letra vira letras diferentes.</p>
+<label class="lbl">Posição inicial</label><select id="p"></select>
+<label class="lbl">Mensagem</label><input type="text" id="t" value="ATAQUE AO AMANHECER">
+<div class="row" style="display:flex;gap:6px;margin-top:8px"><button id="cif">Cifrar</button><button class="alt" id="dec">Decifrar</button></div>
+<div class="big" id="out" style="font-family:monospace;letter-spacing:2px"></div>
+<svg id="sv" viewBox="0 0 400 130" style="background:#0E2354;border-radius:10px"></svg></div>
+<div class="card"><h2>Quebre sem a chave</h2><p class="muted">Esta mensagem foi cifrada com o rotor numa posição secreta. Teste posições até aparecer português.</p>
+<div class="big" id="seg" style="font-family:monospace"></div><label class="lbl">Tentar posição: <span id="vt"></span></label><div class="sl"><input type="range" id="tr" min="0" max="25" value="0"></div><div class="out" id="tenta"></div><div class="msg" id="fb" style="display:none"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const AB='ABCDEFGHIJKLMNOPQRSTUVWXYZ',W='EKMFLGDQVZNTOWYHXUSPAIBRCJ';const IW=AB.split('').map((_,i)=>AB[W.indexOf(AB[i])]).join('');
+$('p').innerHTML=AB.split('').map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+function proc(txt,p,dec){let s='',pos=p,last=null;for(const ch of txt.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'')){const i=AB.indexOf(ch);if(i<0){s+=ch;continue}pos=(pos+1)%26;
+ const o=dec?(AB.indexOf(IW[(i+pos)%26])-pos+26)%26:(AB.indexOf(W[(i+pos)%26])-pos+26)%26;s+=AB[o];last=[i,o,pos]}return[s,last]}
+function anel(last){let s='';for(let i=0;i<26;i++){const x=12+i*14.6;s+=`<text x="${x}" y="25" font-size="11" fill="${last&&last[0]==i?'#F78D33':'#FDE9D8'}" text-anchor="middle" font-family="monospace">${AB[i]}</text><text x="${x}" y="115" font-size="11" fill="${last&&last[1]==i?'#F78D33':'#FDE9D8'}" text-anchor="middle" font-family="monospace">${AB[i]}</text>`}
+ if(last){const x1=12+last[0]*14.6,x2=12+last[1]*14.6;s+=`<path d="M${x1} 32 C${x1} 70 ${x2} 60 ${x2} 102" stroke="#F78D33" stroke-width="3" fill="none"/>`}
+ s+=`<text x="200" y="70" font-size="11" fill="#9CA3AF" text-anchor="middle">rotor na posição ${last?AB[last[2]]:'-'}</text>`;$('sv').innerHTML=s}
+function go(dec){const[r,last]=proc($('t').value,+$('p').value,dec);$('out').textContent=r;anel(last)}
+$('cif').onclick=()=>go(false);$('dec').onclick=()=>go(true);go(false);
+const MSGS=['A MATEMATICA VENCEU A GUERRA','O SEGREDO ESTA NO ROTOR','REJEWSKI CHEGOU PRIMEIRO'];const sec=Math.floor(Math.random()*26),pl=MSGS[Math.floor(Math.random()*MSGS.length)];const C=proc(pl,sec,false)[0];$('seg').textContent=C;
+function tenta(){const k=+$('tr').value;$('vt').textContent=AB[k];const r=proc(C,k,true)[0];$('tenta').textContent=r;const ok=r==pl;$('fb').style.display=ok?'block':'none';$('fb').className='msg ok';$('fb').innerHTML='<b>Quebrou!</b> A posição era '+AB[k]+'. Com 3 rotores seriam 17 576 posições, e a Enigma ainda tinha o painel de tomadas.'}
+$('tr').oninput=tenta;tenta();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!--T: Órbita de Kepler-->
+<div class="card"><h2>Áreas iguais em tempos iguais</h2><p class="muted">A cada intervalo de tempo igual, o planeta pinta um setor. Perto do Sol os setores são curtos e largos; longe, compridos e finos. Todos têm a mesma área.</p>
+<label class="lbl">Achatamento da órbita (excentricidade): <span id="ve"></span></label><div class="sl"><input type="range" id="e" min="0" max="80" value="50"></div>
+<svg id="sv" viewBox="0 0 400 240" style="background:#0E2354;border-radius:10px"></svg><div class="row" style="margin-top:8px"><button id="pp">Pausar</button></div><div class="out" id="out"></div></div>
+<script>
+const $=i=>document.getElementById(i);let M=0,run=true;const N=12;
+function pos(e,Mm){let E=Mm;for(let i=0;i<30;i++)E=E-(E-e*Math.sin(E)-Mm)/(1-e*Math.cos(E));const a=160,b=a*Math.sqrt(1-e*e);return[200+a*(Math.cos(E)-e)+0,120-b*Math.sin(E)]}
+function draw(){const e=+$('e').value/100;$('ve').textContent=e.toLocaleString('pt-BR');const a=160,b=a*Math.sqrt(1-e*e),c=a*e;let s='';
+ for(let k=0;k<N;k++){if(k%2)continue;let pts=`200,120`;for(let j=0;j<=10;j++){const[x,y]=pos(e,2*Math.PI*(k+j/10)/N);pts+=` ${x},${y}`}s+=`<polygon points="${pts}" fill="#F78D33" opacity="1" fill-opacity="${k%4?0.55:0.85}"/>`}
+ s+=`<ellipse cx="${200-c}" cy="120" rx="${a}" ry="${b}" fill="none" stroke="#FDE9D8" stroke-width="1.5"/><circle cx="200" cy="120" r="10" fill="#F2C14E"/>`;
+ const[x,y]=pos(e,M);s+=`<circle cx="${x}" cy="${y}" r="7" fill="#7DD3FC"/>`;$('sv').innerHTML=s;
+ const v=1/Math.hypot(x-200,y-120);$('out').innerHTML=`Distância ao Sol agora: <b>${Math.round(Math.hypot(x-200,y-120))}</b> (unidades do desenho). Quanto mais perto, mais rápido o planeta anda.`;}
+function tick(){if(run){M=(M+0.02)%(2*Math.PI);draw()}requestAnimationFrame(tick)}
+$('e').oninput=draw;$('pp').onclick=()=>{run=!run;$('pp').textContent=run?'Pausar':'Continuar'};tick();
+</script>
