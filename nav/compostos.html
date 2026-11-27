@@ -9,12 +9,12 @@
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Juros sobre juros</h1></header>
 <main>
-<div class="card"><h2>A reta e a curva</h2><p class="muted" style="margin-top:0">A reta azul é o montante com juros simples; a curva laranja, com juros compostos. A linha vermelha é o dobro do capital, e a marca verde, a estimativa da regra de 72.</p>
+<div class="card"><h2>A reta e a curva</h2><p class="muted" style="margin-top:0">A reta azul é o montante com juros simples; a curva laranja, com juros compostos. A linha vermelha é o dobro do capital, e a marca verde, a estimativa da regra de 72. A lupa mostra os dois primeiros anos: no verde (antes de 1 ano), os juros simples rendem mais.</p>
 <div class="fig" id="fig"></div>
 <div class="sl" id="sc"><b>Capital</b><input type="range"><span></span></div>
 <div class="sl" id="si"><b>Taxa ao ano</b><input type="range"><span></span></div>
 <div class="sl" id="st"><b>Anos</b><input type="range"><span></span></div>
-<div class="kpi"><div>Simples<b id="ks"></b></div><div class="o">Compostos<b id="kc"></b></div><div>Regra de 72<b id="kr"></b></div></div>
+<div class="kpi"><div>Simples<b id="ks"></b></div><div class="o">Compostos<b id="kc"></b></div><div>Regra de 72<b id="kr"></b></div><div>Quem rende mais<b id="kq"></b></div></div>
 <div id="m"></div></div>
 <div class="card"><h2>Missão</h2><p style="margin:0">Com taxa de <b>6% ao ano</b>, ache o <b>primeiro ano</b> em que os juros compostos dobram o capital. Compare com a regra de 72.</p></div>
 </main>
@@ -27,7 +27,7 @@ function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">$
 function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
  vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
   if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
-const Cs=SL('sc',1000,8000,500,4000,draw,f0),Is=SL('si',1,20,1,10,draw,v=>v+'%'),Ts=SL('st',1,25,1,5,draw,v=>v+(v>1?' anos':' ano'));
+const Cs=SL('sc',1000,8000,500,4000,draw,f0),Is=SL('si',1,20,1,10,draw,v=>v+'%'),Ts=SL('st',0.25,25,0.25,5,draw,v=>fmt(v)+(v==1?' ano':' anos'));
 function draw(){const C=Cs.get(),ip=Is.get(),i=ip/100,t=Ts.get(),T=25,ymax=Math.min(C*Math.pow(1+i,T),C*6)*1.05,ox=45,oy=215,w=280,h=190,X=a=>ox+a/T*w,Y=v=>oy-Math.min(v,ymax)/ymax*h;let g='';
  [0,.25,.5,.75,1].forEach(q=>{const v=ymax*q;g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-4,Y(v)+3,f0(v),{fs:8,c:GRAY,a:'end'});});
  [0,5,10,15,20,25].forEach(a=>g+=TX(X(a),oy+12,a,{fs:8,c:GRAY}));
@@ -38,7 +38,15 @@ function draw(){const C=Cs.get(),ip=Is.get(),i=ip/100,t=Ts.get(),T=25,ymax=Math.
  g+=`<polyline points="${p.join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="2.6"/>`;
  const vs=C*(1+i*t),vc=C*Math.pow(1+i,t);g+=LN(X(t),oy,X(t),oy-h,GRAY,1,'2 3')+`<circle cx="${X(t)}" cy="${Y(vc)}" r="5" fill="${ORANGE}"/><circle cx="${X(t)}" cy="${Y(vs)}" r="4" fill="${BLUE}"/>`;
  g+=LN(ox,oy,ox+w,oy,NAVY,1.5)+TX(ox+w,oy+25,'anos',{fs:9,a:'end'});
+ const lx=58,ly=18,lw=120,lh=62,dif=a=>C*(1+i*a)-C*Math.pow(1+i,a);let dm=0,dn=0;for(let k=0;k<=40;k++){const v=dif(2*k/40);dm=Math.max(dm,v);dn=Math.min(dn,v);}
+ const sc=lh/Math.max(dm-dn,1e-9),LX=a=>lx+a/2*lw,LY=v=>ly+(dm-v)*sc;
+ g+=`<rect x="${lx-4}" y="${ly-12}" width="${lw+8}" height="${lh+26}" rx="6" fill="#fff" stroke="${GRAYL}"/>`+TX(lx,ly-3,'lupa: simples − compostos',{fs:8,a:'start',c:NAVY});
+ let pp=[],pn=[];for(let k=0;k<=40;k++){const a=2*k/40,v=dif(a);(a<=1?pp:pn).push(LX(a).toFixed(1)+','+LY(v).toFixed(1));}
+ g+=`<polygon points="${LX(0)},${LY(0)} ${pp.join(' ')} ${LX(1)},${LY(0)}" fill="#BBF7D0"/><polygon points="${LX(1)},${LY(0)} ${pn.join(' ')} ${LX(2)},${LY(0)}" fill="${PEACH}"/>`;
+ g+=`<polyline points="${pp.concat(pn).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="1.6"/>`+LN(lx,LY(0),lx+lw,LY(0),NAVY,1);
+ [0,1,2].forEach(a=>g+=TX(LX(a),ly+lh+10,a,{fs:7,c:GRAY}));if(t<=2)g+=`<circle cx="${LX(t)}" cy="${LY(dif(t))}" r="4" fill="${ORANGE}"/>`;
  $('fig').innerHTML=SVG(340,245,g);
+ $('kq').textContent=t<1?'simples':(t==1?'empate':'compostos');
  $('ks').textContent=f0(vs);$('kc').textContent=f0(vc);$('kr').textContent=r1(r72)+' anos';
  const ok=ip==6&&t==12;
  missao('m',ok,'Em 12 anos, 1,06¹² ≈ 2,01: dobrou. Em 11, 1,06¹¹ ≈ 1,90 ainda não. A regra de 72 previu 72 ÷ 6 = 12. Nos juros simples, dobrar levaria 16,7 anos.',
