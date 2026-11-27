@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota de cada sócio", "Quanto vale a pimenta", "O lucro prometido", "O contrato assinado"],G:{1:()=>{const t=R(0,2),T=P([4000,5000,6000,8000,10000,12000]);
+ if(t==0){const p=P([5,10,15,20,25,40,60]);return{q:`Quanto é <b>${p}%</b> de <b>${fmt(T)}</b> cruzados?`,a:T*p/100,exp:`${p}% = ${fmt(p/100)}; ${fmt(p/100)} · ${fmt(T)} = ${fmt(T*p/100)}.`};}
+ if(t==1){const p=P([5,10,15,20,25,30,40,50,60,75]);return{q:`Num gráfico de setores, uma fatia de <b>${p}%</b> tem que ângulo, em graus?`,a:p*3.6,tol:.01,exp:`${p} · 3,6° = ${fmt(p*3.6)}°.`};}
+ const p=P([5,10,15,20,25,30,40,50]),v=T*p/100;return{q:`O casco custou <b>${fmt(v)}</b> de um navio de <b>${fmt(T)}</b> cruzados. Que porcentagem do total é o casco?`,a:p,exp:`${fmt(v)} ÷ ${fmt(T)} = ${fmt(p/100)} = ${p}%.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const h=P([30,40,50,60,80]),m=P([6,12,18,24]),s=P([1,2,3]);return{q:`<b>${h}</b> homens recebem <b>${s}</b> cruzado(s) por mês cada. Quanto custam os soldos de <b>${m}</b> meses?`,a:h*m*s,exp:`${h} · ${s} · ${m} = ${fmt(h*m*s)} cruzados (grandeza direta).`};}
+ if(t==1){const [h,d]=P([[50,540],[60,450],[40,600],[30,720],[45,480]]),h2=P([20,25,36,54,60,72,90].filter(x=>(h*d)%x==0&&x!=h));return{q:`A comida dura <b>${d} dias</b> para <b>${h}</b> homens. Para quantos dias daria com <b>${h2}</b> homens?`,a:h*d/h2,exp:`Grandeza inversa: ${h} · ${d} = ${fmt(h*d)} rações; ${fmt(h*d)} ÷ ${h2} = ${fmt(h*d/h2)} dias.`};}
+ const n=P([10000,20000,27000,30000]),c=P([10,20,25,40]);return{q:`<b>${fmt(n)}</b> rações custam <b>1/${c}</b> de cruzado cada. Qual o custo total?`,a:n/c,exp:`${fmt(n)} ÷ ${c} = ${fmt(n/c)} cruzados.`};},
+3:()=>{const t=R(0,2),T=P([10000,12000,15000,20000]);
+ if(t==0){const p=P([5,10,20,25,40,50,60]),v=T*p/100;return{q:`Um sócio investiu <b>${fmt(v)}</b> de um total de <b>${fmt(T)}</b> cruzados. Qual a cota dele, em %?`,a:p,exp:`${fmt(v)} ÷ ${fmt(T)} = ${fmt(p/100)} = ${p}%.`};}
+ if(t==1){const [a,b]=P([[3,1],[4,1],[2,1],[3,2],[5,3],[12,1]]),k=P([200,300,500,600]);return{q:`Um sócio investiu <b>${fmt(a*k)}</b> e outro <b>${fmt(b*k)}</b> cruzados. A razão entre eles é ${a} : ? (escreva o número que falta)`,a:b,exp:`${fmt(a*k)} : ${fmt(b*k)}; dividindo os dois por ${fmt(k)}: ${a} : ${b}.`};}
+ const p=P([10,20,25,40,60,75]),v=T*p/100;return{q:`Uma cota de <b>${p}%</b> numa sociedade de <b>${fmt(T)}</b> cruzados vale quanto?`,a:v,exp:`${fmt(p/100)} · ${fmt(T)} = ${fmt(v)}.`};},
+4:()=>{const t=R(0,3);
+ if(t==0){const q=P([10,25,50,100,250,800]);return{q:`Quantas <b>arrobas</b> há em <b>${q}</b> quintais? (1 quintal = 4 arrobas)`,a:q*4,exp:`${q} · 4 = ${fmt(q*4)} arrobas.`};}
+ if(t==1){const q=P([2,4,10,20,100]);return{q:`Quantos quilogramas, aproximadamente, há em <b>${q}</b> quintais? (1 quintal ≈ 58,75 kg)`,a:q*58.75,tol:.01,exp:`${q} · 58,75 = ${fmt(q*58.75)} kg.`};}
+ if(t==2){const [c,v]=P([[2,5],[3,6],[4,10],[3,22],[5,8],[2,9],[4,5]]);return{q:`Um preço passou de <b>${c}</b> para <b>${v}</b> cruzados. Qual o aumento percentual? (1 casa decimal)`,a:Math.round(1000*(v-c)/c)/10,tol:.11,exp:`(${v} − ${c}) ÷ ${c} = ${fmt(Math.round(1000*(v-c)/c)/1000)} ≈ ${fmt(Math.round(1000*(v-c)/c)/10)}%. A base é o preço antigo.`};}
+ const [p,f]=P([[50,1.5],[25,1.25],[20,1.2],[100,2]]),a=P([8,12,16,20,40]);return{q:`Um preço subiu <b>${p}%</b> e passou a <b>${fmt(a*f)}</b> cruzados. Qual era o preço antes?`,a:a,exp:`Antes × ${fmt(f)} = ${fmt(a*f)}, então antes = ${fmt(a*f)} ÷ ${fmt(f)} = ${a}.`};},
+5:()=>{const t=R(0,3);
+ if(t==0){const c=P([5000,8000,10000,12000]),p=P([10,15,20,25,30]),r=c*(1+p/100);return{q:`Receita de <b>${fmt(r)}</b> e custo de <b>${fmt(c)}</b> cruzados. Qual a porcentagem de lucro sobre o custo?`,a:p,exp:`Lucro ${fmt(r-c)}; ${fmt(r-c)} ÷ ${fmt(c)} = ${p}%.`};}
+ if(t==1){const [a,b]=P([[10,10],[20,10],[20,20],[10,20],[30,10]]),v=Math.round((1+a/100)*(1-b/100)*10000)/100;return{q:`Um valor de <b>100</b> sobe <b>${a}%</b> e depois cai <b>${b}%</b>. Qual o valor final?`,a:v,tol:.01,exp:`100 · ${fmt(1+a/100)} · ${fmt(1-b/100)} = ${fmt(v)}.`};}
+ if(t==2){const [a,b]=P([[20,20],[10,10],[10,20],[30,10],[50,50]]),d=Math.round((1-(1-a/100)*(1-b/100))*10000)/100;return{q:`Dois descontos seguidos de <b>${a}%</b> e <b>${b}%</b> equivalem a um único desconto de quantos por cento?`,a:d,tol:.01,exp:`${fmt(1-a/100)} · ${fmt(1-b/100)} = ${fmt(1-d/100)}; desconto de ${fmt(d)}%.`};}
+ const v=P([20,22,25]),tx=P([10,20,25]),u=v*(1-tx/100),qe=Math.ceil(12000/u);return{q:`A viagem custa 12.000. Cada quintal é vendido a <b>${v}</b> com taxa de <b>${tx}%</b>. Qual a <b>menor</b> carga, em quintais inteiros, que não dá prejuízo?`,a:qe,exp:`Cada quintal rende ${v} · ${fmt(1-tx/100)} = ${fmt(u)}. 12.000 ÷ ${fmt(u)} ≈ ${fmt(Math.round(12000/u*10)/10)}, então ${qe} quintais.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const L=P([1000,2080,3000,4000,-1440,-2000]),c=P([5,10,25,60]);return{q:`A viagem deu <b>${L>=0?'lucro':'prejuízo'} de ${fmt(Math.abs(L))}</b> cruzados. Quanto cabe ao sócio com cota de <b>${c}%</b>? (prejuízo: responda com sinal de menos)`,a:L*c/100,tol:.01,exp:`${fmt(c/100)} · ${L<0?'(−'+fmt(-L)+')':fmt(L)} = ${fmt(L*c/100)}.`};}
+ if(t==1){const n=P([4,8,10,13]),k=P([1,2,3,4].filter(x=>x<n));return{q:`De <b>${n}</b> navios, <b>${k}</b> se perderam. Que porcentagem se perdeu? (1 casa decimal)`,a:Math.round(1000*k/n)/10,tol:.11,exp:`${k} ÷ ${n} ≈ ${fmt(Math.round(1000*k/n)/10)}%.`};}
+ const [a,b]=P([[798,22],[612,19],[903,18],[495,31]]),e=Math.round(a/100)*100*Math.round(b/10)*10;return{q:`Estime <b>${a} × ${b}</b> arredondando ${a} para a centena e ${b} para a dezena mais próximas.`,a:e,exp:`${Math.round(a/100)*100} × ${Math.round(b/10)*10} = ${fmt(e)}. Exato: ${fmt(a*b)}.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>

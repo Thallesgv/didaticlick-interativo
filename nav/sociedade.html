@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a sociedade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Monte a sociedade</h1></header>
+<main>
+<div class="card"><h2>Quem põe quanto</h2><p class="muted" style="margin-top:0">A cota de cada sócio é o que ele investiu dividido pelo total. Mude os investimentos e veja a barra de 100% se redividir.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Bartolomeo Riva</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Dona Leonor Vaz</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Mestre Gaspar</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Enzo</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Total investido<b id="kt"></b></div><div>Cota de Enzo<b id="ke"></b></div><div>Bartolomeo : Enzo<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">A viagem custa <b>12.000 cruzados</b>. Monte a sociedade da história: Bartolomeo com <b>60%</b>, Dona Leonor com <b>25%</b>, Gaspar com <b>10%</b> e Enzo com <b>5%</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const N=['Bartolomeo','Dona Leonor','Gaspar','Enzo'];
+const S=[SL('s0',0,12000,100,6000,draw,CRZ),SL('s1',0,6000,100,3000,draw,CRZ),SL('s2',0,3000,100,2000,draw,CRZ),SL('s3',0,3000,100,1000,draw,CRZ)];
+const mdc=(a,b)=>b?mdc(b,a%b):a;
+function draw(){const v=S.map(s=>s.get()),T=v.reduce((a,b)=>a+b,0)||1;
+ let g=barra100(v.map((x,i)=>({v:x,cor:CORES_NAV[i],nome:N[i]})),340,14);
+ // moedas de cada sócio (1 moeda = 600 cruzados)
+ v.forEach((x,i)=>{const n=Math.round(x/600);g+=TX(10,104+i*22,N[i],{fs:10,a:'start',w:500});
+  for(let k=0;k<n;k++)g+=`<circle cx="${96+k*13}" cy="${100+i*22}" r="5.5" fill="${CORES_NAV[i]}" stroke="#fff"/>`;});
+ g+=TX(330,190,'1 moeda = 600 cruzados',{fs:9,a:'end',c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,196,g);
+ $('kt').textContent=CRZ(T);$('ke').textContent=r1(100*v[3]/T)+'%';
+ const d=mdc(v[0],v[3])||1;$('kr').textContent=v[3]?fmt(v[0]/d)+' : '+fmt(v[3]/d):'—';
+ const ok=v[0]==7200&&v[1]==3000&&v[2]==1200&&v[3]==600;
+ missao('m',ok,'Sociedade fechada: 7.200 + 3.000 + 1.200 + 600 = 12.000. Bartolomeo põe 12 vezes o que Enzo põe (12 : 1).',T==12000?'O total já é 12.000. Agora acerte a cota de cada um.':'Total atual: '+CRZ(T)+'. A viagem precisa de 12.000.');}
+draw();
+})();
+</script>
+</body>
+</html>

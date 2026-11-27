@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O contrato em números · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O contrato em números</h1></header>
+<main>
+<div class="card"><h2>E se...?</h2><p class="muted" style="margin-top:0">O lucro (ou o prejuízo) da viagem é dividido na proporção das cotas: Bartolomeo 60%, Dona Leonor 25%, Gaspar 10% e Enzo 5%. Escolha um cenário e veja o resultado de cada sócio.</p>
+<div class="chips" id="cen"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sq"><b>Carga que chega a Lisboa</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Preço em Lisboa</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Taxa do porto</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Resultado da viagem<b id="kl"></b></div><div>Parte de Enzo<b id="ke"></b></div><div>Receita<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre um cenário em que <b>Enzo perde dinheiro</b>, mesmo vendendo a pimenta. Depois descubra quantos quintais (com preço 22 e taxa 20%) podem se perder no mar antes de a viagem dar prejuízo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CEN=[['Viagem boa',800,22,20],['Taxa alta',800,22,30],['Preço em queda',800,19.8,20],['Carga perdida',600,22,20]];
+const Q=SL('sq',0,851,1,800,draw,v=>fmt(v)+' quintais'),V=SL('sv',10,30,0.1,22,draw,v=>r1(v)+' cruzados'),T=SL('st',0,40,1,20,draw,v=>v+'%');
+chips('cen',CEN.map(c=>c[0]),0,i=>{Q.set(CEN[i][1]);V.set(CEN[i][2]);T.set(CEN[i][3]);draw();});
+const N=['Bartolomeo','Leonor','Gaspar','Enzo'],C=[.6,.25,.1,.05];
+function draw(){const q=Q.get(),v=V.get(),t=T.get(),rec=q*v*(1-t/100),L=rec-12000;
+ const mid=100,k=80/Math.max(600,Math.abs(L)*.6);let g=LN(10,mid,330,mid,NAVY,1.5)+TX(330,mid-4,'0',{fs:9,a:'end',c:GRAY});
+ C.forEach((c,i)=>{const val=L*c,h=Math.max(-85,Math.min(85,val*k)),x=24+i*78;
+  g+=`<rect x="${x}" y="${h>=0?mid-h:mid}" width="52" height="${Math.abs(h)}" rx="3" fill="${val>=0?GREEN:'#B91C1C'}"/>`;
+  g+=TX(x+26,h>=0?mid-h-5:mid-h+13,(val<0?'− ':'+ ')+fmt(Math.abs(Math.round(val))),{fs:10,c:val>=0?GREEN:'#B91C1C'});
+  g+=TX(x+26,h>=0?mid+14:mid-18,N[i],{fs:9,c:GRAY,w:500})+TX(x+26,h>=0?mid+25:mid-7,Math.round(c*100)+'%',{fs:9,c:GRAY,w:400});});
+ $('fig').innerHTML=SVG(340,200,g);
+ $('kl').innerHTML=`<span style="color:${L>=0?GREEN:'#B91C1C'}">${L>=0?'lucro de ':'prejuízo de '}${fmt(Math.abs(Math.round(L)))}</span>`;
+ $('ke').textContent=(L<0?'− ':'+ ')+fmt(Math.abs(Math.round(L*.05)));$('kr').textContent=CRZ(rec);
+ const perde=L<0;missao('m',perde,'Prejuízo de '+fmt(Math.abs(Math.round(L)))+': Enzo perde '+fmt(Math.abs(Math.round(L*.05)))+' (5%). Com preço 22 e taxa 20%, abaixo de 682 quintais a viagem não se paga: só 118 quintais podem se perder.',
+  'Resultado atual: '+(L>=0?'lucro':'prejuízo')+' de '+fmt(Math.abs(Math.round(L)))+'. Procure um cenário com prejuízo.');}
+draw();
+})();
+</script>
+</body>
+</html>

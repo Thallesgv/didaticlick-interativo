@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A despensa do navio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A despensa do navio</h1></header>
+<main>
+<div class="card"><h2>27.000 rações no porão</h2><p class="muted" style="margin-top:0">Cada homem come 1 ração por dia. Mude o número de homens: a comida dura menos quando a tripulação cresce (grandeza inversa), e os soldos sobem junto (grandeza direta).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Homens a bordo</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Meses de viagem (soldos)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">A comida dura<b id="kd"></b></div><div>homens × dias<b id="kp"></b></div><div>Soldos (2 cruzados/mês)<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">A viagem de ida e volta leva cerca de <b>540 dias</b> (18 meses de 30 dias). Quantos homens podem embarcar para a comida durar exatamente isso? E quanto custam os soldos deles nos 18 meses?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const H=SL('sh',10,150,1,90,draw,v=>v+' homens'),M=SL('sm',6,24,1,18,draw,v=>v+' meses');
+function draw(){const h=H.get(),m=M.get(),d=27000/h,sold=h*2*m;
+ let g=TX(10,14,'Despensa no dia 540 (tonel = 900 rações)',{fs:9.5,a:'start',c:GRAY,w:500});
+ const sobra=Math.max(0,30-h*540/900);for(let i=0;i<30;i++){g+=tonel(12+(i%10)*20,24+Math.floor(i/10)*30,15,24,i<Math.round(sobra));}
+ // dias: barra horizontal até 1.500 dias
+ const W=310,dx=W*Math.min(d,1500)/1500,y=130;
+ g+=TX(10,y-6,'Dias que a comida dura',{fs:10,a:'start',w:600});
+ g+=`<rect x="10" y="${y}" width="${W}" height="20" rx="4" fill="${GRAYL}"/><rect x="10" y="${y}" width="${dx}" height="20" rx="4" fill="${d>=540?GREEN:ORANGE}"/>`;
+ g+=LN(10+W*540/1500,y-4,10+W*540/1500,y+24,NAVY,2,'3 3')+TX(10+W*540/1500,y+36,'540 dias',{fs:9});
+ g+=TX(Math.min(10+dx+4,300),y+14,fmt(Math.round(d)),{fs:10,a:dx>270?'end':'start',c:dx>270?'#fff':NAVY});
+ // tripulação: bonequinhos (1 para cada 10)
+ const n=Math.round(h/10);g+=TX(330,14,'Tripulação (1 = 10)',{fs:9.5,a:'end',c:GRAY,w:500});
+ for(let i=0;i<n;i++)g+=bonequinho(232+(i%5)*20,50+Math.floor(i/5)*34,26,BLUE);
+ $('fig').innerHTML=SVG(340,180,g);
+ $('kd').textContent=fmt(Math.round(d))+' dias';$('kp').textContent=fmt(Math.round(h*d));$('ks').textContent=CRZ(sold);
+ missao('m',h==50&&m==18,'Isso! 27.000 ÷ 50 = 540 dias. Soldos: 50 × 2 × 18 = 1.800 cruzados. Repare que homens × dias continua 27.000.',
+  Math.abs(d-540)<1?'A comida dura 540 dias. Agora ponha os meses em 18 para ver os soldos.':'Com '+h+' homens a comida dura '+fmt(Math.round(d))+' dias. A missão pede 540.');}
+draw();
+})();
+</script>
+</body>
+</html>
