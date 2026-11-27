@@ -11,7 +11,7 @@
 <main>
 <div class="card"><h2>Quem entrou no banco?</h2><p class="muted" style="margin-top:0">Uma pessoa acaba de passar pela porta. Olhe o desenho e a descrição e marque o tipo: <b>C</b> cliente, <b>E</b> entregador, <b>M</b> manutenção, <b>O</b> outros. Cada marca vira um risco na tabela.</p>
 <div class="fig" id="fig"></div>
-<div class="row"><button id="bC">C · cliente</button><button id="bE" class="alt">E · entregador</button><button id="bM" class="alt">M · manutenção</button><button id="bO" class="alt">O · outros</button></div>
+<div class="row"><button id="bC" class="alt">C · cliente</button><button id="bE" class="alt">E · entregador</button><button id="bM" class="alt">M · manutenção</button><button id="bO" class="alt">O · outros</button></div>
 <div id="m"></div></div>
 <div class="card"><h2>A tabela de frequência</h2><div class="fig" id="tab"></div><div class="fig" id="piz"></div>
 <div class="kpi"><div class="o">Visitantes anotados<b id="kt">0</b></div><div>Acertos seguidos<b id="ks">0</b></div><div>Tipo mais frequente<b id="km">—</b></div></div>
@@ -37,11 +37,11 @@ function pessoa(t){let g=RC(0,0,340,150,PEACH,'rx="12"')+RC(250,20,60,130,'#fff'
  return g;}
 function desenha(){const d=DESC[cur][Math.floor((seq*7+cont.reduce((a,b)=>a+b,0)*3)%DESC[cur].length)];
  $('fig').innerHTML=SVG(340,175,pessoa(cur)+TX(150,168,d,{fs:11}));
- const tot=cont.reduce((a,b)=>a+b,0);let g='';const cols=['Tipo','Riscos','Freq. abs.','Freq. rel.'],cx=[8,90,225,295];
+ const tot=cont.reduce((a,b)=>a+b,0);let g='';const cols=['Tipo','Riscos','Freq. abs.','Freq. rel.'],cx=[8,150,232,298];
  cols.forEach((c,i)=>g+=TX(cx[i],16,c,{fs:10,a:i?'middle':'start'}));
  for(let i=0;i<4;i++){const y=40+i*26;g+=TX(8,y+4,TIP[i]+' · '+NOM[i],{fs:10,a:'start',c:COR[i]});
-  let xs=60;for(let k=0;k<Math.min(cont[i],25);k++){const grupo=Math.floor(k/5),pos=k%5,bx=xs+grupo*18;if(pos<4)g+=LN(bx+pos*3.5,y-8,bx+pos*3.5,y+6,COR[i],1.6);else g+=LN(bx-2,y+4,bx+13,y-6,COR[i],1.6);}
-  if(cont[i]>25)g+=TX(150,y+4,'…',{fs:12});
+  let xs=108;for(let k=0;k<Math.min(cont[i],25);k++){const grupo=Math.floor(k/5),pos=k%5,bx=xs+grupo*18;if(pos<4)g+=LN(bx+pos*3.5,y-8,bx+pos*3.5,y+6,COR[i],1.6);else g+=LN(bx-2,y+4,bx+13,y-6,COR[i],1.6);}
+  if(cont[i]>25)g+=TX(203,y+4,'…',{fs:12});
   g+=TX(cx[2],y+4,String(cont[i]),{fs:11})+TX(cx[3],y+4,tot?pct(100*cont[i]/tot,0):'—',{fs:11});}
  g+=LN(4,146,336,146,GRAYL,1)+TX(8,162,'Total',{fs:10,a:'start'})+TX(cx[2],162,String(tot),{fs:11})+TX(cx[3],162,tot?'100%':'—',{fs:11});
  $('tab').innerHTML=SVG(340,170,g);
