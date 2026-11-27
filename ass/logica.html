@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Liga e desliga · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Liga e desliga</h1></header>
+<main>
+<div class="card"><h2>Tabela-verdade e Venn</h2><p class="muted" style="margin-top:0">Ligue e desligue A ("é a hora certa") e B ("há pouca gente"), e escolha o conectivo. A linha da tabela acende e o diagrama pinta onde a expressão é verdadeira; o ponto mostra o caso atual.</p>
+<div class="row"><button id="bA">A: V</button><button id="bB">B: V</button></div>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="fig" id="tab"></div>
+<div class="kpi"><div class="o">Resultado<b id="kr"></b></div><div>Linhas verdadeiras<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre a <b>única linha</b> em que <b>A OU B</b> é falsa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let A=true,B=true;const OPS=['A E B','A OU B','NÃO A','NÃO B','NÃO (A E B)'];const C=chips('ch',OPS,0,draw);
+const F_=[(a,b)=>a&&b,(a,b)=>a||b,(a,b)=>!a,(a,b)=>!b,(a,b)=>!(a&&b)];
+function draw(){const op=C.get(),f=F_[op],r=f(A,B);$('bA').textContent='A: '+(A?'V':'F');$('bB').textContent='B: '+(B?'V':'F');$('bA').className=A?'':'alt';$('bB').className=B?'':'alt';
+ const ca=[130,90],cb=[210,90],rr=62;
+ // pinta cada região conforme f
+ const reg=[[true,false],[true,true],[false,true],[false,false]];let g=`<defs><clipPath id="cA"><circle cx="${ca[0]}" cy="${ca[1]}" r="${rr}"/></clipPath>
+ <mask id="mA"><rect width="340" height="180" fill="#fff"/><circle cx="${ca[0]}" cy="${ca[1]}" r="${rr}" fill="#000"/></mask><mask id="mB"><rect width="340" height="180" fill="#fff"/><circle cx="${cb[0]}" cy="${cb[1]}" r="${rr}" fill="#000"/></mask>
+ <mask id="mAB"><rect width="340" height="180" fill="#fff"/><circle cx="${ca[0]}" cy="${ca[1]}" r="${rr}" fill="#000"/><circle cx="${cb[0]}" cy="${cb[1]}" r="${rr}" fill="#000"/></mask></defs>`;
+ const cor=v=>v?ORANGE:'#fff';
+ g+=RC(6,6,328,168,f(false,false)?ORANGE:'#F3F4F6','stroke="'+NAVY+'" stroke-width="2" rx="6" mask="url(#mAB)"');
+ g+=`<circle cx="${ca[0]}" cy="${ca[1]}" r="${rr}" fill="${cor(f(true,false))}" mask="url(#mB)"/><circle cx="${cb[0]}" cy="${cb[1]}" r="${rr}" fill="${cor(f(false,true))}" mask="url(#mA)"/>`;
+ g+=`<circle cx="${cb[0]}" cy="${cb[1]}" r="${rr}" fill="${cor(f(true,true))}" clip-path="url(#cA)"/>`;
+ g+=`<circle cx="${ca[0]}" cy="${ca[1]}" r="${rr}" fill="none" stroke="${NAVY}" stroke-width="2.5"/><circle cx="${cb[0]}" cy="${cb[1]}" r="${rr}" fill="none" stroke="${BLUE}" stroke-width="2.5"/>`;
+ g+=TX(95,30,'A',{fs:14})+TX(245,30,'B',{fs:14,c:BLUE});
+ const pt=A&&B?[170,90]:A?[100,95]:B?[240,95]:[305,150];g+=`<circle cx="${pt[0]}" cy="${pt[1]}" r="8" fill="${NAVY}" stroke="#fff" stroke-width="3"/>`;
+ $('fig').innerHTML=SVG(340,180,g);
+ let t='';const lin=[[true,true],[true,false],[false,true],[false,false]];const cols=['A','B',OPS[op]];cols.forEach((c,i)=>t+=TX(50+i*110,16,c,{fs:11}));
+ lin.forEach(([a,b],k)=>{const on=a==A&&b==B,y=26+k*24;if(on)t+=RC(4,y,332,22,PEACH,'rx="4"');[a,b,f(a,b)].forEach((v,i)=>t+=TX(50+i*110,y+16,v?'V':'F',{fs:13,c:i==2?(v?GREEN:'#B91C1C'):NAVY}));});
+ $('tab').innerHTML=SVG(340,126,t);$('kr').textContent=r?'verdadeiro':'falso';$('kl').textContent=lin.filter(([a,b])=>f(a,b)).length+' de 4';
+ missao('m',op==1&&!A&&!B,'Isso! A OU B só é falsa quando A e B são falsas ao mesmo tempo: fora dos dois círculos.',op==1?'A OU B está '+(r?'verdadeira':'falsa')+' aqui. Procure a linha falsa.':'Para a missão, escolha A OU B.');}
+$('bA').onclick=()=>{A=!A;draw();};$('bB').onclick=()=>{B=!B;draw();};draw();
+})();
+</script>
+</body>
+</html>

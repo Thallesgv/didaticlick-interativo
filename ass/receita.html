@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As fichas do plano · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>As fichas do plano</h1></header>
+<main>
+<div class="card"><h2>Monte o algoritmo do ensaio</h2><p class="muted" style="margin-top:0">As fichas caíram embaralhadas. Toque nelas na ordem certa. Se uma ficha vier fora de hora, o carro "bate" e você recomeça.</p>
+<div class="fig" id="fig"></div>
+<div id="fichas" style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0"></div>
+<div class="kpi"><div class="o">Passos certos<b id="kp">0 de 7</b></div><div>Batidas<b id="kb">0</b></div><div>Tentativa<b id="kt">1</b></div></div>
+<div class="row"><button id="rec" class="alt">Embaralhar de novo</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte o plano inteiro <b>sem nenhuma batida</b>. Pense: o que precisa acontecer antes de cada passo?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function noSVG(n,on){const {x,y,w,h}=n,c=on?ORANGE:NAVY,f=on?'#FDE9D8':'#fff';let g='';
+ if(n.tipo=='term')g+=RC(x-w/2,y-h/2,w,h,on?ORANGE:NAVY,`rx="${h/2}"`);
+ else if(n.tipo=='proc')g+=RC(x-w/2,y-h/2,w,h,f,`stroke="${c}" stroke-width="${on?2.5:1.5}" rx="3"`);
+ else if(n.tipo=='dec')g+=PG([[x,y-h/2],[x+w/2,y],[x,y+h/2],[x-w/2,y]],f,`stroke="${on?ORANGE:'#F7821F'}" stroke-width="${on?2.5:1.5}"`);
+ else{const s=8;g+=PG([[x-w/2+s,y-h/2],[x+w/2+s,y-h/2],[x+w/2-s,y+h/2],[x-w/2-s,y+h/2]],on?'#FDE9D8':'#E3F1E7',`stroke="${on?ORANGE:GREEN}" stroke-width="${on?2.5:1.5}"`);}
+ const ls=n.t.split('\n');ls.forEach((t,i)=>g+=TX(x,y+4+(i-(ls.length-1)/2)*12,t,{fs:10,c:n.tipo=='term'?'#fff':NAVY}));return g;}
+function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const c=on?ORANGE:NAVY,[a,b]=pts.slice(-2),an=Math.atan2(b[1]-a[1],b[0]-a[0]);
+ let g=`<path d="${d}" fill="none" stroke="${c}" stroke-width="${on?3:1.4}"/>`+PG([[b[0],b[1]],[b[0]-8*Math.cos(an-.4),b[1]-8*Math.sin(an-.4)],[b[0]-8*Math.cos(an+.4),b[1]-8*Math.sin(an+.4)]],c);
+ if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
+const PASSOS=['Abrir a porta do galpão','Ligar o carro','Sair para a praça','Conferir o relógio (14h30?)','Estacionar na rua do banco','Observar o saguão por 10 min','Voltar ao galpão'];
+let ord=[],feitos=0,bat=0,tent=1,bateu=false;
+function emb(){ord=PASSOS.map((p,i)=>i).sort(()=>Math.random()-.5);feitos=0;bateu=false;draw();}
+function draw(){const H=60+Math.max(1,feitos)*38;let g='';const x=170;
+ const nos=[{tipo:'term',x,y:20,w:120,h:26,t:'Início'}];for(let i=0;i<feitos;i++)nos.push({tipo:'proc',x,y:58+i*38,w:230,h:26,t:PASSOS[i]});
+ if(feitos==PASSOS.length)nos.push({tipo:'term',x,y:58+feitos*38,w:120,h:26,t:'Fim'});
+ for(let i=0;i<nos.length-1;i++)g+=setaSVG([[x,nos[i].y+13],[x,nos[i+1].y-13]],false);nos.forEach((n,i)=>g+=noSVG(n,i==nos.length-1&&i>0));
+ if(bateu)g+=TX(x,H+4,'💥 Bateu! Recomeçando...',{fs:13,c:'#B91C1C'});
+ $('fig').innerHTML=SVG(340,H+(feitos==PASSOS.length?40:16),g);
+ $('fichas').innerHTML=ord.filter(i=>i>=feitos).map(i=>`<button class="alt" data-i="${i}" style="font-size:13px;padding:6px 10px">${PASSOS[i]}</button>`).join('');
+ document.querySelectorAll('#fichas button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i==feitos){feitos++;bateu=false;}else{bat++;bateu=true;feitos=0;tent++;}draw();});
+ $('kp').textContent=feitos+' de '+PASSOS.length;$('kb').textContent=bat;$('kt').textContent=tent;
+ if(feitos==PASSOS.length)missao('m',bat==0,'Plano montado sem nenhuma batida! Um algoritmo é isso: passos certos, na ordem certa.','Plano montado, com '+bat+' batida(s). Embaralhe de novo e tente sem nenhuma.');else $('m').innerHTML='';}
+$('rec').onclick=()=>{bat=0;tent=1;emb();};emb();
+})();
+</script>
+</body>
+</html>

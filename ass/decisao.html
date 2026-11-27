@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O caminho da decisão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O caminho da decisão</h1></header>
+<main>
+<div class="card"><h2>A janela está aberta?</h2><p class="muted" style="margin-top:0">Mude a hora e o número de pessoas. O caminho percorrido pelo fluxograma acende em laranja.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Hora</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Pessoas no saguão</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Hora entre 14h30 e 14h40?<b id="ka"></b></div><div>No máximo 5 pessoas?<b id="kb"></b></div><div>Saída<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com 3 pessoas no saguão, descubra <b>todos os minutos</b> em que o aviso "janela aberta" aparece. Depois teste a fronteira: 14h30 e 14h40 contam?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function noSVG(n,on){const {x,y,w,h}=n,c=on?ORANGE:NAVY,f=on?'#FDE9D8':'#fff';let g='';
+ if(n.tipo=='term')g+=RC(x-w/2,y-h/2,w,h,on?ORANGE:NAVY,`rx="${h/2}"`);
+ else if(n.tipo=='proc')g+=RC(x-w/2,y-h/2,w,h,f,`stroke="${c}" stroke-width="${on?2.5:1.5}" rx="3"`);
+ else if(n.tipo=='dec')g+=PG([[x,y-h/2],[x+w/2,y],[x,y+h/2],[x-w/2,y]],f,`stroke="${on?ORANGE:'#F7821F'}" stroke-width="${on?2.5:1.5}"`);
+ else{const s=8;g+=PG([[x-w/2+s,y-h/2],[x+w/2+s,y-h/2],[x+w/2-s,y+h/2],[x-w/2-s,y+h/2]],on?'#FDE9D8':'#E3F1E7',`stroke="${on?ORANGE:GREEN}" stroke-width="${on?2.5:1.5}"`);}
+ const ls=n.t.split('\n');ls.forEach((t,i)=>g+=TX(x,y+4+(i-(ls.length-1)/2)*12,t,{fs:10,c:n.tipo=='term'?'#fff':NAVY}));return g;}
+function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const c=on?ORANGE:NAVY,[a,b]=pts.slice(-2),an=Math.atan2(b[1]-a[1],b[0]-a[0]);
+ let g=`<path d="${d}" fill="none" stroke="${c}" stroke-width="${on?3:1.4}"/>`+PG([[b[0],b[1]],[b[0]-8*Math.cos(an-.4),b[1]-8*Math.sin(an-.4)],[b[0]-8*Math.cos(an+.4),b[1]-8*Math.sin(an+.4)]],c);
+ if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
+const Hh=SL('sh',840,900,1,850,draw,v=>Math.floor(v/60)+'h'+String(v%60).padStart(2,'0')),Pp=SL('sp',0,15,1,3,draw,String);let abertos=new Set();
+function draw(){const h=Hh.get(),p=Pp.get(),A=h>=870&&h<=880,B=p<=5,ok=A&&B;
+ const n={ini:{tipo:'term',x:110,y:20,w:100,h:26,t:'Início'},ler:{tipo:'io',x:110,y:70,w:170,h:30,t:'Ler hora h e pessoas p'},
+  dec:{tipo:'dec',x:110,y:150,w:200,h:80,t:'14h30 ≤ h ≤ 14h40\nE p ≤ 5 ?'},sim:{tipo:'proc',x:270,y:150,w:110,h:44,t:'Avisar:\njanela aberta'},
+  nao:{tipo:'proc',x:110,y:240,w:150,h:30,t:'Esperar 1 minuto'},fim:{tipo:'term',x:270,y:240,w:90,h:26,t:'Fim'}};
+ let g=setaSVG([[110,33],[110,55]],true)+setaSVG([[110,85],[110,110]],true)+setaSVG([[210,150],[215,150]],ok,[200,140,'sim'])+setaSVG([[110,190],[110,225]],!ok,[124,210,'não'])
+  +setaSVG([[35,240],[10,240],[10,70],[22,70]],!ok)+setaSVG([[270,172],[270,227]],ok);
+ g+=noSVG(n.ini,true)+noSVG(n.ler,true)+noSVG(n.dec,true)+noSVG(n.sim,ok)+noSVG(n.nao,!ok)+noSVG(n.fim,ok);
+ $('fig').innerHTML=SVG(340,262,g);
+ $('ka').textContent=A?'V':'F';$('kb').textContent=B?'V':'F';$('ks').textContent=ok?'janela aberta':'esperar';
+ if(ok&&p==3)abertos.add(h);
+ missao('m',abertos.size==11,'Isso: com 3 pessoas, de 14h30 a 14h40, incluindo as duas pontas, são 11 minutos (o símbolo ≤ inclui a fronteira).',
+  'Minutos de janela aberta já encontrados (com 3 pessoas): '+abertos.size+'. Varra o relógio devagar.');}
+draw();
+})();
+</script>
+</body>
+</html>

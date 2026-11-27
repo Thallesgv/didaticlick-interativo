@@ -99,7 +99,29 @@ const LIV={'ass1':{T:["A planta do banco", "Escala e medidas reais", "Perímetro
 6:()=>{const t=R(0,2);
  if(t==0){const s=P([[10,'algarismos'],[26,'letras minúsculas']]),l=R(2,s[0]==10?6:4),q=Math.pow(s[0],l);return{q:`Quantas senhas de <b>${l}</b> ${s[1]} existem?`,a:q,exp:`${s[0]}^${l} = ${q.toLocaleString('pt-BR')}.`};}
  if(t==1){const n=P([10,26,36,62]);return{q:`Numa senha com <b>${n}</b> símbolos possíveis por caractere, acrescentar um caractere multiplica o número de senhas por quanto?`,a:n,exp:`Mais uma etapa com ${n} opções: × ${n}.`};}
- const l=R(3,5),q=Math.pow(10,l);return{q:`A 1.000 tentativas por segundo, quantos segundos leva testar todas as senhas de <b>${l}</b> algarismos?`,a:q/1000,tol:.001,exp:`10^${l} = ${q.toLocaleString('pt-BR')}; ÷ 1.000 = ${fmt(q/1000)} s.`};}}}};
+ const l=R(3,5),q=Math.pow(10,l);return{q:`A 1.000 tentativas por segundo, quantos segundos leva testar todas as senhas de <b>${l}</b> algarismos?`,a:q/1000,tol:.001,exp:`10^${l} = ${q.toLocaleString('pt-BR')}; ÷ 1.000 = ${fmt(q/1000)} s.`};}}},'ass4':{T:["O plano passo a passo", "Os símbolos do fluxograma", "Se... então... senão", "E, OU e NÃO", "Repetir até dar certo", "O teste de mesa"],G:{1:()=>{const t=R(0,2),x=R(2,15),a=R(2,9),b=R(2,5);
+ if(t==0)return{q:`Comece com <b>${x}</b>, some <b>${a}</b> e depois multiplique por <b>${b}</b>. Qual o resultado?`,a:(x+a)*b,exp:`(${x} + ${a}) · ${b} = ${(x+a)*b}.`};
+ if(t==1)return{q:`Comece com <b>${x}</b>, multiplique por <b>${b}</b> e depois some <b>${a}</b>. Qual o resultado?`,a:x*b+a,exp:`${x} · ${b} + ${a} = ${x*b+a}.`};
+ const y=x*b+a;return{q:`Um algoritmo faz "multiplique por <b>${b}</b>, depois some <b>${a}</b>" e o resultado foi <b>${y}</b>. Qual era o número inicial?`,a:x,exp:`Desfaça de trás para a frente: (${y} − ${a}) ÷ ${b} = ${x}.`};},
+2:()=>{const t=R(0,1);
+ if(t==0){const S=P([['Ler a hora no relógio','entrada/saída'],['Mostrar a média','entrada/saída'],['n = n + 1','processo'],['Ligar o carro','processo'],['Há mais de 5 pessoas?','decisão'],['n = 3?','decisão'],['Início','terminal'],['Fim','terminal']]);
+  return{q:`Qual símbolo representa <b>${S[0]}</b>?`,opts:['terminal','entrada/saída','processo','decisão'],a:S[1],exp:'Terminal: início e fim. Paralelogramo: entrada ou saída. Retângulo: ação ou conta. Losango: pergunta de sim ou não.'};}
+ const a=R(2,6),b=R(-5,9),x=R(1,10);return{q:`Siga o fluxograma: Início → Ler x → y = ${a}x ${b<0?'−':'+'} ${Math.abs(b)} → Mostrar y → Fim, com <b>x = ${x}</b>. Qual a saída?`,a:a*x+b,exp:`y = ${a} · ${x} ${b<0?'−':'+'} ${Math.abs(b)} = ${a*x+b}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const L=R(5,15),x=R(1,25);return{q:`SE x &gt; ${L} ENTÃO y = x − ${L} SENÃO y = 0. Calcule y para <b>x = ${x}</b>.`,a:x>L?x-L:0,exp:x>L?`${x} &gt; ${L} é verdadeiro: y = ${x-L}.`:`${x} &gt; ${L} é falso: y = 0.`};}
+ if(t==1){const n=R(3,40);return{q:`SE n é par ENTÃO n = n ÷ 2 SENÃO n = 3n + 1. Aplique a regra a <b>n = ${n}</b>.`,a:n%2?3*n+1:n/2,exp:n%2?`${n} é ímpar: 3 · ${n} + 1 = ${3*n+1}.`:`${n} é par: ${n} ÷ 2 = ${n/2}.`};}
+ const h=R(1,8),p1=P([6,8,10]),p2=P([2,3,4]);return{q:`Estacionamento: R$ ${p1} pela primeira hora e R$ ${p2} por hora a mais. Quanto custam <b>${h} horas</b>?`,a:h<=1?p1:p1+p2*(h-1),exp:`SE h ≤ 1 ENTÃO ${p1} SENÃO ${p1} + ${p2} · (h − 1) = ${h<=1?p1:p1+p2*(h-1)}.`};},
+4:()=>{const t=R(0,2),A=R(0,1)==1,B=R(0,1)==1,v=x=>x?'V':'F';
+ if(t==0)return{q:`A = ${v(A)} e B = ${v(B)}. Quanto vale <b>A E B</b>?`,opts:['V','F'],a:v(A&&B),exp:'A E B só é verdadeira quando as duas são verdadeiras.'};
+ if(t==1)return{q:`A = ${v(A)} e B = ${v(B)}. Quanto vale <b>A OU B</b>?`,opts:['V','F'],a:v(A||B),exp:'A OU B só é falsa quando as duas são falsas.'};
+ const n=R(2,5);return{q:`Quantas linhas tem a tabela-verdade de <b>${n}</b> proposições?`,a:Math.pow(2,n),exp:`2 elevado a ${n} = ${Math.pow(2,n)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const k=P([2,3]),L=P([50,100,200,500]);let x=1,n=0;while(x<L){x*=k;n++;}return{q:`x = 1. ENQUANTO x &lt; ${L}: x = ${k}x. Qual o valor final de x?`,a:x,exp:`O laço roda ${n} vezes e termina com x = ${x}.`};}
+ if(t==1){const m=R(3,9);return{q:`soma = 0, i = 1. ENQUANTO i ≤ ${m}: soma = soma + i; i = i + 1. Qual a soma final?`,a:m*(m+1)/2,exp:`1 + 2 + ... + ${m} = ${m*(m+1)/2}.`};}
+ const ini=R(30,80),d=R(4,9);let x=ini,n=0;while(x>0){x-=d;n++;}return{q:`x = ${ini}. ENQUANTO x &gt; 0: x = x − ${d}. Quantas vezes o laço repete?`,a:n,exp:`Depois de ${n} voltas, x = ${x} e a condição fica falsa.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const a=R(10,50),b=R(3,9);return{q:`a = ${a}, b = ${b}. ENQUANTO a ≥ b: a = a − b. Faça o teste de mesa. Qual o valor final de a?`,a:a%b,exp:`a vai diminuindo de ${b} em ${b} até ficar menor que ${b}: termina em ${a%b} (o resto de ${a} ÷ ${b}).`};}
+ const ini=R(1,3),L=R(4,8);return{q:`i = ${ini}. ENQUANTO i &lt; ${L}: ...; i = i + 1. Quantas vezes o laço roda?`,a:Math.max(0,L-ini),exp:`i assume ${ini}, ..., ${L-1}: são ${L-ini} voltas.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ass1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

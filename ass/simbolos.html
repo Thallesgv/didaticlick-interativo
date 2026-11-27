@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Que forma é essa? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Que forma é essa?</h1></header>
+<main>
+<div class="card"><h2>Escolha o símbolo</h2><p class="muted" style="margin-top:0">Cada passo aparece escrito. Toque na forma certa do fluxograma para ele.</p>
+<div class="msg info" id="passo" style="font-size:17px;text-align:center"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Acertos seguidos<b id="ks">0</b></div><div>Acertos<b id="ka">0</b></div><div>Erros<b id="ke">0</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Acerte <b>10 seguidos</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function noSVG(n,on){const {x,y,w,h}=n,c=on?ORANGE:NAVY,f=on?'#FDE9D8':'#fff';let g='';
+ if(n.tipo=='term')g+=RC(x-w/2,y-h/2,w,h,on?ORANGE:NAVY,`rx="${h/2}"`);
+ else if(n.tipo=='proc')g+=RC(x-w/2,y-h/2,w,h,f,`stroke="${c}" stroke-width="${on?2.5:1.5}" rx="3"`);
+ else if(n.tipo=='dec')g+=PG([[x,y-h/2],[x+w/2,y],[x,y+h/2],[x-w/2,y]],f,`stroke="${on?ORANGE:'#F7821F'}" stroke-width="${on?2.5:1.5}"`);
+ else{const s=8;g+=PG([[x-w/2+s,y-h/2],[x+w/2+s,y-h/2],[x+w/2-s,y+h/2],[x-w/2-s,y+h/2]],on?'#FDE9D8':'#E3F1E7',`stroke="${on?ORANGE:GREEN}" stroke-width="${on?2.5:1.5}"`);}
+ const ls=n.t.split('\n');ls.forEach((t,i)=>g+=TX(x,y+4+(i-(ls.length-1)/2)*12,t,{fs:10,c:n.tipo=='term'?'#fff':NAVY}));return g;}
+function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const c=on?ORANGE:NAVY,[a,b]=pts.slice(-2),an=Math.atan2(b[1]-a[1],b[0]-a[0]);
+ let g=`<path d="${d}" fill="none" stroke="${c}" stroke-width="${on?3:1.4}"/>`+PG([[b[0],b[1]],[b[0]-8*Math.cos(an-.4),b[1]-8*Math.sin(an-.4)],[b[0]-8*Math.cos(an+.4),b[1]-8*Math.sin(an+.4)]],c);
+ if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
+const BANCO=[['Início do ensaio','term'],['Fim do plano','term'],['Ler a hora no relógio','io'],['Mostrar a média das rondas','io'],['Digitar o número de pessoas','io'],['Imprimir o horário de saída','io'],
+ ['soma = soma + r','proc'],['n = n + 1','proc'],['Ligar o carro','proc'],['média = soma ÷ 5','proc'],['Esperar 1 minuto','proc'],
+ ['h < 14h30?','dec'],['Há mais de 5 pessoas?','dec'],['n = 3?','dec'],['O vigia voltou?','dec']];
+const TIP=[['term','Terminal'],['io','Entrada/saída'],['proc','Processo'],['dec','Decisão']];let cur,seq=0,ok=0,er=0,trava=false,pos=[];
+function sorteia(){cur=P(BANCO);$('passo').textContent=cur[0];trava=false;draw();}
+function draw(res){let g='';pos=[];TIP.forEach(([t,nm],i)=>{const x=i%2?250:90,y=i<2?45:130;pos.push([x,y,t]);
+  const on=res&&(t==cur[1]);g+=noSVG({tipo:t,x,y,w:t=='dec'?120:130,h:t=='dec'?62:40,t:nm},on);});
+ $('fig').innerHTML=SVG(340,175,g);}
+toque('fig',(x,y,ini)=>{if(!ini||trava)return;let m=1e9,esc=null;pos.forEach(p=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<m){m=d;esc=p[2];}});if(m>90)return;trava=true;
+ const c=esc==cur[1];if(c){ok++;seq++;}else{er++;seq=0;}$('ks').textContent=seq;$('ka').textContent=ok;$('ke').textContent=er;draw(true);
+ if(seq>=10)missao('m',true,'Dez seguidos! Você já lê fluxogramas como a Nina.','');
+ else $('m').innerHTML=`<div class="msg ${c?'ok':'info'}">${c?'✔ Isso.':'Não: "'+cur[0]+'" é '+TIP.find(t=>t[0]==cur[1])[1].toLowerCase()+'.'}</div>`;setTimeout(sorteia,c?600:1400);});
+sorteia();
+})();
+</script>
+</body>
+</html>
