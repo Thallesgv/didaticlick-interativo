@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O estaleiro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O estaleiro</h1></header>
+<main>
+<div class="card"><h2>O orçamento da nau</h2><p class="muted" style="margin-top:0">Mude o custo de cada parte. O gráfico de setores se refaz: cada fatia é a porcentagem do total, e o ângulo é essa porcentagem vezes 3,6°.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Casco e mastros</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Velas e cordame</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Artilharia</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Âncoras, botes e ferragens</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Total<b id="kt"></b></div><div>Maior fatia<b id="km"></b></div><div>Soma dos ângulos<b id="ka"></b></div></div>
+<div id="tab"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O mestre do estaleiro cobrou <b>6.000 cruzados</b>: o casco ficou com <b>60%</b>, as velas e as âncoras com <b>15%</b> cada e a artilharia com <b>10%</b>. Ajuste os quatro controles até chegar a esse orçamento.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NOMES=['Casco e mastros','Velas e cordame','Artilharia','Âncoras, botes e ferragens'];
+const S=[SL('s0',0,6000,100,3000,draw,CRZ),SL('s1',0,3000,50,1200,draw,CRZ),SL('s2',0,3000,50,600,draw,CRZ),SL('s3',0,3000,50,600,draw,CRZ)];
+function draw(){const v=S.map(s=>s.get()),T=v.reduce((a,b)=>a+b,0)||1;
+ $('fig').innerHTML=pizza(v.map((x,i)=>({v:x,cor:CORES_NAV[i],nome:['Casco','Velas','Artilharia','Âncoras e botes'][i]})),72);
+ $('kt').textContent=CRZ(T);const im=v.indexOf(Math.max(...v));$('km').textContent=NOMES[im].split(' ')[0]+' · '+r1(100*v[im]/T)+'%';
+ $('ka').textContent=fmt(Math.round(v.reduce((a,x)=>a+360*x/T,0)))+'°';
+ $('tab').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px"><tr style="background:'+NAVY+';color:#fff"><th style="text-align:left;padding:4px">Parte</th><th>Cruzados</th><th>%</th><th>Ângulo</th></tr>'+
+  v.map((x,i)=>`<tr><td style="padding:3px 4px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${CORES_NAV[i]}"></span> ${NOMES[i]}</td><td style="text-align:center">${fmt(x)}</td><td style="text-align:center">${r1(100*x/T)}%</td><td style="text-align:center">${r1(360*x/T)}°</td></tr>`).join('')+'</table>';
+ const ok=v[0]==3600&&v[1]==900&&v[2]==600&&v[3]==900;
+ missao('m',ok,'Orçamento fechado: 3.600 + 900 + 600 + 900 = 6.000 cruzados. Ângulos: 216° + 54° + 36° + 54° = 360°.',T==6000?'O total já é 6.000. Agora acerte as porcentagens de cada parte.':'Total atual: '+CRZ(T)+'. A missão pede 6.000.');}
+draw();
+})();
+</script>
+</body>
+</html>

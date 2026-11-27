@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quando a viagem se paga · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>Quando a viagem se paga</h1></header>
+<main>
+<div class="card"><h2>Receita contra custo</h2><p class="muted" style="margin-top:0">A viagem custa 12.000 cruzados. A receita depende da carga, do preço em Lisboa e da taxa do porto. O ponto onde as linhas se cruzam é o <b>ponto de equilíbrio</b>.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sq"><b>Carga vendida</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Preço em Lisboa (por quintal)</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Taxa do porto</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Lucro<b id="kl"></b></div><div>Lucro sobre o custo<b id="kp"></b></div><div>Ponto de equilíbrio<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com preço de <b>22 cruzados</b> e taxa de <b>20%</b>, qual é a <b>menor carga</b> que não dá prejuízo? Coloque a carga exatamente nesse ponto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Q=SL('sq',0,1000,1,800,draw,v=>fmt(v)+' quintais'),V=SL('sv',10,30,0.5,22,draw,v=>r1(v)+' cruzados'),T=SL('st',0,40,1,20,draw,v=>v+'%');
+function draw(){const q=Q.get(),v=V.get(),t=T.get(),u=v*(1-t/100),rec=q*u,L=rec-12000,qe=12000/u;
+ const x0=46,y0=170,W=280,H=150,X=a=>x0+a/1000*W,Y=a=>y0-a/30000*H;let g='';
+ for(let k=0;k<=3;k++){const val=k*10000;g+=LN(x0,Y(val),x0+W,Y(val),'#EEF2F7',1)+TX(x0-4,Y(val)+3,fmt(val),{fs:9,a:'end',c:GRAY,w:400});}
+ for(let k=0;k<=4;k++)g+=TX(X(k*250),y0+13,k*250,{fs:9,c:GRAY,w:400});
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.5)+LN(x0,y0,x0,y0-H,NAVY,1.5);
+ const yq=Y(Math.min(rec,30000));
+ g+=`<path d="M${X(0)},${Y(0)} L${X(q)},${yq} L${X(q)},${Y(12000)} Z" fill="none"/>`;
+ g+=`<rect x="${X(Math.min(q,qe))}" y="${Math.min(yq,Y(12000))}" width="${Math.abs(X(q)-X(Math.min(q,qe)))}" height="0"/>`;
+ g+=LN(X(0),Y(12000),X(1000),Y(12000),NAVY,2,'6 4')+TX(X(0)+4,Y(12000)-5,'custo 12.000',{fs:9,a:'start'});
+ g+=LN(X(0),Y(0),X(1000),Y(Math.min(1000*u,30000)),ORANGE,3);
+ g+=LN(X(q),y0,X(q),yq,L>=0?GREEN:'#B91C1C',4);
+ g+=`<circle cx="${X(q)}" cy="${yq}" r="5" fill="${L>=0?GREEN:'#B91C1C'}"/>`;
+ if(qe<=1000)g+=`<circle cx="${X(qe)}" cy="${Y(12000)}" r="5" fill="${NAVY}"/>`+LN(X(qe),Y(12000),X(qe),y0,NAVY,1,'2 2');
+ g+=TX(x0+W/2,y0+26,'quintais vendidos',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,200,g);
+ $('kl').innerHTML=`<span style="color:${L>=0?GREEN:'#B91C1C'}">${L>=0?'':'− '}${fmt(Math.abs(Math.round(L)))}</span>`;
+ $('kp').textContent=r1(100*L/12000)+'%';$('ke').textContent=qe>1000?'mais de 1.000':'≈ '+r1(qe)+' quintais';
+ const ok=v==22&&t==20&&q==682;
+ missao('m',ok,'Ponto de equilíbrio: 12.000 ÷ 17,6 ≈ 681,8. Com 681 quintais ainda há prejuízo; com 682, a viagem se paga (lucro de 3 cruzados).',
+  v==22&&t==20?(q<682?'Ainda dá prejuízo. Aumente a carga.':'Já dá lucro. Qual é a menor carga que ainda não dá prejuízo?'):'Ponha o preço em 22 e a taxa em 20% para a missão.');}
+draw();
+})();
+</script>
+</body>
+</html>

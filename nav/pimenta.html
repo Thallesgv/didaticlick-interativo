@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança da pimenta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>A balança da pimenta</h1></header>
+<main>
+<div class="card"><h2>Quintais, arrobas e quilos</h2><p class="muted" style="margin-top:0">1 quintal = 4 arrobas = 128 arráteis ≈ 58,75 kg. Escolha a carga e os preços: as barras mostram quanto se paga em Calicute e quanto se recebe em Lisboa.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sq"><b>Carga</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Preço de compra (por quintal)</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Preço de venda (por quintal)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Aumento percentual<b id="ka"></b></div><div>Arrobas<b id="kr"></b></div><div>Quilogramas<b id="kk"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Na história, Enzo compra <b>800 quintais</b> a <b>3 cruzados</b> e vende a <b>22</b>. Monte esse negócio e descubra o aumento percentual. Depois tente: que preço de venda daria um aumento de exatamente 500%?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Q=SL('sq',50,851,1,400,draw,v=>fmt(v)+' quintais'),C=SL('sc',1,10,0.5,4,draw,v=>r1(v)+' cruzados'),V=SL('sv',1,30,0.5,12,draw,v=>r1(v)+' cruzados');
+function draw(){const q=Q.get(),c=C.get(),v=V.get(),comp=q*c,vend=q*v,au=100*(v-c)/c;
+ const mx=851*30,H=150,y0=170,k=H/mx;let g=LN(20,y0,320,y0,NAVY,2);
+ g+=`<rect x="50" y="${y0-comp*k}" width="80" height="${comp*k}" fill="${NAVY}"/>`+TX(90,y0-comp*k-6,fmt(comp),{fs:11})+TX(90,y0+14,'paga em Calicute',{fs:9,c:GRAY,w:500});
+ g+=`<rect x="210" y="${y0-vend*k}" width="80" height="${vend*k}" fill="${ORANGE}"/>`+TX(250,y0-vend*k-6,fmt(vend),{fs:11})+TX(250,y0+14,'recebe em Lisboa',{fs:9,c:GRAY,w:500});
+ g+=TX(170,Math.min(y0-vend*k,y0-comp*k)+40>y0-10?y0-30:y0-(vend*k+comp*k)/2,(au>=0?'+ ':'')+r1(au)+'%',{fs:13,c:au>=0?GREEN:'#B91C1C'});
+ // sacos de pimenta (1 saco = 50 quintais)
+ const n=Math.round(q/50);for(let i=0;i<n;i++)g+=`<ellipse cx="${30+(i%17)*17}" cy="${16+Math.floor(i/17)*0}" rx="7" ry="9" fill="#5C3A1E"/>`;
+ g+=TX(330,34,'1 saco = 50 quintais',{fs:9,a:'end',c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,190,g);
+ $('ka').textContent=r1(au)+'%';$('kr').textContent=fmt(q*4);$('kk').textContent=fmt(Math.round(q*58.75));
+ const ok=q==800&&c==3&&v==22;
+ missao('m',ok,'Negócio da história: paga 2.400 e recebe 17.600. Aumento: (22 − 3) ÷ 3 = 6,33..., ou cerca de 633%.',
+  c==3&&v==18?'Com venda a 18: (18 − 3) ÷ 3 = 5 = 500%. Agora monte o negócio da história.':'Aumento atual: '+r1(au)+'%. Lembre: a base do aumento é o preço de compra.');}
+draw();
+})();
+</script>
+</body>
+</html>
