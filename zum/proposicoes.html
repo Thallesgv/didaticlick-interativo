@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os bilhetes do portão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Os bilhetes do portão</h1></header>
+<main>
+<div class="card"><h2>Carimbe cada bilhete</h2><p class="muted" style="margin-top:0">Toque num bilhete para trocar o carimbo: <b>V</b> (verdadeira), <b>F</b> (falsa) ou <b>não é</b> (não é proposição). Use o que o abrigo já sabe: 150 pessoas, ginásio de 30 m por 20 m, a Ribeira é outro bairro.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Carimbados<b id="kc"></b></div><div class="o">Certos<b id="ka"></b></div><div>Não são proposições<b id="kn"></b></div></div>
+<p style="margin:10px 0 4px"><b>A negação de "Todo mordido vira zumbi em uma hora" é:</b></p>
+<div id="cn"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque nos bilhetes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const B=[['O abrigo tem 150 pessoas.','V'],['A Ribeira fica no Moinho.','F'],['2 + 2 = 5.','F'],['Feche o portão!','N'],
+ ['Quem chegou hoje?','N'],['O ginásio tem 30 m de comprimento.','V'],['Todo mordido vira zumbi em uma hora.','F'],['Água de chuva sem cloro é boa para beber.','F']];
+const C=['','V','F','N'],NOME={V:'V',F:'F',N:'não é'},COR={V:'#15803D',F:'#C0504D',N:'#6B7280'};let st=B.map(()=>0);
+const NEG=['Nenhum mordido vira zumbi em uma hora.','Pelo menos um mordido não vira zumbi em uma hora.','Todo mordido vira zumbi em mais de uma hora.'];
+const CN=chips('cn',['nenhum…','pelo menos um… não…','todo… em mais de uma hora'],-1,draw);
+const carim=()=>st.filter(s=>s>0).length,certos=()=>st.filter((s,i)=>C[s]==B[i][1]).length;
+const ok2=()=>C[st[3]]=='N'&&C[st[4]]=='N'&&st.filter((s,i)=>C[s]=='N'&&B[i][1]!='N').length==0;
+MIS.def(()=>[
+ ['Ache as duas frases que <b>não são proposições</b> e carimbe "não é" nelas (e em nenhuma outra).',ok2,()=>'A ordem e a pergunta não são V nem F. Todo o resto é proposição.',()=>'Toque num bilhete até aparecer "não é".'],
+ ['Carimbe <b>todos os 8 bilhetes</b> do jeito certo.',()=>certos()==8,()=>'8 de 8! Três verdadeiras, três falsas e duas que não são proposições.',()=>carim()<8?'Faltam '+(8-carim())+' bilhetes.':certos()+' de 8 certos. Releia os que estão errados.'],
+ ['Escolha a <b>negação</b> certa de "Todo mordido vira zumbi em uma hora".',()=>CN.get()==1,()=>'Isso: para negar um "todo", basta um caso contrário. E Sofia viu esse caso no Livro 1.',()=>CN.get()<0?'Escolha uma das três frases.':'Essa não é a negação: as duas frases podem ser falsas ao mesmo tempo.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const c=Math.floor(x/170),r=Math.floor((y-6)/52);if(c<0||c>1||r<0||r>3)return;const i=r*2+c;st[i]=(st[i]+1)%4;draw();});
+function draw(){let g='';B.forEach((b,i)=>{const x=6+(i%2)*170,y=6+Math.floor(i/2)*52,s=C[st[i]],cor=s?COR[s]:'#D7DEEA';
+  g+=RC(x,y,160,44,'#FFFDF6','rx="6" stroke="'+cor+'" stroke-width="'+(s?2:1)+'"');
+  const w=b[0].length>26?b[0].replace(/^(.{0,24}\S*)\s(.*)$/,'$1|$2').split('|'):[b[0]];
+  w.forEach((t,k)=>g+=TX(x+8,y+(w.length>1?17:24)+k*13,'"'+(k==0?'':'')+t+(k==w.length-1?'"':''),{fs:9.5,a:'start',w:500}));
+  if(s)g+=RC(x+112,y+28,44,13,cor,'rx="3"')+TX(x+134,y+38,NOME[s],{fs:9,c:'#fff'});});
+ const n=CN.get();g+=RC(6,216,330,26,n<0?'#EEF0F4':(n==1?'#DFF3E4':'#FBE3E2'),'rx="5"')+TX(171,233,n<0?'(escolha a negação abaixo)':'não: "'+NEG[n]+'"',{fs:9.5,c:n<0?GRAY:(n==1?'#15803D':'#C0504D')});
+ $('fig').innerHTML=SVG(342,248,g);$('kc').textContent=carim()+' de 8';$('ka').textContent=certos();$('kn').textContent=st.filter(s=>C[s]=='N').length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

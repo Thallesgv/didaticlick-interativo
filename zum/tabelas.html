@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O circuito da lanterna · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O circuito da lanterna</h1></header>
+<main>
+<div class="card"><h2>Duas chaves, uma lâmpada</h2><p class="muted" style="margin-top:0">Em <b>série</b> (uma depois da outra), a corrente só passa com as duas chaves ligadas: é o <b>e</b>. Em <b>paralelo</b> (lado a lado), basta uma: é o <b>ou</b>. Ligue e desligue as chaves e veja a tabela-verdade se preencher.</p>
+<div id="cm" style="margin:6px 0"></div>
+<div class="row"><button id="ba">Chave A</button><button id="bb">Chave B</button><button class="alt" id="bl">Limpar tabela</button></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ligue as chaves.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let A=false,Bc=false;const vis=[new Set(),new Set()];
+const CM=chips('cm',['em série: A e B','em paralelo: A ou B'],0,draw);
+$('ba').onclick=()=>{A=!A;draw();};$('bb').onclick=()=>{Bc=!Bc;draw();};$('bl').onclick=()=>{vis[0].clear();vis[1].clear();draw();};
+const acesa=()=>CM.get()==0?(A&&Bc):(A||Bc);
+MIS.def(()=>[
+ ['No circuito <b>em série</b>, acenda a lâmpada.',()=>CM.get()==0&&acesa(),()=>'Só acende com A e B ligadas: "A e B" é V só quando as duas são V.',()=>CM.get()!=0?'Escolha "em série".':'Ainda apagada. Quantas chaves precisam estar ligadas?'],
+ ['No circuito <b>em paralelo</b>, deixe a lâmpada <b>apagada</b>.',()=>CM.get()==1&&!acesa(),()=>'Só apaga com as duas desligadas: "A ou B" é F só quando as duas são F.',()=>CM.get()!=1?'Escolha "em paralelo".':'Ainda acesa: em paralelo, uma chave basta.'],
+ ['Preencha as <b>duas tabelas inteiras</b>: passe pelas 4 combinações em série e pelas 4 em paralelo.',()=>vis[0].size==4&&vis[1].size==4,()=>'8 linhas. Compare as colunas: o "e" tem um V só; o "ou" tem um F só.',()=>'Série: '+vis[0].size+' de 4; paralelo: '+vis[1].size+' de 4.']]);
+function chave(x,y,on){return CI(x,y,3,NAVY)+CI(x+30,y,3,NAVY)+(on?LN(x,y,x+30,y,ORANGE,3):LN(x,y,x+26,y-14,'#9AA7BD',3));}
+function draw(){const m=CM.get(),on=acesa();vis[m].add((A?'V':'F')+(Bc?'V':'F'));const fio=on?ORANGE:'#9AA7BD';let g='';
+ g+=RC(14,92,22,40,NAVY,'rx="3"')+TX(25,148,'pilha',{fs:9,c:GRAY});
+ if(m==0){g+=LN(25,92,25,40,fio,2)+LN(25,40,60,40,fio,2)+chave(60,40,A)+LN(90,40,120,40,fio,2)+chave(120,40,Bc)+LN(150,40,180,40,fio,2)+LN(180,40,180,60,fio,2)+LN(180,100,180,170,fio,2)+LN(180,170,25,170,fio,2)+LN(25,170,25,132,fio,2);
+  g+=TX(75,28,'A',{fs:11})+TX(135,28,'B',{fs:11});}
+ else{g+=LN(25,92,25,30,fio,2)+LN(25,30,150,30,fio,2)+LN(60,30,60,50,fio,2)+LN(60,50,70,50,fio,2)+chave(70,50,A)+LN(100,50,150,50,fio,2)+LN(25,30,25,30,fio,2);
+  g+=LN(40,30,40,78,fio,2)+LN(40,78,70,78,fio,2)+chave(70,78,Bc)+LN(100,78,150,78,fio,2)+LN(150,30,150,78,fio,2)+LN(150,54,180,54,fio,2)+LN(180,54,180,60,fio,2)+LN(180,100,180,170,fio,2)+LN(180,170,25,170,fio,2)+LN(25,170,25,132,fio,2);
+  g+=TX(85,44,'A',{fs:11})+TX(85,72,'B',{fs:11});}
+ if(on)g+=CI(180,80,26,'#FFF1C2');g+=CI(180,80,16,on?'#FFD34D':'#E5E7EB','stroke="'+NAVY+'" stroke-width="1.5"')+TX(180,84,on?'acesa':'',{fs:8});
+ const ops=m==0?((p,q)=>p&&q):((p,q)=>p||q),x0=212;g+=TX(x0+60,18,m==0?'A e B':'A ou B',{fs:11,c:ORANGE});
+ ['A','B','lâmpada'].forEach((t,j)=>g+=RC(x0+j*40,26,j<2?40:42,20,'#FDE9D8','stroke="#D7DEEA"')+TX(x0+j*40+(j<2?20:21),40,t,{fs:9}));
+ [[1,1],[1,0],[0,1],[0,0]].forEach((r,i)=>{const k=(r[0]?'V':'F')+(r[1]?'V':'F'),y=46+i*24,cur=(A==!!r[0]&&Bc==!!r[1]),seen=vis[m].has(k),v=ops(r[0],r[1]);
+  for(let j=0;j<3;j++)g+=RC(x0+j*40,y,j<2?40:42,24,cur?'#FFF4D6':'#fff','stroke="'+(cur?ORANGE:'#D7DEEA')+'"'+(cur?' stroke-width="2"':''));
+  g+=TX(x0+20,y+16,r[0]?'V':'F',{fs:10})+TX(x0+60,y+16,r[1]?'V':'F',{fs:10})+TX(x0+101,y+16,seen?(v?'V':'F'):'?',{fs:10,c:seen?(v?'#15803D':'#C0504D'):GRAY});});
+ g+=TX(x0+61,160,'linhas vistas: '+vis[m].size+' de 4',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(342,184,g);$('ba').textContent='Chave A: '+(A?'ligada':'desligada');$('bb').textContent='Chave B: '+(Bc?'ligada':'desligada');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

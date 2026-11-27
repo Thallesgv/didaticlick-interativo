@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As quatro cartas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>As quatro cartas</h1></header>
+<main>
+<div class="card"><h2>Teste a regra</h2><p class="muted" style="margin-top:0">Regra do abrigo: <b>"Se tem mordida, então está no isolamento."</b> Cada carta é uma pessoa: de um lado, se tem mordida; do outro, a ala onde está. Toque numa carta para virá-la. Vire só as cartas que podem mostrar a regra quebrada.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button class="alt" id="br">Desvirar todas</button></div>
+<p style="margin:10px 0 4px"><b>Qual frase diz exatamente o mesmo que a regra?</b></p>
+<div id="cf"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Vire as cartas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const K=[{f:'mordida: SIM',v:'ala: COMUM',tipo:'p'},{f:'mordida: NÃO',v:'ala: ISOLAMENTO',tipo:'np'},{f:'ala: ISOLAMENTO',v:'mordida: NÃO',tipo:'q'},{f:'ala: COMUM',v:'mordida: NÃO',tipo:'nq'}];
+let vir=[false,false,false,false];$('br').onclick=()=>{vir=[false,false,false,false];draw();};
+const FR=['Se está no isolamento, então tem mordida.','Se não tem mordida, então não está no isolamento.','Se não está no isolamento, então não tem mordida.'];
+const CF=chips('cf',['recíproca: se isolamento, mordida','contrária: se não mordida, não isolamento','contrapositiva: se não isolamento, não mordida'],-1,draw);
+const certo=()=>vir[0]&&vir[3]&&!vir[1]&&!vir[2];
+MIS.def(()=>[
+ ['Vire a carta que testa a <b>hipótese</b> da regra e veja se ela quebra a regra.',()=>vir[0],()=>'Mordida SIM, mas na ala COMUM: essa pessoa quebra a regra! Precisa ir para o isolamento.',()=>'A hipótese é "tem mordida". Qual carta mostra isso?'],
+ ['Desvire tudo e vire <b>exatamente as duas cartas</b> necessárias, sem nenhuma à toa.',()=>certo(),()=>'"mordida: SIM" (pode estar fora do isolamento) e "ala: COMUM" (pode ter mordida). As outras duas nunca quebram a regra.',()=>{const n=vir.filter(x=>x).length;return vir[1]||vir[2]?'Alguma carta foi virada à toa: quem não tem mordida, ou quem já está no isolamento, nunca quebra a regra.':n<2?'Vire mais uma carta.':'Quase.';}],
+ ['Escolha a frase que diz <b>exatamente o mesmo</b> que a regra.',()=>CF.get()==2,()=>'A contrapositiva. Por isso a carta "ala: COMUM" precisa ser virada: fora do isolamento, não pode ter mordida.',()=>CF.get()<0?'Escolha uma das três frases.':'Essa pode ser falsa mesmo com a regra verdadeira: Seu Lauro está no isolamento cuidando dos isolados e não tem mordida.']]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const i=Math.floor((x-6)/84);if(i<0||i>3||y<20||y>150)return;vir[i]=!vir[i];draw();});
+function draw(){let g='';K.forEach((k,i)=>{const x=10+i*84,v=vir[i],t=v?k.v:k.f,quebra=v&&i==0;
+  g+=RC(x,24,74,120,v?(quebra?'#FBE3E2':'#EEF0F4'):'#FDE9D8','rx="8" stroke="'+(quebra?'#C0504D':v?'#6B7280':'#F7821F')+'" stroke-width="2"');
+  const [a,b]=t.split(': ');g+=TX(x+37,72,a+':',{fs:10,c:GRAY,w:500})+TX(x+37,92,b,{fs:b.length>8?9.5:13});
+  g+=TX(x+37,136,v?'(verso)':'(frente)',{fs:8,c:GRAY,w:500});if(quebra)g+=TX(x+37,116,'QUEBRA!',{fs:10,c:'#C0504D'});});
+ g+=TX(171,14,'Se tem mordida, então está no isolamento.',{fs:10.5,c:NAVY});
+ const n=CF.get();g+=RC(6,156,330,26,n<0?'#EEF0F4':(n==2?'#DFF3E4':'#FBE3E2'),'rx="5"')+TX(171,173,n<0?'(escolha a frase abaixo)':FR[n],{fs:9.5,c:n<0?GRAY:(n==2?'#15803D':'#C0504D')});
+ $('fig').innerHTML=SVG(342,188,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
