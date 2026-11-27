@@ -13,22 +13,47 @@
 <div class="fig" id="fig"></div>
 <div class="sl" id="sn"><b>Camadas</b><input type="range"><span></span></div>
 <div class="sl" id="sr"><b>Raio da bala</b><input type="range"><span></span></div>
-<div class="kpi"><div class="o">Total de balas<b id="kt"></b></div><div>Massa de uma bala<b id="kb"></b></div><div>Massa da pilha<b id="km"></b></div></div>
+<div class="kpi"><div class="o">Total de balas<b id="kt"></b></div><div>Massa de uma bala<b id="kb"></b></div><div>Massa da pilha<b id="km"></b></div><div class="o">Altura da pilha<b id="kh"></b></div></div>
 <div id="m"></div></div>
-<div class="card"><h2>Missão</h2><p style="margin:0">O artilheiro tem <b>204 balas</b>. Quantas camadas tem a pirâmide que usa todas elas, sem sobrar nenhuma?</p></div>
+<div class="card"><h2>A altura e o quadrado inscrito</h2><p class="muted" style="margin-top:0">Cada bala se apoia em quatro de baixo. Vistos de cima, os centros dessas quatro formam um quadrado de lado 2r, inscrito numa circunferência de raio R = r√2. No corte, Pitágoras dá a subida h entre as camadas.</p>
+<div class="fig" id="fig2"></div>
+<p id="exp" style="margin:6px 0 0"></p></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">O artilheiro tem <b>204 balas</b>. Quantas camadas tem a pirâmide que usa todas elas, sem sobrar nenhuma? Depois descubra a altura dessa pilha com balas de 6,5 cm de raio.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
 const N=SL('sn',1,10,1,5,draw,v=>v+' camadas'),Rr=SL('sr',3,8,0.5,5,draw,v=>r1(v)+' cm');
 function draw(){const n=N.get(),r=Rr.get(),T=n*(n+1)*(2*n+1)/6,vb=4*3.14*r**3/3,mb=vb*7.9/1000;
- const s=Math.min(16,150/n),y0=196;let g='';
- for(let j=0;j<n;j++){const cnt=n-j;const x0=170-cnt*s/2;for(let i=0;i<cnt;i++)g+=`<circle cx="${x0+s/2+i*s}" cy="${y0-s/2-j*s*0.87}" r="${s/2-0.6}" fill="#3A3F4A"/>`;
-  g+=TX(170+cnt*s/2+6,y0-s/2-j*s*0.87+4,cnt+'² = '+cnt*cnt,{fs:Math.min(10,s*.7),a:'start',c:GRAY,w:500});}
+ const h=r*Math.SQRT2,H=2*r+(n-1)*h;
+ const s=Math.min(22,190/n),dy=s*Math.SQRT2/2,y0=196;let g='';
+ for(let j=0;j<n;j++){const cnt=n-j;const x0=150-cnt*s/2;for(let i=0;i<cnt;i++)g+=`<circle cx="${x0+s/2+i*s}" cy="${y0-s/2-j*dy}" r="${s/2}" fill="#3A3F4A" stroke="#fff" stroke-width="1.2"/>`;
+  g+=TX(150+cnt*s/2+6,y0-s/2-j*dy+4,cnt+'² = '+cnt*cnt,{fs:Math.min(10,s*.7),a:'start',c:GRAY,w:500});}
+ const top=y0-s-(n-1)*dy;
+ g+=LN(300,y0,300,top,ORANGE,2)+LN(294,y0,306,y0,ORANGE,2)+LN(294,top,306,top,ORANGE,2);
+ g+=TX(312,(y0+top)/2+4,r1(H)+' cm',{fs:10,a:'start',c:ORANGE});
  g+=TX(170,16,'pilha vista de lado: cada fileira é uma camada quadrada',{fs:9.5,c:GRAY,w:500});
- $('fig').innerHTML=SVG(340,206,g);
- $('kt').textContent=fmt(T);$('kb').textContent=r1(mb)+' kg';$('km').textContent=fmt(Math.round(T*mb))+' kg';
- missao('m',T==204,'8 camadas: 1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 = 204. Pela fórmula: 8 × 9 × 17 ÷ 6 = 204.',
+ $('fig').innerHTML=SVG(360,206,g);
+ // vista de cima + corte
+ const k=32,cx=80,cy=98,R=k*Math.SQRT2;let q='';
+ for(const [sx,sy] of [[-1,-1],[1,-1],[1,1],[-1,1]])q+=`<circle cx="${cx+sx*k}" cy="${cy+sy*k}" r="${k-1}" fill="#9CA3AF" stroke="#3A3F4A"/>`;
+ q+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${BLUE}" stroke-width="2" stroke-dasharray="5 4"/>`;
+ q+=`<rect x="${cx-k}" y="${cy-k}" width="${2*k}" height="${2*k}" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`;
+ q+=`<circle cx="${cx}" cy="${cy}" r="${k-1}" fill="rgba(58,63,74,.25)" stroke="#3A3F4A" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+ q+=LN(cx,cy,cx+k,cy-k,BLUE,2.5)+TX(cx+k+6,cy-2*k-2,'R = '+r1(h)+' cm',{fs:11,a:'start',c:BLUE});
+ q+=TX(cx,cy+2*k+14,'lado do quadrado 2r = '+r1(2*r)+' cm',{fs:10,c:ORANGE});
+ q+=TX(cx,14,'vista de cima',{fs:10,c:GRAY,w:500});
+ const x0=215,yb=170,sc=Math.min(110/(2*r),11),RR=h*sc,hh=h*sc;
+ q+=`<polygon points="${x0},${yb} ${x0+RR},${yb} ${x0},${yb-hh}" fill="#FDE3CC" stroke="${ORANGE}" stroke-width="2"/>`;
+ q+=`<circle cx="${x0}" cy="${yb-hh}" r="4" fill="${BLUE}"/><circle cx="${x0+RR}" cy="${yb}" r="4" fill="${BLUE}"/>`;
+ q+=TX(x0+RR/2,yb+16,'R = '+r1(h)+' cm',{fs:10,c:BLUE});
+ q+=TX(x0-6,yb-hh/2+4,'h',{fs:12,a:'end',c:BLUE});
+ q+=TX(x0+RR/2+8,yb-hh/2-4,'2r = '+r1(2*r),{fs:10,a:'start',c:ORANGE});
+ q+=TX(x0+RR/2,14,'corte',{fs:10,c:GRAY,w:500});
+ $('fig2').innerHTML=SVG(340,212,q);
+ $('exp').innerHTML='h² + R² = (2r)² → h² + '+r1(h*h)+' = '+r1(4*r*r)+' → <b>h = r√2 ≈ '+r1(h)+' cm</b>. Altura da pilha: 2r + (n − 1)·h = '+r1(2*r)+' + '+(n-1)+' × '+r1(h)+' ≈ <b>'+r1(H)+' cm</b> (sem encaixe seriam '+r1(2*r*n)+' cm).';
+ $('kt').textContent=fmt(T);$('kb').textContent=r1(mb)+' kg';$('km').textContent=fmt(Math.round(T*mb))+' kg';$('kh').textContent=r1(H)+' cm';
+ missao('m',T==204,'8 camadas: 1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 = 204. Pela fórmula: 8 × 9 × 17 ÷ 6 = 204. Com raio 6,5 cm, a pilha tem cerca de 77,3 cm de altura.',
   'Com '+n+' camadas são '+fmt(T)+' balas. '+(T<204?'Faltam '+(204-T)+'.':'Passou de 204.'));}
 draw();
 })();
