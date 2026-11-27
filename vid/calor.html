@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O termômetro escondido · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O termômetro escondido</h1></header>
+<main>
+<div class="card"><h2>Picolé e mosquito</h2><p class="muted" style="margin-top:0">Trinta dias na reserva. Cada ponto é um dia. Escolha o par de variáveis, ligue as cores do termômetro e filtre os dias pela temperatura. O número r (de −1 a 1) mede o quanto os pontos formam uma reta.</p>
+<div id="par" style="margin:6px 0"></div>
+<div id="cor" style="margin:6px 0"></div>
+<div id="fil" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Correlação r<b id="kr"></b></div><div>Leitura<b id="kl"></b></div><div>Dias no gráfico<b id="kn"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Explore os dias.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let sd=11;const rnd=()=>{sd=(sd*9301+49297)%233280;return sd/233280;},gs=()=>Math.sqrt(-2*Math.log(1-rnd()))*Math.cos(2*Math.PI*rnd());
+const D=Array.from({length:30},()=>{const T=Math.round((17+16*rnd())*10)/10;return {T,pi:Math.max(5,Math.round(3.2*T-40+6*gs())),mo:Math.max(0,Math.round(0.9*T-12+2.5*gs())),ca:Math.max(0,Math.round(60-1.6*T+4*gs()))};});
+const PAR=[['picolés vendidos','pi','picadas de mosquito','mo'],['temperatura (°C)','T','picadas de mosquito','mo'],['temperatura (°C)','T','casacos vendidos','ca']];
+const CP=chips('par',PAR.map(p=>p[0].split(' ')[0]+' × '+p[2].split(' ')[0]),0,draw),CC=chips('cor',['sem cores','cores do termômetro'],0,draw),CF=chips('fil',['todos os dias','só frescos (até 22 °C)','só mornos (23 a 26 °C)','só quentes (27 °C ou mais)'],0,draw);
+const faixa=T=>T<23?1:T<27?2:3,COR=['','#8EC5E8','#F2C94C','#F2994A'];
+const sel=()=>D.filter(d=>CF.get()==0||faixa(d.T)==CF.get());
+const corr=(a,x,y)=>{const n=a.length;if(n<3)return 0;const mx=a.reduce((s,d)=>s+d[x],0)/n,my=a.reduce((s,d)=>s+d[y],0)/n;let sxy=0,sxx=0,syy=0;a.forEach(d=>{sxy+=(d[x]-mx)*(d[y]-my);sxx+=(d[x]-mx)**2;syy+=(d[y]-my)**2;});return sxx&&syy?sxy/Math.sqrt(sxx*syy):0;};
+const R=()=>{const p=PAR[CP.get()];return corr(sel(),p[1],p[3]);};
+const le=r=>{const a=Math.abs(r);return (a>=0.7?'forte':a>=0.4?'moderada':a>=0.2?'fraca':'quase nenhuma')+(a>=0.2?(r>0?' e positiva':' e negativa'):'');};
+const PICO=(x,y)=>`<g transform="translate(${x} ${y})"><rect x="-4" y="-12" width="8" height="12" rx="4" fill="#F28CB1"/><rect x="-1" y="0" width="2" height="6" fill="#C8A26B"/></g>`;
+const MOSQ=(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cx="0" cy="0" rx="5" ry="2" fill="#374151"/><ellipse cx="-1" cy="-4" rx="3" ry="1.5" fill="#CBD5E1" transform="rotate(-30 -1 -4)"/><ellipse cx="2" cy="-4" rx="3" ry="1.5" fill="#CBD5E1" transform="rotate(30 2 -4)"/><line x1="5" y1="0" x2="9" y2="1" stroke="#374151" stroke-width="1"/></g>`;
+MIS.def(()=>[
+ ['Picolés e picadas sobem juntos (r alto). Agora escolha <b>temperatura × picadas</b>: o calor também anda junto com as picadas?',()=>CP.get()==1&&CF.get()==0,()=>'r = '+r2(R())+': correlação '+le(R())+'. Nos dias quentes há mais picadas. E também se vende mais picolé…',()=>CF.get()!=0?'Volte para todos os dias.':'Escolha temperatura × picadas.'],
+ ['Volte para <b>picolés × picadas</b> e ligue as <b>cores do termômetro</b>. Onde ficam os dias quentes?',()=>CC.get()==1&&CP.get()==0,'Os dias quentes (laranja) ficam todos no alto, à direita; os frescos (azul), embaixo, à esquerda. O calor mexe nas duas variáveis.',()=>'Escolha "cores do termômetro" (com picolés × picadas).'],
+ ['Mostre <b>só os dias quentes</b>. A correlação continua forte?',()=>CP.get()==0&&CF.get()==3,()=>'Só nos dias quentes, r = '+r2(R())+' ('+le(R())+'). Com a temperatura quase igual, a "relação" entre picolé e picada enfraquece muito: quem mandava era o calor.',()=>'Escolha picolés × picadas e "só quentes".'],
+ ['Encontre um par de variáveis com <b>correlação negativa</b>.',()=>CF.get()==0&&R()<-0.4,()=>'r = '+r2(R())+': quanto mais quente, menos casacos. Uma variável sobe enquanto a outra desce.',()=>CF.get()!=0?'Volte para todos os dias.':'Esse par não é negativo. Tente outro.']]);
+function draw(){const p=PAR[CP.get()],a=sel(),xs=D.map(d=>d[p[1]]),ys=D.map(d=>d[p[3]]);
+ const sx=p[1]=='T'?2:20,sy=p[3]=='mo'?5:10,xmin=Math.floor(Math.min(...xs)/sx)*sx,xmax=Math.ceil(Math.max(...xs)/sx)*sx,ymax=Math.ceil(Math.max(...ys)/sy)*sy;
+ $('fig').innerHTML=PLOT({xmin,xmax,ymin:0,ymax,dx:sx*(p[1]=='T'?2:1),dy:sy,xl:p[0],yl:p[2]},(X,Y)=>{let g='';
+  D.forEach(d=>{const on=CF.get()==0||faixa(d.T)==CF.get();g+=CI(X(d[p[1]]),Y(d[p[3]]),on?5:3.5,on?(CC.get()?COR[faixa(d.T)]:NAVY):'#E5E7EB',on?'stroke="'+(CC.get()?NAVY:'#fff')+'" stroke-width="1.2"':'');});
+  if(p[1]=='pi')g+=PICO(240,229);g+=p[3]=='mo'?MOSQ(182,9):'';return g;});
+ const r=R();$('kr').textContent=r2(r);$('kl').textContent=le(r);$('kn').textContent=a.length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

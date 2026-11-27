@@ -92,7 +92,30 @@ const LIV={'vid1':{T:["Do metro ao micrômetro", "Notação científica", "O aum
 6:()=>{const t=R(0,2);
  if(t==0){const a=P([200,400,500,800,1000]),v=P([-40,-25,-20,10,25,50,75]);const n=a*(1+v/100);return{q:`Uma população passou de <b>${fmt(a)}</b> para <b>${fmt(n)}</b>. Qual a variação percentual?`,a:v,exp:`(${fmt(n)} − ${fmt(a)}) ÷ ${fmt(a)} = ${v}%.`};}
  if(t==1){const p=P([1000,2000,5000]),x=P([10,20,25,50]);const v=p*(1-x/100)*(1+x/100);return{q:`Uma população de <b>${fmt(p)}</b> cai <b>${x}%</b> e depois sobe <b>${x}%</b>. Com quanto fica?`,a:v,tol:0.01,exp:`${fmt(p)} × ${fmt(1-x/100)} × ${fmt(1+x/100)} = ${fmt(v)}.`};}
- const x=P([20,25,50,60]);const v=Math.round((1/(1-x/100)-1)*1000)/10;return{q:`Depois de cair <b>${x}%</b>, quantos por cento a população precisa subir para voltar ao valor inicial? (1 casa)`,a:v,tol:0.06,exp:`1 ÷ ${fmt(1-x/100)} − 1 ≈ ${fmt(v)}%.`};}}}};
+ const x=P([20,25,50,60]);const v=Math.round((1/(1-x/100)-1)*1000)/10;return{q:`Depois de cair <b>${x}%</b>, quantos por cento a população precisa subir para voltar ao valor inicial? (1 casa)`,a:v,tol:0.06,exp:`1 ÷ ${fmt(1-x/100)} − 1 ≈ ${fmt(v)}%.`};}}},'vid4':{T:["Uma pergunta que se testa", "O grupo de controle", "O meio dos dados", "O desenho dos dados", "Juntos não quer dizer causa", "Repetir para acreditar"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const j=P([6,8,10]),tot=20,g=10,k=R(Math.ceil(j/2)+1,j);return{q:`Na estufa há <b>${tot}</b> vasos, <b>${j}</b> deles na janela. O grupo do húmus (10 vasos) ficou com <b>${k}</b> vasos de janela. Que porcentagem do grupo do húmus está no sol?`,a:k*10,exp:`${k} ÷ 10 = ${k*10}%.`};}
+ if(t==1){const j=P([6,8,10,12]);return{q:`São 20 vasos, <b>${j}</b> na janela, divididos por sorteio em dois grupos de 10. Quantos vasos de janela se espera em cada grupo?`,a:j/2,exp:`${j} ÷ 2 = ${j/2}.`};}
+ const j=P([8,10,12]),k=R(j/2+1,Math.min(10,j));return{q:`Com <b>${j}</b> vasos de janela, o esperado é ${j/2} em cada grupo. O grupo do húmus recebeu <b>${k}</b>. Quantos por cento a mais que o esperado?`,a:Math.round((k-j/2)/(j/2)*1000)/10,tol:0.06,exp:`(${k} − ${j/2}) ÷ ${j/2} = ${fmt(Math.round((k-j/2)/(j/2)*1000)/10)}%.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const c=R(10,20),e=R(1,6);return{q:`O grupo com adubo teve média <b>${c+e} cm</b> e o controle, <b>${c} cm</b>. Qual o efeito estimado (cm)?`,a:e,exp:`${c+e} − ${c} = ${e} cm.`};}
+ if(t==1){const n=5,v=Array.from({length:n},()=>R(8,18));const s=v.reduce((a,b)=>a+b,0);return{q:`Calcule a média das alturas ${v.join(', ')} (cm).`,a:s/n,tol:0.01,exp:`${s} ÷ ${n} = ${fmt(s/n)}.`};}
+ const r=R(45,80),pl=R(20,r-10);return{q:`Com o remédio, <b>${r}%</b> melhoraram; com placebo, <b>${pl}%</b>. Quantos pontos percentuais o remédio ajudou além do placebo?`,a:r-pl,exp:`${r} − ${pl} = ${r-pl}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const v=Array.from({length:5},()=>R(1,30)),o=v.slice().sort((a,b)=>a-b);return{q:`Qual a mediana de ${v.join(', ')}?`,a:o[2],exp:`Em ordem: ${o.join(', ')}. O do meio é ${o[2]}.`};}
+ if(t==1){const v=Array.from({length:6},()=>R(1,30)),o=v.slice().sort((a,b)=>a-b),m=(o[2]+o[3])/2;return{q:`Qual a mediana de ${v.join(', ')}? (seis valores)`,a:m,tol:0.01,exp:`Em ordem: ${o.join(', ')}. (${o[2]} + ${o[3]}) ÷ 2 = ${fmt(m)}.`};}
+ const n=P([4,5]),m=R(10,15),m2=m+1,x=m2*(n+1)-m*n;return{q:`A média de <b>${n}</b> feijões é <b>${m} cm</b>. Um novo feijão entra e a média passa a <b>${m2} cm</b>. Quanto mede o novo?`,a:x,exp:`${n+1} × ${m2} − ${n} × ${m} = ${m2*(n+1)} − ${m*n} = ${x} cm.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const tot=P([20,40,50,80,200]),f=R(1,tot/2);return{q:`Uma classe do histograma tem <b>${f}</b> de <b>${tot}</b> valores. Qual a frequência relativa (%)?`,a:Math.round(f/tot*1000)/10,tol:0.06,exp:`${f} ÷ ${tot} = ${fmt(Math.round(f/tot*1000)/10)}%.`};}
+ if(t==1){const f=[R(1,4),R(3,8),R(6,12),R(4,10),R(1,4)];return{q:`Frequências das classes 4–5, 5–6, 6–7, 7–8 e 8–9 cm: <b>${f.join(', ')}</b>. Quantas folhas medem menos de 6 cm?`,a:f[0]+f[1],exp:`${f[0]} + ${f[1]} = ${f[0]+f[1]}.`};}
+ const f=[R(1,4),R(3,8),R(2,6)],s=4.5*f[0]+5.5*f[1]+6.5*f[2],n=f[0]+f[1]+f[2];return{q:`Classes 4–5, 5–6 e 6–7 cm com frequências <b>${f.join(', ')}</b>. Estime a média usando os pontos médios. (2 casas)`,a:Math.round(s/n*100)/100,tol:0.011,exp:`(4,5×${f[0]} + 5,5×${f[1]} + 6,5×${f[2]}) ÷ ${n} = ${fmt(s)} ÷ ${n} ≈ ${fmt(Math.round(s/n*100)/100)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const x1=R(10,30),y1=R(2,8),dx=P([10,20,25,40]),k=P([0.2,0.25,0.4,0.5]),y2=y1+k*dx;return{q:`Num dia, <b>${x1}</b> picolés e <b>${y1}</b> picadas; noutro, <b>${x1+dx}</b> picolés e <b>${fmt(y2)}</b> picadas. Quantas picadas a mais por picolé?`,a:k,tol:0.001,exp:`(${fmt(y2)} − ${y1}) ÷ (${x1+dx} − ${x1}) = ${fmt(k)}.`};}
+ if(t==1){const c=R(10,60),k=P([20,25,40,50]);return{q:`Uma cidade tem <b>${c}</b> casais de cegonhas e <b>${c*k}</b> nascimentos. Quantos nascimentos por casal?`,a:k,exp:`${c*k} ÷ ${c} = ${k}.`};}
+ const r=P([0.9,0.7,0.3,-0.4,-0.8]);return{q:`Um gráfico de dispersão tem r = <b>${fmt(r)}</b>. Responda 1 se a correlação for positiva e −1 se for negativa.`,a:r>0?1:-1,exp:`r ${r>0?'maior':'menor'} que zero: ${r>0?'positiva':'negativa'}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const s=P([0.8,1.2,1.6,2]),k=P([4,9,16]);return{q:`Com 5 plantas por grupo, a média oscila <b>${fmt(s)} cm</b>. Com <b>${5*k}</b> plantas (${k} vezes mais), quanto deve oscilar? (2 casas)`,a:Math.round(s/Math.sqrt(k)*100)/100,tol:0.011,exp:`√${k} = ${Math.sqrt(k)}: ${fmt(s)} ÷ ${Math.sqrt(k)} ≈ ${fmt(Math.round(s/Math.sqrt(k)*100)/100)} cm.`};}
+ if(t==1){const d=P([2,3,4,5,10]);return{q:`Quantas vezes mais plantas são necessárias para a oscilação da média cair a <b>1/${d}</b>?`,a:d*d,exp:`${d}² = ${d*d}.`};}
+ const p=P([1,2,3,5]),n=P([20,40,100]);return{q:`Sem efeito nenhum, a sorte dá diferença maior que 2 cm em <b>${p}%</b> dos testes. Em <b>${n}</b> turmas, quantas veriam isso por sorte?`,a:n*p/100,tol:0.01,exp:`${n} × ${p}% = ${fmt(n*p/100)}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='vid1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

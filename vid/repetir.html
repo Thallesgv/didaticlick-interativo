@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mil experimentos num minuto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Mil experimentos num minuto</h1></header>
+<main>
+<div class="card"><h2>A estufa que repete</h2><p class="muted" style="margin-top:0">Escolha quantos vasos há em cada grupo e quanto o húmus ajuda de verdade. A estufa repete o teste inteiro muitas vezes, com feijões novos a cada vez, e cada diferença das médias cai numa coluna do histograma. As colunas laranja são as diferenças de 2 cm ou mais.</p>
+<div class="sl" id="rn"><b>Vasos em cada grupo</b><input type="range"><span></span></div>
+<div class="sl" id="re"><b>Quanto o húmus ajuda de verdade</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Repetir 100 vezes</button><button id="b2">Repetir 1.000 vezes</button><button class="alt" id="b0">Limpar</button></div>
+<div class="fig" id="vas"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Repetições<b id="kn"></b></div><div class="o">Deram 2 cm ou mais<b id="kp"></b></div><div>Oscilação das diferenças<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Repita o teste.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const RN=SL('rn',2,50,1,5,limpa),RE=SL('re',0,3,0.5,0,limpa,v=>fmt(v)+' cm');
+let ds=[],ult=null;const sdN={};
+function limpa(){ds=[];ult=null;draw();}
+function roda(k){const n=RN.get(),e=RE.get();for(let r=0;r<k;r++){const c=[],h=[];for(let i=0;i<n;i++){c.push(13+1.6*GAUSS());h.push(13+e+1.6*GAUSS());}const m=a=>a.reduce((s,v)=>s+v,0)/n;ds.push(m(h)-m(c));ult=[c,h];}
+ if(ds.length>=500)sdN[n]=desv();draw();}
+$('b1').onclick=()=>roda(100);$('b2').onclick=()=>roda(1000);$('b0').onclick=limpa;
+const desv=()=>{const n=ds.length,m=ds.reduce((s,v)=>s+v,0)/n;return Math.sqrt(ds.reduce((s,v)=>s+(v-m)**2,0)/n);},pc=t=>ds.length?100*ds.filter(v=>v>=t).length/ds.length:0;
+MIS.def(()=>[
+ ['Com húmus <b>sem efeito</b> (0 cm) e <b>5 vasos</b>, repita 1.000 vezes. Quantas vezes a sorte deu 2 cm ou mais?',()=>RE.get()==0&&RN.get()==5&&ds.length>=1000,()=>'Em '+r1(pc(2))+'% das repetições. Raro, mas acontece: numa escola com muitas turmas, alguma pode ver 2 cm só por sorte.',()=>RE.get()!=0||RN.get()!=5?'Ajuste: 5 vasos e efeito 0.':'Repetições: '+ds.length+' de 1.000.'],
+ ['Ainda sem efeito, descubra quantos vasos deixam a <b>oscilação abaixo de 0,5 cm</b> (repita pelo menos 500 vezes).',()=>RE.get()==0&&ds.length>=500&&desv()<0.5,()=>'Com '+RN.get()+' vasos, as diferenças oscilam só '+r2(desv())+' cm. Agora 2 cm de sorte é praticamente impossível.',()=>RE.get()!=0?'Volte o efeito para 0.':ds.length<500?'Repita pelo menos 500 vezes.':'Oscilação: '+r2(desv())+' cm. Use mais vasos.'],
+ ['Confira a <b>regra da raiz</b>: repita 500 vezes ou mais com <b>5</b> vasos e depois com <b>20</b>. A oscilação cai pela metade?',()=>sdN[5]&&sdN[20],()=>'Com 5 vasos: '+r2(sdN[5])+' cm; com 20: '+r2(sdN[20])+' cm. Razão de '+r2(sdN[5]/sdN[20])+': 4 vezes mais vasos, cerca de 2 vezes menos oscilação.',()=>'Já medido: '+(sdN[5]?'5 vasos ✔ ':'5 vasos ✗ ')+(sdN[20]?'· 20 vasos ✔':'· 20 vasos ✗')+'.'],
+ ['Agora o húmus ajuda <b>2 cm</b> de verdade. Com 20 vasos, repita 500 vezes ou mais: em quantos testes a diferença passou de 1 cm?',()=>RE.get()==2&&RN.get()==20&&ds.length>=500,()=>'Em '+r1(pc(1))+'% dos testes. Com grupos grandes, um efeito real aparece quase sempre.',()=>RE.get()!=2||RN.get()!=20?'Ajuste: 20 vasos e efeito 2 cm.':'Repetições: '+ds.length+' de 500.']]);
+function draw(){let v=RC(0,0,340,136,'#F3F8EC','rx="10"');
+ if(ult){const k=Math.min(10,RN.get()),w=Math.min(24,300/k);for(let i=0;i<k;i++){const x=30+w/2+i*(300/k);v+=VASO(x,54,ult[0][i]*2.2,'#9C7A55',w)+VASO(x,114,ult[1][i]*2.2,'#2B1A0C',w);}
+  v+=TX(334,130,'último teste'+(RN.get()>10?' (10 de '+RN.get()+' vasos)':''),{fs:9,a:'end',c:GRAY});}else v+=TX(170,64,'Aperte um botão para a estufa repetir o teste.',{fs:11,c:GRAY});
+ $('vas').innerHTML=SVG(340,136,v);
+ const X=t=>26+(t+4)*29,yb=196,c=Array(20).fill(0);ds.forEach(d=>{const k=Math.floor((d+4)/0.5);if(k>=0&&k<20)c[k]++;});const mx=Math.max(1,...c);let g='';
+ c.forEach((f,k)=>{const t=-4+k*0.5,hh=f/mx*160;g+=RC(X(t),yb-hh,14.5,hh,t>=2?ORANGE:'#7CC47F','stroke="'+NAVY+'" stroke-width=".6"');});
+ g+=LN(20,yb,326,yb,NAVY,1.5);for(let t=-4;t<=6;t+=2)g+=LN(X(t),yb,X(t),yb+4,NAVY,1)+TX(X(t),yb+15,(t>0?'+':'')+t,{fs:9,c:GRAY});
+ g+=LN(X(RE.get()),yb,X(RE.get()),22,BLUE,1.8,'4 3')+TX(X(RE.get()),16,'efeito real: '+fmt(RE.get())+' cm',{fs:10,c:BLUE});
+ g+=TX(326,226,'diferença das médias (cm)',{fs:9,a:'end'});
+ $('fig').innerHTML=SVG(340,232,g);$('kn').textContent=fmt(ds.length);$('kp').textContent=ds.length?r1(pc(2))+'%':'—';$('ks').textContent=ds.length>1?r2(desv())+' cm':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

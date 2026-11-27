@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A horta do teste · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A horta do teste</h1></header>
+<main>
+<div class="card"><h2>Húmus contra controle</h2><p class="muted" style="margin-top:0">Você decide quanto o húmus ajuda <b>de verdade</b> e quantos vasos há em cada grupo. Cada feijão também tem a sua sorte: uns nascem mais fortes, outros mais fracos. Aperte <b>Plantar de novo</b> para repetir o teste.</p>
+<div class="sl" id="se"><b>Quanto o húmus ajuda de verdade</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Vasos em cada grupo</b><input type="range"><span></span></div>
+<div class="row"><button id="bp">Plantar de novo</button></div>
+<div class="fig" id="fig"></div>
+<div class="fig" id="fg"></div>
+<div class="kpi"><div>Média sem húmus<b id="kc"></b></div><div>Média com húmus<b id="kh"></b></div><div class="o">Diferença medida<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Plante.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SE=SL('se',0,4,0.5,2,plantar,v=>fmt(v)+' cm'),SN=SL('sn',3,30,1,10,plantar);
+let ctr=[],hum=[],hist=[];
+const med=a=>a.reduce((s,v)=>s+v,0)/a.length,dif=()=>med(hum)-med(ctr);
+function plantar(){const e=SE.get(),n=SN.get(),f=b=>Math.max(1,Math.round((b+1.6*GAUSS())*10)/10);ctr=Array.from({length:n},()=>f(13));hum=Array.from({length:n},()=>f(13+e));hist.push({e,n,d:dif()});draw();}
+$('bp').onclick=plantar;
+const ult=(e,n)=>{const u=hist.slice(-3);return u.length==3&&u.every(h=>h.e==e&&h.n==n)?u:null;};
+const faltam=(e,n)=>{let k=0;for(let i=hist.length-1;i>=0&&hist[i].e==e&&hist[i].n==n;i--)k++;return Math.min(k,3);};
+MIS.def(()=>[
+ ['Deixe o húmus <b>sem efeito nenhum</b> (0 cm) e 5 vasos por grupo. Plante até a diferença das médias passar de <b>1 cm</b>.',()=>SE.get()==0&&SN.get()==5&&Math.abs(dif())>1,()=>'Diferença de '+r1(dif())+' cm, e o húmus não fazia nada! Com poucos vasos, a sorte sozinha cria diferenças.',()=>SE.get()!=0||SN.get()!=5?'Ajuste: efeito 0 cm e 5 vasos.':'Diferença agora: '+r1(dif())+' cm. Plante de novo.'],
+ ['Agora o húmus ajuda <b>2 cm</b>, ainda com 5 vasos. Plante até a diferença medida ficar <b>menor que 1 cm</b>.',()=>SE.get()==2&&SN.get()==5&&dif()<1,()=>'O húmus ajudava 2 cm, mas o teste mostrou só '+r1(dif())+' cm. Um teste pequeno pode esconder um efeito real.',()=>SE.get()!=2||SN.get()!=5?'Ajuste: efeito 2 cm e 5 vasos.':'Diferença agora: '+r1(dif())+' cm. Plante de novo (pode demorar umas vezes).'],
+ ['Com efeito de 2 cm e <b>30 vasos</b> por grupo, plante <b>3 vezes seguidas</b>. As diferenças ficam perto de 2?',()=>!!ult(2,30),()=>'Diferenças: '+ult(2,30).map(h=>r1(h.d)).join('; ')+' cm. Com 30 vasos por grupo, a sorte pesa bem menos.',()=>SE.get()!=2||SN.get()!=30?'Ajuste: efeito 2 cm e 30 vasos.':'Plantios seguidos: '+faltam(2,30)+' de 3.'],
+ ['Volte ao efeito <b>0</b>, com 30 vasos, e plante 3 vezes seguidas. A sorte ainda consegue passar de 1 cm?',()=>!!ult(0,30),()=>'Diferenças: '+ult(0,30).map(h=>r1(h.d)).join('; ')+' cm. Com muitos vasos, a sorte quase nunca imita um efeito de verdade.',()=>SE.get()!=0||SN.get()!=30?'Ajuste: efeito 0 e 30 vasos.':'Plantios seguidos: '+faltam(0,30)+' de 3.']]);
+function draw(){const n=ctr.length,w=Math.min(26,300/n),X=i=>30+w/2+i*(300/n);let g=RC(0,0,340,236,'#F3F8EC','rx="10"');
+ g+=TX(10,16,'sem húmus (controle)',{fs:10,a:'start',c:GRAY})+TX(10,128,'com húmus',{fs:10,a:'start',c:'#6B4A2B'});
+ ctr.forEach((v,i)=>g+=VASO(X(i),108,v*3.4,'#9C7A55',w));hum.forEach((v,i)=>g+=VASO(X(i),222,v*3.4,'#2B1A0C',w));
+ $('fig').innerHTML=SVG(340,236,g);
+ const Y=v=>190-v*8,mc=med(ctr),mh=med(hum);let s='';
+ for(let v=0;v<=20;v+=5)s+=LN(40,Y(v),330,Y(v),'#E5E7EB',1)+TX(34,Y(v)+3,v,{fs:9,a:'end',c:GRAY});
+ [[mc,ctr,'#CBD2DC',110],[mh,hum,'#7CC47F',250]].forEach(([m,a,c,x])=>{s+=RC(x-50,Y(m),100,190-Y(m),c);a.forEach((v,i)=>s+=CI(x-40+((i*37)%80),Y(Math.min(v,22)),3,NAVY,'stroke="#fff" stroke-width="1"'));s+=LN(x-56,Y(m),x+56,Y(m),ORANGE,2.5)+TX(x,182,'média: '+r1(m)+' cm',{fs:10,c:NAVY});});
+ s+=LN(40,190,330,190,NAVY,1.5)+TX(110,206,'sem húmus',{fs:10})+TX(250,206,'com húmus',{fs:10})+TX(40,12,'altura (cm)',{fs:10,a:'start'});
+ $('fg').innerHTML=SVG(340,212,s);$('kc').textContent=r1(mc)+' cm';$('kh').textContent=r1(mh)+' cm';$('kd').textContent=(dif()>=0?'+':'')+r1(dif())+' cm';MIS.ver('m');}
+plantar();
+})();
+</script>
+</body>
+</html>
