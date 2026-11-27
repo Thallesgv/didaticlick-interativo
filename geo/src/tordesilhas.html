@@ -1,0 +1,23 @@
+<!--T: Mova a linha-->
+<div class="card"><h2>Onde passa a linha de Tordesilhas?</h2><p class="muted">O tratado de 1494 dizia "370 léguas a oeste das ilhas de Cabo Verde", mas não dizia quanto mede uma légua nem de qual ilha contar. Escolha e veja a linha andar.</p>
+<label class="lbl">Tamanho da légua: <span id="vg"></span></label><div class="sl"><input type="range" id="leg" min="5" max="7" step="0.05" value="6"></div>
+<label class="lbl">Ilha de partida</label><select id="ilha"><option value="-22.8">Boa Vista (a mais a leste, 22,8° O)</option><option value="-24.0" selected>Santiago (24,0° O)</option><option value="-25.3">Santo Antão (a mais a oeste, 25,3° O)</option></select>
+<svg id="sv" viewBox="0 0 400 330"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>A conta</h2><p>Distância = 370 × légua. Na latitude de Cabo Verde (cerca de 15°), 1° de longitude mede 111,3 × cos 15° ≈ 107,5 km. A linha fica a (distância ÷ 107,5)° a oeste da ilha.</p></div>
+<script>
+const $=i=>document.getElementById(i);
+const AMS=[[-80,9],[-77,8],[-72,12],[-62,11],[-52,5],[-50,0],[-44,-2],[-35,-5],[-35,-9],[-39,-15],[-40,-22],[-48,-26],[-53,-34],[-58,-38],[-63,-41],[-65,-46],[-68,-52],[-72,-53],[-74,-48],[-73,-40],[-71,-30],[-70,-18],[-76,-14],[-81,-6],[-80,0],[-78,2]];
+const X=l=>(l+85)/65*400,Y=f=>(15-f)/72*330;
+function clip(pts,L){// parte do polígono a leste de L (Sutherland-Hodgman)
+ const out=[];for(let i=0;i<pts.length;i++){const P=pts[i],Q=pts[(i+1)%pts.length],pi=P[0]>=L,qi=Q[0]>=L;if(pi)out.push(P);if(pi!=qi){const t=(L-P[0])/(Q[0]-P[0]);out.push([L,P[1]+t*(Q[1]-P[1])])}}return out}
+function area(pts){let a=0;for(let i=0;i<pts.length;i++){const[p,q]=[pts[i],pts[(i+1)%pts.length]];a+=(p[0]*Math.cos(p[1]*Math.PI/180))*q[1]-(q[0]*Math.cos(q[1]*Math.PI/180))*p[1]}return Math.abs(a/2)}
+function draw(){const g=+$('leg').value,i0=+$('ilha').value;$('vg').textContent=g.toLocaleString('pt-BR')+' km';const km=370*g,graus=km/107.5,L=i0-graus;
+ const E=clip(AMS,L);const fr=area(E)/area(AMS);
+ let s=`<rect width="400" height="330" fill="#EAF2FB"/>`;s+=`<polygon points="${AMS.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="#FDE9D8" stroke="#0E2354"/>`;
+ if(E.length>2)s+=`<polygon points="${E.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="#F78D33" opacity=".75"/>`;
+ s+=`<line x1="${X(L)}" y1="0" x2="${X(L)}" y2="330" stroke="#C2410C" stroke-width="3"/><text x="${X(L)+4}" y="14" font-size="11" fill="#C2410C">${Math.abs(L).toFixed(1).replace('.',',')}° O</text>`;
+ s+=`<circle cx="${X(i0)}" cy="${Y(15.5)}" r="4" fill="#0E2354"/><text x="${X(i0)-6}" y="${Y(15.5)-6}" font-size="10" fill="#0E2354" text-anchor="end">Cabo Verde</text>`;
+ s+=`<line x1="${X(-47.4)}" x2="${X(-47.4)}" y1="300" y2="330" stroke="#6B7280"/><line x1="${X(-42.42)}" x2="${X(-42.42)}" y1="300" y2="330" stroke="#6B7280"/><text x="${X(-45)}" y="296" font-size="9" fill="#6B7280" text-anchor="middle">cálculos de 1495 e 1518</text>`;
+ $('sv').innerHTML=s;$('out').innerHTML=`370 × ${g.toLocaleString('pt-BR')} = <b>${Math.round(km).toLocaleString('pt-BR')} km</b> ≈ ${graus.toFixed(1).replace('.',',')}° → linha a <b>${Math.abs(L).toFixed(1).replace('.',',')}° O</b>. Parte laranja (a leste, de Portugal): cerca de <b>${Math.round(fr*100)}%</b> da área da América do Sul (contorno simplificado).`;}
+$('leg').oninput=draw;$('ilha').onchange=draw;draw();
+</script>

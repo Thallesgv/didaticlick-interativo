@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desenhe os distritos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Desenhe os distritos</h1></header>
+<main>
+<div class="card"><h2>Gerrymandering na prática</h2><p class="muted">São 25 eleitores: 15 laranja e 10 azuis (40%). Escolha uma cor de distrito e toque nos quadrados para formar <b>5 distritos de 5 quadrados</b>, cada um formando um bloco só (vizinhos pelos lados). Consegue fazer o azul vencer 3 distritos?</p>
+<div class="row" id="cores"></div><div class="row" style="margin-top:6px"><button class="alt" id="col">Colunas</button><button class="alt" id="lin">Linhas</button><button class="alt" id="lim">Limpar</button></div>
+<svg id="sv" viewBox="0 0 300 300"></svg><div class="out" id="out"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);const V=['AALLL','AALLL','LALAL','LLALA','ALLLA'];const CORES=['#FCA5A5','#93C5FD','#86EFAC','#FDE68A','#C4B5FD'];let D=[...Array(5)].map(()=>Array(5).fill(-1)),cur=0;
+$('cores').innerHTML=CORES.map((c,i)=>`<button data-c="${i}" style="background:${c};color:#0E2354">Distrito ${i+1}</button>`).join('');
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{cur=+b.dataset.c;document.querySelectorAll('[data-c]').forEach(x=>x.style.outline='');b.style.outline='3px solid #0E2354'});
+function conexo(k){const c=[];for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k)c.push([i,j]);if(!c.length)return false;const vis=new Set([c[0].join()]),st=[c[0]];while(st.length){const[i,j]=st.pop();for(const[a,b]of[[i+1,j],[i-1,j],[i,j+1],[i,j-1]])if(a>=0&&a<5&&b>=0&&b<5&&D[a][b]==k&&!vis.has(a+','+b)){vis.add(a+','+b);st.push([a,b])}}return vis.size==c.length}
+function draw(){let s='';for(let i=0;i<5;i++)for(let j=0;j<5;j++){const k=D[i][j];s+=`<rect x="${j*60}" y="${i*60}" width="60" height="60" fill="${k<0?'#fff':CORES[k]}" stroke="#E5E7EB" data-i="${i}" data-j="${j}"/><circle cx="${j*60+30}" cy="${i*60+30}" r="16" fill="${V[i][j]=='A'?'#0E2354':'#F78D33'}" pointer-events="none"/>`}
+ $('sv').innerHTML=s;let ok=true,A=0,L=0,msg=[];for(let k=0;k<5;k++){let n=0,a=0;for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k){n++;if(V[i][j]=='A')a++}
+  if(n!=5||!conexo(k)){ok=false;msg.push(`Distrito ${k+1}: ${n} quadrados${n&&!conexo(k)?' (separado)':''}`)}else{if(a>=3)A++;else L++}}
+ $('out').innerHTML=ok?`Resultado: <b>azul ${A} × ${L} laranja</b>. ${A>=3?'O azul, com 40% dos votos, ganhou a maioria das cadeiras!':A==2?'Resultado proporcional aos votos.':'O azul ficou com menos cadeiras que votos.'}`:'Ainda falta: '+msg.join(' · ');}
+$('sv').addEventListener('click',e=>{const r=e.target;if(r.dataset.i===undefined)return;D[+r.dataset.i][+r.dataset.j]=cur;draw()});
+$('col').onclick=()=>{D=D.map(r=>r.map((_,j)=>j));draw()};$('lin').onclick=()=>{D=D.map((r,i)=>r.map(()=>i));draw()};$('lim').onclick=()=>{D=D.map(r=>r.map(()=>-1));draw()};
+document.querySelector('[data-c]').click();draw();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contar ou sortear? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Contar ou sortear?</h1></header>
+<main>
+<div class="card"><h2>Uma cidade de 2 000 domicílios</h2><p class="muted">Cada ponto é um domicílio. Os laranja têm uma característica (por exemplo, acesso à internet). Quantos são? Conte tudo (censo) ou sorteie uma amostra.</p>
+<div class="row"><button class="alt" data-n="20">Amostra de 20</button><button class="alt" data-n="100">de 100</button><button class="alt" data-n="400">de 400</button><button class="or" data-n="2000">Censo (todos)</button><button class="alt" id="nova">Nova cidade</button></div>
+<canvas id="cv" width="400" height="250" style="width:100%;border-radius:10px;background:#FFF8F0;margin-top:8px"></canvas><div class="out" id="out"></div><div id="hist" class="muted"></div></div>
+<div class="card"><h2>O que observar</h2><p>Amostras pequenas erram mais e variam de um sorteio para outro. Amostras maiores chegam perto do censo, sem visitar todo mundo. O erro típico cai mais ou menos com a raiz quadrada do tamanho da amostra: 4 vezes mais entrevistas, metade do erro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);let D=[],p,H=[];const cv=$('cv'),g=cv.getContext('2d');
+function nova(){p=.2+Math.random()*.6;D=[];for(let i=0;i<2000;i++){const x=10+(i%50)*7.8,y=10+Math.floor(i/50)*5.9;D.push({x,y,v:Math.random()<p+.2*Math.sin(x/50)})}H=[];pinta([]);$('out').innerHTML='Escolha uma amostra.';$('hist').innerHTML=''}
+function pinta(sel){g.clearRect(0,0,400,250);const S=new Set(sel);D.forEach((d,i)=>{g.globalAlpha=sel.length&&!S.has(i)?.18:1;g.fillStyle=d.v?'#F78D33':'#0E2354';g.beginPath();g.arc(d.x,d.y,S.has(i)&&sel.length<2000?3.4:2.2,0,7);g.fill()});g.globalAlpha=1}
+document.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const n=+b.dataset.n;const idx=[...D.keys()].sort(()=>Math.random()-.5).slice(0,n);pinta(idx);
+ const k=idx.filter(i=>D[i].v).length,est=k/n,real=D.filter(d=>d.v).length/2000;H.push(`n = ${n}: ${(est*100).toFixed(1)}%`);
+ $('out').innerHTML=`Na amostra: ${k} de ${n} → <b>${(est*100).toFixed(1).replace('.',',')}%</b>. Estimativa para a cidade: ${Math.round(est*2000)} domicílios.`+(n==2000?' (Isto é o censo: o valor exato.)':` Erro em relação ao valor real: <b>${(Math.abs(est-real)*100).toFixed(1).replace('.',',')} pontos</b>.`);$('hist').innerHTML='Seus sorteios: '+H.join(' · ')});
+$('nova').onclick=nova;nova();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!--T: Desenhe os distritos-->
+<div class="card"><h2>Gerrymandering na prática</h2><p class="muted">São 25 eleitores: 15 laranja e 10 azuis (40%). Escolha uma cor de distrito e toque nos quadrados para formar <b>5 distritos de 5 quadrados</b>, cada um formando um bloco só (vizinhos pelos lados). Consegue fazer o azul vencer 3 distritos?</p>
+<div class="row" id="cores"></div><div class="row" style="margin-top:6px"><button class="alt" id="col">Colunas</button><button class="alt" id="lin">Linhas</button><button class="alt" id="lim">Limpar</button></div>
+<svg id="sv" viewBox="0 0 300 300"></svg><div class="out" id="out"></div></div>
+<script>
+const $=i=>document.getElementById(i);const V=['AALLL','AALLL','LALAL','LLALA','ALLLA'];const CORES=['#FCA5A5','#93C5FD','#86EFAC','#FDE68A','#C4B5FD'];let D=[...Array(5)].map(()=>Array(5).fill(-1)),cur=0;
+$('cores').innerHTML=CORES.map((c,i)=>`<button data-c="${i}" style="background:${c};color:#0E2354">Distrito ${i+1}</button>`).join('');
+document.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{cur=+b.dataset.c;document.querySelectorAll('[data-c]').forEach(x=>x.style.outline='');b.style.outline='3px solid #0E2354'});
+function conexo(k){const c=[];for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k)c.push([i,j]);if(!c.length)return false;const vis=new Set([c[0].join()]),st=[c[0]];while(st.length){const[i,j]=st.pop();for(const[a,b]of[[i+1,j],[i-1,j],[i,j+1],[i,j-1]])if(a>=0&&a<5&&b>=0&&b<5&&D[a][b]==k&&!vis.has(a+','+b)){vis.add(a+','+b);st.push([a,b])}}return vis.size==c.length}
+function draw(){let s='';for(let i=0;i<5;i++)for(let j=0;j<5;j++){const k=D[i][j];s+=`<rect x="${j*60}" y="${i*60}" width="60" height="60" fill="${k<0?'#fff':CORES[k]}" stroke="#E5E7EB" data-i="${i}" data-j="${j}"/><circle cx="${j*60+30}" cy="${i*60+30}" r="16" fill="${V[i][j]=='A'?'#0E2354':'#F78D33'}" pointer-events="none"/>`}
+ $('sv').innerHTML=s;let ok=true,A=0,L=0,msg=[];for(let k=0;k<5;k++){let n=0,a=0;for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(D[i][j]==k){n++;if(V[i][j]=='A')a++}
+  if(n!=5||!conexo(k)){ok=false;msg.push(`Distrito ${k+1}: ${n} quadrados${n&&!conexo(k)?' (separado)':''}`)}else{if(a>=3)A++;else L++}}
+ $('out').innerHTML=ok?`Resultado: <b>azul ${A} × ${L} laranja</b>. ${A>=3?'O azul, com 40% dos votos, ganhou a maioria das cadeiras!':A==2?'Resultado proporcional aos votos.':'O azul ficou com menos cadeiras que votos.'}`:'Ainda falta: '+msg.join(' · ');}
+$('sv').addEventListener('click',e=>{const r=e.target;if(r.dataset.i===undefined)return;D[+r.dataset.i][+r.dataset.j]=cur;draw()});
+$('col').onclick=()=>{D=D.map(r=>r.map((_,j)=>j));draw()};$('lin').onclick=()=>{D=D.map((r,i)=>r.map(()=>i));draw()};$('lim').onclick=()=>{D=D.map(r=>r.map(()=>-1));draw()};
+document.querySelector('[data-c]').click();draw();
+</script>
