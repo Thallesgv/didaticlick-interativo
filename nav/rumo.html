@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O diário de bordo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/nav.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Navegação</div><h1>O diário de bordo</h1></header>
+<main>
+<div class="card"><h2>Dois trechos, um destino</h2><p class="muted" style="margin-top:0">Cada trecho tem um rumo (ângulo a partir da linha norte-sul) e uma distância. O avanço é d · cos θ e o afastamento é d · sen θ.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="a1"><b>Rumo do trecho 1</b><input type="range"><span></span></div>
+<div class="sl" id="d1"><b>Distância do trecho 1</b><input type="range"><span></span></div>
+<div class="sl" id="a2"><b>Rumo do trecho 2</b><input type="range"><span></span></div>
+<div class="sl" id="d2"><b>Distância do trecho 2</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Avanço total<b id="kn"></b></div><div>Afastamento total<b id="ke"></b></div><div>Falta até o alvo<b id="kf"></b></div></div>
+<div id="m"></div><button class="alt" id="nova" style="margin-top:8px">Novo alvo</button></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Chegue ao alvo marcado na carta (a estrela laranja) usando os dois trechos. Dica: decomponha o alvo em avanço e afastamento.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let TN=13.66,TE=13.66;const A1=SL('a1',0,90,1,20,draw,v=>v+'°'),D1=SL('d1',0,15,0.5,8,draw,v=>r1(v)+' léguas'),A2=SL('a2',0,90,1,70,draw,v=>v+'°'),D2=SL('d2',0,15,0.5,8,draw,v=>r1(v)+' léguas');
+$('nova').onclick=()=>{TN=rint(6,20);TE=rint(4,18);draw();};
+function draw(){const a1=A1.get()*RAD,d1=D1.get(),a2=A2.get()*RAD,d2=D2.get();
+ const n1=d1*Math.cos(a1),e1=d1*Math.sin(a1),n2=n1+d2*Math.cos(a2),e2=e1+d2*Math.sin(a2);
+ const k=9,ox=40,oy=220,X=e=>ox+e*k,Y=n=>oy-n*k;let g='';
+ for(let i=0;i<=30;i+=5){g+=LN(X(i),Y(0),X(i),Y(22),'#EEF2F7',1)+LN(X(0),Y(i>22?22:i),X(30),Y(i>22?22:i),'#EEF2F7',1);}
+ g+=LN(X(0),Y(0),X(0),Y(22),GRAY,1)+TX(X(0),Y(22)-4,'N',{fs:10});
+ g+=`<polygon points="${X(TE)},${Y(TN)-8} ${X(TE)+7},${Y(TN)+6} ${X(TE)-7},${Y(TN)+6}" fill="${ORANGE}"/>`;
+ g+=LN(X(0),Y(0),X(e1),Y(n1),BLUE,3)+LN(X(e1),Y(n1),X(e2),Y(n2),NAVY,3);
+ g+=LN(X(0),Y(0),X(0),Y(n1),GREEN,1.5,'3 3')+LN(X(0),Y(n1),X(e1),Y(n1),GREEN,1.5,'3 3');
+ g+=`<circle cx="${X(e2)}" cy="${Y(n2)}" r="5" fill="${NAVY}"/>`;
+ $('fig').innerHTML=SVG(340,236,g);
+ const f=Math.hypot(TN-n2,TE-e2);$('kn').textContent=r2(n2)+' léguas';$('ke').textContent=r2(e2)+' léguas';$('kf').textContent=r2(f)+' léguas';
+ missao('m',f<0.5,'Chegou! Avanço '+r2(n2)+' e afastamento '+r2(e2)+' léguas.','Alvo: avanço '+r2(TN)+' e afastamento '+r2(TE)+' léguas.');}
+draw();
+})();
+</script>
+</body>
+</html>

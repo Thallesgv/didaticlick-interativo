@@ -70,7 +70,30 @@ const LIV={'nav1':{T:["O preço de um navio", "Quanto custa a viagem", "A cota d
 6:()=>{const t=R(0,2);
  if(t==0){const v=P([10,20,30,50]);return{q:`Um barco desloca <b>${v} m³</b> de água do mar (1.025 kg/m³). Qual a massa do barco com a carga, em kg?`,a:v*1025,exp:`${v} · 1.025 = ${fmt(v*1025)} kg.`};}
  if(t==1){const c=P([12.3,24.6,36.9,61.5]),d=Math.round(c*1000/(120*1025)*100);return{q:`A nau (20 m × 6 m na linha d'água) recebe <b>${fmt(c)} t</b> de carga no mar. Quantos centímetros ela desce?`,a:d,tol:1,exp:`${fmt(c*1000)} ÷ (120 · 1.025) ≈ ${fmt(d/100)} m = ${d} cm.`};}
- const m=P([200,300,400,500,800]);return{q:`Uma caixa oca de 1 m × 1 m × 1 m tem massa de <b>${m} kg</b>. Quantos centímetros ela afunda na água doce?`,a:m/10,exp:`Precisa deslocar ${fmt(m/1000)} m³; com base de 1 m², afunda ${fmt(m/1000)} m = ${m/10} cm.`};}}}};
+ const m=P([200,300,400,500,800]);return{q:`Uma caixa oca de 1 m × 1 m × 1 m tem massa de <b>${m} kg</b>. Quantos centímetros ela afunda na água doce?`,a:m/10,exp:`Precisa deslocar ${fmt(m/1000)} m³; com base de 1 m², afunda ${fmt(m/1000)} m = ${m/10} cm.`};}}},'nav3':{T:["A meia corda", "A balestilha", "A latitude pela Estrela Polar", "Avançar e afastar", "A toleta de marteloio", "A rosa dos ventos e o círculo"],G:{1:()=>{const S={10:.174,20:.342,30:.5,40:.643,45:.707,50:.766,60:.866,70:.94,80:.985},t=R(0,2),a=P([10,20,30,40,50,60,70,80]);
+ if(t==0){const r=P([1,2,5,10,20]),v=Math.round(r*S[a]*1000)/1000;return{q:`Numa circunferência de raio <b>${r}</b>, quanto mede a meia corda do ângulo α = <b>${a}°</b>? (sen ${a}° ≈ ${fmt(S[a])})`,a:v,tol:.006,exp:`meia corda = r · sen α = ${r} · ${fmt(S[a])} = ${fmt(v)}.`};}
+ if(t==1){const r=P([1,5,10]),v=Math.round(2*r*S[a]*1000)/1000;return{q:`Numa circunferência de raio <b>${r}</b>, quanto mede a corda inteira do ângulo central <b>${2*a}°</b>? (sen ${a}° ≈ ${fmt(S[a])})`,a:v,tol:.006,exp:`corda = 2 · r · sen ${a}° = 2 · ${r} · ${fmt(S[a])} = ${fmt(v)}.`};}
+ const [s,c]=P([[.6,.8],[.8,.6],[.28,.96],[.96,.28]]);return{q:`Se sen α = <b>${fmt(s)}</b> (α entre 0° e 90°), quanto vale cos α?`,a:c,tol:.001,exp:`cos α = √(1 − ${fmt(s)}²) = √${fmt(Math.round((1-s*s)*10000)/10000)} = ${fmt(c)}.`};},
+2:()=>{const T={15:.268,20:.364,30:.577,45:1},t=R(0,1),h=P([20,30]);const m=P([15,20,30,45]);
+ if(t==0){const d=Math.round(h/T[m]*10)/10;return{q:`Meia soalha de <b>${h} cm</b>. Para medir <b>${2*m}°</b>, a que distância do olho fica a soalha? (tg ${m}° ≈ ${fmt(T[m])}; 1 casa)`,a:d,tol:.3,exp:`d = meia soalha ÷ tg(α/2) = ${h} ÷ ${fmt(T[m])} ≈ ${fmt(d)} cm.`};}
+ const d=Math.round(h/T[m]*10)/10;return{q:`Meia soalha de <b>${h} cm</b> a <b>${fmt(d)} cm</b> do olho. Qual o ângulo medido, em graus? (use tg 15° ≈ 0,268; tg 20° ≈ 0,364; tg 30° ≈ 0,577; tg 45° = 1)`,a:2*m,tol:1,exp:`tg(α/2) = ${h} ÷ ${fmt(d)} ≈ ${fmt(T[m])} → α/2 = ${m}° → α = ${2*m}°.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const g=R(10,40),m=P([6,12,15,24,30,36,45,54]);return{q:`Escreva <b>${g}°${m}′</b> em graus com decimais (2 casas).`,a:Math.round((g+m/60)*100)/100,tol:.006,exp:`${g} + ${m} ÷ 60 = ${fmt(Math.round((g+m/60)*100)/100)}°.`};}
+ if(t==1){const a=R(10,40),b=a-R(3,9);return{q:`A Polar estava a <b>${a}°</b> e, dias depois, a <b>${b}°</b>. Quantos km a nau desceu, aproximadamente? (1° ≈ 111 km)`,a:(a-b)*111,tol:1,exp:`${a-b}° · 111 = ${fmt((a-b)*111)} km.`};}
+ const l=R(5,40);return{q:`A nau está a <b>${l}° N</b>. A que altura, em graus, aparece a Estrela Polar?`,a:l,exp:`A altura da Polar é aproximadamente a latitude: ${l}°.`};},
+4:()=>{const S={30:[.5,.866],45:[.707,.707],60:[.866,.5]},t=R(0,2),a=P([30,45,60]),d=P([4,6,8,10,12,20]);
+ if(t==0)return{q:`A nau navega <b>${d} léguas</b> a <b>${a}°</b> da linha norte-sul. Quanto se afasta? (sen ${a}° ≈ ${fmt(S[a][0])})`,a:Math.round(d*S[a][0]*100)/100,tol:.02,exp:`afastamento = ${d} · ${fmt(S[a][0])} = ${fmt(Math.round(d*S[a][0]*100)/100)} léguas.`};
+ if(t==1)return{q:`A nau navega <b>${d} léguas</b> a <b>${a}°</b> da linha norte-sul. Quanto avança? (cos ${a}° ≈ ${fmt(S[a][1])})`,a:Math.round(d*S[a][1]*100)/100,tol:.02,exp:`avanço = ${d} · ${fmt(S[a][1])} = ${fmt(Math.round(d*S[a][1]*100)/100)} léguas.`};
+ const [x,y,h]=P([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15]]);return{q:`Avanço de <b>${x}</b> e afastamento de <b>${y}</b> léguas. Qual a distância navegada?`,a:h,exp:`√(${x}² + ${y}²) = √${x*x+y*y} = ${h} léguas.`};},
+5:()=>{const S={30:.5,45:.707,60:.866},Tg={30:.577,45:1,60:1.732},t=R(0,2);
+ if(t==0){const q=R(1,7);return{q:`Quantos graus têm <b>${q}</b> quartas?`,a:q*11.25,tol:.001,exp:`${q} · 11,25 = ${fmt(q*11.25)}°.`};}
+ if(t==1){const af=P([3,4,5,6,8]),b=P([30,45,60]),v=Math.round(af/S[b]*100)/100;return{q:`Afastamento de <b>${af} léguas</b>. Voltando a <b>${b}°</b> em direção à rota, quanto a nau navega? (sen ${b}° ≈ ${fmt(S[b])})`,a:v,tol:.03,exp:`${af} ÷ ${fmt(S[b])} ≈ ${fmt(v)} léguas.`};}
+ const af=P([3,4,5,6]),b=P([30,45,60]),v=Math.round(af/Tg[b]*100)/100;return{q:`Afastamento de <b>${af} léguas</b>. Voltando a <b>${b}°</b>, quanto a nau avança na rota durante a volta? (tg ${b}° ≈ ${fmt(Tg[b])})`,a:v,tol:.03,exp:`${af} ÷ ${fmt(Tg[b])} ≈ ${fmt(v)} léguas.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const [ang,v,e]=P([[150,.5,'sen 150° = sen 30°'],[120,-.5,'cos 120° = −cos 60°'],[210,-.5,'sen 210° = −sen 30°'],[300,.5,'cos 300° = cos 60°'],[180,-1,'cos 180°'],[270,-1,'sen 270°']]);
+  return{q:`Quanto vale ${e.split(' =')[0]}?`,a:v,tol:.001,exp:`${e} = ${fmt(v)}.`};}
+ if(t==1){const [r,q]=P([[45,'NE'],[135,'SE'],[225,'SO'],[315,'NO']]);return{q:`O rumo <b>${r}°</b> está em qual quadrante da rosa?`,opts:['NE','SE','SO','NO'],a:q,exp:`${r}° fica entre ${Math.floor(r/90)*90}° e ${Math.floor(r/90)*90+90}°: ${q}.`};}
+ const [r,s]=P([[150,.5],[210,-.5],[330,-.5],[30,.5]]),d=P([6,10,20]);return{q:`<b>${d} léguas</b> no rumo <b>${r}°</b>. Quanto a nau anda para leste? (negativo = oeste)`,a:d*s,tol:.01,exp:`leste = ${d} · sen ${r}° = ${d} · ${fmt(s)} = ${fmt(d*s)}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='nav1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
