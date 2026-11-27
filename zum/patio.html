@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pátio e as lonas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O pátio e as lonas</h1></header>
+<main>
+<div class="card"><h2>Corte o pátio</h2><p class="muted" style="margin-top:0">O pátio é um retângulo de 20 m × 12 m sem um canto. Mude o tamanho do canto que falta e escolha o jeito de calcular: cortar em pé, cortar deitado ou tirar o canto do retângulo grande.</p>
+<div id="cj" style="margin:6px 0"></div>
+<div class="sl" id="sa"><b>Largura do canto que falta</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Altura do canto que falta</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">Área do pátio<b id="ka"></b></div><div>Lonas de 20 m²<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha um jeito de calcular.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vistos=new Set();const CJ=chips('cj',['cortar em pé','cortar deitado','retângulo menos o canto'],0,draw);
+const SA=SL('sa',1,16,1,8,draw,v=>v+' m'),SB=SL('sb',1,10,1,5,draw,v=>v+' m');
+const A=()=>240-SA.get()*SB.get();
+MIS.def(()=>[
+ ['Com o canto de <b>8 m × 5 m</b>, use os <b>três jeitos</b> de calcular. Todos dão a mesma área?',()=>{if(SA.get()==8&&SB.get()==5)vistos.add(CJ.get());return vistos.size==3;},()=>'Os três dão 200 m²: o jeito de cortar muda a conta, não a área.',()=>'Jeitos testados com o canto 8 × 5: '+vistos.size+' de 3.'],
+ ['Mude o canto para o pátio ficar com exatamente <b>180 m²</b>.',()=>A()==180,()=>'O canto tem '+SA.get()+' × '+SB.get()+' = 60 m², e 240 − 60 = 180 m².',()=>'Agora: '+A()+' m². O canto precisa ter 60 m².'],
+ ['Faça um pátio com os mesmos <b>200 m²</b>, mas com um canto de <b>outro formato</b> (não 8 × 5).',()=>A()==200&&!(SA.get()==8&&SB.get()==5),()=>'Canto '+SA.get()+' × '+SB.get()+': outra forma, a mesma área de 200 m², e as mesmas 10 lonas.',()=>'Agora: '+A()+' m². O canto precisa ter 40 m², de outro jeito.']]);
+function draw(){const a=SA.get(),b=SB.get(),k=15,ox=20,oy=12,W=20,H=12,j=CJ.get();
+ const X=v=>ox+v*k,Y=v=>oy+(H-v)*k;let g='';
+ for(let i=0;i<=W;i++)g+=LN(X(i),Y(0),X(i),Y(H),'#E5E7EB',1);for(let i=0;i<=H;i++)g+=LN(X(0),Y(i),X(W),Y(i),'#E5E7EB',1);
+ const pol=[[0,0],[W,0],[W,H-b],[W-a,H-b],[W-a,H],[0,H]].map(p=>X(p[0])+','+Y(p[1])).join(' ');
+ let conta='';
+ if(j==2){g+=RC(X(W-a),Y(H),a*k,b*k,'#FDE2E2','stroke="#C0504D" stroke-dasharray="4 3"');conta='20 × 12 − '+a+' × '+b;}
+ g+=`<polygon points="${pol}" fill="${j==2?'#F2E3C9':'#F2E3C9'}" stroke="#0E2354" stroke-width="2.5"/>`;
+ if(j==0){g+=LN(X(W-a),Y(0),X(W-a),Y(H-b),ORANGE,2.5,'5 3');g+=TX(X((W-a)/2),Y(H/2),(W-a)+' × '+H,{fs:11})+TX(X(W-a/2),Y((H-b)/2),a+' × '+(H-b),{fs:11});conta=(W-a)+' × '+H+' + '+a+' × '+(H-b);}
+ if(j==1){g+=LN(X(0),Y(H-b),X(W-a),Y(H-b),ORANGE,2.5,'5 3');g+=TX(X(W/2),Y((H-b)/2),W+' × '+(H-b),{fs:11})+TX(X((W-a)/2),Y(H-b/2),(W-a)+' × '+b,{fs:11});conta=W+' × '+(H-b)+' + '+(W-a)+' × '+b;}
+ if(j==2)g+=TX(X(W/2-a/2),Y(H/2),'20 × 12 = 240',{fs:11})+TX(X(W-a/2),Y(H-b/2)+4,'− '+a*b,{fs:11,c:'#C0504D'});
+ $('fig').innerHTML=SVG(340,200,g);$('kc').textContent=conta;$('ka').textContent=A()+' m²';$('kl').textContent=Math.ceil(A()/20);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

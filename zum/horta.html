@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A cerca da horta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A cerca da horta</h1></header>
+<main>
+<div class="card"><h2>Cerque a horta</h2><p class="muted" style="margin-top:0">A tela tem comprimento fixo. Mude a largura da horta e veja o comprimento se ajustar sozinho. O gráfico marca a área de cada formato que você testou.</p>
+<div id="cm" style="margin:6px 0"></div><div id="ct" style="margin:6px 0"></div>
+<div class="sl" id="sy"><b>Largura y</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Largura × comprimento<b id="kd"></b></div><div class="o">Área<b id="ka"></b></div><div>Tela usada<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a largura.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let pts=[];const CM=chips('cm',['quatro lados de tela','encostada no muro'],0,()=>{pts=[];ajusta();}),CT=chips('ct',['40 m de tela','60 m de tela'],0,()=>{pts=[];ajusta();});
+const SY=SL('sy',1,19,1,4,draw,v=>v+' m');
+const T=()=>[40,60][CT.get()],muro=()=>CM.get()==1,X=()=>muro()?T()-2*SY.get():T()/2-SY.get(),AR=()=>SY.get()*X();
+function ajusta(){const mx=muro()?T()/2-1:T()/2-1;const el=$('sy').querySelector('input');el.max=mx;if(SY.get()>mx){el.value=mx;}el.dispatchEvent(new Event('input'));}
+MIS.def(()=>[
+ ['Com <b>quatro lados</b> e <b>40 m</b> de tela, ache a horta de <b>maior área</b>.',()=>!muro()&&T()==40&&AR()==100,()=>'O quadrado 10 × 10: 100 m². Com o mesmo perímetro, o quadrado ganha de todos os retângulos.',()=>'Agora: '+AR()+' m². Teste outras larguras.'],
+ ['Agora <b>encoste no muro</b> (tela só em 3 lados), ainda com 40 m. Qual a maior área?',()=>muro()&&T()==40&&AR()==200,()=>'y = 10 e x = 20: 200 m², o dobro do quadrado.',()=>!muro()?'Escolha "encostada no muro".':'Agora: '+AR()+' m².'],
+ ['Encostada no muro e com <b>60 m</b> de tela, qual o melhor formato?',()=>muro()&&T()==60&&AR()==450,()=>'y = 15 e x = 30: 450 m². O lado paralelo ao muro fica sempre com o dobro do outro.',()=>muro()&&T()==60?'Agora: '+AR()+' m².':'Escolha "encostada no muro" e "60 m de tela".']]);
+function draw(){const y=SY.get(),x=X(),a=AR();if(!pts.some(p=>p[0]==y))pts.push([y,a]);
+ const k=Math.min(150/Math.max(x,1),120/Math.max(y,1),5.5),ox=10,oy=20;let g=RC(0,0,340,170,'#F3F7EF');
+ if(muro())g+=RC(ox-4,oy-8,x*k+8,7,'#9AA7BD')+TX(ox+x*k/2,oy-12,'muro',{fs:9,c:GRAY});
+ g+=RC(ox,oy,x*k,y*k,'#7CC47F');
+ g+=muro()?`<polyline points="${ox},${oy} ${ox},${oy+y*k} ${ox+x*k},${oy+y*k} ${ox+x*k},${oy}" fill="none" stroke="#3F8F4A" stroke-width="3"/>`:RC(ox,oy,x*k,y*k,'none','stroke="#3F8F4A" stroke-width="3"');
+ g+=TX(ox+x*k/2,oy+y*k+14,'x = '+fmt(x)+' m',{fs:10})+TX(ox+x*k+4,oy+y*k/2+4,'y = '+y+' m',{fs:10,a:'start'});
+ const gx=186,gy=150,gw=148,gh=125,ym=muro()?T()/2:T()/2,am=muro()?T()*T()/8:T()*T()/16;
+ g+=LN(gx,gy,gx+gw,gy,NAVY,1)+LN(gx,gy,gx,gy-gh,NAVY,1)+TX(gx+gw,gy+13,'y',{fs:9,c:GRAY,a:'end'})+TX(gx+2,gy-gh-4,'área',{fs:9,c:GRAY,a:'start'})+TX(gx-3,gy-gh+8,fmt(am),{fs:8,c:GRAY,a:'end'});
+ pts.forEach(p=>g+=CI((gx+p[0]/ym*gw).toFixed(1),(gy-p[1]/am*gh).toFixed(1),p[0]==y?5:3,p[0]==y?ORANGE:'#3F8F4A'));
+ $('fig').innerHTML=SVG(340,170,g);$('kd').textContent=y+' × '+fmt(x)+' m';$('ka').textContent=fmt(a)+' m²';$('kt').textContent=T()+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
