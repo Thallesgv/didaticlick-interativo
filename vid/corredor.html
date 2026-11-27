@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planta o corredor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Planta o corredor</h1></header>
+<main>
+<div class="card"><h2>Ligar tudo gastando o mínimo</h2><p class="muted" style="margin-top:0">Os corredores Estação–Grota e Capoeira–Rio já existem (verde-escuro, travados). Toque nos outros para plantar. O número em cada um é quantos quilômetros de mata é preciso plantar.</p>
+<div id="cb" style="margin:6px 0"></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Pedaços<b id="kc"></b></div><div>Ciclos<b id="ky"></b></div><div class="o">Km plantados<b id="kk"></b></div></div>
+<div class="row"><button class="alt" id="bl">Arrancar tudo</button><button class="alt" id="bk">Mostrar o Kruskal</button></div>
+<div id="kr"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Plante o corredor.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VX={E:[64,74],G:[121,46],M:[143,126],B:[209,98],C:[253,164],R:[301,98]},NM={E:'Estação',G:'Grota',M:'Morro',B:'Brejo',C:'Capoeira',R:'Rio'};
+const AR=[['E','G',3],['E','M',6],['G','M',2],['G','B',7],['M','B',4],['M','C',8],['B','C',3],['B','R',6],['C','R',2]],VS=Object.keys(VX);
+function comps(on){const pai={};VS.forEach(v=>pai[v]=v);const f=v=>pai[v]==v?v:(pai[v]=f(pai[v]));AR.forEach((a,i)=>{if(on[i])pai[f(a[0])]=f(a[1]);});const g={};VS.forEach(v=>{const r=f(v);(g[r]=g[r]||[]).push(v);});return Object.values(g);}
+const LB={E:[0,26,'middle'],G:[0,-17,'middle'],M:[0,26,'middle'],B:[0,-17,'middle'],C:[20,4,'start'],R:[0,26,'middle']};
+const CORES=['#7CC47F','#7FA9E8','#F7B267','#C59BE0','#F28B82','#9AD3D6'];
+function desenhaMapa(on,o){o=o||{};let g=RC(0,0,340,200,'#F3EBCF','rx="10"')+LN(0,188,340,176,'#9CA3AF',3)+TX(14,181,'estrada',{fs:9,a:'start',c:GRAY});
+ AR.forEach((a,i)=>{const[p,q,w]=a,[x1,y1]=VX[p],[x2,y2]=VX[q],mx=(x1+x2)/2,my=(y1+y2)/2,c=o.cor?o.cor(i):(on[i]?'#2E7D4F':'#94A3B8');
+  g+=`<g data-e="${i}" style="cursor:pointer">`+LN(x1,y1,x2,y2,'#000',14,'').replace('stroke="#000"','stroke="#000" stroke-opacity="0"')+LN(x1,y1,x2,y2,c,on[i]?5:1.6,on[i]?'':'4 3')+CI(mx,my,9,'#fff','stroke="'+c+'" stroke-width="1.5"')+TX(mx,my+3.5,w,{fs:10})+'</g>';});
+ const cs=comps(on),ci={};cs.forEach((c,k)=>c.forEach(v=>ci[v]=k));
+ VS.forEach(v=>{const[x,y]=VX[v];g+=`<ellipse cx="${x}" cy="${y}" rx="17" ry="13" fill="${o.vcor?o.vcor(v):CORES[ci[v]%6]}" stroke="#2E7D4F" stroke-width="1.5"/>`+TX(x,y+4,v,{fs:12,c:'#14532D'})+(()=>{const[dx,dy,an]=LB[v];return `<text x="${x+dx}" y="${y+dy}" font-size="9.5" font-weight="700" text-anchor="${an}" fill="${o.rot?NAVY:'#475569'}" stroke="#F3EBCF" stroke-width="3.5" paint-order="stroke" font-family="inherit">${o.rot?o.rot(v):NM[v]}</text>`;})();});
+ return SVG(340,200,g);}
+function ligaArestas(id,cb){$(id).querySelectorAll('[data-e]').forEach(el=>el.onclick=()=>cb(+el.dataset.e));}
+const FIX=AR.map(a=>(a[0]=='E'&&a[1]=='G')||(a[0]=='C'&&a[1]=='R'));let on=FIX.slice(),bloq=0,aviso='';
+const CB=chips('cb',['estrada livre','a estrada impede M–B'],0,i=>{bloq=i;if(bloq)on[4]=false;draw();});
+$('bl').onclick=()=>{on=FIX.slice();aviso='';draw();};
+const km=()=>AR.reduce((s,a,i)=>s+(on[i]&&!FIX[i]?a[2]:0),0),nA=()=>on.filter(x=>x).length,ciclos=()=>nA()-(VS.length-comps(on).length);
+$('bk').onclick=()=>{const ord=AR.map((a,i)=>i).filter(i=>!(bloq&&i==4)).sort((x,y)=>AR[x][2]-AR[y][2]||x-y);let t=FIX.slice(),txt=[];
+ ord.forEach(i=>{const a=AR[i];if(FIX[i]){txt.push(a[0]+'–'+a[1]+' '+a[2]+': já existe');return;}const c0=comps(t).length;t[i]=true;if(comps(t).length==c0){t[i]=false;txt.push(a[0]+'–'+a[1]+' '+a[2]+': fecha ciclo, recusa');}else txt.push('<b>'+a[0]+'–'+a[1]+' '+a[2]+': planta</b>');});
+ $('kr').innerHTML='<div class="msg info" style="font-size:14px">Kruskal, do mais curto ao mais longo:<br>'+txt.join('<br>')+'</div>';};
+MIS.def(()=>[
+ ['Ligue todas as manchas (um pedaço só) plantando <b>no máximo 12 km</b>.',()=>!bloq&&comps(on).length==1&&km()<=12,()=>'Ligou com '+km()+' km.',()=>bloq?'Escolha "estrada livre".':(comps(on).length>1?'Ainda há '+comps(on).length+' pedaços; '+km()+' km plantados.':'Ligou, mas com '+km()+' km. Dá para gastar menos.')],
+ ['Ache o <b>mínimo</b>: ligar tudo com o menor total plantado.',()=>!bloq&&comps(on).length==1&&km()==9,'9 km: G–M, B–C e M–B. Somando os que já existem, a árvore tem 14 km.',()=>bloq?'Escolha "estrada livre".':(comps(on).length>1?'Ainda há pedaços separados.':km()+' km. Comece pelos mais curtos e não feche ciclo.')],
+ ['Agora <b>a estrada impede M–B</b>. Qual o novo mínimo?',()=>bloq&&comps(on).length==1&&km()==12,'12 km: G–M, B–C e G–B (7 km). Perder um corredor curto encarece a árvore toda.',()=>!bloq?'Escolha "a estrada impede M–B".':(comps(on).length>1?'Ainda há pedaços separados.':km()+' km. Dá para gastar menos.')]]);
+function draw(){$('fig').innerHTML=desenhaMapa(on,{cor:i=>FIX[i]?'#14532D':(bloq&&i==4?'#D9342B':(on[i]?'#2E7D4F':'#94A3B8'))});
+ ligaArestas('fig',i=>{if(FIX[i]){aviso='Esse corredor já existe.';}else if(bloq&&i==4){aviso='A estrada impede o corredor M–B.';}else{on[i]=!on[i];aviso='';}draw();});
+ $('kc').textContent=comps(on).length;$('ky').textContent=ciclos();$('kk').textContent=km()+' km';MIS.ver('m');if(aviso)$('m').innerHTML='<div class="msg info">'+aviso+'</div>'+$('m').innerHTML;}
+draw();
+})();
+</script>
+</body>
+</html>

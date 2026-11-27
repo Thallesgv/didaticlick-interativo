@@ -161,7 +161,31 @@ const LIV={'vid1':{T:["Do metro ao micrômetro", "Notação científica", "O aum
 6:()=>{const t=R(0,2);
  if(t==0){const D=P([2,4,6,8,10,12]),r=P([[1,2],[1,4],[1,3]]);const pk=D/(1-r[0]/r[1]);return{q:`Dose de <b>${D} mg</b>; até a dose seguinte sobra <b>${r[0]}/${r[1]}</b>. Qual o pico estável (mg)?`,a:Math.round(pk*100)/100,tol:0.011,exp:`${D} ÷ (1 − ${r[0]}/${r[1]}) = ${D} ÷ ${fmt(Math.round((1-r[0]/r[1])*1000)/1000)} ≈ ${fmt(Math.round(pk*100)/100)} mg.`};}
  if(t==1){const D=P([4,6,8]),k=R(2,3);let p=0;for(let i=0;i<k;i++)p=p/4+D;return{q:`Dose de <b>${D} mg</b> e sobra 1/4 até a seguinte. Qual o pico depois da <b>${k}ª</b> dose?`,a:p,tol:0.001,exp:`Cada pico = pico anterior × 1/4 + ${D}: ${fmt(p)} mg.`};}
- const h=P([2,3,4,6]),i=h*P([1,2,3]);const r=Math.pow(0.5,i/h);return{q:`Meia-vida de <b>${h} h</b> e doses a cada <b>${i} h</b>. Que fração sobra até a dose seguinte? (em decimal)`,a:r,tol:0.001,exp:`${i} ÷ ${h} = ${i/h} meia(s)-vida(s): (1/2)^${i/h} = ${fmt(r)}.`};}}}};
+ const h=P([2,3,4,6]),i=h*P([1,2,3]);const r=Math.pow(0.5,i/h);return{q:`Meia-vida de <b>${h} h</b> e doses a cada <b>${i} h</b>. Que fração sobra até a dose seguinte? (em decimal)`,a:r,tol:0.001,exp:`${i} ÷ ${h} = ${i/h} meia(s)-vida(s): (1/2)^${i/h} = ${fmt(r)}.`};}}},'vid7':{T:["O favo e o plantio", "Espirais e Fibonacci", "Fractais na mata", "O mapa vira grafo", "O corredor mais barato", "O caminho do mico"],G:{1:()=>{const t=R(0,2),NS=[3,4,5,6,8,9,10,12],NM={3:'triângulo',4:'quadrado',5:'pentágono',6:'hexágono',8:'octógono',9:'eneágono',10:'decágono',12:'dodecágono'};
+ if(t==0){const n=P(NS),a=(n-2)*180/n;return{q:`Quanto mede o ângulo interno de um <b>${NM[n]}</b> regular (em graus)?`,a:a,tol:0.01,exp:`(${n} − 2) × 180 ÷ ${n} = ${fmt(a)}°.`};}
+ if(t==1){const n=P([3,4,6]),a=(n-2)*180/n;return{q:`Quantos <b>${NM[n]}s</b> regulares se encaixam em volta de um vértice, sem fresta?`,a:360/a,exp:`Cada ângulo tem ${a}°; 360 ÷ ${a} = ${360/a}.`};}
+ const n=P(NS),a=(n-2)*180/n,ok=Math.abs(360/a-Math.round(360/a))<1e-9;return{q:`O <b>${NM[n]}</b> regular ladrilha o chão sozinho?`,opts:['sim','não'],a:ok?'sim':'não',exp:`Ângulo de ${fmt(Math.round(a*100)/100)}°; 360 ÷ ${fmt(Math.round(a*100)/100)} ${ok?'= '+fmt(360/a)+', inteiro: ladrilha.':'não dá inteiro: sobra fresta.'}`};},
+2:()=>{const t=R(0,2);const F=[1,1];for(let i=2;i<20;i++)F.push(F[i-1]+F[i-2]);
+ if(t==0){const k=R(3,14);return{q:`Na sequência de Fibonacci ${F.slice(k-3,k).join(', ')}, …, qual é o próximo número?`,a:F[k],exp:`Cada termo é a soma dos dois anteriores: ${F[k-2]} + ${F[k-1]} = ${F[k]}.`};}
+ if(t==1){const k=R(6,16),r=F[k]/F[k-1];return{q:`Divida <b>${F[k]} ÷ ${F[k-1]}</b> (duas casas decimais).`,a:Math.round(r*100)/100,tol:0.011,exp:`${F[k]} ÷ ${F[k-1]} ≈ ${fmt(Math.round(r*100)/100)}, perto da razão áurea 1,618.`};}
+ const v=P([0.25,0.5,0.382,0.4,0.618]);return{q:`Cada semente nasce girada <b>${fmt(v)}</b> de volta em relação à anterior. Quantos graus é isso?`,a:Math.round(v*360*10)/10,tol:0.06,exp:`${fmt(v)} × 360 = ${fmt(Math.round(v*360*10)/10)}°.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const L=P([3,9,27,81]),k=R(1,3);const v=L*Math.pow(4/3,k);return{q:`Uma curva de Koch começa com <b>${L} km</b>. Qual o comprimento depois de <b>${k}</b> passo(s)? (duas casas)`,a:Math.round(v*100)/100,tol:0.011,exp:`Cada passo multiplica por 4/3: ${L} × (4/3)^${k} ≈ ${fmt(Math.round(v*100)/100)} km.`};}
+ if(t==1){const k=R(1,6);return{q:`Começando com um segmento, quantos segmentos a curva de Koch tem depois de <b>${k}</b> passo(s)?`,a:Math.pow(4,k),exp:`Cada segmento vira 4: 4^${k} = ${Math.pow(4,k)}.`};}
+ const k=R(1,6);return{q:`No triângulo de Sierpinski, cada triângulo vira 3 menores. Quantos triângulos depois de <b>${k}</b> passo(s)?`,a:Math.pow(3,k),exp:`3^${k} = ${Math.pow(3,k)}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const n=R(4,8);let g=[];for(let i=0;i<n;i++)g.push(R(1,5));let s=g.reduce((a,b)=>a+b,0);if(s%2){g[0]++;s++;}return{q:`Num grafo, os graus dos vértices são <b>${g.join(', ')}</b>. Quantas arestas ele tem?`,a:s/2,exp:`Cada aresta soma 2 aos graus: (${g.join(' + ')}) ÷ 2 = ${s} ÷ 2 = ${s/2}.`};}
+ if(t==1){const a=R(4,15);return{q:`Um grafo tem <b>${a}</b> arestas. Quanto dá a soma dos graus?`,a:2*a,exp:`Soma dos graus = 2 × arestas = ${2*a}.`};}
+ const n=R(5,12),c=R(1,4);return{q:`Um grafo sem ciclos tem <b>${n}</b> vértices e está dividido em <b>${c}</b> pedaço(s). Quantas arestas ele tem?`,a:n-c,exp:`Cada pedaço sem ciclo com k vértices tem k − 1 arestas; somando: ${n} − ${c} = ${n-c}.`};},
+5:()=>{const t=R(0,1);
+ if(t==0){const n=R(4,20);return{q:`Quantos corredores tem uma árvore que liga <b>${n}</b> manchas (sem ciclos)?`,a:n-1,exp:`Árvore com n vértices tem n − 1 arestas: ${n-1}.`};}
+ const V=['A','B','C','D'],E=[];for(let i=0;i<4;i++)for(let j=i+1;j<4;j++)E.push([i,j,0]);const ws=[1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5);E.forEach((e,i)=>e[2]=ws[i]);
+ const pai=[0,1,2,3],f=v=>pai[v]==v?v:(pai[v]=f(pai[v]));let tot=0,us=[];E.slice().sort((a,b)=>a[2]-b[2]).forEach(e=>{if(f(e[0])!=f(e[1])){pai[f(e[0])]=f(e[1]);tot+=e[2];us.push(V[e[0]]+V[e[1]]+' '+e[2]);}});
+ return{q:`Quatro manchas, todas ligáveis entre si. Custos (km): ${E.map(e=>V[e[0]]+V[e[1]]+' = '+e[2]).join(', ')}. Qual o <b>menor total</b> para ligar tudo?`,a:tot,exp:`Kruskal, do mais curto, recusando os que fecham ciclo: ${us.join(', ')}. Total ${tot} km.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const a=R(2,9),b=R(2,9),c=R(5,16);const m=Math.min(c,a+b);return{q:`De A a B são <b>${a} km</b>, de B a C são <b>${b} km</b> e de A direto a C são <b>${c} km</b>. Qual o caminho mais curto de A a C (km)?`,a:m,exp:`Pelo B: ${a} + ${b} = ${a+b}; direto: ${c}. O menor é ${m}.`};}
+ const ab=R(1,6),ac=R(4,12),bd=R(3,9),cd=R(1,6),bc=R(1,5);const dB=Math.min(ab,ac+bc),dC=Math.min(ac,ab+bc),dD=Math.min(dB+bd,dC+cd);
+ return{q:`Corredores: AB ${ab}, AC ${ac}, BC ${bc}, BD ${bd}, CD ${cd} (km). Qual a menor distância de A até D?`,a:dD,exp:`Dijkstra: B fica com ${dB}, C com ${dC}; D = menor entre ${dB} + ${bd} e ${dC} + ${cd} = ${dD} km.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='vid1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
