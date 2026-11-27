@@ -21,6 +21,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const L_=()=>Q.get()*V.get()*(1-T.get()/100)-12000;
+MIS.def(()=>[
+ ['Com preço de <b>22 cruzados</b> e taxa de <b>20%</b>, qual é a <b>menor carga</b> que não dá prejuízo? Coloque a carga exatamente nesse ponto.',()=>V.get()==22&&T.get()==20&&Q.get()==682,'Ponto de equilíbrio: 12.000 ÷ 17,6 ≈ 681,8. Com 681 quintais ainda há prejuízo; com 682, a viagem se paga (lucro de 3 cruzados).',()=>V.get()==22&&T.get()==20?(Q.get()<682?'Ainda dá prejuízo. Aumente a carga.':'Já dá lucro. Qual é a menor carga que ainda não dá prejuízo?'):'Ponha o preço em 22 e a taxa em 20% para a missão.'],
+ ['E <b>sem taxa do porto</b> (0%), com preço 22? Ache de novo a menor carga sem prejuízo.',()=>V.get()==22&&T.get()==0&&Q.get()==546,'12.000 ÷ 22 ≈ 545,5: com 546 quintais a viagem se paga. A taxa de 20% exigia 136 quintais a mais.',()=>T.get()?'Ponha a taxa em 0%.':'Resultado agora: '+fmt(Math.round(L_()))+'.'],
+ ['Só chegaram <b>500 quintais</b> e a taxa é <b>20%</b>. Que preço em Lisboa deixa a viagem no zero a zero?',()=>Q.get()==500&&T.get()==20&&V.get()==30,'500 × 30 × 0,8 = 12.000: lucro zero. Com tão pouca carga, só o preço máximo salva a viagem.',()=>'Resultado agora: '+fmt(Math.round(L_()))+'.'],
+ ['Monte uma viagem com lucro de <b>pelo menos 50% sobre o custo</b>.',()=>L_()>=6000,()=>'Lucro de '+fmt(Math.round(L_()))+', ou '+r1(100*L_()/12000)+'% sobre os 12.000.',()=>'Lucro sobre o custo agora: '+r1(100*L_()/12000)+'%.']]);
 const Q=SL('sq',0,1000,1,800,draw,v=>fmt(v)+' quintais'),V=SL('sv',10,30,0.5,22,draw,v=>r1(v)+' cruzados'),T=SL('st',0,40,1,20,draw,v=>v+'%');
 function draw(){const q=Q.get(),v=V.get(),t=T.get(),u=v*(1-t/100),rec=q*u,L=rec-12000,qe=12000/u;
  const x0=46,y0=170,W=280,H=150,X=a=>x0+a/1000*W,Y=a=>y0-a/30000*H;let g='';
@@ -40,8 +46,7 @@ function draw(){const q=Q.get(),v=V.get(),t=T.get(),u=v*(1-t/100),rec=q*u,L=rec-
  $('kl').innerHTML=`<span style="color:${L>=0?GREEN:'#B91C1C'}">${L>=0?'':'− '}${fmt(Math.abs(Math.round(L)))}</span>`;
  $('kp').textContent=r1(100*L/12000)+'%';$('ke').textContent=qe>1000?'mais de 1.000':'≈ '+r1(qe)+' quintais';
  const ok=v==22&&t==20&&q==682;
- missao('m',ok,'Ponto de equilíbrio: 12.000 ÷ 17,6 ≈ 681,8. Com 681 quintais ainda há prejuízo; com 682, a viagem se paga (lucro de 3 cruzados).',
-  v==22&&t==20?(q<682?'Ainda dá prejuízo. Aumente a carga.':'Já dá lucro. Qual é a menor carga que ainda não dá prejuízo?'):'Ponha o preço em 22 e a taxa em 20% para a missão.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

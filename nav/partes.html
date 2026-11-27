@@ -29,6 +29,12 @@ function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">$
 function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
  vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
   if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const pt=()=>{const v=S.map(s=>s.get()),tot=v.reduce((a,b)=>a+b,0),L=Ls.get(),k=tot?L/tot:0;return {v,tot,L,k,p:v.map(x=>x*k)};},fx=()=>!(pt().L==8400&&pt().v[0]==7200&&pt().v[1]==3000);
+MIS.def(()=>[
+ ['Com lucro de <b>8 400</b> e sem mexer em Bartolomeo (7 200) e Dona Leonor (3 000), faça Gaspar e Enzo receberem juntos <b>um quarto do lucro</b> (2 100).',()=>{const o=pt();return !fx()&&Math.abs(o.p[2]+o.p[3]-2100)<.5;},()=>{const o=pt();return 'Gaspar e Enzo investiram juntos '+f0(o.v[2]+o.v[3])+': um quarto de '+f0(o.tot)+'. Por isso recebem um quarto do lucro, 2 100.';},()=>{const o=pt();return fx()?'Volte Bartolomeo a 7 200, Dona Leonor a 3 000 e o lucro a 8 400.':'Gaspar e Enzo recebem '+f0(o.p[2]+o.p[3])+'. Para um quarto do lucro, eles precisam ter um quarto do capital.';}],
+ ['Faça <b>k = 1</b>: cada cruzado investido rende exatamente 1 cruzado de lucro.',()=>{const o=pt();return o.tot>0&&o.L==o.tot;},'k = 1: o lucro é igual ao total investido, e cada sócio recebe o mesmo que pôs.',()=>'k agora: '+r2(pt().k)+'.'],
+ ['Com lucro de 8 400, faça <b>Enzo</b> receber <b>840</b> (10% do lucro).',()=>{const o=pt();return o.L==8400&&Math.abs(o.p[3]-840)<.5;},()=>{const o=pt();return 'Enzo tem 10% do capital ('+f0(o.v[3])+' de '+f0(o.tot)+'), então leva 10% do lucro.';},()=>'Enzo recebe '+f0(pt().p[3])+'.'+(pt().L!=8400?' Ponha o lucro em 8 400.':'')],
+ ['Faça os quatro sócios receberem <b>o mesmo valor</b>.',()=>{const v=pt().v;return v[0]>0&&v.every(x=>x==v[0]);},'Capitais iguais, partes iguais: cada um leva um quarto do lucro.',()=>'Partes agora: '+pt().p.map(f0).join(', ')+'.']]);
 const S=[SL('s0',0,10000,100,7200,draw,f0),SL('s1',0,10000,100,3000,draw,f0),SL('s2',0,5000,100,1200,draw,f0),SL('s3',0,5000,100,600,draw,f0)],Ls=SL('sl',1000,12000,100,8400,draw,f0);
 const N=['Bartolomeo','Leonor','Gaspar','Enzo'];
 function draw(){const v=S.map(s=>s.get()),tot=v.reduce((a,b)=>a+b,0),L=Ls.get(),k=tot?L/tot:0,p=v.map(x=>x*k);
@@ -37,8 +43,7 @@ function draw(){const v=S.map(s=>s.get()),tot=v.reduce((a,b)=>a+b,0),L=Ls.get(),
  $('fig').innerHTML=SVG(340,225,g);
  $('kk').textContent=r2(k);$('kg').textContent=f0(p[2]+p[3]);
  const ok=L==8400&&v[0]==7200&&v[1]==3000&&Math.abs(p[2]+p[3]-2100)<0.5;
- missao('m',ok,'Gaspar e Enzo investiram juntos '+f0(v[2]+v[3])+': um quarto de '+f0(tot)+'. Por isso recebem um quarto do lucro, 2 100.',
-  L!=8400||v[0]!=7200||v[1]!=3000?'Volte Bartolomeo a 7 200, Dona Leonor a 3 000 e o lucro a 8 400.':'Gaspar e Enzo recebem '+f0(p[2]+p[3])+'. Para um quarto do lucro, eles precisam ter um quarto do capital.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

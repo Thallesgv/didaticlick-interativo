@@ -19,6 +19,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const sv=()=>'Meia corda: '+fmt(Math.round(Math.sin(A.get()*RAD)*1000)/1000)+'. Distância ao centro: '+fmt(Math.round(Math.cos(A.get()*RAD)*1000)/1000)+'.';
+MIS.def(()=>[
+ ['Encontre o ângulo α em que a meia corda mede exatamente <b>metade do raio</b>.',()=>A.get()==30,'sen 30° = 0,5: a meia corda é metade do raio.',sv],
+ ['Agora ache o ângulo em que a <b>meia corda</b> e a <b>distância ao centro</b> ficam iguais.',()=>A.get()==45,'sen 45° = cos 45° ≈ 0,707. Com 45°, o triângulo é isósceles.',sv],
+ ['Ache o ângulo em que a <b>distância ao centro</b> é metade do raio.',()=>A.get()==60,'cos 60° = 0,5. Repare: sen 30° = cos 60°, porque 30° + 60° = 90°.',sv],
+ ['Faça a corda inteira ficar do tamanho do <b>diâmetro</b>.',()=>A.get()==90,'Com α = 90° a corda do ângulo de 180° é o diâmetro: meia corda 1 (o raio) e distância ao centro 0.',sv]]);
 const A=SL('sa',0,90,1,40,draw,v=>v+'°');let achou30=false;
 function draw(){const a=A.get(),s=Math.sin(a*RAD),c=Math.cos(a*RAD),R=95,cx=130,cy=120;
  const px=cx+R*c,py=cy-R*s,qy=cy+R*s;
@@ -34,8 +40,7 @@ function draw(){const a=A.get(),s=Math.sin(a*RAD),c=Math.cos(a*RAD),R=95,cx=130,
  $('fig').innerHTML=SVG(340,230,g);
  $('ks').textContent=fmt(Math.round(s*1000)/1000);$('kc').textContent=fmt(Math.round(c*1000)/1000);$('kd').textContent=fmt(Math.round(2*s*1000)/1000);
  if(a==30)achou30=true;
- missao('m',a==45&&achou30,'As duas! α = 30°: a meia corda é 0,5 (metade do raio). α = 45°: sen 45° = cos 45° ≈ 0,707.',
-  a==30?'Isso: sen 30° = 0,5, metade do raio. Agora ache o ângulo em que seno e cosseno ficam iguais.':'Meia corda atual: '+fmt(Math.round(s*1000)/1000)+'.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -29,6 +29,12 @@ function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w
  const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
  return {g,X,Y,linha,pts};}
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const tr=()=>{const ini=[0].concat(PAR),fim=PAR.concat([120]);let mx=0,pe=0;ini.forEach((a,i)=>{const L=fim[i]-a;mx=Math.max(mx,L);pe+=Math.max(0,L-30);});return {mx,pe};},tx=()=>'Trecho mais longo: '+tr().mx+' dias. Dias em perigo: '+tr().pe+'.';
+MIS.def(()=>[
+ ['Atravesse os <b>120 dias</b> com <b>no máximo 3 paradas</b>, sem que o contador passe de <b>30</b> em nenhum dia.',()=>tr().mx<=30,'Nenhum trecho passa de 30 dias. Com 3 paradas há 4 trechos, e 4 · 30 = 120: as paradas precisam ser exatamente nos dias 30, 60 e 90.',()=>tx()+(PAR.length<3?' Você ainda pode marcar mais uma parada.':' Mude os dias para repartir melhor a viagem.')],
+ ['Agora com <b>só 2 paradas</b>: deixe o trecho mais longo o mais curto possível.',()=>PAR.length==2&&tr().mx==40,'Com 2 paradas há 3 trechos: 120 ÷ 3 = 40 dias, nos dias 40 e 80. São 10 dias de perigo em cada trecho.',()=>(PAR.length!=2?'Deixe exatamente 2 paradas. ':'')+tx()],
+ ['Monte uma viagem com exatamente <b>20 dias em perigo</b>.',()=>tr().pe==20,()=>'20 dias em perigo: some, em cada trecho, o que passa de 30 dias.',tx],
+ ['Com <b>uma parada só</b>, deixe o menor número possível de dias em perigo.',()=>PAR.length==1&&PAR[0]==60,'Parada no dia 60: dois trechos de 60 dias, 30 em perigo em cada. Com uma parada só, não há como escapar.',()=>(PAR.length!=1?'Deixe só uma parada. ':'')+tx()]]);
 let PAR=[25,70];const OP=[];for(let d=10;d<=110;d+=5)OP.push(d);
 $('dias').innerHTML=OP.map(d=>`<button data-d="${d}">dia ${d}</button>`).join('');
 $('dias').querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=+b.dataset.d;if(PAR.includes(d))PAR=PAR.filter(x=>x!=d);else if(PAR.length<3)PAR.push(d);PAR.sort((a,b)=>a-b);draw();});
@@ -42,8 +48,7 @@ function draw(){$('dias').querySelectorAll('button').forEach(b=>b.classList.togg
  $('fig').innerHTML=SVG(340,250,g);
  $('kp').textContent=PAR.length+' de 3';$('km').textContent=mx;$('kr').textContent=perigo;
  $('fx').innerHTML='D(t) = '+ini.map((a,i)=>(a?'t − '+a:'t')+' , se '+a+' ≤ t '+(i<ini.length-1?'&lt; '+fim[i]:'≤ 120')).join(' · ');
- missao('m',mx<=30,'Nenhum trecho passa de 30 dias. Com 3 paradas há 4 trechos, e 4 · 30 = 120: as paradas precisam ser exatamente nos dias 30, 60 e 90.',
-  'O trecho mais longo tem '+mx+' dias. '+(PAR.length<3?'Você ainda pode marcar mais uma parada.':'Mude os dias para repartir melhor a viagem.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

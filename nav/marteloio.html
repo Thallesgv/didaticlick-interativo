@@ -21,6 +21,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const mt=()=>{const a=Q.get()*11.25*RAD,d=Dd.get(),b=B.get()*RAD,af=d*Math.sin(a);return {af,vol:af/Math.sin(b),tot:d*Math.cos(a)+af/Math.tan(b)};},ms=()=>'Avanço total: '+r2(mt().tot)+' léguas; volta de '+r2(mt().vol)+' léguas.';
+MIS.def(()=>[
+ ['O vento empurrou a nau <b>10 léguas</b> a cerca de <b>30°</b> (2 ou 3 quartas). Escolha a volta para que a nau avance <b>pelo menos 15 léguas</b> na rota, navegando o mínimo possível.',()=>Dd.get()==10&&(Q.get()==2||Q.get()==3)&&mt().tot>=15,()=>'Avanço de '+r2(mt().tot)+' léguas, navegando '+r2(10+mt().vol)+' no total. Quanto menor o ângulo da volta, mais a nau avança, mas mais ela navega.',ms],
+ ['Com 3 quartas e 10 léguas, volte à rota num ângulo de <b>90°</b>.',()=>Q.get()==3&&Dd.get()==10&&B.get()==90,'Volta a 90°: a nau anda só o afastamento (5,56 léguas) e não avança nada na volta.',ms],
+ ['Desvie <b>4 quartas</b> (45°) por 10 léguas e volte também a <b>45°</b>. Quanto mede a volta?',()=>Q.get()==4&&Dd.get()==10&&B.get()==45,'Triângulo isósceles: a volta mede as mesmas 10 léguas, e o avanço total é 2 × 7,07 = 14,14.',ms],
+ ['Com 3 quartas e 10 léguas, ache o <b>maior ângulo de volta</b> que ainda dá <b>20 léguas</b> de avanço.',()=>Q.get()==3&&Dd.get()==10&&B.get()==25,'Com 25° a nau avança 20,2 léguas; com 26°, só 19,7. Volta mais fechada: mais avanço, mas mais caminho.',ms]]);
 const Q=SL('sq',1,7,1,3,draw,v=>v+' quartas = '+fmt(v*11.25)+'°'),Dd=SL('sd',2,20,1,10,draw,v=>v+' léguas'),B=SL('sb',10,90,1,45,draw,v=>v+'°');
 function draw(){const a=Q.get()*11.25*RAD,d=Dd.get(),b=B.get()*RAD,af=d*Math.sin(a),av1=d*Math.cos(a),vol=af/Math.sin(b),av2=af/Math.tan(b),tot=av1+av2;
  const W=320,k=Math.min(W/(av1+av2+2),130/(af+1)),ox=10,oy=190;
@@ -33,8 +39,7 @@ function draw(){const a=Q.get()*11.25*RAD,d=Dd.get(),b=B.get()*RAD,af=d*Math.sin
  $('fig').innerHTML=SVG(340,230,g);
  $('ka').textContent=r2(af)+' léguas';$('kv').textContent=r2(vol)+' léguas';$('kt').textContent=r2(tot)+' léguas';
  const ok=d==10&&(Q.get()==2||Q.get()==3)&&tot>=15;
- missao('m',ok,'Avanço de '+r2(tot)+' léguas, navegando '+r2(d+vol)+' no total. Repare: quanto menor o ângulo da volta, mais a nau avança, mas mais ela navega.',
-  'Avanço total: '+r2(tot)+' léguas (desvio '+r2(av1)+' + volta '+r2(av2)+').');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

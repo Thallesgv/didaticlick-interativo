@@ -27,6 +27,12 @@ function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">$
 function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
  vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
   if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const cm=()=>{const C=Cs.get(),i=Is.get()/100,t=Ts.get();return {C,i,t,vs:C*(1+i*t),vc:C*Math.pow(1+i,t)};},cs=()=>{const o=cm();return 'Em '+fmt(o.t)+' anos: compostos '+f0(o.vc)+', simples '+f0(o.vs)+'.';};
+MIS.def(()=>[
+ ['Com taxa de <b>6% ao ano</b>, ache o <b>primeiro ano</b> em que os juros compostos dobram o capital. Compare com a regra de 72.',()=>Is.get()==6&&Ts.get()==12,'Em 12 anos, 1,06¹² ≈ 2,01: dobrou. Em 11, 1,06¹¹ ≈ 1,90 ainda não. A regra de 72 previu 72 ÷ 6 = 12. Nos juros simples, dobrar levaria 16,7 anos.',()=>{const o=cm();return Is.get()!=6?'Coloque a taxa em 6%.':(o.vc>=2*o.C?'Já dobrou ('+f0(o.vc)+'), mas tente um ano antes.':'Montante '+f0(o.vc)+': ainda não dobrou.');}],
+ ['Com <b>10%</b> ao ano, em que ano inteiro o capital dobra?',()=>Is.get()==10&&Ts.get()==8,'1,1⁸ ≈ 2,14 (em 7 anos, 1,95). A regra de 72 dava 7,2 anos.',()=>(Is.get()!=10?'Coloque a taxa em 10%. ':'')+cs()],
+ ['Ache um tempo em que os juros <b>simples</b> rendem mais que os compostos.',()=>Ts.get()<1,'Antes de 1 ano, os juros simples rendem mais: 1 + i·t fica acima de (1 + i)^t.',cs],
+ ['Com <b>20%</b> ao ano, quantas vezes o capital cresce em <b>10 anos</b>?',()=>Is.get()==20&&Ts.get()==10,'1,2¹⁰ ≈ 6,19: o capital mais que sextuplica. Com juros simples, seria só 3 vezes.',cs]]);
 const Cs=SL('sc',1000,8000,500,4000,draw,f0),Is=SL('si',1,20,1,10,draw,v=>v+'%'),Ts=SL('st',0.25,25,0.25,5,draw,v=>fmt(v)+(v==1?' ano':' anos'));
 function draw(){const C=Cs.get(),ip=Is.get(),i=ip/100,t=Ts.get(),T=25,ymax=Math.min(C*Math.pow(1+i,T),C*6)*1.05,ox=45,oy=215,w=280,h=190,X=a=>ox+a/T*w,Y=v=>oy-Math.min(v,ymax)/ymax*h;let g='';
  [0,.25,.5,.75,1].forEach(q=>{const v=ymax*q;g+=LN(ox,Y(v),ox+w,Y(v),'#EEF2F7',1)+TX(ox-4,Y(v)+3,f0(v),{fs:8,c:GRAY,a:'end'});});
@@ -49,8 +55,7 @@ function draw(){const C=Cs.get(),ip=Is.get(),i=ip/100,t=Ts.get(),T=25,ymax=Math.
  $('kq').textContent=t<1?'simples':(t==1?'empate':'compostos');
  $('ks').textContent=f0(vs);$('kc').textContent=f0(vc);$('kr').textContent=r1(r72)+' anos';
  const ok=ip==6&&t==12;
- missao('m',ok,'Em 12 anos, 1,06¹² ≈ 2,01: dobrou. Em 11, 1,06¹¹ ≈ 1,90 ainda não. A regra de 72 previu 72 ÷ 6 = 12. Nos juros simples, dobrar levaria 16,7 anos.',
-  ip!=6?'Coloque a taxa em 6%.':(vc>=2*C?'Já dobrou ('+f0(vc)+'), mas tente um ano antes.':'Montante '+f0(vc)+': ainda não dobrou.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

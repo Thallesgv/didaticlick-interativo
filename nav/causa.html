@@ -30,6 +30,12 @@ function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w
  const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
  return {g,X,Y,linha,pts};}
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const nE=()=>+$('ke').textContent,nD=()=>+$('kd').textContent,lim_=()=>Math.min(...M.filter(m=>m.g>=1).map(m=>m.dias)),cs=()=>'Doentes: '+nE()+' à esquerda e '+nD()+' à direita da linha.';
+MIS.def(()=>[
+ ['Descubra qual variável explica a doença e coloque a linha de corte no valor a partir do qual ela aparece: <b>nenhum doente à esquerda</b>, com a linha o mais à direita possível.',()=>{const c=Lc.get();return Cv.get()==1&&nE()==0&&c>=lim_()-1&&c<=lim_();},()=>'Os sinais só aparecem depois de cerca de '+Lc.get()+' dias sem fruta, e não têm relação com o contato: é falta, não contágio (pelo menos um mês sem vitamina C).',()=>Cv.get()==0?'Com o contato no eixo, os doentes (laranja) se espalham por toda parte. Isso parece uma nuvem.':(nE()>0?'Há '+nE()+' doente(s) à esquerda da linha. Volte um pouco.':'Nenhum doente à esquerda. Dá para levar a linha mais para a direita?')],
+ ['Com <b>dias sem fruta</b> no eixo, ponha a linha em <b>30</b> e leia a correlação r.',()=>Cv.get()==1&&Lc.get()==30,()=>'r ≈ '+$('kr').textContent+': perto de 1, uma relação forte e positiva. Mais dias sem fruta, mais sinais.',()=>Cv.get()!=1?'Escolha Dias sem fruta.':'Linha agora em '+Lc.get()+'.'],
+ ['Agora ponha <b>horas perto de doentes</b> no eixo, com a linha em 0. Quanto vale r?',()=>Cv.get()==0&&Lc.get()==0,()=>'r ≈ '+$('kr').textContent+': perto de 0, sem padrão. O contato não explica a doença.',()=>Cv.get()!=0?'Escolha Horas perto de doentes.':'Ponha a linha em 0.'],
+ ['Com <b>dias sem fruta</b>, ponha a linha onde os doentes ficam <b>divididos ao meio</b> (diferença de até 1).',()=>Cv.get()==1&&nE()>0&&Math.abs(nE()-nD())<=1,()=>'Metade dos doentes passou menos de '+Lc.get()+' dias sem fruta: esse valor é a mediana do grupo dos doentes.',()=>Cv.get()!=1?'Escolha Dias sem fruta.':cs()]]);
 let sd=11;const rnd=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
 const M=[];for(let i=0;i<40;i++){const dias=Math.round(5+rnd()*65),cont=Math.round(rnd()*100)/10,g=Math.max(0,Math.min(10,(dias-30)*0.28+(rnd()-.5)*1.6));M.push({dias,cont,g:dias<=30?0:g});}
 const VAR=[{n:'horas perto de doentes',k:'cont',max:10,t:[0,2,4,6,8,10]},{n:'dias sem fruta',k:'dias',max:70,t:[0,10,20,30,40,50,60,70]}];
@@ -46,9 +52,7 @@ function draw(){const v=VAR[Cv.get()],cut=Math.min(Lc.get(),v.max),G0=G(v.max,10
  $('fig').innerHTML=SVG(340,250,g);$('ke').textContent=e;$('kd').textContent=d;
  const lim=Math.min(...M.filter(m=>m.g>=1).map(m=>m.dias));
  const ok=Cv.get()==1&&e==0&&cut>=lim-1&&cut<=lim;
- missao('m',ok,'Os sinais só aparecem depois de cerca de '+cut+' dias sem fruta, e não têm relação com o contato: é falta, não contágio, como diz a fonte (pelo menos um mês sem vitamina C).',
-  Cv.get()==0?'Com o contato no eixo, os doentes (laranja) se espalham por toda parte: '+e+' à esquerda e '+d+' à direita. Isso parece uma nuvem.':
-  (e>0?'Há '+e+' doente(s) à esquerda da linha. Volte um pouco.':'Nenhum doente à esquerda. Dá para levar a linha mais para a direita?'));}
+ MIS.ver('m');}
 Lc.set(0);draw();
 })();
 </script>

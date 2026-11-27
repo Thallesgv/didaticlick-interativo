@@ -22,6 +22,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const gv=()=>S.map(s=>s.get()),tot=()=>gv().reduce((a,b)=>a+b,0);
+MIS.def(()=>[
+ ['A viagem custa <b>12.000 cruzados</b>. Monte a sociedade da história: Bartolomeo com <b>60%</b>, Dona Leonor com <b>25%</b>, Gaspar com <b>10%</b> e Enzo com <b>5%</b>.',()=>gv().join()=='7200,3000,1200,600','Sociedade fechada: 7.200 + 3.000 + 1.200 + 600 = 12.000. Bartolomeo põe 12 vezes o que Enzo põe (12 : 1).',()=>tot()==12000?'O total já é 12.000. Agora acerte a cota de cada um.':'Total atual: '+CRZ(tot())+'. A viagem precisa de 12.000.'],
+ ['Enzo quer <b>10%</b>. Leonor (3.000) e Gaspar (1.200) não mudam e o total continua 12.000. Quanto Bartolomeo põe?',()=>gv().join()=='6600,3000,1200,1200','Enzo: 10% de 12.000 = 1.200. Bartolomeo: 12.000 − 3.000 − 1.200 − 1.200 = 6.600, ou 55%.',()=>'Total: '+CRZ(tot())+'. Cota de Enzo: '+r1(100*gv()[3]/(tot()||1))+'%.'],
+ ['Monte uma sociedade em que <b>Bartolomeo : Enzo = 2 : 1</b>, com Enzo pondo pelo menos 1.000.',()=>{const v=gv();return v[3]>=1000&&v[0]==2*v[3];},'2 : 1 quer dizer que Bartolomeo põe o dobro de Enzo, e por isso também recebe o dobro do lucro.',()=>'Bartolomeo : Enzo agora é '+$('kr').textContent+'.'],
+ ['Faça os quatro sócios terem <b>25% cada</b> numa viagem de 12.000.',()=>gv().every(x=>x==3000),'3.000 cada: 3.000 ÷ 12.000 = 25%. Cotas iguais, lucros iguais.',()=>'Total: '+CRZ(tot())+'.']]);
 const N=['Bartolomeo','Dona Leonor','Gaspar','Enzo'];
 const S=[SL('s0',0,12000,100,6000,draw,CRZ),SL('s1',0,6000,100,3000,draw,CRZ),SL('s2',0,3000,100,2000,draw,CRZ),SL('s3',0,3000,100,1000,draw,CRZ)];
 const mdc=(a,b)=>b?mdc(b,a%b):a;
@@ -35,7 +41,7 @@ function draw(){const v=S.map(s=>s.get()),T=v.reduce((a,b)=>a+b,0)||1;
  $('kt').textContent=CRZ(T);$('ke').textContent=r1(100*v[3]/T)+'%';
  const d=mdc(v[0],v[3])||1;$('kr').textContent=v[3]?fmt(v[0]/d)+' : '+fmt(v[3]/d):'—';
  const ok=v[0]==7200&&v[1]==3000&&v[2]==1200&&v[3]==600;
- missao('m',ok,'Sociedade fechada: 7.200 + 3.000 + 1.200 + 600 = 12.000. Bartolomeo põe 12 vezes o que Enzo põe (12 : 1).',T==12000?'O total já é 12.000. Agora acerte a cota de cada um.':'Total atual: '+CRZ(T)+'. A viagem precisa de 12.000.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

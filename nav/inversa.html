@@ -27,6 +27,12 @@ function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">$
 function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
  vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
   if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const pr_=()=>{const d=S.map(s=>s.get()),inv=d.map(x=>1/x),si=inv.reduce((a,b)=>a+b,0);return {d,pr:inv.map(x=>900*x/si)};},is=()=>'Prêmios: '+pr_().pr.map(f0).join(', ')+'.',bate=(a,b,c)=>{const p=pr_().pr;return Math.abs(p[0]-a)<.5&&Math.abs(p[1]-b)<.5&&Math.abs(p[2]-c)<.5;};
+MIS.def(()=>[
+ ['Escolha os dias para que os prêmios sejam <b>450, 300 e 150</b>.',()=>bate(450,300,150),()=>'Prêmios 450 : 300 : 150 = 3 : 2 : 1. Os dias estão na razão inversa, 1 : 1,5 : 3 ('+pr_().d.join(', ')+').',()=>is()+' A razão dos prêmios é 3 : 2 : 1; a dos dias tem de ser a inversa.'],
+ ['Faça as três naus receberem <b>300 cada</b>.',()=>bate(300,300,300),'Mesmos dias, mesmo prêmio: 900 ÷ 3 = 300.',is],
+ ['Faça a <b>Santa Luzia</b> receber exatamente <b>100</b>.',()=>Math.abs(pr_().pr[2]-100)<.5,()=>'Santa Luzia com '+pr_().d[2]+' dias leva 100, um nono do prêmio: as outras duas, juntas, são 8 vezes mais rápidas.',is],
+ ['Faça os prêmios serem <b>400, 300 e 200</b>.',()=>bate(400,300,200),'Prêmios 4 : 3 : 2, dias 3 : 4 : 6 (por exemplo, 90, 120 e 180). Prêmio × dias dá o mesmo para as três.',is]]);
 const S=[SL('s0',60,300,10,120,draw,v=>v+' dias'),SL('s1',60,300,10,150,draw,v=>v+' dias'),SL('s2',60,300,10,200,draw,v=>v+' dias')],N=['nau de Enzo','São Jorge','Santa Luzia'];
 function draw(){const d=S.map(s=>s.get()),inv=d.map(x=>1/x),si=inv.reduce((a,b)=>a+b,0),pr=inv.map(x=>900*x/si);let g='';
  d.forEach((x,i)=>{const y=30+i*72;g+=TX(10,y-6,N[i],{fs:10,a:'start'});
@@ -35,8 +41,7 @@ function draw(){const d=S.map(s=>s.get()),inv=d.map(x=>1/x),si=inv.reduce((a,b)=
  $('fig').innerHTML=SVG(340,240,g);
  $('kp').textContent=f0(pr[0]*d[0]);
  const ok=Math.abs(pr[0]-450)<0.5&&Math.abs(pr[1]-300)<0.5&&Math.abs(pr[2]-150)<0.5;
- missao('m',ok,'Prêmios 450 : 300 : 150 = 3 : 2 : 1. Os dias precisam estar na razão inversa, 1 : 1,5 : 3 (por exemplo, '+d.join(', ')+').',
-  'Prêmios: '+pr.map(f0).join(', ')+'. A razão dos prêmios é 3 : 2 : 1; a dos dias tem de ser a inversa.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

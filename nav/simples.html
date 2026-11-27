@@ -27,6 +27,12 @@ function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">$
 function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
  vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
   if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const sj=()=>{const C=Cs.get(),i=Is.get()/100,t=Ts.get();return {C,i,t,J:C*i*t};},ss=()=>'Juros totais: '+f0(sj().J)+'.',b410=()=>Cs.get()==4000&&Is.get()==10;
+MIS.def(()=>[
+ ['Com <b>4 000 a 10% ao ano</b>, ache em quantos anos os juros ficam <b>iguais ao capital</b>.',()=>b410()&&Ts.get()==10,'10 anos: 10 degraus de 400 = 4 000 de juros. A juros simples de 10% ao ano, o capital dobra em 100 ÷ 10 = 10 anos.',()=>!b410()?'Coloque o capital em 4 000 e a taxa em 10%.':'Juros de '+f0(sj().J)+': '+(sj().J<4000?'ainda menos':'mais')+' que o capital.'],
+ ['Com 4 000 a 10%, em quantos anos os juros chegam a <b>6 000</b>?',()=>b410()&&Ts.get()==15,'400 por ano × 15 anos = 6 000 de juros, e o montante chega a 10 000.',()=>(b410()?'':'Coloque 4 000 e 10%. ')+ss()],
+ ['Ache a taxa que <b>dobra o capital em 5 anos</b>.',()=>Is.get()==20&&Ts.get()==5,'20% × 5 = 100%: dobra em 5 anos. Anos para dobrar = 100 ÷ taxa.',()=>'Juros de '+f0(sj().J)+' sobre '+f0(sj().C)+' em '+Ts.get()+' anos.'],
+ ['Com capital de <b>3 000</b>, monte juros totais de exatamente <b>1 800</b>.',()=>Cs.get()==3000&&Math.abs(sj().J-1800)<.5,()=>'3 000 × '+Is.get()+'% × '+Ts.get()+' = 1 800. Taxa × anos tem de dar 60%.',()=>(Cs.get()!=3000?'Coloque o capital em 3 000. ':'')+ss()]]);
 const Cs=SL('sc',1000,8000,500,4000,draw,f0),Is=SL('si',1,20,1,10,draw,v=>v+'%'),Ts=SL('st',1,15,1,2,draw,v=>v+(v>1?' anos':' ano'));
 function draw(){const C=Cs.get(),i=Is.get()/100,t=Ts.get(),J=C*i*t,M=C+J,ymax=Math.max(C*(1+i*15),C*2)*1.05;
  const ox=45,oy=215,w=280,h=190,bw=w/15,Y=v=>oy-v/ymax*h;let g='';
@@ -38,8 +44,7 @@ function draw(){const C=Cs.get(),i=Is.get()/100,t=Ts.get(),J=C*i*t,M=C+J,ymax=Ma
  $('fig').innerHTML=SVG(340,245,g);
  $('ka').textContent=f0(C*i);$('kj').textContent=f0(J);$('km').textContent=f0(M);
  const ok=C==4000&&Math.abs(i-0.1)<1e-9&&t==10;
- missao('m',ok,'10 anos: 10 degraus de 400 = 4 000 de juros. A juros simples de 10% ao ano, o capital dobra em 100 ÷ 10 = 10 anos.',
-  C!=4000||Math.abs(i-0.1)>1e-9?'Coloque o capital em 4 000 e a taxa em 10%.':'Juros de '+f0(J)+': '+(J<C?'ainda menos':'mais')+' que o capital.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

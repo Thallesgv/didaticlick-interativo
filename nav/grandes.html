@@ -27,6 +27,12 @@ function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
 function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
 function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
 const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const st=()=>{const n=RES.length,v=RES.filter(x=>x).length;return {n,f:n?v/n:0,p:Ps.get()};},pp=x=>Math.abs(Ps.get()-x)<1e-9,gs=()=>{const{n,f,p}=st();return fmt(n)+' viagens, distância até p: '+(n?fmt(Math.round(Math.abs(f-p)*1000)/1000):'—')+'.';};
+MIS.def(()=>[
+ ['Depois de <b>1 000 viagens ou mais</b>, a frequência deve estar a <b>menos de 0,02</b> da probabilidade.',()=>{const{n,f,p}=st();return n>=1000&&Math.abs(f-p)<.02;},()=>'Em '+fmt(st().n)+' viagens, a frequência ficou a '+fmt(Math.round(Math.abs(st().f-st().p)*1000)/1000)+' de p. É a lei dos grandes números.',()=>{const{n}=st();return n<1000?'Faltam '+fmt(1000-n)+' viagens para chegar a 1 000.':gs()+' Mande mais viagens.';}],
+ ['Com chance <b>0,5</b>, chegue a <b>10 000 viagens</b> a menos de <b>0,01</b> de p.',()=>{const{n,f}=st();return pp(.5)&&n>=10000&&Math.abs(f-.5)<.01;},'Com 10 000 viagens a faixa típica é de só 0,01: a frequência fica praticamente em 0,5.',()=>(pp(.5)?'':'Coloque a chance em 0,5. ')+gs()],
+ ['Com chance <b>0,95</b>, faça <b>100 viagens</b> ou mais e fique a menos de <b>0,05</b> de p.',()=>{const{n,f}=st();return pp(.95)&&n>=100&&Math.abs(f-.95)<.05;},'Perto de 0 ou de 1 a faixa é mais estreita: p(1 − p) fica pequeno.',()=>(pp(.95)?'':'Coloque a chance em 0,95. ')+gs()],
+ ['Recomece e, com <b>no máximo 10 viagens</b>, consiga uma frequência a <b>mais de 0,3</b> de p.',()=>{const{n,f,p}=st();return n>=1&&n<=10&&Math.abs(f-p)>.3;},'No começo, uma única viagem joga a frequência longe: por isso a faixa é tão larga perto de 1 viagem.',()=>st().n>10?'Passou de 10. Aperte Recomeçar.':gs()]]);
 let RES=[];const Ps=SL('sp',0.1,0.95,0.05,0.8,()=>{RES=[];draw();},v=>fmt(v));
 const manda=k=>{for(let i=0;i<k;i++)RES.push(Math.random()<Ps.get());draw();};
 BOT('bt',[['+1',()=>manda(1)],['+10',()=>manda(10)],['+100',()=>manda(100)],['+1 000',()=>manda(1000)],['Recomeçar',()=>{RES=[];draw();}]]);
@@ -41,8 +47,7 @@ function draw(){const p=Ps.get(),n=RES.length,v=RES.filter(x=>x).length,f=n?v/n:
  $('fig').innerHTML=SVG(340,250,g);
  $('kn').textContent=fmt(n);$('kf').textContent=n?fmt(Math.round(f*1000)/1000):'—';$('kd').textContent=n?fmt(Math.round(Math.abs(f-p)*1000)/1000):'—';
  const ok=n>=1000&&Math.abs(f-p)<0.02;
- missao('m',ok,'Em '+fmt(n)+' viagens, a frequência ficou a '+fmt(Math.round(Math.abs(f-p)*1000)/1000)+' de p. É a lei dos grandes números: com muitas tentativas, a frequência se aproxima da probabilidade.',
-  n<1000?'Faltam '+fmt(1000-n)+' viagens para chegar a 1 000.':'Distância de '+fmt(Math.round(Math.abs(f-p)*1000)/1000)+': mande mais viagens.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

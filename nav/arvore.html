@@ -27,6 +27,12 @@ function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
 function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
 function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
 const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const pp=x=>Math.abs(Ps.get()-x)<1e-9,av=()=>{const n=Ns.get(),p=Ps.get();return {pt:Math.pow(p,n),pz:Math.pow(1-p,n)};},as=()=>'Todas voltam: '+pct(av().pt)+'. Pelo menos uma: '+pct(1-av().pz)+'.';
+MIS.def(()=>[
+ ['Com chance <b>0,8</b>, qual o <b>menor número de naus</b> para que pelo menos uma volte com probabilidade de <b>99% ou mais</b>?',()=>pp(.8)&&Ns.get()==3,'Três naus: nenhuma volta com 0,2³ = 0,008, e pelo menos uma volta com 1 − 0,008 = 99,2%. Com duas, eram só 96%.',()=>!pp(.8)?'Coloque a chance em 0,8.':(1-av().pz>=.99?'Pelo menos uma volta com '+pct(1-av().pz)+', mas dá para chegar a 99% com menos naus.':'Pelo menos uma volta com '+pct(1-av().pz)+': ainda abaixo de 99%.')],
+ ['Com chance 0,8 e <b>4 naus</b>, qual é a chance de <b>todas</b> voltarem?',()=>pp(.8)&&Ns.get()==4,'0,8⁴ ≈ 41%. Mais naus: mais certeza de que alguma volta, mas menos chance de todas voltarem.',as],
+ ['Com <b>2 naus</b>, que chance de cada nau faz pelo menos uma voltar com <b>99%</b>?',()=>Ns.get()==2&&pp(.9),'0,1² = 0,01: com chance 0,9, duas naus bastam para 99%.',as],
+ ['Faça "todas voltam" e "nenhuma volta" terem <b>a mesma chance</b>.',()=>pp(.5),'Com chance 0,5, voltar e perder são igualmente prováveis: 0,5ⁿ para cada caso.',as]]);
 const Ns=SL('sn',1,4,1,2,draw,v=>v+(v>1?' naus':' nau')),Ps=SL('sp',0.5,0.95,0.05,0.8,draw,v=>fmt(v));
 function draw(){const n=Ns.get(),p=Ps.get(),q=1-p,L=1<<n,ox=20,w=250,top=12,H=232;let g='';
  const yl=i=>top+(i+0.5)*H/L;
@@ -38,8 +44,7 @@ function draw(){const n=Ns.get(),p=Ps.get(),q=1-p,L=1<<n,ox=20,w=250,top=12,H=23
  $('fig').innerHTML=SVG(340,262,g);
  const pt=Math.pow(p,n),pz=Math.pow(q,n);$('kt').textContent=pct(pt);$('kz').textContent=pct(pz);$('ku').textContent=pct(1-pz);
  const ok=Math.abs(p-0.8)<1e-9&&n==3;
- missao('m',ok,'Três naus: nenhuma volta com 0,2³ = 0,008, e pelo menos uma volta com 1 − 0,008 = 99,2%. Com duas, eram só 96%.',
-  Math.abs(p-0.8)>1e-9?'Coloque a chance em 0,8.':(1-pz>=0.99?'Pelo menos uma volta com '+pct(1-pz)+', mas dá para chegar a 99% com menos naus.':'Pelo menos uma volta com '+pct(1-pz)+': ainda abaixo de 99%.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

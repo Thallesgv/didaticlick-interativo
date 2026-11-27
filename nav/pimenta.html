@@ -21,6 +21,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const au_=()=>100*(V.get()-C.get())/C.get();
+MIS.def(()=>[
+ ['Na história, Enzo compra <b>800 quintais</b> a <b>3 cruzados</b> e vende a <b>22</b>. Monte esse negócio e descubra o aumento percentual.',()=>Q.get()==800&&C.get()==3&&V.get()==22,'Negócio da história: paga 2.400 e recebe 17.600. Aumento: (22 − 3) ÷ 3 = 6,33..., ou cerca de 633%.',()=>'Aumento atual: '+r1(au_())+'%. Lembre: a base do aumento é o preço de compra.'],
+ ['Comprando a 3, que preço de venda dá um aumento de <b>exatamente 500%</b>?',()=>C.get()==3&&V.get()==18,'(18 − 3) ÷ 3 = 5 = 500%. Vender a 18 é receber 6 vezes o que se pagou.',()=>'Aumento atual: '+r1(au_())+'%.'],
+ ['Monte uma carga de exatamente <b>1.000 arrobas</b>.',()=>Q.get()==250,'1.000 ÷ 4 = 250 quintais, cerca de 14.688 kg de pimenta.',()=>'Agora: '+fmt(Q.get()*4)+' arrobas.'],
+ ['Comprando a <b>4</b>, ache o preço de venda que dá aumento de <b>100%</b>.',()=>C.get()==4&&V.get()==8,'(8 − 4) ÷ 4 = 1 = 100%. Dobrar o preço é aumentar 100%, não 200%.',()=>'Aumento atual: '+r1(au_())+'%.']]);
 const Q=SL('sq',50,851,1,400,draw,v=>fmt(v)+' quintais'),C=SL('sc',1,10,0.5,4,draw,v=>r1(v)+' cruzados'),V=SL('sv',1,30,0.5,12,draw,v=>r1(v)+' cruzados');
 function draw(){const q=Q.get(),c=C.get(),v=V.get(),comp=q*c,vend=q*v,au=100*(v-c)/c;
  const mx=851*30,H=150,y0=170,k=H/mx;let g=LN(20,y0,320,y0,NAVY,2);
@@ -33,8 +39,7 @@ function draw(){const q=Q.get(),c=C.get(),v=V.get(),comp=q*c,vend=q*v,au=100*(v-
  $('fig').innerHTML=SVG(340,190,g);
  $('ka').textContent=r1(au)+'%';$('kr').textContent=fmt(q*4);$('kk').textContent=fmt(Math.round(q*58.75));
  const ok=q==800&&c==3&&v==22;
- missao('m',ok,'Negócio da história: paga 2.400 e recebe 17.600. Aumento: (22 − 3) ÷ 3 = 6,33..., ou cerca de 633%.',
-  c==3&&v==18?'Com venda a 18: (18 − 3) ÷ 3 = 5 = 500%. Agora monte o negócio da história.':'Aumento atual: '+r1(au)+'%. Lembre: a base do aumento é o preço de compra.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -36,6 +36,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const l60=()=>Math.tan(Rm.get()*RAD)*psi(60)*DEG,ls=()=>'Com rumo '+fmt(Rm.get())+'°, a nau cruza 60° N na longitude '+r1(l60())+'° L.';
+MIS.def(()=>[
+ ['A está em 0°, 0°; B está em 60° N, 60° L. Ache o <b>rumo fixo</b> que leva de A até B.',()=>Math.abs(l60()-60)<=1,()=>'Rumo ≈ '+fmt(Rm.get())+'°: tg(rumo) = 60° em radianos ÷ ln tg(75°) ≈ 1,047 ÷ 1,317 ≈ 0,795. Na carta plana, a régua daria 45°, o rumo errado.',ls],
+ ['Ache o rumo que leva de A até <b>60° N, 30° L</b>.',()=>Math.abs(l60()-30)<=1,()=>'Rumo ≈ '+fmt(Rm.get())+'°. Na carta de Mercator, basta medir o ângulo da reta de A até o ponto.',ls],
+ ['E até <b>60° N, 90° L</b>?',()=>Math.abs(l60()-90)<=1,'Rumo ≈ 50°: tg(rumo) = 1,571 ÷ 1,317 ≈ 1,19.',ls],
+ ['Com rumo <b>45°</b>, em que longitude a nau cruza 60° N?',()=>Rm.get()==45,'Em 75,5° L, não em 60°: a régua de 45° na carta plana leva para o lugar errado.',ls]]);
 const Rm=SL('sr',1,89,0.5,45,draw,v=>fmt(v)+'°');const psi=la=>Math.log(Math.tan(Math.PI/4+la*RAD/2));
 function draw(){const r=Rm.get(),pts=LOX(r,0,75,0);
  const W=150,H=210,ox1=12,ox2=180,oy=228,kx=W/90,kym=H/psi(75)*0.98,kyp=H/75;
@@ -48,8 +54,7 @@ function draw(){const r=Rm.get(),pts=LOX(r,0,75,0);
   g+=BOLA(ox,oy,NAVY,5)+BOLA(ox+60*kx,oy-Y(60),GREEN,6)+TX(ox+60*kx+6,oy-Y(60)-6,'B',{fs:11,a:'start',c:GREEN})+TX(ox+W/2,14,nome,{fs:10});});
  $('fig').innerHTML=SVG(340,250,g);
  const lo60=Math.tan(r*RAD)*psi(60)*DEG;$('kb').textContent=r1(lo60)+'° L';$('kp').textContent='45°';
- missao('m',Math.abs(lo60-60)<=1,'Rumo ≈ '+fmt(r)+'°: tg(rumo) = 60° em radianos ÷ ln tg(75°) ≈ 1,047 ÷ 1,317 ≈ 0,795. Na carta plana, a régua daria 45°, o rumo errado.',
-  'Com esse rumo, a nau cruza o paralelo de 60° na longitude '+r1(lo60)+'°. B está em 60° L.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

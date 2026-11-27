@@ -28,6 +28,12 @@ const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=
 const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
 const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
 const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const sm=()=>{const a=[NV.get()*Math.sin(NR.get()*RAD),NV.get()*Math.cos(NR.get()*RAD)],c=[CV.get()*Math.sin(CR.get()*RAD),CV.get()*Math.cos(CR.get()*RAD)];return [a[0]+c[0],a[1]+c[1]];},mg=()=>Math.hypot(...sm()),vs=()=>'Velocidade real: '+r2(mg())+' léguas/h, rumo '+(mg()>1e-6?r1(RUMO(...sm()))+'°':'nenhum')+'.',dois=()=>NV.get()==2&&CV.get()==1.5;
+MIS.def(()=>[
+ ['Faça a nau andar exatamente para o <b>sudeste</b> (rumo 135°), com a corrente ligada e a proa <b>não</b> apontando para o sudeste.',()=>{const m=mg();return m>1e-6&&Math.abs(RUMO(...sm())-135)<0.05&&CV.get()>0&&NR.get()!=135;},()=>'Sudeste! A soma tem leste e norte de mesmo tamanho com sinais opostos: '+PAR(...sm())+'.',()=>vs()+' Para o sudeste, a componente leste da soma tem de ser o oposto da componente norte.'],
+ ['Com a corrente ligada, faça a nau ficar <b>parada</b> no mapa.',()=>CV.get()>0&&mg()<1e-6,'Parada: a nau anda contra a corrente com a mesma velocidade, e as duas setas se anulam.',vs],
+ ['Com a nau a <b>2</b> e a corrente a <b>1,5</b> légua/h, faça a <b>maior</b> velocidade real possível.',()=>dois()&&Math.abs(mg()-3.5)<.01,'3,5 léguas/h: no mesmo rumo, os módulos simplesmente se somam.',()=>(dois()?'':'Ponha a nau em 2 e a corrente em 1,5. ')+vs()],
+ ['Com as mesmas velocidades (2 e 1,5), faça a velocidade real ser <b>2,5 léguas/h</b>.',()=>dois()&&Math.abs(mg()-2.5)<.01,'Rumos perpendiculares: √(2² + 1,5²) = √6,25 = 2,5. É Pitágoras de novo.',()=>(dois()?'':'Ponha a nau em 2 e a corrente em 1,5. ')+vs()]]);
 const L=v=>r1(v)+' légua'+(v==1?'':'s')+'/h';
 const NV=SL('nv',0.5,4,0.5,2,draw,L),NR=SL('nr',0,345,15,90,draw,v=>v+'°'),CV=SL('cv',0,3,0.5,1,draw,L),CR=SL('cr',0,345,15,180,draw,v=>v+'°');
 function draw(){const a=[NV.get()*Math.sin(NR.get()*RAD),NV.get()*Math.cos(NR.get()*RAD)],c=[CV.get()*Math.sin(CR.get()*RAD),CV.get()*Math.cos(CR.get()*RAD)],s=[a[0]+c[0],a[1]+c[1]];
@@ -41,8 +47,7 @@ function draw(){const a=[NV.get()*Math.sin(NR.get()*RAD),NV.get()*Math.cos(NR.ge
  $('fig').innerHTML=SVG(340,250,g);
  const m=Math.hypot(s[0],s[1]),r=RUMO(s[0],s[1]);$('kv').textContent=L(Math.round(m*100)/100);$('kr').textContent=m>1e-6?r1(r)+'°':'parada';$('ks').textContent=PAR(s[0],s[1]);
  const ok=m>1e-6&&Math.abs(r-135)<0.05&&CV.get()>0&&NR.get()!=135;
- missao('m',ok,'Sudeste! A soma tem leste e norte de mesmo tamanho com sinais opostos: '+PAR(s[0],s[1])+'.',
-  'Rumo real: '+(m>1e-6?r1(r)+'°':'parada')+'. Para o sudeste, a componente leste da soma tem de ser igual ao oposto da componente norte.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

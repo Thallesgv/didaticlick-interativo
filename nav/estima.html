@@ -25,6 +25,12 @@ const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=
 const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
 const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
 const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const fp=()=>{let x=0,y=0;for(let i=0;i<3;i++){const d=H[i].get()*V[i].get(),t=Q[i].get()*RAD;x+=d*Math.sin(t);y+=d*Math.cos(t);}return [x,y];},dc=()=>{const[x,y]=fp();return Math.hypot(20-x,-5-y);},usados=()=>H.filter(h=>h.get()>0).length,es=()=>'Posição estimada '+PAR(...fp())+', a '+r2(dc())+' léguas do cabo.';
+MIS.def(()=>[
+ ['O diário começa como o de Enzo. Mude os trechos para a posição estimada cair <b>a menos de meia légua do cabo</b>.',()=>dc()<.5,()=>'No cabo! A soma dos trechos dá '+PAR(...fp())+', a '+r2(dc())+' légua do cabo em (20; −5).',()=>{const[x,y]=fp();return 'Falta o vetor cabo − posição = '+PAR(20-x,-5-y)+': '+r2(dc())+' léguas no rumo '+r1(RUMO(20-x,-5-y))+'°.';}],
+ ['Chegue perto do cabo (menos de <b>1 légua</b>) usando <b>um trecho só</b>: zere as horas dos outros dois.',()=>usados()==1&&dc()<1,'O cabo fica a √(20² + 5²) ≈ 20,6 léguas, no rumo ≈ 104°: um trecho só, de cerca de 21 léguas no rumo 105°.',()=>usados()!=1?'Trechos com horas: '+usados()+'. Deixe só um.':es()],
+ ['Chegue ao cabo (menos de meia légua) com o <b>trecho 1 indo para o norte</b> (rumo 0°).',()=>Q[0].get()==0&&H[0].get()>0&&dc()<.5,'Primeiro para o norte, depois a volta: caminhos diferentes, mesma soma de vetores.',()=>(Q[0].get()==0&&H[0].get()>0?'':'Ponha o trecho 1 no rumo 0°, com horas. ')+es()],
+ ['Use os <b>três trechos</b> e volte ao <b>ponto de partida</b> (menos de meia légua).',()=>usados()==3&&Math.hypot(...fp())<.5,'Os três vetores somam zero: desenhados ponta com cauda, eles fecham um triângulo.',()=>(usados()<3?'Use os três trechos. ':'')+'Posição estimada '+PAR(...fp())+'.']]);
 const CORT=[NAVY,BLUE,GREEN],INI=[[6,2,90],[4,1.5,225],[4,2,0]];
 $('tr').innerHTML=[0,1,2].map(i=>`<div style="border-left:4px solid ${CORT[i]};padding-left:8px;margin:6px 0"><b style="color:${CORT[i]}">Trecho ${i+1}</b>
 <div class="sl" id="h${i}"><b>Horas</b><input type="range"><span></span></div><div class="sl" id="v${i}"><b>Velocidade</b><input type="range"><span></span></div><div class="sl" id="q${i}"><b>Rumo</b><input type="range"><span></span></div></div>`).join('');
@@ -43,8 +49,7 @@ function draw(){let p=[[0,0]];for(let i=0;i<3;i++){const d=H[i].get()*V[i].get()
  $('fig').innerHTML=SVG(340,240,g);
  const dx=CABO[0]-f[0],dy=CABO[1]-f[1],d=Math.hypot(dx,dy);
  $('kp').textContent=PAR(f[0],f[1]);$('kd').textContent=r2(d)+' léguas';$('kr').textContent=d>0.005?r1(RUMO(dx,dy))+'°':'—';
- missao('m',d<0.5,'No cabo! A soma dos trechos dá '+PAR(f[0],f[1])+', a '+r2(d)+' légua do cabo em (20; −5).',
-  'Falta o vetor cabo − posição = '+PAR(dx,dy)+': '+r2(d)+' léguas no rumo '+r1(RUMO(dx,dy))+'°.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -26,6 +26,12 @@ function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">$
 function BARRA(y,vals,nomes,tot,rot){let g=TX(20,y-8,rot,{fs:10,a:'start'}),x=20;const W=300;
  vals.forEach((v,i)=>{const w=tot?v/tot*W:0;g+=`<rect x="${x}" y="${y}" width="${Math.max(w-1.5,0)}" height="30" fill="${CORES[i]}"/>`;if(w>26)g+=TX(x+w/2,y+19,f0(v),{fs:w>44?10:8,c:'#fff'});
   if(nomes&&w>26)g+=TX(x+w/2,y+44,nomes[i],{fs:9,c:CORES[i],w:500});x+=w;});return g;}
+const tp=()=>{const c=Cs.get(),m=Ms.get(),aL=c*m,pL=6000-6000*72000/(72000+aL);return {c,m,aL,pL};},ts=()=>'Dona Leonor recebe '+f0(tp().pL)+' ('+r1(tp().pL/60)+'%).';
+MIS.def(()=>[
+ ['Dona Leonor só ficou <b>9 meses</b>. Ache o capital que dá a ela exatamente <b>um terço</b> do lucro.',()=>tp().m==9&&tp().c==4000,'4 000 × 9 = 36 000, metade dos 72 000 de Bartolomeo: razão 2 : 1. Ela leva 2 000 de 6 000, um terço.',()=>tp().m!=9?'Coloque os meses de Dona Leonor em 9.':ts()+' Para um terço, a área dela tem de ser metade da de Bartolomeo.'],
+ ['Que capital e quantos meses dão a ela <b>metade</b> do lucro?',()=>tp().aL==72000,()=>f0(tp().c)+' × '+tp().m+' = 72 000, a mesma área de Bartolomeo: 3 000 para cada um.',ts],
+ ['Com só <b>3 meses</b>, que capital dá a ela <b>um quarto</b> do lucro?',()=>tp().m==3&&tp().c==8000,'8 000 × 3 = 24 000, um terço de 72 000: razão 3 : 1, e ela leva 1 500, um quarto.',()=>(tp().m!=3?'Coloque os meses em 3. ':'')+ts()],
+ ['Ache <b>outro</b> retângulo (que não seja 4 000 × 9) que dê a ela um terço do lucro.',()=>{const o=tp();return o.aL==36000&&o.c!=4000;},()=>f0(tp().c)+' × '+tp().m+' = 36 000: a mesma área com outro formato.',()=>'Área dela agora: '+f0(tp().aL)+'. Precisa ser 36 000.']]);
 const Cs=SL('sc',1000,8000,500,3000,draw,f0),Ms=SL('sm',1,12,1,9,draw,v=>v+(v>1?' meses':' mês'));
 function draw(){const c=Cs.get(),m=Ms.get(),aB=6000*12,aL=c*m,L=6000,pB=L*aB/(aB+aL),pL=L-pB;
  const ox=30,oy=205,kx=24,ky=0.011;let g='';
@@ -36,8 +42,7 @@ function draw(){const c=Cs.get(),m=Ms.get(),aB=6000*12,aL=c*m,L=6000,pB=L*aB/(aB
  $('fig').innerHTML=SVG(340,240,g);
  $('kb').textContent=f0(pB);$('kl').textContent=f0(pL);$('kf').textContent=r1(pL/L*100)+'%';
  const ok=m==9&&c==4000;
- missao('m',ok,'4 000 × 9 = 36 000, metade dos 72 000 de Bartolomeo: razão 2 : 1. Ela leva 2 000 de 6 000, um terço.',
-  m!=9?'Coloque os meses de Dona Leonor em 9.':'Ela leva '+f0(pL)+' ('+r1(pL/L*100)+'%). Para um terço, a área dela tem de ser metade da de Bartolomeo.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

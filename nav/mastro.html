@@ -21,7 +21,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const R=SL('sR',0.1,0.5,0.01,0.3,draw,v=>r2(v)+' m'),r=SL('sr',0.1,0.5,0.01,0.3,draw,v=>r2(v)+' m'),H=SL('sh',5,30,1,20,draw,v=>v+' m');
+const mv=()=>[R.get(),r.get(),H.get()],eq=(x,y)=>Math.abs(x-y)<.001,vm=()=>{const[b,a,h]=mv();return 3.14*h*(b*b+a*b+a*a)/3;},breu=()=>{const[b,a,h]=mv();return 3.14*(b+a)*Math.hypot(h,b-a);};
+MIS.def(()=>[
+ ['Faça o <b>mastro reto</b> de Enzo: raio 0,3 m e altura 20 m. Anote o volume.',()=>{const[b,a,h]=mv();return eq(b,.3)&&eq(a,.3)&&h==20;},'Mastro reto: 3,14 × 0,3² × 20 ≈ 5,65 m³ de madeira e 37,7 m² de breu.',()=>'Volume agora: '+r2(vm())+' m³.'],
+ ['Agora <b>afine o topo</b> até 0,2 m. Quanto por cento de madeira se economiza?',()=>{const[b,a,h]=mv();return eq(b,.3)&&eq(a,.2)&&h==20;},'Afunilado: 3,98 m³ contra 5,65 m³ do cilindro. Economia de (5,65 − 3,98) ÷ 5,65 ≈ 29,6% de madeira.',()=>'Volume agora: '+r2(vm())+' m³.'],
+ ['Com o topo em 0,2 m, ache a <b>menor altura</b> em que o mastro afunilado tem pelo menos a madeira do reto (5,65 m³).',()=>{const[b,a,h]=mv();return eq(b,.3)&&eq(a,.2)&&h==29;},'Com 29 m são 5,77 m³ (com 28 m, 5,57). O mastro fino precisa de 9 m a mais para gastar a mesma madeira.',()=>'Volume agora: '+r2(vm())+' m³.'],
+ ['Faça a planificação virar um <b>retângulo</b> com mais de <b>50 m²</b> de breu.',()=>{const[b,a]=mv();return eq(a,b)&&breu()>50;},()=>'Mastro reto: o retângulo tem 2πr de largura e h de altura. Área: '+r1(breu())+' m².',()=>'Breu agora: '+r1(breu())+' m².'+(eq(mv()[0],mv()[1])?'':' Deixe os dois raios iguais.')]]);
+const R=SL('sR',0.1,0.5,0.01,0.3,draw,v=>r2(v)+' m'),r=SL('sr',0.1,0.5,0.01,0.3,draw,v=>r2(v)+' m'),H=SL('sh',5,30,1,15,draw,v=>v+' m');
 let vcil=null;
 function draw(){let b=R.get(),a=r.get();if(a>b){a=b;r.set(b);}const h=H.get();
  const g1=Math.hypot(h,b-a),Al=3.14*(b+a)*g1,V=3.14*h*(b*b+a*b+a*a)/3,Vc=3.14*b*b*h;
@@ -36,8 +42,7 @@ function draw(){let b=R.get(),a=r.get();if(a>b){a=b;r.set(b);}const h=H.get();
  $('fig').innerHTML=SVG(340,220,g);
  $('ka').textContent=r1(Al)+' m²';$('kv').textContent=r2(V)+' m³';$('kc').textContent=r2(2*3.14*b)+' m';
  const reto=Math.abs(b-0.3)<.001&&Math.abs(a-0.3)<.001&&h==20,af=Math.abs(b-0.3)<.001&&Math.abs(a-0.2)<.001&&h==20;
- missao('m',af,'Afunilado: 3,98 m³ contra 5,65 m³ do cilindro. Economia de (5,65 − 3,98) ÷ 5,65 ≈ 29,6% de madeira.',
-  reto?'Mastro reto: 5,65 m³ e 37,7 m² de breu. Agora afine o topo até 0,2 m.':'Volume do cilindro com esse raio de baixo: '+r2(Vc)+' m³.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

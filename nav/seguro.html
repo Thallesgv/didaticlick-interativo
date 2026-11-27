@@ -31,6 +31,13 @@ function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
 function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
 function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
 const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const sg=()=>{const V=Vs.get(),p=Ps.get(),m=Ms.get(),n=Ns.get(),pr=p*V*(1+m/100),lim=n*pr/V,s=risco(n,p,lim).s,ant=m>0?risco(n,p,n*p*V*(1+(m-1)/100)/V).s:1;return {V,p,m,n,pr,lim,s,ant};};
+const base=n=>{const o=sg();return o.V==5000&&Math.abs(o.p-.2)<1e-9&&o.n==n;},ss=()=>'Chance de prejuízo: '+pct(sg().s)+'.';
+MIS.def(()=>[
+ ['Com cargas de <b>5 000</b>, chance de perda <b>0,2</b> e <b>200 contratos</b>, ache a <b>menor margem</b> que deixa a chance de prejuízo em <b>5% ou menos</b>.',()=>{const o=sg();return base(200)&&o.s<=.05&&o.ant>.05;},()=>{const o=sg();return 'Margem de '+o.m+'%: o prêmio de '+fmt(Math.round(o.pr))+' paga até '+r1(o.lim)+' naus perdidas, e a chance de mais que isso é '+pct(o.s)+'.';},()=>{const o=sg();return !base(200)?'Coloque cargas de 5 000, chance 0,2 e 200 contratos.':(o.s<=.05?ss()+' Já está em 5% ou menos, mas dá com uma margem menor.':ss()+' Ainda acima de 5%.');}],
+ ['Nas mesmas condições, ponha a margem em <b>0%</b> (prêmio justo). Quanto fica o risco?',()=>base(200)&&sg().m==0,()=>'Prejuízo em '+pct(sg().s)+' das temporadas: o prêmio justo só empata em média, e perde quase metade das vezes.',ss],
+ ['Agora com <b>400 contratos</b>: ache de novo a menor margem com risco de 5% ou menos.',()=>{const o=sg();return base(400)&&o.s<=.05&&o.ant>.05;},()=>'Com 400 contratos basta '+sg().m+'%: quanto mais contratos, menor a margem necessária.',()=>(base(400)?'':'Ponha 400 contratos, cargas de 5 000 e chance 0,2. ')+ss()],
+ ['Sorteie temporadas até ver uma <b>com prejuízo</b> para o segurador.',()=>SORT!=null&&SORT>sg().lim+1e-9,'Até com margem o prejuízo aparece de vez em quando: o risco é pequeno, mas não é zero.',()=>SORT==null?'Aperte Sortear uma temporada.':'Última temporada: '+SORT+' perdas, e os prêmios pagam '+r1(sg().lim)+'. Sorteie de novo (ou diminua a margem).']]);
 const Vs=SL('sv',1000,10000,500,5000,draw,v=>fmt(v)),Ps=SL('sp',0.05,0.4,0.05,0.2,draw,v=>fmt(v)),Ms=SL('sm',0,50,1,0,draw,v=>v+'%'),Ns=SL('sn',10,400,10,200,draw,v=>v);
 let SORT=null;BOT('bt',[['Sortear uma temporada',()=>{const n=Ns.get(),p=Ps.get();let k=0;for(let i=0;i<n;i++)k+=Math.random()<p;SORT=k;draw();}]]);
 function risco(n,p,lim){const B=BIN(n,p);let s=0;B.forEach((v,k)=>{if(k>lim+1e-9)s+=v;});return {B,s};}
@@ -45,8 +52,7 @@ function draw(){const V=Vs.get(),p=Ps.get(),m=Ms.get(),n=Ns.get(),pr=p*V*(1+m/10
  $('kp').textContent=fmt(Math.round(pr));$('kl').textContent=fmt(Math.round(n*(pr-p*V)));$('kr').textContent=pct(s);
  if(SORT!=null){const res=n*pr-SORT*V;$('tmp').innerHTML='Temporada sorteada (▼): '+SORT+' naus perdidas. Fundo: '+fmt(Math.round(n*pr))+' − '+SORT+' · '+fmt(V)+' = <b style="color:'+(res>=0?GREEN:RED)+'">'+fmt(Math.round(res))+'</b>';}else $('tmp').textContent='';
  const base=V==5000&&Math.abs(p-0.2)<1e-9&&n==200,ant=m>0?risco(n,p,n*p*V*(1+(m-1)/100)/V).s:1,ok=base&&s<=0.05&&ant>0.05;
- missao('m',ok,'Margem de '+m+'%: o prêmio de '+fmt(Math.round(pr))+' paga até '+r1(lim)+' naus perdidas, e a chance de mais que isso é '+pct(s)+'. Sem margem, o segurador teria prejuízo em quase metade das temporadas.',
-  !base?'Coloque cargas de 5 000, chance 0,2 e 200 contratos.':(s<=0.05?'Chance de prejuízo '+pct(s)+': já está em 5% ou menos, mas dá com uma margem menor.':'Chance de prejuízo '+pct(s)+': ainda acima de 5%.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

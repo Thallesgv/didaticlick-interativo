@@ -23,6 +23,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const enzo=()=>r.get()==28&&R.get()==35&&H.get()==90,trf=()=>{const a=r.get(),b=R.get(),h=H.get();return 2*PI*(h/2)*(b*b+a*b+a*a)/3/1000;};
+MIS.def(()=>[
+ ['Faça a pipa de Enzo: tampas com raio de <b>28 cm</b>, meio com <b>35 cm</b> e comprimento de <b>90 cm</b>. Quantos litros ela guarda?',enzo,'Pipa de Enzo: cerca de 282 L pelos troncos de cone. Pelas tampas o cilindro dá 222 L (pouco); pelo meio, 346 L (demais).','Ajuste r, R e o comprimento para a pipa de Enzo.'],
+ ['Na pipa de Enzo, escolha o <b>cilindro</b> que chega mais perto dos troncos de cone.',()=>enzo()&&C.get()==2,'O cilindro pelo raio médio (31,5 cm) dá 280 L, só 2 L a menos que os troncos: as sobras e as faltas quase se compensam.',()=>enzo()?'Compare os três cilindros nos botões.':'Volte às medidas da pipa de Enzo (28, 35 e 90 cm).'],
+ ['Faça os quatro sólidos darem <b>o mesmo volume</b>.',()=>r.get()==R.get(),'Com r = R a pipa vira um cilindro, e as quatro contas ficam iguais.',()=>'Agora r = '+r.get()+' cm e R = '+R.get()+' cm.'],
+ ['Monte uma pipa de pelo menos <b>500 litros</b> com comprimento de no máximo 100 cm.',()=>trf()>=500&&H.get()<=100,()=>'Cerca de '+fmt(Math.round(trf()))+' L. O raio pesa mais que o comprimento, porque entra ao quadrado.',()=>'Agora: '+fmt(Math.round(trf()))+' L com '+H.get()+' cm de comprimento.']]);
 const SOL=['Dois troncos de cone','Cilindro pelas tampas','Cilindro pelo raio médio','Cilindro pelo meio'];
 const CORS=['#E11D48','#7C3AED',GREEN,BLUE];
 const C=chips('ch',SOL,0,draw);
@@ -56,8 +62,7 @@ function draw(){let a=r.get(),b=R.get();const h=H.get();if(b<a){b=a;R.set(a);}
   'Um cilindro com o raio da barriga: envolve a pipa inteira e sobra nas pontas. Dá demais.'];
  $('exp').innerHTML='<b style="color:'+CORS[s]+'">'+SOL[s]+':</b> '+EXP[s]+' Volume: <b>'+fmt(Math.round(vols[s]))+' L</b>.';
  $('kt').textContent=fmt(Math.round(tr))+' L';$('km').textContent=fmt(Math.round(cm))+' L';$('kc').textContent=fmt(Math.round(cc))+' L';$('kf').textContent=fmt(Math.round(cf))+' L';
- const ok=a==28&&b==35&&h==90;missao('m',ok,'Pipa de Enzo: cerca de 282 L pelos troncos. O cilindro pelo raio médio (31,5 cm) dá 280 L, quase igual; pelas tampas, 222 L (pouco); pelo meio, 346 L (demais).',
-  'Ajuste r, R e o comprimento para a pipa de Enzo e compare os quatro sólidos nos botões.');}
+ const ok=a==28&&b==35&&h==90;MIS.ver('m');}
 draw();
 })();
 </script>

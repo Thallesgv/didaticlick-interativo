@@ -26,6 +26,14 @@ const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=
 const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
 const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
 const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const yfim=()=>{const c=CS[C.get()],t=PR.get()*RAD,vx=2*Math.sin(t),vy=2*Math.cos(t)-c;return vx>1e-6?vy*20/vx:null;},okp=()=>{const y=yfim();return y!==null&&Math.abs(y)<=0.25;};
+const pd=()=>{const y=yfim();return y===null?'Com essa proa a nau nem avança para leste. Aponte mais para o leste.':Math.abs(y)<=.25?'No porto!':(y<0?'A corrente ganhou: a nau passa '+r2(-y)+' léguas ao sul. Aponte a proa mais para o norte (rumo menor).':'Corrigiu demais: a nau passa '+r2(y)+' léguas ao norte. Aponte a proa mais para o leste (rumo maior).');};
+const pm=c=>()=>{const a=Math.asin(c/2)*DEG;return 'No porto! sen θ = '+fmt(c)+' ÷ 2 = '+fmt(c/2)+', θ ≈ '+r1(a)+'°: proa no rumo ≈ '+r1(90-a)+'°.';};
+MIS.def(()=>[
+ ['Com corrente de <b>1 légua/h</b>, chegue ao porto <b>exatamente a leste</b>, sem passar ao sul nem ao norte dele.',()=>C.get()==1&&okp(),pm(1),()=>C.get()!=1?'Escolha a corrente de 1 légua/h.':pd()],
+ ['Troque para a corrente de <b>0,5 légua/h</b> e acerte o porto de novo.',()=>C.get()==0&&okp(),pm(.5),()=>C.get()!=0?'Escolha a corrente de 0,5 légua/h.':pd()],
+ ['Agora com a corrente de <b>1,5 légua/h</b>.',()=>C.get()==2&&okp(),pm(1.5),()=>C.get()!=2?'Escolha a corrente de 1,5 légua/h.':pd()],
+ ['Com corrente de 1 légua/h, aponte a proa <b>direto para o leste</b> (90°). Quanto a nau erra?',()=>C.get()==1&&PR.get()==90,'Sem corrigir, a nau leva 10 h para chegar à longitude do porto, e nesse tempo a corrente a arrasta 10 léguas para o sul.',()=>C.get()!=1?'Escolha a corrente de 1 légua/h.':'Proa agora: '+fmt(PR.get())+'°.']]);
 const CS=[0.5,1,1.5];const C=chips('ch',['Corrente 0,5 légua/h','Corrente 1 légua/h','Corrente 1,5 légua/h'],1,draw);
 const PR=SL('sp',0,180,0.5,90,draw,v=>fmt(v)+'°');
 function draw(){const c=CS[C.get()],t=PR.get()*RAD,vx=2*Math.sin(t),vy=2*Math.cos(t)-c,v=Math.hypot(vx,vy);
@@ -45,8 +53,7 @@ function draw(){const c=CS[C.get()],t=PR.get()*RAD,vx=2*Math.sin(t),vy=2*Math.co
  if(tf===null){$('kd').textContent='não chega';$('kt').textContent='—';}
  else{$('kd').textContent=Math.abs(yf)<0.005?'no porto':r2(Math.abs(yf))+' léguas '+(yf<0?'ao sul':'ao norte');$('kt').textContent=r1(tf)+' h';}
  const ang=Math.asin(c/2)*DEG,ok=tf!==null&&Math.abs(yf)<=0.25;
- missao('m',ok,'No porto! Com corrente de '+fmt(c)+' légua/h: sen θ = '+fmt(c)+' ÷ 2 = '+fmt(c/2)+', θ ≈ '+r1(ang)+'° para o norte do leste, ou seja, proa no rumo ≈ '+r1(90-ang)+'°.',
-  tf===null?'Com essa proa a nau nem avança para leste. Aponte mais para o leste.':(yf<0?'A corrente ganhou: a nau passa ao sul. Aponte a proa mais para o norte (rumo menor).':'Corrigiu demais: a nau passa ao norte. Aponte a proa mais para o leste (rumo maior).'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

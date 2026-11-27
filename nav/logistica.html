@@ -31,6 +31,13 @@ function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w
  const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
  return {g,X,Y,linha,pts};}
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const tm_=()=>D.get()*Math.log2(C.get()/A.get()-1),nomeio=()=>Math.abs(Tm.get()-tm_())<=.5,lg=t=>C.get()/(1+(C.get()/A.get()-1)*Math.pow(2,-t/D.get())),vv=t=>lg(t+.5)-lg(t-.5);
+const vs=()=>'No dia '+fmt(Tm.get())+': '+r1(vv(Tm.get()))+' novos doentes por dia. Ande com o marcador e procure o maior valor.';
+MIS.def(()=>[
+ ['Mova o marcador até o dia em que a febre cresce <b>mais depressa</b>. Quantos já adoeceram nesse momento?',nomeio,()=>'Aí! No dia '+r1(tm_())+' metade da capacidade ('+fmt(C.get()/2)+') já adoeceu, e a curva cresce mais rápido. Depois disso, ela freia.',vs],
+ ['Ponha a capacidade em <b>200</b> e ache de novo o dia mais rápido.',()=>C.get()==200&&nomeio(),()=>'Com C = 200 o meio é 100 doentes, no dia '+r1(tm_())+': com mais gente para adoecer, o pico vem mais tarde.',()=>(C.get()!=200?'Ponha C = 200. ':'')+vs()],
+ ['Comece com <b>10 doentes</b>. O dia mais rápido chega antes ou depois?',()=>A.get()==10&&nomeio(),()=>'Antes: no dia '+r1(tm_())+'. Começando com mais doentes, a curva chega mais cedo à metade da capacidade.',()=>(A.get()!=10?'Ponha a = 10. ':'')+vs()],
+ ['Ache um dia, a partir do dia 5, em que a curva em S e a exponencial ainda estão <b>quase juntas</b> (menos de 1 doente de diferença).',()=>{const t=Tm.get();return t>=5&&Math.abs(lg(t)-A.get()*Math.pow(2,t/D.get()))<1;},'No começo ainda sobra muita gente sã, e a curva em S cresce como uma exponencial. A diferença aparece perto do meio.',()=>{const t=Tm.get();return 'No dia '+fmt(t)+' a diferença é de '+r1(Math.abs(lg(t)-A.get()*Math.pow(2,t/D.get())))+' doentes.'+(t<5?' Vá para o dia 5 ou depois.':' Tente um dia mais cedo ou uma capacidade maior.');}]]);
 const C=SL('sc',60,200,10,120,draw),A=SL('sa',1,10,1,2,draw),D=SL('sd',1,6,0.5,3,draw,v=>fmt(v)+' dias'),Tm=SL('st',0,40,0.5,8,draw,v=>fmt(v));
 function draw(){const c=C.get(),a=A.get(),d=D.get(),k=c/a-1,L=t=>c/(1+k*Math.pow(2,-t/d)),Ex=t=>a*Math.pow(2,t/d),t=Tm.get();
  const G0=G(40,200,[0,10,20,30,40],[0,50,100,150,200],'dias','já adoeceram');
@@ -41,8 +48,7 @@ function draw(){const c=C.get(),a=A.get(),d=D.get(),k=c/a-1,L=t=>c/(1+k*Math.pow
  $('fig').innerHTML=SVG(340,250,g);
  $('kl').textContent=r1(L(t));$('kv').textContent=r1(vel(t));$('km').textContent=tm>0?r1(tm):'0';
  const ok=Math.abs(t-tm)<=0.5;
- missao('m',ok,'Aí! No dia '+r1(tm)+' metade da capacidade ('+fmt(c/2)+') já adoeceu e a curva cresce mais rápido: '+r1(vel(t))+' novos doentes por dia. Depois disso, a curva freia.',
-  'No dia '+fmt(t)+': '+r1(vel(t))+' novos doentes por dia. Ande com o marcador e procure o maior valor.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

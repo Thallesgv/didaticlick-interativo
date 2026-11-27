@@ -36,6 +36,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const fa=()=>1/Math.cos(A.get()*RAD),fs=()=>'Aqui ('+A.get()+'° N) a carta estica '+r2(fa())+' vezes.';
+MIS.def(()=>[
+ ['Ache a latitude em que a carta plana estica a largura <b>2 vezes</b>.',()=>A.get()==60,'A 60°: cos 60° = 0,5, a largura real é metade da altura, e a carta estica 2 vezes para desenhar um quadrado.',()=>fs()+' Procure o fator 2.'],
+ ['Ache a latitude em que a carta estica cerca de <b>1,5 vez</b>.',()=>Math.abs(fa()-1.5)<.01,'Por volta de 48°: cos 48° ≈ 0,67, e a carta estica 1,5 vez.',fs],
+ ['Ache a <b>menor</b> latitude em que a largura real do quadro fica abaixo de <b>300 km</b>.',()=>A.get()==75,'A 75°: 10° de longitude valem só 288 km, contra 1.112 km de altura. A carta estica quase 4 vezes.',()=>'Largura real agora: '+$('kl').textContent+'.'],
+ ['Ache a <b>maior</b> latitude em que a carta estica menos de <b>1,05 vez</b> (erro menor que 5%).',()=>A.get()==17,'Até cerca de 17°, a carta plana erra menos de 5%: perto do equador ela quase não engana.',fs]]);
 const A=SL('sa',5,80,1,30,draw,v=>v+'° N');
 function draw(){const la=A.get(),G=GLOBO(85,125,78,35,0);let g=G.grade(10);
  const box=[];[[-5,-5],[5,-5],[5,5],[-5,5],[-5,-5]].forEach((q,i,arr)=>{if(i==4)return;const n=arr[i+1];for(let j=0;j<=10;j++)box.push([la+q[0]+(n[0]-q[0])*j/10,q[1]+(n[1]-q[1])*j/10]);});
@@ -46,8 +52,7 @@ function draw(){const la=A.get(),G=GLOBO(85,125,78,35,0);let g=G.grade(10);
  g+=TX(85,18,'no globo',{fs:10})+TX(ox+75,18,'na carta plana',{fs:10});
  $('fig').innerHTML=SVG(340,250,g);
  const c=Math.cos(la*RAD),k1=2*Math.PI*RT/360;$('kl').textContent=KM(10*k1*c);$('ka').textContent=KM(10*k1);$('kf').textContent='× '+r2(1/c);
- missao('m',la==60,'A 60°: cos 60° = 0,5, a largura real é metade da altura, e a carta estica 2 vezes para desenhar um quadrado.',
-  'Aqui a carta estica '+r2(1/c)+' vezes. Procure o fator 2.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

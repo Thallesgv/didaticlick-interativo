@@ -38,6 +38,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const tsm=()=>'Soma agora: '+(180+D.get())+'°. Fração da esfera: '+D.get()+'/720.';
+MIS.def(()=>[
+ ['Monte um triângulo cuja soma dos ângulos seja <b>300°</b>. Que fração da esfera ele ocupa?',()=>D.get()==120,'Soma 300°: excesso 120° = 2π/3. Área = R² · 2π/3 = 4πR² ÷ 6: um sexto da esfera.',()=>'Soma '+(180+D.get())+'° = 180° + '+D.get()+'°. O ângulo do polo é a diferença de longitude.'],
+ ['Monte um triângulo com <b>três ângulos retos</b>.',()=>D.get()==90,'90° + 90° + 90° = 270°: excesso de 90°, um oitavo da esfera.',tsm],
+ ['Monte o triângulo que ocupa <b>um quarto</b> da esfera.',()=>D.get()==180,'Com 180°, os dois meridianos dão meia volta: o triângulo cobre metade do hemisfério norte, um quarto da esfera.',tsm],
+ ['Monte o triângulo com área mais perto de <b>10 milhões de km²</b>.',()=>D.get()==15,'Com 15°: cerca de 10,6 milhões de km². Mesmo assim, a soma dos ângulos é 195°.',()=>'Área agora: '+$('ka').textContent+'.']]);
 const D=SL('sd',5,180,5,90,draw,v=>v+'°'),V=SL('sv',-180,180,5,40,draw,v=>v+'°');
 function draw(){const d=D.get(),G=GLOBO(170,128,112,30,V.get()+d/2);let g=G.grade(15);
  const tri=[];for(let l=0;l<=d;l+=1)tri.push([0,l]);for(let a=0;a<=90;a+=2)tri.push([a,d]);for(let a=90;a>=0;a-=2)tri.push([a,0]);
@@ -48,8 +54,7 @@ function draw(){const d=D.get(),G=GLOBO(170,128,112,30,V.get()+d/2);let g=G.grad
  const S=180+d,E=d,area=RT*RT*E*RAD;
  $('kg').textContent='90° + 90° + '+d+'°';$('ks').textContent=S+'°';$('ke').textContent=E+'° = '+r2(E*RAD)+' rad';
  $('ka').textContent=fmt(Math.round(area/1e5)/10)+' milhões de km²';$('kf').textContent=fmt(Math.round(E/720*1000)/1000)+' (= '+E+'/720)';
- missao('m',S==300,'Soma 300°: excesso 120° = 2π/3. Área = R² · 2π/3 = 4πR² ÷ 6: um sexto da esfera.',
-  'Soma '+S+'° = 180° + '+d+'°. O ângulo do polo é a diferença de longitude.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>
