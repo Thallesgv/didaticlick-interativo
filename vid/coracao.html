@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O coração que pisca · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O coração que pisca</h1></header>
+<main>
+<div class="card"><h2>Conte as batidas</h2><p class="muted" style="margin-top:0">Escolha um bicho. O coração pisca no ritmo dele e a faixa mostra as batidas do intervalo que você escolher, uma risca por batida. (Valores típicos em repouso; o do Pipoca é a contagem do Kauã.)</p>
+<div id="cb" style="margin:6px 0"></div>
+<div class="sl" id="st"><b>Contar durante</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Batidas no intervalo<b id="kn"></b></div><div class="o">Por minuto<b id="km"></b></div><div>Por dia<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Conte.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const BX=[['camundongo',600,0.5],['Pipoca',224,0.85],['pessoa',72,1.4],['elefante',30,2.2]];let bi=-1;
+const CB=chips('cb',BX.map(b=>b[0]),-1,i=>{bi=i;draw();}),ST=SL('st',5,60,5,30,draw,v=>v+' s');
+const bpm=()=>bi<0?0:BX[bi][1],nb=()=>Math.round(bpm()*ST.get()/60);
+MIS.def(()=>[
+ ['Confira a conta do Kauã: quantas batidas o <b>Pipoca</b> dá em <b>15 segundos</b>?',()=>bi==1&&ST.get()==15,'56 batidas em 15 s; × 4 = 224 por minuto, como o Kauã contou.',()=>bi!=1?'Escolha o Pipoca.':'Ajuste o intervalo para 15 s.'],
+ ['Ache o bicho cujo coração bate <b>20 vezes mais devagar</b> que o do camundongo.',()=>bi==3,'Elefante: 600 ÷ 30 = 20. O coração do camundongo dá 10 batidas por segundo; o do elefante, uma a cada 2 segundos.',()=>bi<0?'Escolha um bicho.':BX[bi][0]+': 600 ÷ '+bpm()+' = '+r1(600/bpm())+'. Tente outro.'],
+ ['Em quantos segundos o <b>camundongo</b> bate exatamente <b>100 vezes</b>?',()=>bi==0&&nb()==100,'10 segundos: 600 por minuto = 10 por segundo.',()=>bi!=0?'Escolha o camundongo.':nb()+' batidas em '+ST.get()+' s. Ajuste o intervalo.']]);
+let pulso=0;function draw(){let g=RC(0,0,340,230,'#FFF5F5','rx="10"');
+ if(bi<0){g+=TX(170,110,'escolha um bicho acima',{fs:13,c:GRAY});['kn','km','kd'].forEach(k=>$(k).textContent='—');}
+ else{const [nm,b,s]=BX[bi];const sc=s*(pulso?1.12:1);
+  g+=`<g transform="translate(90 80) scale(${sc*1.6})"><path d="M0 12 C-18 0 -16 -14 -6 -14 C-2 -14 0 -10 0 -8 C0 -10 2 -14 6 -14 C16 -14 18 0 0 12z" fill="#D9342B" stroke="#8B1A13" stroke-width="1"/></g>`;
+  g+=TX(90,150,nm+': '+b+' por minuto',{fs:12})+TX(250,60,fmt(Math.round(b/60*10)/10),{fs:30,c:ORANGE})+TX(250,82,'batidas por segundo',{fs:10,c:GRAY});
+  const x0=14,W=312,y=200,n=nb();g+=LN(x0,y,x0+W,y,'#94A3B8',1);
+  for(let k=0;k<n;k++){const x=x0+W*(k+0.5)/n;g+=`<polyline points="${x-3},${y} ${x-1},${y-22} ${x+1},${y+8} ${x+3},${y}" fill="none" stroke="#D9342B" stroke-width="${n>200?0.6:1.4}"/>`;}
+  g+=TX(x0,y+22,'0 s',{fs:9,c:GRAY,a:'start'})+TX(x0+W,y+22,ST.get()+' s',{fs:9,c:GRAY,a:'end'});
+  $('kn').textContent=n;$('km').textContent=b;$('kd').textContent=fmt(b*1440);}
+ $('fig').innerHTML=SVG(340,230,g);MIS.ver('m');}
+draw();
+function bate(){if(bi>=0){pulso=1;draw();setTimeout(()=>{pulso=0;draw();},Math.min(150,30000/bpm()));}setTimeout(bate,bi<0?500:60000/bpm());}bate();
+})();
+</script>
+</body>
+</html>

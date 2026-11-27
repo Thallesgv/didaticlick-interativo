@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua das potências · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A régua das potências</h1></header>
+<main>
+<div class="card"><h2>Do camundongo ao elefante no mesmo gráfico</h2><p class="muted" style="margin-top:0">Seis bichos: massa no eixo horizontal, gasto de energia por dia no vertical (dados ilustrativos, perto da lei de Kleiber). Troque a régua dos eixos e gire a reta laranja, que passa por (1 kg; 70 kcal).</p>
+<div id="ce" style="margin:6px 0"></div>
+<div class="sl" id="sb"><b>Inclinação da reta (expoente)</b><input type="range"><span></span></div>
+<div class="sl" id="sx"><b>Ler a reta na massa</b><input type="range"><span></span></div>
+<div class="fig" id="fig" style="flex-direction:column"></div>
+<div class="kpi"><div>Inclinação<b id="ki"></b></div><div>Massa lida<b id="kx"></b></div><div class="o">Gasto na reta<b id="ky"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desenhe.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const BS=[['camundongo',0.025,1.1],['mico',0.6,0.92],['gato',4,1.06],['pessoa',70,1],['vaca',600,0.94],['elefante',4000,1.07]];
+let lg=0;const CE=chips('ce',['eixos comuns','eixos logarítmicos'],0,i=>{lg=i;draw();}),SB=SL('sb',0.25,1.25,0.05,1,draw,v=>fmt(v)),SX=SL('sx',-1,4,1,0,draw,v=>fmt(10**v)+' kg');
+const kc=m=>70*m**0.75;
+MIS.def(()=>[
+ ['Troque para <b>eixos logarítmicos</b> e separe o camundongo e o mico do zero.',()=>lg==1,'Cada marca vale 10 vezes a anterior: agora cada bicho tem seu lugar, e os pontos quase se alinham.',()=>'Nos eixos comuns, quatro bichos ficam espremidos no canto. Troque a régua.'],
+ ['Nos eixos logarítmicos, gire a reta até ela passar pelos pontos.',()=>lg==1&&Math.abs(SB.get()-0.75)<1e-9,'Inclinação 3/4 = 0,75: é o expoente de Kleiber.',()=>lg!=1?'Use os eixos logarítmicos.':'Inclinação '+fmt(SB.get())+'. '+(SB.get()>0.75?'A reta sobe demais.':'A reta sobe de menos.')],
+ ['Com a reta certa, leia o gasto de um bicho de <b>10.000 kg</b>.',()=>lg==1&&Math.abs(SB.get()-0.75)<1e-9&&SX.get()==4,'70 × 10.000<sup>3/4</sup> = 70 × 1.000 = 70.000 kcal por dia. Massa × 10<sup>4</sup>, gasto × 10<sup>3</sup>.',()=>Math.abs(SB.get()-0.75)>1e-9?'Ajuste a inclinação para 0,75.':'Leve o controle de leitura até 10.000 kg.']]);
+function draw(){const b=SB.get(),x0=52,y0=210,W=270,H=190;let g=RC(0,0,340,240,'#fff','rx="10"');
+ let X,Y;if(lg){X=m=>x0+(Math.log10(m)+2)/6*W;Y=v=>y0-(Math.log10(v))/6*H;
+  for(let e=-2;e<=4;e++){const x=X(10**e);g+=LN(x,y0,x,y0-H,'#E5E7EB',1)+TX(x,y0+13,['0,01','0,1','1','10','100','1 mil','10 mil'][e+2],{fs:8,c:GRAY});}
+  for(let e=0;e<=6;e++){const y=Y(10**e);g+=LN(x0,y,x0+W,y,'#E5E7EB',1)+TX(x0-4,y+3,['1','10','100','1 mil','10 mil','100 mil','1 mi'][e],{fs:8,c:GRAY,a:'end'});}}
+ else{X=m=>x0+m/10000*W;Y=v=>y0-v/100000*H;
+  for(let v=0;v<=10000;v+=2500){const x=X(v);g+=LN(x,y0,x,y0-H,'#E5E7EB',1)+TX(x,y0+13,fmt(v),{fs:8,c:GRAY});}
+  for(let v=0;v<=100000;v+=25000){const y=Y(v);g+=LN(x0,y,x0+W,y,'#E5E7EB',1)+TX(x0-4,y+3,fmt(v/1000)+' mil',{fs:8,c:GRAY,a:'end'});}}
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.5)+LN(x0,y0,x0,y0-H,NAVY,1.5)+TX(x0+W,y0+27,'massa (kg)',{fs:9,a:'end'})+TX(x0,12,'kcal por dia',{fs:9,a:'start'});
+ let pts=[];for(let i=0;i<=120;i++){const m=10**(-2+6*i/120),v=70*m**b;if(!lg&&(m>10000||v>100000))continue;if(lg&&(v<1||v>1e6))continue;pts.push(X(m).toFixed(1)+','+Y(v).toFixed(1));}
+ g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`;
+ BS.forEach(([nm,m,f])=>{const v=kc(m)*f;g+=CI(X(m),Y(v),4.5,NAVY,'stroke="#fff" stroke-width="1.5"')+TX(X(m)+6,Y(v)+12,nm,{fs:8.5,a:'start'});});
+ const mx=10**SX.get(),vy=70*mx**b;if(lg||mx<=10000){g+=LN(X(mx),y0,X(mx),Math.max(y0-H,Y(vy)),'#3F8F4A',1.5,'4 3')+(Y(vy)>=y0-H?CI(X(mx),Y(vy),5,'#3F8F4A'):'');}
+ $('fig').innerHTML=SVG(340,240,g);$('ki').textContent=fmt(b);$('kx').textContent=fmt(mx)+' kg';$('ky').textContent=fmt(Math.round(vy))+' kcal';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
