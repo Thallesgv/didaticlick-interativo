@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Abra o cofre · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Abra o cofre</h1></header>
+<main>
+<div class="card"><h2>A caixa que se abre</h2><p class="muted" style="margin-top:0">Ajuste as medidas e use o controle "Abrir" para desdobrar a caixa até ela virar uma planificação. Arraste o desenho para girar.</p>
+<div class="fig" id="fig" style="cursor:grab"></div>
+<div class="sl" id="t"><b>Abrir</b><input type="range"><span></span></div>
+<div class="sl" id="a"><b>Comprimento a</b><input type="range"><span></span></div>
+<div class="sl" id="b"><b>Largura b</b><input type="range"><span></span></div>
+<div class="sl" id="c"><b>Altura c</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área total<b id="ka"></b></div><div>Volume<b id="kv"></b></div></div>
+<div class="msg info" id="cn"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Com volume de <b>64 m³</b>, encontre a caixa que gasta <b>menos chapa de aço</b> (menor área total).</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OUROF=s=>`hsl(44,85%,${32+38*s}%)`,ACOF=s=>`hsl(218,22%,${52+34*s}%)`;
+function VIEW(ang,elev){const ca=Math.cos(ang),sa=Math.sin(ang),ce=Math.cos(elev),se=Math.sin(elev);
+ return p=>{const x=p[0]*ca-p[1]*sa,y=p[0]*sa+p[1]*ca,z=p[2];return [x,y*se+z*ce,-y*ce+z*se];};}
+function DESENHA(faces,o){const V=VIEW(o.ang,o.elev),k=o.k,cx=o.cx,cy=o.cy,all=faces.flatMap(f=>f.p.map(V));
+ const cc=[0,1,2].map(i=>all.reduce((s,p)=>s+p[i],0)/all.length);let g='';
+ const L=faces.map(f=>{const q=f.p.map(V),m=[0,1,2].map(i=>q.reduce((s,p)=>s+p[i],0)/q.length),a=q[0],b=q[1],d=q[2];
+  let n=[(b[1]-a[1])*(d[2]-a[2])-(b[2]-a[2])*(d[1]-a[1]),(b[2]-a[2])*(d[0]-a[0])-(b[0]-a[0])*(d[2]-a[2]),(b[0]-a[0])*(d[1]-a[1])-(b[1]-a[1])*(d[0]-a[0])];
+  if(o.cull&&n[0]*(m[0]-cc[0])+n[1]*(m[1]-cc[1])+n[2]*(m[2]-cc[2])<0)n=n.map(v=>-v);
+  if(!o.cull&&n[2]<0)n=n.map(v=>-v);
+  const nl=Math.hypot(...n)||1;return{q,m,vis:n[2]/nl,lum:(-.4*n[0]+.6*n[1]+.7*n[2])/nl,f};});
+ L.sort((a,b)=>a.m[2]-b.m[2]);
+ const pts=q=>q.map(p=>[r2(cx+p[0]*k).replace(',','.'),r2(cy-p[1]*k).replace(',','.')]);
+ if(o.cull)L.filter(x=>x.vis<=1e-6).forEach(x=>g+=PG(pts(x.q),'none',`stroke="${NAVY}" stroke-width="1" stroke-dasharray="4 3" opacity=".55"`));
+ L.filter(x=>!o.cull||x.vis>1e-6).forEach(x=>g+=PG(pts(x.q),(x.f.cor||OUROF)(clamp(.45+.55*x.lum,0,1)),`stroke="${NAVY}" stroke-width="1.3" stroke-linejoin="round" fill-opacity="${o.cull?.86:.95}"`));
+ return g;}
+// Projeção isométrica fixa para os cubinhos.
+const ISO=(cx,cy,k)=>(x,y,z)=>[cx+(x-y)*.866*k,cy-((x+y)*.5+z)*k];
+let ang=.55,elev=.62,best=null;const T_=SL('t',0,100,1,0,draw,v=>v+'%'),A_=SL('a',1,8,1,6,draw),B_=SL('b',1,8,1,4,draw),C_=SL('c',1,8,1,3,draw);
+toque('fig',(x,y,ini)=>{if(ini){toque.x0=x;toque.a0=ang;}ang=toque.a0+(x-toque.x0)/60;draw();});
+function draw(){const a=A_.get(),b=B_.get(),c=C_.get(),t=T_.get()/100,al=t*Math.PI/2,s=Math.sin(al),co=Math.cos(al),te=t*Math.PI-Math.PI/2,ex=a/2,ey=b/2;
+ const Q=p=>[p[0]-ex,p[1]-ey,p[2]-c/2*(1-t)],F=[];const add=(pts,cor)=>F.push({p:pts.map(Q),cor});
+ add([[0,0,0],[a,0,0],[a,b,0],[0,b,0]],ACOF);
+ add([[0,0,0],[a,0,0],[a,-c*s,c*co],[0,-c*s,c*co]]);add([[0,b,0],[a,b,0],[a,b+c*s,c*co],[0,b+c*s,c*co]]);
+ add([[0,0,0],[0,b,0],[-c*s,b,c*co],[-c*s,0,c*co]]);add([[a,0,0],[a,b,0],[a+c*s,b,c*co],[a+c*s,0,c*co]]);
+ const e=[0,Math.sin(te),Math.cos(te)],y1=b+c*s,z1=c*co;add([[0,y1,z1],[a,y1,z1],[a,y1+b*e[1],z1+b*e[2]],[0,y1+b*e[1],z1+b*e[2]]],ACOF);
+ const sz=Math.max(a+2*c*s,2*b+2*c*s+.1,c+1),k=Math.min(48,230/sz);
+ $('fig').innerHTML=SVG(340,240,DESENHA(F,{ang,elev,k,cx:170,cy:125,cull:false}));
+ const At=2*(a*b+a*c+b*c),V=a*b*c;$('ka').textContent=At+' m²';$('kv').textContent=V+' m³';
+ $('cn').innerHTML='Faces: 2 · ('+a+' · '+b+') + 2 · ('+a+' · '+c+') + 2 · ('+b+' · '+c+') = 2 · ('+a*b+' + '+a*c+' + '+b*c+') = <b>'+At+' m²</b>.';
+ if(V==64&&(best===null||At<best))best=At;
+ missao('m',V==64&&At==96,'O cubo 4 × 4 × 4 usa só 96 m² de chapa. Para o mesmo volume, quanto mais perto do cubo, menos material.',
+  V==64?'Volume 64 m³ com '+At+' m² de chapa'+(best!==null?' (melhor até agora: '+best+' m²)':'')+'. Dá para gastar menos?':'Volume agora: '+V+' m³. Ajuste até dar 64 m³.');}
+draw();
+})();
+</script>
+</body>
+</html>

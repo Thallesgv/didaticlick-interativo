@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Empilhe as moedas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Empilhe as moedas</h1></header>
+<main>
+<div class="card"><h2>Pilha de moedas de ouro</h2><p class="muted" style="margin-top:0">Escolha o raio e a espessura da moeda e quantas empilhar. A pilha é um cilindro: V = π · r² · h.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="r"><b>Raio da moeda (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="e"><b>Espessura (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="n"><b>Número de moedas</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Altura da pilha<b id="kh"></b></div><div>Volume<b id="kv"></b></div><div>Massa em ouro<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte uma pilha com cerca de <b>1 kg de ouro</b> (entre 950 g e 1.050 g). Use π ≈ 3,14 e 19,3 g/cm³.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R_=SL('r',.5,2,.1,1,draw),E_=SL('e',.1,.4,.05,.2,draw),N_=SL('n',1,100,1,6,draw);
+function draw(){const r=R_.get(),e=E_.get(),n=N_.get(),h=n*e,k=Math.min(40,170/(h+r*.6),60/r),cx=110,y0=205,rx=r*k,ry=r*k*.3;let g='';
+ g+=TX(cx,225,n+' moedas',{fs:11,c:GRAY});
+ for(let i=0;i<n;i++){const y=y0-i*e*k;g+=RC(cx-rx,y-e*k,2*rx,e*k,'#E8B923')+`<ellipse cx="${cx}" cy="${y}" rx="${rx}" ry="${ry}" fill="#E8B923" stroke="#B8860B" stroke-width="${n>40?.4:.9}"/>`;}
+ const yt=y0-h*k;g+=`<ellipse cx="${cx}" cy="${yt}" rx="${rx}" ry="${ry}" fill="#F6D86B" stroke="#B8860B" stroke-width="1.2"/>`+LN(cx,yt,cx+rx,yt,NAVY,1.5)+TX(cx+rx/2,yt-4,'r',{fs:11});
+ g+=LN(cx+rx+14,y0,cx+rx+14,yt,ORANGE,1.5)+TX(cx+rx+20,(y0+yt)/2+4,'h = '+r2(h)+' cm',{fs:11,a:'start',c:ORANGE});
+ const V=3.14*r*r*h,m=V*19.3;$('fig').innerHTML=SVG(340,230,g);
+ $('kh').textContent=r2(h)+' cm';$('kv').textContent=r2(V)+' cm³';$('km').textContent=Math.round(m).toLocaleString('pt-BR')+' g';
+ missao('m',m>=950&&m<=1050,'Cerca de 1 kg: 3,14 · '+r1(r)+'² · '+r2(h)+' ≈ '+r2(V)+' cm³, e '+r2(V)+' · 19,3 ≈ '+Math.round(m)+' g.',
+  'Agora: 3,14 · '+r1(r)+'² · '+r2(h)+' ≈ '+r2(V)+' cm³ → '+Math.round(m)+' g. '+(m<950?'Falta ouro.':'Passou de 1 kg.'));}
+draw();
+})();
+</script>
+</body>
+</html>

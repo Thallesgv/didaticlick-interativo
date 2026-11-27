@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O teste da água · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>O teste da água</h1></header>
+<main>
+<div class="card"><h2>Ouro ou falsa?</h2><p class="muted" style="margin-top:0">Escolha uma barra e aperte "Mergulhar". A água mostra o volume; a balança, a massa. Calcule d = m ÷ V e dê o seu veredito.</p>
+<div id="bar"></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="mg">Mergulhar</button><button class="alt" id="our">É ouro</button><button class="alt" id="fal">É falsa</button></div>
+<div class="kpi"><div class="o">Massa<b id="km"></b></div><div>Volume deslocado<b id="kv"></b></div><div>Vereditos<b id="kc"></b></div></div>
+<div id="m"></div>
+<div class="row"><button class="alt" id="nv">Novas barras</button></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Descubra <b>quais das cinco barras</b> são de ouro de verdade (19,3 g/cm³). Acerte todas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let BS,sel=0,pos=0,anim=null,ver;const DEN=[19.3,19.3,19.3,11.3,10.5,8.9,7.9];
+function novas(){BS=[];for(let i=0;i<5;i++){const v=P([400,500,560,600,644,700]),d=P(DEN);BS.push({v,d,m:Math.round(v*d)});}
+ if(!BS.some(b=>b.d==19.3))BS[rint(0,4)].d=19.3;if(BS.every(b=>b.d==19.3))BS[rint(0,4)].d=11.3;BS.forEach(b=>b.m=Math.round(b.v*b.d));
+ ver=Array(5).fill(null);sel=0;pos=0;chips('bar',['A','B','C','D','E'],0,i=>{sel=i;pos=0;clearInterval(anim);draw();});draw();}
+function draw(){const b=BS[sel],x=40,w=170,y0=200,H=170,base=2000,cap=3000,Y=v=>y0-v/cap*H,nv=base+b.v*pos;let g='';
+ g+=RC(x,Y(nv),w,y0-Y(nv),'rgba(36,87,214,.25)');
+ for(let k=1;k<=3;k++)g+=LN(x+w,Y(k*1000),x+w-10,Y(k*1000),NAVY,1)+TX(x+w+4,Y(k*1000)+4,k+' L',{fs:9,a:'start',c:GRAY});
+ const bw=60+b.v/700*40,bh=22,by=pos<1?20+(y0-bh-4-20)*pos:y0-bh-4;
+ g+=PG([[x+w/2-bw/2,by+bh],[x+w/2+bw/2,by+bh],[x+w/2+bw/2-8,by],[x+w/2-bw/2+8,by]],'#E8B923',`stroke="#B8860B" stroke-width="1.5"`)+TX(x+w/2,by+15,'ABCDE'[sel],{fs:12,c:NAVY});
+ g+=LN(x,y0-H,x,y0,NAVY,2.4)+LN(x+w,y0-H,x+w,y0,NAVY,2.4)+LN(x,y0,x+w,y0,NAVY,2.4);
+ g+=LN(x+w+30,Y(nv),x+w+34,Y(nv),ORANGE,2)+TX(x+w+38,Y(nv)+4,nv.toLocaleString('pt-BR',{maximumFractionDigits:0})+' mL',{fs:10,a:'start',c:ORANGE});
+ g+=RC(258,182,72,18,NAVY,'rx="4"')+RC(266,170,56,12,GRAYL,'rx="3"')+TX(294,195,(b.m/1000).toLocaleString('pt-BR')+' kg',{fs:11,c:'#fff'})+TX(294,164,'balança',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,230,g);$('km').textContent=b.m.toLocaleString('pt-BR')+' g';$('kv').textContent=pos>=1?b.v+' cm³':'?';
+ $('kc').textContent=ver.filter(v=>v!==null).length+' de 5';
+ const ok=ver.every((v,i)=>v!==null&&v==(BS[i].d==19.3)),errs=ver.filter((v,i)=>v!==null&&v!=(BS[i].d==19.3)).length;
+ const fb=ver[sel]===null?(pos>=1?'d = '+b.m+' ÷ '+b.v+' = ? Faça a conta e dê o veredito.':'Mergulhe a barra para medir o volume.'):
+  'Barra '+'ABCDE'[sel]+': d = '+b.m+' ÷ '+b.v+' ≈ '+r1(b.m/b.v)+' g/cm³: '+(b.d==19.3?'ouro':'falsa')+'. Seu veredito: '+(ver[sel]==(b.d==19.3)?'certo.':'errado.');
+ missao('m',ok,'Todas certas! O ouro é o único com 19,3 g/cm³; as falsas têm a forma certa, mas a densidade não engana.',fb+(errs?' ('+errs+' veredito(s) errado(s) até agora.)':''));}
+$('mg').onclick=()=>{clearInterval(anim);pos=0;anim=setInterval(()=>{pos=Math.min(1,pos+.05);draw();if(pos>=1)clearInterval(anim);},40);};
+const julga=o=>{if(pos<1){$('m').innerHTML='<div class="msg info">Primeiro mergulhe a barra para saber o volume.</div>';return;}ver[sel]=o;draw();};
+$('our').onclick=()=>julga(true);$('fal').onclick=()=>julga(false);$('nv').onclick=novas;
+novas();
+})();
+</script>
+</body>
+</html>
