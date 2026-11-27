@@ -1,0 +1,21 @@
+<!--T: Calculadora do IDH-->
+<div class="card"><h2>Monte o IDH de um país</h2><p class="muted">As balizas são as do PNUD: vida de 20 a 85 anos; anos esperados de estudo de 0 a 18; média de anos de estudo de 0 a 15; renda de 100 a 75 000 dólares (com logaritmo).</p>
+<label class="lbl">Esperança de vida: <span id="v1"></span></label><div class="sl"><input type="range" id="e" min="20" max="85" step="0.1" value="75.8"></div>
+<label class="lbl">Anos esperados de estudo: <span id="v2"></span></label><div class="sl"><input type="range" id="a" min="0" max="18" step="0.1" value="15.8"></div>
+<label class="lbl">Média de anos de estudo: <span id="v3"></span></label><div class="sl"><input type="range" id="m" min="0" max="15" step="0.1" value="8.4"></div>
+<label class="lbl">Renda por pessoa (dólares PPC): <span id="v4"></span></label><div class="sl"><input type="range" id="r" min="0" max="100" step="0.1" value="77.6"></div>
+<div class="row"><button class="alt" id="br">Brasil (Relatório 2025)</button><button class="alt" id="ri">Só renda alta</button></div>
+<svg id="sv" viewBox="0 0 400 190"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>Por que média geométrica?</h2><p>A média geométrica (∛(a × b × c)) é sempre menor ou igual à aritmética e pune quem vai mal numa dimensão. Com renda altíssima e escola fraca, o IDH não sobe tanto quanto subiria numa média comum.</p></div>
+<script>
+const $=i=>document.getElementById(i);const renda=v=>Math.round(100*Math.pow(750,v/100));
+function draw(){const e=+$('e').value,a=+$('a').value,m=+$('m').value,R=renda(+$('r').value);
+ $('v1').textContent=e.toLocaleString('pt-BR')+' anos';$('v2').textContent=a.toLocaleString('pt-BR');$('v3').textContent=m.toLocaleString('pt-BR');$('v4').textContent=R.toLocaleString('pt-BR');
+ const s1=(e-20)/65,s2=(Math.min(a,18)/18+m/15)/2,s3=(Math.log(R)-Math.log(100))/(Math.log(75000)-Math.log(100));const idh=Math.cbrt(s1*s2*s3),ar=(s1+s2+s3)/3;
+ const bar=(y,v,c,t)=>`<text x="0" y="${y+13}" font-size="12" fill="#0E2354">${t}</text><rect x="110" y="${y}" width="260" height="18" fill="#F3F4F6"/><rect x="110" y="${y}" width="${260*Math.max(0,v)}" height="18" fill="${c}"/><text x="${115+260*Math.max(0,v)}" y="${y+13}" font-size="11" fill="#0E2354">${v.toFixed(3).replace('.',',')}</text>`;
+ $('sv').innerHTML=bar(5,s1,'#2E7D4F','Saúde')+bar(35,s2,'#1D4ED8','Educação')+bar(65,s3,'#F78D33','Renda')+bar(110,idh,'#0E2354','IDH (geom.)')+bar(140,ar,'#9CA3AF','Média comum');
+ $('out').innerHTML=`IDH = ∛(${s1.toFixed(3)} × ${s2.toFixed(3)} × ${s3.toFixed(3)}) = <b>${idh.toFixed(3).replace('.',',')}</b>`.replace(/(\d)\.(\d)/g,'$1,$2');}
+['e','a','m','r'].forEach(i=>$(i).oninput=draw);
+const setR=x=>{$('r').value=Math.log(x/100)/Math.log(750)*100};
+$('br').onclick=()=>{$('e').value=75.8;$('a').value=15.8;$('m').value=8.4;setR(18011);draw()};$('ri').onclick=()=>{$('e').value=60;$('a').value=6;$('m').value=3;setR(70000);draw()};$('br').onclick();
+</script>

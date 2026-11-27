@@ -1,0 +1,54 @@
+<!--T: Pratique-->
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+<script>
+const $=i=>document.getElementById(i);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const P=a=>a[Math.floor(Math.random()*a.length)];
+const mdc=(a,b)=>b?mdc(b,a%b):a, mmc=(a,b)=>a*b/mdc(a,b);
+const T=['Medir a Terra','Escala: o mundo no papel','Projeções: o mapa mente?','Navegações: achar-se no mar','Fusos horários','Fronteiras','GPS: onde estou?','O censo','Pirâmides etárias','A cidade','Desigualdade no mapa','Votos e território'];
+const br=x=>String(x).replace('.',',');
+const G={
+1:()=>{const a=P([4,5,6,7.2,8,9,10,12]),d=R(3,12)*100;if(Math.random()<.5)return{q:`Como Eratóstenes: a sombra faz um ângulo de <b>${br(a)}°</b> e as cidades estão a <b>${d} km</b> no mesmo meridiano. Quanto mede a volta da Terra, em km?`,a:Math.round(360/a*d),exp:`360 ÷ ${br(a)} = ${br(+(360/a).toFixed(2))} partes; ${br(+(360/a).toFixed(2))} × ${d} = ${Math.round(360/a*d)} km.`};
+ const c=40000,an=P([2,3,4,5,6,8,9,10]);return{q:`Se a volta da Terra mede 40 000 km, quanto mede um arco de <b>${an}°</b> de meridiano, em km? (arredonde)`,a:Math.round(c*an/360),exp:`40 000 × ${an} ÷ 360 ≈ ${Math.round(c*an/360)} km.`};},
+2:()=>{const E=P([10000,20000,25000,50000,100000,200000]),cm=R(2,15);if(Math.random()<.5)return{q:`Num mapa em escala <b>1 : ${E.toLocaleString('pt-BR')}</b>, duas cidades estão a <b>${cm} cm</b>. Qual é a distância real, em metros?`,a:cm*E/100,exp:`${cm} × ${E.toLocaleString('pt-BR')} = ${(cm*E).toLocaleString('pt-BR')} cm = ${(cm*E/100).toLocaleString('pt-BR')} m.`};
+ const km=cm*E/100000;return{q:`Uma estrada de <b>${br(km)} km</b> aparece com <b>${cm} cm</b> num mapa. A escala é 1 : ?`,a:E,exp:`${br(km)} km = ${(km*100000).toLocaleString('pt-BR')} cm; ÷ ${cm} = ${E.toLocaleString('pt-BR')}.`};},
+3:()=>{const t=P([[60,0.5,4],[0,1,1],[45,0.71,2],[70,0.34,9],[30,0.87,1.3]]);if(Math.random()<.5&&t[0]!=30&&t[0]!=70)return{q:`Na projeção de Mercator, a <b>${t[0]}°</b> de latitude (cos = ${br(t[1])}), quantas vezes as áreas aparecem esticadas?`,a:t[2],exp:`(1 ÷ ${br(t[1])})² ≈ ${t[2]}.`};
+ return{q:'Que tipo de projeção mantém as <b>áreas</b>?',opts:['conforme','equivalente','azimutal'],a:'equivalente',exp:'Equivalente = áreas iguais. A conforme mantém os ângulos, como a de Mercator.'};},
+4:()=>{const k=R(0,2);if(k==0){const l=R(5,60);return{q:`No Hemisfério Norte, a Estrela Polar está a <b>${l}°</b> do horizonte. Qual é a latitude, em graus?`,a:l,exp:`A altura da Polar é igual à latitude: ${l}° N.`}}
+ if(k==1){const h=R(50,89);return{q:`Num equinócio, o Sol do meio-dia está a <b>${h}°</b> de altura. Quantos graus de latitude tem o navio?`,a:90-h,exp:`90° − ${h}° = ${90-h}°. O lado em que o Sol aparece diz se é norte ou sul.`}}
+ const hr=R(1,6);return{q:`É meio-dia no navio e o relógio do porto de partida marca <b>${12+hr}h</b>. Quantos graus de longitude a oeste do porto está o navio?`,a:hr*15,exp:`${hr} h × 15° = ${hr*15}°.`};},
+5:()=>{const Z=[['Brasília',-3],['Acre',-5],['Manaus',-4],['Fernando de Noronha',-2],['Lisboa',0],['Tóquio',9],['Moscou',3]];const[a,b]=[P(Z),P(Z)];const h=R(0,23);if(a[0]==b[0])return G[5]();
+ const r=((h+b[1]-a[1])%24+24)%24;return{q:`São <b>${h}h</b> em ${a[0]} (${a[1]>0?'+':''}${a[1]} h). Que horas são em ${b[0]} (${b[1]>0?'+':''}${b[1]} h)? (responda só a hora, de 0 a 23)`,a:r,exp:`Diferença: ${b[1]} − (${a[1]}) = ${b[1]-a[1]} h. ${h} ${b[1]-a[1]>=0?'+':'−'} ${Math.abs(b[1]-a[1])} → ${r}h.`};},
+6:()=>{const g=P([5.5,5.8,6,6.2,6.5]);if(Math.random()<.5)return{q:`Se uma légua medisse <b>${br(g)} km</b>, quantos km dariam as 370 léguas de Tordesilhas?`,a:Math.round(370*g),exp:`370 × ${br(g)} = ${Math.round(370*g)} km.`};
+ const km=R(18,24)*100,d=107;return{q:`Na latitude de Cabo Verde, 1° de longitude mede cerca de 107 km. Quantos graus (arredonde) correspondem a <b>${km} km</b>?`,a:Math.round(km/d),exp:`${km} ÷ 107 ≈ ${br(+(km/d).toFixed(1))} → ${Math.round(km/d)}°.`};},
+7:()=>{if(Math.random()<.5){const t=P([0.065,0.067,0.07,0.072,0.075,0.08]);return{q:`Um sinal viaja a 300 000 km/s e leva <b>${br(t)} s</b> para chegar. A que distância está o satélite, em km?`,a:Math.round(300000*t),exp:`300 000 × ${br(t)} = ${Math.round(300000*t)} km.`}}
+ const a=P([[3,4,5],[6,8,10],[5,12,13],[9,12,15]]);return{q:`Você está no ponto (${a[0]}, ${a[1]}) e a estação está em (0, 0), em km. A que distância está da estação?`,a:a[2],exp:`√(${a[0]}² + ${a[1]}²) = √${a[2]*a[2]} = ${a[2]} km.`};},
+8:()=>{const n=P([20,40,50,80,100]),N=P([1000,2000,5000]),k=R(2,Math.floor(n*0.8));if(Math.random()<.5)return{q:`Numa amostra de <b>${n}</b> pessoas, <b>${k}</b> usam bicicleta. Numa cidade de <b>${N.toLocaleString('pt-BR')}</b> pessoas, quantas devem usar bicicleta, estimando?`,a:Math.round(k/n*N),exp:`${k}/${n} = ${br(+(k/n*100).toFixed(1))}%; × ${N.toLocaleString('pt-BR')} ≈ ${Math.round(k/n*N)}.`};
+ const p=R(100,500)*1000,c=P([5,8,10,12,20]);return{q:`Uma cidade tinha ${p.toLocaleString('pt-BR')} habitantes e cresceu <b>${c}%</b>. Quantos habitantes passou a ter?`,a:Math.round(p*(1+c/100)),exp:`${p.toLocaleString('pt-BR')} × ${br(1+c/100)} = ${Math.round(p*(1+c/100)).toLocaleString('pt-BR')}.`};},
+9:()=>{const i=R(6,20),c=R(15,35);if(Math.random()<.5)return{q:`Um país tem <b>${i}%</b> de idosos (65+) e <b>${c}%</b> de crianças (0-14). Qual é o índice de envelhecimento (idosos para cada 100 crianças)? Arredonde.`,a:Math.round(i/c*100),exp:`${i} ÷ ${c} × 100 ≈ ${Math.round(i/c*100)}.`};
+ const v=[...Array(7)].map(()=>R(10,18)).sort((a,b)=>a-b);return{q:`As idades de um grupo são ${v.join(', ')}. Qual é a idade mediana?`,a:v[3],exp:`Com 7 valores em ordem, a mediana é o 4º: ${v[3]}.`};},
+10:()=>{if(Math.random()<.5){const p=R(10,90)*1000,a=R(2,20);return{q:`Um bairro tem <b>${p.toLocaleString('pt-BR')}</b> habitantes em <b>${a} km²</b>. Qual é a densidade, em hab/km²? (arredonde)`,a:Math.round(p/a),exp:`${p.toLocaleString('pt-BR')} ÷ ${a} ≈ ${Math.round(p/a).toLocaleString('pt-BR')} hab/km².`}}
+ const x=R(1,9),y=R(1,9);return{q:`Num bairro em grade, a casa está em (0, 0) e a escola em (${x}, ${y}) quarteirões. Qual é a distância de táxi, em quarteirões?`,a:x+y,exp:`|${x}| + |${y}| = ${x+y} quarteirões.`};},
+11:()=>{if(Math.random()<.5){const e=R(55,84);return{q:`Calcule o índice de saúde do IDH para esperança de vida de <b>${e} anos</b> (mínimo 20, máximo 85). Responda com 2 casas decimais.`,a:+((e-20)/65).toFixed(2),exp:`(${e} − 20) ÷ 65 ≈ ${br(((e-20)/65).toFixed(2))}.`}}
+ const t=P([[0.8,0.8,0.8,0.8],[1,0.5,0.5,0.63],[0.9,0.6,0.8,0.76],[0.5,0.5,1,0.63]]);return{q:`Qual é a média geométrica de ${br(t[0])}, ${br(t[1])} e ${br(t[2])}? (2 casas decimais)`,a:t[3],exp:`∛(${br(t[0])} × ${br(t[1])} × ${br(t[2])}) ≈ ${br(t[3])}.`};},
+12:()=>{if(Math.random()<.5){const p=R(5,40)*100000,d=P([8,10,12,20,30,46,70]);return{q:`Um estado tem <b>${p.toLocaleString('pt-BR')}</b> habitantes e elege <b>${d}</b> deputados. Quantas pessoas cada deputado representa? (arredonde)`,a:Math.round(p/d),exp:`${p.toLocaleString('pt-BR')} ÷ ${d} ≈ ${Math.round(p/d).toLocaleString('pt-BR')}.`}}
+ return{q:'Desenhar distritos eleitorais para favorecer um partido é chamado de:',opts:['gerrymandering','quociente','plebiscito'],a:'gerrymandering',exp:'O nome vem do governador Elbridge Gerry e de um distrito em forma de salamandra, em 1812.'};},
+};
+let m=+(new URLSearchParams(location.search).get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="number" id="r" placeholder="sua resposta">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;const certo=cur.opts?v==cur.a:(Math.abs(+v.replace(',','.')-cur.a)<0.0051);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+cur.a+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+</script>

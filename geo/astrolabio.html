@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Astrolábio virtual · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e Geografia</div><h1 id="title">Astrolábio virtual</h1></header>
+<main>
+<div class="card"><h2>O céu do navegante</h2><p class="muted">Mude a latitude do navio. No Hemisfério Norte, a Estrela Polar sobe no céu até a altura igual à latitude. Ao meio-dia de um equinócio, o Sol fica a 90° − latitude.</p>
+<label class="lbl">Latitude do navio: <span id="vl"></span></label><div class="sl"><input type="range" id="lat" min="-50" max="70" value="38"></div>
+<svg id="sv" viewBox="0 0 400 230"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>Seja o piloto</h2><p class="muted">O astrolábio mediu um astro. Descubra a latitude do navio (use N ou S no sinal: sul é negativo).</p><div id="q" class="out"></div>
+<div class="row" style="margin-top:8px"><input type="number" id="r" placeholder="latitude (sul negativo)" style="flex:1"><button class="or" id="ok">Conferir</button><button class="alt" id="novo">Outro</button></div><div id="m"></div><p class="muted" id="pl"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+function ceu(lat,mostra=true){const cx=200,cy=200,R=170;let s=`<path d="M30 200 A170 170 0 0 1 370 200 Z" fill="#EEF2FB"/><line x1="20" y1="200" x2="380" y2="200" stroke="#2E7D4F" stroke-width="3"/><text x="25" y="218" font-size="11" fill="#2E7D4F">horizonte norte</text><text x="375" y="218" font-size="11" fill="#2E7D4F" text-anchor="end">sul</text>`;
+ s+=`<path d="M${cx-40} 200 l40 -12 l40 12 z" fill="#0E2354"/>`;
+ if(lat>0){const a=lat*Math.PI/180,x=cx-R*Math.cos(a),y=cy-R*Math.sin(a);s+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#C2410C" stroke-dasharray="4 3"/><text x="${x-6}" y="${y-8}" font-size="18" fill="#C2410C">★</text>`+(mostra?`<text x="${x+14}" y="${y+4}" font-size="11" fill="#C2410C">Polar: ${lat}°</text>`:'')}
+ else s+=`<text x="40" y="180" font-size="11" fill="#6B7280">a Polar está abaixo do horizonte</text>`;
+ const h=90-Math.abs(lat),na=lat<0,b=h*Math.PI/180,sx=na?cx-R*Math.cos(b):cx+R*Math.cos(b),sy=cy-R*Math.sin(b);
+ s+=`<line x1="${cx}" y1="${cy}" x2="${sx}" y2="${sy}" stroke="#F2C14E" stroke-width="2"/><circle cx="${sx}" cy="${sy}" r="11" fill="#F2C14E"/>`+(mostra?`<text x="${sx+(na?-16:16)}" y="${sy+18}" font-size="11" fill="#B4530F" text-anchor="${na?'end':'start'}">Sol ao meio-dia: ${h}°</text>`:'');return s}
+function draw(){const l=+$('lat').value;$('vl').textContent=Math.abs(l)+'° '+(l>=0?'N':'S');$('sv').innerHTML=ceu(l);
+ $('out').innerHTML=l>0?`Polar a <b>${l}°</b> = latitude. Sol (equinócio) a 90° − ${l}° = <b>${90-l}°</b>, ao sul do navio.`:`Sem Polar. Sol (equinócio) a 90° − ${Math.abs(l)}° = <b>${90-Math.abs(l)}°</b>, ${l<0?'ao norte do navio: estamos no Hemisfério Sul':'a pino'}.`;}
+$('lat').oninput=draw;draw();
+let alvo,tipo,ac=0,tot=0;function novo(){alvo=Math.round(Math.random()*90-35);if(alvo==0)alvo=5;tipo=alvo>0&&Math.random()<.5?'polar':'sol';
+ const h=90-Math.abs(alvo);$('q').innerHTML=tipo=='polar'?`A Estrela Polar está a <b>${alvo}°</b> acima do horizonte.`:`Num equinócio, o Sol do meio-dia está a <b>${h}°</b> de altura, ao <b>${alvo>0?'sul':'norte'}</b> do navio.`;$('r').value='';$('m').innerHTML=''}
+$('ok').onclick=()=>{const v=parseInt($('r').value);if(isNaN(v))return;tot++;const ok=v===alvo;if(ok)ac++;$('m').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo!':'Ainda não.'} A latitude é ${Math.abs(alvo)}° ${alvo>0?'N':'S'}${tipo=='sol'?' (90° − '+(90-Math.abs(alvo))+'°, e o lado do Sol diz o hemisfério)':''}.</div>`;$('pl').textContent=`Acertos: ${ac} de ${tot}`;$('lat').value=alvo;draw()};
+$('novo').onclick=novo;novo();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!--T: Medir a Terra-->
+<div class="card"><h2>Faça como Eratóstenes</h2><p class="muted">Escolha o ângulo da sombra e a distância entre as duas cidades. O desenho mostra a Terra que resultaria dessas medidas, comparada com a Terra real (círculo tracejado, 40 000 km).</p>
+<label class="lbl">Ângulo da sombra: <span id="va"></span></label><div class="sl"><input type="range" id="ang" min="1" max="30" step="0.1" value="7.2"></div>
+<label class="lbl">Distância entre as cidades: <span id="vd"></span></label><div class="sl"><input type="range" id="dist" min="100" max="3000" step="10" value="800"></div>
+<div class="row"><button class="alt" id="p1">Eratóstenes (7,2°, ~800 km)</button><button class="alt" id="p2">Duas escolas (5°, 555 km)</button></div>
+<svg id="sv" viewBox="0 0 400 300"></svg>
+<div class="out" id="out"></div></div>
+<div class="card"><h2>A conta</h2><p>Arco ÷ circunferência = ângulo ÷ 360°. Então <b>C = distância × 360 ÷ ângulo</b>. Se o ângulo é 1/50 do círculo, a Terra tem 50 vezes a distância entre as cidades.</p></div>
+<script>
+const $=i=>document.getElementById(i);
+function draw(){const a=+$('ang').value,d=+$('dist').value;$('va').textContent=a.toLocaleString('pt-BR')+'°';$('vd').textContent=d.toLocaleString('pt-BR')+' km';
+ const C=d*360/a,R=110*Math.sqrt(C/40000),r=Math.min(R,135),cx=200,cy=160;let s='';
+ s+=`<circle cx="${cx}" cy="${cy}" r="110" fill="none" stroke="#9CA3AF" stroke-dasharray="5 4"/>`;
+ s+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#FFF4E8" stroke="#0E2354" stroke-width="2.5"/>`;
+ const t1=-Math.PI/2,t2=t1-a*Math.PI/180;const p=t=>[cx+r*Math.cos(t),cy+r*Math.sin(t)];const [x1,y1]=p(t1),[x2,y2]=p(t2);
+ for(let k=-3;k<=3;k++){const x=x1+k*28;s+=`<line x1="${x}" y1="0" x2="${x}" y2="${Math.min(cy-r+20,y1)-4}" stroke="#F2C14E" stroke-width="2"/>`}
+ s+=`<line x1="${cx}" y1="${cy}" x2="${x1}" y2="${y1}" stroke="#6B7280" stroke-dasharray="3 2"/><line x1="${cx}" y1="${cy}" x2="${x2}" y2="${y2}" stroke="#6B7280" stroke-dasharray="3 2"/>`;
+ const vx=x2+22*Math.cos(t2),vy=y2+22*Math.sin(t2);s+=`<line x1="${x2}" y1="${y2}" x2="${vx}" y2="${vy}" stroke="#0E2354" stroke-width="4"/>`;
+ s+=`<path d="M${cx} ${cy-26} A26 26 0 0 0 ${cx+26*Math.cos(t2)} ${cy+26*Math.sin(t2)}" fill="none" stroke="#C2410C" stroke-width="2"/><text x="${cx-8}" y="${cy-30}" font-size="12" fill="#C2410C" text-anchor="end">${a.toLocaleString('pt-BR')}°</text>`;
+ s+=`<circle cx="${x1}" cy="${y1}" r="5" fill="#F78D33"/><text x="${x1+8}" y="${y1-6}" font-size="12" fill="#0E2354">Siene</text><text x="${x2-8}" y="${y2-6}" font-size="12" fill="#0E2354" text-anchor="end">Alexandria</text>`;
+ if(R>135)s+=`<text x="200" y="295" font-size="11" fill="#C2410C" text-anchor="middle">(Terra grande demais para caber: desenho limitado)</text>`;
+ $('sv').innerHTML=s;const err=(C-40000)/400;
+ $('out').innerHTML=`360 ÷ ${a.toLocaleString('pt-BR')} = <b>${(360/a).toLocaleString('pt-BR',{maximumFractionDigits:1})}</b> partes → C = ${(360/a).toLocaleString('pt-BR',{maximumFractionDigits:1})} × ${d.toLocaleString('pt-BR')} = <b>${Math.round(C).toLocaleString('pt-BR')} km</b> (${err>=0?'+':''}${err.toFixed(1).replace('.',',')}% em relação a 40 000 km)`;}
+['ang','dist'].forEach(i=>$(i).oninput=draw);
+$('p1').onclick=()=>{$('ang').value=7.2;$('dist').value=800;draw()};$('p2').onclick=()=>{$('ang').value=5;$('dist').value=555;draw()};draw();
+</script>
