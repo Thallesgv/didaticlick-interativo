@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os círculos de giz · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Os círculos de giz</h1></header>
+<main>
+<div class="card"><h2>O diagrama de Venn</h2><p class="muted" style="margin-top:0">Escolha o total de pessoas, quantas têm febre (F), quantas têm mordida (M) e quantas têm as duas coisas (F e M). O diagrama se redesenha, com o número de cada parte.</p>
+<div class="sl" id="su"><b>Total (U)</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Febre (F)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Mordida (M)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>As duas (F e M)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>F ou M<b id="ku"></b></div><div class="o">Só febre<b id="kf"></b></div><div>Nenhum<b id="kn"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SU=SL('su',10,60,1,30,draw),SF=SL('sf',0,30,1,10,draw),SM=SL('sm',0,30,1,6,draw),SA=SL('sa',0,30,1,2,draw);
+const U=()=>SU.get(),Fv=()=>SF.get(),Mv=()=>SM.get(),Av=()=>SA.get(),UN=()=>Fv()+Mv()-Av(),ok=()=>Av()<=Math.min(Fv(),Mv())&&UN()<=U();
+MIS.def(()=>[
+ ['Monte a <b>Ribeira</b>: 40 pessoas, 12 com febre, 8 com mordida e 5 com as duas.',()=>U()==40&&Fv()==12&&Mv()==8&&Av()==5,()=>'Só febre 7, as duas 5, só mordida 3, nenhum 25. A união é 12 + 8 − 5 = 15.',()=>'Agora: U = '+U()+', F = '+Fv()+', M = '+Mv()+', F e M = '+Av()+'.'],
+ ['Com febre e mordida maiores que zero, faça os dois círculos ficarem <b>separados</b>.',()=>Fv()>0&&Mv()>0&&Av()==0&&ok(),()=>'Interseção vazia: ninguém tem as duas coisas, e a união é a soma, '+Fv()+' + '+Mv()+' = '+UN()+'.',()=>!ok()?'Esses números são impossíveis. Ajuste.':'Os círculos ainda se cruzam: há '+Av()+' com as duas coisas.'],
+ ['Com U = 40, F = 12 e M = 8, ponha o <b>maior número possível</b> na interseção.',()=>U()==40&&Fv()==12&&Mv()==8&&Av()==8,()=>'8: todos os mordidos têm febre. O círculo M fica inteiro dentro de F. Mais que 8 é impossível.',()=>U()!=40||Fv()!=12||Mv()!=8?'Ponha U = 40, F = 12 e M = 8.':Av()>8?'Impossível: a interseção não pode passar do menor conjunto.':'Dá para pôr mais.']]);
+function draw(){const u=U(),f=Fv(),m=Mv(),a=Av(),bom=ok();let g=RC(6,6,330,190,'#EEF0F4','rx="4" stroke="#0E2354" stroke-width="1.5"')+TX(14,188,'U: '+u+' pessoas',{fs:10,a:'start'});
+ if(!bom){g+=TX(171,90,'Números impossíveis!',{fs:14,c:'#C0504D'})+TX(171,112,a>Math.min(f,m)?'As duas não pode passar de '+Math.min(f,m)+'.':'F ou M ('+UN()+') passa do total ('+u+').',{fs:10.5,c:'#C0504D'});}
+ else{const K=15,rf=Math.min(70,Math.max(8,K*Math.sqrt(f))),rm=Math.min(70,Math.max(8,K*Math.sqrt(m))),mn=Math.min(f,m),t=mn?a/mn:0,dmax=rf+rm+8,dmin=Math.abs(rf-rm),d=a==0?dmax:(rf+rm)-((rf+rm)-dmin)*t;
+  const cy=110,cxF=Math.max(14+rf,150-d/2),cxM=cxF+d;
+  if(f)g+=CI(cxF,cy,rf,'#FDE1C8','stroke="#F7821F" stroke-width="2"');if(m)g+=CI(cxM,cy,rm,'#F5D3D2','fill-opacity="0.85" stroke="#C0504D" stroke-width="2"');
+  if(f)g+=CI(cxF,cy,rf,'none','stroke="#F7821F" stroke-width="2"');
+  g+=TX(14,24,'F: febre ('+f+')',{fs:10,c:'#F7821F',a:'start'})+TX(14,40,'M: mordida ('+m+')',{fs:10,c:'#C0504D',a:'start'});
+  const Fl=cxF-rf,Fr=cxF+rf,Ml=cxM-rm,Mr=cxM+rm;
+  if(f&&a<f)g+=TX((Fl+Math.min(Ml,Fr))/2,cy+5,f-a,{fs:14,c:'#F7821F'});
+  if(a)g+=TX((Math.max(Fl,Ml)+Math.min(Fr,Mr))/2,cy+5,a,{fs:14});
+  if(m&&a<m)g+=TX((Math.max(Fr,Ml)+Mr)/2,cy+5,m-a,{fs:14,c:'#C0504D'});
+  g+=TX(306,30,u-UN(),{fs:16})+TX(306,44,'nenhum',{fs:9,c:GRAY,w:500});}
+ $('fig').innerHTML=SVG(342,202,g);$('ku').textContent=bom?UN():'—';$('kf').textContent=bom?f-a:'—';$('kn').textContent=bom?u-UN():'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

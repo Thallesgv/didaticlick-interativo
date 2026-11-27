@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O portão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>O portão</h1></header>
+<main>
+<div class="card"><h2>O fluxograma da triagem</h2><p class="muted" style="margin-top:0">Monte quem chega ao portão. Sofia considera febre a partir de 37,8 °C. A bolinha segue as setas e acende o caminho até o destino. Depois, troque a ordem das perguntas.</p>
+<div id="cm" style="margin:4px 0"></div>
+<div class="sl" id="st"><b>Temperatura</b><input type="range"><span></span></div>
+<div id="co" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a pessoa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CM=chips('cm',['sem mordida','com mordida ou arranhão'],0,draw),ST=SL('st',35.5,40,0.1,36.5,draw,v=>fmt(Math.round(v*10)/10)+' °C'),CO=chips('co',['ordem: mordida primeiro','ordem: febre primeiro'],0,draw);
+const mord=()=>CM.get()==1,feb=()=>ST.get()>=37.8-1e-9;
+function destino(){const qs=CO.get()==0?['M','F']:['F','M'];for(const q of qs){if(q=='M'&&mord())return 'ISO';if(q=='F'&&feb())return 'OBS';}return 'ENTRA';}
+const NOME={ISO:'ISOLAMENTO',OBS:'OBSERVAÇÃO',ENTRA:'ENTRA no abrigo'};
+MIS.def(()=>[
+ ['Mande alguém para o <b>isolamento</b>.',()=>destino()=='ISO',()=>'Mordida ou arranhão: isolamento, com febre ou sem.',()=>'Destino agora: '+NOME[destino()]+'.'],
+ ['Mande alguém para a <b>observação</b>.',()=>destino()=='OBS',()=>'Sem mordida e com febre (37,8 °C ou mais): enfermaria, em observação.',()=>'Destino agora: '+NOME[destino()]+'.'],
+ ['Faça alguém <b>entrar</b> no abrigo.',()=>destino()=='ENTRA',()=>'Não tem mordida e não tem febre: os dois "não" juntos, com "e".',()=>'Destino agora: '+NOME[destino()]+'.'],
+ ['Ache a pessoa que <b>muda de destino</b> quando a febre vem primeiro.',()=>CO.get()==1&&mord()&&feb(),()=>'Com mordida e febre, a ordem "febre primeiro" manda para a observação, e não para o isolamento. Por isso a mordida vem antes.',()=>CO.get()!=1?'Escolha a ordem "febre primeiro".':'Destino agora: '+NOME[destino()]+'. Quem teria dois "sim"?']]);
+function draw(){const fp=CO.get()==1,d=destino(),hot='#F7821F',cold='#D7DEEA';let g='';
+ const q1=fp?'tem febre?':'tem mordida?',q2=fp?'tem mordida?':'tem febre?',r1v=fp?feb():mord(),r2v=fp?mord():feb(),dest1=fp?'OBS':'ISO',dest2=fp?'ISO':'OBS';
+ const los=(x,y,t,on)=>PG([[x,y-22],[x+62,y],[x,y+22],[x-62,y]],on?'#FFF4D6':'#fff','stroke="'+(on?hot:'#9AA7BD')+'" stroke-width="2"')+TX(x,y+4,t,{fs:10});
+ const cx=(x,y,t,on,c)=>RC(x-58,y-14,116,28,on?c:'#fff','rx="6" stroke="'+(on?c:'#9AA7BD')+'" stroke-width="2"')+TX(x,y+4,t,{fs:10,c:on?'#fff':NAVY});
+ const C={ISO:'#C0504D',OBS:'#B8860B',ENTRA:'#15803D'};
+ g+=RC(36,6,100,24,NAVY,'rx="6"')+TX(86,22,'chegou ao portão',{fs:10,c:'#fff'});
+ g+=LN(86,30,86,48,hot,2.5)+los(86,70,q1,true);
+ g+=LN(148,70,206,70,r1v?hot:cold,2.5)+TX(176,64,'sim',{fs:9,c:'#C0504D'})+cx(266,70,NOME[dest1],d==dest1,C[dest1]);
+ g+=LN(86,92,86,120,!r1v?hot:cold,2.5)+TX(94,110,'não',{fs:9,c:'#15803D',a:'start'})+los(86,142,q2,!r1v);
+ g+=LN(148,142,206,142,!r1v&&r2v?hot:cold,2.5)+TX(176,136,'sim',{fs:9,c:'#C0504D'})+cx(266,142,NOME[dest2],d==dest2,C[dest2]);
+ g+=LN(86,164,86,190,!r1v&&!r2v?hot:cold,2.5)+TX(94,182,'não',{fs:9,c:'#15803D',a:'start'})+cx(86,204,'ENTRA no abrigo',d=='ENTRA',C.ENTRA);
+ const pos={ISO:fp?[266,142]:[266,70],OBS:fp?[266,70]:[266,142],ENTRA:[86,204]}[d];g+=CI(pos[0]+64,pos[1],7,hot,'stroke="#0E2354" stroke-width="1.5"');
+ g+=TX(266,196,(mord()?'mordida: sim':'mordida: não')+' · '+fmt(Math.round(ST.get()*10)/10)+' °C',{fs:9,c:GRAY,w:500})+TX(266,210,feb()?'(tem febre)':'(sem febre)',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(342,224,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

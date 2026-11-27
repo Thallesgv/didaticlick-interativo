@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quem mente? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Quem mente?</h1></header>
+<main>
+<div class="card"><h2>Verdadeiros e mentirosos</h2><p class="muted" style="margin-top:0">Num jogo de enigmas à noite, cada um escolheu ser <b>sempre verdadeiro</b> ou <b>sempre mentiroso</b>. Toque em cada pessoa para trocar o papel. Uma fala fica <b>verde</b> quando combina com o papel de quem fala e <b>vermelha</b> quando dá contradição.</p>
+<div id="ce" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha os papéis.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PES=['Pietro','Gabi','Seu Lauro'];
+const EN=[
+ [['Gabi mente.',v=>!v[1]],['Seu Lauro mente.',v=>!v[2]],['Pietro e Gabi mentem.',v=>!v[0]&&!v[1]]],
+ [['Pelo menos um de nós mente.',v=>!(v[0]&&v[1]&&v[2])],['Pietro diz a verdade.',v=>v[0]],['Gabi mente.',v=>!v[1]]],
+ [['Seu Lauro e eu somos do mesmo tipo.',v=>v[0]==v[2]],['Exatamente um de nós diz a verdade.',v=>v.filter(x=>x).length==1],['Gabi mente.',v=>!v[1]]]];
+let v=[true,true,true];const sol=[];
+EN.forEach((e,k)=>{sol[k]=[];for(let b=0;b<8;b++){const w=[!!(b&4),!!(b&2),!!(b&1)];if(e.every((s,i)=>s[1](w)==w[i]))sol[k].push(w.join());}});
+const CE=chips('ce',['enigma 1','enigma 2','enigma 3'],0,()=>{v=[true,true,true];draw();});
+const resolvido=k=>CE.get()==k&&sol[k].includes(v.join());
+const txt=k=>()=>{const w=sol[k][0].split(',').map(x=>x=='true');return 'Sem contradição: '+PES.filter((_,i)=>w[i]).join(' e ')+(w.filter(x=>x).length==1?' diz':' dizem')+' a verdade. É a única escolha que funciona.';};
+const dica=k=>()=>CE.get()!=k?'Escolha o enigma '+(k+1)+'.':'Ainda há '+EN[k].filter((s,i)=>s[1](v)!=v[i]).length+' fala(s) em vermelho.';
+MIS.def(()=>[['Resolva o <b>enigma 1</b>.',()=>resolvido(0),txt(0),dica(0)],['Resolva o <b>enigma 2</b>.',()=>resolvido(1),txt(1),dica(1)],['Resolva o <b>enigma 3</b>.',()=>resolvido(2),txt(2),dica(2)]]);
+toque('fig',(x,y,ini)=>{if(!ini)return;const i=Math.floor((y-8)/66);if(i<0||i>2||x>110)return;v[i]=!v[i];draw();});
+function draw(){const e=EN[CE.get()];let g='';
+ e.forEach((s,i)=>{const y=8+i*66,okf=s[1](v)==v[i],cor=okf?'#15803D':'#C0504D';
+  g+=RC(6,y,100,56,v[i]?'#DFF3E4':'#FBE3E2','rx="8" stroke="'+(v[i]?'#15803D':'#C0504D')+'" stroke-width="2"')+TX(56,y+24,PES[i],{fs:11})+TX(56,y+42,v[i]?'verdadeiro':'mentiroso',{fs:9.5,c:v[i]?'#15803D':'#C0504D'});
+  g+=PG([[110,y+28],[120,y+20],[120,y+36]],'#fff','stroke="'+cor+'" stroke-width="1.5"')+RC(120,y+6,216,44,'#fff','rx="8" stroke="'+cor+'" stroke-width="2"');
+  g+=TX(228,y+25,'"'+s[0]+'"',{fs:9.5,w:500})+TX(228,y+41,'a fala é '+(s[1](v)?'V':'F')+(okf?' ✔ combina':' ✘ contradição'),{fs:9,c:cor});});
+ $('fig').innerHTML=SVG(342,206,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
