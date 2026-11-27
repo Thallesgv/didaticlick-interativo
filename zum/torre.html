@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A vigia da torre · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>A vigia da torre</h1></header>
+<main>
+<div class="card"><h2>Observe a ponte</h2><p class="muted" style="margin-top:0">A ponte tem uma chance escondida de ter zumbis em cada observação. Observe e veja a frequência relativa (zumbis ÷ observações) mudar. Com poucas observações ela pula; com muitas, se acomoda.</p>
+<div class="row"><button id="b1">Observar 1 vez</button><button id="b10">Observar 10 vezes</button><button id="b100">Observar 100 vezes</button><button class="alt" id="bz">Zerar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Observações<b id="kn"></b></div><div class="o">Com zumbis<b id="kz"></b></div><div>Frequência<b id="kf"></b></div></div>
+<p style="margin:10px 0 4px"><b>Qual é a chance escondida?</b></p><div id="cp"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Observe a ponte.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PS=[0.1,0.2,0.3,0.4],pv=PS[Math.floor(Math.random()*4)];let obs=[],hist=[];
+const CP=chips('cp',['10%','20%','30%','40%'],-1,draw);
+function ob(k){for(let i=0;i<k;i++){obs.push(Math.random()<pv?1:0);const z=obs.reduce((a,b)=>a+b,0);hist.push(z/obs.length);}draw();}
+$('b1').onclick=()=>ob(1);$('b10').onclick=()=>ob(10);$('b100').onclick=()=>ob(100);$('bz').onclick=()=>{obs=[];hist=[];draw();};
+const N=()=>obs.length,Z=()=>obs.reduce((a,b)=>a+b,0),FR=()=>N()?Z()/N():0;
+MIS.def(()=>[
+ ['Faça <b>60 observações</b>, como Pietro.',()=>N()>=60,()=>'Com '+N()+' observações, a frequência ficou em '+fmt(Math.round(FR()*1000)/10)+'%. É uma estimativa da chance.',()=>'Já foram '+N()+' de 60.'],
+ ['Chegue a <b>500 observações</b> e veja a curva se acalmar.',()=>N()>=500,()=>'A curva oscila menos: é a lei dos grandes números. A frequência agora é '+fmt(Math.round(FR()*1000)/10)+'%.',()=>'Já foram '+N()+' de 500.'],
+ ['Descubra a <b>chance escondida</b> da ponte.',()=>CP.get()>=0&&PS[CP.get()]==pv,()=>'Isso! A chance era '+Math.round(pv*100)+'%, e a frequência foi chegando perto dela.',()=>CP.get()<0?'Escolha uma das chances.':(N()<300?'Ainda não. Faça mais observações antes de chutar.':'Ainda não. Olhe onde a curva se acomodou.')]]);
+function draw(){let g='';const last=obs.slice(-60);
+ for(let i=0;i<60;i++){const x=8+(i%15)*21,y=8+Math.floor(i/15)*21,v=last[i];g+=RC(x,y,17,17,v===undefined?'#F3F4F6':(v?'#FBE3E2':'#DFF3E4'),'rx="3" stroke="'+(v===undefined?'#D7DEEA':(v?'#C0504D':'#15803D'))+'"');if(v)g+=TX(x+8.5,y+12.5,'Z',{fs:9,c:'#C0504D'});}
+ g+=TX(330,106,'(as últimas 60 observações)',{fs:9,c:GRAY,a:'end',w:500});
+ const ox=34,oy=226,W=296,H=100;g+=LN(ox,oy,ox+W,oy,NAVY,1.2)+LN(ox,oy,ox,oy-H,NAVY,1.2);
+ [0,0.25,0.5].forEach(v=>g+=TX(ox-4,oy-H*v/0.5+3,Math.round(v*100)+'%',{fs:8,c:GRAY,a:'end'}));
+ const n=hist.length;if(n>1){let pts=[];const st=Math.max(1,Math.floor(n/300));for(let i=0;i<n;i+=st)pts.push((ox+W*(i+1)/n).toFixed(1)+','+(oy-H*Math.min(hist[i],0.5)/0.5).toFixed(1));g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="#F7821F" stroke-width="2"/>`;}
+ g+=TX(ox+W,oy+14,n+' observações',{fs:9,c:GRAY,a:'end'})+TX(ox+4,oy-H-4,'frequência relativa',{fs:9,c:GRAY,a:'start'});
+ $('fig').innerHTML=SVG(342,244,g);$('kn').textContent=N();$('kz').textContent=Z();$('kf').textContent=N()?fmt(Math.round(FR()*1000)/10)+'%':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

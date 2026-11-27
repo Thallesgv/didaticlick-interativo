@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os rádios · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática no Apocalipse Zumbi</div><h1>Os rádios</h1></header>
+<main>
+<div class="card"><h2>Pelo menos um funciona?</h2><p class="muted" style="margin-top:0">Escolha quantos rádios a equipe leva e a chance de cada um funcionar. A equipe só fica sem contato se <b>todos</b> falharem. Teste 100 viagens e compare com a conta.</p>
+<div class="sl" id="sn"><b>Rádios</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Chance de cada um</b><input type="range"><span></span></div>
+<div class="row"><button id="bt">Testar 100 viagens</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Todos falham<b id="kf"></b></div><div class="o">Pelo menos um<b id="kp"></b></div><div>No teste<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha os rádios.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SN=SL('sn',1,6,1,1,draw),SP=SL('sp',0.5,0.95,0.05,0.7,draw,v=>fmt(Math.round(v*100)/100));let teste=null;
+$('bt').onclick=()=>{const n=SN.get(),p=PP();teste=[];for(let v=0;v<100;v++){let ok=false;for(let r=0;r<n;r++)if(Math.random()<p)ok=true;teste.push(ok);}draw();};
+const PP=()=>Math.round(SP.get()*100)/100,QF=()=>Math.pow(1-PP(),SN.get()),PA=()=>1-QF();
+MIS.def(()=>[
+ ['Monte o plano da equipe: <b>3 rádios</b> de chance <b>0,7</b>.',()=>SN.get()==3&&PP()==0.7,()=>'1 − 0,3³ = 1 − 0,027 = 97,3%. Teste algumas vezes: quase nunca ficam sem contato.',()=>'Agora: '+SN.get()+' rádio(s) de '+fmt(PP())+'.'],
+ ['Com rádios de 0,7, qual o <b>menor número</b> de rádios que garante pelo menos 99%?',()=>PP()==0.7&&SN.get()==4,()=>'4 rádios: 1 − 0,3⁴ = 99,19%. Com 3 eram 97,3%.',()=>PP()!=0.7?'Use a chance 0,7.':PA()<0.99?'Ainda abaixo de 99%.':'Passou, mas dá com menos rádios.'],
+ ['Com rádios melhores, de <b>0,9</b>, quantos bastam para 99%?',()=>PP()==0.9&&SN.get()==2,()=>'2 rádios de 0,9: 1 − 0,1² = 99%. Rádios melhores pedem menos rádios.',()=>PP()!=0.9?'Use a chance 0,9.':PA()<0.99-1e-9?'Ainda abaixo de 99%.':'Passou, mas dá com menos rádios.']]);
+function draw(){const n=SN.get(),p=PP();let g='';
+ for(let r=0;r<n;r++){const x=14+r*54;g+=RC(x,10,30,46,NAVY,'rx="4"')+LN(x+22,10,x+26,-2+8,NAVY,2)+RC(x+5,16,20,12,'#9AA7BD','rx="2"')+CI(x+15,42,6,ORANGE);}
+ g+=TX(330,30,'cada um: '+Math.round(p*100)+'%',{fs:10,c:GRAY,a:'end'})+TX(330,46,'falha: '+Math.round((1-p)*100)+'%',{fs:10,c:GRAY,a:'end'});
+ for(let v=0;v<100;v++){const x=14+(v%20)*16,y=74+Math.floor(v/20)*16,t=teste?teste[v]:null;g+=RC(x,y,13,13,t===null?'#F3F4F6':(t?'#DFF3E4':'#FBE3E2'),'rx="2" stroke="'+(t===null?'#D7DEEA':(t?'#15803D':'#C0504D'))+'"');}
+ g+=TX(14,170,teste?'verde: com contato · vermelho: sem contato':'(aperte "Testar 100 viagens")',{fs:9,c:GRAY,a:'start',w:500});
+ $('fig').innerHTML=SVG(342,178,g);$('kf').textContent=fmt(Math.round(QF()*10000)/100)+'%';$('kp').textContent=fmt(Math.round(PA()*10000)/100)+'%';$('kt').textContent=teste?teste.filter(x=>x).length+' de 100':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
