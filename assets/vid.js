@@ -13,4 +13,19 @@ function PLOT(o, f) {
 const linha = (pts, X, Y, c, w, dash) => `<polyline points="${pts.map(p => X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${w || 2.5}"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
 const ponto = (x, y, X, Y, c) => `<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
 // número com expoente bonito: sup(3) = '³'
+// Bichos desenhados (centro em x, y; s = escala, 1 ≈ 24 px de comprimento; f = 1 olha para a direita, -1 para a esquerda).
+const BICHO = {
+  prea: (x, y, s, f) => `<g transform="translate(${x} ${y}) scale(${s * (f || 1)} ${s})"><ellipse cx="0" cy="0" rx="11" ry="6.5" fill="#9C6B3F"/><ellipse cx="9" cy="-2" rx="5.5" ry="4.6" fill="#8A5A32"/><circle cx="7.5" cy="-6" r="2" fill="#C99A70"/><circle cx="11.5" cy="-3" r="1.1" fill="#1F2937"/><ellipse cx="-2" cy="2" rx="7" ry="3" fill="#B88456" opacity=".6"/></g>`,
+  jaguatirica: (x, y, s, f) => `<g transform="translate(${x} ${y}) scale(${s * (f || 1)} ${s})"><path d="M-13 -1 q-8 -2 -9 -9" stroke="#D99A3A" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="0" rx="13" ry="6" fill="#E8B04B"/><rect x="-10" y="3" width="3" height="7" fill="#D99A3A"/><rect x="7" y="3" width="3" height="7" fill="#D99A3A"/><circle cx="13" cy="-4" r="5.5" fill="#E8B04B"/><path d="M10 -8 l1 -5 l3 4 z M15 -8 l2 -5 l2 5 z" fill="#C9862C"/><circle cx="15" cy="-5" r="1" fill="#1F2937"/>${[[-7, -2], [-3, 2], [1, -3], [5, 1], [-9, 2], [9, -1]].map(p => `<ellipse cx="${p[0]}" cy="${p[1]}" rx="1.8" ry="1.3" fill="#5B3A1A"/>`).join('')}</g>`,
+  capivara: (x, y, s, f) => `<g transform="translate(${x} ${y}) scale(${s * (f || 1)} ${s})"><rect x="-9" y="3" width="3.5" height="7" fill="#6E4A2A"/><rect x="5" y="3" width="3.5" height="7" fill="#6E4A2A"/><ellipse cx="0" cy="0" rx="13" ry="8" fill="#8B5E3C"/><path d="M9 -7 h8 a3 3 0 0 1 3 3 v4 a3 3 0 0 1 -3 3 h-6 z" fill="#7A5232"/><circle cx="10" cy="-8" r="1.6" fill="#5E3E22"/><circle cx="14" cy="-4" r="1" fill="#1F2937"/></g>`,
+  mico: (x, y, s, f) => `<g transform="translate(${x} ${y}) scale(${s * (f || 1)} ${s})"><path d="M-6 4 q-10 8 -6 16" stroke="#E39B2D" stroke-width="2.5" fill="none" stroke-linecap="round"/><ellipse cx="-2" cy="4" rx="6" ry="7" fill="#F2A93B"/>${Array.from({length: 12}, (_, i) => { const a = i * 30 * Math.PI / 180; return `<ellipse cx="${(4 + Math.cos(a) * 6).toFixed(1)}" cy="${(-6 + Math.sin(a) * 6).toFixed(1)}" rx="3" ry="2" fill="#F5B947" transform="rotate(${i * 30} ${(4 + Math.cos(a) * 6).toFixed(1)} ${(-6 + Math.sin(a) * 6).toFixed(1)})"/>`; }).join('')}<circle cx="4" cy="-6" r="4.2" fill="#6B4423"/><circle cx="5.5" cy="-7" r=".9" fill="#fff"/></g>`
+};
+// Cenário com bichos espalhados: n de cada tipo, posições fixas por semente.
+function CENA(W, H, grupos, fundo) {
+  let g = fundo || `<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E8F4D8"/><stop offset="1" stop-color="#B9DA92"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#cg)" rx="10"/>`;
+  const itens = [];
+  grupos.forEach(([tipo, n, s, semente]) => { let r = semente || 7; const rnd = () => { r = (r * 9301 + 49297) % 233280; return r / 233280; }; for (let i = 0; i < n; i++) itens.push([tipo, 18 + rnd() * (W - 36), 16 + rnd() * (H - 30), s, rnd() < 0.5 ? 1 : -1]); });
+  itens.sort((a, b) => a[2] - b[2]).forEach(([t, x, y, s, f]) => g += BICHO[t](x.toFixed(1), y.toFixed(1), s, f));
+  return SVG(W, H, g).replace(`width="${W}"`, `width="100%" style="max-width:${Math.round(W*1.4)}px"`);
+}
 const SUP = n => String(n).split('').map(ch => ({ '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' })[ch] || ch).join('');

@@ -13,6 +13,8 @@
 <div class="sl" id="sr"><b>Crescimento anual r</b><input type="range"><span></span></div>
 <div><b style="color:var(--navy)">Febre amarela</b><div id="cs" style="margin:4px 0"></div></div>
 <div class="fig" id="fig"></div>
+<div class="sl" id="sy"><b>Ano mostrado na floresta</b><input type="range"><span></span></div>
+<div class="fig" id="flo" style="flex-direction:column"></div>
 <div class="kpi"><div class="o">Modelo em 2023<b id="k23"></b></div><div>Modelo em 2040<b id="k40"></b></div><div>Chega a 8.000 em<b id="km"></b></div></div>
 <div id="m"></div></div>
 <div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
@@ -21,6 +23,7 @@
 <script>
 (()=>{
 const SR=SL('sr',0,20,0.5,8,draw,v=>fmt(v)+'% ao ano'),PERDA=[0,0.32,0.10];
+const SY=SL('sy',2014,2040,1,2018,draw,v=>String(v));
 const CS=chips('cs',['sem surto','surto: perda de 32%','surto com vacina: perda de 10%'],1,draw);
 function serie(r,k){const p={2014:3700};for(let a=2015;a<=2040;a++){const s=(a==2017||a==2018)&&PERDA[k]>0;p[a]=s?p[a-1]*Math.sqrt(1-PERDA[k]):p[a-1]*(1+r/100);}return p;}
 const S=()=>serie(SR.get(),CS.get()),meta=p=>{for(let a=2014;a<=2040;a++)if(p[a]>=8000)return a;return null;};
@@ -32,7 +35,9 @@ MIS.def(()=>[
 function draw(){const p=S(),pts=[];for(let a=2014;a<=2040;a++)pts.push([a,p[a]]);const yM=Math.min(30000,Math.max(10000,Math.ceil(p[2040]/5000)*5000));
  $('fig').innerHTML=PLOT({xmin:2014,xmax:2040,ymin:0,ymax:yM,dx:4,dy:yM/5,xl:'ano',yl:'micos',fy:v=>fmt(v),fx:v=>String(v)},(X,Y)=>{let g=`<rect x="${X(2016)}" y="${Y(yM)}" width="${X(2018)-X(2016)}" height="${Y(0)-Y(yM)}" fill="#FDE2E2"/>`+TX((X(2016)+X(2018))/2,Y(yM)+12,'surto',{fs:9,c:VERM});
   g+=LN(X(2014),Y(8000),X(2040),Y(8000),GREEN,2,'6 4')+TX(X(2019),Y(8000)-5,'meta: 8.000',{fs:10,a:'start',c:GREEN});
+  g+=`<line x1="${X(SY.get())}" y1="${Y(0)}" x2="${X(SY.get())}" y2="${Y(yM)}" stroke="#2E8B57" stroke-width="2" stroke-dasharray="5 4"/>`;
   g+=linha(pts.map(q=>[q[0],Math.min(q[1],yM)]),X,Y,ORANGE,3);[[2014,3700],[2018,2516],[2023,4800]].forEach(([a,v])=>g+=`<circle cx="${X(a)}" cy="${Y(v)}" r="5" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`);return g;});
+ {const a=SY.get(),v=p[a],n=Math.min(70,Math.round(v/200));$('flo').innerHTML=CENA(340,160,[['mico',n,0.8,4]],`<defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE8C0"/><stop offset="1" stop-color="#6FA85A"/></linearGradient></defs><rect width="340" height="160" fill="url(#cg)" rx="10"/>`+[30,95,170,250,315].map((x,i)=>`<circle cx="${x}" cy="${18+i%2*10}" r="34" fill="#3F7F3A" opacity=".45"/>`).join(''))+`<div class="muted" style="font-size:12px;text-align:center">${a}: ${fmt(Math.round(v))} micos no modelo (cada desenho = 200)${a>=2016&&a<=2018&&CS.get()>0?' · surto de febre amarela':''}</div>`;}
  $('k23').textContent=fmt(Math.round(p[2023]));$('k40').textContent=fmt(Math.round(p[2040]));$('km').textContent=meta(p)||'não chega';MIS.ver('m');}
 draw();
 })();

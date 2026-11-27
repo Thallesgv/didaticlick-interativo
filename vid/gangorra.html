@@ -13,6 +13,8 @@
 <div class="sl" id="sh"><b>Preás no começo</b><input type="range"><span></span></div>
 <div class="sl" id="sl"><b>Jaguatiricas no começo</b><input type="range"><span></span></div>
 <div class="fig" id="fig"></div>
+<div class="sl" id="sy"><b>Ano mostrado na mata</b><input type="range"><span></span></div>
+<div class="fig" id="mata" style="flex-direction:column"></div>
 <div class="fig" id="fas"></div>
 <div class="kpi"><div class="o">Maior nº de preás<b id="kh"></b></div><div>Período<b id="kp"></b></div><div>Atraso do predador<b id="ka"></b></div></div>
 <div id="m"></div></div>
@@ -21,7 +23,7 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const SH=SL('sh',0,150,1,80,draw),SLp=SL('sl',0,60,1,20,draw);
+const SH=SL('sh',0,150,1,80,draw),SLp=SL('sl',0,60,1,20,draw),SY=SL('sy',0,40,0.5,0,draw,v=>'ano '+fmt(v));
 function sim(){let H=SH.get(),L=SLp.get();const a=0.6,b=0.02,c=0.01,d=0.5,dt=0.02,f=(h,l)=>[a*h-b*h*l,c*h*l-d*l],sh=[[0,H]],sl=[[0,L]];
  for(let i=1;i<=2000;i++){const k1=f(H,L),k2=f(H+dt/2*k1[0],L+dt/2*k1[1]),k3=f(H+dt/2*k2[0],L+dt/2*k2[1]),k4=f(H+dt*k3[0],L+dt*k3[1]);
   H+=dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]);L+=dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]);H=Math.min(H,1e6);if(i%5==0){sh.push([i*dt,H]);sl.push([i*dt,L]);}}return [sh,sl];}
@@ -34,12 +36,14 @@ MIS.def(()=>[
  ['Agora tire <b>todos os preás</b> (deixe jaguatiricas).',()=>SH.get()==0&&SLp.get()>0,'Sem comida, as jaguatiricas caem 0,5 por ano e somem. Predador depende da presa.',()=>'Zere os preás.']]);
 function draw(){S=sim();const ym=Math.min(400,Math.max(100,Math.ceil(Math.max(hmax(),lmax())/50)*50));const cl=s=>s.map(p=>[p[0],Math.min(p[1],ym*1.03)]);
  $('fig').innerHTML=PLOT({xmin:0,xmax:40,ymin:0,ymax:ym,dx:5,dy:ym/4,xl:'anos',yl:'animais'},(X,Y)=>linha(cl(S[0]),X,Y,VERDE_E,2.5)+linha(cl(S[1]),X,Y,ORANGE,2.5)+
-  RC(240,22,10,4,VERDE_E)+TX(254,27,'preás',{fs:10,a:'start'})+RC(240,36,10,4,ORANGE)+TX(254,41,'jaguatiricas',{fs:10,a:'start'}));
+  LN(X(SY.get()),Y(0),X(SY.get()),Y(ym),NAVY,1.5,'4 3')+RC(240,22,10,4,VERDE_E)+TX(254,27,'preás',{fs:10,a:'start'})+RC(240,36,10,4,ORANGE)+TX(254,41,'jaguatiricas',{fs:10,a:'start'}));
  const hm=Math.min(ym,Math.max(160,hmax())),lm=Math.max(70,Math.min(200,lmax()*1.1));let g=RC(0,0,340,150,'#fff');const x0=40,y0=130,W=280,Hh=115,Xf=v=>x0+Math.min(v,hm)/hm*W,Yf=v=>y0-Math.min(v,lm)/lm*Hh;
  g+=LN(x0,y0,x0+W,y0,NAVY,1.4)+LN(x0,y0,x0,y0-Hh,NAVY,1.4)+TX(x0+W,y0+14,'preás →',{fs:9,a:'end'})+TX(x0+4,y0-Hh-3,'↑ jaguatiricas',{fs:9,a:'start'});
  g+=`<polyline points="${S[0].map((p,i)=>Xf(p[1]).toFixed(1)+','+Yf(S[1][i][1]).toFixed(1)).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="1.8"/>`;
  g+=CI(Xf(50),Yf(30),4,GREEN)+TX(Xf(50)+6,Yf(30)+4,'equilíbrio',{fs:9,a:'start',c:GREEN})+CI(Xf(S[0][0][1]),Yf(S[1][0][1]),4.5,ORANGE);
  $('fas').innerHTML=SVG(340,150,g);
+ {const i=Math.min(S[0].length-1,Math.round(SY.get()/0.1)),H=S[0][i][1],L=S[1][i][1],nh=Math.min(60,Math.round(H/4)),nl=Math.min(30,Math.round(L/2));
+  $('mata').innerHTML=CENA(340,170,[['prea',nh,0.85,3],['jaguatirica',nl,0.95,9]])+`<div class="muted" style="font-size:12px;text-align:center">Ano ${fmt(SY.get())}: ${H>9e5?'muitíssimos':Math.round(H)} preás (cada desenho = 4) e ${Math.round(L)} jaguatiricas (cada desenho = 2)</div>`;}
  const ph=picos(S[0]),pl=picos(S[1]);$('kh').textContent=hmax()>9e5?'explode':Math.round(hmax());
  $('kp').textContent=ph.length>=2&&hmax()-hmin()>2?r1(ph[1]-ph[0])+' anos':'—';
  const at=ph.length&&pl.length&&hmax()-hmin()>2?(()=>{const q=pl.find(t=>t>ph[0]);return q!==undefined?r1(q-ph[0])+' anos':'—';})():'—';$('ka').textContent=at;MIS.ver('m');}
