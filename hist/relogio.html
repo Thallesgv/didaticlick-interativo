@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relógio da Revolução · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e História</div><h1 id="title">Relógio da Revolução</h1></header>
+<main>
+<div class="card"><h2>A mesma hora, dois relógios</h2><p class="muted">Em 1793, a França dividiu o dia em 10 horas de 100 minutos. Mova a hora e compare.</p>
+<label class="lbl">Hora comum: <span id="vh"></span></label><div class="sl"><input type="range" id="h" min="0" max="1439" value="1080"></div>
+<svg id="sv" viewBox="0 0 400 200" style="background:#fff;border-radius:10px"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>Hoje no calendário republicano</h2><p class="muted">12 meses de 30 dias, cada um com 3 décadas de 10 dias, e 5 ou 6 dias no fim do ano. O ano começa por volta de 22 de setembro. Conversão aproximada.</p>
+<input type="date" id="d"><div class="big" id="rep"></div><div class="out" id="o2"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+function relogio(cx,n,frac,tit){let s=`<circle cx="${cx}" cy="95" r="72" fill="#FFF8F0" stroke="#0E2354" stroke-width="3"/>`;
+ for(let k=0;k<n;k++){const t=-Math.PI/2+2*Math.PI*k/n;s+=`<text x="${cx+58*Math.cos(t)}" y="${95+58*Math.sin(t)+4}" font-size="${n>12?9:12}" text-anchor="middle" fill="#0E2354">${k||n}</text>`}
+ const t=-Math.PI/2+2*Math.PI*frac;s+=`<line x1="${cx}" y1="95" x2="${cx+42*Math.cos(t)}" y2="${95+42*Math.sin(t)}" stroke="#F78D33" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="95" r="5" fill="#0E2354"/><text x="${cx}" y="190" font-size="12" text-anchor="middle" fill="#0E2354" font-weight="700">${tit}</text>`;return s}
+function hora(){const m=+$('h').value,f=m/1440;const hh=Math.floor(m/60),mm=m%60;$('vh').textContent=`${hh}h${String(mm).padStart(2,'0')}`;
+ const dec=f*10,dh=Math.floor(dec),dm=Math.floor((dec-dh)*100);
+ $('sv').innerHTML=relogio(105,24,f,'24 horas')+relogio(295,10,f,'10 horas decimais');
+ $('out').innerHTML=`${hh}h${String(mm).padStart(2,'0')} é ${(f*100).toLocaleString('pt-BR',{maximumFractionDigits:1})}% do dia → <b>${dh} h ${String(dm).padStart(2,'0')} min decimais</b>.`;}
+const MES=['Vendemiário','Brumário','Frimário','Nivoso','Pluvioso','Ventoso','Germinal','Floreal','Prairial','Messidor','Termidor','Frutidor'];
+function rep(){const v=$('d').value?new Date($('d').value+'T12:00:00'):new Date();let y=v.getFullYear();let ini=new Date(y,8,22,12);if(v<ini){y--;ini=new Date(y,8,22,12)}
+ const n=Math.round((v-ini)/86400000),ano=y-1791;let txt;if(n<360){const mes=Math.floor(n/30),dia=n%30+1,dec=Math.floor((dia-1)/10)+1;txt=`${dia} de ${MES[mes]} do ano ${ano}`;
+ $('o2').innerHTML=`É o ${dia}º dia do mês, na ${dec}ª década.`+(dia%10==0?' Hoje é <b>décadi</b>: dia de descanso!':` Faltam ${10-((dia-1)%10)-1} dia(s) para o décadi.`)}
+ else{txt=`${n-359}º dia complementar do ano ${ano}`;$('o2').innerHTML='Os dias complementares fechavam o ano, fora dos meses.'}$('rep').textContent=txt;}
+$('h').oninput=hora;$('d').oninput=rep;$('d').valueAsDate=new Date();hora();rep();
+</script>
+
+</body>
+</html>

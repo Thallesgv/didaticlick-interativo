@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e História</div><h1 id="title">Pratique</h1></header>
+<main>
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const P=a=>a[Math.floor(Math.random()*a.length)];
+const mdc=(a,b)=>b?mdc(b,a%b):a, mmc=(a,b)=>a*b/mdc(a,b);
+const T=['Contar antes de escrever','Mesopotâmia e a base 60','Egito, Nilo e papiro','Da conta à demonstração','China, Índia e o zero','Bagdá e a álgebra','Fibonacci e o comércio','Calendários e o tempo','A Revolução Científica','A Revolução e o metro','Guerras e códigos','Brasil: do cruzeiro ao Real'];
+const br=x=>String(x).replace('.',',');const fm=x=>x.toLocaleString('pt-BR');
+const G={
+1:()=>{if(Math.random()<.5){const a=R(2,9),b=R(2,9),c=R(2,9);return{q:`Uma família entregou <b>${a}</b> medidas de cereal, <b>${b}</b> jarros de óleo e <b>${c}</b> ovelhas. Quantas fichas vão para o envelope?`,a:a+b+c,exp:`Uma ficha para cada coisa: ${a} + ${b} + ${c} = ${a+b+c}.`}}
+ const f=R(3,9),e=R(2,8),t=f*e;const w=R(2,6);return{q:`O celeiro recebeu <b>${f}</b> medidas de cada uma de <b>${e*w}</b> famílias e reparte tudo entre <b>${w*f}</b> trabalhadores. Quanto recebe cada um?`,a:e,exp:`${f} × ${e*w} = ${f*e*w}; ÷ ${w*f} = ${e}.`};},
+2:()=>{const k=R(0,2);if(k==0){const a=R(1,9),b=R(0,59);return{q:`Quanto vale, em base 10, o número babilônico <b>${a},${b}</b>?`,a:a*60+b,exp:`${a} × 60 + ${b} = ${a*60+b}.`}}
+ if(k==1){const n=R(61,599);return{q:`Escreva <b>${n}</b> em base 60. Responda só o número de "sessentas".`,a:Math.floor(n/60),exp:`${n} = ${Math.floor(n/60)} × 60 + ${n%60} → ${Math.floor(n/60)},${n%60}.`}}
+ const p=R(1,10)*60,m=R(1,24);return{q:`Empréstimo de <b>${p}</b> siclos a 1/60 por mês, sem juros sobre juros. Quanto se paga de juros em <b>${m}</b> meses?`,a:p*m/60,exp:`${p} ÷ 60 = ${p/60} por mês; × ${m} = ${p*m/60}.`};},
+3:()=>{if(Math.random()<.6){const a=R(5,40),b=R(5,40);let r=[],k=1;while(k<=a){if(a&k)r.push(k);k*=2}return{q:`Multiplique <b>${a} × ${b}</b> dobrando. Qual é o resultado?`,a:a*b,exp:`${a} = ${r.join(' + ')}; some ${r.map(x=>x*b).join(' + ')} = ${a*b}.`}}
+ const c=P([200,300,400,500,600]),t=P([5,10,4]);return{q:`Uma aldeia colheu <b>${c}</b> sacos e paga imposto de <b>1/${t}</b>. Quantos sacos sobram?`,a:c-c/t,exp:`${c} ÷ ${t} = ${c/t}; ${c} − ${c/t} = ${c-c/t}.`};},
+4:()=>{if(Math.random()<.6){const b=P([1,1.5,2]),s=P([0.5,1,1.5,2,3]),S=R(5,40)*s;return{q:`Um bastão de <b>${br(b)} m</b> faz sombra de <b>${br(s)} m</b>. Na mesma hora, uma torre faz sombra de <b>${br(S)} m</b>. Qual é a altura da torre, em metros?`,a:+(S*b/s).toFixed(2),exp:`${br(S)} × ${br(b)} ÷ ${br(s)} = ${br(+(S*b/s).toFixed(2))} m.`}}
+ const v=R(2,6)*10,p=v*R(5,12);return{q:`Numa cidade antiga, <b>${fm(v*1000)}</b> pessoas podiam votar numa população de <b>${fm(p*1000)}</b>. Que porcentagem votava? (arredonde)`,a:Math.round(v/p*100),exp:`${v} ÷ ${p} × 100 ≈ ${Math.round(v/p*100)}%.`};},
+5:()=>{const k=R(0,2);if(k==0){const a=R(-15,15),b=R(-15,15);return{q:`Calcule com fortunas e dívidas: <b>(${a}) + (${b})</b>.`,a:a+b,exp:`${a} + (${b}) = ${a+b}.`}}
+ if(k==1){const a=R(-12,12),b=R(-12,-1);return{q:`Calcule: <b>(${a}) − (${b})</b>. Lembre: tirar uma dívida é ganhar.`,a:a-b,exp:`${a} − (${b}) = ${a} + ${-b} = ${a-b}.`}}
+ const x=R(1,4),y=R(1,4),T=R(2,9)*10*(x+y);return{q:`Um imposto de <b>${T}</b> sacos é dividido entre duas aldeias com <b>${x*100}</b> e <b>${y*100}</b> famílias, proporcionalmente. Quanto paga a primeira?`,a:T*x/(x+y),exp:`${T} × ${x}/${x+y} = ${T*x/(x+y)}.`};},
+6:()=>{const F=P([[2,3],[3,4],[4,6],[2,4],[3,6]]);const t=R(2,9)*12*100;const a=F[0],b=F[1];const r=1-1/a-1/b;if(Math.random()<.5)return{q:`Uma herança de <b>${fm(t)}</b> dirhams: 1/${a} para um filho, 1/${b} para outro e o resto para a mãe. Quanto recebe a mãe?`,a:Math.round(t*r),exp:`1 − 1/${a} − 1/${b} = ${br(+r.toFixed(4))}; × ${fm(t)} = ${fm(Math.round(t*r))}.`};
+ const x=R(2,30)*2;return{q:`"Um tesouro somado à sua metade dá <b>${x*3/2}</b>." Quanto vale o tesouro?`,a:x,exp:`x + x/2 = ${x*3/2} → 3x/2 = ${x*3/2} → x = ${x}.`};},
+7:()=>{const k=R(0,2);if(k==0){const n=R(8,15);let f=[1,1];while(f.length<n)f.push(f[f.length-1]+f[f.length-2]);return{q:`Na sequência de Fibonacci 1, 1, 2, 3, 5, 8..., qual é o <b>${n}º</b> termo?`,a:f[n-1],exp:`${f.slice(0,n).join(', ')}.`}}
+ const p=R(1,10)*100,t=P([5,10,20]),a=R(2,5);if(k==1)return{q:`<b>${p}</b> florins a <b>${t}%</b> ao ano, juros simples, por <b>${a}</b> anos. Quanto se paga de juros?`,a:p*t/100*a,exp:`${p} × ${t/100} × ${a} = ${p*t/100*a}.`};
+ return{q:`<b>${p}</b> florins a <b>${t}%</b> ao ano, juros compostos, por <b>2</b> anos. Quanto se deve no fim?`,a:+(p*(1+t/100)**2).toFixed(2),exp:`${p} × ${br(1+t/100)}² = ${br(+(p*(1+t/100)**2).toFixed(2))}.`};},
+8:()=>{if(Math.random()<.5){const y=P([1600,1700,1800,1900,2000,2100,2024,2026,1996,2400,1582,1752]);const g=(y%4==0&&y%100!=0)||y%400==0;return{q:`O ano <b>${y}</b> é bissexto no calendário gregoriano?`,opts:['sim','não'],a:g?'sim':'não',exp:y%100==0?`Termina em 00: só é bissexto se for divisível por 400. ${y%400==0?'É.':'Não é.'}`:`${y%4==0?'É múltiplo de 4.':'Não é múltiplo de 4.'}`}}
+ const a=R(10,300),b=R(10,300);return{q:`Quantos anos se passaram de <b>${a} a.C.</b> até <b>${b} d.C.</b>? (não existe ano zero)`,a:a+b-1,exp:`${a} + ${b} − 1 = ${a+b-1}.`};},
+9:()=>{const k=R(0,1);if(k==0){const d=R(2,5);return{q:`Se a distância entre dois corpos for multiplicada por <b>${d}</b>, a força da gravidade fica dividida por quanto?`,a:d*d,exp:`Inverso do quadrado: ${d}² = ${d*d}.`}}
+ const a=P([1,4,9,16]);return{q:`Pela terceira lei de Kepler (T² = a³), qual é o período, em anos, de um planeta a <b>${a}</b> distâncias Terra-Sol?`,a:Math.pow(a,1.5),exp:`T² = ${a}³ = ${a**3} → T = ${Math.pow(a,1.5)}.`};},
+10:()=>{const k=R(0,2);if(k==0){const h=P([6,9,12,15,18,21]);return{q:`Converta <b>${h}h</b> para horas decimais (dia de 10 horas).`,a:h/24*10,exp:`${h} ÷ 24 × 10 = ${br(h/24*10)}.`}}
+ if(k==1){const v=R(1,50)/10;return{q:`Quantos metros há em <b>${br(v)} km</b>?`,a:v*1000,exp:`${br(v)} × 1 000 = ${fm(v*1000)} m.`}}
+ const n=R(1,330);return{q:`No calendário republicano (meses de 30 dias), o <b>${n}º</b> dia do ano cai em que mês (1 a 12)?`,a:Math.floor((n-1)/30)+1,exp:`(${n} − 1) ÷ 30 → mês ${Math.floor((n-1)/30)+1}.`};},
+11:()=>{const AB='ABCDEFGHIJKLMNOPQRSTUVWXYZ';const k=R(0,2);if(k==0){const n=R(3,6);let f=1;for(let i=2;i<=n;i++)f*=i;return{q:`De quantas formas podemos ordenar <b>${n}</b> rotores diferentes?`,a:f,exp:`${n}! = ${f}.`}}
+ if(k==1){const r=R(3,6),u=3;return{q:`Escolhendo 3 rotores entre <b>${r}</b>, importando a ordem, quantas escolhas existem?`,a:r*(r-1)*(r-2),exp:`${r} × ${r-1} × ${r-2} = ${r*(r-1)*(r-2)}.`}}
+ const d=R(1,25),L=AB[R(0,25)];return{q:`Na cifra de César com deslocamento <b>${d}</b>, em que letra se transforma a letra <b>${L}</b>?`,opts:[...new Set([AB[(AB.indexOf(L)+d)%26],AB[(AB.indexOf(L)+d+1)%26],AB[(AB.indexOf(L)+26-d)%26]])],a:AB[(AB.indexOf(L)+d)%26],exp:`Ande ${d} letras para a frente: ${L} → ${AB[(AB.indexOf(L)+d)%26]}.`};},
+12:()=>{const k=R(0,2);if(k==0){const p=R(2,20)*10,i=P([5,10,20,50]);return{q:`Um produto custa <b>${p}</b> e a inflação é de <b>${i}%</b> ao mês. Quanto custará depois de 2 meses?`,a:+(p*(1+i/100)**2).toFixed(2),exp:`${p} × ${br(1+i/100)}² = ${br(+(p*(1+i/100)**2).toFixed(2))}.`}}
+ if(k==1){const u=R(2,40)*10;return{q:`Em 1º de março de 1994, 1 URV = CR$ 647,50. Quantas URV valiam <b>CR$ ${fm(u*647.5)}</b>?`,a:u,exp:`${fm(u*647.5)} ÷ 647,50 = ${u} URV.`}}
+ const u=R(1,30)*10;return{q:`Em 30 de junho de 1994, 1 URV = CR$ 2 750. Quanto valiam <b>${u} URV</b> em cruzeiros reais?`,a:u*2750,exp:`${u} × 2 750 = ${fm(u*2750)}.`};},
+};
+let m=+(new URLSearchParams(location.search).get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="number" id="r" placeholder="sua resposta">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;const certo=cur.opts?v==cur.a:(Math.abs(+v.replace(',','.')-cur.a)<0.0051);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+cur.a+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Órbita de Kepler · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css">
+<style>
+input[type=text],input[type=number],textarea,select{font-family:inherit;font-size:16px;border:2px solid #D7DEEA;border-radius:10px;padding:8px 10px;width:100%;box-sizing:border-box}
+textarea{min-height:120px}
+.big{font-size:28px;font-weight:700;color:var(--navy);text-align:center;margin:8px 0;word-break:break-word}
+.tag{display:inline-block;background:var(--peach);color:var(--navy);border-radius:8px;padding:2px 8px;margin:2px;font-size:13px}
+table.t{border-collapse:collapse;width:100%;font-size:14px}table.t td,table.t th{border-bottom:1px solid #E5E7EB;padding:5px 6px;text-align:left}table.t th{background:var(--navy);color:#fff}
+.bar{height:14px;background:var(--orange);border-radius:4px}
+.sl{display:flex;align-items:center;gap:10px;margin:8px 0}.sl input{flex:1}
+.lbl{font-weight:600;color:var(--navy);font-size:14px;margin-top:8px;display:block}
+svg{max-width:100%;height:auto;touch-action:none}
+.out{font-size:15px;color:var(--navy);margin-top:8px}
+.out b{color:var(--orange)}
+</style>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · Matemática e História</div><h1 id="title">Órbita de Kepler</h1></header>
+<main>
+<div class="card"><h2>Áreas iguais em tempos iguais</h2><p class="muted">A cada intervalo de tempo igual, o planeta pinta um setor. Perto do Sol os setores são curtos e largos; longe, compridos e finos. Todos têm a mesma área.</p>
+<label class="lbl">Achatamento da órbita (excentricidade): <span id="ve"></span></label><div class="sl"><input type="range" id="e" min="0" max="80" value="50"></div>
+<svg id="sv" viewBox="0 0 400 240" style="background:#0E2354;border-radius:10px"></svg><div class="row" style="margin-top:8px"><button id="pp">Pausar</button></div><div class="out" id="out"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+const $=i=>document.getElementById(i);let M=0,run=true;const N=12;
+function pos(e,Mm){let E=Mm;for(let i=0;i<30;i++)E=E-(E-e*Math.sin(E)-Mm)/(1-e*Math.cos(E));const a=160,b=a*Math.sqrt(1-e*e);return[200+a*(Math.cos(E)-e)+0,120-b*Math.sin(E)]}
+function draw(){const e=+$('e').value/100;$('ve').textContent=e.toLocaleString('pt-BR');const a=160,b=a*Math.sqrt(1-e*e),c=a*e;let s='';
+ for(let k=0;k<N;k++){if(k%2)continue;let pts=`200,120`;for(let j=0;j<=10;j++){const[x,y]=pos(e,2*Math.PI*(k+j/10)/N);pts+=` ${x},${y}`}s+=`<polygon points="${pts}" fill="#F78D33" opacity="1" fill-opacity="${k%4?0.55:0.85}"/>`}
+ s+=`<ellipse cx="${200-c}" cy="120" rx="${a}" ry="${b}" fill="none" stroke="#FDE9D8" stroke-width="1.5"/><circle cx="200" cy="120" r="10" fill="#F2C14E"/>`;
+ const[x,y]=pos(e,M);s+=`<circle cx="${x}" cy="${y}" r="7" fill="#7DD3FC"/>`;$('sv').innerHTML=s;
+ const v=1/Math.hypot(x-200,y-120);$('out').innerHTML=`Distância ao Sol agora: <b>${Math.round(Math.hypot(x-200,y-120))}</b> (unidades do desenho). Quanto mais perto, mais rápido o planeta anda.`;}
+function tick(){if(run){M=(M+0.02)%(2*Math.PI);draw()}requestAnimationFrame(tick)}
+$('e').oninput=draw;$('pp').onclick=()=>{run=!run;$('pp').textContent=run?'Pausar':'Continuar'};tick();
+</script>
+
+</body>
+</html>

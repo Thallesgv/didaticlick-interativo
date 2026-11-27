@@ -1,0 +1,21 @@
+<!--T: Máquina do calendário-->
+<div class="card"><h2>É bissexto?</h2><input type="number" id="y" value="1900"><div class="out" id="o1"></div></div>
+<div class="card"><h2>O calendário que escorrega</h2><p class="muted">O círculo é o ano das estações. A bolinha laranja é onde o Sol realmente está no "21 de março" do calendário juliano. Faça o tempo correr a partir do Concílio de Niceia (325).</p>
+<label class="lbl">Ano: <span id="va"></span></label><div class="sl"><input type="range" id="a" min="325" max="2100" value="1582"></div>
+<label style="display:flex;gap:6px;align-items:center;margin:6px 0"><input type="checkbox" id="g" style="width:auto"> usar a reforma gregoriana a partir de 1582</label>
+<svg id="sv" viewBox="0 0 400 230" style="background:#fff;border-radius:10px"></svg><div class="out" id="o2"></div></div>
+<script>
+const $=i=>document.getElementById(i);
+function bis(){const y=+$('y').value;const j=y%4==0,g=(y%4==0&&y%100!=0)||y%400==0;
+ $('o1').innerHTML=`Calendário juliano: <b>${j?'bissexto':'não bissexto'}</b> (só olha se é múltiplo de 4).<br>Calendário gregoriano: <b>${g?'bissexto':'não bissexto'}</b>`+(y%100==0?` (termina em 00: só é bissexto se for divisível por 400; ${y} ÷ 400 = ${(y/400).toLocaleString('pt-BR',{maximumFractionDigits:2})}).`:'.');}
+function deriva(){const a=+$('a').value;$('va').textContent=a;const g=$('g').checked;let d;
+ if(!g||a<1582)d=(a-325)*0.0078;else{d=(1582-325)*0.0078-10+(a-1582)*0.0003}
+ const cx=120,cy=115,r=90;let s=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#E5E7EB" stroke-width="14"/>`;
+ const M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];M.forEach((m,i)=>{const t=-Math.PI/2+2*Math.PI*i/12;s+=`<text x="${cx+(r+22)*Math.cos(t)}" y="${cy+(r+22)*Math.sin(t)+4}" font-size="10" text-anchor="middle" fill="#6B7280">${m}</text>`});
+ const t0=-Math.PI/2+2*Math.PI*(79/365),t1=t0-2*Math.PI*(d/365)*6;// exagero visual de 6x
+ s+=`<line x1="${cx}" y1="${cy}" x2="${cx+r*Math.cos(t0)}" y2="${cy+r*Math.sin(t0)}" stroke="#0E2354" stroke-width="2"/><circle cx="${cx+r*Math.cos(t0)}" cy="${cy+r*Math.sin(t0)}" r="7" fill="#0E2354"/>`;
+ s+=`<circle cx="${cx+r*Math.cos(t1)}" cy="${cy+r*Math.sin(t1)}" r="9" fill="#F78D33"/>`;
+ s+=`<text x="250" y="60" font-size="12" fill="#0E2354"><tspan font-weight="700">azul:</tspan> equinócio de verdade</text><text x="250" y="80" font-size="12" fill="#C2410C"><tspan font-weight="700">laranja:</tspan> 21 de março</text><text x="250" y="100" font-size="12" fill="#C2410C">do calendário</text><text x="250" y="140" font-size="22" fill="#0E2354" font-weight="700">${d.toLocaleString('pt-BR',{maximumFractionDigits:1})} dias</text><text x="250" y="158" font-size="11" fill="#6B7280">de diferença (desenho ampliado 6×)</text>`;
+ $('sv').innerHTML=s;$('o2').innerHTML=g&&a>=1582?`Em 1582, a bula pulou de 4 para 15 de outubro e passou a valer a regra dos 400 anos. O erro agora é de cerca de 1 dia a cada 3 mil anos.`:`O calendário juliano erra cerca de 0,0078 dia por ano. Em ${a-325} anos, o erro acumulado é de ${d.toLocaleString('pt-BR',{maximumFractionDigits:1})} dias.`;}
+$('y').oninput=bis;$('a').oninput=deriva;$('g').onchange=deriva;bis();deriva();
+</script>

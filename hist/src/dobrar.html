@@ -1,0 +1,24 @@
+<!--T: Escriba do Nilo-->
+<div class="card"><h2>A cheia e o imposto</h2><p class="muted">Mova a altura da cheia. Os campos alagados recebem a terra fértil. A tabela de impostos é <b>inventada para o exercício</b>, mas a lógica é a dos nilômetros: cheia prevista, colheita prevista, imposto calculado.</p>
+<label class="lbl">Altura da cheia no nilômetro: <span id="vh"></span> côvados</label><div class="sl"><input type="range" id="h" min="8" max="19" value="14"></div>
+<svg id="sv" viewBox="0 0 400 200" style="border-radius:10px"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>Multiplicar dobrando</h2><p class="muted">Marque as linhas da esquerda que somam o primeiro número. A soma das linhas marcadas da direita é o produto.</p>
+<div style="display:flex;gap:8px"><input type="number" id="a" value="13" min="1" max="99"><input type="number" id="b" value="12" min="1" max="99"></div>
+<div id="tab" style="margin-top:8px"></div><div class="msg" id="fb"></div></div>
+<script>
+const $=i=>document.getElementById(i);
+function nilo(){const h=+$('h').value;$('vh').textContent=h;const f=Math.max(0,Math.min(1,(h-8)/10));let s='<rect width="400" height="200" fill="#F2C14E"/>';
+ const lv=150-f*110;s+=`<rect x="0" y="${lv}" width="400" height="${200-lv}" fill="#A7D7B8"/>`;for(let i=0;i<8;i++){const y=40+i*20;s+=`<line x1="0" y1="${y}" x2="400" y2="${y}" stroke="#D9A22E" stroke-dasharray="3 6"/>`}
+ s+=`<path d="M170 0 C200 60 150 120 190 200 L230 200 C190 120 240 60 210 0Z" fill="#3B82F6"/>`;
+ for(let k=0;k<=10;k++){s+=`<line x1="360" y1="${190-k*16}" x2="372" y2="${190-k*16}" stroke="#0E2354"/><text x="378" y="${194-k*16}" font-size="9" fill="#0E2354">${k+8}</text>`}
+ s+=`<rect x="352" y="${190-(h-8)*16}" width="6" height="${(h-8)*16}" fill="#1D4ED8"/>`;$('sv').innerHTML=s;
+ const col=h<12?150:h<14?300:h<17?500:350;const tx=h<12?10:h<14?8:5;const imp=Math.round(col/tx);
+ $('out').innerHTML=(h>=17?'<b>Cheia grande demais:</b> inundou casas e celeiros. ':h<12?'<b>Cheia fraca:</b> pouca terra molhada. ':'')+`Colheita prevista: <b>${col} sacos</b>. Imposto (1/${tx}): <b>${imp} sacos</b>. Sobra para a aldeia: <b>${col-imp}</b>.`;}
+let marc=new Set();
+function tab(){const a=Math.max(1,Math.min(99,+$('a').value||1)),b=Math.max(1,Math.min(99,+$('b').value||1));let rows=[],k=1,v=b;while(k<=a){rows.push([k,v]);k*=2;v*=2}
+ $('tab').innerHTML='<table class="t"><tr><th>dobra o 1</th><th>dobra o '+b+'</th></tr>'+rows.map(([k,v])=>`<tr data-k="${k}" style="cursor:pointer;${marc.has(k)?'background:#FDE9D8;font-weight:700':''}"><td>${marc.has(k)?'✓ ':''}${k}</td><td>${v}</td></tr>`).join('')+'</table>';
+ document.querySelectorAll('#tab tr[data-k]').forEach(r=>r.onclick=()=>{const k=+r.dataset.k;marc.has(k)?marc.delete(k):marc.add(k);tab()});
+ const sk=[...marc].filter(k=>k<=a).reduce((x,y)=>x+y,0),sv=[...marc].filter(k=>k<=a).reduce((x,y)=>x+y*b,0);
+ $('fb').className='msg '+(sk==a?'ok':'info');$('fb').innerHTML=sk==a?`<b>Isso!</b> ${[...marc].sort((x,y)=>x-y).join(' + ')} = ${a}, então ${a} × ${b} = ${[...marc].sort((x,y)=>x-y).map(k=>k*b).join(' + ')} = <b>${sv}</b>.`:`Linhas marcadas somam ${sk} na esquerda. Falta chegar a ${a}.`;}
+$('h').oninput=nilo;$('a').oninput=()=>{marc.clear();tab()};$('b').oninput=tab;nilo();tab();
+</script>

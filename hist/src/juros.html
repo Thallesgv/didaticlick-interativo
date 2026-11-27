@@ -1,0 +1,22 @@
+<!--T: O banco de Florença-->
+<div class="card"><h2>Juros simples × compostos</h2>
+<label class="lbl">Empréstimo: <span id="vp"></span> florins</label><div class="sl"><input type="range" id="p" min="100" max="1000" step="100" value="100"></div>
+<label class="lbl">Taxa: <span id="vt"></span>% ao ano</label><div class="sl"><input type="range" id="t" min="1" max="30" value="10"></div>
+<label class="lbl">Anos: <span id="va"></span></label><div class="sl"><input type="range" id="a" min="1" max="20" value="8"></div>
+<svg id="sv" viewBox="0 0 400 200" style="background:#fff;border-radius:10px"></svg><div class="out" id="out"></div></div>
+<div class="card"><h2>O livro de partidas dobradas</h2><p class="muted">Cada operação entra duas vezes: a débito (para onde vai) e a crédito (de onde vem). A balança só fica em equilíbrio se as somas forem iguais.</p>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><button data-o="0">Comprar lã por 100, à vista</button><button data-o="1">Vender lã por 150, a prazo</button><button data-o="2">Pagar 40 de aluguel</button><button class="or" data-o="3">Erro: lançar só o débito de 30</button><button class="alt" id="lz">limpar</button></div>
+<table class="t" id="tb" style="margin-top:8px"></table><svg id="bal" viewBox="0 0 400 110" style="margin-top:6px"></svg></div>
+<script>
+const $=i=>document.getElementById(i);
+function draw(){const p=+$('p').value,t=+$('t').value/100,a=+$('a').value;$('vp').textContent=p;$('vt').textContent=Math.round(t*100);$('va').textContent=a;
+ const S=[...Array(a+1)].map((_,k)=>p*(1+t*k)),C=[...Array(a+1)].map((_,k)=>p*Math.pow(1+t,k)),M=C[a];const bw=380/(a+1);let s='';
+ for(let k=0;k<=a;k++){const x=10+k*bw;s+=`<rect x="${x+bw*.08}" y="${180-160*S[k]/M}" width="${bw*.4}" height="${160*S[k]/M}" fill="#0E2354"/><rect x="${x+bw*.5}" y="${180-160*C[k]/M}" width="${bw*.4}" height="${160*C[k]/M}" fill="#F78D33"/>`;if(a<=12||k%2==0)s+=`<text x="${x+bw/2}" y="194" font-size="9" text-anchor="middle" fill="#6B7280">${k}</text>`}
+ s+='<rect x="12" y="8" width="10" height="10" fill="#0E2354"/><text x="26" y="17" font-size="11" fill="#0E2354">simples</text><rect x="90" y="8" width="10" height="10" fill="#F78D33"/><text x="104" y="17" font-size="11" fill="#0E2354">compostos</text>';$('sv').innerHTML=s;
+ const f=v=>v.toLocaleString('pt-BR',{maximumFractionDigits:2});$('out').innerHTML=`Depois de ${a} anos: simples <b>${f(S[a])}</b> · compostos <b>${f(C[a])}</b> (diferença de ${f(C[a]-S[a])}).`;}
+['p','t','a'].forEach(i=>$(i).oninput=draw);draw();
+const OP=[['Estoque de lã',100,'Caixa',100],['Clientes a receber',150,'Vendas',150],['Despesa de aluguel',40,'Caixa',40],['Material',30,'',0]];let L=[];
+function livro(){let d=0,c=0;$('tb').innerHTML='<tr><th>Débito</th><th>Crédito</th></tr>'+L.map(o=>{d+=o[1];c+=o[3];return `<tr><td>${o[0]}: ${o[1]}</td><td>${o[2]?o[2]+': '+o[3]:'<span style="color:#B91C1C">(faltou)</span>'}</td></tr>`}).join('')+`<tr><td><b>${d}</b></td><td><b>${c}</b></td></tr>`;
+ const ang=Math.max(-20,Math.min(20,(d-c)/3));$('bal').innerHTML=`<polygon points="190,100 210,100 200,60" fill="#0E2354"/><g transform="rotate(${ang} 200 60)"><line x1="80" y1="60" x2="320" y2="60" stroke="#0E2354" stroke-width="4"/><rect x="55" y="62" width="50" height="16" fill="#0E2354"/><rect x="295" y="62" width="50" height="16" fill="#F78D33"/><text x="80" y="96" font-size="11" text-anchor="middle" fill="#0E2354">débito ${d}</text><text x="320" y="96" font-size="11" text-anchor="middle" fill="#C2410C">crédito ${c}</text></g>`+(d==c?'<text x="200" y="20" font-size="12" text-anchor="middle" fill="#15803D" font-weight="700">em equilíbrio</text>':'<text x="200" y="20" font-size="12" text-anchor="middle" fill="#B91C1C" font-weight="700">desequilíbrio: erro ou fraude!</text>');}
+document.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{L.push(OP[+b.dataset.o]);livro()});$('lz').onclick=()=>{L=[];livro()};livro();
+</script>
