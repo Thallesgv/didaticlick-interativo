@@ -20,6 +20,16 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+MIS.def(()=>[
+ ['Encontre a escala que faz o desenho ficar o <b>maior possível</b> sem sair da área útil da folha (27,7 cm × 19 cm).',()=>ESC[C.get()]==100&&2400/ESC[C.get()]<=27.7,
+  'Isso! Em 1 : 100 o prédio fica com 24 cm × 16 cm. Em 1 : 50 seriam 48 cm (não cabe); em 1 : 150 caberia, mas menor.',
+  ()=>2400/ESC[C.get()]<=27.7&&1600/ESC[C.get()]<=19?'Cabe, mas será que dá para desenhar maior? Experimente uma escala que reduza menos.':'Não cabe! Escolha uma escala com o número de baixo maior.'],
+ ['Faça o desenho do prédio ter <b>exatamente 16 cm</b> de comprimento. Qual escala é essa?',()=>ESC[C.get()]==150,
+  '1 : 150: 24 m = 2.400 cm, e 2.400 ÷ 150 = 16 cm.','O comprimento no papel é 2.400 cm ÷ (número de baixo da escala).'],
+ ['Deixe a régua do papel em <b>5 cm</b> e encontre a escala em que ela vale <b>10 m</b> na realidade.',()=>S.get()==5&&ESC[C.get()]==200,
+  '1 : 200: 5 cm × 200 = 1.000 cm = 10 m.',()=>'Agora: '+fmt(S.get())+' cm × '+ESC[C.get()]+' = '+fmt(S.get()*ESC[C.get()])+' cm. Queremos 1.000 cm com a régua em 5 cm.'],
+ ['Na escala <b>1 : 500</b>, quantos centímetros de papel valem <b>15 m</b>? Ajuste a régua.',()=>ESC[C.get()]==500&&S.get()==3,
+  '3 cm × 500 = 1.500 cm = 15 m.','15 m = 1.500 cm. Divida por 500.']]);
 const ESC=[50,100,150,200,250,500];let vistos=new Set();const C=chips('ch',ESC.map(e=>'1 : '+e),3,draw);const S=SL('sp',0.5,20,0.5,4,draw,v=>fmt(v)+' cm');
 function draw(){const e=ESC[C.get()],w=2400/e,h=1600/e,k=10.5;vistos.add(e);
  let g=RC(14,10,29.7*k,21*k,'#fff','stroke="'+GRAYL+'" stroke-width="2"')+RC(14+k,10+k,27.7*k,19*k,'none','stroke="'+GRAYL+'" stroke-dasharray="4 3"');
@@ -29,8 +39,7 @@ function draw(){const e=ESC[C.get()],w=2400/e,h=1600/e,k=10.5;vistos.add(e);
  const p=S.get(),pk=Math.min(p,27.7)*k;g+=RC(14+k,10+20*k,pk,6,ORANGE)+TX(14+k,10+20*k-3,'régua: '+fmt(p)+' cm',{fs:9,a:'start'});
  $('fig').innerHTML=SVG(340,240,g);
  $('kd').textContent=r1(w)+' × '+r1(h)+' cm';const real=p*e/100;$('kr').textContent=r2(real)+' m';$('kc').textContent=cabe?'sim':'não';
- missao('m',e==100&&cabe,'Isso! Em 1 : 100 o prédio fica com 24 cm × 16 cm. Em 1 : 50 seriam 48 cm (não cabe); em 1 : 150 caberia, mas menor.',
-  cabe?'Cabe, mas será que dá para desenhar maior? Experimente uma escala que reduza menos.':'Não cabe! Escolha uma escala com o número de baixo maior.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -13,7 +13,7 @@
 <div class="msg info" id="passo" style="font-size:17px;text-align:center"></div>
 <div class="fig" id="fig"></div>
 <div class="kpi"><div class="o">Acertos seguidos<b id="ks">0</b></div><div>Acertos<b id="ka">0</b></div><div>Erros<b id="ke">0</b></div></div>
-<div id="m"></div></div>
+<div id="m"></div><div id="mm"></div></div>
 <div class="card"><h2>Missão</h2><p style="margin:0">Acerte <b>10 seguidos</b>.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
@@ -31,16 +31,20 @@ function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const 
 const BANCO=[['Início do ensaio','term'],['Fim do plano','term'],['Ler a hora no relógio','io'],['Mostrar a média das rondas','io'],['Digitar o número de pessoas','io'],['Imprimir o horário de saída','io'],
  ['soma = soma + r','proc'],['n = n + 1','proc'],['Ligar o carro','proc'],['média = soma ÷ 5','proc'],['Esperar 1 minuto','proc'],
  ['h < 14h30?','dec'],['Há mais de 5 pessoas?','dec'],['n = 3?','dec'],['O vigia voltou?','dec']];
-const TIP=[['term','Terminal'],['io','Entrada/saída'],['proc','Processo'],['dec','Decisão']];let cur,seq=0,ok=0,er=0,trava=false,pos=[];
+const TIP=[['term','Terminal'],['io','Entrada/saída'],['proc','Processo'],['dec','Decisão']];let cur,seq=0,ok=0,er=0,trava=false,pos=[],okT={};
+MIS.def(()=>[
+ ['Acerte <b>10 seguidos</b>.',()=>seq>=10,'Dez seguidos! Você já lê fluxogramas como a Nina.',()=>'Acertos seguidos: '+seq+' de 10.'],
+ ['Acerte <b>5 losangos de decisão</b> (perguntas com sim ou não).',()=>(okT.dec||0)>=5,'Cinco decisões! Toda pergunta de sim ou não vira um losango.',()=>'Decisões certas: '+(okT.dec||0)+' de 5.'],
+ ['Chegue a <b>30 acertos</b> no total.',()=>ok>=30,'Trinta acertos: os quatro símbolos já são velhos conhecidos.',()=>'Acertos: '+ok+' de 30.'],
+ ['Desafio: <b>20 seguidos</b>.',()=>seq>=20,'Vinte seguidos sem errar!',()=>'Acertos seguidos: '+seq+' de 20.']]);
 function sorteia(){cur=P(BANCO);$('passo').textContent=cur[0];trava=false;draw();}
 function draw(res){let g='';pos=[];TIP.forEach(([t,nm],i)=>{const x=i%2?250:90,y=i<2?45:130;pos.push([x,y,t]);
   const on=res&&(t==cur[1]);g+=noSVG({tipo:t,x,y,w:t=='dec'?120:130,h:t=='dec'?62:40,t:nm},on);});
  $('fig').innerHTML=SVG(340,175,g);}
 toque('fig',(x,y,ini)=>{if(!ini||trava)return;let m=1e9,esc=null;pos.forEach(p=>{const d=Math.hypot(p[0]-x,p[1]-y);if(d<m){m=d;esc=p[2];}});if(m>90)return;trava=true;
- const c=esc==cur[1];if(c){ok++;seq++;}else{er++;seq=0;}$('ks').textContent=seq;$('ka').textContent=ok;$('ke').textContent=er;draw(true);
- if(seq>=10)missao('m',true,'Dez seguidos! Você já lê fluxogramas como a Nina.','');
- else $('m').innerHTML=`<div class="msg ${c?'ok':'info'}">${c?'✔ Isso.':'Não: "'+cur[0]+'" é '+TIP.find(t=>t[0]==cur[1])[1].toLowerCase()+'.'}</div>`;setTimeout(sorteia,c?600:1400);});
-sorteia();
+ const c=esc==cur[1];if(c){ok++;seq++;okT[cur[1]]=(okT[cur[1]]||0)+1;}else{er++;seq=0;}$('ks').textContent=seq;$('ka').textContent=ok;$('ke').textContent=er;draw(true);
+ MIS.ver('mm');$('m').innerHTML=`<div class="msg ${c?'ok':'info'}">${c?'✔ Isso.':'Não: "'+cur[0]+'" é '+TIP.find(t=>t[0]==cur[1])[1].toLowerCase()+'.'}</div>`;setTimeout(sorteia,c?600:1400);});
+sorteia();MIS.ver('mm');
 })();
 </script>
 </body>

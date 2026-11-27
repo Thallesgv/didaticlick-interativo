@@ -30,7 +30,13 @@ function setaSVG(pts,on,rot){let d='M'+pts.map(p=>p.join(',')).join(' L');const 
  let g=`<path d="${d}" fill="none" stroke="${c}" stroke-width="${on?3:1.4}"/>`+PG([[b[0],b[1]],[b[0]-8*Math.cos(an-.4),b[1]-8*Math.sin(an-.4)],[b[0]-8*Math.cos(an+.4),b[1]-8*Math.sin(an+.4)]],c);
  if(rot)g+=TX(rot[0],rot[1],rot[2],{fs:10,c:rot[2]=='sim'?GREEN:ORANGE});return g;}
 const PASSOS=['Abrir a porta do galpão','Ligar o carro','Sair para a praça','Conferir o relógio (14h30?)','Estacionar na rua do banco','Observar o saguão por 10 min','Voltar ao galpão'];
-let ord=[],feitos=0,bat=0,tent=1,bateu=false;
+let ord=[],feitos=0,bat=0,tent=1,bateu=false,comp=0,sem=0,um=0;
+MIS.def(()=>[
+ ['Monte o plano inteiro <b>sem nenhuma batida</b>. Pense: o que precisa acontecer antes de cada passo?',()=>sem>=1,'Plano montado sem nenhuma batida! Um algoritmo é isso: passos certos, na ordem certa.',
+  ()=>feitos==PASSOS.length?'Plano montado, com '+bat+' batida(s). Embaralhe de novo e tente sem nenhuma.':'Toque nas fichas na ordem do ensaio.'],
+ ['Monte o plano <b>sem batida</b> mais uma vez, com as fichas embaralhadas de outro jeito.',()=>sem>=2,'Duas vezes sem errar: a ordem certa não depende de como as fichas aparecem.',()=>feitos==PASSOS.length?'Aperte "Embaralhar de novo".':'Siga a ordem do ensaio.'],
+ ['Agora, de propósito: monte o plano com <b>exatamente 1 batida</b>. Qual passo você pôs fora de hora?',()=>um>=1,'Uma batida e o plano recomeça do zero: num algoritmo, um passo fora de ordem estraga tudo.',()=>'Batidas nesta tentativa: '+bat+'. Embaralhe de novo para recomeçar a contagem.'],
+ ['Complete <b>3 planos</b> no total.',()=>comp>=3,'Três planos completos. Repetir é a melhor forma de testar um algoritmo.',()=>'Planos completos: '+comp+' de 3.']]);
 function emb(){ord=PASSOS.map((p,i)=>i).sort(()=>Math.random()-.5);feitos=0;bateu=false;draw();}
 function draw(){const H=60+Math.max(1,feitos)*38;let g='';const x=170;
  const nos=[{tipo:'term',x,y:20,w:120,h:26,t:'Início'}];for(let i=0;i<feitos;i++)nos.push({tipo:'proc',x,y:58+i*38,w:230,h:26,t:PASSOS[i]});
@@ -39,9 +45,9 @@ function draw(){const H=60+Math.max(1,feitos)*38;let g='';const x=170;
  if(bateu)g+=TX(x,H+4,'💥 Bateu! Recomeçando...',{fs:13,c:'#B91C1C'});
  $('fig').innerHTML=SVG(340,H+(feitos==PASSOS.length?40:16),g);
  $('fichas').innerHTML=ord.filter(i=>i>=feitos).map(i=>`<button class="alt" data-i="${i}" style="font-size:13px;padding:6px 10px">${PASSOS[i]}</button>`).join('');
- document.querySelectorAll('#fichas button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i==feitos){feitos++;bateu=false;}else{bat++;bateu=true;feitos=0;tent++;}draw();});
+ document.querySelectorAll('#fichas button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i==feitos){feitos++;bateu=false;if(feitos==PASSOS.length){comp++;if(bat==0)sem++;if(bat==1)um++;}}else{bat++;bateu=true;feitos=0;tent++;}draw();});
  $('kp').textContent=feitos+' de '+PASSOS.length;$('kb').textContent=bat;$('kt').textContent=tent;
- if(feitos==PASSOS.length)missao('m',bat==0,'Plano montado sem nenhuma batida! Um algoritmo é isso: passos certos, na ordem certa.','Plano montado, com '+bat+' batida(s). Embaralhe de novo e tente sem nenhuma.');else $('m').innerHTML='';}
+MIS.ver('m');}
 $('rec').onclick=()=>{bat=0;tent=1;emb();};emb();
 })();
 </script>

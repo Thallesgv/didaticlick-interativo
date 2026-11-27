@@ -25,6 +25,14 @@ function tempo(s){if(!isFinite(s))return 'mais que a idade do universo';if(s<60)
 function grande(v){if(v<1e15)return Math.round(v).toLocaleString('pt-BR');const e=Math.floor(Math.log10(v));return fmt(Math.round(v/Math.pow(10,e)*10)/10)+' × 10<sup>'+e+'</sup>';}
 const TIP=[['algarismos',10],['minúsculas',26],['minúsc. + algarismos',36],['maiúsc. + minúsc. + algarismos',62],['com símbolos',94]];
 const C=chips('ch',TIP.map(t=>t[0]+' ('+t[1]+')'),0,draw),L=SL('sl',1,16,1,4,draw,String);
+const n_=()=>TIP[C.get()][1],s_=()=>Math.pow(n_(),L.get())/1000;
+MIS.def(()=>[
+ ['Faça o teste passar de <b>1.000 anos</b> com o <b>menor comprimento possível</b>. Qual tipo de senha permite isso?',()=>n_()==94&&L.get()==7,
+  'Isso! Com símbolos (N = 94), 7 caracteres bastam: 94⁷ ≈ 6,5 × 10¹³ senhas, cerca de 2 mil anos. Com N = 62 seriam precisos 8.',
+  ()=>s_()>31536000000?'Passou de 1.000 anos com '+L.get()+' caracteres. Dá para usar menos com outro tipo de senha?':'Ainda não chega a 1.000 anos. Aumente L ou N.'],
+ ['Um PIN de banco tem <b>4 algarismos</b>. Monte-o e veja quanto tempo o teste leva.',()=>n_()==10&&L.get()==4,'10⁴ = 10.000 senhas: 10 segundos no teste. Por isso o banco bloqueia depois de poucas tentativas!',()=>'Escolha algarismos e 4 caracteres.'],
+ ['Só com <b>algarismos</b>, quantos caracteres para passar de <b>1 ano</b>?',()=>n_()==10&&L.get()==11,'10¹¹ ÷ 1.000 = 10⁸ s ≈ 3 anos. Com 10 algarismos seriam só 116 dias.',()=>n_()!=10?'Escolha algarismos.':'Agora: '+tempo(s_())+'.'],
+ ['Só com <b>minúsculas</b>, qual o menor comprimento que passa de <b>1 dia</b>?',()=>n_()==26&&L.get()==6,'26⁶ ≈ 3,1 × 10⁸ senhas: cerca de 3,6 dias. Com 5 letras, só 3 horas e meia.',()=>n_()!=26?'Escolha minúsculas.':'Agora: '+tempo(s_())+'.']]);
 const MARC=[[60,'1 min'],[86400,'1 dia'],[31536000,'1 ano'],[31536000000,'1.000 anos']];
 function draw(){const n=TIP[C.get()][1],l=L.get(),q=Math.pow(n,l),s=q/1000,lg=Math.log10(Math.max(s,.001)),X=v=>20+clamp((v+3)/(32+3),0,1)*300;let g='';
  g+=RC(20,50,300,26,'#E8EDF7','rx="6"')+RC(20,50,Math.max(4,X(lg)-20),26,s>31536000000?GREEN:s>31536000?ORANGE:'#B91C1C','rx="6"');
@@ -32,8 +40,7 @@ function draw(){const n=TIP[C.get()][1],l=L.get(),q=Math.pow(n,l),s=q/1000,lg=Ma
  g+=TX(170,124,'(escala de potências de 10: cada passo é 10 vezes mais)',{fs:9,c:GRAY,w:500});
  $('fig').innerHTML=SVG(340,132,g);
  $('kq').innerHTML=grande(q);$('kc').innerHTML=n+'<sup>'+l+'</sup>';$('kt').textContent=tempo(s);
- missao('m',n==94&&l==7,'Isso! Com símbolos (N = 94), 7 caracteres bastam: 94⁷ ≈ 6,5 × 10¹³ senhas, cerca de 2 mil anos. Com N = 62 seriam precisos 8.',
-  s>31536000000?'Passou de 1.000 anos com '+l+' caracteres. Dá para usar menos com outro tipo de senha?':'Ainda não chega a 1.000 anos. Aumente L ou N.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

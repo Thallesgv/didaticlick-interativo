@@ -41,6 +41,13 @@ function DESENHA(faces,o){const V=VIEW(o.ang,o.elev),k=o.k,cx=o.cx,cy=o.cy,all=f
 const ISO=(cx,cy,k)=>(x,y,z)=>[cx+(x-y)*.866*k,cy-((x+y)*.5+z)*k];
 let ang=-.5,elev=.45;const up=()=>{if(b_.get()>B_.get())b_.set(B_.get());draw();};
 const B_=SL('B',4,12,1,8,up),b_=SL('b',1,12,1,6,up),H_=SL('h',1,8,1,4,draw),L_=SL('L',5,30,1,23,draw);
+const V_=()=>(B_.get()+b_.get())*H_.get()/2*L_.get();
+MIS.def(()=>[
+ ['Desenhe uma barra com exatamente <b>644 cm³</b> (como a do livro), mas com <b>comprimento diferente de 23 cm</b>. Dica: 644 = 28 · 23 = 46 · 14 = 92 · 7.',()=>Math.abs(V_()-644)<1e-9&&L_.get()!=23,
+  ()=>'644 cm³ com comprimento '+L_.get()+' cm.',()=>'Agora: ('+B_.get()+' + '+b_.get()+') · '+H_.get()+' ÷ 2 = '+r1(V_()/L_.get())+' cm²; vezes '+L_.get()+' = '+r1(V_())+' cm³.'],
+ ['Faça as duas bases do trapézio <b>iguais</b>. Que sólido aparece?',()=>B_.get()==b_.get(),'Com B = b o trapézio vira retângulo, e a barra vira um paralelepípedo: (B + b) · h ÷ 2 = B · h.',()=>'Base maior '+B_.get()+', base menor '+b_.get()+'.'],
+ ['Desenhe uma barra com cerca de <b>1 kg</b> de ouro (entre 0,95 e 1,05 kg).',()=>V_()*19.3>=950&&V_()*19.3<=1050,()=>r1(V_())+' cm³ × 19,3 ≈ '+r2(V_()*19.3/1000)+' kg.',()=>'Agora: '+r2(V_()*19.3/1000)+' kg. 1 kg de ouro tem cerca de 52 cm³.'],
+ ['Desenhe a <b>barra mais pesada</b> que os controles permitem.',()=>V_()==2880,'(12 + 12) · 8 ÷ 2 · 30 = 2.880 cm³: cerca de 55,6 kg de ouro!',()=>'Agora: '+r1(V_()*19.3/1000)+' kg.']]);
 toque('fig',(x,y,ini)=>{if(ini){toque.x0=x;toque.a0=ang;}ang=toque.a0+(x-toque.x0)/60;draw();});
 function draw(){const B=B_.get(),b=b_.get(),h=H_.get(),L=L_.get(),m=(B-b)/2,s=.1,tr=[[-B/2,0],[B/2,0],[B/2-m,h],[-B/2+m,h]];
  const p=(q,y)=>[q[0]*s,(y-L/2)*s,(q[1]-h/2)*s],F=[{p:tr.map(q=>p(q,0)),cor:s=>`hsl(40,80%,${28+30*s}%)`},{p:tr.map(q=>p(q,L))}];
@@ -48,8 +55,7 @@ function draw(){const B=B_.get(),b=b_.get(),h=H_.get(),L=L_.get(),m=(B-b)/2,s=.1
  const A=(B+b)*h/2,V=A*L;
  $('fig').innerHTML=SVG(340,230,DESENHA(F,{ang,elev,k:Math.min(115,210/Math.max(L*s,B*s,1)),cx:170,cy:120,cull:true})+TX(170,224,'trapézio '+B+' · '+b+' · '+h+' cm, comprimento '+L+' cm',{fs:11,c:GRAY}));
  $('ka').textContent=r1(A)+' cm²';$('kv').textContent=r1(V)+' cm³';$('km').textContent=r1(V*19.3/1000)+' kg';
- missao('m',Math.abs(V-644)<1e-9&&L!=23,'644 cm³ com comprimento '+L+' cm: ('+B+' + '+b+') · '+h+' ÷ 2 = '+r1(A)+' cm², e '+r1(A)+' · '+L+' = 644 cm³.',
-  'Agora: ('+B+' + '+b+') · '+h+' ÷ 2 = '+r1(A)+' cm²; '+r1(A)+' · '+L+' = '+r1(V)+' cm³.');}
+MIS.ver('m');}
 draw();
 })();
 </script>

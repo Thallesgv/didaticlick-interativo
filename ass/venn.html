@@ -24,6 +24,15 @@
 <script>
 (()=>{
 const OPS=['M ∪ S','M ∩ S','M − S','S − M','(M ∪ S)ᶜ','Mᶜ'];
+const esc=()=>U.get()==20&&A.get()==12&&B.get()==8&&I.get()==5;
+MIS.def(()=>[
+ ['Monte a escala do Banco Aurora: <b>20 funcionários</b>, <b>12 de manhã</b>, <b>8 no sábado</b>, <b>5 nos dois</b>. Quantos <b>não trabalham nem de manhã nem no sábado</b>? Acenda essa região.',()=>esc()&&C.get()==4,
+  'Isso! 20 − (12 + 8 − 5) = 20 − 15 = 5 funcionários só trabalham à tarde em dias úteis.',()=>esc()?'A escala está montada. Agora acenda a região de quem não está em M nem em S.':'Monte primeiro a escala do Banco Aurora: 20, 12, 8 e 5.'],
+ ['Na mesma escala, acenda quem trabalha <b>só de manhã</b> (de manhã, mas não no sábado).',()=>esc()&&C.get()==2,'M − S: 12 − 5 = 7 funcionários.',()=>esc()?'Qual operação tira de M quem também está em S?':'Volte para a escala 20, 12, 8 e 5.'],
+ ['Monte uma escala com <b>30 funcionários</b> em que <b>ninguém fica de fora</b> de M ∪ S.',()=>U.get()==30&&A.get()+B.get()-I.get()==30,()=>'n(M ∪ S) = '+A.get()+' + '+B.get()+' − '+I.get()+' = 30 = n(U). O complementar é vazio.',
+  ()=>'n(U) = '+U.get()+' e n(M ∪ S) = '+(A.get()+B.get()-I.get())+'.'],
+ ['Monte M e S <b>disjuntos</b> (sem ninguém nos dois) com 25 funcionários, 10 de manhã e 15 no sábado. Depois acenda <b>M ∩ S</b>.',()=>U.get()==25&&A.get()==10&&B.get()==15&&I.get()==0&&C.get()==1,
+  'M ∩ S vazio: 0 pessoas. Conjuntos disjuntos, e n(M ∪ S) = 10 + 15 = 25.','Ajuste 25, 10, 15 e 0 nos dois, e acenda a interseção.']]);
 const C=chips('ch',OPS,0,draw),U=SL('su',1,40,1,24,draw),A=SL('sa',0,20,1,10,draw),B=SL('sb',0,20,1,6,draw),I=SL('si',0,20,1,2,draw);
 function draw(){let u=U.get(),a=A.get(),b=B.get(),i=I.get();if(i>Math.min(a,b)){i=Math.min(a,b);I.set(i);}
  const so_a=a-i,so_b=b-i,uni=a+b-i,fora=u-uni,op=C.get();
@@ -44,8 +53,7 @@ function draw(){let u=U.get(),a=A.get(),b=B.get(),i=I.get();if(i>Math.min(a,b)){
  $('kr').textContent=OPS[op];$('kn').textContent=fora<0?'impossível':qt;
  const contas=[`${a} + ${b} − ${i} = ${uni}`,`${i}`,`${a} − ${i} = ${so_a}`,`${b} − ${i} = ${so_b}`,`${u} − ${uni} = ${fora}`,`${u} − ${a} = ${u-a}`];$('kc').textContent=contas[op];
  if(fora<0){$('m').innerHTML='<div class="msg info">Assim não cabe: M ∪ S teria '+uni+' pessoas, mais do que as '+u+' do banco. Aumente n(U).</div>';return;}
- missao('m',u==20&&a==12&&b==8&&i==5&&op==4,'Isso! 20 − (12 + 8 − 5) = 20 − 15 = 5 funcionários só trabalham à tarde em dias úteis.',
-  u==20&&a==12&&b==8&&i==5?'A escala está montada. Agora acenda a região de quem não está em M nem em S.':'Monte primeiro a escala do Banco Aurora: 20, 12, 8 e 5.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

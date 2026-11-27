@@ -20,14 +20,23 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+MIS.def(()=>[
+ ['Vicente tem <b>40 m de fita</b>. Monte a sala com perímetro de 40 m e a <b>maior área possível</b>.',()=>A.get()==10&&B.get()==10,
+  'Perfeito: 10 m × 10 m = 100 m². Com o mesmo perímetro, o quadrado tem a maior área.',
+  ()=>2*(A.get()+B.get())==40?'Perímetro de 40 m, área de '+A.get()*B.get()+' m². Dá para fazer melhor? (seu recorde: '+melhor+' m²)':'Perímetro atual: '+2*(A.get()+B.get())+' m. Ajuste para 40 m.'],
+ ['Agora ao contrário: monte uma sala de <b>36 m²</b> com o <b>menor perímetro</b> possível.',()=>A.get()==6&&B.get()==6,
+  '6 m × 6 m: 36 m² com só 24 m de rodapé. De novo o quadrado vence.',()=>A.get()*B.get()==36?'Área certa, perímetro '+2*(A.get()+B.get())+' m. Dá para gastar menos rodapé?':'Área atual: '+A.get()*B.get()+' m². Queremos 36 m².'],
+ ['Monte uma sala com <b>perímetro de 30 m</b> e <b>área de 50 m²</b>.',()=>A.get()*B.get()==50&&A.get()+B.get()==15,
+  '5 m × 10 m: 2 · (5 + 10) = 30 m e 5 · 10 = 50 m².','Dois números que somam 15 (metade do perímetro) e multiplicados dão 50.'],
+ ['A sala precisa receber <b>30 pessoas</b> (1 a cada 2 m²) com <b>34 m de rodapé</b>.',()=>A.get()*B.get()==60&&A.get()+B.get()==17,
+  '5 m × 12 m: 60 m² para 30 pessoas e perímetro 34 m.','30 pessoas pedem 60 m². Os lados somam 34 ÷ 2 = 17.']]);
 const A=SL('sa',1,20,1,14,draw,v=>v+' m'),B=SL('sb',1,20,1,6,draw,v=>v+' m');let melhor=0;
 function draw(){const a=A.get(),b=B.get(),Pm=2*(a+b),Ar=a*b,k=Math.min(15,300/a,200/b),x0=(340-a*k)/2,y0=10;let g='';
  for(let i=0;i<a;i++)for(let j=0;j<b;j++)g+=RC(x0+i*k,y0+j*k,k,k,Pm==40?ORANGE:LIGHT,'stroke="#fff" stroke-width="1"');
  g+=RC(x0,y0,a*k,b*k,'none','stroke="'+NAVY+'" stroke-width="3"');g+=TX(170,y0+b*k+16,a+' m × '+b+' m',{fs:12});
  $('fig').innerHTML=SVG(340,y0+b*k+24,g);$('kp').textContent=Pm+' m';$('ka').textContent=Ar+' m²';$('kg').textContent=Math.floor(Ar/2);
  if(Pm==40)melhor=Math.max(melhor,Ar);
- missao('m',Pm==40&&Ar==100,'Perfeito: 10 m × 10 m = 100 m². Com o mesmo perímetro, o quadrado tem a maior área.',
-  Pm==40?'Perímetro de 40 m, área de '+Ar+' m². Dá para fazer melhor? (seu recorde: '+melhor+' m²)':'Perímetro atual: '+Pm+' m. Ajuste para 40 m.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

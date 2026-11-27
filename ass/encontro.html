@@ -32,6 +32,13 @@ function PLOT(o,f){const x0=40,y0=200,W=290,H=180,X=v=>x0+(v-o.xmin)/(o.xmax-o.x
 const linha=(pts,X,Y,c,w)=>`<polyline points="${pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${w||2.5}"/>`;
 const ponto=(x,y,X,Y,c)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
 const C=chips('ch',['Lara vem em direção ao galpão','Lara vai em direção ao banco'],0,draw),VA=SL('va',.5,8,.5,4.5,draw,v=>fmt(v)),VB=SL('vb',.5,8,.5,1.5,draw,v=>fmt(v)),PB=SL('pb',0,1500,50,1500,draw,String),Ts=SL('st',0,400,5,100,draw,String);
+const enc_=()=>{const va=VA.get(),vb=(C.get()==0?-1:1)*VB.get(),pb=PB.get(),te=(va-vb)!=0?pb/(va-vb):NaN;return{te,ok:te>=0&&isFinite(te),de:va*te};};
+MIS.def(()=>[
+ ['Faça os dois se encontrarem <b>exatamente na praça</b>, a <b>600 m</b> do galpão.',()=>enc_().ok&&Math.abs(enc_().de-600)<1e-6,()=>'Encontro na praça: t = '+r1(enc_().te)+' s, a 600 m do galpão.',
+  ()=>enc_().ok?'Hoje o encontro é a '+r1(enc_().de)+' m. Leve-o para 600 m.':'Assim eles não se encontram (retas paralelas ou se afastando).'],
+ ['Faça o encontro acontecer <b>exatamente aos 200 s</b>.',()=>enc_().ok&&Math.abs(enc_().te-200)<1e-6,()=>'t = 200 s, a '+r1(enc_().de)+' m do galpão.',()=>enc_().ok?'Encontro aos '+r1(enc_().te)+' s.':'Eles não se encontram assim.'],
+ ['Agora Lara vai <b>em direção ao banco</b>: faça Bento <b>alcançá-la</b>.',()=>C.get()==1&&enc_().ok,()=>'Bento alcança Lara aos '+r1(enc_().te)+' s: ele precisa ser mais rápido que ela.',()=>C.get()!=1?'Escolha "Lara vai em direção ao banco".':'Com Lara mais rápida (ou igual), ele nunca a alcança.'],
+ ['No mesmo sentido, faça as retas ficarem <b>paralelas</b>. O que acontece com o encontro?',()=>C.get()==1&&VA.get()==VB.get()&&PB.get()>0,'Mesma velocidade, mesmo sentido: retas paralelas, a distância entre eles nunca muda.',()=>C.get()!=1?'Escolha "Lara vai em direção ao banco".':'Iguale as velocidades.']]);
 function draw(){const va=VA.get(),vb=(C.get()==0?-1:1)*VB.get(),pb=PB.get(),t=Ts.get(),fa=x=>va*x,fb=x=>pb+vb*x;
  const te=(va-vb)!=0?pb/(va-vb):NaN,ok=te>=0&&isFinite(te),de=ok?fa(te):NaN;
  $('fig').innerHTML=PLOT({xmin:0,xmax:400,ymin:0,ymax:1800,dx:50,dy:300,xl:'tempo (s)',yl:'distância do galpão (m)'},(X,Y)=>{let g=`<clipPath id="cp"><rect x="40" y="20" width="290" height="180"/></clipPath><g clip-path="url(#cp)">`+linha([[0,0],[400,fa(400)]],X,Y,ORANGE)+linha([[0,pb],[400,fb(400)]],X,Y,BLUE)+'</g>';
@@ -41,7 +48,7 @@ function draw(){const va=VA.get(),vb=(C.get()==0?-1:1)*VB.get(),pb=PB.get(),t=Ts
  g+=`<circle cx="${Xa(fa(t))}" cy="37" r="7" fill="${ORANGE}" stroke="#fff" stroke-width="2"/><circle cx="${Xa(fb(t))}" cy="50" r="7" fill="${BLUE}" stroke="#fff" stroke-width="2"/>`;
  $('av').innerHTML=SVG(340,70,g);
  $('ke').textContent=ok?'t = '+r1(te)+' s, a '+r1(de)+' m':'não se encontram';$('kq').textContent=fmt(va)+'t = '+pb+(vb<0?' − ':' + ')+fmt(Math.abs(vb))+'t';
- missao('m',ok&&Math.abs(de-600)<1e-6,'Encontro na praça: t = '+r1(te)+' s, a 600 m do galpão.',ok?'Hoje o encontro é a '+r1(de)+' m. Leve-o para 600 m.':'Assim eles não se encontram (retas paralelas ou se afastando).');}
+MIS.ver('m');}
 draw();
 })();
 </script>

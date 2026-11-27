@@ -20,6 +20,14 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+let pc=0;MIS.def(()=>[
+ ['Descubra o <b>menor ângulo de lente</b> que cobre 100% do saguão e para onde a câmera deve apontar.',()=>pc==100&&Lt.get()==90,
+  'Isso! Lente de 90° apontada a 45°: ela vai de 0° a 90°, exatamente o ângulo do canto da sala.',()=>pc==100?'Cobre tudo, mas com lente de '+Lt.get()+'°. Dá para usar um ângulo menor?':'Faltam '+(100-pc)+'% do saguão.'],
+ ['Faça a câmera cobrir <b>exatamente 50%</b> do saguão.',()=>pc==50,()=>'Metade do saguão com lente de '+Lt.get()+'° apontada a '+D.get()+'°. Há vários jeitos!',()=>'Cobertura agora: '+pc+'%.'],
+ ['Com uma lente <b>aguda</b> (menor que 90°), cubra <b>pelo menos 90%</b> do saguão.',()=>pc>=90&&Lt.get()<90,
+  ()=>'Lente de '+Lt.get()+'° cobrindo '+pc+'%: os cantos longe da diagonal são os que ficam de fora.',()=>Lt.get()<90?'Cobertura '+pc+'%. Aponte para o meio do saguão.':'A lente precisa ser menor que 90°.'],
+ ['Com a lente mais fechada (<b>10°</b>), aponte a câmera para o <b>canto oposto</b> do saguão, na diagonal.',()=>Lt.get()==10&&D.get()-5<=35.5&&D.get()+5>=35.5,
+  'A diagonal faz cerca de 35,5° com a parede de cima: a tangente desse ângulo é 10 ÷ 14.','O canto oposto fica 14 m para o lado e 10 m para baixo. Qual direção é essa?']]);
 const D=SL('sd',0,90,1,30,draw,v=>v+'°'),Lt=SL('sl',10,180,5,60,draw,v=>v+'°');
 function draw(){const d=D.get(),l=Lt.get(),a0=d-l/2,a1=d+l/2,k=21,ox=23,oy=12;
  let g=RC(ox,oy,14*k,10*k,PEACH,'stroke="'+NAVY+'" stroke-width="3"');for(let i=1;i<14;i++)g+=LN(ox+i*k,oy,ox+i*k,oy+10*k,'#F3D3B5',1);for(let j=1;j<10;j++)g+=LN(ox,oy+j*k,ox+14*k,oy+j*k,'#F3D3B5',1);
@@ -29,9 +37,9 @@ function draw(){const d=D.get(),l=Lt.get(),a0=d-l/2,a1=d+l/2,k=21,ox=23,oy=12;
  // cobertura por amostragem
  let cob=0,n=0;for(let x=.25;x<14;x+=.5)for(let y=.25;y<10;y+=.5){n++;const t=Math.atan2(y,x)*DEG;if(t>=a0-1e-6&&t<=a1+1e-6)cob++;}
  g+=`<circle cx="${ox}" cy="${oy}" r="8" fill="${NAVY}"/>`+TX(ox+14*k/2,oy+10*k+16,'saguão: 14 m × 10 m',{fs:11});
- $('fig').innerHTML=SVG(340,240,g);const pc=Math.round(100*cob/n);$('kc').textContent=pc+'%';
+ $('fig').innerHTML=SVG(340,240,g);pc=Math.round(100*cob/n);$('kc').textContent=pc+'%';
  $('kv').textContent=Math.max(0,a0)+'° a '+Math.min(90,a1)+'°';$('kt').textContent=l<90?'agudo':l==90?'reto':l<180?'obtuso':'raso';
- missao('m',pc==100&&l==90,'Isso! Lente de 90° apontada a 45°: ela vai de 0° a 90°, exatamente o ângulo do canto da sala.',pc==100?'Cobre tudo, mas com lente de '+l+'°. Dá para usar um ângulo menor?':'Faltam '+(100-pc)+'% do saguão.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -18,6 +18,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+MIS.def(()=>[
+ ['Ache <b>três pontos diferentes</b> em que a hipotenusa dá um número <b>inteiro</b> de metros (sem os pontos sobre os eixos).',()=>achados.size>=3,
+  ()=>'Você achou '+achados.size+' pontos com hipotenusa inteira: '+[...achados].map(p=>'('+p+')').join(', ')+'.',()=>'Pontos encontrados: '+achados.size+' de 3. Dica: pense em 3-4-5 e nos múltiplos.'],
+ ['Faça um atalho de <b>exatamente 13 m</b>.',()=>a*a+b*b==169&&a>0&&b>0,'5² + 12² = 25 + 144 = 169 = 13².',()=>'Agora c² = '+(a*a+b*b)+'. Queremos 169.'],
+ ['Faça um atalho de <b>exatamente 25 m</b>.',()=>a*a+b*b==625&&a>0&&b>0,'20² + 15² = 400 + 225 = 625 = 25². É o 3-4-5 vezes 5!',()=>'Agora c² = '+(a*a+b*b)+'. Queremos 625. Pense em 3-4-5 multiplicado.'],
+ ['Encontre um ponto em que o caminho em L é <b>8 m mais longo</b> que o atalho.',()=>a>0&&b>0&&Math.abs(a+b-Math.hypot(a,b)-8)<1e-9,
+  ()=>a+' + '+b+' = '+(a+b)+' contra '+Math.hypot(a,b)+': 8 m a mais.',()=>'Diferença agora: '+r2(a+b-Math.hypot(a,b))+' m.']]);
 let a=12,b=9;const achados=new Set();const k=14,ox=20,oy=225;
 function draw(){const c=Math.hypot(a,b),X=ox+a*k,Y=oy-b*k;let g='';
  for(let i=0;i<=22;i++)g+=LN(ox+i*k,oy,ox+i*k,oy-15*k,'#EEF1F6',1);for(let j=0;j<=15;j++)g+=LN(ox,oy-j*k,ox+22*k,oy-j*k,'#EEF1F6',1);
@@ -28,8 +35,7 @@ function draw(){const c=Math.hypot(a,b),X=ox+a*k,Y=oy-b*k;let g='';
  g+=`<circle cx="${X}" cy="${Y}" r="9" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
  $('fig').innerHTML=SVG(340,240,g);$('kc').textContent=r2(c)+' m';$('ks').textContent=a*a+' + '+b*b+' = '+(a*a+b*b);$('kl').textContent=(a+b)+' m';
  const inteiro=a>0&&b>0&&Math.abs(c-Math.round(c))<1e-9;if(inteiro)achados.add(a+','+b);
- missao('m',achados.size>=3,'Você achou '+achados.size+' pontos com hipotenusa inteira: '+[...achados].map(p=>'('+p+')').join(', ')+'.',
-  (inteiro?'Inteiro! ':'')+'Pontos encontrados: '+achados.size+' de 3. Dica: pense em 3-4-5 e nos múltiplos.');}
+ MIS.ver('m');}
 toque('fig',(x,y)=>{a=clamp(Math.round((x-ox)/k),0,22);b=clamp(Math.round((oy-y)/k),0,15);draw();});draw();
 })();
 </script>

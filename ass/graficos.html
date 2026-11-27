@@ -21,11 +21,20 @@
 <script>
 (()=>{
 const DIA=['Seg','Ter','Qua','Qui','Sex'],V=[30,31,33,32,34],COR=[NAVY,NAVY,NAVY,NAVY,ORANGE];let feito=false;
+const ap_=()=>(34-E.get())/(30-E.get()),set_='No gráfico de setores, as fatias quase não mudam. Ele mostra partes de um todo, não a variação no tempo. Volte para colunas.';
+MIS.def(()=>[
+ ['Faça a coluna da <b>sexta parecer 3 vezes maior</b> que a da segunda, sem mudar nenhum número.',()=>C.get()!=2&&ap_()>=3,
+  ()=>'Pronto: a sexta parece '+r1(ap_())+' vezes maior, mas a diferença real é de só 13%.',()=>C.get()==2?set_:'Hoje a sexta parece '+r1(ap_())+' vez(es) maior. Suba o início do eixo.'],
+ ['Agora <b>volte o eixo para 0</b> e veja o retrato honesto dos dados.',()=>C.get()!=2&&E.get()==0,'Com o eixo em 0, as colunas quase se igualam: 34 é só 13% maior que 30.','Desça o início do eixo até 0.'],
+ ['No gráfico de <b>linhas</b>, faça a sexta parecer <b>exatamente o dobro</b> da segunda.',()=>C.get()==1&&Math.abs(ap_()-2)<1e-9,
+  'Eixo começando em 26: 34 − 26 = 8 é o dobro de 30 − 26 = 4.',()=>C.get()!=1?'Troque para o gráfico de linhas.':'A sexta parece '+r2(ap_())+' vez(es) a segunda.'],
+ ['Nas <b>colunas</b>, faça a <b>terça</b> (31) parecer o dobro da <b>segunda</b> (30).',()=>C.get()==0&&E.get()==29,
+  'Eixo em 29: 31 − 29 = 2 é o dobro de 30 − 29 = 1. Uma diferença de 1 pessoa virou "o dobro"!',()=>C.get()!=0?'Volte para as colunas.':'Terça ÷ segunda no desenho: '+r2((31-E.get())/(30-E.get()))+'.']]);
 const C=chips('ch',['Colunas','Linhas','Setores'],0,draw),E=SL('se',0,29,1,0,draw,v=>String(v));
 function draw(){const t=C.get(),e=E.get(),x0=40,y0=170,W=286,H=140,Y=v=>y0-(v-e)/(36-e)*H;let g='';
  if(t==2){$('fig').innerHTML=pizza(V.map((v,i)=>({v,cor:[NAVY,BLUE,GREEN,'#7A4BB5',ORANGE][i],nome:DIA[i]+': '+v})));
   $('kv').textContent='quase iguais';$('kh').textContent='sim (mas setores servem para partes de um todo)';$('kr').textContent='34 ÷ 30 ≈ 1,13';
-  missao('m',false,'','No gráfico de setores, as fatias quase não mudam. Ele mostra partes de um todo, não a variação no tempo. Volte para colunas.');return;}
+  MIS.ver('m');return;}
  const passo=36-e>12?5:1;for(let v=Math.ceil(e/passo)*passo;v<=36;v+=passo)g+=LN(x0,Y(v),x0+W,Y(v),GRAYL,1)+TX(x0-5,Y(v)+3,String(v),{fs:9,a:'end',c:GRAY,w:500});
  const bw=W/5;
  if(t==0)V.forEach((v,i)=>g+=RC(x0+i*bw+bw*.2,Y(v),bw*.6,y0-Y(v),COR[i])+TX(x0+i*bw+bw/2,Y(v)-4,String(v),{fs:10}));
@@ -35,8 +44,7 @@ function draw(){const t=C.get(),e=E.get(),x0=40,y0=170,W=286,H=140,Y=v=>y0-(v-e)
  $('fig').innerHTML=SVG(340,195,g);
  const ap=(34-e)/(30-e);$('kr').textContent='34 ÷ 30 ≈ 1,13';$('kv').textContent=r1(ap)+' vezes';$('kh').textContent=e==0?'sim':'não: o eixo foi cortado';
  if(ap>=3)feito=true;
- missao('m',ap>=3,'Pronto: a sexta parece '+r1(ap)+' vezes maior, mas a diferença real é de só 13%. Agora volte o eixo para 0 e veja a verdade.',
-  feito&&e==0?'Com o eixo em 0, as colunas quase se igualam: esse é o retrato honesto dos dados.':'Hoje a sexta parece '+r1(ap)+' vez(es) maior. Suba o início do eixo.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>
