@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O varal das folhas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O varal das folhas</h1></header>
+<main>
+<div class="card"><h2>40 folhas, um histograma</h2><p class="muted" style="margin-top:0">Cada folhinha desenhada é uma das 40 folhas da trilha. Escolha o tamanho da classe e veja cada folha cair na sua coluna. As colunas ficam encostadas: onde uma classe termina, a outra começa.</p>
+<div id="cw" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Classes<b id="kq"></b></div><div>Coluna mais alta<b id="ka"></b></div></div>
+<p style="margin:10px 0 4px"><b>Qual é a classe modal (com 1 cm)?</b></p><div id="q1"></div>
+<p style="margin:10px 0 4px"><b>Quantas folhas medem menos de 6 cm?</b></p><div id="q2"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha as classes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CL=[[4,2],[5,6],[6,11],[7,12],[8,7],[9,2]],F=[];CL.forEach(([a,f])=>{for(let k=0;k<f;k++)F.push(Math.floor((a+(k+0.5)/f)*10)/10);});
+const LARG=[0.5,1,2],CW=chips('cw',['classes de 0,5 cm','classes de 1 cm','classes de 2 cm'],1,draw);
+const Q1=chips('q1',['4 a 5','5 a 6','6 a 7','7 a 8','8 a 9','9 a 10'],-1,draw),Q2=chips('q2',['6','8','11','19'],-1,draw);
+const L=()=>LARG[CW.get()],cont=()=>{const w=L(),n=Math.round(6/w),c=Array(n).fill(0);F.forEach(x=>c[Math.min(n-1,Math.floor((x-4)/w+1e-9))]++);return c;};
+MIS.def(()=>[
+ ['Com classes de <b>1 cm</b>, qual é a <b>classe modal</b> (a coluna mais alta)? Responda embaixo do gráfico.',()=>CW.get()==1&&Q1.get()==3,'7 a 8 cm, com 12 folhas: 12 ÷ 40 = 30% das folhas.',()=>CW.get()!=1?'Escolha classes de 1 cm.':Q1.get()<0?'Escolha uma classe na pergunta.':'Essa coluna não é a mais alta. Conte as folhinhas.'],
+ ['Quantas folhas medem <b>menos de 6 cm</b>?',()=>Q2.get()==1,'2 + 6 = 8 folhas, ou 20% das 40.',()=>Q2.get()<0?'Escolha uma resposta.':'Some só as colunas que ficam antes do 6.'],
+ ['Troque para classes de <b>2 cm</b>. Quantas folhas ficaram na coluna mais alta?',()=>CW.get()==2,'23 folhas, de 6 a 8 cm. Com só 3 colunas, some a diferença entre "6 a 7" e "7 a 8".','Escolha classes de 2 cm.'],
+ ['Agora experimente classes de <b>0,5 cm</b>. O desenho ficou mais claro ou mais serrilhado?',()=>CW.get()==0,'Com 12 colunas e só 40 folhas, cada coluna tem poucas folhas e o desenho fica cheio de dentes. Para 40 dados, classes de 1 cm mostram melhor a forma.','Escolha classes de 0,5 cm.']]);
+function draw(){const w=L(),c=cont(),n=c.length,cw=300/n,X=k=>26+k*cw,yb=186,pr=w==0.5?1:w==1?2:4,lh=w==1?13:16;let g=RC(0,0,340,214,'#F3F8EC','rx="10"');
+ c.forEach((f,k)=>{const lin=Math.ceil(f/pr),hh=lin*lh+4,top=yb-hh;g+=RC(X(k),top,cw,hh,k==c.indexOf(Math.max(...c))?'#FDE2C4':'#E3F1DA','stroke="'+NAVY+'" stroke-width="1"');
+  for(let j=0;j<f;j++){const col=j%pr,row=Math.floor(j/pr),fx=X(k)+cw*(col+0.5)/pr,fy=yb-6-row*lh;g+=FOLHA(fx.toFixed(1),fy,j%3?'#7CC47F':'#5DB05F',Math.min(1.25,cw/pr/17),-15);}
+  g+=TX(X(k)+cw/2,top-5,f,{fs:10});});
+ g+=LN(20,yb,330,yb,NAVY,1.5);for(let k=0;k<=n;k++){const t=4+k*w;if(w>=1||k%2==0)g+=LN(X(k),yb,X(k),yb+4,NAVY,1)+TX(X(k),yb+15,fmt(t),{fs:9,c:GRAY});}
+ g+=TX(330,210,'comprimento da folha (cm)',{fs:9,a:'end'});
+ $('fig').innerHTML=SVG(340,214,g);$('kq').textContent=n+' de '+fmt(w)+' cm';const mx=Math.max(...c),km=c.indexOf(mx);$('ka').textContent=mx+' folhas ('+fmt(4+km*w)+' a '+fmt(4+(km+1)*w)+')';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

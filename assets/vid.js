@@ -28,4 +28,14 @@ function CENA(W, H, grupos, fundo) {
   itens.sort((a, b) => a[2] - b[2]).forEach(([t, x, y, s, f]) => g += BICHO[t](x.toFixed(1), y.toFixed(1), s, f));
   return SVG(W, H, g).replace(`width="${W}"`, `width="100%" style="max-width:${Math.round(W*1.4)}px"`);
 }
+// Vaso com um pé de feijão: base do vaso em (x, yb), h = altura da planta em px, solo = cor da terra, w = largura do vaso.
+function VASO(x, yb, h, solo, w) {
+  w = w || 22; const vh = w * 0.75; let g = PG([[x - w / 2, yb - vh], [x + w / 2, yb - vh], [x + w * 0.36, yb], [x - w * 0.36, yb]], '#C2703D', 'stroke="#9A5228" stroke-width="1"') + RC(x - w / 2 - 1, yb - vh - 3, w + 2, 4, '#B5612F', 'rx="1"') + `<ellipse cx="${x}" cy="${yb - vh}" rx="${w / 2 - 1}" ry="2.2" fill="${solo || '#6B4A2B'}"/>`;
+  if (h > 0) { const t = yb - vh - h; g += LN(x, yb - vh, x, t + 2, '#3F8F4A', 2);
+    for (let y = yb - vh - 10, k = 0; y > t + 8; y -= 11, k++) { const d = k % 2 ? 1 : -1; g += `<ellipse cx="${x + d * 5}" cy="${y}" rx="5" ry="2.6" fill="#7CC47F" transform="rotate(${d * -25} ${x + d * 5} ${y})"/>`; }
+    g += `<ellipse cx="${x - 4}" cy="${t + 3}" rx="4.5" ry="2.6" fill="#5DB05F" transform="rotate(30 ${x - 4} ${t + 3})"/><ellipse cx="${x + 4}" cy="${t + 3}" rx="4.5" ry="2.6" fill="#5DB05F" transform="rotate(-30 ${x + 4} ${t + 3})"/>`; }
+  return g;
+}
+const FOLHA = (x, y, c, s, ang) => `<g transform="translate(${x} ${y}) rotate(${ang || 0}) scale(${s || 1})"><path d="M-8 0 Q0 -5 8 0 Q0 5 -8 0z" fill="${c || '#7CC47F'}" stroke="#3F8F4A" stroke-width=".8"/><line x1="-8" y1="0" x2="8" y2="0" stroke="#3F8F4A" stroke-width=".6"/></g>`;
+const GAUSS = () => Math.sqrt(-2 * Math.log(1 - Math.random())) * Math.cos(2 * Math.PI * Math.random());
 const SUP = n => String(n).split('').map(ch => ({ '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' })[ch] || ch).join('');

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Puxa a média, não puxa a mediana · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>Puxa a média, não puxa a mediana</h1></header>
+<main>
+<div class="card"><h2>Os 10 feijões com húmus</h2><p class="muted" style="margin-top:0">Escolha um feijão (pelo número ou tocando nele) e mude a altura dele no controle. A linha laranja é a <b>média</b>; a azul, a <b>mediana</b>. Embaixo, cada feijão vira um ponto na reta.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sa"><b>Altura do feijão escolhido (cm)</b><input type="range"><span></span></div>
+<div class="row"><button class="alt" id="br">Voltar ao original</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Média<b id="km"></b></div><div>Mediana<b id="kd"></b></div><div>Amplitude<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude um feijão.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ORIG=[15,17,14,18,16,15,19,16,17,3];let v=ORIG.slice(),sel=9;
+const C=chips('ch',ORIG.map((_,i)=>String(i+1)),9,i=>{sel=i;SA.set(v[sel]);draw();});
+const SA=SL('sa',0,30,0.5,3,x=>{v[sel]=x;draw();},x=>fmt(x)+' cm');
+$('br').onclick=()=>{v=ORIG.slice();SA.set(v[sel]);draw();};
+const media=()=>v.reduce((s,x)=>s+x,0)/10,mediana=()=>{const o=v.slice().sort((a,b)=>a-b);return (o[4]+o[5])/2;},amp=()=>Math.max(...v)-Math.min(...v),mud=()=>v.filter((x,i)=>x!=ORIG[i]).length;
+MIS.def(()=>[
+ ['Mudando <b>um feijão só</b>, faça a <b>média</b> ficar abaixo de <b>14 cm</b>. A mediana muda muito?',()=>mud()<=1&&media()<14,()=>'Média '+r1(media())+' cm, mediana '+r1(mediana())+' cm. Um valor extremo puxa a média e quase não mexe na mediana.',()=>mud()>1?'Mudou mais de um. Aperte "Voltar ao original" e mude só um.':'Média agora: '+r1(media())+' cm. Baixe mais um feijão.'],
+ ['Volte ao original e deixe a <b>média igual à mediana</b>.',()=>Math.abs(media()-mediana())<0.05,()=>'Média e mediana valem '+r1(media())+' cm. Sem o valor estranho puxando, as duas se encontram no meio.',()=>'Média '+r1(media())+' e mediana '+r1(mediana())+'. Dica: o feijão 10 (o da lagarta) é o que puxa.'],
+ ['Coloque <b>um único feijão em 30 cm</b> (os outros como no original). Quanto mudou cada medida?',()=>mud()==1&&v.includes(30),()=>'Média '+r1(media())+' cm (mudou '+r1(Math.abs(media()-15))+' cm); mediana '+r1(mediana())+' cm (mudou '+r1(Math.abs(mediana()-16))+' cm).',()=>mud()>1?'Volte ao original e mude só um.':'Leve um feijão até 30 cm.'],
+ ['Mudando um feijão só, deixe a <b>amplitude</b> em <b>5 cm ou menos</b>.',()=>mud()<=1&&amp()<=5,()=>'Amplitude '+r1(amp())+' cm: os 10 feijões ficaram parecidos. Era o feijão da lagarta que espalhava tudo.',()=>mud()>1?'Volte ao original e mude só um.':'Amplitude agora: '+r1(amp())+' cm (maior − menor).']]);
+function draw(){const m=media(),d=mediana();let g=RC(0,0,340,262,'#F3F8EC','rx="10"');
+ v.forEach((x,i)=>{const cx=22+i*33;g+=`<g data-i="${i}" style="cursor:pointer">`+RC(cx-16,0,32,140,'#000','fill-opacity="0"')+(i==sel?RC(cx-15,4,30,136,'#FDE9D8','rx="6"'):'')+VASO(cx,126,x*3.2,i==9&&x<6?'#7A3B1A':'#6B4A2B',22)+TX(cx,138,i+1,{fs:9,c:i==sel?ORANGE:GRAY})+'</g>';});
+ const X=x=>20+x*10,yb=222;g+=LN(20,yb,320,yb,NAVY,1.4);for(let t=0;t<=30;t+=5)g+=LN(X(t),yb,X(t),yb+4,NAVY,1)+TX(X(t),yb+15,t,{fs:9,c:GRAY});
+ const pil={};v.forEach((x,i)=>{const k=pil[x]||0;pil[x]=k+1;g+=CI(X(x),yb-7-k*9,4.2,i==sel?ORANGE:'#7CC47F','stroke="'+NAVY+'" stroke-width=".8"');});
+ g+=LN(X(m),yb,X(m),158,ORANGE,2,'4 3')+TX(X(m)+(m<d?-3:3),156,'média '+r1(m),{fs:10,c:ORANGE,a:m<d?'end':'start'})+LN(X(d),yb,X(d),168,BLUE,2,'4 3')+TX(X(d)+(m<d?3:-3),178,'mediana '+r1(d),{fs:10,c:BLUE,a:m<d?'start':'end'});
+ g+=TX(320,252,'altura (cm)',{fs:9,a:'end'});
+ $('fig').innerHTML=SVG(340,262,g);$('fig').querySelectorAll('[data-i]').forEach(el=>el.onclick=()=>{sel=+el.dataset.i;SA.set(v[sel]);$('ch').querySelectorAll('button').forEach((b,j)=>b.className=j==sel?'':'alt');draw();});
+ $('km').textContent=r1(m)+' cm';$('kd').textContent=r1(d)+' cm';$('ka').textContent=r1(amp())+' cm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

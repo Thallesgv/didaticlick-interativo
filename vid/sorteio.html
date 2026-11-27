@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O sorteio dos vasos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>O sorteio dos vasos</h1></header>
+<main>
+<div class="card"><h2>Quem recebe o húmus?</h2><p class="muted" style="margin-top:0">Vinte vasos iguais na estufa: os das duas colunas da esquerda ficam perto da janela e tomam mais sol. Toque nos vasos para escolher os 10 que recebem húmus (terra escura), ou deixe o sorteio escolher.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="bs">Sortear</button><button id="b20">Sortear 20 vezes</button><button class="alt" id="bl">Limpar</button></div>
+<div class="kpi"><div class="o">Vasos com húmus<b id="kn"></b></div><div>Com húmus no sol<b id="kj"></b></div><div>Sem húmus no sol<b id="kk"></b></div></div>
+<div class="fig" id="h20" style="display:none"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha os vasos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let sel=new Set(),modo='',h20=[],aviso='';
+const JAN=i=>i%5<2,jan=()=>[...sel].filter(JAN).length;
+const sorteia=()=>{const id=[...Array(20).keys()];for(let i=19;i>0;i--){const j=Math.floor(Math.random()*(i+1));[id[i],id[j]]=[id[j],id[i]];}return new Set(id.slice(0,10));};
+$('bs').onclick=()=>{sel=sorteia();modo='s';aviso='';draw();};
+$('b20').onclick=()=>{h20=[];for(let k=0;k<20;k++){sel=sorteia();h20.push(jan());}modo='s';aviso='';draw();};
+$('bl').onclick=()=>{sel=new Set();modo='';aviso='';draw();};
+MIS.def(()=>[
+ ['Monte à mão um grupo <b>bem injusto</b>: 10 vasos com húmus e pelo menos <b>7 deles na janela</b>.',()=>modo=='m'&&sel.size==10&&jan()>=7,()=>'Com '+jan()+' dos 10 no sol, se o húmus "ganhar", ninguém vai saber se foi o húmus ou o sol.',()=>sel.size<10?'Toque nos vasos para escolher 10 (faltam '+(10-sel.size)+').':'Só '+jan()+' estão na janela. Troque vasos do canto por vasos da janela.'],
+ ['Agora use o botão <b>Sortear</b> até os dois grupos ficarem com <b>4 vasos de janela cada</b>.',()=>modo=='s'&&jan()==4,'Equilibrado: 4 no sol de cada lado. O sorteio nem sempre acerta em cheio, mas costuma chegar perto.',()=>modo!='s'?'Use o botão Sortear.':'Deu '+jan()+' contra '+(8-jan())+'. Sorteie de novo.'],
+ ['Aperte <b>Sortear 20 vezes</b>. Em quantos sorteios o grupo do húmus ficou com 3, 4 ou 5 vasos de janela?',()=>h20.length==20,()=>{const k=h20.filter(v=>v>=3&&v<=5).length;return 'Em '+k+' dos 20 sorteios ('+k*5+'%). Grupos muito injustos, com 7 ou 8 no sol, quase nunca aparecem.';},()=>'Aperte o botão Sortear 20 vezes.'],
+ ['Sem sortear, escolha à mão um grupo <b>justo</b>: 10 vasos, 4 na janela e 6 no canto.',()=>modo=='m'&&sel.size==10&&jan()==4,'Também funciona, quando você sabe qual é a diferença (o sol). O sorteio é melhor porque equilibra até as diferenças que ninguém percebeu, como a semente mais fraca.',()=>sel.size<10?'Escolha 10 vasos (faltam '+(10-sel.size)+').':'Agora há '+jan()+' na janela. Precisa de 4.']]);
+function draw(){let g=RC(0,0,340,250,'#F7F3EA','rx="10"')+RC(44,8,118,234,'#FFF1B8','rx="8"')+RC(6,14,30,222,'#CFE6FA','stroke="#8AA9C7" stroke-width="3" rx="3"')+LN(21,14,21,236,'#8AA9C7',2)+LN(6,125,36,125,'#8AA9C7',2);
+ g+=CI(22,40,9,'#FFC93C')+TX(103,22,'janela: sol',{fs:10,c:'#B7791F'})+TX(250,22,'canto: sombra',{fs:10,c:GRAY});
+ for(let i=0;i<20;i++){const c=i%5,r=Math.floor(i/5),x=72+c*62,yb=82+r*52,h=sel.has(i);
+  g+=`<g data-v="${i}" style="cursor:pointer">`+RC(x-26,yb-48,52,50,'#000','fill-opacity="0"')+VASO(x,yb,JAN(i)?20:16,h?'#2B1A0C':'#9C7A55',26)+(h?CI(x+15,yb-12,7,ORANGE)+TX(x+15,yb-8.5,'H',{fs:9,c:'#fff'}):'')+'</g>';}
+ $('fig').innerHTML=SVG(340,250,g);
+ $('fig').querySelectorAll('[data-v]').forEach(el=>el.onclick=()=>{const i=+el.dataset.v;aviso='';if(sel.has(i))sel.delete(i);else if(sel.size<10)sel.add(i);else aviso='Já são 10. Toque num vaso escolhido para tirá-lo.';modo='m';h20=[];draw();});
+ $('kn').textContent=sel.size+' de 10';$('kj').textContent=jan()+' vasos';$('kk').textContent=(sel.size==10?8-jan():'—')+(sel.size==10?' vasos':'');
+ if(h20.length){const cont=Array(9).fill(0);h20.forEach(v=>cont[v]++);let s='';const X=v=>40+v*32;
+  for(let v=0;v<=8;v++){const hh=cont[v]*14;s+=RC(X(v),170-hh,32,hh,v>=3&&v<=5?'#7CC47F':LIGHT,'stroke="'+NAVY+'" stroke-width="1"')+(cont[v]?TX(X(v)+16,166-hh,cont[v],{fs:10}):'')+TX(X(v)+16,184,v,{fs:10,c:GRAY});}
+  s+=LN(40,170,328,170,NAVY,1.5)+TX(184,202,'vasos de janela no grupo do húmus (20 sorteios)',{fs:10})+TX(184,16,'Verde: grupos equilibrados (3, 4 ou 5)',{fs:10,c:'#3F8F4A'});
+  $('h20').style.display='';$('h20').innerHTML=SVG(340,210,s);}else $('h20').style.display='none';
+ MIS.ver('m');if(aviso)$('m').innerHTML='<div class="msg info">'+aviso+'</div>';}
+draw();
+})();
+</script>
+</body>
+</html>
