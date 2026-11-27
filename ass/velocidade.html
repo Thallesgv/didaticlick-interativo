@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A corrida do cronômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>A corrida do cronômetro</h1></header>
+<main>
+<div class="card"><h2>Dois corredores</h2><p class="muted" style="margin-top:0">Escolha a distância e o tempo de cada um. Aperte "Largar" para ver a corrida em câmera lenta. O painel mostra as velocidades em três unidades.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="da"><b>Laranja: distância (m)</b><input type="range"><span></span></div>
+<div class="sl" id="ta"><b>Laranja: tempo (s)</b><input type="range"><span></span></div>
+<div class="sl" id="db"><b>Azul: distância (m)</b><input type="range"><span></span></div>
+<div class="sl" id="tb"><b>Azul: tempo (s)</b><input type="range"><span></span></div>
+<div class="row"><button id="go">Largar</button></div>
+<div class="kpi"><div class="o">Laranja<b id="ka"></b></div><div>Azul<b id="kb"></b></div><div>Mais rápido<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça os dois terem <b>a mesma velocidade</b> com <b>distâncias diferentes</b>. Repare que as três unidades mudam juntas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DA=SL('da',50,1000,50,600,draw),TA=SL('ta',10,600,10,480,draw),DB=SL('db',50,1000,50,900,draw),TB=SL('tb',10,600,10,90,draw);let tt=-1,anim=null;
+const un=v=>r2(v)+' m/s · '+r1(v*60)+' m/min · '+r1(v*3.6)+' km/h';
+function draw(){const da=DA.get(),ta=TA.get(),db=DB.get(),tb=TB.get(),va=da/ta,vb=db/tb,dm=Math.max(da,db),X=d=>20+d/dm*300;let g='';
+ [[da,ta,ORANGE,40],[db,tb,BLUE,100]].forEach(([d,t,c,y])=>{g+=RC(20,y-14,300,28,'#F3F4F6','rx="6"')+LN(X(d),y-18,X(d),y+18,c,3)+TX(X(d),y-22,d+' m',{fs:10,c});
+  const pos=tt<0?0:Math.min(d,d/t*tt);g+=`<circle cx="${X(pos)}" cy="${y}" r="10" fill="${c}" stroke="#fff" stroke-width="2"/>`;});
+ g+=TX(170,140,tt<0?'tempo: 0 s':'tempo: '+Math.round(tt)+' s',{fs:12});
+ $('fig').innerHTML=SVG(340,150,g);$('ka').textContent=un(va);$('kb').textContent=un(vb);$('kc').textContent=Math.abs(va-vb)<1e-9?'empate':va>vb?'laranja':'azul';
+ missao('m',Math.abs(va-vb)<1e-9&&da!=db,'Empate de velocidade com distâncias diferentes: '+da+' ÷ '+ta+' = '+db+' ÷ '+tb+' = '+r2(va)+' m/s.','Laranja '+r2(va)+' m/s, azul '+r2(vb)+' m/s. Ajuste até empatar.');}
+$('go').onclick=()=>{clearInterval(anim);tt=0;const T=Math.max(TA.get(),TB.get());anim=setInterval(()=>{tt+=T/80;if(tt>=T){tt=T;clearInterval(anim);}draw();},40);};
+draw();
+})();
+</script>
+</body>
+</html>

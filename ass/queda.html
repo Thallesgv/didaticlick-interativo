@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solte a moeda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Solte a moeda</h1></header>
+<main>
+<div class="card"><h2>d(t) = 5t²</h2><p class="muted" style="margin-top:0">Solte a moeda do alto da torre. O cronômetro para sozinho quando ela toca o chão. No modo "torre misteriosa", a altura fica escondida: calcule-a pelo tempo.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap"><div class="fig" id="torre" style="flex:0 0 110px"></div><div class="fig" id="fig" style="flex:1 1 220px"></div></div>
+<div class="sl" id="sh"><b>Altura da torre (m)</b><input type="range"><span></span></div>
+<div class="row"><button id="sol">Soltar</button><input type="number" id="pal" placeholder="altura (m)" style="width:110px;font-size:16px;padding:6px;border:2px solid #D7DEEA;border-radius:8px"><button id="conf" class="alt">Conferir altura</button></div>
+<div class="kpi"><div class="o">Cronômetro<b id="kt">0,00 s</b></div><div>Torres misteriosas acertadas<b id="ka">0 de 3</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">No modo <b>torre misteriosa</b>, solte a moeda, leia o tempo e calcule a altura com d = 5t². Acerte <b>3 torres</b>.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function PLOT(o,f){const x0=40,y0=200,W=290,H=180,X=v=>x0+(v-o.xmin)/(o.xmax-o.xmin)*W,Y=v=>y0-(v-o.ymin)/(o.ymax-o.ymin)*H;let g='';
+ for(let v=o.xmin;v<=o.xmax+1e-9;v+=o.dx)g+=LN(X(v),y0,X(v),y0-H,'#E5E7EB',1)+TX(X(v),y0+13,fmt(Math.round(v*100)/100),{fs:9,c:GRAY,w:500});
+ for(let v=o.ymin;v<=o.ymax+1e-9;v+=o.dy)g+=LN(x0,Y(v),x0+W,Y(v),'#E5E7EB',1)+TX(x0-4,Y(v)+3,fmt(Math.round(v*100)/100),{fs:9,c:GRAY,w:500,a:'end'});
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.6)+LN(x0,y0,x0,y0-H,NAVY,1.6)+TX(x0+W,y0+26,o.xl,{fs:10,a:'end'})+TX(x0+2,12,o.yl,{fs:10,a:'start'});
+ return SVG(340,230,g+f(X,Y));}
+const linha=(pts,X,Y,c,w)=>`<polyline points="${pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${w||2.5}"/>`;
+const ponto=(x,y,X,Y,c)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+const C=chips('ch',['Torre livre','Torre misteriosa'],0,()=>{nova();}),Hs=SL('sh',2,80,1,12,()=>{if(C.get()==0){h=Hs.get();reset();}},String);
+let h=12,t=0,anim=null,caiu=false,acertos=0,vistas=new Set();
+function nova(){h=C.get()==0?Hs.get():P([5,11.25,20,31.25,45,61.25,80].filter(x=>!vistas.has(x)));$('sh').style.display=C.get()==0?'':'none';reset();}
+function reset(){clearInterval(anim);t=0;caiu=false;$('kt').textContent='0,00 s';draw();}
+function draw(){const d=Math.min(5*t*t,h),Ht=200,top=20,Yt=v=>top+v/Math.max(h,1)*(Ht-top-10);
+ let g=RC(30,top,40,Ht-top,'#9AA5B8','rx="4"')+PG([[26,top],[50,top-14],[74,top]],NAVY)+RC(0,Ht,110,10,GRAY)+TX(50,Ht-4,'',{});
+ g+=`<circle cx="85" cy="${Yt(d)}" r="7" fill="#E8B923" stroke="#B8860B" stroke-width="2"/>`+TX(50,top-18,C.get()==0?h+' m':'? m',{fs:11});
+ $('torre').innerHTML=SVG(110,215,g);
+ const T=Math.sqrt(h/5);$('fig').innerHTML=PLOT({xmin:0,xmax:Math.max(1,Math.ceil(T)),ymin:0,ymax:Math.max(10,Math.ceil(h/10)*10),dx:.5,dy:Math.max(5,Math.ceil(h/40)*10),xl:'t (s)',yl:'d (m)'},(X,Y)=>{
+  const pts=[];for(let i=0;i<=40;i++){const s=i/40*Math.min(t,T);pts.push([s,5*s*s]);}return (t>0?linha(pts,X,Y,ORANGE):'')+(caiu?ponto(T,h,X,Y,NAVY):'');});}
+$('sol').onclick=()=>{reset();const T=Math.sqrt(h/5),t0=performance.now();anim=setInterval(()=>{t=(performance.now()-t0)/1000;if(t>=T){t=T;caiu=true;clearInterval(anim);}$('kt').textContent=fmt(Math.round(t*100)/100)+' s';draw();},30);};
+$('conf').onclick=()=>{if(!caiu){$('m').innerHTML='<div class="msg info">Solte a moeda primeiro.</div>';return;}const v=+String($('pal').value).replace(',','.');if(isNaN(v))return;
+ const ok=Math.abs(v-h)<=.5;if(ok&&C.get()==1&&!vistas.has(h)){vistas.add(h);acertos++;}$('ka').textContent=acertos+' de 3';
+ if(acertos>=3)missao('m',true,'Três torres medidas só com o cronômetro! d = 5t² transforma tempo em altura.','');
+ else $('m').innerHTML=`<div class="msg ${ok?'ok':'info'}">${ok?'✔ Isso: 5 · '+fmt(Math.round(Math.sqrt(h/5)*100)/100)+'² = '+fmt(h)+' m.'+(C.get()==1?' Aperte "Torre misteriosa" para outra.':''):'Ainda não. Use d = 5 · t², com o tempo do cronômetro.'}</div>`;};
+nova();
+})();
+</script>
+</body>
+</html>

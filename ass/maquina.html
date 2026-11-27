@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina misteriosa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>A máquina misteriosa</h1></header>
+<main>
+<div class="card"><h2>Qual é a regra?</h2><p class="muted" style="margin-top:0">Digite uma entrada x e aperte "Entrar". A saída aparece na tabela e no gráfico. Quando tiver um palpite, escolha a regra.</p>
+<div class="row"><input type="number" id="x" value="1" style="width:90px;font-size:16px;padding:6px;border:2px solid #D7DEEA;border-radius:8px"><button id="ent">Entrar</button></div>
+<div class="fig" id="fig"></div>
+<div id="tab" style="font-size:14px;margin:6px 0"></div>
+<div id="ops" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+<div class="kpi"><div class="o">Acertos seguidos<b id="ks">0</b></div><div>Máquina nº<b id="kn">1</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Acerte a regra de <b>3 máquinas seguidas</b>. Dica: experimente x = 0 e x = 1 primeiro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function PLOT(o,f){const x0=40,y0=200,W=290,H=180,X=v=>x0+(v-o.xmin)/(o.xmax-o.xmin)*W,Y=v=>y0-(v-o.ymin)/(o.ymax-o.ymin)*H;let g='';
+ for(let v=o.xmin;v<=o.xmax+1e-9;v+=o.dx)g+=LN(X(v),y0,X(v),y0-H,'#E5E7EB',1)+TX(X(v),y0+13,fmt(Math.round(v*100)/100),{fs:9,c:GRAY,w:500});
+ for(let v=o.ymin;v<=o.ymax+1e-9;v+=o.dy)g+=LN(x0,Y(v),x0+W,Y(v),'#E5E7EB',1)+TX(x0-4,Y(v)+3,fmt(Math.round(v*100)/100),{fs:9,c:GRAY,w:500,a:'end'});
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.6)+LN(x0,y0,x0,y0-H,NAVY,1.6)+TX(x0+W,y0+26,o.xl,{fs:10,a:'end'})+TX(x0+2,12,o.yl,{fs:10,a:'start'});
+ return SVG(340,230,g+f(X,Y));}
+const linha=(pts,X,Y,c,w)=>`<polyline points="${pts.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${w||2.5}"/>`;
+const ponto=(x,y,X,Y,c)=>`<circle cx="${X(x)}" cy="${Y(y)}" r="5" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+const REG=[['2x + 3',x=>2*x+3],['3x − 1',x=>3*x-1],['5x',x=>5*x],['x + 7',x=>x+7],['4x + 2',x=>4*x+2],['−2x + 10',x=>-2*x+10],['x²',x=>x*x],['3x + 2',x=>3*x+2],['x² + 1',x=>x*x+1],['10 − x',x=>10-x]];
+let cur,pts,seq=0,num=1,trava=false;
+function nova(){cur=P(REG);pts=[];trava=false;const op=[cur];while(op.length<4){const r=P(REG);if(!op.includes(r))op.push(r);}op.sort(()=>Math.random()-.5);
+ $('ops').innerHTML=op.map(r=>`<button class="alt" style="font-size:15px">f(x) = ${r[0]}</button>`).join('');
+ document.querySelectorAll('#ops button').forEach((b,i)=>b.onclick=()=>{if(trava)return;trava=true;const ok=op[i]==cur;seq=ok?seq+1:0;$('ks').textContent=seq;
+  if(seq>=3)missao('m',true,'Três máquinas seguidas! Tabela, regra e gráfico contam a mesma história.','');
+  else $('m').innerHTML=`<div class="msg ${ok?'ok':'info'}">${ok?'✔ Isso: f(x) = '+cur[0]+'.':'Não: a regra era f(x) = '+cur[0]+'.'}</div>`;setTimeout(()=>{num++;$('kn').textContent=num;nova();},1500);});draw();}
+function draw(){$('tab').innerHTML=pts.length?'<b>x → f(x):</b> '+pts.map(p=>p[0]+' → '+p[1]).join(' · '):'Nenhuma entrada ainda.';
+ $('fig').innerHTML=PLOT({xmin:-5,xmax:10,ymin:-20,ymax:60,dx:5,dy:20,xl:'x',yl:'f(x)'},(X,Y)=>pts.filter(p=>p[1]>=-20&&p[1]<=60&&p[0]>=-5&&p[0]<=10).map(p=>ponto(p[0],p[1],X,Y,ORANGE)).join(''));}
+$('ent').onclick=()=>{const x=+$('x').value;if(isNaN(x))return;pts=pts.filter(p=>p[0]!=x);pts.push([x,cur[1](x)]);pts.sort((a,b)=>a[0]-b[0]);draw();};
+nova();
+})();
+</script>
+</body>
+</html>
