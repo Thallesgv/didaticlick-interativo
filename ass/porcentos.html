@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aumenta, diminui · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Assalto</div><h1>Aumenta, diminui</h1></header>
+<main>
+<div class="card"><h2>Fatores que se multiplicam</h2><p class="muted" style="margin-top:0">Escolha um valor, um aumento e depois um desconto. As barras mostram cada etapa; o fator total é o produto dos fatores.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Valor inicial (mil R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Aumento</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Desconto</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Valor final<b id="kf"></b></div><div>Fator total<b id="kx"></b></div><div>Variação<b id="kv"></b></div></div>
+<div id="m"></div></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OURO='#E3A72F',PRATA='#AEB7C6';
+const mdc=(a,b)=>b?mdc(b,a%b):a;
+const R$s=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const barra=(x,y,w,h,c)=>`<polygon points="${x},${y+h} ${x+w},${y+h} ${x+w*.82},${y} ${x+w*.18},${y}" fill="${c}" stroke="${NAVY}" stroke-width=".8"/>`;
+function maxde(id,m){$(id).querySelector('input').max=m;}
+const V=SL('sv',10,200,10,100,draw),A=SL('sa',0,100,5,10,draw,v=>'+'+v+'%'),D=SL('sd',0,80,5,0,draw,v=>'−'+v+'%');
+const fx=()=>(1+A.get()/100)*(1-D.get()/100);
+MIS.def(()=>[
+ ['Com <b>R$ 100 mil</b>, aplique <b>+20%</b> e depois <b>−20%</b>. Voltou ao início?',()=>V.get()==100&&A.get()==20&&D.get()==20,'1,2 · 0,8 = 0,96: R$ 96 mil, 4% a menos. O desconto incide sobre um valor maior.',()=>'Ajuste R$ 100 mil, +20% e −20%.'],
+ ['Depois de um aumento de <b>25%</b>, que desconto faz o valor <b>voltar ao início</b>?',()=>A.get()==25&&D.get()==20,'1,25 · 0,8 = 1: desconto de 20% desfaz um aumento de 25%.',()=>A.get()!=25?'Ponha o aumento em 25%.':'Fator agora: '+fmt(Math.round(fx()*1e4)/1e4)+'. Queremos 1.'],
+ ['O banco retém <b>10%</b> de <b>R$ 180 mil</b>. Mostre o valor recebido agora, sem aumento.',()=>V.get()==180&&A.get()==0&&D.get()==10,'0,9 · 180 = R$ 162 mil. Retidos: R$ 18 mil.',()=>'Valor 180, aumento 0 e desconto 10%.'],
+ ['Encontre um aumento e um desconto <b>iguais em porcentagem</b> que juntos tirem <b>exatamente 25%</b>.',()=>A.get()==50&&D.get()==50,'1,5 · 0,5 = 0,75: +50% e −50% tiram 25%. Em geral, (1 + p)(1 − p) = 1 − p².',()=>'Agora a variação é '+fmt(Math.round((fx()-1)*1000)/10)+'%. Teste porcentagens iguais nos dois.']]);
+function draw(){const v=V.get(),v1=v*(1+A.get()/100),v2=v1*(1-D.get()/100),mx=Math.max(v,v1,1),k=150/mx;let g='';
+ [[v,'início',NAVY],[v1,'+'+A.get()+'%',ORANGE],[v2,'−'+D.get()+'%',NAVY]].forEach(([x,t,c],i)=>{const X=40+i*120;
+  g+=RC(X,175-x*k,60,x*k,c,'rx="3"')+TX(X+30,168-x*k,'R$ '+r1(x)+' mil',{fs:10})+TX(X+30,192,t,{fs:10,c:GRAY});
+  if(i)g+=TX(X-30,110,'× '+fmt(i==1?1+A.get()/100:1-D.get()/100),{fs:10,c:ORANGE});});
+ g+=LN(30,175-v*k,380,175-v*k,GRAY,1,'4 3');
+ $('fig').innerHTML=SVG(400,200,g);
+ $('kf').textContent='R$ '+r1(v2)+' mil';$('kx').textContent=fmt(Math.round(fx()*1e4)/1e4);const vv=Math.round((fx()-1)*1000)/10;$('kv').textContent=(vv>0?'+':'')+fmt(vv)+'%';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
