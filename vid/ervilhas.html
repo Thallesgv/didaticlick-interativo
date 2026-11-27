@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A horta de Mendel · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/vid.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Vida</div><h1>A horta de Mendel</h1></header>
+<main>
+<div class="card"><h2>Plante e conte</h2><p class="muted" style="margin-top:0">Os pais são Ll (lisos, mas guardam o alelo rugoso). Cada semente nova é sorteada: chance de 3/4 de ser lisa e 1/4 de ser rugosa. A horta mostra as últimas 400 sementes; as barras mostram todas.</p>
+<div class="row"><button id="b1">+1</button><button id="b10">+10</button><button id="b100">+100</button><button id="b1000">+1.000</button><button class="alt" id="zera">Recomeçar</button></div>
+<div class="row"><input type="number" id="qn" min="1" max="20000" value="50" style="font-size:15px;padding:7px;border:2px solid #D7DEEA;border-radius:10px;width:110px"><button class="alt" id="bq">Plantar esse tanto</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Sementes<b id="kt"></b></div><div>Lisas : rugosas<b id="kc"></b></div><div>Razão (x : 1)<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Plante sementes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AMAR='#F2C94C',AMAR_E='#B98E10',ROXA='#7A4BB5',ROXA_C='#E6DAF5';
+function ervilha(x,y,r,amarela,rugosa){const c=amarela?AMAR:VERDE,e=amarela?AMAR_E:VERDE_E;let g=CI(x,y,r,c,'stroke="'+e+'" stroke-width="1.4"');
+ if(rugosa){for(let k=-1;k<=1;k++)g+=`<path d="M${x+k*r*0.38} ${y-r*0.6} q ${r*0.25} ${r*0.6} 0 ${r*1.2}" stroke="${e}" stroke-width="1.2" fill="none"/>`;}return g;}
+function flor(x,y,r,roxa){let g='';for(let k=0;k<5;k++){const a=k*72*RAD;g+=CI(x+Math.cos(a)*r*0.55,y+Math.sin(a)*r*0.55,r*0.45,roxa?ROXA:'#fff','stroke="'+(roxa?'#4B2A7A':'#9CA3AF')+'" stroke-width="1"');}return g+CI(x,y,r*0.25,AMAR);}
+let L=0,R=0,ult=[];
+function planta(n){n=clamp(Math.round(n)||0,0,20000);for(let i=0;i<n;i++){const r=Math.random()<0.25;r?R++:L++;ult.push(r);}if(ult.length>400)ult=ult.slice(-400);draw();}
+$('b1').onclick=()=>planta(1);$('b10').onclick=()=>planta(10);$('b100').onclick=()=>planta(100);$('b1000').onclick=()=>planta(1000);
+$('bq').onclick=()=>planta(+$('qn').value);$('zera').onclick=()=>{L=0;R=0;ult=[];draw();};
+const raz=()=>R?L/R:Infinity,TOT=()=>L+R;
+MIS.def(()=>[
+ ['Plante pelo menos <b>100 sementes</b> e veja a razão lisas : rugosas.',()=>TOT()>=100,()=>'Com '+fmt(TOT())+' sementes a razão está em '+r2(raz())+' : 1. Mendel achou 2,96 : 1.',()=>'Faltam '+(100-TOT())+' sementes.'],
+ ['Chegue a uma razão entre <b>2,9 e 3,1</b>, com pelo menos 200 sementes.',()=>TOT()>=200&&raz()>=2.9&&raz()<=3.1,()=>'Razão '+r2(raz())+' : 1, colada no 3 : 1 de Mendel.',()=>TOT()<200?'Plante mais sementes.':'Agora está em '+r2(raz())+' : 1. Plante mais: quanto mais sementes, mais perto de 3.'],
+ ['Recomece e, com <b>no máximo 12 sementes</b>, consiga uma razão <b>abaixo de 2 ou acima de 5</b> (ou nenhuma rugosa).',()=>TOT()>=4&&TOT()<=12&&(raz()<2||raz()>5),'Com poucas sementes o acaso manda: a razão fica longe de 3. Por isso Mendel contou milhares.',()=>TOT()>12?'Aperte Recomeçar e plante de 1 em 1.':TOT()<4?'Plante pelo menos 4.':'Razão '+r2(raz())+'. Recomece e tente de novo: é sorte.'],
+ ['Passe das <b>7.324 sementes</b> que Mendel contou para a forma. A razão fica entre 2,8 e 3,2?',()=>TOT()>=7324&&raz()>=2.8&&raz()<=3.2,()=>fmt(L)+' lisas e '+fmt(R)+' rugosas: '+r2(raz())+' : 1. Com milhares de sementes, a razão quase não muda mais.',()=>'Faltam '+fmt(Math.max(0,7324-TOT()))+' sementes.']]);
+function draw(){let g=RC(0,0,340,300,'#F4F1E8','rx="10"');
+ ult.forEach((r,i)=>{const x=14+(i%20)*10.5,y=14+Math.floor(i/20)*10.5;g+=ervilha(x,y,4.3,true,r);});
+ const t=TOT()||1,h1=200*L/t,h2=200*R/t;
+ g+=RC(230,0,110,300,'#fff');g+=LN(240,250,330,250,NAVY,1.5);
+ g+=RC(248,250-h1,36,h1,AMAR)+RC(288,250-h2,36,h2,AMAR_E);
+ g+=TX(266,268,'lisas',{fs:10})+TX(306,268,'rugosas',{fs:10})+TX(266,Math.max(12,245-h1),fmt(L),{fs:10})+TX(306,Math.max(12,245-h2),fmt(R),{fs:10});
+ g+=LN(242,250-150,334,250-150,ORANGE,1.5,'4 3')+TX(244,250-146,'3/4',{fs:9,c:ORANGE,a:'end'});
+ g+=TX(285,292,TOT()?'razão '+(R?r2(raz()):'∞')+' : 1':'plante!',{fs:12,c:ORANGE});
+ $('fig').innerHTML=SVG(340,300,g);$('kt').textContent=fmt(TOT());$('kc').textContent=fmt(L)+' : '+fmt(R);$('kr').textContent=R?r2(raz())+' : 1':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

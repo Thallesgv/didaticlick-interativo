@@ -45,7 +45,31 @@ const LIV={'vid1':{T:["Do metro ao micrômetro", "Notação científica", "O aum
 6:()=>{const t=R(0,2);
  if(t==0){const k=R(2,6);return{q:`A distância até o centro de uma célula fica <b>${k}</b> vezes maior. O tempo de difusão fica quantas vezes maior?`,a:k*k,exp:`Tempo ∝ distância²: ${k}² = ${k*k}.`};}
  if(t==1){const r=P([1,2,3,5,10,15,20,30]);return{q:`Numa esfera, A/V = 3/r. Quanto vale A/V para r = <b>${r} µm</b>? (até 2 casas)`,a:Math.round(300/r)/100,tol:0.011,exp:`3 ÷ ${r} ≈ ${fmt(Math.round(300/r)/100)} por µm.`};}
- const k=R(2,4);return{q:`Duas células esféricas: uma tem raio <b>${k}</b> vezes maior que a outra. Quantas vezes o volume dela é maior?`,a:k**3,exp:`Volume ∝ r³: ${k}³ = ${k**3}.`};}}}};
+ const k=R(2,4);return{q:`Duas células esféricas: uma tem raio <b>${k}</b> vezes maior que a outra. Quantas vezes o volume dela é maior?`,a:k**3,exp:`Volume ∝ r³: ${k}³ = ${k**3}.`};}}},'vid2':{T:["As ervilhas de Mendel", "Dominante e recessivo", "O quadro de Punnett", "Heredogramas", "Dois genes de uma vez", "Portadores na população"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const r=R(80,400),a=r*3+R(-30,30);return{q:`Numa horta nasceram <b>${fmt(a)}</b> sementes lisas e <b>${fmt(r)}</b> rugosas. Escreva a razão como x : 1 (2 casas). Quanto vale x?`,a:Math.round(a/r*100)/100,tol:0.011,exp:`${fmt(a)} ÷ ${fmt(r)} ≈ ${fmt(Math.round(a/r*100)/100)}.`};}
+ if(t==1){const n=P([200,400,800,1000,1200,2000]);return{q:`Num cruzamento Ll × Ll nasceram <b>${fmt(n)}</b> sementes. Quantas rugosas se esperam?`,a:n/4,exp:`1/4 de ${fmt(n)} = ${fmt(n/4)}.`};}
+ const n=P([120,240,360,480,600]);return{q:`Num cruzamento com razão 3 : 1, nasceram <b>${n}</b> plantas. Quantas têm a característica dominante?`,a:n*3/4,exp:`3/4 de ${n} = ${n*3/4}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const [x,y,v]=P([['Aa','Aa',25],['Aa','aa',50],['AA','Aa',0],['aa','aa',100],['AA','aa',0]]);return{q:`Cruzamento <b>${x} × ${y}</b>. Qual a chance (%) de um filho ser <b>aa</b>?`,a:v,exp:`Cada pai passa a com chance ${x=='AA'?'0':x=='Aa'?'1/2':'1'} e ${y=='AA'?'0':y=='Aa'?'1/2':'1'}; o produto dá ${v}%.`};}
+ if(t==1){const n=R(2,4);return{q:`Um casal Aa × Aa terá <b>${n}</b> filhos. Qual a chance (%) de <b>todos</b> serem aa? (2 casas)`,a:Math.round(10000/4**n)/100,tol:0.011,exp:`(1/4)${SUP(n)} = 1/${4**n} ≈ ${fmt(Math.round(10000/4**n)/100)}%.`};}
+ const n=R(2,3);return{q:`Um casal Aa × aa terá <b>${n}</b> filhos. Qual a chance (%) de nenhum ser aa? (1 casa)`,a:Math.round(1000/2**n)/10,tol:0.06,exp:`Cada filho escapa com chance 1/2: (1/2)${SUP(n)} = ${fmt(Math.round(1000/2**n)/10)}%.`};},
+3:()=>{const t=R(0,2);
+ const G=['AA','Aa','aa'],x=P(G),y=P(G),o=c=>{let n=0;for(const a of x)for(const b of y){const g=(a+b).includes('A')&&(a+b).includes('a')?'Aa':a+b;if(g==c)n++;}return n;};
+ if(t==0){const c=P(G);return{q:`No quadro de Punnett de <b>${x} × ${y}</b>, quantas das 4 casas são <b>${c}</b>?`,a:o(c),exp:`Montando o quadro: ${o('AA')} AA, ${o('Aa')} Aa, ${o('aa')} aa.`};}
+ if(t==1)return{q:`Cruzamento <b>${x} × ${y}</b> (A domina a). Qual a porcentagem de filhos com o fenótipo <b>dominante</b>?`,a:(o('AA')+o('Aa'))*25,exp:`${o('AA')+o('Aa')} das 4 casas têm A: ${(o('AA')+o('Aa'))*25}%.`};
+ const n=P([40,80,120,200,400]);return{q:`Aa × Aa gerou <b>${n}</b> filhos. Quantos se espera que sejam <b>Aa</b>?`,a:n/2,exp:`Aa é 2/4 = 1/2 do quadro: ${n/2}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0)return{q:`Um casal sem a doença (recessiva) teve um filho afetado. Qual a chance (%) de o próximo filho ser afetado?`,a:25,exp:`Os pais são Aa × Aa: chance 1/4 = 25%.`};
+ if(t==1){const n=P(['um irmão','uma irmã']);return{q:`Um casal Aa × Aa tem ${n} <b>não afetado(a)</b>. Qual a chance (%) de ele(a) ser portador(a)? (1 casa)`,a:66.7,tol:0.06,exp:`Sem o aa, sobram 3 casas e 2 são Aa: 2/3 ≈ 66,7%.`};}
+ return{q:`Uma mulher não afetada, filha de pai afetado (aa), casa com um homem aa. Qual a chance (%) de um filho ser afetado?`,a:50,exp:`Ela é Aa com certeza (recebeu a do pai). Aa × aa dá 1/2 = 50%.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const [g,n]=P([['LlAa',4],['LLAa',2],['Llaa',2],['llaa',1],['LlAA',2],['LLAA',1]]);return{q:`Quantos tipos diferentes de gametas forma uma planta <b>${g}</b>?`,a:n,exp:`Cada gene heterozigoto dobra os tipos: ${n}.`};}
+ if(t==1){const [d,v]=P([['lisa e amarela',9],['lisa e verde',3],['rugosa e amarela',3],['rugosa e verde',1]]);return{q:`LlAa × LlAa: das 16 casas, quantas são <b>${d}</b>?`,a:v,exp:`9 : 3 : 3 : 1 → ${v} casas.`};}
+ const n=P([160,320,480,800,1600]);return{q:`LlAa × LlAa gerou <b>${n}</b> sementes. Quantas rugosas e verdes se esperam?`,a:n/16,exp:`1/16 de ${n} = ${n/16}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const q=P([0.1,0.2,0.3,0.4,0.05]);const p=1-q;return{q:`Com q = <b>${fmt(q)}</b>, qual a porcentagem de portadores (2pq)?`,a:Math.round(2*p*q*1000)/10,tol:0.06,exp:`2 × ${fmt(p)} × ${fmt(q)} = ${fmt(Math.round(2*p*q*1000)/1000)} = ${fmt(Math.round(2*p*q*1000)/10)}%.`};}
+ if(t==1){const [n,q]=P([[100,0.1],[400,0.05],[2500,0.02],[10000,0.01],[900,1/30]]);return{q:`Uma doença recessiva afeta <b>1 em ${fmt(n)}</b> pessoas. Quanto vale q? (3 casas)`,a:Math.round(q*1000)/1000,tol:0.0011,exp:`q² = 1/${fmt(n)}, então q = 1/${fmt(Math.round(1/q))} ≈ ${fmt(Math.round(q*1000)/1000)}.`};}
+ const q=P([0.2,0.3,0.4,0.6]),N=P([1000,2000,5000]);return{q:`Numa cidade de <b>${fmt(N)}</b> pessoas em equilíbrio, q = <b>${fmt(q)}</b>. Quantas pessoas são aa?`,a:Math.round(N*q*q),exp:`q² = ${fmt(Math.round(q*q*100)/100)}; ${fmt(Math.round(q*q*100)/100)} × ${fmt(N)} = ${fmt(Math.round(N*q*q))}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='vid1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
