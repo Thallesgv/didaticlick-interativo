@@ -20,6 +20,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const fim=()=>{const t1=R1.get()*RAD,t2=R2.get()*RAD;return [10*Math.sin(t1)+10*Math.sin(t2),10*Math.cos(t1)+10*Math.cos(t2)];},fs=()=>{const[e,n]=fim(),f=v=>(v<0?'−':'+')+fmt(Math.abs(Math.round(v*100)/100));return 'Final: leste '+f(e)+', norte '+f(n)+'.';};
+MIS.def(()=>[
+ ['Termine <b>17,32 léguas ao sul</b> do ponto de partida, sem desvio para leste ou oeste, usando dois rumos <b>diferentes</b>.',()=>{const[e,n]=fim();return Math.abs(e)<.3&&Math.abs(n+17.32)<.4&&R1.get()!=R2.get();},'Isso! Por exemplo, 150° e 210°: sen 150° = +0,5 e sen 210° = −0,5 se anulam; cos 150° = cos 210° ≈ −0,866 somam −17,32.',()=>fs()+' O alvo está em leste 0, norte −17,32.'],
+ ['Faça os dois trechos se anularem: termine <b>no ponto de partida</b>.',()=>{const[e,n]=fim();return Math.abs(e)<.05&&Math.abs(n)<.05;},'Rumos opostos (diferença de 180°): senos e cossenos trocam de sinal e se anulam.',fs],
+ ['Termine exatamente <b>10 léguas a oeste</b> do ponto de partida.',()=>{const[e,n]=fim();return Math.abs(e+10)<.3&&Math.abs(n)<.3;},'Por exemplo, 210° e 330°: os nortes −8,66 e +8,66 se anulam e os lestes −5 e −5 somam −10.',fs],
+ ['Termine o mais longe possível, a <b>20 léguas</b>, no rumo <b>nordeste</b>.',()=>R1.get()==45&&R2.get()==45,'Os dois trechos a 45° (NE): 20 léguas em linha reta, 14,14 para leste e 14,14 para o norte.',fs]]);
 const nome=t=>{const n=['N','NNE','NE','ENE','L','ESE','SE','SSE','S','SSO','SO','OSO','O','ONO','NO','NNO'];return n[Math.round(t/22.5)%16];};
 const R1=SL('r1',0,355,5,45,draw,v=>v+'° ('+nome(v)+')'),R2=SL('r2',0,355,5,300,draw,v=>v+'° ('+nome(v)+')');
 function draw(){const t1=R1.get()*RAD,t2=R2.get()*RAD,e1=10*Math.sin(t1),n1=10*Math.cos(t1),e2=e1+10*Math.sin(t2),n2=n1+10*Math.cos(t2);
@@ -33,8 +39,7 @@ function draw(){const t1=R1.get()*RAD,t2=R2.get()*RAD,e1=10*Math.sin(t1),n1=10*M
  const f=v=>(v<0?'−':'+')+fmt(Math.abs(Math.round(v*100)/100));
  $('k1').textContent=f(e1)+'; '+f(n1-0);$('k2').textContent=f(e2-e1)+'; '+f(n2-n1);$('kf').textContent=f(e2)+'; '+f(n2);
  const ok=Math.abs(e2)<0.3&&Math.abs(n2+17.32)<0.4&&R1.get()!=R2.get();
- missao('m',ok,'Isso! Por exemplo, 150° e 210°: sen 150° = +0,5 e sen 210° = −0,5 se anulam; cos 150° = cos 210° ≈ −0,866 somam −17,32.',
-  'Final: leste '+f(e2)+', norte '+f(n2)+'. O alvo verde está em leste 0, norte −17,32.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -36,6 +36,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const fa=()=>1/Math.cos(A.get()*RAD)**2,ts=()=>'Aqui ('+A.get()+'° N) a área parece '+r2(fa())+' vezes maior.';
+MIS.def(()=>[
+ ['Ache a latitude em que o círculo parece ter <b>4 vezes</b> a área que tem no equador.',()=>A.get()==60,'A 60°: comprimentos × 2 e áreas × 4. É por isso que a Groenlândia parece do tamanho da África, que na verdade é 14 vezes maior.',()=>ts()+' O fator vale 1 ÷ cos²(lat).'],
+ ['Ache a latitude em que a área parece <b>2 vezes</b> maior.',()=>A.get()==45,'A 45°: cos² 45° = 0,5, e a área dobra. Os comprimentos crescem √2 ≈ 1,41 vez.',ts],
+ ['Leve o círculo até o meio da Groenlândia, a <b>72° N</b>. Quanto a área engana?',()=>A.get()==72,'A 72° a área parece cerca de 10,5 vezes maior que a real.',ts],
+ ['Ache a <b>maior</b> latitude em que a área parece no máximo <b>50%</b> maior.',()=>A.get()==35,'Até 35°, a área parece até 49% maior. Acima disso, o exagero cresce depressa: 2 vezes em 45°, 4 vezes em 60°.',ts]]);
 const A=SL('sa',0,75,1,20,draw,v=>v+'° N');const psi=la=>Math.log(Math.tan(Math.PI/4+la*RAD/2));
 function draw(){const la=A.get(),k=78,ox=20,oy=236,Y=l=>oy-psi(l)*k;let g='';
  for(const l of [0,20,40,60,70,80])g+=LN(ox,Y(l),320,Y(l),GRD,1)+TX(ox+302,Y(l)-3,l+'°',{fs:8,a:'end',c:GRAY,w:500});
@@ -44,8 +50,7 @@ function draw(){const la=A.get(),k=78,ox=20,oy=236,Y=l=>oy-psi(l)*k;let g='';
  g+=`<circle id="bola" cx="190" cy="${Y(la)}" r="${rr*s}" fill="${PEACH}" fill-opacity=".85" stroke="${ORANGE}" stroke-width="2.5"/>`;
  $('fig').innerHTML=SVG(340,250,g);
  $('kc').textContent='× '+r2(s);$('ka').textContent='× '+r2(s*s);$('kp').textContent=fmt(Math.round(Math.PI*1500*1500*s*s/1e5)*1e5)+' km²';
- missao('m',la==60,'A 60°: comprimentos × 2 e áreas × 4. É por isso que a Groenlândia parece do tamanho da África, que na verdade é 14 vezes maior.',
-  'Fator de área aqui: '+r2(s*s)+'. Ele vale 1 ÷ cos²(lat).');
+ MIS.ver('m');
  arrastar($('fig').querySelector('svg'),$('fig').querySelector('#bola'),(x,y)=>{let best=0,dm=1e9;for(let l=0;l<=75;l++){const d=Math.abs(Y(l)-y);if(d<dm){dm=d;best=l;}}if(best!=A.get()){A.set(best);draw();}});}
 draw();
 })();

@@ -32,6 +32,39 @@ function chips(id, itens, ini, cb) {
   return { get: () => cur };
 }
 function missao(id, ok, txtOk, txtNao) { $(id).innerHTML = `<div class="msg ${ok ? 'ok' : 'info'}">${ok ? '✔ ' + txtOk : txtNao}</div>`; }
+// Várias missões por simulador. MIS.def(()=>[[texto, ok(), msgOk, dica], ...]) no início do script; MIS.ver('m') a cada desenho.
+// msgOk e dica podem ser texto ou função. O cartão "Missão" vira "Missão k de N" com barrinha de progresso e botão "Próxima missão".
+const MIS = (() => {
+  let fn = null, L = null, mi = 0, card = null, id = 'm', fresco = false, keep = null; const feitas = new Set();
+  const v = x => typeof x === 'function' ? x() : x;
+  function monta() {
+    if (L) return; L = fn(); card = [...document.querySelectorAll('.card')].find(c => { const h = c.querySelector('h2'); return h && /^Missão/.test(h.textContent.trim()); });
+    const alvo = $(id);
+    if (!card && alvo) { const host = alvo.closest('.card'); card = document.createElement('div'); card.className = 'card'; (host || alvo).after(card); }
+    if (card && alvo && card.contains(alvo)) keep = alvo;
+  }
+  const bot = () => feitas.has(mi) && mi < L.length - 1 ? '<button class="alt msprox" style="margin-top:8px">Próxima missão →</button>' : '';
+  function liga() { document.querySelectorAll('.msprox').forEach(b => b.onclick = () => { mi++; fresco = true; MIS.ver(); try { $(id).scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (_) {} }); }
+  function pinta() {
+    if (!card) return;
+    card.innerHTML = `<h2>Missão ${mi + 1} de ${L.length}</h2><div style="display:flex;gap:5px;margin:4px 0 10px">${L.map((_, i) => `<span style="width:26px;height:8px;border-radius:4px;background:${feitas.has(i) ? '#15803D' : i === mi ? '#F7821F' : '#D7DEEA'}"></span>`).join('')}</div><p style="margin:0">${L[mi][0]}</p>${keep ? '' : bot()}`;
+    if (keep) card.appendChild(keep);
+  }
+  return {
+    def(f) { fn = f; },
+    ver(i) {
+      if (i) id = i; if (!fn) return; monta(); const M = L[mi]; let ok = false;
+      if (fresco) fresco = false; else ok = !!M[1]();
+      if (ok) feitas.add(mi); pinta();
+      const todas = ok && feitas.size === L.length;
+      const feita = feitas.has(mi);
+      $(id).innerHTML = `<div class="msg ${ok || feita ? 'ok' : 'info'}">${ok ? '✔ ' + (todas ? 'Todas as missões cumpridas! ' : '') + v(M[2]) : feita ? '✔ Missão cumprida!' + (mi < L.length - 1 ? ' Siga para a próxima.' : '') : v(M[3])}</div>${feita ? bot() : ''}`;
+      liga();
+    },
+    pula() { if (L && mi < L.length - 1) { mi++; fresco = true; MIS.ver(); } },
+    get i() { return mi; }
+  };
+})();
 const ELI = (cx, cy, a, b, ang, fill, extra) => `<ellipse cx="${cx}" cy="${cy}" rx="${a}" ry="${b}" transform="rotate(${ang} ${cx} ${cy})" fill="${fill}" ${extra || ''}/>`;
 const LN = (x1, y1, x2, y2, c, w, dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w || 2}"${dash ? ` stroke-dasharray="${dash}"` : ''} stroke-linecap="round"/>`;
 function bonequinho(x, y, h, c) { const r = h * .11; return `<circle cx="${x}" cy="${y - h + r}" r="${r}" fill="${c}"/><rect x="${x - h * .12}" y="${y - h * .76}" width="${h * .24}" height="${h * .38}" rx="${h * .05}" fill="${c}"/>` + LN(x - h * .06, y - h * .4, x - h * .08, y, c, Math.max(2, h * .07)) + LN(x + h * .06, y - h * .4, x + h * .08, y, c, Math.max(2, h * .07)); }

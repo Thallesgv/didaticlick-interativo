@@ -27,6 +27,12 @@ function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
 function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
 function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
 const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const pp=x=>Math.abs(Ps.get()-x)<1e-9,pz=()=>Math.pow(1-Ps.get(),Ns.get()),ds=()=>'Perder tudo: '+pct(pz())+'. Sacas esperadas: '+fmt(Math.round(1200*Ps.get()))+'.';
+MIS.def(()=>[
+ ['Com chance <b>0,8</b>, ache o <b>menor número de naus</b> que deixa a chance de perder tudo <b>abaixo de 0,1%</b>.',()=>pp(.8)&&Ns.get()==5,'Cinco naus: 0,2⁵ = 0,00032, ou 0,032%. Com quatro, eram 0,16%. E as sacas esperadas continuam 960.',()=>!pp(.8)?'Coloque a chance em 0,8.':(pz()<.001?'Abaixo de 0,1%, mas dá com menos naus.':'Perder tudo: '+pct(pz())+'. Ainda acima de 0,1%.')],
+ ['Com 4 naus e chance 0,8, olhe a barra de <b>exatamente 3 naus</b> voltando. Qual é a chance?',()=>pp(.8)&&Ns.get()==4,'C(4, 3) · 0,8³ · 0,2 = 4 × 0,512 × 0,2 ≈ 41%: é o resultado mais provável.',ds],
+ ['Ache a chance que faz as sacas esperadas serem <b>1.080</b>.',()=>pp(.9),'1.200 × 0,9 = 1.080. As sacas esperadas dependem da chance, não do número de naus.',ds],
+ ['Com chance <b>0,6</b>, quantas naus, no mínimo, deixam perder tudo <b>abaixo de 1%</b>?',()=>pp(.6)&&Ns.get()==6,'0,4⁶ ≈ 0,4%. Com cinco naus ainda era 1,02%. Chance menor pede mais naus.',()=>(pp(.6)?'':'Coloque a chance em 0,6. ')+ds()]]);
 const Ns=SL('sn',1,8,1,1,draw,v=>v+(v>1?' naus':' nau')),Ps=SL('sp',0.5,0.95,0.05,0.8,draw,v=>fmt(v));
 function draw(){const n=Ns.get(),p=Ps.get(),B=BIN(n,p);let g='';
  for(let i=0;i<n;i++){const x=170+(i-(n-1)/2)*34;g+=BARCO(x,30,22,NAVY)+TX(x,52,fmt(Math.round(1200/n)),{fs:8,c:GRAY});}
@@ -38,8 +44,7 @@ function draw(){const n=Ns.get(),p=Ps.get(),B=BIN(n,p);let g='';
  $('fig').innerHTML=SVG(340,255,g);
  $('ks').textContent=fmt(Math.round(1200/n));$('ke').textContent=fmt(Math.round(1200*p));$('kz').textContent=pct(B[0]);
  const ok=Math.abs(p-0.8)<1e-9&&n==5;
- missao('m',ok,'Cinco naus: 0,2⁵ = 0,00032, ou 0,032%. Com quatro, eram 0,16%. E as sacas esperadas continuam 960.',
-  Math.abs(p-0.8)>1e-9?'Coloque a chance em 0,8.':(B[0]<0.001?'Abaixo de 0,1%, mas dá com menos naus.':'Perder tudo: '+pct(B[0])+'. Ainda acima de 0,1%.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

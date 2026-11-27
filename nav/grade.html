@@ -38,6 +38,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const g1=()=>2*Math.PI*RT/360*Math.cos(A.get()*RAD),gs=()=>'Ponto em '+NS(A.get())+', '+LO(O.get())+'. 1° de longitude aqui: '+r1(g1())+' km.';
+MIS.def(()=>[
+ ['Ache a latitude em que <b>1° de longitude</b> vale <b>metade</b> do que vale no equador.',()=>Math.abs(Math.abs(A.get())-60)<.5,()=>'Isso: a '+NS(A.get())+', cos 60° = 0,5 e 1° de longitude vale cerca de 55,6 km, metade dos 111 km do equador.',()=>'1° de longitude aqui: '+r1(g1())+' km. No equador: 111,2 km. Procure a metade.'],
+ ['Ache a latitude em que 1° de longitude vale cerca de <b>100 km</b>.',()=>Math.abs(g1()-100)<.5,()=>'A '+NS(A.get())+': cos 26° ≈ 0,9, e 1° vale cerca de 100 km.',gs],
+ ['Leve o ponto ao <b>Rio de Janeiro</b>: 23° S, 43° O.',()=>A.get()==-23&&O.get()==-43,'Rio: 23° S, 43° O. Lá, 1° de longitude vale cerca de 102 km.',gs],
+ ['Lisboa fica em 39° N, 9° O. Leve o ponto ao lado <b>oposto da Terra</b> (o antípoda de Lisboa).',()=>A.get()==-39&&O.get()==171,'Antípoda: troca N por S e soma 180° na longitude: 39° S, 171° L, no mar perto da Nova Zelândia.',()=>gs()+' Troque o hemisfério e ande 180° em longitude.']]);
 const NS=v=>v==0?'0°':Math.abs(v)+'° '+(v>0?'N':'S'),LO=v=>v==0?'0°':Math.abs(v)+'° '+(v>0?'L':'O');
 const A=SL('sa',-80,80,1,39,draw,NS),O=SL('so',-180,180,1,-9,draw,LO),V=SL('sv',-180,180,5,10,draw,v=>v+'°');
 function draw(){const la=A.get(),lo=O.get(),G=GLOBO(128,125,110,25,V.get());let g=G.grade(15);
@@ -49,8 +55,7 @@ function draw(){const la=A.get(),lo=O.get(),G=GLOBO(128,125,110,25,V.get());let 
  g+=`<rect x="262" y="80" width="${70}" height="10" fill="${GRAYL}"/><rect x="262" y="80" width="${70*c}" height="10" fill="${ORANGE}"/>`+TX(262,104,'1° aqui ÷',{fs:8,a:'start',c:GRAY})+TX(262,116,'1° no equador',{fs:8,a:'start',c:GRAY});
  $('fig').innerHTML=SVG(340,250,g);
  $('kp').textContent=KM(2*Math.PI*RT*c);$('kg').textContent=r1(k*c)+' km';$('ke').textContent=KM(Math.abs(la)*k);
- missao('m',Math.abs(Math.abs(la)-60)<0.5,'Isso: a '+NS(la)+', cos 60° = 0,5 e 1° de longitude vale cerca de 55,6 km, metade dos 111 km do equador.',
-  '1° de longitude aqui: '+r1(k*c)+' km. No equador: '+r1(k)+' km. Procure a metade.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

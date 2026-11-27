@@ -30,6 +30,12 @@ function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w
  const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
  return {g,X,Y,linha,pts};}
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const dia_=()=>Es.get()/(Hs.get()*Rs.get()),rr=x=>Math.abs(Rs.get()-x)<1e-6,ds=()=>'O estoque acaba no dia '+r1(dia_())+'.';
+MIS.def(()=>[
+ ['Com <b>18 000 rações</b> e <b>120 homens</b>, o porto está a <b>120 dias</b>. Escolha a <b>maior</b> ração que ainda faz o estoque chegar ao porto.',()=>Es.get()==18000&&Hs.get()==120&&rr(1.25),'Isso! 18 000 ÷ 120 dias = 150 rações por dia; ÷ 120 homens = 1,25: cada um pode comer até 125% da ração e ainda chegar.',()=>(Es.get()!=18000||Hs.get()!=120)?'Para a missão, use 18 000 rações e 120 homens.':(dia_()<120?ds()+' Antes do porto: diminua a ração.':ds()+' Chega com sobra: dá para comer mais!')],
+ ['Agora são <b>150 homens</b> com ração de <b>100%</b>. Quantas rações, no mínimo, para chegar ao porto no dia 120?',()=>Hs.get()==150&&rr(1)&&Es.get()==18000,'150 × 1 × 120 = 18 000 rações: o estoque acaba exatamente no dia 120.',()=>(Hs.get()==150&&rr(1)?'':'Ponha 150 homens e ração de 100%. ')+ds()],
+ ['Com <b>12 000 rações</b> e ração de 100%, quantos homens, no máximo, chegam ao porto?',()=>Es.get()==12000&&rr(1)&&Hs.get()==100,'12 000 ÷ 120 dias = 100 rações por dia: 100 homens.',()=>(Es.get()==12000&&rr(1)?'':'Ponha 12 000 rações e ração de 100%. ')+ds()],
+ ['Faça o estoque acabar exatamente no <b>dia 200</b>.',()=>Math.abs(dia_()-200)<.01,()=>fmt(Es.get())+' ÷ '+fmt(Math.round(Hs.get()*Rs.get()))+' rações por dia = 200 dias. O zero da reta é estoque ÷ taxa.',ds]]);
 const Es=SL('se',6000,24000,1000,18000,draw,v=>fmt(v)),Hs=SL('sh',40,160,10,120,draw,v=>v+' homens'),Rs=SL('sr',0.5,1.5,0.05,1,draw,v=>fmt(Math.round(v*100))+'% da ração');
 function draw(){const E0=Es.get(),c=Hs.get()*Rs.get(),dia=E0/c,G0=G(250,24000,[0,50,100,150,200,250],[0,6000,12000,18000,24000],'dias','rações');
  let g=G0.g;g+=LN(G0.X(120),G0.Y(0),G0.X(120),G0.Y(24000),GREEN,1.5,'5 4')+TX(G0.X(120)+4,G0.Y(22500),'porto: dia 120',{fs:9,a:'start',c:GREEN});
@@ -38,8 +44,7 @@ function draw(){const E0=Es.get(),c=Hs.get()*Rs.get(),dia=E0/c,G0=G(250,24000,[0
  $('fig').innerHTML=SVG(340,250,g);
  $('kc').textContent=fmt(Math.round(c))+' rações';$('kd').textContent=r1(dia);
  const ok=E0==18000&&Hs.get()==120&&dia>=120&&Math.abs(Rs.get()-1.25)<1e-6;
- missao('m',ok,'Isso! 18 000 ÷ 120 dias = 150 rações por dia; ÷ 120 homens = 1,25: cada um pode comer até 125% da ração e ainda chegar.',
-  (E0!=18000||Hs.get()!=120)?'Para a missão, use 18 000 rações e 120 homens.':(dia<120?'O estoque acaba no dia '+r1(dia)+', antes do porto. Diminua a ração.':'Chega com sobra (acaba no dia '+r1(dia)+'). Dá para comer mais!'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

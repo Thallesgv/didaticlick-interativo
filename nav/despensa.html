@@ -20,6 +20,11 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+MIS.def(()=>[
+ ['A viagem de ida e volta leva cerca de <b>540 dias</b> (18 meses). Quantos homens podem embarcar para a comida durar exatamente isso? Deixe os meses em 18 para ver os soldos.',()=>H.get()==50&&M.get()==18,'Isso! 27.000 ÷ 50 = 540 dias. Soldos: 50 × 2 × 18 = 1.800 cruzados. Repare que homens × dias continua 27.000.',()=>{const d=27000/H.get();return Math.abs(d-540)<1?'A comida dura 540 dias. Agora ponha os meses em 18 para ver os soldos.':'Com '+H.get()+' homens a comida dura '+fmt(Math.round(d))+' dias. A missão pede 540.';}],
+ ['Um desvio pela costa alonga a viagem: a comida precisa durar <b>600 dias</b>. Quantos homens cabem?',()=>H.get()==45,'27.000 ÷ 600 = 45 homens. Mais dias, menos homens: grandeza inversa.',()=>'Com '+H.get()+' homens a comida dura '+fmt(Math.round(27000/H.get()))+' dias.'],
+ ['O capitão só tem <b>2.400 cruzados</b> para soldos de <b>20 meses</b>. Quantos homens dá para pagar?',()=>H.get()==60&&M.get()==20,'60 × 2 × 20 = 2.400. Mas a comida dura só 27.000 ÷ 60 = 450 dias: não chega aos 540!',()=>'Soldos agora: '+CRZ(H.get()*2*M.get())+' em '+M.get()+' meses.'],
+ ['Ache a tripulação com que a comida dura exatamente <b>216 dias</b>.',()=>H.get()==125,'27.000 ÷ 216 = 125 homens. Homens × dias dá sempre 27.000.',()=>'Com '+H.get()+' homens a comida dura '+fmt(Math.round(27000/H.get()))+' dias.']]);
 const H=SL('sh',10,150,1,90,draw,v=>v+' homens'),M=SL('sm',6,24,1,18,draw,v=>v+' meses');
 function draw(){const h=H.get(),m=M.get(),d=27000/h,sold=h*2*m;
  let g=TX(10,14,'Despensa no dia 540 (tonel = 900 rações)',{fs:9.5,a:'start',c:GRAY,w:500});
@@ -35,8 +40,7 @@ function draw(){const h=H.get(),m=M.get(),d=27000/h,sold=h*2*m;
  for(let i=0;i<n;i++)g+=bonequinho(232+(i%5)*20,50+Math.floor(i/5)*34,26,BLUE);
  $('fig').innerHTML=SVG(340,180,g);
  $('kd').textContent=fmt(Math.round(d))+' dias';$('kp').textContent=fmt(Math.round(h*d));$('ks').textContent=CRZ(sold);
- missao('m',h==50&&m==18,'Isso! 27.000 ÷ 50 = 540 dias. Soldos: 50 × 2 × 18 = 1.800 cruzados. Repare que homens × dias continua 27.000.',
-  Math.abs(d-540)<1?'A comida dura 540 dias. Agora ponha os meses em 18 para ver os soldos.':'Com '+h+' homens a comida dura '+fmt(Math.round(d))+' dias. A missão pede 540.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

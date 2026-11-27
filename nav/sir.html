@@ -30,6 +30,12 @@ function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w
  const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
  return {g,X,Y,linha,pts};}
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const sim=()=>{const b=B.get(),D=Dd.get(),N=120;let S=N-I0.get(),I=I0.get(),pk=I;for(let t=1;t<=60;t++){const nv=b*S*I/N,cu=I/D;S-=nv;I+=nv-cu;if(I>pk)pk=I;}return {pk,tot:N-S,R0:b*D};},ss=()=>'Pico: '+r1(sim().pk)+' doentes. R₀ = '+fmt(Math.round(sim().R0*100)/100)+'.';
+MIS.def(()=>[
+ ['A enfermaria da popa tem <b>10 redes</b>. Com <b>D = 4 dias</b> e 2 doentes no início, escolha o <b>maior β</b> que mantém o pico abaixo de 10 doentes.',()=>Dd.get()==4&&I0.get()==2&&Math.abs(B.get()-.35)<1e-6,'β = 0,35 dá R₀ = 1,4 e um pico de 7,1 doentes. Com β = 0,4 o pico já passa de 11. Separar os doentes é diminuir β.',()=>(Dd.get()!=4||I0.get()!=2)?'Para a missão, use D = 4 dias e 2 doentes no início.':(sim().pk>=10?'O pico chega a '+r1(sim().pk)+': faltam redes. Diminua β.':'Cabe na enfermaria (pico '+r1(sim().pk)+'). Será que dá para β ser um pouco maior?')],
+ ['Com <b>β = 0,5</b> e 2 doentes no início, qual é o <b>maior D</b> que mantém o pico abaixo de 10?',()=>Math.abs(B.get()-.5)<1e-6&&I0.get()==2&&Dd.get()==3,'D = 3: pico de 9,4. Com D = 4 já são 20,6 doentes: quanto mais tempo doente, mais tempo contagiando.',()=>(Math.abs(B.get()-.5)<1e-6&&I0.get()==2?'':'Ponha β = 0,5 e 2 doentes no início. ')+ss()],
+ ['Faça <b>R₀ ficar abaixo de 1</b>. O que acontece com a febre?',()=>sim().R0<1-1e-9,'Com R₀ < 1, cada doente contagia menos de um: a febre não decola e morre sozinha.',ss],
+ ['Faça <b>mais de 100 homens</b> adoecerem até o dia 60.',()=>sim().tot>100,()=>'Já adoeceram '+r1(sim().tot)+' até o dia 60, com R₀ = '+fmt(Math.round(sim().R0*100)/100)+'. R₀ alto quase não deixa ninguém são.',()=>'Já adoeceram no dia 60: '+r1(sim().tot)+'.']]);
 const B=SL('sb',0.1,1,0.05,0.5,draw,v=>fmt(Math.round(v*100)/100)),Dd=SL('sd',2,8,1,4,draw,v=>v+' dias'),I0=SL('si',1,10,1,2,draw);
 function draw(){const b=B.get(),D=Dd.get(),N=120;let S=N-I0.get(),I=I0.get(),R=0;const s=[[0,S]],i=[[0,I]],r=[[0,R]];let pk=I,pd=0;
  for(let t=1;t<=60;t++){const nv=b*S*I/N,cu=I/D;S-=nv;I+=nv-cu;R+=cu;s.push([t,S]);i.push([t,I]);r.push([t,R]);if(I>pk){pk=I;pd=t;}}
@@ -40,8 +46,7 @@ function draw(){const b=B.get(),D=Dd.get(),N=120;let S=N-I0.get(),I=I0.get(),R=0
  $('fig').innerHTML=SVG(340,250,g);
  const R0=b*D;$('kr').textContent=fmt(Math.round(R0*100)/100);$('kp').textContent=r1(pk)+(pd?' (dia '+pd+')':' (no início)');$('kt').textContent=r1(N-S);
  const ok=D==4&&I0.get()==2&&pk<10&&Math.abs(b-0.35)<1e-6;
- missao('m',ok,'β = 0,35 dá R₀ = 1,4 e um pico de '+r1(pk)+' doentes. Com β = 0,4 o pico já passa de 11. Separar os doentes é diminuir β.',
-  (D!=4||I0.get()!=2)?'Para a missão, use D = 4 dias e 2 doentes no início.':(pk>=10?'O pico chega a '+r1(pk)+': faltam redes. Diminua β.':'Cabe na enfermaria (pico '+r1(pk)+'). Será que dá para β ser um pouco maior?'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -23,6 +23,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const gv=()=>S.map(s=>s.get()),tot=()=>gv().reduce((a,b)=>a+b,0);
+MIS.def(()=>[
+ ['O mestre do estaleiro cobrou <b>6.000 cruzados</b>: casco com <b>60%</b>, velas e âncoras com <b>15%</b> cada e artilharia com <b>10%</b>. Ajuste os quatro controles até chegar a esse orçamento.',()=>gv().join()=='3600,900,600,900','Orçamento fechado: 3.600 + 900 + 600 + 900 = 6.000 cruzados. Ângulos: 216° + 54° + 36° + 54° = 360°.',()=>tot()==6000?'O total já é 6.000. Agora acerte as porcentagens de cada parte.':'Total atual: '+CRZ(tot())+'. A missão pede 6.000.'],
+ ['Veio a notícia de piratas: o total continua <b>6.000</b>, mas a artilharia passa a ser <b>20%</b>. Refaça o orçamento.',()=>tot()==6000&&gv()[2]==1200,'20% de 6.000 = 1.200 cruzados, e a fatia da artilharia dobra de ângulo: 20 × 3,6° = 72°.',()=>'Total: '+CRZ(tot())+'. Artilharia: '+r1(100*gv()[2]/(tot()||1))+'%.'],
+ ['Deixe as <b>quatro fatias iguais</b>. Quanto mede o ângulo de cada uma?',()=>{const v=gv();return v[0]>0&&v.every(x=>x==v[0]);},'Quatro partes iguais: 25% cada, e 25 × 3,6° = 90°. A pizza vira quatro quartos.',()=>'As fatias ainda não são iguais.'],
+ ['Faça o casco custar <b>o dobro de todas as outras partes juntas</b>.',()=>{const v=gv();return v[0]>0&&v[0]==2*(v[1]+v[2]+v[3]);},()=>'O casco fica com 2 de 3 partes: 66,7% do total e 240° da pizza.',()=>{const v=gv();return 'Casco: '+CRZ(v[0])+'. Outras partes juntas: '+CRZ(v[1]+v[2]+v[3])+'.';}]]);
 const NOMES=['Casco e mastros','Velas e cordame','Artilharia','Âncoras, botes e ferragens'];
 const S=[SL('s0',0,6000,100,3000,draw,CRZ),SL('s1',0,3000,50,1200,draw,CRZ),SL('s2',0,3000,50,600,draw,CRZ),SL('s3',0,3000,50,600,draw,CRZ)];
 function draw(){const v=S.map(s=>s.get()),T=v.reduce((a,b)=>a+b,0)||1;
@@ -32,7 +38,7 @@ function draw(){const v=S.map(s=>s.get()),T=v.reduce((a,b)=>a+b,0)||1;
  $('tab').innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px;margin-top:8px"><tr style="background:'+NAVY+';color:#fff"><th style="text-align:left;padding:4px">Parte</th><th>Cruzados</th><th>%</th><th>Ângulo</th></tr>'+
   v.map((x,i)=>`<tr><td style="padding:3px 4px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${CORES_NAV[i]}"></span> ${NOMES[i]}</td><td style="text-align:center">${fmt(x)}</td><td style="text-align:center">${r1(100*x/T)}%</td><td style="text-align:center">${r1(360*x/T)}°</td></tr>`).join('')+'</table>';
  const ok=v[0]==3600&&v[1]==900&&v[2]==600&&v[3]==900;
- missao('m',ok,'Orçamento fechado: 3.600 + 900 + 600 + 900 = 6.000 cruzados. Ângulos: 216° + 54° + 36° + 54° = 360°.',T==6000?'O total já é 6.000. Agora acerte as porcentagens de cada parte.':'Total atual: '+CRZ(T)+'. A missão pede 6.000.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

@@ -20,6 +20,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const alm=()=>2*Math.atan(30/D.get())*DEG,okA=()=>Math.abs(alm()-ALT)<=1,hits=new Set();
+const dica_=()=>alm()<ALT?'A ponta de cima está abaixo da estrela: traga a soalha para mais perto do olho.':'A ponta de cima passou da estrela: afaste a soalha do olho.';
+MIS.def(()=>[
+ ['A meia soalha tem 30 cm. Mova a soalha até a ponta de baixo ficar no horizonte e a de cima na estrela. Leia o ângulo: essa é a altura da estrela.',()=>{const o=okA();if(o)hits.add(ALT);return o;},()=>'Na mira! A estrela está a '+ALT+'° do horizonte. Com d = '+r1(D.get())+' cm: tg(α/2) = 30 ÷ '+r1(D.get())+' ≈ '+fmt(Math.round(30/D.get()*1000)/1000)+'.',dica_],
+ ['Aperte <b>Outra estrela</b> e meça a altura dela.',()=>{if(okA())hits.add(ALT);return hits.size>=2;},()=>'Estrela a '+ALT+'°. Quanto mais alta a estrela, mais perto do olho fica a soalha.',()=>hits.size<2&&okA()?'Aperte Outra estrela.':dica_()],
+ ['Ponha a soalha onde a balestilha mede <b>60°</b>.',()=>Math.abs(alm()-60)<.1,'d ≈ 52 cm: tg 30° = 30 ÷ 52 ≈ 0,577. Cada metade da soalha cobre 30°.',()=>'Ângulo medido agora: '+r1(alm())+'°.'],
+ ['Ponha a soalha a <b>30 cm</b> do olho. Que ângulo ela mede?',()=>D.get()==30,'tg(α/2) = 30 ÷ 30 = 1, então α/2 = 45° e α = 90°: a estrela estaria bem acima da cabeça.',()=>'Ângulo medido agora: '+r1(alm())+'°.']]);
 let ALT=50;const D=SL('sd',25,90,0.5,70,draw,v=>r1(v)+' cm');
 $('nova').onclick=()=>{ALT=rint(40,95);draw();};
 function draw(){const d=D.get(),h=30,half=Math.atan(h/d),al=2*half*DEG,r=Math.hypot(d,h),k=3.1,ex=26,ey=200;
@@ -47,8 +54,7 @@ function draw(){const d=D.get(),h=30,half=Math.atan(h/d),al=2*half*DEG,r=Math.hy
  $('ka').textContent=r1(al)+'°';$('kt').textContent=fmt(Math.round(h/d*1000)/1000);$('kr').textContent=r1(r)+' cm';
  $('ks').textContent=r1(r*Math.sin(half))+' cm';$('kc').textContent=r1(r*Math.cos(half))+' cm';
  const ok=Math.abs(al-ALT)<=1;
- missao('m',ok,'Na mira! A estrela está a '+ALT+'° do horizonte. Com d = '+r1(d)+' cm: tg(α/2) = 30 ÷ '+r1(d)+' ≈ '+fmt(Math.round(h/d*1000)/1000)+', e α ≈ '+r1(al)+'°.',
-  al<ALT?'A ponta de cima está abaixo da estrela: traga a soalha para mais perto do olho.':'A ponta de cima passou da estrela: afaste a soalha do olho.');
+ MIS.ver('m');
  arrastar($('fig').querySelector('svg'),$('fig').querySelector('#soalha'),(x,y)=>{const t=((x-ex)*ux+(ey-y)*uy)/k;D.set(clamp(Math.round(t*2)/2,25,90));draw();});}
 draw();
 })();

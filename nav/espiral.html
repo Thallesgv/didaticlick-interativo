@@ -38,6 +38,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const vo=()=>{const r=Rm.get();return (r==0||r==90)?0:Math.tan(r*RAD)*Math.log(Math.tan(Math.PI/4+89*RAD/2))*DEG/360;},vs=()=>'Rumo '+Rm.get()+'°: '+r1(vo())+' voltas até 89°.';
+MIS.def(()=>[
+ ['Ache os <b>dois rumos</b> entre 0° e 90° em que a linha <b>não</b> espirala.',()=>vistos.size==2,'Rumo 0° dá um meridiano e rumo 90° dá um paralelo (aqui, o equador). Qualquer outro rumo espirala em direção ao polo.',()=>vistos.size==1?'Achou um ('+[...vistos][0]+'°). Falta o outro.':vs()],
+ ['Ache o <b>menor</b> rumo que dá <b>mais de 2 voltas</b> em torno do polo até 89°.',()=>Rm.get()==70,'Rumo 70°: cerca de 2,1 voltas. Quanto mais perto de 90°, mais voltas: a espiral vai apertando.',vs],
+ ['Ache o rumo que dá <b>1 volta</b> inteira até 89°.',()=>Math.abs(vo()-1)<.02,'Rumo 53°: uma volta inteira em torno do polo até 89° de latitude.',vs],
+ ['Com rumo <b>45°</b>, quantas voltas a linha dá até 89°?',()=>Rm.get()==45,'Cerca de 0,75 volta. Mas a espiral nunca chega ao polo: quanto mais perto, mais voltas ela dá.',vs]]);
 const Rm=SL('sr',0,90,1,60,draw,v=>v+'°'),V=SL('sv',-180,180,5,40,draw,v=>v+'°'),I=SL('si',0,90,5,45,draw,v=>v+'°');const vistos=new Set();
 function draw(){const r=Rm.get(),G=GLOBO(170,125,112,I.get(),V.get());let g=G.grade(15),pts,tipo;
  if(r==90){pts=[];for(let l=-180;l<=180;l+=2)pts.push([0.01,l]);tipo='paralelo (equador)';}
@@ -48,8 +54,7 @@ function draw(){const r=Rm.get(),G=GLOBO(170,125,112,I.get(),V.get());let g=G.gr
  const voltas=(r==0||r==90)?0:Math.tan(r*RAD)*Math.log(Math.tan(Math.PI/4+89*RAD/2))*DEG/360;
  $('kv').textContent=r==90?'—':r1(voltas);$('kt').textContent=tipo;
  if(r==0||r==90)vistos.add(r);
- missao('m',vistos.size==2,'Rumo 0° dá um meridiano e rumo 90° dá um paralelo (aqui, o equador). Qualquer outro rumo espirala em direção ao polo.',
-  vistos.size==1?'Achou um ('+[...vistos][0]+'°). Falta o outro.':'Rumo '+r+'°: '+tipo+(tipo=='espiral'?', com '+r1(voltas)+' voltas até 89° de latitude.':'.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

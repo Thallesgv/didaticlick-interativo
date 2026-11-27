@@ -22,6 +22,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const L_=()=>Q.get()*V.get()*(1-T.get()/100)-12000;
+MIS.def(()=>[
+ ['Encontre um cenário em que <b>Enzo perde dinheiro</b>, mesmo vendendo a pimenta.',()=>L_()<0,()=>'Prejuízo de '+fmt(Math.abs(Math.round(L_())))+': Enzo perde '+fmt(Math.abs(Math.round(L_()*.05)))+' (5%). O prejuízo também se divide pelas cotas.',()=>'Resultado atual: lucro de '+fmt(Math.round(L_()))+'. Procure um cenário com prejuízo.'],
+ ['Com preço 22 e taxa 20%, quantos quintais podem se perder no mar? Deixe a carga na <b>menor quantidade sem prejuízo</b>.',()=>V.get()==22&&T.get()==20&&Q.get()==682,'Com 682 quintais a viagem se paga. Dos 800 embarcados, só 118 podem se perder.',()=>V.get()==22&&T.get()==20?'Resultado: '+(L_()<0?'prejuízo':'lucro')+' de '+fmt(Math.abs(Math.round(L_())))+'.':'Ponha o preço em 22 e a taxa em 20%.'],
+ ['Com <b>800 quintais</b> e taxa <b>20%</b>, qual é o menor preço em Lisboa sem prejuízo?',()=>Q.get()==800&&T.get()==20&&Math.abs(V.get()-18.8)<.01,'Com 18,80 sobram 32 cruzados; com 18,70 já há prejuízo. O limite é 12.000 ÷ 640 = 18,75.',()=>'Resultado: '+(L_()<0?'prejuízo':'lucro')+' de '+fmt(Math.abs(Math.round(L_())))+'.'],
+ ['Faça a parte de Enzo ser um lucro de <b>pelo menos 200 cruzados</b>.',()=>L_()*.05>=200,()=>'Enzo leva 5% de '+fmt(Math.round(L_()))+' = '+fmt(Math.round(L_()*.05))+'. Para isso a viagem toda precisa lucrar 4.000 ou mais.',()=>'Parte de Enzo agora: '+fmt(Math.round(L_()*.05))+'.']]);
 const CEN=[['Viagem boa',800,22,20],['Taxa alta',800,22,30],['Preço em queda',800,19.8,20],['Carga perdida',600,22,20]];
 const Q=SL('sq',0,851,1,800,draw,v=>fmt(v)+' quintais'),V=SL('sv',10,30,0.1,22,draw,v=>r1(v)+' cruzados'),T=SL('st',0,40,1,20,draw,v=>v+'%');
 chips('cen',CEN.map(c=>c[0]),0,i=>{Q.set(CEN[i][1]);V.set(CEN[i][2]);T.set(CEN[i][3]);draw();});
@@ -35,8 +41,7 @@ function draw(){const q=Q.get(),v=V.get(),t=T.get(),rec=q*v*(1-t/100),L=rec-1200
  $('fig').innerHTML=SVG(340,200,g);
  $('kl').innerHTML=`<span style="color:${L>=0?GREEN:'#B91C1C'}">${L>=0?'lucro de ':'prejuízo de '}${fmt(Math.abs(Math.round(L)))}</span>`;
  $('ke').textContent=(L<0?'− ':'+ ')+fmt(Math.abs(Math.round(L*.05)));$('kr').textContent=CRZ(rec);
- const perde=L<0;missao('m',perde,'Prejuízo de '+fmt(Math.abs(Math.round(L)))+': Enzo perde '+fmt(Math.abs(Math.round(L*.05)))+' (5%). Com preço 22 e taxa 20%, abaixo de 682 quintais a viagem não se paga: só 118 quintais podem se perder.',
-  'Resultado atual: '+(L>=0?'lucro':'prejuízo')+' de '+fmt(Math.abs(Math.round(L)))+'. Procure um cenário com prejuízo.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

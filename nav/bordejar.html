@@ -26,6 +26,13 @@ const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=
 const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
 const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
 const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const tp=()=>{const b=B.get();return 10/Math.cos(b*RAD)/vel(b);};let vira1=false;
+const ts=()=>'Tempo agora: '+r1(tp())+' h a '+B.get()+'°.';
+MIS.def(()=>[
+ ['Chegue ao ponto contra o vento no <b>menor tempo</b>.',()=>B.get()==45,()=>'Menor tempo: '+r1(tp())+' h. A 45° a nau faz 2 léguas/h e avança 2 · cos 45° ≈ 1,41 légua/h contra o vento.',()=>'Avanço contra o vento = velocidade · cos(ângulo) = '+r2(vel(B.get()))+' · cos '+B.get()+'° ≈ '+r2(vel(B.get())*Math.cos(B.get()*RAD))+' légua/h. Procure o ângulo em que esse avanço é o maior.'],
+ ['Agora bordeje bem perto do vento, a <b>30°</b>. Quanto tempo leva?',()=>B.get()==30,'A 30° a nau quase não anda (1,2 légua/h): cerca de 9,6 h. Perto demais do vento, ela fica lenta.',ts],
+ ['Entre 60° e 85°, ache o ângulo que leva <b>mais tempo</b>.',()=>B.get()==85,'85°: a nau anda rápido (2,67 léguas/h), mas avança só 0,23 légua/h contra o vento: cerca de 43 h.',ts],
+ ['No ângulo do menor tempo, compare <b>1 virada</b> com <b>7 viradas</b>.',()=>{if(B.get()==45&&VI.get()==0)vira1=true;return vira1&&B.get()==45&&VI.get()==3;},'O tempo continua 7,1 h: mais viradas só deixam o zigue-zague mais estreito, sem mudar a distância navegada.',()=>B.get()!=45?'Volte para 45°.':vira1?'Agora escolha 7 viradas.':'Escolha 1 virada primeiro.']]);
 const VP=[[30,1.2],[45,2],[60,2.4],[75,2.6],[90,2.7]];
 const vel=b=>{for(let i=0;i<VP.length-1;i++){const [a0,v0]=VP[i],[a1,v1]=VP[i+1];if(b<=a1)return v0+(v1-v0)*(b-a0)/(a1-a0);}return 2.7;};
 const B=SL('sb',30,85,5,60,draw,v=>v+'°');const NS=[1,3,5,7];const VI=chips('ch',['1 virada','3 viradas','5 viradas','7 viradas'],1,draw);
@@ -43,8 +50,7 @@ function draw(){const b=B.get(),v=vel(b),av=v*Math.cos(b*RAD),D=10,n=NS[VI.get()
  $('fig').innerHTML=SVG(340,250,g);
  $('kv').textContent=r2(v)+' léguas/h';$('ka').textContent=r2(av)+' légua/h';$('kd').textContent=r1(dist)+' léguas';$('kt').textContent=r1(tempo)+' h';
  melhor=Math.min(melhor,tempo);
- missao('m',b==45,'Menor tempo: '+r1(tempo)+' h. A 45° a nau faz 2 léguas/h e avança 2 · cos 45° ≈ 1,41 légua/h contra o vento. Mais perto do vento ela fica lenta; mais longe, avança pouco a cada légua.',
-  'Avanço contra o vento = velocidade · cos(ângulo) = '+r2(v)+' · cos '+b+'° ≈ '+r2(av)+' légua/h. Procure o ângulo em que esse avanço é o maior.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

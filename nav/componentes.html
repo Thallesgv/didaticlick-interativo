@@ -28,6 +28,12 @@ const RUMO=(e,n)=>{if(Math.hypot(e,n)<1e-9)return 0;let r=Math.atan2(e,n)*DEG;r=
 const SN=v=>(v<-0.004?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
 const PAR=(e,n)=>'('+SN(e)+'; '+SN(n)+')';
 const ROSA=(x,y)=>TX(x,y-14,'N',{fs:10,c:NAVY})+SETA(x,y,x,y-10,NAVY,1.5);
+const ms=()=>{const a=comp(AM.get(),AR.get()),b=comp(BM.get(),BR.get());return Math.hypot(a[0]+b[0],a[1]+b[1]);},tres=()=>(AM.get()==3&&BM.get()==4)||(AM.get()==4&&BM.get()==3),mss=()=>'Módulo da soma: '+r2(ms())+'.'+(tres()?'':' Use módulos 3 e 4.');
+MIS.def(()=>[
+ ['Escolha <b>a</b> com módulo 3 e <b>b</b> com módulo 4. Ajuste os rumos para a soma ter módulo exatamente <b>5</b>.',()=>tres()&&Math.abs(ms()-5)<0.005,'Módulo 5! Os rumos diferem 90°: vetores perpendiculares somam por Pitágoras, √(3² + 4²) = 5.',mss],
+ ['Com os mesmos módulos, faça a <b>maior</b> soma possível.',()=>tres()&&Math.abs(ms()-7)<0.005,'7 = 3 + 4: com rumos iguais, os vetores apontam juntos.',mss],
+ ['Agora a <b>menor</b> soma possível.',()=>tres()&&Math.abs(ms()-1)<0.005,'1 = 4 − 3: com rumos opostos, um vetor desconta o outro.',mss],
+ ['Ponha <b>os dois módulos em 5</b> e faça a soma ter módulo <b>5</b> também.',()=>AM.get()==5&&BM.get()==5&&Math.abs(ms()-5)<0.005,'Com 120° entre eles, os vetores e a soma formam um triângulo equilátero: tudo mede 5.',()=>'Módulo da soma: '+r2(ms())+'.']]);
 const AM=SL('am',1,5,1,3,draw),AR=SL('ar',0,345,15,0,draw,v=>v+'°'),BM=SL('bm',1,5,1,4,draw),BR=SL('br',0,345,15,60,draw,v=>v+'°');
 const comp=(m,t)=>[m*Math.sin(t*RAD),m*Math.cos(t*RAD)];
 function draw(){const a=comp(AM.get(),AR.get()),b=comp(BM.get(),BR.get()),s=[a[0]+b[0],a[1]+b[1]],m=Math.hypot(s[0],s[1]);
@@ -41,8 +47,7 @@ function draw(){const a=comp(AM.get(),AR.get()),b=comp(BM.get(),BR.get()),s=[a[0
  const row=(n,v,c)=>`<tr><td style="color:${c};font-weight:700">${n}</td><td>${SN(v[0])}</td><td>${SN(v[1])}</td><td>${r2(Math.hypot(v[0],v[1]))}</td></tr>`;
  $('tab').innerHTML=`<table class="t"><tr><th></th><th>leste</th><th>norte</th><th>módulo</th></tr>${row('a',a,BLUE)}${row('b',b,GREEN)}${row('soma',s,ORANGE)}</table>`;
  const tres=(AM.get()==3&&BM.get()==4)||(AM.get()==4&&BM.get()==3);
- missao('m',tres&&Math.abs(m-5)<0.005,'Módulo 5! Os rumos diferem 90°: vetores perpendiculares somam por Pitágoras, √(3² + 4²) = 5. A maior soma (7) sai com rumos iguais; a menor (1), com rumos opostos.',
-  'Módulo da soma: √('+SN(s[0])+'² + '+SN(s[1])+'²) ≈ '+r2(m)+'.'+(tres?' Gire um dos rumos.':' Use módulos 3 e 4.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

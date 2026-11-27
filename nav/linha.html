@@ -22,6 +22,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const cg=()=>Pm.get()+Ag.get()+Bl.get(),dd=()=>cg()/(120*(AG.get()==0?1.025:1)),base=()=>Ag.get()==4.5&&Bl.get()==3.5,ds=()=>'A nau desce '+fmt(Math.round(dd()*100))+' cm.';
+MIS.def(()=>[
+ ['A faixa de segurança permite descer no máximo <b>1 m</b>. No <b>mar</b>, com 4,5 t de água e 3,5 t de balas, qual é a maior carga de pimenta?',()=>AG.get()==0&&base()&&Pm.get()==115,'No mar: 1,025 × 120 = 123 t de carga no máximo. 123 − 4,5 − 3,5 = 115 t de pimenta.',()=>(base()?'':'Ponha 4,5 t de água e 3,5 t de balas. ')+ds()],
+ ['E na <b>água doce</b> do rio, com as mesmas 4,5 t de água e 3,5 t de balas?',()=>AG.get()==1&&base()&&Pm.get()==112,'Na água doce: 120 − 4,5 − 3,5 = 112 t de pimenta. A nau desce mais, porque a água doce é menos densa.',()=>(AG.get()?'':'Escolha Água doce. ')+ds()],
+ ['De volta ao mar, leve <b>20 t de água</b> e <b>10 t de balas</b>. Quanta pimenta ainda cabe?',()=>AG.get()==0&&Ag.get()==20&&Bl.get()==10&&Pm.get()==93,'123 − 20 − 10 = 93 t. Cada tonelada a mais de água ou de balas tira uma de pimenta.',()=>ds()],
+ ['No mar, faça a nau descer exatamente <b>meio metro</b>.',()=>AG.get()==0&&Math.abs(dd()-.5)<.004,()=>'Carga de '+r1(cg())+' t: 61,5 ÷ 123 = 0,5 m. Metade da carga máxima, metade da descida.',()=>ds()]]);
 const Pm=SL('sp',0,130,1,47,draw,v=>v+' t'),Ag=SL('sa',0,20,0.5,4.5,draw,v=>r1(v)+' t'),Bl=SL('sb',0,10,0.5,3.5,draw,v=>r1(v)+' t');
 const AG=chips('ag',['Água do mar (1.025 kg/m³)','Água doce (1.000 kg/m³)'],0,draw);
 function draw(){const rho=AG.get()==0?1.025:1,c=Pm.get()+Ag.get()+Bl.get(),d=c/(120*rho);
@@ -36,8 +42,7 @@ function draw(){const rho=AG.get()==0?1.025:1,c=Pm.get()+Ag.get()+Bl.get(),d=c/(
  $('fig').innerHTML=SVG(340,230,g);
  $('kd').innerHTML=`<span style="color:${d>1?'#B91C1C':GREEN}">${fmt(Math.round(d*100))} cm</span>`;$('kc').textContent=r1(c)+' t';$('kv').textContent=r1(c/rho)+' m³';
  const lim=Math.floor(120*rho-Ag.get()-Bl.get());
- missao('m',Math.abs(d-1)<0.01&&Ag.get()==4.5&&Bl.get()==3.5,'No limite! '+(rho==1.025?'No mar: 123 − 4,5 − 3,5 = 115 t de pimenta.':'Na água doce: 120 − 4,5 − 3,5 = 112 t de pimenta. Desce mais, porque a água doce é menos densa.'),
-  d>1?'Passou da faixa: a nau desceu '+fmt(Math.round(d*100))+' cm.':'A nau desceu '+fmt(Math.round(d*100))+' cm. Com essa água e essas balas, o limite de pimenta é cerca de '+lim+' t.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

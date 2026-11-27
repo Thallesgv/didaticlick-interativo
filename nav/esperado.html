@@ -28,6 +28,12 @@ function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
 function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
 function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
 const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const ev=()=>Ps.get()*Rs.get()-Cs.get(),es=()=>'Valor esperado: '+fmt(Math.round(ev()))+'.',pp=x=>Math.abs(Ps.get()-x)<1e-9;
+MIS.def(()=>[
+ ['Com cota de <b>1 000</b> e retorno de <b>3 000</b>, ache a chance que deixa o valor esperado em <b>zero</b> (aposta justa).',()=>Cs.get()==1000&&Rs.get()==3000&&Math.abs(ev())<=15,'Chance de cerca de 1/3: 3 000 · p − 1 000 = 0. Abaixo disso, a cota de Dona Leonor dá prejuízo em média.',()=>Cs.get()!=1000||Rs.get()!=3000?'Coloque a cota em 1 000 e o retorno em 3 000.':es()+' '+(ev()>0?'Diminua a chance.':'Aumente a chance.')],
+ ['Com a mesma cota e o mesmo retorno, qual é o valor esperado com chance <b>0,8</b>?',()=>Cs.get()==1000&&Rs.get()==3000&&pp(.8),'0,8 × 2 000 − 0,2 × 1 000 = 1 400 por viagem, em média.',es],
+ ['Com cota de 1 000 e chance <b>0,5</b>, ache o <b>menor retorno</b> que não dá prejuízo em média.',()=>Cs.get()==1000&&pp(.5)&&Rs.get()==2000,'0,5 × 2 000 − 1 000 = 0: no meio a meio, o retorno precisa ser o dobro da cota.',es],
+ ['Monte um negócio com valor esperado de pelo menos <b>2 000</b> e chance de no máximo <b>0,6</b>.',()=>ev()>=2000&&Ps.get()<=.6+1e-9,()=>es()+' Mesmo arriscado, ele compensa em média, porque o retorno é bem maior que a cota.',()=>es()+(Ps.get()>.6+1e-9?' A chance precisa ser 0,6 ou menos.':'')]]);
 const Cs=SL('sc',500,3000,100,1000,draw,v=>fmt(v)),Rs=SL('sr',1000,6000,100,3000,draw,v=>fmt(v)),Ps=SL('sp',0,1,0.01,0.8,draw,v=>fmt(v));
 function draw(){const C=Cs.get(),R=Rs.get(),p=Ps.get(),L=R-C,E=p*L-(1-p)*C,pe=C/R;let g='';
  const oy=130,k=85/Math.max(L,C,1);
@@ -40,8 +46,7 @@ function draw(){const C=Cs.get(),R=Rs.get(),p=Ps.get(),L=R-C,E=p*L-(1-p)*C,pe=C/
  $('fig').innerHTML=SVG(340,250,g);
  $('kl').textContent=fmt(L);$('ke').textContent=fmt(Math.round(E));$('kq').textContent=r2(pe);
  const ok=C==1000&&R==3000&&Math.abs(E)<=15;
- missao('m',ok,'Chance de cerca de 1/3: 3 000 · p − 1 000 = 0. Abaixo disso, a cota de Dona Leonor dá prejuízo em média.',
-  C!=1000||R!=3000?'Coloque a cota em 1 000 e o retorno em 3 000.':'Valor esperado: '+fmt(Math.round(E))+'. '+(E>0?'Diminua a chance.':'Aumente a chance.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

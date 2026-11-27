@@ -37,6 +37,12 @@ const GC=(a1,o1,a2,o2,n)=>{const v=(a,o)=>[Math.cos(a*RAD)*Math.cos(o*RAD),Math.
  for(let i=0;i<=n;i++){const t=i/n,s1=om?Math.sin((1-t)*om)/Math.sin(om):1-t,s2=om?Math.sin(t*om)/Math.sin(om):t,x=s1*A[0]+s2*B[0],y=s1*A[1]+s2*B[1],z=s1*A[2]+s2*B[2];P.push([Math.asin(z)*DEG,Math.atan2(y,x)*DEG]);}return P;};
 const KM=v=>fmt(Math.round(v))+' km';
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const ec_=()=>{const la=A.get(),d=D.get(),lp=RT*Math.cos(la*RAD)*d*RAD,lc=RT*ANGC(la,0,la,d);return lp>0?1-lc/lp:0;},es=()=>'Economia: '+fmt(Math.round(ec_()*1000)/10)+'%.';
+MIS.def(()=>[
+ ['Ache uma latitude e uma diferença de longitude em que o círculo máximo economize <b>mais de 25%</b> do caminho.',()=>ec_()>.25,()=>'Economia de '+fmt(Math.round(ec_()*1000)/10)+'%! Quanto mais perto do polo e mais longe em longitude, mais o círculo máximo corta caminho por cima.',()=>es()+' Tente latitudes mais altas e diferenças de longitude maiores.'],
+ ['Ponha A e B no <b>equador</b>. Quanto o círculo máximo economiza?',()=>A.get()==0,'0%: o equador já é um círculo máximo, e os dois caminhos são o mesmo.',es],
+ ['A <b>60° N</b>, com <b>180°</b> de diferença de longitude, por onde passa o caminho mais curto?',()=>A.get()==60&&D.get()==180,'Por cima do polo: 6.672 km contra 10.007 km pelo paralelo. Economia de 33%.',es],
+ ['Ache a combinação com a <b>maior economia</b> possível (mais de 35,5%).',()=>ec_()>.355,()=>es()+' Perto do máximo de 36%: com 180° de longitude, o círculo máximo passa pelo polo.',es]]);
 const A=SL('sa',0,85,5,60,draw,v=>v+'° N'),D=SL('sd',10,180,10,90,draw,v=>v+'°');
 function draw(){const la=A.get(),d=D.get(),G=GLOBO(170,128,112,Math.min(la+15,80),d/2);let g=G.grade(15);
  const par=[];for(let l=0;l<=d;l+=1)par.push([la,l]);g+=G.curva(par,ORANGE,3.5)+G.curva(GC(la,0,la,d,90),BLUE,3.5);
@@ -44,8 +50,7 @@ function draw(){const la=A.get(),d=D.get(),G=GLOBO(170,128,112,Math.min(la+15,80
  $('fig').innerHTML=SVG(340,256,g);
  const lp=RT*Math.cos(la*RAD)*d*RAD,lc=RT*ANGC(la,0,la,d),ec=lp>0?1-lc/lp:0;
  $('kp').textContent=KM(lp);$('kc').textContent=KM(lc);$('ke').textContent=fmt(Math.round(ec*1000)/10)+'%';
- missao('m',ec>0.25,'Economia de '+fmt(Math.round(ec*1000)/10)+'%! Quanto mais perto do polo e mais longe em longitude, mais o círculo máximo "corta caminho" por cima.',
-  'Economia: '+fmt(Math.round(ec*1000)/10)+'%. Tente latitudes mais altas e diferenças de longitude maiores.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

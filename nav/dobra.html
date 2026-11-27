@@ -30,6 +30,12 @@ function G(xmax,ymax,xt,yt,xl,yl,o){o=o||{};const ox=o.ox||40,oy=o.oy||210,w=o.w
  const pts=(arr,cor,lw)=>{const p=arr.filter(a=>a[1]<=ymax*1.02).map(a=>X(a[0]).toFixed(1)+','+Y(a[1]).toFixed(1));return `<polyline points="${p.join(' ')}" fill="none" stroke="${cor}" stroke-width="${lw||2.5}" stroke-linejoin="round"/>`;};
  return {g,X,Y,linha,pts};}
 const BOLA=(x,y,c,r)=>`<circle cx="${x}" cy="${y}" r="${r||4}" fill="${c}"/>`;
+const fe=()=>{const a=A.get(),d=D.get();return t=>a*Math.pow(2,t/d);},erro_=()=>{const f=fe();return Math.max(...DADOS.map(p=>Math.abs(f(p[0])-p[1])));},tc_=()=>D.get()*Math.log2(100/A.get());
+MIS.def(()=>[
+ ['Encaixe a curva laranja nos <b>cinco pontos</b> do diário (dias 0, 3, 6, 9 e 12).',()=>erro_()<.01,'Encaixou: a = 2 e d = 3, g(t) = 2 · 2^(t/3). Os doentes dobram a cada 3 dias.',()=>'Maior distância entre a curva e os pontos: '+r1(erro_())+' doentes. Olhe o primeiro ponto para achar a, e de quanto em quanto tempo os pontos dobram.'],
+ ['Agora faça a <b>reta</b> passar pelo último ponto (dia 12, 32 doentes).',()=>B.get()==2.5,'Com 2,5 por dia a reta acerta o dia 12, mas erra o meio: no dia 6 dá 17 em vez de 8. Diferenças 2, 4, 8, 16 não são constantes; as razões, sim.',()=>'No dia 12 a reta dá '+fmt(2+12*B.get())+'.'],
+ ['Começando com <b>2 doentes</b>, mude d para a febre só passar de <b>100</b> depois do dia 18.',()=>A.get()==2&&tc_()>18,()=>'Com d = '+fmt(D.get())+', passa de 100 só no dia '+r1(tc_())+'. Dobrar mais devagar dá tempo à tripulação.',()=>A.get()!=2?'Ponha a = 2.':'Agora passa de 100 no dia '+r1(tc_())+'.'],
+ ['Faça a reta e a curva darem quase o mesmo valor no <b>dia 18</b> (diferença de até 1 doente).',()=>Math.abs(fe()(18)-(2+18*B.get()))<=1,'No dia 18 elas se encontram. Daí em diante a exponencial dispara e a reta fica para trás.',()=>'No dia 18: curva '+r1(fe()(18))+', reta '+r1(2+18*B.get())+'.']]);
 const DADOS=[[0,2],[3,4],[6,8],[9,16],[12,32]];
 const A=SL('sa',1,6,1,3,draw),D=SL('sd',1,6,0.5,4,draw,v=>fmt(v)+' dias'),B=SL('sb',0,8,0.5,2,draw,v=>fmt(v));
 function draw(){const a=A.get(),d=D.get(),b=B.get(),f=t=>a*Math.pow(2,t/d),h=t=>2+b*t,G0=G(18,130,[0,3,6,9,12,15,18],[0,32,64,96,128],'dias','doentes');
@@ -38,8 +44,7 @@ function draw(){const a=A.get(),d=D.get(),b=B.get(),f=t=>a*Math.pow(2,t/d),h=t=>
  $('fig').innerHTML=SVG(340,250,g);
  $('ke').textContent=r1(f(18));$('kf').textContent=r1(h(18));const tc=d*Math.log2(100/a);$('kc').textContent=a>=100?'0':r1(tc);
  const erro=Math.max(...DADOS.map(p=>Math.abs(f(p[0])-p[1])));
- missao('m',erro<0.01,'Encaixou: a = 2 e d = 3, g(t) = 2 · 2^(t/3). A reta não consegue: as diferenças 2, 4, 8, 16 não são constantes, mas as razões são todas 2.',
-  'Maior distância entre a curva e os pontos: '+r1(erro)+' doentes. Olhe o primeiro ponto para achar a, e de quanto em quanto tempo os pontos dobram.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

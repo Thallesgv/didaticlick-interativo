@@ -27,6 +27,12 @@ function COMB(n,k){let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;}
 function BIN(n,p){const a=[];for(let k=0;k<=n;k++)a.push(COMB(n,k)*Math.pow(p,k)*Math.pow(1-p,n-k));return a;}
 function BOT(id,itens){$(id).innerHTML=itens.map((t,i)=>`<button data-i="${i}">${t[0]}</button>`).join('');$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>itens[+b.dataset.i][1]());}
 const pct=v=>v>=0.01?r1(v*100)+'%':fmt(Math.round(v*1e6)/1e4)+'%';
+const st=()=>{const n=RES.length,v=RES.filter(x=>x).length;return {n,f:n?v/n:0,p:Ps.get()};},pp=x=>Math.abs(Ps.get()-x)<1e-9,cs=()=>{const{n,f}=st();return n+' naus, frequência '+(n?r2(f):'—')+'.';};
+MIS.def(()=>[
+ ['Com chance de <b>0,8</b>, mande <b>pelo menos 100 naus</b> e faça a frequência ficar entre <b>0,78 e 0,82</b>.',()=>{const{n,f}=st();return pp(.8)&&n>=100&&Math.abs(f-.8)<=.02+1e-9;},()=>'Frequência '+r2(st().f)+' em '+st().n+' naus, colada na probabilidade 0,8. Um registro longo vira uma boa estimativa.',()=>{const{n,f}=st();return !pp(.8)?'Coloque a chance em 0,8.':n<100?'Faltam '+(100-n)+' naus para chegar a 100.':'Frequência '+r2(f)+': ainda fora de 0,78 a 0,82. Mande mais naus.';}],
+ ['Com chance <b>0,5</b>, mande 100 naus ou mais e deixe a frequência entre <b>0,45 e 0,55</b>.',()=>{const{n,f}=st();return pp(.5)&&n>=100&&Math.abs(f-.5)<=.05+1e-9;},'Meio a meio: com 100 naus a frequência já fica perto de 0,5, como numa moeda.',()=>(pp(.5)?'':'Coloque a chance em 0,5. ')+cs()],
+ ['Com chance <b>0,3</b>, mande pelo menos <b>500 naus</b> e fique a menos de <b>0,03</b> da chance.',()=>{const{n,f}=st();return pp(.3)&&n>=500&&Math.abs(f-.3)<.03;},'Com 500 naus a oscilação típica é de uns 0,02: a frequência quase sempre fica perto de 0,3.',()=>(pp(.3)?'':'Coloque a chance em 0,3. ')+cs()],
+ ['Recomece e mande <b>só 10 naus</b>. Consiga uma frequência a <b>mais de 0,15</b> da chance.',()=>{const{n,f,p}=st();return n==10&&Math.abs(f-p)>.15;},()=>'Frequência '+r2(st().f)+' com chance '+fmt(Ps.get())+': com só 10 naus, o registro pode enganar bastante.',()=>{const{n}=st();return n>10?'Passou de 10. Aperte Recomeçar.':n<10?cs()+' Mande até 10.':cs()+' Ficou perto. Recomece e tente de novo.';}]]);
 let RES=[];const Ps=SL('sp',0.1,0.95,0.05,0.8,()=>{RES=[];draw();},v=>fmt(v));
 const manda=k=>{for(let i=0;i<k;i++)RES.push(Math.random()<Ps.get());draw();};
 BOT('bt',[['+1 nau',()=>manda(1)],['+10 naus',()=>manda(10)],['+100 naus',()=>manda(100)],['Recomeçar',()=>{RES=[];draw();}]]);
@@ -41,8 +47,7 @@ function draw(){const p=Ps.get(),n=RES.length,v=RES.filter(x=>x).length,f=n?v/n:
  $('fig').innerHTML=SVG(340,255,g);
  $('kn').textContent=n;$('kv').textContent=v;$('kf').textContent=n?r2(f):'—';
  const ok=Math.abs(p-0.8)<1e-9&&n>=100&&Math.abs(f-0.8)<=0.02+1e-9;
- missao('m',ok,'Frequência '+r2(f)+' em '+n+' naus, colada na probabilidade 0,8. É assim que um registro longo vira uma boa estimativa.',
-  Math.abs(p-0.8)>1e-9?'Coloque a chance em 0,8.':n<100?'Faltam '+(100-n)+' naus para chegar a 100.':'Frequência '+r2(f)+': ainda fora de 0,78 a 0,82. Mande mais naus.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>

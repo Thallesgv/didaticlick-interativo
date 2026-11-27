@@ -19,8 +19,14 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let MIS=rint(5,42);const L=SL('sl',0,45,0.1,38.7,draw,v=>r1(v)+'° N');
-$('nova').onclick=()=>{MIS=rint(5,42);draw();};
+const lat_=()=>'Sua nau está a '+r1(L.get())+'° N.';
+MIS.def(()=>[
+ ['Uma nau misteriosa mediu a Polar com a balestilha. Leve a sua nau para a <b>mesma latitude</b>.',()=>Math.abs(L.get()-ALV)<0.15,()=>'Encontrou! A Polar a '+ALV+'° acima do mar significa latitude '+ALV+'° N, a cerca de '+fmt(ALV*111)+' km do equador.',()=>'A nau misteriosa mediu a Polar a <b>'+ALV+'°</b>. Onde ela está?'],
+ ['Leve a nau até o <b>equador</b>. A que altura fica a Polar?',()=>L.get()==0,'No equador a Polar fica no horizonte: altura 0°. Mais ao sul, ela some do céu.',lat_],
+ ['Uma nau está <b>2.220 km</b> ao norte do equador. Leve a sua nau até lá.',()=>Math.abs(L.get()-20)<.05,'2.220 ÷ 111 = 20°: a Polar aparece a 20° do mar.',lat_],
+ ['Fique a exatamente <b>1.110 km ao sul de Lisboa</b> (38,7° N).',()=>Math.abs(L.get()-28.7)<.05,'1.110 ÷ 111 = 10° de diferença: 38,7° − 10° = 28,7° N, perto das Canárias.',lat_]]);
+let ALV=rint(5,42);const L=SL('sl',0,45,0.1,38.7,draw,v=>r1(v)+'° N');
+$('nova').onclick=()=>{ALV=rint(5,42);draw();};
 function draw(){const la=L.get();const cx=80,cy=130,R=62;
  let g=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="#DCEBFB" stroke="${NAVY}" stroke-width="2"/>`+LN(cx-R-6,cy,cx+R+6,cy,GRAY,1,'3 3')+TX(cx,cy+R+16,'equador tracejado',{fs:9,c:GRAY,w:400});
  g+=LN(cx,cy,cx,cy-R-34,NAVY,1,'2 2')+`<circle cx="${cx}" cy="${cy-R-38}" r="4" fill="${ORANGE}"/>`+TX(cx+8,cy-R-36,'Polar',{fs:9,a:'start',c:ORANGE});
@@ -35,8 +41,8 @@ function draw(){const la=L.get();const cx=80,cy=130,R=62;
  g+=TX(x0+82,y0-10,'mar',{fs:10,c:'#fff',w:500});
  $('fig').innerHTML=SVG(340,220,g);
  $('ka').textContent=r1(la)+'°';$('kd').textContent=fmt(Math.round(la*111))+' km';$('kl').textContent=fmt(Math.round(Math.abs(38.7-la)*111))+' km';
- const ok=Math.abs(la-MIS)<0.15;
- missao('m',ok,'Encontrou! A Polar a '+MIS+'° acima do mar significa latitude '+MIS+'° N, a cerca de '+fmt(MIS*111)+' km do equador.','A nau misteriosa mediu a Polar a <b>'+MIS+'°</b>. Onde ela está?');}
+
+ MIS.ver('m');}
 draw();
 })();
 </script>

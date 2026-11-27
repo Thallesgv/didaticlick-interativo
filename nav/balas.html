@@ -23,6 +23,12 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const tot=()=>{const n=N.get();return n*(n+1)*(2*n+1)/6;};
+MIS.def(()=>[
+ ['O artilheiro tem <b>204 balas</b>. Quantas camadas tem a pirâmide que usa todas, sem sobrar nenhuma?',()=>tot()==204,'8 camadas: 1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 = 204. Pela fórmula: 8 × 9 × 17 ÷ 6 = 204.',()=>'Com '+N.get()+' camadas são '+fmt(tot())+' balas. '+(tot()<204?'Faltam '+(204-tot())+'.':'Passou de 204.')],
+ ['Com as 8 camadas, use balas de <b>6,5 cm</b> de raio. Qual é a altura da pilha?',()=>N.get()==8&&Rr.get()==6.5,'2 × 6,5 + 7 × 6,5 × √2 ≈ 13 + 64,3 = 77,3 cm. Sem o encaixe seriam 104 cm.',()=>N.get()!=8?'Volte para 8 camadas.':'Ajuste o raio da bala.'],
+ ['Com balas de 6,5 cm, ache a pilha com <b>menos camadas</b> que passa de <b>1 tonelada</b>.',()=>N.get()==7&&Rr.get()==6.5,'7 camadas: 140 balas × 9,1 kg ≈ 1.271 kg. Com 6 camadas (91 balas) seriam só 826 kg.',()=>'Massa da pilha agora: '+$('km').textContent+'.'],
+ ['Uma bala de 4 cm de raio pesa 2,1 kg. Ponha o raio em <b>8 cm</b>: quantas vezes mais ela pesa?',()=>Rr.get()==8,'8 vezes (16,9 kg): dobrar o raio multiplica o volume por 2 × 2 × 2 = 8.',()=>'Massa de uma bala agora: '+$('kb').textContent+'.']]);
 const N=SL('sn',1,10,1,5,draw,v=>v+' camadas'),Rr=SL('sr',3,8,0.5,5,draw,v=>r1(v)+' cm');
 function draw(){const n=N.get(),r=Rr.get(),T=n*(n+1)*(2*n+1)/6,vb=4*3.14*r**3/3,mb=vb*7.9/1000;
  const h=r*Math.SQRT2,H=2*r+(n-1)*h;
@@ -53,8 +59,7 @@ function draw(){const n=N.get(),r=Rr.get(),T=n*(n+1)*(2*n+1)/6,vb=4*3.14*r**3/3,
  $('fig2').innerHTML=SVG(340,212,q);
  $('exp').innerHTML='h² + R² = (2r)² → h² + '+r1(h*h)+' = '+r1(4*r*r)+' → <b>h = r√2 ≈ '+r1(h)+' cm</b>. Altura da pilha: 2r + (n − 1)·h = '+r1(2*r)+' + '+(n-1)+' × '+r1(h)+' ≈ <b>'+r1(H)+' cm</b> (sem encaixe seriam '+r1(2*r*n)+' cm).';
  $('kt').textContent=fmt(T);$('kb').textContent=r1(mb)+' kg';$('km').textContent=fmt(Math.round(T*mb))+' kg';$('kh').textContent=r1(H)+' cm';
- missao('m',T==204,'8 camadas: 1 + 4 + 9 + 16 + 25 + 36 + 49 + 64 = 204. Pela fórmula: 8 × 9 × 17 ÷ 6 = 204. Com raio 6,5 cm, a pilha tem cerca de 77,3 cm de altura.',
-  'Com '+n+' camadas são '+fmt(T)+' balas. '+(T<204?'Faltam '+(204-T)+'.':'Passou de 204.'));}
+ MIS.ver('m');}
 draw();
 })();
 </script>

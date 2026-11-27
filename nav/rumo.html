@@ -22,6 +22,13 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
+const pos=()=>{const a1=A1.get()*RAD,d1=D1.get(),a2=A2.get()*RAD,d2=D2.get();return [d1*Math.cos(a1)+d2*Math.cos(a2),d1*Math.sin(a1)+d2*Math.sin(a2)];},falta=()=>{const[n,e]=pos();return Math.hypot(TN-n,TE-e);},hitsR=new Set();
+const ps=()=>{const[n,e]=pos();return 'Avanço '+r2(n)+' e afastamento '+r2(e)+' léguas.';};
+MIS.def(()=>[
+ ['Chegue ao alvo marcado na carta (a estrela laranja) usando os dois trechos. Dica: decomponha o alvo em avanço e afastamento.',()=>{const o=falta()<.5;if(o)hitsR.add(TN+','+TE);return o;},()=>'Chegou! '+ps(),()=>'Alvo: avanço '+r2(TN)+' e afastamento '+r2(TE)+' léguas. Você: '+ps()],
+ ['Aperte <b>Novo alvo</b> e chegue lá também.',()=>{if(falta()<.5)hitsR.add(TN+','+TE);return hitsR.size>=2;},()=>'Chegou de novo! '+ps(),()=>hitsR.size<2&&falta()<.5?'Aperte Novo alvo.':'Alvo: avanço '+r2(TN)+' e afastamento '+r2(TE)+'. Você: '+ps()],
+ ['Use os dois trechos no <b>mesmo rumo, 45°</b>, e avance cerca de <b>10 léguas</b>.',()=>A1.get()==45&&A2.get()==45&&Math.abs(pos()[0]-10)<.2,()=>'Avanço = (d1 + d2) · cos 45° ≈ 0,707 × '+r1(D1.get()+D2.get())+' ≈ '+r2(pos()[0])+'. Dois trechos no mesmo rumo somam como um só.',ps],
+ ['Chegue a <b>10 léguas de afastamento</b> sem <b>nenhum avanço</b>.',()=>{const[n,e]=pos();return Math.abs(n)<.05&&Math.abs(e-10)<.05;},'Rumo 90° é leste puro: cos 90° = 0, nada de avanço, e os trechos somam 10 léguas de afastamento.',ps]]);
 let TN=13.66,TE=13.66;const A1=SL('a1',0,90,1,20,draw,v=>v+'°'),D1=SL('d1',0,15,0.5,8,draw,v=>r1(v)+' léguas'),A2=SL('a2',0,90,1,70,draw,v=>v+'°'),D2=SL('d2',0,15,0.5,8,draw,v=>r1(v)+' léguas');
 $('nova').onclick=()=>{TN=rint(6,20);TE=rint(4,18);draw();};
 function draw(){const a1=A1.get()*RAD,d1=D1.get(),a2=A2.get()*RAD,d2=D2.get();
@@ -35,7 +42,7 @@ function draw(){const a1=A1.get()*RAD,d1=D1.get(),a2=A2.get()*RAD,d2=D2.get();
  g+=`<circle cx="${X(e2)}" cy="${Y(n2)}" r="5" fill="${NAVY}"/>`;
  $('fig').innerHTML=SVG(340,236,g);
  const f=Math.hypot(TN-n2,TE-e2);$('kn').textContent=r2(n2)+' léguas';$('ke').textContent=r2(e2)+' léguas';$('kf').textContent=r2(f)+' léguas';
- missao('m',f<0.5,'Chegou! Avanço '+r2(n2)+' e afastamento '+r2(e2)+' léguas.','Alvo: avanço '+r2(TN)+' e afastamento '+r2(TE)+' léguas.');}
+ MIS.ver('m');}
 draw();
 })();
 </script>
