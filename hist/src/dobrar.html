@@ -5,7 +5,7 @@
 <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:#0E2354;margin-top:4px"><span>🌾 campo que a cheia molhou (fértil)</span><span>▬ <span style="color:#A16207">terra seca</span> (não dá para plantar)</span></div>
 <svg id="sacos" viewBox="0 0 400 70" style="margin-top:6px"></svg>
 <div class="msg info" id="out"></div></div>
-<div class="card"><h2>Multiplicar dobrando</h2><p class="muted"><b>Toque nas linhas</b> da tabela para marcá-las. Escolha as linhas cujos números da coluna da esquerda somam o primeiro número. Os números da direita dessas linhas, somados, dão a resposta da multiplicação.</p>
+<div class="card"><h2>Multiplicar dobrando</h2><p class="muted"><b>Toque nas linhas</b> da tabela para marcá-las. Pense em cestos com o segundo número de pães em cada um: a coluna da esquerda conta os cestos e a da direita conta os pães. Escolha as linhas cujos cestos somam o primeiro número; somando os pães dessas linhas, você tem a resposta.</p>
 <div style="display:flex;gap:8px"><input type="number" id="a" value="13" min="1" max="99"><input type="number" id="b" value="12" min="1" max="99"></div>
 <div id="tab" style="margin-top:8px"></div><div class="msg" id="fb"></div></div>
 <script>
@@ -23,15 +23,15 @@ function nilo(){const h=+$('h').value;$('vh').textContent=h;const ly=222-(h-7)*1
  // aldeia
  const casas=[[352,GY(352)],[372,GY(372)]];casas.forEach(([x,y])=>{s+=`<rect x="${x-7}" y="${y-12}" width="14" height="12" fill="#fff" stroke="#0E2354"/><polygon points="${x-9},${y-12} ${x+9},${y-12} ${x},${y-20}" fill="#0E2354"/>`});
  s+=`<text x="362" y="${GY(362)-24}" font-size="9" fill="#0E2354" text-anchor="middle">aldeia</text>`;
- const inund=h>=17;if(inund)s+=`<text x="300" y="40" font-size="12" fill="#B91C1C" font-weight="700" text-anchor="middle">a água chegou perto da aldeia!</text>`;
+ const inund=h>=18;if(inund)s+=`<text x="300" y="40" font-size="12" fill="#B91C1C" font-weight="700" text-anchor="middle">a água chegou perto da aldeia!</text>`;
  s+=`<text x="200" y="244" font-size="10" fill="#fff" text-anchor="middle">rio Nilo</text>`;$('sv').innerHTML=s;
- let col=mol*30;if(inund)col=Math.round(col*0.6);const tx=col>=300?5:10,imp=Math.round(col/tx);
+ let col=mol*30;if(inund)col=Math.round(col*0.6);const cat=h<14?'uma colheita <b>fraca</b>':h<16?'uma colheita <b>suficiente</b>':h<17?'uma colheita <b>farta</b>':h<18?'a <b>melhor</b> colheita possível':'uma colheita <b>estragada</b> pelo excesso de água';const tx=(h>=14&&h<18)?5:10,imp=Math.round(col/tx);
  let k='';const ns=Math.round(col/30),ni=Math.round(imp/30);for(let i=0;i<ns;i++){const x=8+(i%18)*21.5,y=8+Math.floor(i/18)*30;k+=`<path d="M${x+3} ${y+6} Q${x+9} ${y-2} ${x+15} ${y+6} L${x+17} ${y+24} L${x+1} ${y+24}Z" fill="${i<ni?'#F78D33':'#F2C14E'}" stroke="#8B5A34"/>`}
  $('sacos').innerHTML=k+(ns?'':'<text x="200" y="35" text-anchor="middle" font-size="12" fill="#6B7280">sem colheita</text>');
- $('out').innerHTML=`<b>${mol} de ${tot} campos</b> ficaram férteis. Colheita prevista: <b>${col} sacos</b> (cada saco desenhado = 30). `+(inund?'A cheia exagerada estragou parte dos campos e casas. ':'')+`O imposto é de <b>1/${tx}</b> da colheita: <b style="color:#C2410C">${imp} sacos</b> (em laranja) para o faraó, e <b>${col-imp}</b> ficam com a aldeia. <span class="muted">(Tabela de imposto inventada: 1/5 se a colheita for boa, 1/10 se for fraca.)</span>`;}
+ $('out').innerHTML=`<b>${mol} de ${tot} campos</b> ficaram férteis. Colheita prevista: <b>${col} sacos</b>, ${cat} (cada saco desenhado = 30). `+(inund?'A cheia exagerada estragou parte dos campos e casas. ':'')+`O imposto é de <b>1/${tx}</b> da colheita: <b style="color:#C2410C">${imp} sacos</b> (em laranja) para o faraó, e <b>${col-imp}</b> ficam com a aldeia. <br><span class="muted">As faixas de colheita seguem um relato da época árabe, séculos depois dos faraós: com 14 côvados a colheita era suficiente, com 16 era farta e 17 era a altura mais vantajosa (fonte: verbete Nilometer, Wikipedia, em inglês). A taxa do imposto (1/5 em colheita boa, 1/10 em colheita fraca ou estragada) é inventada para o exercício.</span>`;}
 let marc=new Set();
 function tab(){const a=Math.max(1,Math.min(99,+$('a').value||1)),b=Math.max(1,Math.min(99,+$('b').value||1));let rows=[],k=1,v=b;while(k<=a){rows.push([k,v]);k*=2;v*=2}
- $('tab').innerHTML='<table class="t"><tr><th>dobra o 1</th><th>dobra o '+b+'</th></tr>'+rows.map(([k,v])=>`<tr data-k="${k}" style="cursor:pointer;${marc.has(k)?'background:#FDE9D8;font-weight:700':''}"><td>${marc.has(k)?'✓ ':''}${k}</td><td>${v}</td></tr>`).join('')+'</table>';
+ $('tab').innerHTML='<table class="t"><tr><th>quantas vezes o '+b+'</th><th>quanto dá</th></tr>'+rows.map(([k,v])=>`<tr data-k="${k}" style="cursor:pointer;${marc.has(k)?'background:#FDE9D8;font-weight:700':''}"><td>${marc.has(k)?'✓ ':''}${k}</td><td>${v}</td></tr>`).join('')+'</table>';
  document.querySelectorAll('#tab tr[data-k]').forEach(r=>r.onclick=()=>{const k=+r.dataset.k;marc.has(k)?marc.delete(k):marc.add(k);tab()});
  const sk=[...marc].filter(k=>k<=a).reduce((x,y)=>x+y,0),sv=[...marc].filter(k=>k<=a).reduce((x,y)=>x+y*b,0);
  $('fb').className='msg '+(sk==a?'ok':'info');$('fb').innerHTML=sk==a?`<b>Isso!</b> ${[...marc].sort((x,y)=>x-y).join(' + ')} = ${a}, então ${a} × ${b} = ${[...marc].sort((x,y)=>x-y).map(k=>k*b).join(' + ')} = <b>${sv}</b>.`:`Linhas marcadas somam ${sk} na esquerda. Falta chegar a ${a}.`;}
