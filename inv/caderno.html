@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O caderno · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O caderno</h1></header>
+<main>
+<div class="card"><h2>Média e mediana</h2><p class="muted" style="margin-top:0">A primeira página do caderno do Seu Zeca: a temperatura do meio-dia em cada dia. Escolha um dia e mude a temperatura dele. A linha laranja é a média; a azul, a mediana.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="cd" style="margin:6px 0"></div>
+<div class="sl" id="sv"><b>Temperatura do dia</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Média<b id="km"></b></div><div>Mediana<b id="kd"></b></div><div>Soma<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia o caderno.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0';
+const MEAN=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const MED=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const SD=a=>{const m=MEAN(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const SG=v=>(v>0?'+':v<0?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const SG1=v=>(v>0.04?'+':v<-0.04?'−':'')+fmt(Math.abs(Math.round(v*10)/10));
+const JAN=[26.6,27.2,28.6,26.1,27.5,26.4,26.4,26.4,27.3,27.4,27.1,25.6,28.4,27.0,28.5,27.4,28.0,27.8,27.2,27.9,27.4,25.4,28.0,26.7,26.7,25.8,27.5,28.5,27.0,26.6,28.8,26.4,27.5,26.9,27.1,26.5,27.5,25.2,26.3,26.9,26.5,26.2,27.4,28.1,27.8,27.4,26.2,27.6,26.7,25.2,26.4,27.6,26.0,26.7,28.6,28.0,27.3,27.6,28.1,27.7,25.8,27.9,26.1,25.6,27.2,25.9,27.2,25.5,25.2,27.0,28.0,26.3,27.6,27.1,26.8,28.5,25.7,27.4,28.5,26.6,26.3,26.9,27.2,27.8,27.1,26.7,26.7,26.0,26.6,25.4,26.4,28.2,27.4,26.4,26.7,28.3,25.3,26.3,28.8,27.0];
+const ESTE=24.3;
+const V=[24,25,23,14,22,24,25,24];let modo=0,dia=3;
+chips('ch',['A semana do caderno','Sem o dia do vento sul','Com um 8º dia'],0,i=>{modo=i;cdias();draw();});
+const S=SL('sv',12,36,0.5,V[dia],v=>{V[dia]=v;draw();},v=>fmt(v)+' °C');
+function cdias(){const n=modo==2?8:7;chips('cd',Array.from({length:n},(_,i)=>'Dia '+(i+1)),dia<n?dia:0,i=>{dia=i;S.set(V[dia]);draw();});if(dia>=n){dia=0;S.set(V[0]);}}
+const dados=()=>modo==0?V.slice(0,7):modo==1?V.slice(0,7).filter((_,i)=>i!=3):V.slice(0,8);
+MIS.def(()=>[
+ ['A média da semana é 22,4 °C e a mediana, 24 °C. Tire o <b>dia do vento sul</b> (dia 4) da conta.',()=>modo==1,()=>'Média '+r1(MEAN(dados()))+' °C, mediana '+fmt(MED(dados()))+' °C. A média subiu 1,4 °C; a mediana nem se mexeu.',()=>'Escolha "Sem o dia do vento sul".'],
+ ['Volte para a semana toda e imagine que o dia 4 tivesse sido de <b>24 °C</b>.',()=>modo==0&&V[3]==24,()=>'Média '+r2(MEAN(dados()))+' °C. A mediana continua 24 °C: ela só olha para quem está no meio.',()=>modo!=0?'Escolha "A semana do caderno".':dia!=3?'Escolha o Dia 4.':'O dia 4 está em '+fmt(V[3])+' °C.'],
+ ['Mude só o dia 4 até a <b>média ficar igual à mediana</b>.',()=>modo==0&&Math.abs(MEAN(dados())-MED(dados()))<0.01,()=>'Dia 4 em '+fmt(V[3])+' °C: média e mediana valem '+fmt(MED(dados()))+' °C. Com os dados equilibrados em volta do meio, as duas coincidem.',()=>'Média '+r2(MEAN(dados()))+', mediana '+fmt(MED(dados()))+'.'],
+ ['Ponha o dia 4 de volta em <b>14 °C</b>, acrescente um 8º dia e descubra que temperatura ele precisa ter para a média dos 8 dar <b>24 °C</b>.',()=>modo==2&&V[3]==14&&Math.abs(MEAN(dados())-24)<0.001,()=>'O 8º dia precisaria de '+fmt(V[7])+' °C: 8 × 24 = 192, e a semana soma 157. Um dia horrível pesa muito na média.',()=>V[3]!=14&&modo!=2?'Volte o dia 4 para 14 °C (na semana toda) e depois escolha "Com um 8º dia".':V[3]!=14?'Escolha o Dia 4 e ponha 14 °C.':modo!=2?'Escolha "Com um 8º dia".':'Média dos 8: '+r2(MEAN(dados()))+' °C. Mude o Dia 8.']]);
+function quadro(){const W=340,H_=220,a=12,b=36,X=t=>20+(t-a)/(b-a)*300;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');
+ g+=LN(20,170,320,170,NAVY,1.5);for(let t=12;t<=36;t+=2)g+=LN(X(t),170,X(t),175,NAVY,1)+TX(X(t),188,t,{fs:9,c:GRAY,w:500});g+=TX(320,204,'°C',{fs:9,c:GRAY,w:500,a:'end'});
+ const n=modo==2?8:7,cont={};for(let i=0;i<n;i++){if(modo==1&&i==3)continue;const t=V[i],k=cont[t]||0;cont[t]=k+1;
+  g+=CI(X(t),158-k*16,7,i==3?VERM:MARC,'stroke="'+(i==dia?ORANGE:NAVY)+'" stroke-width="'+(i==dia?3:1.2)+'"')+TX(X(t),161-k*16,i+1,{fs:8,c:NAVY});}
+ const d=dados(),m=MEAN(d),md=MED(d);g+=LN(X(m),170,X(m),48,ORANGE,2.5,'5 3')+TX(X(m),40,'média '+r1(m),{fs:10,c:ORANGE});
+ g+=LN(X(md),170,X(md),72,AZ2,2.5,'5 3')+TX(X(md),66,'mediana '+fmt(md),{fs:10,c:AZ2});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const d=dados();$('km').textContent=r2(MEAN(d))+' °C';$('kd').textContent=fmt(MED(d))+' °C';$('ks').textContent=fmt(d.reduce((s,x)=>s+x,0))+' °C';quadro();MIS.ver('m');}
+cdias();draw();
+})();
+</script>
+</body>
+</html>

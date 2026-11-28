@@ -185,7 +185,34 @@ const LIV={'inv1':{T:["O que é uma onda", "Velocidade, frequência e compriment
 6:()=>{const t=R(0,2);
  if(t==0){const P2=P([[400,800],[450,900],[350,700],[500,1000]]);return{q:`Uma luz de <b>${P2[0]} nm</b> é espalhada quantas vezes mais que uma de <b>${P2[1]} nm</b>?`,a:16,exp:`(${P2[1]} ÷ ${P2[0]})⁴ = 2⁴ = 16.`};}
  if(t==1){const h=P([[30,0.5],[90,1],[10,0.174],[5,0.087]]);return{q:`Com o Sol a <b>${h[0]}°</b> (sen ≈ ${fmt(h[1])}), o caminho da luz fica quantas vezes maior que com o Sol a pino?`,a:Math.round(1/h[1]*10)/10,tol:0.06,exp:`1 ÷ ${fmt(h[1])} ≈ ${fmt(Math.round(1/h[1]*10)/10)}.`};}
- const a=P([2,4,10,11]),b=P([13,40,68,80]);return{q:`Chegam ${b}% do vermelho e ${a}% do azul. Quantas vezes mais vermelho?`,a:Math.round(b/a*10)/10,tol:0.06,exp:`${b} ÷ ${a} ≈ ${fmt(Math.round(b/a*10)/10)}.`};}}}};
+ const a=P([2,4,10,11]),b=P([13,40,68,80]);return{q:`Chegam ${b}% do vermelho e ${a}% do azul. Quantas vezes mais vermelho?`,a:Math.round(b/a*10)/10,tol:0.06,exp:`${b} ÷ ${a} ≈ ${fmt(Math.round(b/a*10)/10)}.`};}}},'inv7':{T:["O caderno do Seu Zeca", "Espalhar: amplitude e desvio-padrão", "Anomalias: longe do normal", "A curva normal e o escore z", "Histogramas: o retrato de cem janeiros", "Anéis que lembram: a correlação"],G:{1:()=>{const t=R(0,3);
+ if(t==0){const n=R(4,6),v=Array.from({length:n},()=>R(20,28));const s=v.reduce((a,b)=>a+b,0);return{q:`Qual a média de <b>${v.join(', ')}</b> °C?`,a:Math.round(s/n*100)/100,tol:0.05,exp:`${s} ÷ ${n} ≈ ${fmt(Math.round(s/n*100)/100)} °C.`};}
+ if(t==1){const n=P([5,7]),v=Array.from({length:n},()=>R(14,30));const o=[...v].sort((a,b)=>a-b);return{q:`Qual a mediana de <b>${v.join(', ')}</b> °C?`,a:o[(n-1)/2],exp:`Em ordem: ${o.join(', ')}. O valor do meio é ${o[(n-1)/2]}.`};}
+ if(t==2){const v=Array.from({length:6},()=>R(18,30));const o=[...v].sort((a,b)=>a-b),m=(o[2]+o[3])/2;return{q:`Qual a mediana de <b>${v.join(', ')}</b> °C?`,a:m,exp:`Em ordem: ${o.join(', ')}. Média dos dois do meio: (${o[2]} + ${o[3]}) ÷ 2 = ${fmt(m)}.`};}
+ const n=R(4,7),m=R(22,26),x=R(15,30);const nv=Math.round((n*m+x)/(n+1)*100)/100;return{q:`A média de ${n} dias foi <b>${m} °C</b>. No dia seguinte fez <b>${x} °C</b>. Qual a nova média?`,a:nv,tol:0.05,exp:`(${n} × ${m} + ${x}) ÷ ${n+1} = ${n*m+x} ÷ ${n+1} ≈ ${fmt(nv)} °C.`};},
+2:()=>{const t=R(0,3);
+ if(t==0){const v=Array.from({length:5},()=>R(15,32));return{q:`Qual a amplitude de <b>${v.join(', ')}</b> °C?`,a:Math.max(...v)-Math.min(...v),exp:`${Math.max(...v)} − ${Math.min(...v)} = ${Math.max(...v)-Math.min(...v)} °C.`};}
+ if(t==1){const m=R(20,28),d=P([1,2,3,4,5]);const v=[m-d,m,m+d];const s=Math.sqrt(2*d*d/3);return{q:`Qual o desvio-padrão (dividindo por n) de <b>${v.join(', ')}</b>?`,a:Math.round(s*100)/100,tol:0.02,exp:`Média ${m}; desvios −${d}, 0, +${d}; variância ${2*d*d} ÷ 3; σ ≈ ${fmt(Math.round(s*100)/100)}.`};}
+ if(t==2){const k=P([2,3,4,5,6,1.5]);return{q:`A variância de uma lista é <b>${fmt(k*k)}</b> °C². Qual o desvio-padrão?`,a:k,exp:`√${fmt(k*k)} = ${fmt(k)} °C.`};}
+ const s=P([0.5,1,2,3]),c=R(1,5);return{q:`Uma lista tem desvio-padrão <b>${fmt(s)} °C</b>. Todos os valores sobem <b>${c} °C</b>. Qual o novo desvio-padrão?`,a:s,exp:`Somar a todos não espalha: σ continua ${fmt(s)} °C.`};},
+3:()=>{const t=R(0,2);
+ const n=R(200,290)/10,a=R(-30,30)/10;
+ if(t==0)return{q:`A normal de um mês é <b>${fmt(n)} °C</b> e ele teve <b>${fmt(Math.round((n+a)*10)/10)} °C</b>. Qual a anomalia?`,a:a,tol:0.01,exp:`${fmt(Math.round((n+a)*10)/10)} − ${fmt(n)} = ${fmt(a)} °C.`};
+ if(t==1)return{q:`A normal é <b>${fmt(n)} °C</b> e a anomalia foi <b>${fmt(a)} °C</b>. Qual foi a temperatura?`,a:Math.round((n+a)*10)/10,tol:0.01,exp:`${fmt(n)} + (${fmt(a)}) = ${fmt(Math.round((n+a)*10)/10)} °C.`};
+ const v=Array.from({length:4},()=>R(-15,15)/10);const s=v.reduce((x,y)=>x+y,0);return{q:`As anomalias de 4 anos foram <b>${v.map(fmt).join('; ')}</b> °C. Qual a anomalia média?`,a:Math.round(s/4*1000)/1000,tol:0.01,exp:`${fmt(Math.round(s*10)/10)} ÷ 4 ≈ ${fmt(Math.round(s/4*100)/100)} °C.`};},
+4:()=>{const t=R(0,3);
+ if(t==0){const m=R(15,30),s=P([0.5,1,2,4]),z=P([-3,-2,-1.5,-1,1,2,2.5]);return{q:`μ = ${m} e σ = ${fmt(s)}. Qual o escore z de <b>${fmt(m+z*s)}</b>?`,a:z,tol:0.01,exp:`(${fmt(m+z*s)} − ${m}) ÷ ${fmt(s)} = ${fmt(z)}.`};}
+ if(t==1){const m=R(20,28),s=P([0.5,0.9,1,2]),z=P([-2,-1,1,2,3]);return{q:`μ = ${m} °C e σ = ${fmt(s)} °C. Que temperatura tem z = <b>${z}</b>?`,a:Math.round((m+z*s)*100)/100,tol:0.01,exp:`${m} + ${z} × ${fmt(s)} = ${fmt(Math.round((m+z*s)*100)/100)} °C.`};}
+ if(t==2){const k=P([[1,'68%'],[2,'95%'],[3,'99,7%']]);return{q:`Numa curva normal, que porcentagem fica a menos de <b>${k[0]}σ</b> da média?`,opts:['50%','68%','95%','99,7%'],a:k[1],exp:`Regra 68–95–99,7.`};}
+ const k=P([[1,16],[2,2.5]]);return{q:`Numa curva normal, que porcentagem fica <b>abaixo de μ − ${k[0]}σ</b>?`,a:k[1],tol:0.1,exp:`(100% − ${k[0]==1?'68':'95'}%) ÷ 2 = ${fmt(k[1])}%.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const n=P([20,25,40,50,200]),f=Math.round(n*P([0.1,0.2,0.25,0.4]));return{q:`Numa lista de <b>${n}</b> valores, uma classe tem <b>${f}</b>. Qual a frequência relativa, em %?`,a:Math.round(f/n*1000)/10,tol:0.1,exp:`${f} ÷ ${n} = ${fmt(Math.round(f/n*1000)/10)}%.`};}
+ if(t==1){const a=R(20,29),w=P([0.5,1,2]);return{q:`Qual o ponto médio da classe de <b>${fmt(a)}</b> a <b>${fmt(a+w)}</b> °C?`,a:a+w/2,exp:`(${fmt(a)} + ${fmt(a+w)}) ÷ 2 = ${fmt(a+w/2)}.`};}
+ const f=[6,7,17,17,22,14,9,8],k=R(1,4);const s=f.slice(0,k).reduce((x,y)=>x+y,0);return{q:`Na tabela dos cem janeiros (classes de 0,5 °C desde 25,0: 6, 7, 17, 17, 22, 14, 9, 8), quantos tiveram menos de <b>${fmt(25+0.5*k)} °C</b>?`,a:s,exp:`${f.slice(0,k).join(' + ')} = ${s}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const T=R(250,290)/10;const L=Math.round((0.5*T-11.3)*100)/100;return{q:`Pela reta L = 0,5T − 11,3, que largura de anel se espera para <b>T = ${fmt(T)} °C</b>?`,a:L,tol:0.01,exp:`0,5 × ${fmt(T)} − 11,3 = ${fmt(L)} mm.`};}
+ if(t==1){const L=R(6,32)/10;const T=Math.round((2*L+22.6)*100)/100;return{q:`Pela fórmula T = 2L + 22,6, que temperatura corresponde a um anel de <b>${fmt(L)} mm</b>?`,a:T,tol:0.01,exp:`2 × ${fmt(L)} + 22,6 = ${fmt(T)} °C.`};}
+ const r=P([[0.95,'forte e crescente'],[-0.9,'forte e decrescente'],[0.05,'praticamente nenhuma']]);return{q:`Um coeficiente de correlação <b>r = ${fmt(r[0])}</b> indica uma relação linear:`,opts:['forte e crescente','forte e decrescente','praticamente nenhuma'],a:r[1],exp:`O sinal diz a direção; perto de ±1, forte; perto de 0, fraca.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='inv1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
