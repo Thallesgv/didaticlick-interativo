@@ -164,7 +164,35 @@ const LIV={'arq1':{T:["Escala: do mapa ao terreno", "Curvas de nível", "Inclina
 6:()=>{const t=R(0,2);
  if(t==0){const r=P([15,15.3,16.2,16.8,18,13.5]);return{q:`Um rosto mede <b>${fmt(r)} cm</b> da raiz do cabelo ao queixo. Quanto mede cada terço?`,a:Math.round(r/3*100)/100,tol:0.011,exp:`${fmt(r)} ÷ 3 = ${fmt(Math.round(r/3*100)/100)} cm.`};}
  if(t==1){const c=P([18,19,19.1,20,21,22,23]);return{q:`Uma cabeça mede <b>${fmt(c)} cm</b> do alto ao queixo. A que distância do queixo ficam os olhos, em cm?`,a:c/2,exp:`${fmt(c)} ÷ 2 = ${fmt(c/2)} cm.`};}
- const h=R(145,185);return{q:`Com Vitrúvio, uma pessoa de <b>${h} cm</b> tem rosto de quantos cm? E cada terço? Responda o terço (2 casas).`,a:Math.round(h/30*100)/100,tol:0.011,exp:`Rosto ${fmt(h/10)} cm; terço ${fmt(h/10)} ÷ 3 ≈ ${fmt(Math.round(h/30*100)/100)} cm.`};}}}};
+ const h=R(145,185);return{q:`Com Vitrúvio, uma pessoa de <b>${h} cm</b> tem rosto de quantos cm? E cada terço? Responda o terço (2 casas).`,a:Math.round(h/30*100)/100,tol:0.011,exp:`Rosto ${fmt(h/10)} cm; terço ${fmt(h/10)} ÷ 3 ≈ ${fmt(Math.round(h/30*100)/100)} cm.`};}}},'arq7':{T:["Classificar e contar", "Média, mediana e moda", "A dispersão", "O histograma", "A amostra sem viés", "Da amostra ao todo", "Margem de erro"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const T=P([50,80,120,150,200,250,400]),p=P([10,12,20,24,25,30,40,45]);const n=T*p/100;return{q:`Num lote de <b>${T}</b> peças, <b>${fmt(n)}</b> são lascas. Qual a frequência relativa, em %?`,a:p,exp:`${fmt(n)} ÷ ${T} = ${p}%.`};}
+ if(t==1){const p=P([5,10,12,14,20,24,25,40,45,60]);return{q:`Um tipo de peça é <b>${p}%</b> do acervo. Qual o ângulo do seu setor, em graus?`,a:p*3.6,tol:0.01,exp:`${p} × 3,6° = ${fmt(Math.round(p*36)/10)}°.`};}
+ const a=P([18,36,45,54,72,90,108,144,180]);return{q:`Um setor tem <b>${a}°</b>. Que porcentagem do total ele representa?`,a:a/3.6,tol:0.01,exp:`${a} ÷ 3,6 = ${fmt(a/3.6)}%.`};},
+2:()=>{const t=R(0,2),n=P([5,7,9]),v=Array.from({length:n},()=>R(2,15));const s=v.slice().sort((a,b)=>a-b);
+ if(t==0){const m=Math.round(v.reduce((x,y)=>x+y,0)/n*100)/100;return{q:`Qual a média de <b>${v.join('; ')}</b>? (2 casas)`,a:m,tol:0.011,exp:`Soma ${v.reduce((x,y)=>x+y,0)} ÷ ${n} ≈ ${fmt(m)}.`};}
+ if(t==1)return{q:`Qual a mediana de <b>${v.join('; ')}</b>?`,a:s[(n-1)/2],exp:`Em ordem: ${s.join('; ')}. O do meio é ${s[(n-1)/2]}.`};
+ const k=R(4,6),b=R(5,9),m=R(20,40),u=Array.from({length:k},()=>b);const tot=k*b+m;return{q:`${k} contas medem <b>${b} mm</b> e um pingente mede <b>${m} mm</b>. Qual a média, em mm? (2 casas)`,a:Math.round(tot/(k+1)*100)/100,tol:0.011,exp:`(${k} × ${b} + ${m}) ÷ ${k+1} ≈ ${fmt(Math.round(tot/(k+1)*100)/100)} mm. A mediana e a moda continuam ${b} mm.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const v=Array.from({length:6},()=>R(1,12));return{q:`Qual a amplitude de <b>${v.join('; ')}</b>?`,a:Math.max(...v)-Math.min(...v),exp:`${Math.max(...v)} − ${Math.min(...v)} = ${Math.max(...v)-Math.min(...v)}.`};}
+ if(t==1){const m=R(3,9),d=R(1,4);return{q:`Qual o desvio padrão de <b>${m-d} e ${m+d}</b>?`,a:d,exp:`Média ${m}; desvios ±${d}; variância ${d*d}; desvio padrão ${d}.`};}
+ const va=P([1,1.96,2.25,4,6.25,9,0.64,1.44]);return{q:`A variância de um conjunto é <b>${fmt(va)}</b>. Qual o desvio padrão?`,a:Math.sqrt(va),tol:0.001,exp:`√${fmt(va)} = ${fmt(Math.sqrt(va))}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,8),w=P([1,2,0.5]);return{q:`Qual o ponto médio da classe de <b>${fmt(a)} a ${fmt(a+w)} cm</b>?`,a:a+w/2,exp:`(${fmt(a)} + ${fmt(a+w)}) ÷ 2 = ${fmt(a+w/2)}.`};}
+ if(t==1){const c=[R(2,8),R(8,16),R(12,22),R(6,14),R(2,8)],T=c.reduce((x,y)=>x+y,0),s=c.reduce((x,y,i)=>x+y*(1.5+i),0),m=Math.round(s/T*100)/100;
+  return{q:`Lascas em classes de 1 a 2, 2 a 3, 3 a 4, 4 a 5 e 5 a 6 cm: <b>${c.join(', ')}</b>. Média estimada pelos pontos médios? (2 casas)`,a:m,tol:0.011,exp:`(${c.map((n,i)=>fmt(1.5+i)+' × '+n).join(' + ')}) ÷ ${T} ≈ ${fmt(m)} cm.`};}
+ const c=[R(2,8),R(8,16),R(12,22),R(6,14),R(2,8)],T=c.reduce((x,y)=>x+y,0),i=R(0,4),p=Math.round(c[i]/T*1000)/10;return{q:`Classes 1 a 2, 2 a 3, 3 a 4, 4 a 5, 5 a 6 cm com <b>${c.join(', ')}</b> lascas. Que porcentagem está na classe de ${i+1} a ${i+2} cm? (1 casa)`,a:p,tol:0.06,exp:`${c[i]} ÷ ${T} ≈ ${fmt(p)}%.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const N=P([100,200,400,500,1000]),n=P([10,20,25,50]);return{q:`Sorteiam-se <b>${n}</b> de <b>${N}</b> sacos. Qual a chance, em %, de um saco qualquer entrar?`,a:n/N*100,tol:0.01,exp:`${n} ÷ ${N} = ${fmt(n/N*100)}%.`};}
+ if(t==1){const k=P([5,10,20,25]),c=R(1,k);return{q:`Amostra sistemática de 200 sacos: um a cada <b>${k}</b>, começando no saco <b>${c}</b>. Qual o terceiro saco escolhido?`,a:c+2*k,exp:`${c}, ${c+k}, ${c+2*k}.`};}
+ const n=P([20,40]),a=P([100,120,80]),b=P([50,60,40]),d=200-a-b;return{q:`De 200 sacos, ${a} são da camada E, ${b} do chão D e ${d} do chão B. Numa amostra estratificada de ${n} sacos, quantos vêm da camada E?`,a:a*n/200,exp:`${a} × ${n} ÷ 200 = ${a*n/200}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const n=P([10,20,25,40]),m=P([5.5,6,6.2,6.3,6.5,7]);const s=Math.round(n*m*10)/10;return{q:`${n} sacos sorteados têm <b>${fmt(s)}</b> peças. Estime o total de <b>200</b> sacos.`,a:m*200,tol:0.5,exp:`${fmt(s)} ÷ ${n} = ${fmt(m)} por saco; × 200 = ${fmt(m*200)}.`};}
+ if(t==1){const M=P([20,30,40,50,60]),C=P([40,50,60,80]),Rr=P([4,5,8,10]);return{q:`Captura e recaptura: <b>${M}</b> peixes marcados; depois, <b>${C}</b> pescados, <b>${Rr}</b> com marca. Quantos peixes há no lago?`,a:M*C/Rr,tol:0.5,exp:`N ≈ ${M} × ${C} ÷ ${Rr} = ${fmt(M*C/Rr)}.`};}
+ const b=P([100,120,150,200]),v=P([100,250,408,500]);return{q:`Um balde de 10 L tem <b>${b}</b> conchas. Quantas conchas há em <b>${v} m³</b>?`,a:b/10*1000*v,tol:1,exp:`${b} ÷ 10 = ${b/10} por litro; × 1.000 × ${v} = ${fmt(b/10*1000*v)}.`};},
+7:()=>{const t=R(0,2);
+ if(t==0){const s=P([1,1.5,2,2.5,3]),n=P([4,9,16,25,36,49,64,100]);const m=Math.round(2*s/Math.sqrt(n)*1000)/1000;return{q:`Desvio padrão <b>${fmt(s)}</b>, amostra de <b>${n}</b>. Qual a margem de 95% (2 × s ÷ √n)? (até 3 casas)`,a:m,tol:0.002,exp:`2 × ${fmt(s)} ÷ ${Math.sqrt(n)} ≈ ${fmt(m)}.`};}
+ if(t==1){const n=P([100,400,625,900,1600,2500,10000]);return{q:`Uma pesquisa ouviu <b>${fmt(n)}</b> pessoas. Qual a margem aproximada, em % (1 ÷ √n)?`,a:100/Math.sqrt(n),tol:0.01,exp:`1 ÷ ${Math.sqrt(n)} = ${fmt(100/Math.sqrt(n))}%.`};}
+ const n=P([10,20,25,50]),k=P([2,3,4]);return{q:`Uma amostra de <b>${n}</b> dá certa margem. Quantos elementos são precisos para dividir a margem por <b>${k}</b>?`,a:n*k*k,exp:`A margem cai com √n: multiplique n por ${k}² = ${k*k}. ${n} × ${k*k} = ${n*k*k}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='arq1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

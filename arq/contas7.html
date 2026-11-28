@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O centro das contas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O centro das contas</h1></header>
+<main>
+<div class="card"><h2>Média, mediana e moda</h2><p class="muted" style="margin-top:0">Cada bolinha é uma conta, com seu diâmetro em milímetros. Arraste qualquer conta pela reta; o pingente (laranja) também muda pelo controle.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Pingente</b><input type="range"><span></span></div>
+<div class="kpi"><div>Média<b id="kme"></b></div><div class="o">Mediana<b id="kmd"></b></div><div>Moda<b id="kmo"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Arraste as contas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),mil=v=>fmt(Math.round(v));
+const media=a=>a.reduce((s,v)=>s+v,0)/a.length,dpad=a=>{const m=media(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)*(v-m),0)/a.length);};
+const mediana=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
+const V=[6,7,7,8,8,8,9,9,10,11,15];
+const Sp=SL('sp',5,30,1,15,v=>{V[10]=v;draw();},v=>v+' mm');
+const X0=24,K=10.4,Y0=190,X=v=>X0+(v-4)*K;let pega=-1;
+const pos=()=>{const c={};return V.map(v=>{const k=c[v]||0;c[v]=k+1;return k;});};
+toque('fig',(x,y,novo)=>{const v=Math.min(30,Math.max(4,Math.round((x-X0)/K+4)));
+ if(novo){const p=pos();let b=1e9;pega=-1;V.forEach((u,i)=>{const d=Math.hypot(X(u)-x,(Y0-14-p[i]*18)-y);if(d<b){b=d;pega=i;}});if(b>40)pega=-1;}
+ if(pega<0)return;V[pega]=v;if(pega==10)Sp.set(v);draw();});
+const modas=()=>{const c={};V.forEach(v=>c[v]=(c[v]||0)+1);const mx=Math.max(...Object.values(c));return Object.keys(c).filter(k=>c[k]==mx).map(Number).sort((a,b)=>a-b);};
+const ori=()=>V.slice(0,10).join()=='6,7,7,8,8,8,9,9,10,11';
+MIS.def(()=>[
+ ['Mude o pingente para <b>27 mm</b>, como o da Dra. Nádia. Quanto dá a média?',()=>V[10]==27&&ori(),'Média 10 mm, mediana e moda 8 mm: o pingente puxou a média para cima.',()=>!ori()?'Volte as 10 contas aos valores do livro (6, 7, 7, 8, 8, 8, 9, 9, 10, 11).':'Pingente agora: '+V[10]+' mm.'],
+ ['Mexendo só no pingente, deixe a <b>média igual à mediana</b>.',()=>ori()&&Math.abs(media(V)-mediana(V))<0.01,()=>'Pingente de '+V[10]+' mm: média e mediana em '+f1(media(V))+' mm. Sem valor atípico, as duas concordam.',()=>!ori()?'Volte as 10 contas aos valores do livro.':'Média '+f2(media(V))+' e mediana '+fmt(mediana(V))+'. Precisam ser iguais.'],
+ ['Mexendo só no pingente, deixe a média em <b>9 mm</b>.',()=>ori()&&Math.abs(media(V)-9)<0.01,'Pingente de 16 mm: a soma tem de ser 9 × 11 = 99, e as outras dez somam 83.',()=>!ori()?'Volte as 10 contas aos valores do livro.':'Média agora: '+f2(media(V))+' mm.'],
+ ['Arraste as contas até haver <b>duas modas</b>.',()=>modas().length==2,()=>'Modas: '+modas().join(' e ')+' mm. Um conjunto pode ter duas (ou mais) modas.',()=>'Modas agora: '+modas().join(', ')+' mm. Precisa haver exatamente duas.']]);
+function draw(){let g=RC(0,0,340,230,'#F8FAFC','rx="10"');g+=LN(X0-6,Y0,X(30)+6,Y0,NAVY,1.5);
+ for(let v=4;v<=30;v++)g+=LN(X(v),Y0,X(v),Y0+(v%2?4:7),NAVY,1)+(v%2?'':TX(X(v),Y0+19,v,{fs:9,c:GRAY,w:500}));
+ const me=media(V),md=mediana(V);
+ g+=LN(X(md),Y0,X(md),40,BLUE,1.5,'4 3')+TX(X(md),34,'mediana',{fs:10,c:BLUE});
+ g+=LN(X(me),Y0,X(me),60,ORANGE,1.5,'4 3')+TX(X(me),54,'média',{fs:10,c:ORANGE});
+ const p=pos();V.forEach((v,i)=>g+=CIR(X(v),Y0-14-p[i]*18,8,i==10?ORANGE:GREEN,'stroke="#fff" stroke-width="1.5"'));
+ g+=TX(X(17),Y0+34,'diâmetro (mm)',{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(340,230,g);$('kme').textContent=f2(me)+' mm';$('kmd').textContent=fmt(md)+' mm';$('kmo').textContent=modas().join(' e ')+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

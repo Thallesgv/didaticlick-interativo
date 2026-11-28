@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O inventário · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O inventário</h1></header>
+<main>
+<div class="card"><h2>Barras e setores</h2><p class="muted" style="margin-top:0">Mude a quantidade de cada tipo de peça pelos controles, ou toque numa barra na altura que quiser. O gráfico de setores divide os 360° na mesma proporção.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Ossos de peixe</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Lascas de pedra</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Contas de concha</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Cacos de cerâmica</b><input type="range"><span></span></div>
+<div class="sl" id="s4"><b>Ossos de mamífero</b><input type="range"><span></span></div>
+<div class="kpi"><div>Total<b id="kt"></b></div><div class="o">Lascas<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as quantidades.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),mil=v=>fmt(Math.round(v));
+const media=a=>a.reduce((s,v)=>s+v,0)/a.length,dpad=a=>{const m=media(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)*(v-m),0)/a.length);};
+const mediana=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
+const NOM=['ossos de peixe','lascas','contas','cacos','ossos de mamífero'],COR=['#2457D6','#F7821F','#15803D','#B5774A','#8B5CF6'],INI=[50,30,25,20,10];
+const S=INI.map((v,i)=>SL('s'+i,0,100,1,v,()=>draw(),x=>x+' peças'));
+const q=()=>S.map(s=>s.get()),tot=()=>q().reduce((a,b)=>a+b,0);
+const X0=30,BW=26,GAP=8,Y0=230,K=1.8;
+toque('fig',(x,y)=>{const i=Math.floor((x-X0)/(BW+GAP));if(i<0||i>4||x>X0+5*(BW+GAP))return;S[i].set(Math.min(100,Math.max(0,Math.round((Y0-y)/K))));draw();});
+MIS.def(()=>[
+ ['Monte a tabela dos primeiros 25 sacos: <b>60, 36, 21, 18 e 15</b> peças.',()=>q().join()=='60,36,21,18,15',()=>'Total de 150 peças: 40%, 24%, 14%, 12% e 10%.',()=>{const e=[60,36,21,18,15],i=q().findIndex((v,k)=>v!=e[k]);return NOM[i]+' agora: '+q()[i]+'. Precisa de '+e[i]+'.';}],
+ ['Faça as <b>lascas</b> ocuparem exatamente <b>um quarto</b> do círculo (90°).',()=>tot()>0&&q()[1]*4==tot(),()=>'Lascas: '+q()[1]+' de '+tot()+' = 25%, um setor de 90°.',()=>'Lascas: '+f1(q()[1]/Math.max(1,tot())*100)+'% ('+f1(q()[1]/Math.max(1,tot())*360)+'°). Precisa de 25% (90°).'],
+ ['Faça os <b>ossos de peixe</b> virarem <b>metade</b> do círculo, sem zerar nenhum tipo.',()=>q().every(v=>v>0)&&q()[0]*2==tot(),()=>'Ossos de peixe: '+q()[0]+' de '+tot()+'. Metade das peças, 180°: a soma dos outros quatro tem de ser igual a eles.',()=>q().some(v=>v==0)?'Nenhum tipo pode ficar com zero.':'Ossos de peixe: '+q()[0]+'; os outros somam '+(tot()-q()[0])+'. Precisam ser iguais.'],
+ ['Monte um acervo de <b>200 peças</b> em que as <b>contas</b> têm um setor de <b>36°</b>.',()=>tot()==200&&q()[2]==20,'36° = 10% do círculo: 20 de 200 peças.',()=>tot()!=200?'Total agora: '+tot()+'. Precisa de 200.':'Contas: '+q()[2]+' ('+f1(q()[2]/2*3.6)+'°). Precisa de 36°.']]);
+function draw(){let g=RC(0,0,340,260,'#F8FAFC','rx="10"');const v=q(),t=tot();
+ for(let k=0;k<=100;k+=20)g+=LN(X0-4,Y0-k*K,X0+5*(BW+GAP),Y0-k*K,'#E5EAF1',1)+TX(X0-6,Y0-k*K+3,k,{fs:8,a:'end',c:GRAY,w:500});
+ v.forEach((n,i)=>{const x=X0+i*(BW+GAP)+GAP/2;g+=RC(x,Y0-n*K,BW,n*K,COR[i],'rx="2"')+TX(x+BW/2,Y0-n*K-4,n,{fs:9});});
+ g+=TX(X0+2.5*(BW+GAP),Y0+16,'toque numa barra para mudar',{fs:9,c:GRAY,w:500});
+ const cx=272,cy=110,r=60;let a=-Math.PI/2;
+ if(t>0)v.forEach((n,i)=>{if(!n)return;const b=a+n/t*2*Math.PI,lg=(b-a)>Math.PI?1:0;
+  g+=n==t?CIR(cx,cy,r,COR[i]):`<path d="M${cx},${cy} L${cx+r*Math.cos(a)},${cy+r*Math.sin(a)} A${r},${r} 0 ${lg} 1 ${cx+r*Math.cos(b)},${cy+r*Math.sin(b)} Z" fill="${COR[i]}" stroke="#fff" stroke-width="1.5"/>`;
+  const m=(a+b)/2;if(n/t>0.06)g+=TX(cx+r*0.62*Math.cos(m),cy+r*0.62*Math.sin(m)+4,Math.round(n/t*100)+'%',{fs:10,c:'#fff'});a=b;});
+ g+=TX(cx,cy+r+18,t+' peças = 360°',{fs:10});
+ $('fig').innerHTML=SVG(340,260,g);$('kt').textContent=t+' peças';$('kl').textContent=t?f1(v[1]/t*100)+'% = '+f1(v[1]/t*360)+'°':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
