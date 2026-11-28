@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança da equação · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A balança da equação</h1></header>
+<main>
+<div class="card"><h2>Os átomos dos dois lados</h2><p class="muted" style="margin-top:0">Escolha a reação e mude os <b>coeficientes</b>. A balança compara os átomos de cada elemento dos dois lados e só fica reta quando a equação está balanceada.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="c0"><b>Coeficiente 1</b><input type="range"><span></span></div>
+<div class="sl" id="c1"><b>Coeficiente 2</b><input type="range"><span></span></div>
+<div class="sl" id="c2"><b>Coeficiente 3</b><input type="range"><span></span></div>
+<div class="sl" id="c3"><b>Coeficiente 4</b><input type="range"><span></span></div>
+<div class="sl" id="c4"><b>Coeficiente 5</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Equação<b id="ke"></b></div><div>Massa à esquerda<b id="kl"></b></div><div>Massa à direita<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Balanceie.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?2:d))/Math.pow(10,d==null?2:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (e>=-2&&e<=5)?fmt(Math.round(v*1000)/1000):fmt(a)+' × 10'+SUP(e);};
+const ACOR={H:'#E5E7EB',C:'#3B3F4A',O:'#E5482B',S:'#F2C230',Ca:'#7FB2E0'},AR={H:9,C:13,O:13,S:16,Ca:17},AM={H:1,C:12,O:16,S:32,Ca:40};
+function ATOMO(x,y,el,k){k=k||1;return CI(x,y,AR[el]*k,ACOR[el],'stroke="#0E2354" stroke-width="1.2"')+TX(x,y+4*k,el,{fs:10*k,c:(el=='O'||el=='C')?'#fff':NAVY});}
+const IDX=n=>n>1?String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''):'';
+const MM={'SO₂':{S:1,O:2},'O₂':{O:2},'H₂O':{H:2,O:1},'H₂SO₄':{H:2,S:1,O:4},'H₂S':{H:2,S:1},'CaCO₃':{Ca:1,C:1,O:3},'CaSO₄':{Ca:1,S:1,O:4},'CO₂':{C:1,O:2}};
+const RE=[{n:'SO₂ vira ácido',l:['SO₂','O₂','H₂O'],r:['H₂SO₄']},{n:'H₂S queimando',l:['H₂S','O₂'],r:['SO₂','H₂O']},{n:'Calcário e ácido',l:['CaCO₃','H₂SO₄'],r:['CaSO₄','H₂O','CO₂']}];
+let ir=0;const K=[0,1,2,3,4].map(i=>SL('c'+i,1,6,1,1,()=>draw()));
+chips('ch',RE.map(r=>r.n),0,i=>{ir=i;K.forEach(k=>k.set(1));draw();});
+const mw=f=>{let s=0;for(const[e,q]of Object.entries(MM[f]))s+=AM[e]*q;return s;};
+function conta(){const R=RE[ir],L={},Rr={};let ml=0,mr=0;R.l.forEach((f,i)=>{for(const[e,q]of Object.entries(MM[f]))L[e]=(L[e]||0)+q*K[i].get();ml+=mw(f)*K[i].get();});
+ R.r.forEach((f,j)=>{const i=R.l.length+j;for(const[e,q]of Object.entries(MM[f]))Rr[e]=(Rr[e]||0)+q*K[i].get();mr+=mw(f)*K[i].get();});return{L,Rr,ml,mr};}
+const bal=()=>{const c=conta();return Object.keys({...c.L,...c.Rr}).every(e=>(c.L[e]||0)==(c.Rr[e]||0));};
+const ks=()=>K.slice(0,RE[ir].l.length+RE[ir].r.length).map(k=>k.get()).join(',');
+MIS.def(()=>[
+ ['Balanceie o <b>SO₂ virando ácido sulfúrico</b> com os menores coeficientes.',()=>ir==0&&ks()=='2,1,2,2',()=>'2 SO₂ + O₂ + 2 H₂O → 2 H₂SO₄. S: 2 = 2; O: 8 = 8; H: 4 = 4. Massa: 128 + 32 + 36 = 196 g dos dois lados.',()=>ir!=0?'Escolha "SO₂ vira ácido".':bal()?'Está balanceada, mas dá para usar coeficientes menores.':'Compare os átomos de cada lado.'],
+ ['Queime o <b>H₂S</b>, o gás do cheiro de ovo podre.',()=>ir==1&&ks()=='2,3,2,2',()=>'2 H₂S + 3 O₂ → 2 SO₂ + 2 H₂O. O gás da fumarola também vira SO₂.',()=>ir!=1?'Escolha "H₂S queimando".':bal()?'Balanceada, mas há coeficientes menores.':'Dica: o oxigênio é o último a acertar.'],
+ ['Faça o <b>calcário</b> neutralizar o ácido.',()=>ir==2&&ks()=='1,1,1,1,1',()=>'CaCO₃ + H₂SO₄ → CaSO₄ + H₂O + CO₂: tudo 1. 100 g de calcário para 98 g de ácido.',()=>ir!=2?'Escolha "Calcário e ácido".':'Teste todos os coeficientes iguais a 1.'],
+ ['Volte ao SO₂ e <b>dobre</b> todos os coeficientes (4, 2, 4, 4). A balança desequilibra?',()=>ir==0&&ks()=='4,2,4,4','Não: dobrar tudo mantém a proporção, como numa receita para o dobro de pessoas. Por convenção, usamos os menores inteiros.',()=>ir!=0?'Escolha "SO₂ vira ácido".':'Ponha 4, 2, 4 e 4.']]);
+function quadro(){const W=340,H_=236,c=conta();let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const dif=c.ml-c.mr,ang=bal()?0:clamp(dif/40,-1,1)*10;
+ g+=PG([[160,212],[180,212],[170,130]],NAVY);g+=`<g transform="rotate(${-ang} 170 130)">`+LN(30,130,310,130,NAVY,4);
+ [[90,c.L],[250,c.Rr]].forEach(([x,o])=>{g+=LN(x,130,x-50,150,GRAY,1)+LN(x,130,x+50,150,GRAY,1)+RC(x-58,150,116,5,NAVY);let i=0;
+  for(const e of ['Ca','C','S','H','O']){if(!o[e])continue;const q=o[e];   g+=TX(x-46,32+i*22,e+': '+q,{fs:11,c:NAVY,a:'start'});for(let j=0;j<Math.min(q,12);j++)g+=CI(x-6+j*7,28+i*22,AR[e]*0.3,ACOR[e],'stroke="#0E2354" stroke-width=".6"');i++;}});
+ g+='</g>';g+=TX(170,228,bal()?'balanceada ✔':'ainda não',{fs:11,c:bal()?GREEN:'#B91C1C'});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const R=RE[ir],nf=R.l.length+R.r.length;K.forEach((k,i)=>{$('c'+i).style.display=i<nf?'':'none';const f=i<R.l.length?R.l[i]:R.r[i-R.l.length];if(f)$('c'+i).querySelector('b').textContent='Coeficiente de '+f;});
+ const cf=(f,i)=>(K[i].get()>1?K[i].get()+' ':'')+f;$('ke').textContent=R.l.map((f,i)=>cf(f,i)).join(' + ')+' → '+R.r.map((f,j)=>cf(f,R.l.length+j)).join(' + ');
+ const c=conta();$('kl').textContent=c.ml+' g';$('kr').textContent=c.mr+' g';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

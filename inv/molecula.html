@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a molécula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Monte a molécula</h1></header>
+<main>
+<div class="card"><h2>Massa = soma dos átomos</h2><p class="muted" style="margin-top:0">Escolha quantos átomos de cada elemento a molécula tem. A tela soma as massas (H = 1, C = 12, O = 16, S = 32) e mostra quanto da massa é de cada elemento.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Hidrogênio (H)</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Carbono (C)</b><input type="range"><span></span></div>
+<div class="sl" id="so"><b>Oxigênio (O)</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Enxofre (S)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Fórmula<b id="kf"></b></div><div>Massa<b id="km"></b></div><div>Enxofre na massa<b id="ks"></b></div><div>Átomos<b id="kn"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte uma molécula.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?2:d))/Math.pow(10,d==null?2:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (e>=-2&&e<=5)?fmt(Math.round(v*1000)/1000):fmt(a)+' × 10'+SUP(e);};
+const ACOR={H:'#E5E7EB',C:'#3B3F4A',O:'#E5482B',S:'#F2C230',Ca:'#7FB2E0'},AR={H:9,C:13,O:13,S:16,Ca:17},AM={H:1,C:12,O:16,S:32,Ca:40};
+function ATOMO(x,y,el,k){k=k||1;return CI(x,y,AR[el]*k,ACOR[el],'stroke="#0E2354" stroke-width="1.2"')+TX(x,y+4*k,el,{fs:10*k,c:(el=='O'||el=='C')?'#fff':NAVY});}
+const IDX=n=>n>1?String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''):'';
+const H=SL('sh',0,6,1,2,()=>draw()),C=SL('sc',0,3,1,0,()=>draw()),O=SL('so',0,6,1,1,()=>draw()),S=SL('ss',0,2,1,0,()=>draw());
+const n=()=>({H:H.get(),C:C.get(),O:O.get(),S:S.get()}),massa=()=>{const a=n();return a.H+12*a.C+16*a.O+32*a.S;};
+const form=()=>{const a=n();let f='';if(a.H)f+='H'+IDX(a.H);if(a.C)f+='C'+IDX(a.C);if(a.S)f+='S'+IDX(a.S);if(a.O)f+='O'+IDX(a.O);if(a.C&&!a.H&&!a.S)f='C'+IDX(a.C)+'O'+IDX(a.O);return f||'—';};
+const eh=(h,c,o,s)=>H.get()==h&&C.get()==c&&O.get()==o&&S.get()==s;
+MIS.def(()=>[
+ ['Monte o <b>dióxido de enxofre</b>, SO₂.',()=>eh(0,0,2,1),'32 + 2 × 16 = 64 u. Metade da massa é enxofre.',()=>'SO₂: 1 enxofre e 2 oxigênios, sem H e sem C.'],
+ ['Monte o <b>ácido sulfúrico</b>, H₂SO₄, que forma as gotículas da névoa.',()=>eh(2,0,4,1),'2 + 32 + 64 = 98 u. Sete átomos.',()=>'2 H, 1 S e 4 O.'],
+ ['Só com S e O, monte a molécula em que o enxofre é <b>40%</b> da massa.',()=>eh(0,0,3,1),'SO₃: 32 ÷ 80 = 40%. O trióxido de enxofre, o passo entre o SO₂ e o ácido.',()=>massa()?'Agora o enxofre é '+r1(32*S.get()/massa()*100)+'% da massa.':'Comece com 1 enxofre.'],
+ ['Monte o <b>gás carbônico</b>, CO₂. Quantas vezes ele pesa mais que a água?',()=>eh(0,1,2,0),'44 ÷ 18 ≈ 2,4 vezes. Por isso o CO₂ desce e se acumula em buracos e porões perto de vulcões.',()=>'1 carbono e 2 oxigênios.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const a=n();const cx=110,cy=112;
+ let cen=a.S?'S':a.C?'C':a.O?'O':a.H?'H':null;const ext=[];['S','C','O','H'].forEach(el=>{for(let i=0;i<a[el];i++)ext.push(el);});
+ if(cen){ext.splice(ext.indexOf(cen),1);const pos=ext.map((el,i)=>{const ang=-Math.PI/2+i*2*Math.PI/Math.max(ext.length,1),r=ext.length>6?68:52;return [cx+r*Math.cos(ang),cy+r*Math.sin(ang),el];});
+  pos.forEach(p=>g+=LN(cx,cy,p[0],p[1],NAVY,3));pos.forEach(p=>g+=ATOMO(p[0],p[1],p[2],1.3));g+=ATOMO(cx,cy,cen,1.3);}
+ else g+=TX(cx,cy,'sem átomos',{fs:11,c:GRAY});
+ const m=massa(),x0=232,y0=26,h=176;g+=TX(x0+40,y0-8,'massa: '+m+' u',{fs:10,c:NAVY});let y=y0;
+ ['H','C','O','S'].forEach(el=>{const p=m?a[el]*AM[el]/m:0;if(p>0){g+=RC(x0,y,80,p*h,ACOR[el],'stroke="#fff"');if(p*h>14)g+=TX(x0+40,y+p*h/2+4,el+' '+r1(p*100)+'%',{fs:9.5,c:(el=='O'||el=='C')?'#fff':NAVY});y+=p*h;}});
+ g+=RC(x0,y0,80,h,'none','stroke="#0E2354"');
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const m=massa();$('kf').textContent=form();$('km').textContent=m+' u';$('ks').textContent=m?r1(32*S.get()/m*100)+'%':'—';$('kn').textContent=H.get()+C.get()+O.get()+S.get();quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

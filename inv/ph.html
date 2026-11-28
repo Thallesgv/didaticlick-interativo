@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua do pH · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A régua do pH</h1></header>
+<main>
+<div class="card"><h2>pH = −log [H⁺]</h2><p class="muted" style="margin-top:0">Mude o pH da chuva que caiu na cisterna e o volume dela. Depois ponha calcário: cada 100 g (1 mol de CaCO₃) neutralizam 2 mol de H⁺.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>pH da água</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Volume da cisterna</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Calcário</b><input type="range"><span></span></div>
+<div class="kpi"><div>[H⁺]<b id="kh"></b></div><div>× a chuva normal (5,6)<b id="kx"></b></div><div>Calcário necessário<b id="kn"></b></div><div class="o">pH depois<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça a água.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?2:d))/Math.pow(10,d==null?2:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (e>=-2&&e<=5)?fmt(Math.round(v*1000)/1000):fmt(a)+' × 10'+SUP(e);};
+const ACOR={H:'#E5E7EB',C:'#3B3F4A',O:'#E5482B',S:'#F2C230',Ca:'#7FB2E0'},AR={H:9,C:13,O:13,S:16,Ca:17},AM={H:1,C:12,O:16,S:32,Ca:40};
+function ATOMO(x,y,el,k){k=k||1;return CI(x,y,AR[el]*k,ACOR[el],'stroke="#0E2354" stroke-width="1.2"')+TX(x,y+4*k,el,{fs:10*k,c:(el=='O'||el=='C')?'#fff':NAVY});}
+const IDX=n=>n>1?String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''):'';
+const PH=SL('sp',1,8,0.1,5.6,()=>draw(),v=>r1(v)),V=SL('sv',1000,20000,1000,10000,()=>draw(),v=>fmt(v)+' L'),Cc=SL('sc',0,1000,10,0,()=>draw(),v=>fmt(v)+' g');
+const h=()=>Math.pow(10,-PH.get()),nH=()=>h()*V.get(),prec=()=>nH()/2*100,resto=()=>Math.max(0,nH()-Cc.get()/100*2),phD=()=>{const r=resto()/V.get();return r>1e-7?-Math.log10(r):7;};
+const ig=(a,b)=>Math.abs(a-b)<0.05;
+MIS.def(()=>[
+ ['A chuva da ilha tem <b>pH 4,0</b>. Quantas vezes é mais ácida que a chuva normal?',()=>ig(PH.get(),4),()=>'10^(5,6 − 4) = 10^1,6 ≈ '+fmt(Math.round(Math.pow(10,1.6)))+' vezes mais H⁺ por litro.',()=>'Leve o pH até 4,0.'],
+ ['A cisterna de 10.000 L com pH 4 precisa de 50 g de calcário. E uma cisterna de <b>20.000 L</b>?',()=>ig(PH.get(),4)&&V.get()==20000,'20.000 × 10⁻⁴ = 2 mol de H⁺ → 1 mol de CaCO₃ = 100 g: o dobro do volume, o dobro do calcário.',()=>!ig(PH.get(),4)?'Volte para pH 4,0.':'Mude o volume para 20.000 L.'],
+ ['Volte aos <b>10.000 L</b> e imagine chuva de <b>pH 3</b>. Quanto calcário?',()=>ig(PH.get(),3)&&V.get()==10000,'10 mol de H⁺ → 500 g de calcário: dez vezes os 50 g do pH 4, porque um ponto de pH é um fator 10.',()=>'pH 3,0 e 10.000 L.'],
+ ['Neutralize a cisterna de pH 3: ponha o calcário certo.',()=>ig(PH.get(),3)&&V.get()==10000&&Cc.get()==500,'Com 500 g, o H⁺ some e a água fica perto do neutro. Na prática, o calcário que sobra não dissolve e não passa muito de 7.',()=>!(ig(PH.get(),3)&&V.get()==10000)?'Volte para pH 3 e 10.000 L.':'Agora o pH depois é '+r1(phD())+'.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const x0=20,w=300/14,y=40;
+ for(let k=0;k<14;k++){const t=k/13;const c=k<7?`rgb(${230},${Math.round(70+120*t)},${Math.round(45+50*t)})`:`rgb(${Math.round(90-40*(t-0.5))},${Math.round(140+20*(t-0.5))},220)`;g+=RC(x0+k*w,y,w,22,c,'stroke="#fff"');g+=TX(x0+k*w,y+36,k,{fs:9,c:GRAY,w:500});}
+ g+=TX(x0+14*w,y+36,14,{fs:9,c:GRAY,w:500});
+ const xp=x0+PH.get()*w,xn=x0+5.6*w;g+=PG([[xp,y-2],[xp-7,y-14],[xp+7,y-14]],NAVY)+TX(xp,y-18,'pH '+r1(PH.get()),{fs:10,c:NAVY});
+ g+=LN(xn,y+22,xn,y+44,ORANGE,1.5,'3 2')+TX(xn,y+56,'chuva normal',{fs:8.5,c:ORANGE});
+ const cx=90,cy=160,lv=clamp(V.get()/20000,0.1,1)*56;g+=RC(cx-50,cy-60,100,64,'none','stroke="#0E2354" stroke-width="2"');
+ const tint=phD()<5?'#F2B8A8':phD()<6.5?'#F3E2B3':'#BFD9F2';g+=RC(cx-48,cy+2-lv,96,lv,Cc.get()>0?tint:(PH.get()<5?'#F2B8A8':'#BFD9F2'));
+ g+=TX(cx,cy+22,'cisterna: '+fmt(V.get())+' L',{fs:9.5,c:NAVY});
+ const nb=Math.min(20,Math.round(Cc.get()/50));for(let i=0;i<nb;i++)g+=RC(cx-44+(i%10)*9,cy-4-Math.floor(i/10)*7,7,5,'#E5E7EB','stroke="#9AA0AC"');
+ g+=TX(240,130,'H⁺ na cisterna:',{fs:10,c:GRAY,w:500})+TX(240,150,SIG(nH())+' mol',{fs:13,c:ORANGE})+TX(240,178,'calcário:',{fs:10,c:GRAY,w:500})+TX(240,198,fmt(Cc.get())+' g de '+SIG(prec())+' g',{fs:11,c:NAVY});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kh').textContent=CIENT(h())+' mol/L';$('kx').textContent=SIG(Math.pow(10,5.6-PH.get()));$('kn').textContent=SIG(prec())+' g';$('kd').textContent=r1(phD());quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
