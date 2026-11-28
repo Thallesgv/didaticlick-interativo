@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O livro de noites · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O livro de noites</h1></header>
+<main>
+<div class="card"><h2>Frequência relativa</h2><p class="muted" style="margin-top:0">Sorteie noites com a chance de geada medida em cada lugar (ou sementes do saco do Seu Zeca: 30 de feijão e 20 de milho, devolvendo cada uma) e veja a frequência relativa se formar.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div id="cc" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin:8px 0"><button id="b1">Sortear 1</button><button class="alt" id="b10">Sortear 10</button><button class="alt" id="b100">Sortear 100</button></div>
+<div class="kpi"><div>Sorteios<b id="kn"></b></div><div class="o">Frequência relativa<b id="kf"></b></div><div>Probabilidade<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Sorteie noites.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0',VERDE='#2F7D4A',VERDEC='#CFE8D6',GRAD='#E5E7EB';
+const F2=v=>fmt(Math.round(v*100)/100),F3=v=>fmt(Math.round(v*1000)/1000);
+const COMB=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const eqv=(a,b)=>Math.abs(a-b)<1e-6;
+let modo=0,cont=0,R=[];const PR=[0.25,0.02,0.6];
+chips('ch',['Encosta','Várzea','Saco de sementes'],0,i=>{modo=i;R=[];draw();});
+chips('cc',['Contar o evento','Contar o complementar'],0,i=>{cont=i;draw();});
+const sort=k=>{for(let i=0;i<k;i++)R.push(Math.random()<PR[modo]);draw();};
+$('b1').onclick=()=>sort(1);$('b10').onclick=()=>sort(10);$('b100').onclick=()=>sort(100);
+const nev=()=>modo==2?'feijão':'geada',ncomp=()=>modo==2?'milho':'sem geada';
+const fr=()=>R.length?R.filter(x=>cont?!x:x).length/R.length:0,pr=()=>cont?1-PR[modo]:PR[modo];
+MIS.def(()=>[
+ ['Na <b>encosta</b>, sorteie pelo menos 100 noites. A frequência de geada chega perto de 0,25?',()=>modo==0&&cont==0&&R.length>=100,()=>'Frequência '+F2(fr())+' em '+R.length+' noites. Ela flutua em torno de 0,25, sem nunca ser exatamente igual.',()=>modo!=0?'Escolha "Encosta".':'Faltam '+(100-R.length)+' noites.'],
+ ['Agora conte o <b>complementar</b>: as noites sem geada.',()=>modo==0&&cont==1&&R.length>=100,()=>'Frequência '+F2(fr())+': perto de 1 − 0,25 = 0,75. Evento e complementar sempre somam 1.',()=>cont!=1?'Escolha "Contar o complementar".':'Sorteie pelo menos 100 noites na encosta.'],
+ ['Volte a contar geadas e sorteie <b>200 noites na várzea</b>. Quantas geadas?',()=>modo==1&&cont==0&&R.length>=200,()=>R.filter(x=>x).length+' geadas em '+R.length+' noites. O esperado era 0,02 × 200 = 4. Com tão poucos casos, a contagem varia muito de uma tentativa para outra.',()=>modo!=1?'Escolha "Várzea".':cont!=0?'Escolha "Contar o evento".':'Faltam '+(200-R.length)+' noites.'],
+ ['Tire pelo menos 50 sementes do <b>saco</b> (devolvendo cada uma). Que fração é de feijão?',()=>modo==2&&cont==0&&R.length>=50,()=>'Frequência '+F2(fr())+', perto de 30/50 = 0,6. Com casos igualmente prováveis, a probabilidade é favoráveis ÷ possíveis.',()=>modo!=2?'Escolha "Saco de sementes".':'Faltam '+(50-R.length)+' sementes.']]);
+function quadro(){const W=340,H_=230;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const N=Math.min(R.length,200),off=R.length-N;
+ for(let i=0;i<N;i++){const x=12+(i%20)*16,y=12+Math.floor(i/20)*16,e=R[off+i];g+=RC(x,y,13,13,modo==2?(e?'#C98B4B':'#F2C230'):(e?AZ2:GRAD),'rx="2"');}
+ g+=TX(170,186,R.length>200?'mostrando as últimas 200':'',{fs:9,c:GRAY,w:500});
+ const lg=modo==2?[['feijão','#C98B4B'],['milho','#F2C230']]:[['geada',AZ2],['sem geada',GRAD]];g+=RC(100,204,12,12,lg[0][1],'rx="2"')+TX(116,214,lg[0][0],{fs:10,c:NAVY,a:'start'})+RC(190,204,12,12,lg[1][1],'rx="2"')+TX(206,214,lg[1][0],{fs:10,c:NAVY,a:'start'});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kn').textContent=R.length;$('kf').textContent=R.length?F2(fr())+' ('+(cont?ncomp():nev())+')':'—';$('kp').textContent=F2(pr());quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

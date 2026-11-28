@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A decisão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A decisão</h1></header>
+<main>
+<div class="card"><h2>Valor esperado e risco</h2><p class="muted" style="margin-top:0">Plantar agora na várzea dá 20 sacas se escapar da geada e 5 se não escapar; esperar dá 12 sacas quase certas. Escolha a chance de escapar e a fração do hectare plantada agora. A família precisa de 8 sacas.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sq"><b>Chance de escapar da geada</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Fração plantada agora</b><input type="range"><span></span></div>
+<div class="kpi"><div>Plantar tudo agora (A)<b id="ka"></b></div><div>Esperar tudo (B)<b id="kb"></b></div></div>
+<div class="kpi"><div class="o">Valor esperado da roça<b id="ke"></b></div><div>Pior caso<b id="kw"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Decida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0',VERDE='#2F7D4A',VERDEC='#CFE8D6',GRAD='#E5E7EB';
+const F2=v=>fmt(Math.round(v*100)/100),F3=v=>fmt(Math.round(v*1000)/1000);
+const COMB=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const eqv=(a,b)=>Math.abs(a-b)<1e-6;
+const Q=SL('sq',0,1,0.01,0.67,()=>draw(),v=>fmt(v)),Fr=SL('sf',0,1,0.05,0.5,()=>draw(),v=>PC(v*100,0));
+const EA=()=>20*Q.get()+5*(1-Q.get()),f=()=>Fr.get(),E=()=>f()*EA()+(1-f())*12,pior=()=>f()*5+(1-f())*12,melhor=()=>f()*20+(1-f())*12;
+MIS.def(()=>[
+ ['Com chance 0,67 de escapar, plante <b>tudo agora</b>. Qual o valor esperado?',()=>eqv(Q.get(),0.67)&&eqv(f(),1),()=>'0,67 × 20 + 0,33 × 5 = '+F2(EA())+' sacas: mais que as 12 de esperar. Mas o pior caso é 5 sacas, abaixo das 8 da família.',()=>'Chance 0,67 e fração 100%.'],
+ ['Com tudo plantado agora, ache a chance de escapar que <b>empata</b> com esperar (12 sacas).',()=>eqv(f(),1)&&Math.abs(EA()-12)<0.1,()=>'Chance '+fmt(Q.get())+': 5 + 15q = 12 dá q = 7/15 ≈ 0,47. Abaixo disso, esperar vale mais.',()=>'Agora: '+F2(EA())+' sacas.'],
+ ['Volte à chance 0,67 e plante a <b>maior fração</b> que ainda garante 8 sacas no pior caso.',()=>eqv(Q.get(),0.67)&&pior()>=8&&f()+0.05>4/7+0.0001&&f()<=4/7,()=>'Fração '+PC(f()*100,0)+': pior caso '+F2(pior())+' sacas, valor esperado '+F2(E())+'. Troca-se um pouco de média por segurança.',()=>!eqv(Q.get(),0.67)?'Chance 0,67.':pior()<8?'Pior caso '+F2(pior())+': plante menos.':'Ainda cabe mais.'],
+ ['Se a chance de escapar fosse <b>0,3</b>, qual a melhor escolha? Ajuste a fração.',()=>eqv(Q.get(),0.3)&&eqv(f(),0),'Com 0,3, plantar agora vale 0,3 × 20 + 0,7 × 5 = 9,5 sacas, menos que 12. Esperar tudo é melhor na média e no pior caso.',()=>!eqv(Q.get(),0.3)?'Chance 0,3.':'Valor esperado agora: '+F2(E())+'. Tente outras frações.']]);
+function quadro(){const W=340,H_=220,y0=180,k=7;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');
+ g+=LN(14,y0-8*k,326,y0-8*k,VERM,1.5,'5 3')+TX(326,y0-8*k-4,'8 sacas',{fs:9,c:VERM,a:'end'});
+ const bar=(x,v,c,t,p)=>RC(x,y0-v*k,46,v*k,c,'rx="3" opacity="'+(0.35+0.65*p)+'"')+TX(x+23,y0-v*k-4,r1(v),{fs:9,c:NAVY})+TX(x+23,y0+14,t,{fs:9,c:GRAY,w:500})+TX(x+23,y0+27,'chance '+F2(p),{fs:8.5,c:GRAY,w:500});
+ g+=bar(30,melhor(),MARC,'escapou',Q.get())+bar(90,pior(),MARC,'geou',1-Q.get());
+ g+=LN(24,y0-E()*k,142,y0-E()*k,ORANGE,3)+TX(146,y0-E()*k+4,'E = '+r1(E()),{fs:10,c:ORANGE,a:'start'});
+ g+=RC(220,y0-12*k,46,12*k,'#C9A57A','rx="3"')+TX(243,y0-12*k-4,'12',{fs:9,c:NAVY})+TX(243,y0+14,'esperar tudo',{fs:9,c:GRAY,w:500});
+ g+=TX(84,22,'a roça escolhida',{fs:10,c:NAVY})+TX(243,22,'para comparar',{fs:10,c:NAVY});
+ g+=LN(14,y0,326,y0,NAVY,1.5);
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('ka').textContent=F2(EA())+' sacas';$('kb').textContent='12 sacas';$('ke').textContent=F2(E())+' sacas';$('kw').textContent=F2(pior())+' sacas';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vinte noites · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Vinte noites</h1></header>
+<main>
+<div class="card"><h2>Multiplicar chances</h2><p class="muted" style="margin-top:0">Cada noite escapa da geada com chance q = 1 − p. Para escapar de todas, multiplicam-se as chances: qⁿ. Embaixo, cada semente germina com chance g; a cova só fica vazia se todas falharem.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Chance de geada por noite (p)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Noites</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Sementes por cova</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Germinação (g)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Nenhuma geada<b id="ka"></b></div><div>Pelo menos uma<b id="kb"></b></div><div>Cova vazia<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escape das noites.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0',VERDE='#2F7D4A',VERDEC='#CFE8D6',GRAD='#E5E7EB';
+const F2=v=>fmt(Math.round(v*100)/100),F3=v=>fmt(Math.round(v*1000)/1000);
+const COMB=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const eqv=(a,b)=>Math.abs(a-b)<1e-6;
+const Pp=SL('sp',0,0.5,0.01,0.1,()=>draw(),v=>fmt(v)),N=SL('sn',1,40,1,5,()=>draw()),K=SL('sk',1,6,1,1,()=>draw()),G=SL('sg',0.5,0.95,0.05,0.8,()=>draw(),v=>fmt(v));
+const q=()=>1-Pp.get(),esc=n=>Math.pow(q(),n==null?N.get():n),vaz=k=>Math.pow(1-G.get(),k==null?K.get():k);
+MIS.def(()=>[
+ ['Na <b>várzea</b> (p = 0,02), quanto vale escapar de <b>20 noites</b>? É 40% de geada?',()=>eqv(Pp.get(),0.02)&&N.get()==20,()=>'Escapar: 0,98²⁰ ≈ '+F2(esc())+'. Geada em pelo menos uma: '+F2(1-esc())+', não 0,40: as chances se multiplicam, não se somam.',()=>'p = 0,02 e 20 noites.'],
+ ['Agora a <b>encosta</b> (p = 0,25), também com 20 noites.',()=>eqv(Pp.get(),0.25)&&N.get()==20,()=>'0,75²⁰ ≈ '+F3(esc())+': três chances em mil. Na encosta, plantar agora é quase certeza de perder.',()=>'p = 0,25 e 20 noites.'],
+ ['Na encosta, ache o <b>menor número de noites</b> em que a chance de escapar fica abaixo de meio a meio.',()=>eqv(Pp.get(),0.25)&&esc()<0.5&&esc(N.get()-1)>=0.5,()=>N.get()+' noites: 0,75³ ≈ 0,42. Com 2 noites ainda era 0,56.',()=>eqv(Pp.get(),0.25)?(esc()<0.5?'Abaixo de 0,5, mas tente menos noites.':'Ainda '+F2(esc())+': mais noites.'):'p = 0,25.'],
+ ['Com germinação 0,8, quantas <b>sementes por cova</b> deixam a chance de cova vazia abaixo de 1 em 1.000?',()=>eqv(G.get(),0.8)&&vaz()<0.001&&vaz(K.get()-1)>=0.001,()=>K.get()+' sementes: 0,2⁵ = 0,00032. Com 4, ainda era 0,0016.',()=>!eqv(G.get(),0.8)?'Germinação 0,8.':'Cova vazia: '+fmt(Math.round(vaz()*100000)/100000)+'.']]);
+function quadro(){const W=340,H_=230;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const n=N.get();
+ for(let i=0;i<n;i++){const x=14+(i%20)*16,y=16+Math.floor(i/20)*20;g+=CI(x+6,y+6,6,'#24407F')+CI(x+8,y+4,4.5,'#F8FAFC');}
+ const ys=70;g+=TX(14,ys,'qⁿ = '+F2(q())+SUP(n),{fs:10,c:NAVY,a:'start'});g+=RC(14,ys+8,300,16,GRAD,'rx="4"')+RC(14,ys+8,300*esc(),16,VERDE,'rx="4"')+TX(318,ys+20,PC(esc()*100),{fs:10,c:NAVY,a:'end'});
+ g+=TX(14,ys+42,'escapar de todas as noites',{fs:9,c:GRAY,w:500,a:'start'});
+ const k=K.get(),yc=140;g+=TX(14,yc,'Uma cova com '+k+' semente'+(k>1?'s':'')+':',{fs:10,c:NAVY,a:'start'});
+ g+=RC(14,yc+8,140,60,'#C9A57A','rx="8"');for(let i=0;i<k;i++)g+='<ellipse cx="'+(34+i*20)+'" cy="'+(yc+38)+'" rx="7" ry="5" fill="#7A4A21"/>';
+ g+=TX(240,yc+26,'vazia: '+F2(1-G.get())+SUP(k),{fs:10,c:NAVY})+TX(240,yc+48,'= '+(vaz()<0.001?fmt(Math.round(vaz()*100000)/100000):F3(vaz())),{fs:13,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('ka').textContent=esc()<0.01?F3(esc()):F2(esc());$('kb').textContent=F2(1-esc());$('kc').textContent=vaz()<0.001?fmt(Math.round(vaz()*100000)/100000):F3(vaz());quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
