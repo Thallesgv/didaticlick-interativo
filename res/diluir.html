@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O conta-gotas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O conta-gotas</h1></header>
+<main>
+<div class="card"><h2>C₁ · V₁ = C₂ · V₂</h2><p class="muted" style="margin-top:0">Escolha a água sanitária (2% = 20.000 mg/L ou 2,5% = 25.000 mg/L), quantos mL pingar (1 gota ≈ 0,05 mL) e o volume de água. A meta é 2 mg/L; acima de 4 mg/L passa do seguro.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sd"><b>Água sanitária</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Água no recipiente</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><div class="fig" id="gr"></div>
+<div class="kpi"><div class="o">Concentração final<b id="k1"></b></div><div>Gotas<b id="k2"></b></div><div>Cloro (mg)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Pingue.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function BALDE(x,y,w,h,f,cor){const t=0.12;return `<polygon points="${x},${y} ${x+w},${y} ${x+w*(1-t)},${y+h} ${x+w*t},${y+h}" fill="#fff" stroke="#0E2354" stroke-width="2"/>`+
+ (f>0?`<polygon points="${x+w*t*f},${y+h*(1-f)} ${x+w-w*t*f},${y+h*(1-f)} ${x+w*(1-t)},${y+h} ${x+w*t},${y+h}" fill="${cor||AGUA}"/>`:'');}
+const C1=[20000,25000];let ci=0;chips('ch',['água sanitária 2%','água sanitária 2,5%'],0,i=>{ci=i;draw();});
+const D=SL('sd',0,30,0.05,0.5,draw,v=>fmt(r2(v))+' mL'),V=SL('sv',1,200,1,10,draw,v=>v+' L');
+const mg=()=>C1[ci]*D.get()/1000,C2=()=>mg()/V.get(),perto=(a,b)=>Math.abs(a-b)<0.026;
+MIS.def(()=>[
+ ['Com água sanitária a 2%, chegue a <b>2 mg/L</b> num balde de <b>10 L</b>.',()=>ci==0&&V.get()==10&&perto(D.get(),1),'1 mL (20 gotas): 20.000 × 0,001 ÷ 10 = 2 mg/L.',()=>'Agora: '+fmt(r2(C2()))+' mg/L.'],
+ ['Agora faça a dose dos <b>132 L</b> dos 33, também com 2 mg/L.',()=>ci==0&&V.get()==132&&Math.abs(D.get()-13.2)<0.026,'13,2 mL: V₁ = 2 × 132 ÷ 20.000 L. São 264 gotas: melhor usar uma seringa.',()=>'Agora: '+fmt(r2(C2()))+' mg/L em '+V.get()+' L.'],
+ ['Nos 132 L, ache o <b>maior volume</b> de água sanitária a 2% que ainda fica em 4 mg/L.',()=>ci==0&&V.get()==132&&Math.abs(D.get()-26.4)<0.026,'26,4 mL: o dobro da dose. Mais que isso passa do que é considerado seguro.',()=>'Agora: '+fmt(r2(C2()))+' mg/L.']]);
+function draw(){const c=C2();let g='';const amar=Math.min(1,c/8);
+ g+=RC(30,40,36,70,'#FFF7D6','rx="5" stroke="#0E2354" stroke-width="1.5"')+RC(38,30,20,12,ORANGE)+TX(48,128,ci?'2,5%':'2%',{fs:11});
+ g+=LN(78,75,140,75,NAVY,2)+PG([[140,69],[150,75],[140,81]],NAVY)+TX(110,66,fmt(r2(D.get()))+' mL',{fs:11,c:ORANGE});
+ const cor=`rgb(${Math.round(156+99*amar)},${Math.round(200+40*amar)},${Math.round(240-170*amar)})`;g+=BALDE(165,20,130,110,0.8,cor)+TX(230,146,V.get()+' L',{fs:11});
+ g+=TX(230,80,fmt(r2(c))+' mg/L',{fs:14,c:c>4?VERM:c>=1.95?GREEN:NAVY});$('fig').innerHTML=SVG(340,156,g);
+ $('gr').innerHTML=PLOT({xmin:0,xmax:200,ymin:0,ymax:8,dx:40,dy:2,xl:'água (L)',yl:'mg/L com '+fmt(r2(D.get()))+' mL',fy:v=>v},(X,Y)=>{const pts=[];for(let v=1;v<=200;v+=1)pts.push([v,Math.min(9,mg()/v)]);
+  return `<rect x="${X(0)}" y="${Y(4)}" width="${X(200)-X(0)}" height="${Y(0)-Y(4)}" fill="#E7F5EC"/>`+linha([[0,4],[200,4]],X,Y,VERM,1.5,'6 4')+linha(pts,X,Y,ORANGE,3)+(c<=8?ponto(V.get(),c,X,Y,NAVY):'');});
+ $('k1').textContent=fmt(r2(c))+' mg/L';$('k2').textContent=fmt(Math.round(D.get()/0.05));$('k3').textContent=fmt(r1(mg()));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
