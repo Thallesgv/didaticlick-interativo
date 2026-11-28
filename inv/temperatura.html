@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O termômetro do planeta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O termômetro do planeta</h1></header>
+<main>
+<div class="card"><h2>T = [S(1 − a)/(4σ)]<sup>1/4</sup></h2><p class="muted" style="margin-top:0">Mude a luz do Sol no topo da atmosfera (S), o albedo e o efeito estufa (os graus que a atmosfera soma). σ = 5,67 × 10⁻⁸ W/(m²·K⁴).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Luz do Sol S</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Albedo</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Efeito estufa</b><input type="range"><span></span></div>
+<div class="kpi"><div>Absorvido<b id="kab"></b></div><div class="o">Equilíbrio<b id="kt"></b></div><div>Superfície<b id="ksu"></b></div><div>Diferença da Terra de hoje<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Aqueça o planeta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const SOLC='#FFB13B',AMAR='#F2C230';
+const S=SL('ss',400,2000,1,1361,()=>draw(),v=>fmt(v)+' W/m²'),A=SL('sa',0,0.9,0.005,0.3,()=>draw(),v=>fmt(Math.round(v*1000)/1000)),E=SL('se',0,40,1,33,()=>draw(),v=>v+' K');
+const ab=()=>S.get()*(1-A.get())/4,T=()=>Math.pow(ab()/5.67e-8,0.25),T0=Math.pow(1361*0.7/4/5.67e-8,0.25);
+MIS.def(()=>[
+ ['A Terra <b>sem efeito estufa</b>: S = 1.361, albedo 0,30, estufa 0.',()=>S.get()==1361&&Math.abs(A.get()-0.3)<0.001&&E.get()==0,()=>'T ≈ '+r1(T())+' K = '+r1(T()-273)+' °C. Com os 33 K do efeito estufa, voltam os 15 °C.',()=>'S = 1.361, albedo 0,30 e estufa 0 K.'],
+ ['Ponha a névoa do Monte Brasa: albedo <b>0,31</b>.',()=>S.get()==1361&&Math.abs(A.get()-0.31)<0.001,()=>'Absorvido: '+r1(ab())+' W/m² (−3,4). T cai '+r2(T0-T())+' K: quase um grau.',()=>'S = 1.361 e albedo 0,31.'],
+ ['Teste a regra do um quarto: diminua S em <b>4%</b> (para cerca de 1.307), com albedo 0,30.',()=>Math.abs(S.get()-1307)<=2&&Math.abs(A.get()-0.3)<0.001,()=>'T caiu '+PC((1-T()/T0)*100,2)+': perto de 4% ÷ 4 = 1%.',()=>'Albedo 0,30 e S perto de 1.307.'],
+ ['<b>Marte</b>: S ≈ 590 W/m², albedo ≈ 0,25, quase sem efeito estufa.',()=>S.get()==590&&Math.abs(A.get()-0.25)<0.001,()=>'T ≈ '+fmt(Math.round(T()))+' K, cerca de '+fmt(Math.round(T()-273))+' °C.',()=>'S = 590 e albedo 0,25.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const t=T()+E.get(),y=v=>200-(v-150)/200*170;
+ g+=RC(150,20,26,184,'#fff','rx="13" stroke="#0E2354" stroke-width="2"')+CI(163,206,18,'#E5482B')+RC(156,clamp(y(t),24,200),14,200-clamp(y(t),24,200)+6,'#E5482B');
+ [[273,'0 °C'],[255,'−18 °C'],[288,'15 °C'],[210,'Marte']].forEach(([v,l])=>g+=LN(180,y(v),196,y(v),GRAY,1)+TX(200,y(v)+4,l,{fs:9,c:GRAY,a:'start',w:500}));
+ g+=TX(70,60,'equilíbrio',{fs:10,c:GRAY,w:500})+TX(70,82,r1(T())+' K',{fs:15,c:NAVY})+TX(70,120,'superfície',{fs:10,c:GRAY,w:500})+TX(70,142,r1(t-273)+' °C',{fs:15,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kab').textContent=r1(ab())+' W/m²';$('kt').textContent=r1(T())+' K';$('ksu').textContent=r1(T()+E.get()-273)+' °C';$('kd').textContent=(T()>=T0?'+':'')+r2(T()-T0)+' K';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

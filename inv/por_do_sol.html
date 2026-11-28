@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pôr do sol · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O pôr do sol</h1></header>
+<main>
+<div class="card"><h2>1/λ⁴ e o caminho comprido</h2><p class="muted" style="margin-top:0">O ar limpo tem τ ≈ 0,2 para o azul (450 nm) e τ ≈ 0,035 para o vermelho (700 nm). A névoa soma o mesmo τ às duas cores. O caminho da luz é m = 1/sen h.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Altura do Sol</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Névoa (τ)</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Comprimento de onda λ</b><input type="range"><span></span></div>
+<div class="kpi"><div>Azul que chega<b id="ka"></b></div><div>Vermelho que chega<b id="kv"></b></div><div class="o">Vermelho ÷ azul<b id="kr"></b></div><div>λ espalhado × o vermelho<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Baixe o Sol.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const SOLC='#FFB13B',AMAR='#F2C230';
+const H=SL('sh',2,90,1,90,()=>draw(),v=>v+'°'),Nv=SL('sn',0,0.3,0.01,0,()=>draw(),v=>fmt(v)),Lb=SL('sl',400,700,10,550,()=>draw(),v=>v+' nm');
+const m=()=>1/Math.sin(H.get()*RAD),tz=l=>0.035*Math.pow(700/l,4),fr=l=>Math.exp(-(tz(l)+Nv.get())*m()),az=()=>fr(450),vm=()=>fr(700),rz=()=>vm()/az();
+MIS.def(()=>[
+ ['Ponha λ em <b>450 nm</b> (azul). Quantas vezes ele é espalhado mais que o vermelho?',()=>Lb.get()==450,'(700 ÷ 450)⁴ ≈ 5,86: quase 6 vezes.',()=>'Leve λ até 450 nm.'],
+ ['Sem névoa, baixe o Sol até <b>5°</b>. Quanto de cada cor chega?',()=>Nv.get()==0&&H.get()==5,()=>'Azul '+PC(az()*100)+', vermelho '+PC(vm()*100)+': o Sol fica alaranjado.',()=>'Névoa 0 e Sol a 5°.'],
+ ['Ligue a névoa do Monte Brasa (<b>τ = 0,15</b>), com o Sol a 5°.',()=>Math.abs(Nv.get()-0.15)<0.001&&H.get()==5,()=>'Azul '+PC(az()*100)+', vermelho '+PC(vm()*100)+': o Sol fica fraco e vermelho.',()=>'τ = 0,15 e Sol a 5°.'],
+ ['Sem névoa, ache a altura do Sol em que o vermelho chega <b>10 vezes</b> mais que o azul.',()=>Nv.get()==0&&rz()>=10&&Math.exp(0.165/Math.sin((H.get()+1)*RAD))<10,()=>'Por volta de '+H.get()+'°: e^(0,165 m) = 10 dá m ≈ 14.',()=>Nv.get()!=0?'Tire a névoa.':'Agora: '+r1(rz())+' vezes.']]);
+function cor(){const r=vm(),b=az(),gg=fr(550);const k=255/Math.max(r,gg,b,0.001);return `rgb(${Math.round(r*k)},${Math.round(gg*k*0.92)},${Math.round(b*k*0.85)})`;}
+function quadro(){const W=340,H_=236;const a=H.get()*RAD;const ceu=H.get()>25?'#8EC1F0':H.get()>10?'#F5C38B':'#E9875B';let g=RC(0,0,W,H_,ceu,'rx="10"');
+ g+=`<rect x="0" y="0" width="${W}" height="190" fill="#F4EEE6" opacity="${clamp(Nv.get()*2.5,0,0.6)}"/>`;
+ const sy=190-170*Math.sin(a);g+=CI(80,sy,18,cor(),'stroke="#fff" stroke-width="2"')+RC(0,190,W,46,'#2C4C92');
+ const x0=190;[[450,'#2457D6','azul',az()],[550,'#15803D','verde',fr(550)],[700,'#E5482B','vermelho',vm()]].forEach(([l,c,n,f],i)=>{const y=40+i*44;g+=TX(x0,y,n,{fs:10,c:NAVY,a:'start'})+RC(x0,y+6,130,12,'#fff','opacity=".6"')+RC(x0,y+6,130*f,12,c)+TX(x0+134,y+16,PC(f*100,0),{fs:9,c:NAVY,a:'start'});});
+ g+=TX(x0,186,'λ = '+Lb.get()+' nm: '+r2(Math.pow(700/Lb.get(),4))+' × o vermelho',{fs:9,c:'#fff',a:'start'});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('ka').textContent=PC(az()*100);$('kv').textContent=PC(vm()*100);$('kr').textContent=r1(rz())+' ×';$('kl').textContent=r2(Math.pow(700/Lb.get(),4))+' ×';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

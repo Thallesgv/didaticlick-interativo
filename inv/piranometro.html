@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O piranômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O piranômetro</h1></header>
+<main>
+<div class="card"><h2>Porcentagem de queda</h2><p class="muted" style="margin-top:0">O piranômetro mede a luz do Sol que chega ao convés. Mova o Sol e ponha a névoa (profundidade óptica τ). Antes da erupção, com o Sol a pino, a leitura era 1.000 W/m².</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Altura do Sol</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Névoa (τ)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Leitura<b id="kl"></b></div><div>Variação desde 1.000<b id="kv"></b></div><div>Para voltar a 1.000<b id="kb"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia o medidor.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const SOLC='#FFB13B',AMAR='#F2C230';
+let modo=0;chips('ch',['No convés','Topo da atmosfera','Média sobre a Terra'],0,i=>{modo=i;draw();});
+const H=SL('sh',5,90,1,90,()=>draw(),v=>v+'°'),Tau=SL('st',0,0.4,0.01,0,()=>draw(),v=>fmt(v));
+const sh=()=>Math.sin(H.get()*RAD),L=()=>modo==1?1361:modo==2?340:1000*sh()*Math.exp(-Tau.get()/sh());
+MIS.def(()=>[
+ ['Com o Sol a pino, ponha névoa até a leitura cair para cerca de <b>850 W/m²</b>. Qual a queda?',()=>modo==0&&H.get()==90&&Math.abs(L()-850)<6,()=>'Leitura '+fmt(Math.round(L()))+' W/m²: queda de cerca de 15%. A névoa tem τ ≈ '+fmt(Tau.get())+'.',()=>modo!=0?'Volte para "No convés".':H.get()!=90?'Ponha o Sol a 90°.':'Agora: '+fmt(Math.round(L()))+' W/m².'],
+ ['Agora tire a névoa (τ = 0) e volte a 1.000. Quanto a leitura precisou <b>subir</b>?',()=>modo==0&&H.get()==90&&Tau.get()==0,'De 850 para 1.000 são 150 ÷ 850 ≈ 17,6%: mais que os 15% da queda, porque a base agora é menor.',()=>'Sol a 90° e névoa 0.'],
+ ['Ponha de volta a névoa (τ ≈ 0,16) e baixe o Sol para <b>30°</b>. Quanto chega?',()=>modo==0&&H.get()==30&&Tau.get()>=0.14,()=>fmt(Math.round(L()))+' W/m²: a luz se espalha por mais chão (× sen 30° = 0,5) e atravessa o dobro de névoa.',()=>Tau.get()<0.14?'Ponha a névoa de volta (τ ≈ 0,16).':'Leve o Sol a 30°.'],
+ ['Compare o <b>topo da atmosfera</b> com a <b>média sobre a Terra</b>.',()=>modo==2,'1.361 ÷ 4 ≈ 340 W/m²: a esfera tem 4 vezes a área do disco que recebe a luz.',()=>modo!=1?'Escolha "Topo da atmosfera" e depois "Média sobre a Terra".':'Agora escolha "Média sobre a Terra".']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#EAF2FB','rx="10"')+RC(0,200,W,36,'#7FB2E0');
+ const a=H.get()*RAD,sx=170-150*Math.cos(a),sy=200-170*Math.sin(a);
+ g+=`<rect x="0" y="0" width="${W}" height="200" fill="#F2F2EE" opacity="${clamp(Tau.get()*2,0,0.75)}"/>`;
+ g+=CI(sx,sy,16,SOLC)+LN(sx,sy,170,196,AMAR,3,'6 4');
+ g+=RC(150,196,40,8,NAVY)+CI(170,192,7,'#fff','stroke="#0E2354" stroke-width="2"');
+ const lv=L(),bh=clamp(lv/1400,0,1)*150;g+=RC(290,200-bh,24,bh,modo?LAVA_C:ORANGE,'rx="3"')+RC(290,50,24,150,'none','stroke="#0E2354"')+LN(284,200-1000/1400*150,320,200-1000/1400*150,NAVY,1.5,'3 2')+TX(284,200-1000/1400*150+4,'1.000',{fs:8.5,c:NAVY,a:'end'});
+ g+=TX(302,44,fmt(Math.round(lv)),{fs:11,c:ORANGE});
+ if(modo)g+=TX(130,40,modo==1?'topo da atmosfera, de frente para o Sol':'média sobre a esfera inteira (÷ 4)',{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const l=L();$('kl').textContent=fmt(Math.round(l))+' W/m²';$('kv').textContent=(l>=1000?'+':'')+PC((l/1000-1)*100);$('kb').textContent=l<1000?'+'+PC((1000/l-1)*100):'—';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

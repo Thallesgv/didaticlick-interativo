@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa de albedo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O mapa de albedo</h1></header>
+<main>
+<div class="card"><h2>Média ponderada</h2><p class="muted" style="margin-top:0">Divida a região entre as superfícies (em porcentagem da área; a soma tem que dar 100%). O albedo médio é a média ponderada: floresta 0,15, pasto 0,20, praia 0,35, cinza clara 0,35, neve 0,80.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Floresta</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Pasto</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Praia</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Cinza clara</b><input type="range"><span></span></div>
+<div class="sl" id="s4"><b>Neve</b><input type="range"><span></span></div>
+<div class="kpi"><div>Soma das áreas<b id="ks"></b></div><div class="o">Albedo médio<b id="ka"></b></div><div>Luz absorvida<b id="kb"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Pinte a região.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const SOLC='#FFB13B',AMAR='#F2C230';
+const SUPF=[['floresta',0.15,'#2F7D4A'],['pasto',0.20,'#8DBE6A'],['praia',0.35,'#E8D2A0'],['cinza',0.35,'#C9CDD6'],['neve',0.80,'#F3F6FA']];
+let nev=0;chips('ch',['A ilha','O planeta com a névoa'],0,i=>{nev=i;draw();});
+const S=SUPF.map((s,i)=>SL('s'+i,0,100,10,[60,30,10,0,0][i],()=>draw(),v=>v+'%'));
+const soma=()=>S.reduce((a,s)=>a+s.get(),0),alb=()=>S.reduce((a,s,i)=>a+s.get()/100*SUPF[i][1],0),eq=(...v)=>v.every((x,i)=>S[i].get()==x);
+MIS.def(()=>[
+ ['A ilha antes da erupção: <b>60%</b> floresta, <b>30%</b> pasto e <b>10%</b> praia.',()=>nev==0&&eq(60,30,10,0,0),'a = 0,09 + 0,06 + 0,035 = 0,185: a ilha absorve 81,5% da luz.',()=>'60, 30, 10, 0, 0.'],
+ ['Cubra <b>metade da floresta</b> com cinza clara.',()=>nev==0&&eq(30,30,10,30,0),'a = 0,045 + 0,06 + 0,035 + 0,105 = 0,245: absorve 75,5%, 6 pontos percentuais a menos.',()=>soma()!=100?'A soma está em '+soma()+'%.':'30% floresta, 30% pasto, 10% praia, 30% cinza.'],
+ ['Um inverno sem fim: deixe <b>tudo nevado</b>.',()=>nev==0&&eq(0,0,0,0,100),'a = 0,80: a ilha devolve 80% da luz e absorve só 20%. Neve que puxa mais frio.',()=>'100% neve e o resto zero.'],
+ ['Veja o <b>planeta com a névoa</b>: albedo de 0,30 para 0,31.',()=>nev==1,'0,70 × 340 = 238 e 0,69 × 340 = 234,6 W/m²: 3,4 W/m² a menos em cada metro quadrado da Terra.',()=>'Escolha "O planeta com a névoa".']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#7FB2E0','rx="10"');
+ if(nev){const r=80;g+=CI(120,118,r,'#3D7FC2')+CI(120,118,r+10,'none','stroke="#F2C230" stroke-width="10" opacity=".55"');g+=TX(260,80,'albedo: 0,30 → 0,31',{fs:11,c:'#fff'})+TX(260,110,'absorvido:',{fs:10,c:'#fff',w:500})+TX(260,130,'238 → 234,6 W/m²',{fs:11,c:'#fff'})+TX(260,160,'−3,4 W/m²',{fs:14,c:'#FFE2A8'});}
+ else{let x=20;const tot=Math.max(soma(),1);SUPF.forEach((s,i)=>{const w=S[i].get()/tot*200;if(w>0){g+=RC(x,40,w,150,s[2],'stroke="#fff"');if(w>26)g+=TX(x+w/2,120,S[i].get()+'%',{fs:10,c:i==0?'#fff':NAVY});}x+=w;});
+  g+=TX(120,28,soma()==100?'região: 100%':'faltam '+(100-soma())+'%',{fs:10,c:'#fff'});
+  const a=alb();g+=TX(282,60,'refletido',{fs:10,c:'#fff',w:500})+TX(282,84,soma()==100?PC(a*100):'—',{fs:16,c:'#FFE2A8'})+TX(282,130,'absorvido',{fs:10,c:'#fff',w:500})+TX(282,154,soma()==100?PC((1-a)*100):'—',{fs:16,c:'#fff'});}
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('ks').textContent=soma()+'%';$('ka').textContent=soma()==100?fmt(Math.round(alb()*1000)/1000):'(a soma deve dar 100%)';$('kb').textContent=soma()==100?PC((1-alb())*100):'—';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
