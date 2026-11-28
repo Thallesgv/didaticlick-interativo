@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta do tempo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A reta do tempo</h1></header>
+<main>
+<div class="card"><h2>De AP para o calendário</h2><p class="muted" style="margin-top:0">Arraste a data em anos <b>antes do presente</b> (antes de 1950). O simulador mostra o ano no calendário. Lembre: não existe ano zero.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Data (anos AP)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">Calendário<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Arraste a data.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AP=SL('sa',0,10000,50,1000,()=>draw(),v=>fmt(v)+' AP');
+const ano=a=>1950-a,cal=a=>{const y=ano(a);return y>0?fmt(y)+' d.C.':fmt(1-y)+' a.C.';};
+MIS.def(()=>[
+ ['Converta <b>4.000 AP</b>, uma data do fim do sítio Moraes.',()=>AP.get()==4000,'1950 − 4000 = −2050. Negativo: 1 − (−2050) = 2051 a.C.',()=>'Leve a data para 4.000 AP.'],
+ ['Ache a data AP que cai no ano <b>1 a.C.</b>, logo antes do ano 1 d.C.',()=>AP.get()==1950,'1.950 AP: a conta dá o "ano 0", que no calendário é 1 a.C. Um ano depois (1.949 AP) já é 1 d.C.',()=>'Agora: '+cal(AP.get())+'.'],
+ ['Os portugueses chegaram ao Brasil em <b>1500 d.C.</b> Que data AP é essa?',()=>AP.get()==450,'1950 − 1500 = 450 AP. Os sambaquis do Vale do Ribeira são milhares de anos mais antigos.',()=>'Agora: '+cal(AP.get())+'.'],
+ ['Leve a data até o crânio de <b>Capelinha</b>, de cerca de 9.000 AP. Que ano é?',()=>AP.get()==9000,'9.000 AP = 7051 a.C. Quase 9 mil anos antes de 1950.',()=>'Agora: '+fmt(AP.get())+' AP.']]);
+function draw(){const a=AP.get(),x0=20,x1=320,X=v=>x1-v/10000*(x1-x0);let g=RC(0,0,340,150,'#F8FAFC','rx="10"');
+ g+=LN(x0,80,x1,80,NAVY,2);for(let v=0;v<=10000;v+=1000)g+=LN(X(v),75,X(v),85,NAVY,1.5)+TX(X(v),100,v/1000+(v?' mil':''),{fs:8,c:GRAY,w:500});
+ g+=RC(X(6000),58,X(4000)-X(6000),10,LIGHT,'rx="3"')+TX((X(6000)+X(4000))/2,52,'Moraes',{fs:9,c:ORANGE});
+ g+=CIR(X(9000),80,5,TERRA_E)+TX(X(9000),52,'Capelinha',{fs:9,c:TERRA_E});g+=CIR(X(1950),80,4,BLUE)+TX(X(1950),118,'ano 1',{fs:9,c:BLUE});g+=TX(X(0),118,'1950',{fs:9});
+ g+=PG([[X(a),74],[X(a)-7,60],[X(a)+7,60]],ORANGE)+TX(Math.min(300,Math.max(40,X(a))),140,cal(a),{fs:13,c:ORANGE});
+ $('fig').innerHTML=SVG(340,150,g);$('kc').textContent='1950 − '+fmt(a)+' = '+fmt(ano(a));$('ka').textContent=cal(a);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
