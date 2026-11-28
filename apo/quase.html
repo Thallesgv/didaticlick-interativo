@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina do quase · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A máquina do quase</h1></header>
+<main>
+<div class="card"><h2>Prêmio, quase e nada</h2><p class="muted" style="margin-top:0">Um caça-níquel de 3 rolos com os símbolos 0 a 9. Só paga 7 7 7 na linha. Escolha a máquina e gire.</p>
+<div id="chm" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="b1">Girar</button><button id="b2">Girar 100</button><button id="b3">Girar 1 000</button><button class="alt" id="b0">Zerar</button></div>
+<div class="kpi"><div>Giros<b id="k1"></b></div><div>Prêmios (777)<b id="k2"></b></div><div>Quase (dois 7)<b id="k3"></b></div><div class="o">Quase por prêmio<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Conte os quases.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let mq=0,ult=[3,5,8];const Z=()=>({n:0,w:0,q:0});let ST=[Z(),Z()];
+chips('chm',['máquina honesta','rolos virtuais'],0,i=>{mq=i;draw();});
+const PS=[[.1,.1,.1],[.3,.3,1/90]];
+function rolo(j){const p=PS[mq][j];if(Math.random()<p)return 7;let s;do{s=Math.floor(Math.random()*10);}while(s==7);return s;}
+function girar(n){const S=ST[mq];for(let i=0;i<n;i++){ult=[rolo(0),rolo(1),rolo(2)];const k=ult.filter(x=>x==7).length;S.n++;if(k==3)S.w++;else if(k==2)S.q++;}draw();}
+$('b1').onclick=()=>girar(1);$('b2').onclick=()=>girar(100);$('b3').onclick=()=>girar(1000);$('b0').onclick=()=>{ST=[Z(),Z()];draw();};
+const S=()=>ST[mq];const fq=X=>X.n?X.q/X.n:0,fw=X=>X.n?X.w/X.n:0;
+MIS.def(()=>[
+ ['Na <b>máquina honesta</b>, gire pelo menos 1 000 vezes. Quantos quases para cada prêmio?',()=>mq==0&&ST[0].n>=1000,()=>pct(fq(ST[0])*100,1)+' de quase vitórias e '+pct(fw(ST[0])*100,1)+' de prêmios. A conta diz 2,7% e 0,1%: 27 quases por prêmio.',()=>mq!=0?'Escolha a máquina honesta.':'Faltam '+fmt(1000-ST[0].n)+' giros.'],
+ ['Troque para os <b>rolos virtuais</b> e gire pelo menos 1 000 vezes.',()=>mq==1&&ST[1].n>=1000,()=>'Quase vitórias: '+pct(fq(ST[1])*100,1)+', mais de três vezes a máquina honesta. Os dois primeiros rolos têm mais setes; o terceiro, quase nenhum.',()=>mq!=1?'Escolha "rolos virtuais".':'Faltam '+fmt(1000-ST[1].n)+' giros.'],
+ ['Junte pelo menos <b>5 000 giros em cada máquina</b> e compare os prêmios.',()=>ST[0].n>=5000&&ST[1].n>=5000,()=>'Prêmios: '+ST[0].w+' em '+fmt(ST[0].n)+' na honesta e '+ST[1].w+' em '+fmt(ST[1].n)+' na virtual. A cada 5 000 giros esperamos 5 prêmios nas duas, com um sobe e desce de uns 4: a chance de 777 é 1 em 1 000 nas duas. A virtual só fabrica mais "quases".',()=>'Honesta: '+fmt(ST[0].n)+' giros; virtual: '+fmt(ST[1].n)+'. Leve as duas a 5 000.']]);
+function draw(){let g=RC(0,0,340,150,'#16213F','rx="12"');const k=ult.filter(x=>x==7).length;
+ for(let j=0;j<3;j++){const x=40+j*90;g+=RC(x,18,80,104,'#fff','rx="8"');
+  g+=TX(x+40,42,(ult[j]+9)%10,{fs:14,c:GRAYL})+TX(x+40,80,ult[j],{fs:30,c:ult[j]==7?(k==3?GREEN:ORANGE):NAVY})+TX(x+40,114,(ult[j]+1)%10,{fs:14,c:GRAYL});}
+ g+=LN(30,70,310,70,ORANGE,1,'4 3');
+ g+=TX(170,142,S().n?(k==3?'PRÊMIO!':k==2?'Por pouco! (paga o mesmo que nada)':'nada'):'Aperte Girar',{fs:11,c:k==3?'#7CE3A1':k==2?LIGHT:'#DCE3F2'});
+ $('fig').innerHTML=SVG(340,150,g);const X=S();
+ $('k1').textContent=fmt(X.n);$('k2').textContent=X.n?fmt(X.w)+' ('+pct(fw(X)*100,2)+')':'–';$('k3').textContent=X.n?fmt(X.q)+' ('+pct(fq(X)*100,1)+')':'–';$('k4').textContent=X.w?r1(X.q/X.w):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

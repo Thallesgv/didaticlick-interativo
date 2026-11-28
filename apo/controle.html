@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O ritual funciona? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O ritual funciona?</h1></header>
+<main>
+<div class="card"><h2>Com ou sem ritual</h2><p class="muted" style="margin-top:0">Escolha <b>com ritual</b> (o dado é tocado três vezes antes de rolar) ou <b>sem ritual</b> e lance. A tabela de dupla entrada guarda tudo e o gráfico mostra a porcentagem de setes (soma de dois dados) com a margem de erro.</p>
+<div id="chr" style="margin:4px 0"></div>
+<div class="row"><button id="b1">Lançar</button><button id="b2">Lançar 10</button><button id="b3">Lançar 50</button><button class="alt" id="b0">Zerar</button></div>
+<div class="fig" id="fig"></div>
+<div id="tb"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste o ritual.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let rit=0,T=[{n:0,s:0},{n:0,s:0}],ult=[3,4],toc=0;
+chips('chr',['com ritual','sem ritual'],0,i=>{rit=i;draw();});
+function lancar(n){for(let i=0;i<n;i++){ult=[1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6)];T[rit].n++;if(ult[0]+ult[1]==7)T[rit].s++;}toc=rit==0?3:0;draw();}
+$('b1').onclick=()=>lancar(1);$('b2').onclick=()=>lancar(10);$('b3').onclick=()=>lancar(50);$('b0').onclick=()=>{T=[{n:0,s:0},{n:0,s:0}];draw();};
+const f=X=>X.n?X.s/X.n:0,mg=X=>X.n?2*Math.sqrt(1/6*5/6/X.n):0,cob=X=>Math.abs(f(X)-1/6)<=mg(X);
+MIS.def(()=>[
+ ['Faça pelo menos <b>100 lances com</b> e <b>100 sem</b> ritual.',()=>T[0].n>=100&&T[1].n>=100,()=>'Com ritual: '+pct(f(T[0])*100,1)+'; sem ritual: '+pct(f(T[1])*100,1)+'. '+(cob(T[0])&&cob(T[1])?'As duas faixas de erro cobrem os 16,7% de um dado honesto.':'Uma das faixas ficou fora dos 16,7%: acontece em cerca de 1 vez a cada 20. Lance mais e veja voltar.'),()=>'Com ritual: '+T[0].n+' lances; sem: '+T[1].n+'. Leve os dois a 100.'],
+ ['Continue lançando até a porcentagem <b>com ritual</b> ficar <b>acima</b> da sem ritual.',()=>T[0].n>=100&&T[1].n>=100&&f(T[0])>f(T[1]),()=>'Ficou acima: '+pct(f(T[0])*100,1)+' contra '+pct(f(T[1])*100,1)+'. Isso prova o ritual? Não: '+(Math.abs(f(T[0])-f(T[1]))<mg(T[0])+mg(T[1])?'as faixas de erro se cruzam.':'compare com as margens e continue lançando.')+' Rafael só olhava este momento.',()=>'Por enquanto, com ritual '+pct(f(T[0])*100,1)+' e sem '+pct(f(T[1])*100,1)+'. Lance mais (com ou sem): o acaso troca a ordem a toda hora.'],
+ ['Leve os dois grupos a <b>500 lances</b> e veja as faixas encolherem.',()=>T[0].n>=500&&T[1].n>=500,()=>'Com 500 lances, a margem caiu para ± '+pct(mg(T[0])*100,1)+'. As duas porcentagens grudam em 16,7%: o ritual não muda nada.',()=>'Com ritual: '+T[0].n+'; sem: '+T[1].n+'. Leve os dois a 500.']]);
+function draw(){let g=RC(0,0,340,190,'#F8FAFC','rx="10"');
+ g+=DADO(20,20,44,ult[0])+DADO(72,20,44,ult[1])+TX(68,84,'soma '+(ult[0]+ult[1]),{fs:11,c:ult[0]+ult[1]==7?ORANGE:NAVY});
+ if(toc)for(let i=0;i<3;i++)g+=CIR(26+i*10,100,3,ORANGE);
+ const y0=170,gh=130,lo=0,hi=.4,Y=v=>y0-gh*(v-lo)/(hi-lo);
+ [0,.1,.2,.3,.4].forEach(v=>{g+=LN(160,Y(v),330,Y(v),GRAYL,.6)+TX(156,Y(v)+3,Math.round(v*100)+'%',{fs:8,a:'end',c:GRAY,w:500});});
+ [[0,175,ORANGE,'com ritual'],[1,255,BLUE,'sem ritual']].forEach(([i,x,c,t])=>{const X=T[i];if(X.n){const v=f(X),e=mg(X);g+=RC(x,Y(v),60,y0-Y(v),c,'rx="3"')+LN(x+30,Y(clamp(v-e,lo,hi)),x+30,Y(clamp(v+e,lo,hi)),NAVY,1.5)+TX(x+30,Y(Math.min(hi,v+e))-4,pct(v*100,1),{fs:9});}g+=TX(x+30,y0+13,t,{fs:9});});
+ g+=LN(160,Y(1/6),330,Y(1/6),NAVY,1,'4 3');
+ $('fig').innerHTML=SVG(340,190,g);
+ const L=(t,X)=>`<tr><td style="text-align:left">${t}</td><td>${X.s}</td><td>${X.n-X.s}</td><td>${X.n}</td><td><b>${X.n?pct(f(X)*100,1):'–'}</b></td></tr>`;
+ $('tb').innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:13px;text-align:center;margin:6px 0"><tr style="background:#0E2354;color:#fff"><td></td><td>Saiu 7</td><td>Não saiu</td><td>Total</td><td>% de 7</td></tr>${L('com ritual',T[0])}${L('sem ritual',T[1])}</table>`;
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
