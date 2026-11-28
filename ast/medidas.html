@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A mesa de medidas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A mesa de medidas</h1></header>
+<main>
+<div class="card"><h2>Cada medida com um errinho</h2><p class="muted" style="margin-top:0">Cada clique é um observatório medindo a posição do Teimoso. Cada medida tem um erro sorteado (o erro típico é de 0,27″). O valor verdadeiro está escondido: a média vai chegando perto dele.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="b1">Medir 1</button><button id="b10">Medir 10</button><button class="alt" id="b0">Recomeçar</button></div>
+<div class="kpi"><div>Medidas<b id="kn"></b></div><div class="o">Média<b id="km"></b></div><div>Desvio padrão<b id="ks"></b></div><div>Erro da média (σ ÷ √n)<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça medidas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;};
+const PHI=z=>0.5*(1+erf(z/Math.SQRT2));
+const GAUSS=()=>{let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const PCT=v=>v>=0.1?r1(v*100)+'%':v>=0.0001?r2(v*100)+'%':(v>0?'menos de 0,01%':'0%');
+const V=12.65,SG=0.27;let X=[];
+const med=()=>X.reduce((a,b)=>a+b,0)/X.length,dp=()=>{const m=med();return Math.sqrt(X.reduce((a,b)=>a+(b-m)**2,0)/X.length);};
+const em=()=>X.length>1?dp()/Math.sqrt(X.length):NaN;
+const mede=n=>{for(let i=0;i<n;i++)X.push(Math.round((V+SG*GAUSS())*100)/100);draw();};
+$('b1').onclick=()=>mede(1);$('b10').onclick=()=>mede(10);$('b0').onclick=()=>{X=[];draw();};
+const dentro=()=>{const m=med(),s=dp();return X.filter(x=>Math.abs(x-m)<=s).length/X.length;};
+MIS.def(()=>[
+ ['Faça <b>10 medidas</b>. Quanto deu a média e o desvio padrão?',()=>X.length>=10,()=>'Com '+X.length+' medidas: média '+r2(med())+'″ e desvio padrão '+r2(dp())+'″, perto dos 0,27″ do erro típico.','Clique em medir até ter 10 medidas.'],
+ ['Com pelo menos <b>20 medidas</b>, deixe a média a até <b>0,1″</b> do valor verdadeiro (ele é revelado quando você conseguir).',()=>X.length>=20&&Math.abs(med()-V)<=0.1,()=>'O valor verdadeiro é 12,65″ e a sua média deu '+r2(med())+'″. Juntas, as medidas erram menos que cada uma sozinha.',()=>X.length<20?'Faça pelo menos 20 medidas.':'Ainda longe. Continue medindo: a média vai se aproximando.'],
+ ['Faça o <b>erro da média</b> ficar menor que <b>0,05″</b>. Quantas medidas foram precisas?',()=>X.length>1&&em()<0.05,()=>X.length+' medidas: erro da média de '+r2(em())+'″. Pela conta, 0,27 ÷ √n < 0,05 pede n > 29.',()=>X.length>1?'Agora o erro da média é '+r2(em())+'″.':'Faça medidas.'],
+ ['Chegue a <b>100 medidas</b> e veja quantas caíram a até 1 desvio padrão da média.',()=>X.length>=100,()=>PCT(dentro())+' das medidas ficaram a até 1 desvio da média. A curva do sino diz 68%.',()=>'Agora: '+X.length+' medidas.']]);
+function draw(){const W=340,H=200;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const lo=11.6,hi=13.7,x0=20,x1=320,XX=v=>x0+(v-lo)/(hi-lo)*(x1-x0),y=160;
+ if(X.length>1){const m=med(),s=dp();g+=RC(XX(m-s),30,XX(m+s)-XX(m-s),y-30,'#FDE9D8')+LN(XX(m),24,XX(m),y+4,ORANGE,2.5)+TX(XX(m),18,'média '+r2(m)+'″',{fs:10.5,c:ORANGE});}
+ g+=LN(x0,y,x1,y,NAVY,1.4);for(let v=12;v<=13.5;v+=0.5)g+=LN(XX(v),y-4,XX(v),y+4,NAVY,1)+TX(XX(v),y+18,r1(v)+'″',{fs:9.5});
+ const cont={};X.forEach(x=>{const b=Math.round(x*20)/20;cont[b]=(cont[b]||0)+1;const n=cont[b];if(n<=24)g+=`<circle cx="${XX(b)}" cy="${y-6-(n-1)*5.2}" r="2.6" fill="${NAVY}"/>`;});
+ $('fig').innerHTML=SVG(W,H,g);$('kn').textContent=X.length;$('km').textContent=X.length?r2(med())+'″':'—';$('ks').textContent=X.length>1?r2(dp())+'″':'—';$('ke').textContent=X.length>1?r2(em())+'″':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

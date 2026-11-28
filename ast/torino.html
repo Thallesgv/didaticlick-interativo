@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A nota de Torino · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A nota de Torino</h1></header>
+<main>
+<div class="card"><h2>Chance × energia</h2><p class="muted" style="margin-top:0">Escolha o diâmetro de uma rocha e a chance de impacto. A energia é calculada com densidade de 2.000 kg/m³ e chegada a 12,3 km/s, como a do Teimoso. O quadro é uma versão simplificada da escala de Torino.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Diâmetro</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Chance de impacto</b><input type="range"><span></span></div>
+<div class="kpi"><div>Massa<b id="km"></b></div><div>Energia<b id="ke"></b></div><div class="o">Nota de Torino<b id="kn"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o diâmetro e a chance.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;};
+const PHI=z=>0.5*(1+erf(z/Math.SQRT2));
+const GAUSS=()=>{let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const PCT=v=>v>=0.1?r1(v*100)+'%':v>=0.0001?r2(v*100)+'%':(v>0?'menos de 0,01%':'0%');
+const D=SL('sd',Math.log10(5),Math.log10(2000),0.001,Math.log10(300),draw,v=>fmt(Math.round(Math.pow(10,v)))+' m');
+const Pp=SL('sp',-6,0,0.001,Math.log10(0.0017),draw,v=>PCT(Math.pow(10,v)));
+const diam=()=>Math.round(Math.pow(10,D.get())),pr=()=>Math.pow(10,Pp.get());
+const massa=()=>4/3*Math.PI*Math.pow(diam()/2,3)*2000,E=()=>0.5*massa()*12300*12300/4.184e15;
+const col=()=>E()<1?0:E()<100?1:E()<1e5?2:3,lin=()=>{const p=pr();return p<1e-4?0:p<0.01?1:p<0.1?2:p<0.99?3:4;};
+const NIV=[[0,0,0,0,0],[0,1,3,3,8],[1,2,4,5,9],[1,2,6,7,10]],nota=()=>NIV[col()][lin()];
+const perto=(a,b)=>Math.abs(a-b)/b<0.04;
+MIS.def(()=>[
+ ['Dê a nota do <b>Teimoso no dia 0</b>: 300 m e chance de 0,17%.',()=>diam()==300&&perto(pr(),0.0017),()=>'Energia de '+fmt(Math.round(E()))+' Mt e nota '+nota()+': merece atenção.',()=>'Agora: '+diam()+' m e '+PCT(pr())+'.'],
+ ['Agora o <b>Teimoso no dia 30</b>: 300 m e chance de 99%.',()=>diam()==300&&pr()>=0.99,()=>'Nota '+nota()+': colisão certa, com devastação regional.',()=>'Agora: '+diam()+' m e '+PCT(pr())+'.'],
+ ['O <b>Apophis</b> em dezembro de 2004: uns 340 m e 2,7% de chance.',()=>Math.abs(diam()-340)<=3&&perto(pr(),0.027),()=>'Nota '+nota()+', a maior já dada na vida real.',()=>'Agora: '+diam()+' m e '+PCT(pr())+'.'],
+ ['O <b>2024 YR4</b> em fevereiro de 2025: uns 60 m e 3% de chance.',()=>Math.abs(diam()-60)<=1&&perto(pr(),0.03),()=>'Energia de uns '+r1(E())+' Mt, estrago local, nota '+nota()+'. Na vida real, ele também chegou à nota 3.',()=>'Agora: '+diam()+' m e '+PCT(pr())+'.']]);
+function draw(){const W=340,H=230;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const x0=84,y0=20,cw=60,rh=34;
+ const cor={0:'#FFFFFF',1:'#C6F6D5',2:'#FEF08A',3:'#FEF08A',4:'#FEF08A',5:'#FDBA74',6:'#FDBA74',7:'#FDBA74',8:'#F87171',9:'#F87171',10:'#F87171'};
+ const rows=['99% ou mais','10% a 99%','1% a 10%','0,01% a 1%','menos de 0,01%'],cols=['< 1 Mt','local','regional','global'];
+ for(let c=0;c<4;c++){for(let r=0;r<5;r++){const n=NIV[c][4-r];const on=c==col()&&4-r==lin();g+=RC(x0+c*cw,y0+r*rh,cw,rh,cor[n],'stroke="'+(on?NAVY:'#94A3B8')+'" stroke-width="'+(on?3:0.6)+'"')+TX(x0+c*cw+cw/2,y0+r*rh+rh/2+5,String(n),{fs:on?16:12,c:NAVY});}
+  g+=TX(x0+c*cw+cw/2,y0+5*rh+14,cols[c],{fs:9.5});}
+ rows.forEach((t,r)=>g+=TX(x0-4,y0+r*rh+rh/2+4,t,{fs:8.5,a:'end'}));
+ $('fig').innerHTML=SVG(W,H,g);$('km').textContent=SCI(massa(),3)+' kg';$('ke').textContent=E()>=10?fmt(Math.round(E()))+' Mt':r2(E())+' Mt';$('kn').textContent=nota();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
