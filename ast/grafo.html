@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa que virou grafo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O mapa que virou grafo</h1></header>
+<main>
+<div class="card"><h2>Vértices, arestas e graus</h2><p class="muted" style="margin-top:0">As cidades são os vértices; as estradas, as arestas. <b>Toque numa estrada</b> para fechá-la (fica tracejada) ou reabri-la. O número laranja ao lado de cada cidade é o seu grau.</p>
+<div class="fig" id="fig"></div>
+<button class="alt" id="rb" style="margin:6px 0">Reabrir todas as estradas</button>
+<div class="kpi"><div>Estradas abertas<b id="ka"></b></div><div class="o">Soma dos graus<b id="ks"></b></div><div>Grau de Pedra Alta<b id="kp"></b></div><div>Serra Nova alcançável?<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Feche e abra estradas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NOS={P:['Pedra Alta',35,19],V:['Vila Seca',-52,47],R:['Rio Claro do Sul',-72,-83],C:['Campo Largo',40,145],F:['Ponte Funda',85,-50],T:['Três Barras',175,20],S:['Serra Nova',142,-141]};
+const AR=[['P','V',100],['P','R',170],['P','C',150],['P','F',100],['V','R',150],['V','C',150],['C','T',210],['F','T',130],['F','R',180],['T','S',190],['F','S',120],['R','S',260]];
+const GX=x=>32+(x+72)*0.95,GY=y=>290-(y+141)*0.95;
+const ROT={P:[0,-11,'middle'],V:[0,-11,'middle'],R:[-6,19,'start'],C:[11,4,'start'],F:[11,13,'start'],T:[0,-11,'middle'],S:[11,4,'start']};
+const nome=k=>NOS[k][0];
+const BD={P:[15,10],V:[-13,10],R:[14,-11],C:[-14,8],F:[-14,10],T:[14,12],S:[-16,-3]};
+function fundo(W,H){let g=RC(0,0,W,H,'#E8F1E0','rx="10"');let rio=[];for(let i=0;i<=40;i++){const t=i/40;rio.push(GX(-60+250*t)+','+GY(-95+90*t+12*Math.sin(t*9)));}
+ g+=`<polyline points="${rio.join(' ')}" fill="none" stroke="#6B8FE0" stroke-width="3"/>`;
+ g+=LN(GX(0)-4,GY(0)-4,GX(0)+4,GY(0)+4,VERM,2)+LN(GX(0)-4,GY(0)+4,GX(0)+4,GY(0)-4,VERM,2);return g;}
+function vizinhos(arestas){const a={};Object.keys(NOS).forEach(k=>a[k]=[]);arestas.forEach(([x,y,w])=>{a[x].push([y,w]);a[y].push([x,w]);});return a;}
+function dijkstra(arestas,o){const a=vizinhos(arestas),D={},pr={},fix=new Set();Object.keys(NOS).forEach(k=>D[k]=Infinity);D[o]=0;
+ while(true){let u=null;for(const k in D)if(!fix.has(k)&&D[k]<Infinity&&(u===null||D[k]<D[u]))u=k;if(u===null)break;fix.add(u);a[u].forEach(([v,w])=>{if(D[u]+w<D[v]){D[v]=D[u]+w;pr[v]=u;}});}
+ return {D,pr};}
+function rota(pr,o,d){const r=[d];while(r[0]!==o&&pr[r[0]])r.unshift(pr[r[0]]);return r[0]===o?r:[];}
+function distSeg(px,py,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,t=clamp(((px-x1)*dx+(py-y1)*dy)/(dx*dx+dy*dy),0,1);return Math.hypot(px-x1-t*dx,py-y1-t*dy);}
+let fech=new Set();
+const abertas=()=>AR.filter(([a,b])=>!fech.has(a+b));
+const grau=k=>abertas().filter(([a,b])=>a==k||b==k).length;
+function alcance(o){const a=vizinhos(abertas()),vis=new Set([o]),f=[o];while(f.length){const u=f.pop();a[u].forEach(([v])=>{if(!vis.has(v)){vis.add(v);f.push(v);}});}return vis;}
+const soma=()=>Object.keys(NOS).reduce((s,k)=>s+grau(k),0);
+const ligado=()=>alcance('P').size==7;
+function tog(e){fech.has(e)?fech.delete(e):fech.add(e);draw();}
+window.__ar=tog;
+MIS.def(()=>[
+ ['Feche <b>só</b> a estrada Pedra Alta–Vila Seca. O que acontece com a soma dos graus?',()=>fech.size==1&&fech.has('PV'),()=>'Soma '+soma()+' = 2 × '+abertas().length+'. Fechar uma estrada tira 1 do grau de cada ponta: a soma cai 2.',()=>fech.size==0?'Toque na estrada entre Pedra Alta e Vila Seca.':'Há '+fech.size+' estradas fechadas. Use o botão para reabrir todas e feche só a de Pedra Alta a Vila Seca.'],
+ ['Deixe <b>Pedra Alta com grau 1</b>: só uma estrada saindo da cidade.',()=>grau('P')==1,()=>'Grau 1. Se essa última estrada fechar, Pedra Alta fica isolada.',()=>'Grau de Pedra Alta: '+grau('P')+'.'],
+ ['Reabra tudo e <b>isole Serra Nova</b> fechando o menor número possível de estradas.',()=>!alcance('P').has('S')&&fech.size==3,()=>'Três estradas: as três que chegam a Serra Nova. O grau dela era 3.',()=>fech.size>3&&!alcance('P').has('S')?'Isolou, mas com '+fech.size+' estradas fechadas. Dá com menos.':'Estradas fechadas: '+fech.size+'. Serra Nova '+(alcance('P').has('S')?'ainda é alcançável.':'isolada.')],
+ ['Feche estradas até sobrar o <b>mínimo</b> que ainda liga as 7 cidades.',()=>ligado()&&abertas().length==6,()=>'6 estradas para 7 cidades: uma árvore. Fechar qualquer outra separa o grafo.',()=>'Abertas: '+abertas().length+'. '+(ligado()?'Todas ligadas.':'Alguma cidade ficou isolada: reabra uma estrada.')]]);
+function draw(){const W=340,H=310;let g=fundo(W,H);
+ AR.forEach(([a,b])=>{const x1=GX(NOS[a][1]),y1=GY(NOS[a][2]),x2=GX(NOS[b][1]),y2=GY(NOS[b][2]);g+=fech.has(a+b)?LN(x1,y1,x2,y2,GRAY,1.5,'4 4'):LN(x1,y1,x2,y2,NAVY,2.6);});
+ const al=alcance('P');
+ for(const k in NOS){const x=GX(NOS[k][1]),y=GY(NOS[k][2]),[dx,dy,an]=ROT[k];g+=`<circle cx="${x}" cy="${y}" r="7" fill="${k=='S'?GREEN:al.has(k)?NAVY:GRAY}" stroke="#fff" stroke-width="2"/>`+TX(x+dx,y+dy,nome(k),{fs:9.5,a:an})+`<circle cx="${x+BD[k][0]}" cy="${y+BD[k][1]}" r="7" fill="${ORANGE}"/>`+TX(x+BD[k][0],y+BD[k][1]+3.5,grau(k),{fs:9,c:'#fff'});}
+ $('fig').innerHTML=SVG(W,H,g);$('ka').textContent=abertas().length+' de 12';$('ks').textContent=soma()+' = 2 × '+abertas().length;$('kp').textContent=grau('P');$('kr').textContent=al.has('S')?'sim':'não';MIS.ver('m');}
+toque('fig',(x,y,ini)=>{if(!ini)return;let best=null,bd=14;AR.forEach(([a,b])=>{const d=distSeg(x,y,GX(NOS[a][1]),GY(NOS[a][2]),GX(NOS[b][1]),GY(NOS[b][2]));if(d<bd){bd=d;best=a+b;}});if(best)tog(best);});
+$('rb').onclick=()=>{fech.clear();draw();};
+draw();
+})();
+</script>
+</body>
+</html>

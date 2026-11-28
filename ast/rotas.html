@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O caminho mais curto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O caminho mais curto</h1></header>
+<main>
+<div class="card"><h2>Dijkstra no mapa</h2><p class="muted" style="margin-top:0">Escolha o destino e as estradas fechadas. O número em cada cidade é a menor distância desde Pedra Alta, calculada pelo algoritmo de Dijkstra. A linha tracejada é uma estrada de terra que a Defesa Civil pode abrir de Pedra Alta a Três Barras: escolha o comprimento dela.</p>
+<div id="cd" style="margin:6px 0"></div>
+<div id="cb" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sx"><b>Estrada de terra Pedra Alta–Três Barras</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Menor distância<b id="kd"></b></div><div>Caminho<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache as rotas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NOS={P:['Pedra Alta',35,19],V:['Vila Seca',-52,47],R:['Rio Claro do Sul',-72,-83],C:['Campo Largo',40,145],F:['Ponte Funda',85,-50],T:['Três Barras',175,20],S:['Serra Nova',142,-141]};
+const AR=[['P','V',100],['P','R',170],['P','C',150],['P','F',100],['V','R',150],['V','C',150],['C','T',210],['F','T',130],['F','R',180],['T','S',190],['F','S',120],['R','S',260]];
+const GX=x=>32+(x+72)*0.95,GY=y=>290-(y+141)*0.95;
+const ROT={P:[0,-11,'middle'],V:[0,-11,'middle'],R:[-6,19,'start'],C:[11,4,'start'],F:[11,13,'start'],T:[0,-11,'middle'],S:[11,4,'start']};
+const nome=k=>NOS[k][0];
+const BD={P:[15,10],V:[-13,10],R:[14,-11],C:[-14,8],F:[-14,10],T:[14,12],S:[-16,-3]};
+function fundo(W,H){let g=RC(0,0,W,H,'#E8F1E0','rx="10"');let rio=[];for(let i=0;i<=40;i++){const t=i/40;rio.push(GX(-60+250*t)+','+GY(-95+90*t+12*Math.sin(t*9)));}
+ g+=`<polyline points="${rio.join(' ')}" fill="none" stroke="#6B8FE0" stroke-width="3"/>`;
+ g+=LN(GX(0)-4,GY(0)-4,GX(0)+4,GY(0)+4,VERM,2)+LN(GX(0)-4,GY(0)+4,GX(0)+4,GY(0)-4,VERM,2);return g;}
+function vizinhos(arestas){const a={};Object.keys(NOS).forEach(k=>a[k]=[]);arestas.forEach(([x,y,w])=>{a[x].push([y,w]);a[y].push([x,w]);});return a;}
+function dijkstra(arestas,o){const a=vizinhos(arestas),D={},pr={},fix=new Set();Object.keys(NOS).forEach(k=>D[k]=Infinity);D[o]=0;
+ while(true){let u=null;for(const k in D)if(!fix.has(k)&&D[k]<Infinity&&(u===null||D[k]<D[u]))u=k;if(u===null)break;fix.add(u);a[u].forEach(([v,w])=>{if(D[u]+w<D[v]){D[v]=D[u]+w;pr[v]=u;}});}
+ return {D,pr};}
+function rota(pr,o,d){const r=[d];while(r[0]!==o&&pr[r[0]])r.unshift(pr[r[0]]);return r[0]===o?r:[];}
+function distSeg(px,py,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,t=clamp(((px-x1)*dx+(py-y1)*dy)/(dx*dx+dy*dy),0,1);return Math.hypot(px-x1-t*dx,py-y1-t*dy);}
+let dest='S',blq=0;const DS=['S','T','V'];
+const X=SL('sx',140,300,5,300,draw,v=>v+' km');
+function arestas(){let a=AR.filter(([p,q])=>!(blq==1&&(p=='F'||q=='F'))&&!(blq==2&&p=='F'&&q=='S'));return a.concat([['P','T',X.get()]]);}
+const calc=()=>dijkstra(arestas(),'P');
+const melhor=()=>{const{D,pr}=calc();return{d:D[dest],r:rota(pr,'P',dest)};};
+const usaTerra=()=>{const r=melhor().r;for(let i=1;i<r.length;i++)if((r[i-1]=='P'&&r[i]=='T')||(r[i-1]=='T'&&r[i]=='P'))return true;return false;};
+MIS.def(()=>[
+ ['Destino <b>Serra Nova</b>, tudo aberto. Qual o caminho mais curto?',()=>dest=='S'&&blq==0&&melhor().d==220,()=>'220 km, por Ponte Funda. Compare com a tabela do livro.',()=>'Escolha Serra Nova e "Tudo aberto". Agora: '+fmt(melhor().d)+' km.'],
+ ['Feche a <b>Ponte Funda</b> (com a estrada de terra longa, acima de 240 km). E agora?',()=>dest=='S'&&blq==1&&melhor().d==430,()=>'430 km, por Rio Claro do Sul: quase o dobro. Ponte Funda é o ponto frágil da rede.',()=>'Agora: '+fmt(melhor().d)+' km. Deixe a estrada de terra em 240 km ou mais.'],
+ ['Reabra a ponte e feche só a estrada <b>Ponte Funda–Serra Nova</b>.',()=>dest=='S'&&blq==2&&melhor().d==420,()=>'420 km, por Ponte Funda e Três Barras: só 10 km melhor que ir por Rio Claro do Sul.',()=>'Agora: '+fmt(melhor().d)+' km.'],
+ ['Com a <b>Ponte Funda fechada</b>, ache o <b>maior</b> comprimento da estrada de terra que ainda encurta a viagem até Serra Nova.',()=>dest=='S'&&blq==1&&usaTerra()&&X.get()>=235,()=>X.get()+' + 190 = '+(X.get()+190)+' km, menos que os 430 por Rio Claro. Com 240 km ou mais, a estrada de terra deixa de compensar.',()=>blq!=1||dest!='S'?'Feche a Ponte Funda e escolha Serra Nova.':usaTerra()?'Compensa, mas dá para ser mais longa. Aumente.':'Com '+X.get()+' km, a estrada de terra não entra no caminho mais curto. Diminua.']]);
+function draw(){const W=340,H=310,{D,pr}=calc(),r=melhor().r;let g=fundo(W,H);
+ const noC=new Set();for(let i=1;i<r.length;i++)noC.add(r[i-1]<r[i]?r[i-1]+r[i]:r[i]+r[i-1]);
+ const fechada=(p,q)=>(blq==1&&(p=='F'||q=='F'))||(blq==2&&p=='F'&&q=='S');
+ AR.concat([['P','T',X.get()]]).forEach(([a,b,w],i)=>{const x1=GX(NOS[a][1]),y1=GY(NOS[a][2]),x2=GX(NOS[b][1]),y2=GY(NOS[b][2]);const on=noC.has(a<b?a+b:b+a),terra=i==12;
+  g+=fechada(a,b)?LN(x1,y1,x2,y2,VERM,1.5,'3 4'):LN(x1,y1,x2,y2,on?ORANGE:(terra?'#8B5A2B':NAVY),on?5:(terra?2:1.6),terra&&!on?'6 4':'');
+  const tt=(a=='T'&&b=='S')?0.35:0.5,mx=x1+(x2-x1)*tt,my=y1+(y2-y1)*tt;g+=RC(mx-13,my-8,26,15,'#fff','rx="4" stroke="'+(on?ORANGE:'#D1D5DB')+'"')+TX(mx,my+3.5,w,{fs:8.5,c:fechada(a,b)?GRAY:on?ORANGE:NAVY});});
+ for(const k in NOS){const x=GX(NOS[k][1]),y=GY(NOS[k][2]),[dx,dy,an]=ROT[k];const off=blq==1&&k=='F';g+=`<circle cx="${x}" cy="${y}" r="7" fill="${off?GRAY:k==dest?GREEN:NAVY}" stroke="#fff" stroke-width="2"/>`+TX(x+dx,y+dy,nome(k),{fs:9,a:an})+(D[k]<Infinity?RC(x+BD[k][0]-13,y+BD[k][1]-7,26,14,ORANGE,'rx="4"')+TX(x+BD[k][0],y+BD[k][1]+3.5,D[k],{fs:8.5,c:'#fff'}):'');}
+ $('fig').innerHTML=SVG(W,H,g);const m=melhor();$('kd').textContent=m.d<Infinity?fmt(m.d)+' km':'sem caminho';$('kc').textContent=m.r.map(nome).join(' → ');MIS.ver('m');}
+chips('cd',['Até Serra Nova','Até Três Barras','Até Vila Seca'],0,i=>{dest=DS[i];draw();});
+chips('cb',['Tudo aberto','Ponte Funda fechada','Ponte Funda–Serra Nova fechada'],0,i=>{blq=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>
