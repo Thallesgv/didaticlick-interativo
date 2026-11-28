@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O copo de água · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O copo de água</h1></header>
+<main>
+<div class="card"><h2>Massa, volume e concentração</h2><p class="muted" style="margin-top:0">Cada bolinha vermelha é <b>1 mg de cobre</b>. Mude a massa de cobre e o volume de água: a concentração é C = m ÷ V. Na água, 1 mg/L ≈ 1 ppm.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Cobre dissolvido</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Volume de água</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Concentração<b id="k1"></b></div><div>Em ppm<b id="k2"></b></div><div>Num copo de 0,25 L<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a massa e o volume.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const M=SL('sm',0,60,1,6,draw,v=>v+' mg'),V=SL('sv',0.25,10,0.25,1,draw,v=>fmt(v)+' L');const C=()=>M.get()/V.get();
+let s=11;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;const PT=[...Array(60)].map(()=>[rnd(),rnd()]);
+MIS.def(()=>[
+ ['Monte a água que uma pessoa bebe num dia: <b>4 L</b> da goteira, com <b>3 mg/L</b>. Quantos mg de cobre?',()=>V.get()==4&&M.get()==12,'12 mg em 4 L: 3 mg/L. É o cobre que cada um dos 33 engole por dia.',()=>'Agora: '+fmt(r2(C()))+' mg/L.'],
+ ['Com os mesmos <b>12 mg</b>, ache o volume que deixa a concentração pela <b>metade</b> (1,5 mg/L).',()=>M.get()==12&&V.get()==8,'8 L: o dobro da água, metade da concentração. É a diluição do Módulo 4.',()=>'Agora: '+fmt(r2(C()))+' mg/L.'],
+ ['Encha o balde de <b>10 L</b> com a água da goteira (3 mg/L). Quantos mg de cobre há nele?',()=>V.get()==10&&M.get()==30,'30 mg: m = C · V = 3 × 10. A concentração é a mesma do copo; a massa, não.',()=>'Agora: '+fmt(r2(C()))+' mg/L em '+fmt(V.get())+' L.']]);
+function draw(){const v=V.get(),m=M.get();let g='';const x=90,w=160,h=190,y=14,hv=h*v/10;
+ g+=RC(x,y,w,h,'#fff','stroke="#0E2354" stroke-width="2"')+RC(x+2,y+h-hv,w-4,hv-2,AGUA);
+ for(let i=0;i<m;i++){const p=PT[i];g+=`<circle cx="${(x+8+p[0]*(w-16)).toFixed(1)}" cy="${(y+h-hv+6+p[1]*Math.max(1,hv-12)).toFixed(1)}" r="3.2" fill="${VERM}"/>`;}
+ for(let k=1;k<=10;k++)g+=LN(x+w,y+h-h*k/10,x+w+6,y+h-h*k/10,NAVY,1)+TX(x+w+10,y+h-h*k/10+4,k+' L',{fs:9,a:'start',c:GRAY});
+ $('fig').innerHTML=SVG(340,214,g);$('k1').textContent=fmt(r2(C()))+' mg/L';$('k2').textContent='≈ '+fmt(r2(C()))+' ppm';$('k3').textContent=fmt(r2(C()*0.25))+' mg';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
