@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A rampa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A rampa</h1></header>
+<main>
+<div class="card"><h2>O peso decomposto na rampa</h2><p class="muted" style="margin-top:0">Mude o peso do bloco e a inclinação da rampa (arraste ou use − e +). A seta azul é o peso; a laranja, a parte que empurra ao longo da rampa (P·sen i); a vermelha, a parte que aperta contra a rampa (P·cos i).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Peso do bloco</b><input type="range"><span></span></div><div class="sl" id="si"><b>Inclinação da rampa</b><input type="range"><span></span></div><div class="kpi"><div>Empurra (P·sen i)<b id="k1"></b></div><div>Aperta (P·cos i)<b id="k2"></b></div><div class="o">Fração que empurra<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function AR(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),t=9;return LN(x1,y1,x2,y2,c,w||3)+PG([[x2,y2],[x2-t*Math.cos(a-0.4),y2-t*Math.sin(a-0.4)],[x2-t*Math.cos(a+0.4),y2-t*Math.sin(a+0.4)]],c,'');}
+const SP=SL('sp',0,40000,1000,20000,()=>draw(),v=>fmt(v)+' kN'),SI=SL('si',0,90,1,20,()=>draw(),v=>v+'°');
+const T=()=>SP.get()*Math.sin(SI.get()*RAD),N=()=>SP.get()*Math.cos(SI.get()*RAD);
+MIS.def(()=>[
+ ['Decomponha o peso do pacote: <b>28 000 kN</b> numa camada de <b>30°</b>.',()=>SP.get()==28000&&SI.get()==30,'Empurra 14 000 kN; aperta 24 249 kN.',()=>SP.get()!=28000?'O peso está em '+fmt(SP.get())+' kN.':'A rampa está a '+SI.get()+'°.'],
+ ['Ache a inclinação em que <b>empurrar e apertar ficam iguais</b>.',()=>SI.get()==45&&SP.get()>0,'45°: sen 45° = cos 45°. Acima disso, o peso mais empurra do que aperta.',()=>'A '+SI.get()+'°, empurra '+fmt(Math.round(T()))+' e aperta '+fmt(Math.round(N()))+' kN.'],
+ ['Ponha o pacote (<b>28 000 kN</b>) na inclinação da <b>encosta, 48°</b>. Quanto empurraria?',()=>SP.get()==28000&&SI.get()==48,()=>fmt(Math.round(T()))+' kN: 74% do peso. Por isso o ângulo da camada, e não o da encosta, decide o deslizamento.',()=>SP.get()!=28000?'Volte o peso para 28 000 kN.':'A rampa está a '+SI.get()+'°.']]);
+function draw(){const i=SI.get()*RAD,ox=30,oy=215,L=230,P=SP.get(),k=110/40000;let g=RC(0,0,340,240,'#fff','rx="10"');
+ const tx=ox+L*Math.cos(i),ty=oy-L*Math.sin(i);g+=PG([[ox,oy],[tx,ty],[tx,oy]],'#C9CED8','stroke="'+NAVY+'"');
+ const s=L*0.55,bx=ox+s*Math.cos(i),by=oy-s*Math.sin(i),u=[Math.cos(i),-Math.sin(i)],nn=[-Math.sin(i),-Math.cos(i)],bw=60,bh=34;
+ const q=[[bx-u[0]*bw/2,by-u[1]*bw/2],[bx+u[0]*bw/2,by+u[1]*bw/2]];g+=PG([q[0],q[1],[q[1][0]+nn[0]*bh,q[1][1]+nn[1]*bh],[q[0][0]+nn[0]*bh,q[0][1]+nn[1]*bh]],TERRA,'stroke="'+TERRA_E+'" stroke-width="1.5"');
+ const cx=bx+nn[0]*bh/2,cy=by+nn[1]*bh/2,Pk=P*k;
+ if(Pk>2){g+=AR(cx,cy,cx,cy+Pk,BLUE);const t=T()*k,n=N()*k;if(t>2)g+=AR(cx,cy,cx-u[0]*t,cy-u[1]*t,ORANGE);if(n>2)g+=AR(cx,cy,cx-nn[0]*n,cy-nn[1]*n,VERM);}
+ g+=TX(ox+44,oy-6,'i = '+SI.get()+'°',{fs:11,a:'start'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(Math.round(T()))+' kN';$('k2').textContent=fmt(Math.round(N()))+' kN';$('k3').textContent=Math.round(Math.sin(i)*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

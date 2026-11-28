@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O fator de segurança · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O fator de segurança</h1></header>
+<main>
+<div class="card"><h2>O que segura contra o que empurra</h2><p class="muted" style="margin-top:0">Mude a coesão do solo, o ângulo de atrito e a inclinação da camada (arraste ou use − e +). O pacote tem 28 000 kN e base de 600 m², sem água. As barras comparam o que segura (verde) com o que empurra (laranja).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Coesão (c)</b><input type="range"><span></span></div><div class="sl" id="sf"><b>Ângulo de atrito (φ)</b><input type="range"><span></span></div><div class="sl" id="si"><b>Inclinação da camada</b><input type="range"><span></span></div><div class="kpi"><div>Segura<b id="k1"></b></div><div>Empurra<b id="k2"></b></div><div class="o">FS<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function FSc(o){const P=o.P??28000,i=(o.i??30)*RAD,phi=(o.phi??25)*RAD,c=o.c??16,A=600,h=Math.max(0,o.h??0),n=o.n??0;
+ const T=P*Math.sin(i),N=P*Math.cos(i),U=7.5*h*A,Ne=Math.max(0,N-U),R=c*A+Ne*Math.tan(phi)+250*n;return{T,N,U,Ne,R,fs:R/T,at:Ne*Math.tan(phi),co:c*A};}
+const corFS=f=>f>=1.5?VERDE:f>=1?OURO:VERM;
+const SC=SL('sc',0,30,0.5,5,()=>draw(),v=>vg(v)+' kPa'),SF=SL('sf',15,40,1,30,()=>draw(),v=>v+'°'),SI=SL('si',15,50,1,30,()=>draw(),v=>v+'°');
+const F=()=>FSc({c:SC.get(),phi:SF.get(),i:SI.get()}),base=()=>SF.get()==25&&SI.get()==30;
+MIS.def(()=>[
+ ['Calcule o FS do pacote seco: <b>c = 16 kPa</b>, <b>φ = 25°</b>, <b>i = 30°</b>.',()=>SC.get()==16&&base(),()=>'FS ≈ '+r2(F().fs)+': segura 20 900, empurra 14 000 kN.',()=>!base()?'Ponha φ = 25° e i = 30°.':'A coesão está em '+vg(SC.get())+' kPa.'],
+ ['Com φ = 25° e i = 30°, ache a coesão que deixa o pacote <b>no limite</b> (FS = 1).',()=>base()&&Math.abs(F().fs-1)<0.01,()=>'c = '+vg(SC.get())+' kPa: abaixo disso, o pacote desce mesmo seco.',()=>!base()?'Ponha φ = 25° e i = 30°.':'FS agora: '+r2(F().fs)+'.'],
+ ['Ache a <b>menor coesão</b> que atende à norma (<b>FS ≥ 1,5</b>), com φ = 25° e i = 30°.',()=>base()&&F().fs>=1.5&&FSc({c:SC.get()-0.5}).fs<1.5,()=>'c = '+vg(SC.get())+' kPa: o solo real tem 16, um pouco abaixo.',()=>!base()?'Ponha φ = 25° e i = 30°.':F().fs<1.5?'FS agora: '+r2(F().fs)+'.':'Atende, mas dá para usar menos coesão.']]);
+function draw(){const f=F(),k=170/30000,x0=60,y0=215;let g=RC(0,0,340,240,'#fff','rx="10"')+LN(30,y0,320,y0,NAVY,1);
+ const hc=Math.min(f.co*k,190),ha=Math.min(f.at*k,190-hc);g+=RC(x0,y0-hc,80,hc,VERDE,'')+RC(x0,y0-hc-ha,80,ha,'#7BB38F','');
+ g+=TX(x0+40,y0-hc-ha-6,'segura '+fmt(Math.round(f.R)),{fs:10,c:VERDE});if(hc>14)g+=TX(x0+40,y0-hc/2+4,'coesão',{fs:9,c:'#fff'});if(ha>14)g+=TX(x0+40,y0-hc-ha/2+4,'atrito',{fs:9,c:'#fff'});
+ const ht=Math.min(f.T*k,190);g+=RC(x0+120,y0-ht,80,ht,ORANGE,'')+TX(x0+160,y0-ht-6,'empurra '+fmt(Math.round(f.T)),{fs:10,c:ORANGE});
+ g+=TX(300,60,'FS',{fs:12})+TX(300,90,r2(f.fs),{fs:22,c:corFS(f.fs)});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(Math.round(f.R))+' kN';$('k2').textContent=fmt(Math.round(f.T))+' kN';$('k3').textContent=r2(f.fs);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
