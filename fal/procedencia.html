@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A procedência em pedaços · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A procedência em pedaços</h1></header>
+<main>
+<div class="card"><h2>A procedência em pedaços</h2><p class="muted" style="margin-top:0">Cada aresta é uma passagem do quadro, com o seu documento. Toque numa aresta para lê-lo e classifique-o. Depois escolha quais arestas a perícia aceita: os vértices de mesma cor são os pedaços (componentes) que ainda se alcançam.</p>
+<div class="fig" id="fig"></div>
+<div class="msg info" id="doc"></div>
+<div id="cmk" style="margin:4px 0"></div>
+<p class="muted" style="margin:8px 0 2px">Que arestas a perícia aceita?</p><div id="cfl" style="margin:4px 0"></div>
+<div class="sl" id="sf"><b>Confiança de uma cópia (fraca)</b><input type="range"><span></span></div>
+<div class="sl" id="sF"><b>Confiança de um documento forte</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Confiança de um elo sem documento</b><input type="range"><span></span></div>
+<div class="kpi"><div>Arestas aceitas<b id="ka"></b></div><div>Componentes<b id="kc"></b></div><div class="o">Confiança da corrente<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia os documentos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROXO='#8E44AD';
+const CAD=[["V", "Van Gogh", "1889"], ["T", "Theo", "1890"], ["J", "Jo Bonger", "1891"], ["M", "Gal. Moreau", "1912"], ["H", "Col. Hartmann", "1928"], ["L", "Leilão Londres", "1953"], ["O", "Otávio Fontes", "1974"], ["R", "Raul Fontes", "2009"], ["X", "Leilão", "2026"]],DOCS=[["cópia de carta, sem original", "fraca"], ["cópia de inventário", "fraca"], ["nenhum documento", "nenhum"], ["fotocópia de recibo", "fraca"], ["catálogo: a foto não tem cipreste", "falsa"], ["nota de 1974 com CEP de 8 dígitos", "falsa"], ["inventário em cartório", "forte"], ["contrato de consignação", "forte"]];
+
+const XY=[[30,50],[100,50],[170,50],[240,50],[310,50],[310,160],[240,160],[170,160],[100,160]];
+const TIPOS=['forte','fraca','falsa','falta'],CERTO=['fraca','fraca','falta','fraca','falsa','falsa','forte','forte'],COR={forte:GREEN,fraca:ORANGE,falsa:VERM,falta:VERM};
+let marca=Array(8).fill(null),sel=0,filtro=0;
+const CK=chips('cmk',TIPOS.map(t=>'marcar: '+t),-1,i=>{marca[sel]=TIPOS[i];draw();});
+const CF=chips('cfl',['todas','sem falsas e sem a que falta','só as fortes'],0,i=>{filtro=i;draw();});
+const SF=SL('sf',0,100,5,60,()=>draw(),v=>v+'%'),SFo=SL('sF',0,100,5,95,()=>draw(),v=>v+'%'),SN=SL('sn',0,100,5,30,()=>draw(),v=>v+'%');
+const aceita=i=>{const m=marca[i];return filtro==0?true:filtro==1?!(m=='falsa'||m=='falta'):m=='forte';};
+function comps(){const p=[...Array(9).keys()],f=x=>p[x]==x?x:(p[x]=f(p[x]));for(let i=0;i<8;i++)if(aceita(i))p[f(i)]=f(i+1);const r=[];for(let i=0;i<9;i++)r.push(f(i));return r;}
+toque('fig',(x,y,ini)=>{if(!ini)return;let b=-1,bd=16;for(let i=0;i<8;i++){const [x1,y1]=XY[i],[x2,y2]=XY[i+1];const L2=(x2-x1)**2+(y2-y1)**2;let t=((x-x1)*(x2-x1)+(y-y1)*(y2-y1))/L2;t=Math.max(0,Math.min(1,t));
+ const d=Math.hypot(x-x1-t*(x2-x1),y-y1-t*(y2-y1));if(d<bd){bd=d;b=i;}}if(b>=0){sel=b;draw();}});
+const certas=()=>marca.every((m,i)=>m==CERTO[i]);
+MIS.def(()=>[
+ ['Leia os documentos e marque como <b>falta</b> o elo que não tem papel nenhum.',()=>marca[2]=='falta','Jo Bonger (1891) → Galeria Moreau (1912): 21 anos sem documento. O caminho fica fraco, mas não cai só por isso.',()=>marca.includes('falta')?'O elo marcado como "falta" tem documento. Leia de novo.':'Toque nas arestas, uma a uma, e leia o documento.'],
+ ['Marque como <b>falsa</b> as duas arestas cujo documento contradiz os fatos.',()=>marca[4]=='falsa'&&marca[5]=='falsa'&&marca.filter(m=>m=='falsa').length==2,'O catálogo de 1953 mostra um quadro sem cipreste, e a nota de 1974 tem CEP de 8 dígitos, que só existe desde 1992.',()=>'Marcadas como falsas: '+marca.filter(m=>m=='falsa').length+'. Procure a foto e o CEP.'],
+ ['Classifique as <b>8 arestas</b> e aceite só as que não são falsas nem faltam. Em quantos pedaços a procedência fica?',()=>certas()&&filtro==1,'4 componentes: {Van Gogh, Theo, Jo Bonger}, {Moreau, Hartmann}, {Londres} e {Otávio, Raul, leilão}. Van Gogh não alcança Raul.',()=>!certas()?'Ainda há '+marca.filter((m,i)=>m!=CERTO[i]).length+' aresta(s) sem a classificação certa. As cópias são fracas; os documentos originais, fortes.':'Escolha "sem falsas e sem a que falta".'],
+ ['Seja ainda mais exigente: aceite <b>só as fortes</b>.',()=>certas()&&filtro==2,'7 componentes: só {Otávio, Raul, leilão} fica ligado, e seis vértices ficam sozinhos.',()=>'Escolha "só as fortes".']]);
+function draw(){const cp=comps(),ids=[...new Set(cp)],PAL=['#FDE9D8','#D9EEDD','#DCE6FA','#F3E0F7','#FFF3C4','#E0F2F1','#FBE0E0','#E8E8E8','#EDE7F6'];
+ let s=RC(0,0,340,215,'#fff','rx="10"');
+ for(let i=0;i<8;i++){const [x1,y1]=XY[i],[x2,y2]=XY[i+1],m=marca[i],ok=aceita(i),c=m?COR[m]:GRAY,mx=(x1+x2)/2,my=(y1+y2)/2;
+  if(sel==i)s+=LN(x1,y1,x2,y2,'#FFE08A',16);
+  s+=LN(x1,y1,x2,y2,ok?c:GRAYL,m=='forte'?5:3.5,m=='forte'?null:(ok?'7 5':'2 6'));
+  if(m=='falsa')s+=LN(mx-6,my-6,mx+6,my+6,VERM,3)+LN(mx-6,my+6,mx+6,my-6,VERM,3);
+  if(m=='falta')s+=TX(mx+(x1==x2?12:0),my+(x1==x2?6:-8),'?',{fs:18,c:VERM});}
+ for(let i=0;i<9;i++){const [x,y]=XY[i];s+=CIR(x,y,17,PAL[ids.indexOf(cp[i])%9],'stroke="'+NAVY+'" stroke-width="2"')+TX(x,y+5,CAD[i][0],{fs:13})+TX(x,y+(y<100?-24:33),CAD[i][1].replace('Leilão Londres','Londres'),{fs:8,c:GRAY})+TX(x,y+(y<100?-34:43),CAD[i][2],{fs:8,c:NAVY});}
+ $('fig').innerHTML=SVG(340,215,s);
+ $('doc').innerHTML='<b>'+CAD[sel][1]+' ('+CAD[sel][2]+') → '+CAD[sel+1][1]+' ('+CAD[sel+1][2]+')</b><br>Documento: '+DOCS[sel][0]+'.'+(marca[sel]?' Sua marca: <b>'+marca[sel]+'</b>.':' Ainda sem marca.');
+ document.querySelectorAll('#cmk button').forEach((b,i)=>b.className=TIPOS[i]==marca[sel]?'':'alt');
+ const cf={forte:SFo.get()/100,fraca:SF.get()/100,falta:SN.get()/100,falsa:0};let pr=1;marca.forEach(m=>pr*=cf[m||'fraca']);
+ $('ka').textContent=[...Array(8).keys()].filter(aceita).length+' de 8';$('kc').textContent=ids.length;$('kf').textContent=r1(pr*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
