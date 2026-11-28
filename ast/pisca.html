@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pisca-pisca · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O pisca-pisca</h1></header>
+<main>
+<div class="card"><h2>Ache o ponto que pula</h2><p class="muted" style="margin-top:0">Duas fotos da mesma região do céu, tiradas com <b>20 minutos</b> de diferença. Aperte <b>Piscar</b> para alternar entre elas e toque no ponto que muda de lugar. Nesta câmera, cada pixel cobre <b>0,75″</b> do céu.</p>
+<div class="fig" id="fig" style="cursor:crosshair"></div>
+<div class="row"><button id="pis">Piscar</button><button class="alt" id="novo">Outro céu</button></div>
+<div class="sl" id="sd"><b>Distância do asteroide (medida por paralaxe ou radar)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Pulo na foto<b id="kp">—</b></div><div>Em radianos<b id="kr">—</b></div><div>Caminho de lado<b id="ks">—</b></div><div class="o">Velocidade de lado<b id="kv">—</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Aperte Piscar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let seed=17,ast,shift,ceu=0,quadro=0,achou=false,timer=null,achados=0;
+function novo(prim){seed=prim?17:Math.floor(Math.random()*9000)+50;let r=seed;const rnd=()=>{r=(r*9301+49297)%233280;return r/233280;};
+ const ang=rnd()*2*Math.PI,px=prim?55:30+Math.round(rnd()*50);shift=[px*Math.cos(prim?0.35:ang),px*Math.sin(prim?0.35:ang)];
+ ast=[90+rnd()*130,60+rnd()*80];achou=false;quadro=0;['kp','kr','ks','kv'].forEach(k=>$(k).textContent='—');draw();}
+const S=SL('sd',6,8.3,0.002,Math.log10(4.5e7),()=>{draw();},v=>MI(Math.pow(10,v)));
+const pulo=()=>Math.hypot(shift[0],shift[1])*0.75,rad=()=>pulo()/206265,cam=()=>Math.pow(10,S.get())*rad(),vel=()=>cam()/1200;
+$('pis').onclick=()=>{if(timer){clearInterval(timer);timer=null;$('pis').textContent='Piscar';}else{timer=setInterval(()=>{quadro=1-quadro;draw();},450);$('pis').textContent='Parar';}};
+$('novo').onclick=()=>{ceu++;novo(false);};
+toque('fig',(x,y,ini)=>{if(!ini)return;const p=quadro?[ast[0]+shift[0],ast[1]+shift[1]]:ast;if(Math.hypot(x-p[0],y-p[1])<16){if(!achou)achados++;achou=true;}draw();});
+MIS.def(()=>[
+ ['Aperte <b>Piscar</b> e toque no ponto que pula.',()=>achados>=1,'Achou! As estrelas ficaram paradas e o asteroide pulou. Agora os números aparecem embaixo.','Aperte Piscar e observe com calma. Toque no ponto que muda de lugar.'],
+ ['Esse é o Teimoso, a <b>45 milhões de km</b>. Deixe a distância nesse valor e leia a velocidade de lado: uns <b>7,5 km/s</b>.',()=>achou&&ceu==0&&Math.abs(S.get()-Math.log10(4.5e7))<0.01,()=>'Pulo de '+r2(pulo())+'″ = '+SCI(rad())+' rad; caminho de '+NUM(cam(),0)+' km em 1.200 s: '+r2(vel())+' km/s.',()=>ceu?'Esta missão é com o primeiro céu: recarregue a página.':!achou?'Ache o asteroide primeiro.':'Ajuste a distância para 45.000.000 km.'],
+ ['Aperte <b>Outro céu</b> e ache o novo asteroide.',()=>ceu>0&&achou,'Mais um! Cada céu tem um pulo diferente.','Aperte Outro céu, depois Piscar, e toque no ponto que pula.'],
+ ['Neste novo céu, suponha o asteroide a <b>10 milhões de km</b> (entre 9,8 e 10,2 milhões). Qual a velocidade de lado?',()=>ceu>0&&achou&&Math.abs(Math.pow(10,S.get())-1e7)<2e5,()=>'v = '+NUM(cam(),0)+' km ÷ 1.200 s ≈ '+r2(vel())+' km/s. Mesmo pulo, mais perto: velocidade menor.','Ache o asteroide deste céu e ajuste a distância para 10 milhões de km.']]);
+function draw(){let g=RC(0,0,340,220,CEU,'rx="10"')+ESTRELAS(4,4,332,212,90,seed);
+ const p=quadro?[ast[0]+shift[0],ast[1]+shift[1]]:ast;g+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="1.4" fill="#fff"/>`;
+ g+=TX(14,18,quadro?'foto das 22h20':'foto das 22h00',{fs:10,c:'#fff',a:'start'});
+ if(achou){const q=[ast[0]+shift[0],ast[1]+shift[1]];g+=`<circle cx="${ast[0]}" cy="${ast[1]}" r="9" fill="none" stroke="${AMA}" stroke-dasharray="3 2"/><circle cx="${q[0]}" cy="${q[1]}" r="9" fill="none" stroke="${ORANGE}" stroke-width="2"/>`+LN(ast[0],ast[1],q[0],q[1],ORANGE,1.5,'4 2')+TX((ast[0]+q[0])/2,(ast[1]+q[1])/2-12,r2(pulo())+'″',{fs:11,c:'#FDBA74'});
+  $('kp').textContent=r2(pulo())+'″ ('+Math.round(Math.hypot(shift[0],shift[1]))+' px)';$('kr').textContent=SCI(rad())+' rad';$('ks').textContent=NUM(cam(),0)+' km';$('kv').textContent=r2(vel())+' km/s';}
+ $('fig').innerHTML=SVG(340,220,g);MIS.ver('m');}
+novo(true);
+})();
+</script>
+</body>
+</html>

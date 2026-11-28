@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O zoom cósmico · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O zoom cósmico</h1></header>
+<main>
+<div class="card"><h2>Uma régua de potências de 10</h2><p class="muted" style="margin-top:0">A tela tem a largura indicada, em km. Cada barra é uma distância de verdade, na mesma escala. Mude o expoente: a cada passo inteiro, a largura fica 10 vezes maior. Barras que passam da tela ganham uma seta.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sz"><b>Largura da tela = 10 elevado a… (km)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Largura da tela<b id="kw"></b></div><div>Por extenso<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o expoente.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=[['diâmetro da Terra',12742,TERRA],['Terra–Lua',384400,'#9CA3AF'],['Terra–Teimoso',4.5e7,ORANGE],['Terra–Sol (1 UA)',1.496e8,AMA],['Sol–Netuno',4.5e9,'#6B8FE0'],['dia-luz (Voyager 1)',2.59e10,'#A78BFA'],['Proxima Centauri',4.0e13,'#F472B6']];
+const Z=SL('sz',3,14,0.05,5,draw,v=>r2(v));
+const W=()=>Math.pow(10,Z.get()),px=v=>v/W()*290;
+const b=n=>px(D.find(x=>x[0]==n)[1]);
+MIS.def(()=>[
+ ['Deixe a barra <b>Terra–Lua</b> ocupando entre <b>metade e toda</b> a tela.',()=>b('Terra–Lua')>=145&&b('Terra–Lua')<=290,()=>'A tela tem '+SCI(W())+' km e a Lua está a 3,8 × 10⁵ km. O diâmetro da Terra virou um tracinho.',()=>'A barra da Lua tem '+r1(b('Terra–Lua'))+' px.'],
+ ['Mostre o <b>Teimoso</b> e o <b>Sol</b> juntos: a barra do Sol inteira na tela e a do Teimoso com pelo menos <b>60 px</b>.',()=>b('Terra–Sol (1 UA)')<=290&&b('Terra–Teimoso')>=60,()=>'O Teimoso está a 0,3 UA: '+r1(b('Terra–Teimoso')/b('Terra–Sol (1 UA)')*100)+'% do caminho até o Sol.',()=>b('Terra–Sol (1 UA)')>290?'O Sol passou da tela: aumente o expoente.':'A barra do Teimoso tem '+r1(b('Terra–Teimoso'))+' px.'],
+ ['Faça caber <b>Sol–Netuno</b> com a barra do <b>dia-luz da Voyager 1</b> passando da tela. Quantas vezes o dia-luz é maior?',()=>b('Sol–Netuno')<=290&&b('dia-luz (Voyager 1)')>290,'2,59 × 10¹⁰ ÷ 4,5 × 10⁹ ≈ 5,8: a Voyager está quase 6 vezes mais longe que Netuno.',()=>b('Sol–Netuno')>290?'Netuno passou da tela.':'A Voyager ainda cabe: diminua o expoente.'],
+ ['Afaste até caber <b>Proxima Centauri</b>. Quantos pixels sobram para a distância Terra–Sol?',()=>b('Proxima Centauri')<=290,()=>'Com a tela de '+SCI(W())+' km, a UA tem '+SCI(b('Terra–Sol (1 UA)'))+' px: menos que um átomo de tinta. A estrela mais próxima está a 270 mil UA.','A estrela ainda passa da tela.']]);
+function draw(){let g=RC(0,0,340,250,CEU,'rx="10"')+ESTRELAS(4,4,332,242,35,9);const x0=26;
+ D.forEach(([n,v,c],i)=>{const y=26+i*29,w=px(v);const ww=Math.min(w,296);g+=TX(x0,y,n+' · '+SCI(v)+' km',{fs:9.5,c:'#fff',a:'start'});
+  g+=w<0.5?`<circle cx="${x0}" cy="${y+9}" r="1.5" fill="${c}"/>`:RC(x0,y+5,Math.max(ww,1),8,c,'rx="3"');if(w>296)g+=PG([[x0+296,y+3],[x0+306,y+9],[x0+296,y+15]],c);});
+ g+=LN(x0,240,x0+290,240,'#fff',1.5)+LN(x0,236,x0,244,'#fff',1.5)+LN(x0+290,236,x0+290,244,'#fff',1.5)+TX(x0+145,236,'10'+SUP(r2(Z.get()).replace(',','.'))+' km',{fs:10,c:'#fff'});
+ $('fig').innerHTML=SVG(340,250,g);$('kw').textContent=SCI(W())+' km';$('ke').textContent=NUM(W(),0)+' km';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
