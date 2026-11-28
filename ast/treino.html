@@ -112,7 +112,31 @@ const LIV={'ast1':{T:["Ângulos no céu", "Paralaxe", "UA e ano-luz", "Notação
  const p=P([1,2,5,10]);return{q:`Dois asteroides independentes têm, cada um, <b>${p}%</b> de chance de bater. Qual a chance de pelo menos um bater, em %? (até 2 casas)`,a:Math.round((1-(1-p/100)**2)*10000)/100,tol:0.011,exp:`1 − (1 − ${fmt(p/100)})² = ${fmt(Math.round((1-(1-p/100)**2)*10000)/100)}%.`};},
 6:()=>{const t=R(0,1);
  if(t==0){const [m,v]=P([[2e9,15000],[1e10,10000],[2.8e10,12300],[1e8,20000]]);const E=0.5*m*v*v;return{q:`Qual a energia, em megatons, de uma rocha de <b>${SCI(m)} kg</b> a <b>${fmt(v/1000)} km/s</b>? (½mv²; 1 Mt = 4,184 × 10¹⁵ J; arredonde)`,a:Math.round(E/4.184e15),tol:Math.max(1,E/4.184e15*0.02),exp:`½ × ${SCI(m)} × ${fmt(v)}² = ${SCI(E,3)} J ≈ ${fmt(Math.round(E/4.184e15))} Mt.`};}
- const [c,s,n]=P([[0.01,100000,1000],[0.001,5000000,5000],[0.05,20000,1000],[0.2,1000,200]]);return{q:`Uma chance de <b>${fmt(c*100)}%</b> de atingir <b>${fmt(s)}</b> pessoas. Qual o risco (chance × estrago), em pessoas?`,a:n,exp:`${fmt(c)} × ${fmt(s)} = ${fmt(n)}.`};}}}};
+ const [c,s,n]=P([[0.01,100000,1000],[0.001,5000000,5000],[0.05,20000,1000],[0.2,1000,200]]);return{q:`Uma chance de <b>${fmt(c*100)}%</b> de atingir <b>${fmt(s)}</b> pessoas. Qual o risco (chance × estrago), em pessoas?`,a:n,exp:`${fmt(c)} × ${fmt(s)} = ${fmt(n)}.`};}}},'ast5':{T:["Energia do impacto", "Logaritmos", "Escalas logarítmicas", "Crateras", "O alcance", "A frequência"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const m=P([2,4,6,10,20]),v=P([10,15,20,30]);const E=0.5*m*v*v;return{q:`Qual a energia cinética, em joules, de <b>${m} kg</b> a <b>${v} m/s</b>? (½mv²)`,a:E,exp:`½ × ${m} × ${v}² = ½ × ${m} × ${v*v} = ${fmt(E)} J.`};}
+ if(t==1){const k=P([2,3,4]);return{q:`Se a velocidade de uma rocha fica <b>${k} vezes</b> maior, a energia fica quantas vezes maior?`,a:k*k,exp:`A energia depende de v²: ${k}² = ${k*k}.`};}
+ const mt=P([15,150,510,1500,4500]);return{q:`Quantas bombas de Hiroshima (15 kt) cabem em <b>${fmt(mt)} Mt</b>?`,a:mt*1000/15,exp:`${fmt(mt)} Mt = ${fmt(mt*1000)} kt; ÷ 15 = ${fmt(mt*1000/15)}.`};},
+2:()=>{const t=R(0,3);
+ if(t==0){const n=R(-3,9);return{q:`Quanto vale <b>log 10${SUP(n)}</b>?`,a:n,exp:`log 10${SUP(n)} = ${n}, pois 10 elevado a ${n} dá 10${SUP(n)}.`};}
+ if(t==1){const [a,b]=P([[2,3],[2,5],[3,5],[2,7],[3,3]]);const L={2:0.301,3:0.477,5:0.699,7:0.845};return{q:`Com log 2 ≈ 0,301, log 3 ≈ 0,477, log 5 ≈ 0,699 e log 7 ≈ 0,845, quanto vale <b>log ${a*b}</b>? (até 3 casas)`,a:Math.round((L[a]+L[b])*1000)/1000,tol:0.002,exp:`log ${a*b} = log ${a} + log ${b} ≈ ${fmt(L[a])} + ${fmt(L[b])} = ${fmt(Math.round((L[a]+L[b])*1000)/1000)}.`};}
+ if(t==2){const m=P([2,3,5]),n=R(2,15);const L={2:0.301,3:0.477,5:0.699};return{q:`Com log ${m} ≈ ${fmt(L[m])}, quanto vale <b>log (${m} × 10${SUP(n)})</b>? (até 3 casas)`,a:Math.round((n+L[m])*1000)/1000,tol:0.002,exp:`${n} + ${fmt(L[m])} = ${fmt(Math.round((n+L[m])*1000)/1000)}.`};}
+ const b=P([2,3,4]),k=R(2,5);return{q:`Quanto vale <b>log</b><sub>${b}</sub> <b>${b**k}</b>?`,a:k,exp:`${b}${SUP(k)} = ${b**k}, então o logaritmo vale ${k}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const d=R(1,3);return{q:`Um terremoto tem magnitude <b>${d}</b> ponto${d>1?'s':''} maior que outro. Libera quantas vezes mais energia? (cada ponto ≈ 32 vezes; arredonde)`,a:Math.round(31.6**d),tol:Math.round(31.6**d)*0.03,exp:`32${SUP(d)} ≈ ${fmt(Math.round(31.6**d))}.`};}
+ if(t==1){const d=P([10,20,30,40]);return{q:`Um som tem <b>${d} dB</b> a mais que outro. Tem quantas vezes mais intensidade?`,a:10**(d/10),exp:`Cada 10 dB multiplicam por 10: 10${SUP(d/10)} = ${fmt(10**(d/10))}.`};}
+ const M=P([4,5,6,7,8]);return{q:`Pela fórmula log E = 1,5M + 4,8, quanto vale <b>log E</b> para magnitude <b>${M}</b>?`,a:1.5*M+4.8,tol:0.01,exp:`1,5 × ${M} + 4,8 = ${fmt(1.5*M+4.8)}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const k=P([2,10,100,1000]);return{q:`Se o diâmetro da cratera cresce com E<sup>0,3</sup>, multiplicar a energia por <b>${fmt(k)}</b> multiplica o diâmetro por quanto? (até 2 casas)`,a:Math.round(k**0.3*100)/100,tol:0.02,exp:`${fmt(k)}<sup>0,3</sup> ≈ ${fmt(Math.round(k**0.3*100)/100)}.`};}
+ if(t==1){const D=P([1,2,4,10]);return{q:`Uma cratera simples tem diâmetro <b>${D} km</b> e profundidade de cerca de 1/5 dele. Qual a profundidade, em metros?`,a:D*200,exp:`${D} km ÷ 5 = ${fmt(D/5)} km = ${fmt(D*200)} m.`};}
+ const k=P([2,3,4,5]);return{q:`Na lei de potência y = x² (uma reta de inclinação 2 no gráfico log-log), se x fica <b>${k}</b> vezes maior, y fica quantas vezes maior?`,a:k*k,exp:`${k}² = ${k*k}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const k=P([8,27,64,125,1000]);return{q:`O raio de destruição cresce com a raiz cúbica da energia. Se a energia fica <b>${fmt(k)}</b> vezes maior, o raio fica quantas vezes maior?`,a:Math.round(Math.cbrt(k)),exp:`∛${fmt(k)} = ${fmt(Math.round(Math.cbrt(k)))}.`};}
+ if(t==1){const R0=P([10,20,50,87,100]);return{q:`Qual a área de um círculo de raio <b>${R0} km</b>, em km²? (π ≈ 3,14; arredonde)`,a:Math.round(3.14*R0*R0),tol:Math.max(1,3.14*R0*R0*0.005),exp:`3,14 × ${R0}² = ${fmt(Math.round(3.14*R0*R0))} km².`};}
+ const A=P([1000,5000,20000]),d=P([20,50,80,150]);return{q:`Uma área de <b>${fmt(A)} km²</b> tem <b>${d} hab/km²</b>. Quantas pessoas moram nela?`,a:A*d,exp:`${fmt(A)} × ${d} = ${fmt(A*d)}.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const N=P([50,100,1000,100000]),y=P([10,20,50]);return{q:`Algo acontece em média <b>1 vez a cada ${fmt(N)} anos</b>. Quantas vezes se espera em <b>${fmt(N*y)}</b> anos?`,a:y,exp:`${fmt(N*y)} ÷ ${fmt(N)} = ${y}.`};}
+ if(t==1){const N=P([50,100,200,1000]);return{q:`Um evento acontece em média 1 vez a cada <b>${fmt(N)}</b> anos. Qual a chance, em %, de acontecer num ano qualquer?`,a:100/N,tol:0.001,exp:`1 ÷ ${fmt(N)} = ${fmt(100/N)}%.`};}
+ const k=P([2,3,10]);const v=Math.round(k**2.3);return{q:`O intervalo médio entre quedas cresce com D<sup>2,3</sup>. Rochas <b>${k}</b> vezes maiores caem a intervalos quantas vezes maiores? (arredonde)`,a:v,tol:Math.max(1,v*0.03),exp:`${k}<sup>2,3</sup> ≈ ${fmt(v)}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ast1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

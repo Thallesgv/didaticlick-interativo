@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua de logaritmos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A régua de logaritmos</h1></header>
+<main>
+<div class="card"><h2>Multiplicar somando</h2><p class="muted" style="margin-top:0">Cada número aparece na régua na posição do seu logaritmo. Escolha a e b: somando os comprimentos log a e log b, você chega a log (a × b).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>log a</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>log b</b><input type="range"><span></span></div>
+<div class="kpi"><div>a<b id="ka"></b></div><div>b<b id="kb"></b></div><div class="o">a × b = 10^(log a + log b)<b id="kp"></b></div><div>log a + log b<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude log a e log b.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MT=4.184e15,L10=Math.log10;
+const fl=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const MTX=v=>v>=100?fmt(Math.round(v))+' Mt':v>=1?r1(v)+' Mt':v>=0.001?fmt(Math.round(v*1000))+' kt':fmt(Math.round(v*1e6))+' t';
+const LOGBAR=(x0,x1,lo,hi)=>v=>x0+(L10(v)-lo)/(hi-lo)*(x1-x0);
+const A=SL('sa',-5,19,0.001,0.301,draw,v=>fl3(v)),B=SL('sb',-5,19,0.001,0.477,draw,v=>fl3(v));
+function fl3(v){return (v<0?'−':'')+(Math.round(Math.abs(v)*1000)/1000).toString().replace('.',',');}
+const nv=x=>{const v=Math.pow(10,x);return v>=1e6||v<0.01?SCI(v,3):(v>=100?fmt(Math.round(v)):r2(v));};
+const perto=(x,y,t)=>Math.abs(x-y)<=t;
+MIS.def(()=>[
+ ['Ponha <b>a = 2</b> e <b>b = 3</b> (log 2 ≈ 0,301; log 3 ≈ 0,477). Quanto dá o produto?',()=>perto(A.get(),0.301,0.0015)&&perto(B.get(),0.477,0.0015),()=>'0,301 + 0,477 = 0,778, e 10^0,778 ≈ '+nv(A.get()+B.get())+'. Somar logaritmos é multiplicar.',()=>'Agora a = '+nv(A.get())+' e b = '+nv(B.get())+'.'],
+ ['Ache o número cujo logaritmo é <b>18,32</b>: deixe log a + log b entre 18,31 e 18,33.',()=>perto(A.get()+B.get(),18.32,0.01),()=>'10^18,32 ≈ '+nv(A.get()+B.get())+' J: a energia do Teimoso.',()=>'Agora a soma é '+fl3(A.get()+B.get())+'.'],
+ ['Ponha <b>a = 10³</b> e escolha b para que a × b = <b>10⁻¹</b> (log b negativo).',()=>perto(A.get(),3,0.002)&&perto(A.get()+B.get(),-1,0.002),()=>'log b = −4: b = 0,0001. 1.000 × 0,0001 = 0,1. Logaritmos negativos são números entre 0 e 1.',()=>'Agora a = '+nv(A.get())+' e a × b = '+nv(A.get()+B.get())+'.'],
+ ['Divida o Teimoso por Hiroshima: dividir é <b>subtrair</b> logaritmos, 18,32 − 13,80 = 4,52. Faça <b>log a = 4,52</b> e <b>log b = 0</b> (b = 1). Quanto dá?',()=>perto(A.get(),4.52,0.003)&&perto(B.get(),0,0.002),()=>'10^4,52 ≈ '+nv(4.52)+': o Teimoso vale umas 33 mil bombas de Hiroshima.',()=>'Agora log a = '+fl3(A.get())+' e log b = '+fl3(B.get())+'.']]);
+function draw(){const W=340,H=150;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const lo=-6,hi=19,x0=15,x1=325,X=v=>x0+(v-lo)/(hi-lo)*(x1-x0);
+ g+=RC(x0,58,x1-x0,22,'#FDE9D8','stroke="'+NAVY+'"');for(let k=lo;k<=hi;k++)g+=LN(X(k),58,X(k),k%3==0?70:64,NAVY,k%3==0?1.2:0.6)+(k%3==0?TX(X(k),94,'10'+SUP(k),{fs:9}):'');
+ const a=A.get(),b=B.get(),s=a+b,ya=40,yb=28;
+ g+=LN(X(0),ya,X(a),ya,ORANGE,4)+TX((X(0)+X(a))/2,ya+14,'log a',{fs:9,c:ORANGE});
+ g+=LN(X(a),yb,X(s),yb,BLUE,4)+TX((X(a)+X(s))/2,yb-6,'log b',{fs:9,c:BLUE});
+ g+=LN(X(s),20,X(s),84,NAVY,1.6,'3 2')+`<circle cx="${X(s)}" cy="69" r="5" fill="${NAVY}"/>`+TX(Math.min(Math.max(X(s),40),300),118,'a × b ≈ '+nv(s),{fs:12,c:NAVY});
+ $('fig').innerHTML=SVG(W,H,g);$('ka').textContent=nv(a);$('kb').textContent=nv(b);$('kp').textContent=nv(s);$('ks').textContent=fl3(s);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
