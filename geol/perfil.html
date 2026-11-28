@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Perfil do morro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Perfil do morro</h1></header>
+<main>
+<div class="card"><h2>O perfil A–B e o exagero vertical</h2><p class="muted" style="margin-top:0">Mude o exagero vertical e a posição do ponto ao longo da linha A–B (arraste ou use − e +). O perfil estica ou achata; o ponto mostra a altitude, a declividade verdadeira do trecho e a que aparece no desenho.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sx"><b>Exagero vertical</b><input type="range"><span></span></div><div class="sl" id="sp"><b>Distância desde A</b><input type="range"><span></span></div><div class="kpi"><div>Altitude do ponto<b id="k1"></b></div><div>Declividade verdadeira<b id="k2"></b></div><div class="o">Declividade no desenho<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SEG=[[32,0.12],[30,0.38],[30,0.70],[16,1.10]];
+function zDe(x){let z=928,x0=0;for(const [w,s] of SEG){if(x<=x0+w)return z+(x-x0)*s;z+=w*s;x0+=w;}return z;}
+function xDe(zq){let z=928,x0=0;for(const [w,s] of SEG){if(zq<=z+w*s)return x0+(zq-z)/s;z+=w*s;x0+=w;}return 108;}
+function sDe(x){let x0=0;for(const [w,s] of SEG){if(x<x0+w)return s;x0+=w;}return SEG[3][1];}
+function curva(cx,cy,k,zq){const r0=108-xDe(zq);let p=[];for(let i=0;i<=48;i++){const t=2*Math.PI*i/48,f=1+0.5*(1+Math.cos(t))/2+0.06*Math.sin(3*t);p.push([cx-k*r0*f*Math.cos(t),cy+k*r0*f*0.62*Math.sin(t)]);}return p;}
+const SX=SL('sx',1,5,0.5,1,()=>draw(),v=>vg(v)+'×'),SP=SL('sp',0,108,1,10,()=>draw(),v=>v+' m');
+MIS.def(()=>[
+ ['Deixe o perfil com <b>exagero 2</b>, como no relatório da equipe.',()=>SX.get()==2,'Escala vertical 1 : 1 000 para horizontal 1 : 2 000. Repare como o morro parece mais bravo.',()=>'O exagero está em '+vg(SX.get())+'×.'],
+ ['Ache o ponto onde o perfil cruza a curva de <b>960 m</b> (altitude entre 959,5 e 960,5 m).',()=>Math.abs(zDe(SP.get())-960)<=0.5,()=>'A '+SP.get()+' m de A, no trecho de 70%.',()=>'Altitude agora: '+r1(zDe(SP.get()))+' m. '+(zDe(SP.get())<960?'Ande para B.':'Volte para A.')],
+ ['Pare no <b>trecho mais íngreme</b> e veja como o exagero muda a inclinação aparente.',()=>SP.get()>92,()=>'110% de verdade (47,7°), mas '+Math.round(110*SX.get())+'% no desenho ('+r1(Math.atan(1.1*SX.get())*DEG)+'°).',()=>'Este trecho tem '+Math.round(sDe(SP.get())*100)+'%. Procure outro.']]);
+function draw(){const ex=SX.get(),xp=SP.get(),kx=2.7,kz=Math.min(kx*ex,200/54),x0=30,y0=215;
+ let g=RC(0,0,340,240,CEU,'rx="10"');
+ const pts=[[x0,y0]];for(let x=0;x<=108;x+=1)pts.push([x0+x*kx,y0-(zDe(x)-928)*kz]);pts.push([x0+108*kx,y0]);
+ g+=PG(pts,TERRA,'stroke="'+TERRA_E+'" stroke-width="2"')+LN(x0,y0,x0+108*kx,y0,NAVY,1);
+ for(let z=930;z<=980;z+=10){const y=y0-(z-928)*kz;g+=LN(x0-4,y,x0,y,NAVY,1)+TX(x0-6,y+3,z,{fs:8,a:'end'});}
+ const px=x0+xp*kx,py=y0-(zDe(xp)-928)*kz;g+=LN(px,y0,px,py,ORANGE,1,'3 3')+CIR(px,py,6,ORANGE);
+ g+=TX(x0,y0+16,'A',{fs:11,c:VERM})+TX(x0+108*kx,y0+16,'B',{fs:11,c:VERM})+TX(170,y0+16,'108 m',{fs:10});
+ g+=TX(330,22,'exagero '+vg(ex)+'×',{fs:12,a:'end',c:ORANGE})+(kz<kx*ex?TX(330,38,'(achatado para caber)',{fs:9,a:'end',c:GRAY}):'');
+ $('fig').innerHTML=SVG(340,240,g);
+ const s=sDe(xp);$('k1').textContent=r1(zDe(xp))+' m';$('k2').textContent=Math.round(s*100)+'% ('+r1(Math.atan(s)*DEG)+'°)';$('k3').textContent=Math.round(s*100*ex)+'% ('+r1(Math.atan(s*ex)*DEG)+'°)';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
