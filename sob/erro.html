@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O erro que se acumula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O erro que se acumula</h1></header>
+<main>
+<div class="card"><h2>Erro total = √(e₁² + e₂² + ...)</h2><p class="muted" style="margin-top:0">Mude o erro de rumo, o erro de distância, a distância de onde se vê o mastro e um desvio sistemático (arrastando ou com − e +). Cada ponto é uma travessia sorteada com os cinco trechos do Téo. Verde: vê o mastro; vermelho: não vê.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button id="bs">Sortear de novo</button></div><div class="sl" id="se"><b>Erro de rumo por trecho</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Erro de distância por trecho</b><input type="range"><span></span></div><div class="sl" id="sm"><b>Vê o mastro a até</b><input type="range"><span></span></div><div class="sl" id="ss"><b>Desvio sistemático de rumo</b><input type="range"><span></span></div><div class="kpi"><div>Erro total (fórmula)<b id="k1"></b></div><div>Travessias que veem o mastro<b id="k2"></b></div><div class="o">Desvio do centro da nuvem<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça o erro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const AR=(x1,y1,x2,y2,c,w,dash)=>{const a=Math.atan2(y2-y1,x2-x1),h=7+(w||2)*1.5,L=Math.hypot(x2-x1,y2-y1);if(L<1)return '';return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||2,dash)+PG([[x2,y2],[x2-h*Math.cos(a-0.42),y2-h*Math.sin(a-0.42)],[x2-h*Math.cos(a+0.42),y2-h*Math.sin(a+0.42)]].map(p=>p.map(v=>v.toFixed(1))),c);};
+const rumoDe=(n,e)=>(Math.atan2(e,n)*DEG+360)%360;
+const ig=(a,b)=>Math.abs(a-b)<1e-6;
+const gr=v=>fmt(Math.round(v))+'°';
+const km=v=>fmt(Math.round(v*10)/10).replace('-','−')+' km';
+const TR=[[8,53],[4,0],[6,90],[9,50],[3.2,50]],S2=Math.sqrt(TR.reduce((s,t)=>s+t[0]*t[0],0));
+const SE=SL('se',0,20,1,5,()=>draw(),v=>'± '+v+'°'),SDi=SL('sd',0,30,1,10,()=>draw(),v=>'± '+v+'%'),SM=SL('sm',0.5,8,0.5,3,()=>draw(),v=>fmt(v)+' km'),SS=SL('ss',-10,10,1,0,()=>draw(),v=>(v>0?'+':v<0?'−':'')+Math.abs(v)+'°');
+let sem=1;$('bs').onclick=()=>{sem++;draw();};
+const tot=()=>S2*Math.hypot(Math.sin(SE.get()*RAD),SDi.get()/100);
+const plano=()=>TR.reduce((s,t)=>[s[0]+t[0]*Math.sin(t[1]*RAD),s[1]+t[0]*Math.cos(t[1]*RAD)],[0,0]);
+function nuvem(){const r=RNG(sem*104729),g=()=>{let u=r()||1e-9,v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);},P0=plano(),out=[];
+ for(let i=0;i<200;i++){let e=0,n=0;for(const[d,ru]of TR){const dd=d*(1+SDi.get()/100*g()),rr=(ru+SS.get()+SE.get()*g())*RAD;e+=dd*Math.sin(rr);n+=dd*Math.cos(rr);}out.push([e-P0[0],n-P0[1]]);}return out;}
+let NV=[],vis=0,cen=0;
+MIS.def(()=>[
+ ['Refaça o erro do Téo: <b>± 5°</b> de rumo, <b>± 10%</b> de distância, mastro visível a <b>3 km</b>, sem desvio sistemático.',()=>SE.get()==5&&SDi.get()==10&&ig(SM.get(),3)&&SS.get()==0,'Erro total ≈ 1,9 km, menor que 3 km: quase todas as travessias terminam com o mastro à vista.',()=>'Confira os quatro controles.'],
+ ['Com ± 10% de distância e mastro a 3 km, ache o <b>maior</b> erro de rumo que ainda deixa o erro total abaixo de 3 km.',()=>SDi.get()==10&&ig(SM.get(),3)&&tot()<3&&S2*Math.hypot(Math.sin((SE.get()+1)*RAD),0.1)>=3,'± 10°: o erro total fica em 2,9 km. Com 11°, passa de 3 km.',()=>SDi.get()!=10||!ig(SM.get(),3)?'Volte para ± 10% e 3 km.':tot()>=3?'Erro total de '+km(tot())+': passou do mastro.':'Erro total de '+km(tot())+': ainda dá para errar mais.'],
+ ['Volte ao erro do Téo e ponha um desvio sistemático de pelo menos <b>5°</b> (para qualquer lado).',()=>SE.get()==5&&SDi.get()==10&&Math.abs(SS.get())>=5,()=>'A nuvem inteira se deslocou '+km(cen)+': o erro sistemático não se compensa, e só '+vis+'% das travessias veem o mastro.',()=>'Desvio agora: '+SS.get()+'°.']]);
+function draw(){NV=nuvem();const W=340,H=300,cx=170,cy=150,k=130/Math.max(4,SM.get()+1,tot()*2.2,Math.abs(SS.get())*0.6+tot()*2);let g=RC(0,0,W,H,AREIA,'rx="10"');
+ g+=CIR(cx,cy,SM.get()*k,'rgba(247,130,31,0.10)',`stroke="${ORANGE}" stroke-width="2" stroke-dasharray="6 4"`)+CIR(cx,cy,tot()*k,'none',`stroke="${NAVY}" stroke-width="2"`);
+ let ok=0,me=0,mn=0;NV.forEach(([e,n])=>{const d=Math.hypot(e,n);if(d<=SM.get())ok++;me+=e;mn+=n;g+=CIR(cx+e*k,cy-n*k,2.6,d<=SM.get()?VERDE:'#C0392B');});
+ vis=Math.round(ok/2);cen=Math.hypot(me,mn)/NV.length;
+ g+=`<path d="M${cx},${cy} L${cx},${cy-22} L${cx+12},${cy-17} L${cx},${cy-12}" fill="${ORANGE}" stroke="${NAVY}" stroke-width="1.5"/>`+LN(cx,cy,cx,cy+3,NAVY,2);
+ g+=TX(8,16,'mastro visível',{fs:9,a:'start',c:ORANGE})+TX(8,30,'círculo do erro total',{fs:9,a:'start',c:NAVY})+LN(250,286,250+k,286,NAVY,2)+TX(250+k/2,282,'1 km',{fs:8,c:NAVY});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent='± '+km(tot());$('k2').textContent=vis+'%';$('k3').textContent=km(cen);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
