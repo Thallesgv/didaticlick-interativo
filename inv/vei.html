@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O vulcão da escala VEI · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O vulcão da escala VEI</h1></header>
+<main>
+<div class="card"><h2>De 0 a 8, cada degrau vezes 10</h2><p class="muted" style="margin-top:0">Escolha a nota VEI e veja a coluna de cinzas subir e o volume mínimo de tefra crescer. Ou digite um volume em m³ (por exemplo <b>3e9</b>, que é 3 × 10⁹) e descubra a nota.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Nota VEI</b><input type="range"><span></span></div>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0"><b>Volume (m³):</b><input id="vol" type="text" inputmode="decimal" placeholder="ex.: 5e8" style="width:130px;padding:6px;border:1px solid #D7DEEA;border-radius:8px"><button id="ir">Descobrir a nota</button><span id="lv" class="muted"></span></div>
+<div class="kpi"><div class="o">Nota<b id="kn"></b></div><div>Volume mínimo<b id="kv"></b></div><div>Coluna típica<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha uma nota.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const COL=[0.1,0.6,3,9,17,28,33,40,48],EX=['Havaí','Stromboli','erupções pequenas','Nevado del Ruiz','Eyjafjallajökull','Santa Helena','Pinatubo, Krakatoa','Tambora','Yellowstone'];
+let viu5=false,digitado=null;
+const S=SL('sv',0,8,1,3,()=>{digitado=null;$('lv').textContent='';draw();},v=>'VEI '+v);
+const VMIN=n=>n==0?null:n==1?1e4:Math.pow(10,n+4);
+function nota(V){if(V<1e4)return 0;if(V<1e6)return 1;return Math.min(8,Math.floor(Math.log10(V)+1e-9)-4);}
+$('ir').onclick=()=>{let t=$('vol').value.replace(/\s/g,'').replace(',','.').replace(/×10\^?/,'e');const V=parseFloat(t);if(!(V>0)){$('lv').textContent='Digite um número positivo, como 5e8.';return;}
+ digitado=V;S.set(nota(V));$('lv').innerHTML='log V ≈ '+fmt(Math.round(Math.log10(V)*100)/100)+' → <b>VEI '+nota(V)+'</b>';draw();};
+MIS.def(()=>[
+ ['Qual a nota do <b>Monte Brasa</b>, com 1,2 × 10¹¹ m³? Coloque o seletor nela.',()=>S.get()==7,'log (1,2 × 10¹¹) ≈ 11,08: parte inteira 11, menos 4 = VEI 7. A mesma nota do Tambora.',()=>'Parte inteira de log V, menos 4.'],
+ ['Digite no campo o volume <b>5 × 10⁸ m³</b> (escreva 5e8) e descubra a nota.',()=>digitado&&Math.abs(digitado/5e8-1)<1e-6,'log (5 × 10⁸) ≈ 8,7: parte inteira 8, menos 4 = VEI 4. Mesmo perto do 10⁹, ainda não chegou ao degrau 5.',()=>'Digite 5e8 e toque em "Descobrir a nota".'],
+ ['Ponha a nota do <b>Santa Helena</b> (VEI 5) e depois suba até o <b>VEI 7</b>. Quantos Santa Helenas cabem no volume mínimo de um VEI 7?',()=>{if(S.get()==5)viu5=true;return viu5&&S.get()==7;},'De 10⁹ para 10¹¹ m³: 2 degraus, 10² = 100 Santa Helenas.',()=>viu5?'Agora suba até VEI 7.':'Comece pelo VEI 5.'],
+ ['Encontre a <b>menor nota</b> cuja coluna típica passa dos <b>25 km</b>, já dentro da estratosfera.',()=>S.get()==5,'A partir do VEI 5, a coluna passa dos 25 km. É na estratosfera que os gases ficam por anos e esfriam o planeta.',()=>'Compare a coluna com a faixa da estratosfera.']]);
+function quadro(){const n=S.get(),ch=218,k=3.9;let g=RC(0,0,340,252,'#EEF4FB','rx="10"');
+ g+=RC(0,ch-50*k,340,(50-15)*k,'#E2E8F5')+TX(6,ch-50*k+12,'estratosfera',{fs:9,c:'#5B6B8C',a:'start',w:500});
+ g+=LN(0,ch-11*k,200,ch-11*k,'#93A3BD',1,'5 4')+TX(6,ch-11*k-4,'aviões',{fs:8.5,c:GRAY,a:'start',w:500});
+ for(let h=10;h<=50;h+=10)g+=TX(200,ch-h*k+3,h+' km',{fs:8,c:GRAY,a:'end',w:500});
+ const hc=COL[n]*k,x=110;
+ for(let i=0;i<14;i++){const f=i/13,r=6+f*(10+n*3);g+=CI(x+Math.sin(i*1.7)*f*8,ch-34-f*(hc-10),r,i%2?'#9AA0AC':'#B7BAC2','opacity=".9"');}
+ g+=VULCAO(x,ch,130,34,false)+RC(0,ch,340,34,'#E9D9BF');
+ if(n<=1)g+=PG([[x-8,ch-34],[x+8,ch-34],[x+30,ch]],LAVA,'opacity=".85"');
+ // cubos ×10
+ const cx=268;for(let i=0;i<=n;i++){const s=8+i*7.5;if(i<n)continue;const d=s*0.45;
+  g+=RC(cx-s/2,ch-s,s,s,n==7?LAVA:'#8C8F98','stroke="#4A4E5A"')+PG([[cx-s/2,ch-s],[cx-s/2+d,ch-s-d],[cx+s/2+d,ch-s-d],[cx+s/2,ch-s]],n==7?LAVA_C:'#B7BAC2','stroke="#4A4E5A"')+PG([[cx+s/2,ch],[cx+s/2+d,ch-d],[cx+s/2+d,ch-s-d],[cx+s/2,ch-s]],'#6B6E78','stroke="#4A4E5A"');
+  g+=TX(cx+d/2,ch-s-d-8,n==0?'< 10⁴ m³':'≥ '+CIENT(VMIN(n),0)+' m³',{fs:10,c:NAVY});}
+ for(let i=0;i<=8;i++)g+=RC(214+i*14,ch+6,11,8,i<=n?(i==7?LAVA:ORANGE):'#D7DEEA','rx="2"');
+ g+=TX(270,ch+28,'VEI '+n+' · '+EX[n],{fs:9,c:NAVY});
+ $('fig').innerHTML=SVG(340,252,g);}
+function draw(){const n=S.get();$('kn').textContent='VEI '+n;$('kv').textContent=n==0?'menos de 10⁴ m³':CIENT(VMIN(n),0)+' m³';$('kc').textContent='≈ '+fmt(COL[n])+' km';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
