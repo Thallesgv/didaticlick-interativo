@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os juros a favor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Os juros a favor</h1></header>
+<main>
+<div class="card"><h2>Guardar todo mês</h2><p class="muted" style="margin-top:0">Escolha um valor inicial, quanto depositar por mês, a taxa ao mês e por quantos anos (arrastando ou com − e +). Em azul, o que foi depositado; em laranja, o que veio dos juros. A taxa é uma hipótese: rendimentos reais variam.</p>
+<div class="sl" id="sv"><b>Valor inicial (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Depósito por mês (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Taxa ao mês (%)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Anos</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Total<b id="k1"></b></div><div>Depositado<b id="k2"></b></div><div class="o">Juros<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ponha os juros do seu lado.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const VM='#B91C1C',OURO='#E0A800';
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const curto=v=>{const a=Math.abs(v);return a>=1e6?vir(v/1e6,1)+' mi':a>=1e4?fmt(Math.round(v/1000))+' mil':fmt(Math.round(v));};
+const SV=SL('sv',0,20000,500,0,()=>draw(),v=>R$(v,0)),SD=SL('sd',0,2000,50,200,()=>draw(),v=>R$(v,0)),SI=SL('si',0.1,2,0.1,0.5,()=>draw(),v=>vir(v,1)+'%'),SA=SL('sa',1,40,1,5,()=>draw(),v=>v);
+const tot=m=>{const i=SI.get()/100;return SV.get()*Math.pow(1+i,m)+SD.get()*(Math.pow(1+i,m)-1)/i;},dep=m=>SV.get()+SD.get()*m;
+const ig=x=>Math.abs(SI.get()-x)<1e-6;
+MIS.def(()=>[
+ ['Refaça a conta de Marcelle: <b>R$ 500</b> por mês a <b>0,8%</b> ao mês por <b>10 anos</b>, sem valor inicial.',()=>SV.get()==0&&SD.get()==500&&ig(0.8)&&SA.get()==10,()=>'Depositados '+R$(dep(120),0)+', total de '+R$(tot(120),0)+'. Os juros pagaram '+R$(tot(120)-dep(120),0)+'.',()=>'Agora: inicial '+R$(SV.get(),0)+', '+R$(SD.get(),0)+' por mês, '+vir(SI.get(),1)+'%, '+SA.get()+' anos.'],
+ ['Ainda sem valor inicial e a 0,8%, ache o <b>primeiro ano</b> em que os juros passam do que foi depositado.',()=>SV.get()==0&&SD.get()>0&&ig(0.8)&&tot(12*SA.get())-dep(12*SA.get())>dep(12*SA.get())&&tot(12*SA.get()-12)-dep(12*SA.get()-12)<=dep(12*SA.get()-12),()=>'No ano '+SA.get()+': os juros já são '+R$(tot(12*SA.get())-dep(12*SA.get()),0)+', mais que os '+R$(dep(12*SA.get()),0)+' depositados. Daí em diante, os juros trabalham mais que a pessoa.',()=>SV.get()!=0||!ig(0.8)||SD.get()==0?'Volte para inicial R$ 0, algum depósito e 0,8%.':'Em '+SA.get()+' anos, juros de '+R$(tot(12*SA.get())-dep(12*SA.get()),0)+' contra '+R$(dep(12*SA.get()),0)+' depositados.'],
+ ['E os <b>R$ 8 000</b> de Rafael? Ponha-os como valor inicial, <b>sem depósitos</b>, a 0,8% por <b>10 anos</b>.',()=>SV.get()==8000&&SD.get()==0&&ig(0.8)&&SA.get()==10,()=>'Viram '+R$(tot(120),0)+': mais de 2,5 vezes o valor guardado. É a mesma exponencial da dívida, do lado de quem guarda.',()=>'Agora: inicial '+R$(SV.get(),0)+', '+R$(SD.get(),0)+' por mês, '+vir(SI.get(),1)+'%, '+SA.get()+' anos.']]);
+function draw(){const N=12*SA.get(),top=Math.max(tot(N),1)*1.1,X=m=>46+238*m/N,Y=y=>182-162*y/top;let g=RC(0,0,340,210,'#F8FAFC','rx="10"');
+ for(let k=0;k<=4;k++){const yy=top*k/4;g+=LN(46,Y(yy),284,Y(yy),GRAYL,0.8)+TX(42,Y(yy)+3,'R$ '+curto(yy),{fs:8,a:'end',c:GRAY,w:400});}
+ const A=[],B=[];for(let i=0;i<=80;i++){const m=N*i/80;A.push(X(m).toFixed(1)+','+Y(tot(m)).toFixed(1));B.push(X(m).toFixed(1)+','+Y(dep(m)).toFixed(1));}
+ g+='<polygon points="'+X(0)+','+Y(0)+' '+A.join(' ')+' '+X(N)+','+Y(0)+'" fill="'+LIGHT+'"/>';
+ g+='<polygon points="'+X(0)+','+Y(0)+' '+B.join(' ')+' '+X(N)+','+Y(0)+'" fill="'+BLUE+'"/>';
+ g+=TX(288,Y(tot(N))+3,'total',{fs:8.5,a:'start',c:ORANGE})+TX(288,Math.min(178,Y(dep(N))+12),'depósitos',{fs:8.5,a:'start',c:BLUE});
+ g+=TX(177,202,'anos (0 a '+SA.get()+')',{fs:8.5,c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=R$(tot(N),0);$('k2').textContent=R$(dep(N),0);$('k3').textContent=R$(tot(N)-dep(N),0);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

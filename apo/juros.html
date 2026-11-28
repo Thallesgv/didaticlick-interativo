@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simples × compostos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Simples × compostos</h1></header>
+<main>
+<div class="card"><h2>A dívida mês a mês</h2><p class="muted" style="margin-top:0">Ajuste o valor da dívida, a taxa ao mês e quantos meses (arrastando ou com − e +). A reta azul são os juros simples; a curva laranja, os compostos. Ligue o teto para ver o limite do rotativo (juros e encargos até o valor da dívida).</p>
+<div id="cht" style="margin:4px 0"></div>
+<div class="sl" id="sc"><b>Dívida inicial (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Taxa ao mês (%)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Meses</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Juros simples<b id="k1"></b></div><div>Juros compostos<b id="k2"></b></div><div>Taxa ao ano<b id="k3"></b></div><div class="o">Dívida com o teto<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Veja a dívida crescer.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const VM='#B91C1C',OURO='#E0A800';
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const curto=v=>{const a=Math.abs(v);return a>=1e6?vir(v/1e6,1)+' mi':a>=1e4?fmt(Math.round(v/1000))+' mil':fmt(Math.round(v));};
+let teto=0;chips('cht',['Sem teto','Com teto'],0,i=>{teto=i;draw();});
+const SC=SL('sc',500,20000,500,1000,()=>draw(),v=>R$(v,0)),SI=SL('si',0.5,20,0.1,2,()=>draw(),v=>vir(v,1)+'%'),SN=SL('sn',1,36,1,6,()=>draw(),v=>v);
+const sim_=t=>SC.get()*(1+SI.get()/100*t),cmp=t=>SC.get()*Math.pow(1+SI.get()/100,t),tet=t=>Math.min(cmp(t),2*SC.get());
+const ano=()=>100*(Math.pow(1+SI.get()/100,12)-1),dobra=()=>Math.log(2)/Math.log(1+SI.get()/100);
+MIS.def(()=>[
+ ['Refaça a dívida de Rafael: <b>R$ 3 000</b> a <b>14,9%</b> ao mês por <b>12 meses</b>, sem teto.',()=>SC.get()==3000&&Math.abs(SI.get()-14.9)<1e-6&&SN.get()==12&&teto==0,()=>'Simples: '+R$(sim_(12),0)+'. Compostos: '+R$(cmp(12),0)+'. Taxa de '+fmt(Math.round(ano()))+'% ao ano. Agora ligue o teto e compare.',()=>'Agora: '+R$(SC.get(),0)+', '+vir(SI.get(),1)+'%, '+SN.get()+' meses'+(teto?', com teto':'')+'.'],
+ ['Com 14,9% ao mês, ache o <b>menor número de meses</b> em que a dívida composta <b>dobra</b>.',()=>Math.abs(SI.get()-14.9)<1e-6&&cmp(SN.get())>=2*SC.get()&&cmp(SN.get()-1)<2*SC.get(),()=>'Em '+SN.get()+' meses: '+R$(cmp(SN.get()),0)+', o dobro de '+R$(SC.get(),0)+'. Pela regra do 72: 72 ÷ 14,9 ≈ 4,8.',()=>Math.abs(SI.get()-14.9)>1e-6?'Volte a taxa para 14,9%.':'Em '+SN.get()+' meses a dívida é '+vir(cmp(SN.get())/SC.get(),2)+' vezes a inicial.'],
+ ['Ponha <b>12 meses</b> e ache a taxa mensal que faz a dívida <b>dobrar em um ano</b>.',()=>SN.get()==12&&Math.abs(cmp(12)/SC.get()-2)<0.05,()=>'Com '+vir(SI.get(),1)+'% ao mês, a dívida vira '+vir(cmp(12)/SC.get(),2)+' vezes a inicial em 12 meses. Parece pouco ao mês; é 100% ao ano.',()=>SN.get()!=12?'Ponha 12 meses.':'Agora a dívida vira '+vir(cmp(12)/SC.get(),2)+' vezes. '+(cmp(12)<2*SC.get()?'Aumente':'Diminua')+' a taxa.']]);
+function draw(){const n=SN.get(),C=SC.get(),top=Math.max(cmp(n),sim_(n),2.2*C)*1.08,X=t=>46+270*t/n,Y=y=>182-162*y/top;let g=RC(0,0,340,210,'#F8FAFC','rx="10"');
+ for(let k=0;k<=4;k++){const yy=top*k/4;g+=LN(46,Y(yy),316,Y(yy),GRAYL,0.8)+TX(42,Y(yy)+3,'R$ '+curto(yy),{fs:8,a:'end',c:GRAY,w:400});}
+ g+=LN(46,Y(2*C),316,Y(2*C),teto?VM:GRAYL,teto?1.6:1,'5 3')+TX(50,Y(2*C)-4,teto?'teto: R$ '+curto(2*C):'dobro da dívida',{fs:8.5,a:'start',c:teto?VM:GRAY});
+ const pts=[],pt2=[];for(let i=0;i<=60;i++){const t=n*i/60;pts.push([X(t),Y(cmp(t))]);pt2.push([X(t),Y(tet(t))]);}
+ g+=LN(X(0),Y(C),X(n),Y(sim_(n)),BLUE,2.5)+PL(pts,ORANGE,teto?1.2:2.8,teto?'4 3':'');if(teto)g+=PL(pt2,VM,2.8);
+ g+=TX(X(n),Y(cmp(n))-6,R$(cmp(n),0),{fs:9.5,a:'end',c:ORANGE});
+ g+=TX(181,202,'meses (0 a '+n+')',{fs:8.5,c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=R$(sim_(n),0);$('k2').textContent=R$(cmp(n),0);$('k3').textContent=fmt(Math.round(ano()))+'%';$('k4').textContent=R$(tet(n),0);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

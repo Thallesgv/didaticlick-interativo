@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta da perda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A reta da perda</h1></header>
+<main>
+<div class="card"><h2>Perda esperada = margem × volume</h2><p class="muted" style="margin-top:0">Escolha o jogo e monte a rotina: valor de cada aposta, apostas por hora, horas por semana e semanas (arrastando ou com − e +). Cada jogo é uma reta saindo do zero; o ponto mostra onde a rotina cai.</p>
+<div id="chj" style="margin:4px 0"></div>
+<div class="sl" id="sa"><b>Valor de cada aposta (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Apostas por hora</b><input type="range"><span></span></div>
+<div class="sl" id="sw"><b>Horas por semana</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Semanas</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Volume apostado<b id="k1"></b></div><div>Margem do jogo<b id="k2"></b></div><div class="o">Perda esperada<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Descubra quanto custa uma rotina de apostas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const VM='#B91C1C',OURO='#E0A800';
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const curto=v=>{const a=Math.abs(v);return a>=1e6?vir(v/1e6,1)+' mi':a>=1e4?fmt(Math.round(v/1000))+' mil':fmt(Math.round(v));};
+const J=[['Roleta europeia',2.7],['Fortuna Frutas',4],['Dado da Sorte',5],['Futebol simples',7],['Aviãozinho (real)',12],['Múltipla de 5',22.6]];
+const COR=['#A9BFEA','#7C96D8',BLUE,LIGHT,ORANGE,VM];let jg=0;const vis=new Set();
+chips('chj',J.map(j=>j[0]+' · '+vir(j[1],1).replace(',0','')+'%'),0,i=>{jg=i;vis.add(i);draw();});
+const SA=SL('sa',1,100,1,10,()=>draw(),v=>R$(v,0)),SH=SL('sh',1,200,1,20,()=>draw(),v=>v),SW=SL('sw',1,40,1,5,()=>draw(),v=>v+' h'),SS=SL('ss',1,52,1,4,()=>draw(),v=>v);
+const vol=()=>SA.get()*SH.get()*SW.get()*SS.get(),perda=()=>J[jg][1]/100*vol();
+MIS.def(()=>[
+ ['No <b>Dado da Sorte</b> (5%), monte uma rotina que chegue à perda de Rafael: pelo menos <b>R$ 8 000</b>.',()=>jg==2&&perda()>=8000,()=>'Volume de '+R$(vol(),0)+' e perda esperada de '+R$(perda(),0)+'. Rafael chegou lá com R$ 160 mil apostados: o dinheiro girou, ganhando e perdendo, até virar perda.',()=>jg!=2?'Escolha o Dado da Sorte.':'Perda agora: '+R$(perda(),0)+'. Aumente o volume (aposta, apostas por hora, horas ou semanas).'],
+ ['Sem mexer na rotina, toque na <b>roleta</b> e depois na <b>múltipla</b>. Quantas vezes maior é a perda?',()=>vis.has(0)&&vis.has(5),()=>'Mesmo volume, '+R$(vol(),0)+': na roleta, '+R$(0.027*vol(),0)+'; na múltipla, '+R$(0.226*vol(),0)+'. Cerca de 8 vezes mais: a inclinação da reta é a margem.',()=>'Falta tocar em: '+[[0,'roleta'],[5,'múltipla']].filter(x=>!vis.has(x[0])).map(x=>x[1]).join(' e ')+'.'],
+ ['No <b>aviãozinho</b>, ache uma rotina de pelo menos <b>8 semanas</b> com perda esperada de <b>até R$ 100</b>.',()=>jg==4&&SS.get()>=8&&perda()<=100,()=>'Volume de '+R$(vol(),0)+' e perda de '+R$(perda(),0)+'. Só dá com pouquíssimo volume: num jogo de 12% de margem, cada R$ 100 apostados custam R$ 12.',()=>jg!=4?'Escolha o aviãozinho.':SS.get()<8?'Ponha pelo menos 8 semanas.':'Perda agora: '+R$(perda(),0)+'. Diminua a aposta, as apostas por hora ou as horas.']]);
+function draw(){const v=vol(),mx=Math.max(1000,v*1.25),ymx=mx*0.25,X=x=>46+284*x/mx,Y=y=>182-160*Math.min(y,ymx)/ymx;let g=RC(0,0,340,210,'#F8FAFC','rx="10"');
+ for(let k=0;k<=4;k++){const yy=ymx*k/4;g+=LN(46,Y(yy),330,Y(yy),GRAYL,0.8)+TX(42,Y(yy)+3,'R$ '+curto(yy),{fs:8,a:'end',c:GRAY,w:400});}
+ J.forEach((j,i)=>{if(i==jg)return;const xe=Math.min(mx,ymx/(j[1]/100));g+=LN(X(0),Y(0),X(xe),Y(j[1]/100*xe),COR[i],1.2,'4 3');});
+ const m=J[jg][1]/100,xe=Math.min(mx,ymx/m);g+=LN(X(0),Y(0),X(xe),Y(m*xe),COR[jg],3);
+ const p=perda();g+=LN(X(v),Y(0),X(v),Y(p),GRAY,1,'3 3')+LN(X(0),Y(p),X(v),Y(p),GRAY,1,'3 3')+CIR(X(v),Y(p),6,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=TX(Math.min(X(v),300),Math.max(Y(p)-10,14),R$(p,0),{fs:11,c:ORANGE});
+ g+=TX(188,202,'volume apostado (até R$ '+curto(mx)+')',{fs:8.5,c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=R$(v,0);$('k2').textContent=vir(J[jg][1],1).replace(',0','')+'%';$('k3').textContent=R$(p,0);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dobra ou metade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Dobra ou metade</h1></header>
+<main>
+<div class="card"><h2>f(t) = valor inicial × (1 + taxa)<sup>t</sup></h2><p class="muted" style="margin-top:0">Ajuste o valor inicial, a taxa por período (positiva faz crescer, negativa faz encolher) e quantos períodos mostrar (arrastando ou com − e +). As linhas pontilhadas marcam cada dobra ou cada metade.</p>
+<div class="sl" id="sv"><b>Valor inicial (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Taxa por período (%)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Períodos mostrados</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Valor no fim<b id="k1"></b></div><div>Tempo de dobrar<b id="k2"></b></div><div>Meia-vida<b id="k3"></b></div><div class="o">Regra do 72<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Dobre e corte pela metade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const VM='#B91C1C',OURO='#E0A800';
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const curto=v=>{const a=Math.abs(v);return a>=1e6?vir(v/1e6,1)+' mi':a>=1e4?fmt(Math.round(v/1000))+' mil':fmt(Math.round(v));};
+const SV=SL('sv',100,10000,100,1000,()=>draw(),v=>R$(v,0)),SI=SL('si',-10,20,0.1,3,()=>draw(),v=>(v>0?'+':'')+vir(v,1)+'%'),SN=SL('sn',5,300,1,40,()=>draw(),v=>v);
+const a=()=>1+SI.get()/100,f=t=>SV.get()*Math.pow(a(),t),td=()=>SI.get()>0?Math.log(2)/Math.log(a()):null,mv=()=>SI.get()<0?Math.log(0.5)/Math.log(a()):null;
+const ig=x=>Math.abs(SI.get()-x)<1e-6;
+MIS.def(()=>[
+ ['Ponha a taxa da dívida do rotativo, <b>+14,9%</b> ao mês, e mostre pelo menos <b>15 períodos</b>. Quantas vezes ela dobra?',()=>ig(14.9)&&SN.get()>=15,()=>'Dobra a cada '+vir(td(),1)+' meses: em 15 meses, '+fmt(Math.floor(15/td()))+' dobras: '+R$(SV.get(),0)+' viram '+R$(f(15),0)+'. A dívida de Rafael, de R$ 3 000, iria a uns R$ 24 000.',()=>!ig(14.9)?'Taxa agora: '+vir(SI.get(),1)+'%. Ponha +14,9%.':'Mostre pelo menos 15 períodos.'],
+ ['Agora a banca de quem aposta 10% dela num jogo de RTP 95%: taxa de <b>−0,5%</b> por aposta. Mostre o bastante para ver a <b>meia-vida</b>.',()=>ig(-0.5)&&SN.get()>=mv(),()=>'Meia-vida de '+fmt(Math.round(mv()))+' apostas. A banca nunca chega a zero na conta, mas encolhe pela metade, e de novo, e de novo.',()=>!ig(-0.5)?'Taxa agora: '+vir(SI.get(),1)+'%. Ponha −0,5%.':'Mostre mais períodos: a metade ainda não apareceu.'],
+ ['Teste a <b>regra do 72</b> com uma taxa de <b>+8%</b>: compare a regra com o tempo de dobrar de verdade.',()=>ig(8),()=>'Regra do 72: 72 ÷ 8 = 9. Conta exata: log 2 ÷ log 1,08 ≈ '+vir(td(),2)+'. A regra acerta bem para taxas pequenas.',()=>'Taxa agora: '+vir(SI.get(),1)+'%.']]);
+function draw(){const n=SN.get(),V=SV.get(),ymax=Math.max(V,f(n))*1.1,X=t=>46+280*t/n,Y=y=>182-162*y/ymax;let g=RC(0,0,340,210,'#F8FAFC','rx="10"');
+ for(let k=0;k<=4;k++){const yy=ymax*k/4;g+=LN(46,Y(yy),326,Y(yy),GRAYL,0.8)+TX(42,Y(yy)+3,'R$ '+curto(yy),{fs:8,a:'end',c:GRAY,w:400});}
+ const step=td()||mv();let nm=0;
+ if(step)for(let k=1;k*step<=n&&nm<12;k++,nm++){const t=k*step;g+=LN(X(t),Y(0),X(t),Y(f(t)),GRAY,1,'3 3')+CIR(X(t),Y(f(t)),3.5,SI.get()>0?ORANGE:BLUE);if(nm<4)g+=TX(X(t)>250?X(t)-5:X(t)+3,Y(f(t))+(X(t)>250?12:-6),'R$ '+curto(f(t)),{fs:8.5,a:X(t)>250?'end':'start',c:NAVY});}
+ const pts=[];for(let i=0;i<=120;i++){const t=n*i/120;pts.push([X(t),Y(f(t))]);}g+=PL(pts,SI.get()>0?ORANGE:SI.get()<0?BLUE:GRAY,2.6);
+ g+=TX(186,202,'períodos (0 a '+n+')'+(step&&n/step>12?' · só as 12 primeiras marcas':''),{fs:8.5,c:GRAY,w:400});
+ $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=R$(f(n),0);$('k2').textContent=td()?vir(td(),1):'não dobra';$('k3').textContent=mv()?vir(mv(),1):'não cai';$('k4').textContent=SI.get()>0?vir(72/SI.get(),1):SI.get()<0?'só para crescer':'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
