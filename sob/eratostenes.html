@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eratóstenes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Eratóstenes</h1></header>
+<main>
+<div class="card"><h2>Medir a Terra com duas sombras</h2><p class="muted" style="margin-top:0">Escolha a diferença entre os ângulos das sombras nas duas cidades e a distância entre elas (arrastando ou com − e +). A página calcula a volta da Terra.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Diferença de ângulo</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Distância entre as cidades</b><input type="range"><span></span></div><div class="kpi"><div>Quantas vezes cabe em 360°<b id="k1"></b></div><div>Volta da Terra<b id="k2"></b></div><div class="o">Em estádios de 160 m<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça a Terra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',0.5,20,0.1,5,()=>draw(),v=>fmt(v)+'°'),SD=SL('sd',50,2500,1,500,()=>draw(),v=>fmt(v)+' km');
+const V=()=>360/SA.get()*SD.get();
+toque('fig',(x,y)=>{const a=Math.atan2(x-170,250-y)*DEG;SA.set(clamp(Math.round(Math.abs(a)*2*10)/10,0.5,20));draw();});
+MIS.def(()=>[
+ ['Refaça a conta de Eratóstenes: <b>7,2°</b> e <b>800 km</b> (5 000 estádios de 160 m).',()=>Math.abs(SA.get()-7.2)<0.01&&SD.get()==800,'360 ÷ 7,2 = 50; 50 × 800 = 40 000 km, ou 250 000 estádios.',()=>Math.abs(SA.get()-7.2)>0.01?'Ajuste o ângulo para 7,2°.':'Ajuste a distância para 800 km.'],
+ ['Chegue a uma Terra de <b>40 000 km (± 500)</b> com um ângulo <b>diferente</b> de 7,2°.',()=>Math.abs(SA.get()-7.2)>0.01&&Math.abs(V()-40000)<=500,()=>fmt(SA.get())+'° e '+fmt(SD.get())+' km: '+fmt(Math.round(V()))+' km. O ângulo e a distância crescem juntos.',()=>'Agora: '+fmt(Math.round(V()))+' km.'],
+ ['Com <b>1°</b> de diferença, que distância dá uma Terra de 40 000 km (± 200)?',()=>Math.abs(SA.get()-1)<0.01&&Math.abs(V()-40000)<=200,()=>fmt(SD.get())+' km por grau: é o número que o Téo usa para converter latitude em km.',()=>Math.abs(SA.get()-1)>0.01?'Ajuste o ângulo para 1°.':'Agora: '+fmt(Math.round(V()))+' km. Use − e + na distância.']]);
+function draw(){const a=SA.get(),v=V();let g=RC(0,0,340,240,NOITE,'rx="10"');
+ const cx=170,cy=250,R=200,t=a/2*RAD*3;
+ g+=`<path d="M${cx-R*Math.sin(0.6)},${cy-R*Math.cos(0.6)} A${R},${R} 0 0,1 ${cx+R*Math.sin(0.6)},${cy-R*Math.cos(0.6)}" fill="none" stroke="${BLUE}" stroke-width="3"/>`;
+ for(const s of[-1,1]){const x=cx+s*R*Math.sin(t),y=cy-R*Math.cos(t);g+=LN(cx,cy,x,y,'#5A6A9A',1,'3 3')+LN(x,y,x+s*14*Math.sin(t),y-14*Math.cos(t),MAD,4)+LN(x,y-80,x,y,OURO,1.5,'5 4');}
+ g+=TX(cx,cy-R-16,'ângulo exagerado no desenho',{fs:9,c:AZC,w:500})+TX(cx,cy-40,fmt(a)+'°',{fs:14,c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(Math.round(360/a*100)/100);$('k2').textContent=fmt(Math.round(v))+' km';$('k3').textContent=fmt(Math.round(v/0.16))+' estádios';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

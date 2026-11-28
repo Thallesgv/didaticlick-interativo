@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto vale um centímetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Quanto vale um centímetro</h1></header>
+<main>
+<div class="card"><h2>A faixa de incerteza</h2><p class="muted" style="margin-top:0">Ajuste as três fontes de erro (arrastando ou com − e +). A margem total soma os quadrados e tira a raiz; a faixa no mapa mostra onde o Téo pode estar.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s1"><b>Erro na leitura da sombra</b><input type="range"><span></span></div><div class="sl" id="s2"><b>Inclinação da estaca</b><input type="range"><span></span></div><div class="sl" id="s3"><b>Erro na data</b><input type="range"><span></span></div><div class="kpi"><div>Margem<b id="k1"></b></div><div>Faixa: de… a…<b id="k2"></b></div><div class="o">Largura da faixa<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos erros.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DECL=n=>23.44*Math.sin(2*Math.PI*(n-80)/365);const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};const lat_=v=>Math.abs(v)<0.05?'0°':(r1(Math.abs(v))+'° '+(v>0?'N':'S'));
+const S1=SL('s1',0,5,0.5,2,()=>draw(),v=>'± '+fmt(v)+' cm'),S2=SL('s2',0,2,0.1,1,()=>draw(),v=>'± '+fmt(v)+'°'),S3=SL('s3',0,5,1,2,()=>draw(),v=>'± '+v+' dia'+(v==1?'':'s'));
+const parc=()=>[0.28*S1.get(),S2.get(),0.2*S3.get()];const M=()=>Math.hypot(...parc());
+MIS.def(()=>[
+ ['Monte a margem do Téo: sombra <b>± 1 cm</b>, estaca <b>± 0,3°</b> e data <b>± 1 dia</b>.',()=>S1.get()==1&&Math.abs(S2.get()-0.3)<0.01&&S3.get()==1,()=>'Margem ≈ ± '+r2(M())+'°, que o Téo arredondou para ± 0,5°: faixa de uns 100 km.',()=>{const f=[];if(S1.get()!=1)f.push('a sombra');if(Math.abs(S2.get()-0.3)>0.01)f.push('a estaca');if(S3.get()!=1)f.push('a data');return 'Ajuste '+f.join(', ')+'.';}],
+ ['Deixe a faixa com <b>menos de 30 km</b> de largura.',()=>2*M()*111<30,()=>'Faixa de '+Math.round(2*M()*111)+' km. Precisou zerar quase tudo: medir bem é difícil!',()=>'A faixa tem '+Math.round(2*M()*111)+' km. Qual fonte está pesando mais? Olhe as barras.'],
+ ['Zere a sombra e a estaca. Quantos dias de erro na data já fazem a faixa passar de <b>100 km</b>?',()=>S1.get()==0&&S2.get()==0&&2*M()*111>100&&S3.get()==3,'Três dias: ± 0,6°, faixa de 133 km. Com 2 dias, seriam 89 km. A data pesa!',()=>S1.get()!=0||S2.get()!=0?'Primeiro zere a sombra e a estaca.':'Com '+S3.get()+' dia(s), a faixa tem '+Math.round(2*M()*111)+' km. Ache o menor número de dias que passa de 100 km.']]);
+function draw(){const m=M(),p=parc();let g=RC(0,0,340,230,'#F8FAFC','rx="10"');
+ const nomes=['sombra','estaca','data'];p.forEach((v,i)=>{g+=TX(20,30+i*28,nomes[i],{fs:11,a:'start'})+RC(80,18+i*28,Math.max(1,v/2*220),16,i==0?ORANGE:i==1?MAD:BLUE,'rx="4"')+TX(86+Math.max(1,v/2*220),31+i*28,'± '+r2(v)+'°',{fs:10,a:'start',c:GRAY});});
+ g+=TX(20,116,'total',{fs:11,a:'start'})+RC(80,104,Math.max(1,m/2*220),16,NAVY,'rx="4"')+TX(86+m/2*220,117,'± '+r2(m)+'°',{fs:10,a:'start'});
+ const Y=v=>140+(v+5)/-16*-1*0+((-v)-5)*8;g+=RC(10,136,320,84,'#E8F0FB','rx="6"');
+ const y0=178,k=40;g+=RC(10,y0-m*k,320,Math.max(2,2*m*k),ORANGE,'opacity="0.55"')+LN(10,y0,330,y0,ORANGE,2)+TX(16,y0-m*k-4,lat_(-10.4+m),{fs:9,a:'start',c:NAVY})+TX(16,y0+m*k+12,lat_(-10.4-m),{fs:9,a:'start',c:NAVY})+TX(324,y0+4,'10,4° S',{fs:10,a:'end'});
+ $('fig').innerHTML=SVG(340,230,g);
+ $('k1').textContent='± '+r2(m)+'°';$('k2').textContent=r1(10.4-m)+'° a '+r1(10.4+m)+'° S';$('k3').textContent=Math.round(2*m*111)+' km';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

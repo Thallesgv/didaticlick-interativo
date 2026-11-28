@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva do ano · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A curva do ano</h1></header>
+<main>
+<div class="card"><h2>δ = 23,44 · sen(360° · (n − 80) ÷ 365)</h2><p class="muted" style="margin-top:0">Arraste no gráfico (ou use − e +) para escolher o dia do ano. A conta aparece passo a passo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Dia do ano (n)</b><input type="range"><span></span></div><p id="conta" style="margin:6px 0;font-size:15px"></p><div class="kpi"><div>Data<b id="k1"></b></div><div>Ângulo<b id="k2"></b></div><div class="o">Declinação<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Percorra o ano.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DECL=n=>23.44*Math.sin(2*Math.PI*(n-80)/365);const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};const lat_=v=>Math.abs(v)<0.05?'0°':(r1(Math.abs(v))+'° '+(v>0?'N':'S'));
+const SD=SL('sd',1,365,1,1,()=>draw(),v=>v);const zeros=new Set();
+const gx=30,gy=130,gw=300,gh=100;
+toque('fig',(x,y)=>{SD.set(clamp(Math.round(1+(x-gx)/gw*364),1,365));draw();});
+MIS.def(()=>[
+ ['Ache os <b>dois dias</b> do ano em que a declinação é zero (entre −0,2° e 0,2°).',()=>zeros.size>=2,()=>'Dias '+[...zeros].join(' e ')+': os equinócios de março e setembro.',()=>zeros.size==0?'Procure onde a curva cruza o eixo do meio.':'Já achou o dia '+[...zeros][0]+'. Falta o outro.'],
+ ['Ache o dia de <b>maior declinação</b>.',()=>DECL(SD.get())>23.43,()=>'Dia '+SD.get()+' ('+data(SD.get())+'): o solstício de junho.',()=>'Agora: '+r2(DECL(SD.get()))+'°. Procure o topo da onda.'],
+ ['Ache o dia <b>13 de julho</b>.',()=>SD.get()==194,'Dia 194: 21,7°.',()=>'Agora: '+data(SD.get())+'.'],
+ ['Ache o <b>outro dia</b> do ano com quase a mesma declinação de 13 de julho (diferença menor que 0,25°).',()=>SD.get()<172&&Math.abs(DECL(SD.get())-DECL(194))<0.25,()=>'Dia '+SD.get()+' ('+data(SD.get())+'): a curva é simétrica em torno de 21 de junho.',()=>'Procure antes de junho. Agora: '+r2(DECL(SD.get()))+'° contra 21,67°.']]);
+function draw(){const n=SD.get(),d=DECL(n),ang=360*(n-80)/365;if(Math.abs(d)<0.2)zeros.add(n>180?'≈ '+n:'≈ '+n);
+ if(zeros.size>2){const a=[...zeros];zeros.clear();a.slice(-2).forEach(z=>zeros.add(z));}
+ let g=RC(0,0,340,250,'#F8FAFC','rx="10"');g+=LN(gx,gy,gx+gw,gy,GRAY,1);
+ for(const v of[-20,-10,10,20])g+=LN(gx,gy-gh*v/23.44,gx+gw,gy-gh*v/23.44,GRAYL,1)+TX(gx-3,gy-gh*v/23.44+3,v+'°',{fs:8,a:'end',c:GRAY,w:500});
+ MES.forEach((m,i)=>g+=TX(gx+gw*(i+0.5)/12,gy+gh+16,m,{fs:8,c:GRAY,w:500}));
+ const pts=[];for(let k=1;k<=365;k+=3)pts.push([gx+gw*(k-1)/364,gy-gh*DECL(k)/23.44]);g+=PL(pts,BLUE,2);
+ const px=gx+gw*(n-1)/364,py=gy-gh*d/23.44;g+=LN(px,gy,px,py,ORANGE,1.5,'3 3')+CIR(px,py,6,ORANGE);
+ $('fig').innerHTML=SVG(340,250,g);
+ const ar=((ang%360)+360)%360;
+ $('conta').innerHTML='n − 80 = '+(n-80)+' → 360° × '+(n-80)+' ÷ 365 = '+r1(ang)+'° → sen = '+fmt(Math.round(Math.sin(ang*RAD)*1000)/1000)+' → δ = 23,44 × '+fmt(Math.round(Math.sin(ang*RAD)*1000)/1000)+' = <b>'+r1(d)+'°</b>';
+ $('k1').textContent=data(n);$('k2').textContent=r1(ang)+'°';$('k3').textContent=(d>=0?'+':'')+r1(d)+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
