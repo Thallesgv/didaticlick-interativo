@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A altura do Sol · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A altura do Sol</h1></header>
+<main>
+<div class="card"><h2>Da sombra ao ângulo</h2><p class="muted" style="margin-top:0">A estaca tem 1,50 m. Mude a sombra (arrastando a ponta no chão ou com − e +). A página calcula a tangente e o ângulo; o quadrante ao lado mostra o mesmo ângulo pelo fio de prumo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Sombra</b><input type="range"><span></span></div><div class="kpi"><div>tg h = 150 ÷ sombra<b id="k1"></b></div><div>h = arctg<b id="k2"></b></div><div class="o">Distância zenital<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a sombra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SS=SL('ss',30,300,1,150,()=>draw(),v=>v+' cm');const X0=200,Y0=200,K=0.6;
+toque('fig',(x,y)=>{SS.set(clamp(Math.round((X0-x)/K),30,300));draw();});
+const h=()=>Math.atan(150/SS.get())*DEG;
+MIS.def(()=>[
+ ['Reproduza a sombra do Téo: <b>94 cm</b>.',()=>SS.get()==94,'tg h = 150 ÷ 94 ≈ 1,596 e h ≈ 57,9°. Distância zenital: 32,1°.',()=>'A sombra está em '+SS.get()+' cm.'],
+ ['Ache a sombra do Sol a <b>45°</b>.',()=>Math.abs(h()-45)<0.3,'Sombra de 150 cm, igual à estaca: tg = 1.',()=>'h = '+r1(h())+'°. '+(h()>45?'Aumente a sombra.':'Diminua a sombra.')],
+ ['Ache a sombra do Sol a <b>30°</b> (entre 29,8° e 30,2°).',()=>Math.abs(h()-30)<=0.2,()=>'Sombra de '+SS.get()+' cm: 150 ÷ tg 30° = 150 ÷ 0,577 ≈ 260 cm.',()=>'h = '+r1(h())+'°. Sol mais baixo pede sombra mais comprida.']]);
+function draw(){const s=SS.get(),a=h();let g=RC(0,0,340,240,CEU,'rx="10"')+RC(0,Y0,340,40,AREIA,'');
+ const xt=X0-s*K;g+=LN(xt,Y0,X0,Y0,ORANGE,5)+LN(X0,Y0,X0,Y0-150*K,MAD,6)+LN(xt,Y0,X0,Y0-150*K,OURO,1.5,'5 4')+CIR(xt,Y0,7,ORANGE,'opacity="0.6"');
+ g+=TX(xt+30,Y0-6,r1(a)+'°',{fs:11,c:ORANGE})+TX((xt+X0)/2,Y0+18,s+' cm',{fs:11,c:ORANGE})+TX(X0+6,Y0-45,'150 cm',{fs:10,a:'start'});
+ const qx=250,qy=110,r=70;g+=`<path d="M${qx},${qy} L${qx},${qy-r} A${r},${r} 0 0,1 ${qx+r},${qy} Z" fill="#D9A86A" stroke="${MAD}"/>`;
+ for(let d=0;d<=90;d+=10){const t=d*RAD;g+=LN(qx+r*0.82*Math.sin(t),qy-r*0.82*Math.cos(t),qx+r*0.97*Math.sin(t),qy-r*0.97*Math.cos(t),MAD,1);}
+ const t=(90-a)*RAD;g+=LN(qx,qy,qx+r*Math.sin(t),qy-r*Math.cos(t),ORANGE,2)+TX(qx+r*0.5,qy-6,r1(a)+'°',{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(Math.round(150/s*1000)/1000);$('k2').textContent=r1(a)+'°';$('k3').textContent=r1(90-a)+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

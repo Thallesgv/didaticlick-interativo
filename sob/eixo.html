@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Terra inclinada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A Terra inclinada</h1></header>
+<main>
+<div class="card"><h2>O eixo que não muda de direção</h2><p class="muted" style="margin-top:0">Arraste a Terra pela órbita (ou mude o dia com − e +). O eixo, inclinado 23,4°, aponta sempre para o mesmo lado. Embaixo, a faixa onde o Sol está a pino.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Dia do ano</b><input type="range"><span></span></div><div class="kpi"><div>Data<b id="k1"></b></div><div>Declinação<b id="k2"></b></div><div class="o">Sol a pino em<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova a Terra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DECL=n=>23.44*Math.sin(2*Math.PI*(n-80)/365);const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};const lat_=v=>Math.abs(v)<0.05?'0°':(r1(Math.abs(v))+'° '+(v>0?'N':'S'));
+const SD=SL('sd',1,365,1,100,()=>draw(),data);const cx=170,cy=110,RX=130,RY=60;
+toque('fig',(x,y)=>{if(y>190)return;let a=Math.atan2((y-cy)/RY,(x-cx)/RX);let n=Math.round(172+a/(2*Math.PI)*365*-1);n=((n-1)%365+365)%365+1;SD.set(n);draw();});
+MIS.def(()=>[
+ ['Leve a Terra ao <b>solstício de junho</b> (declinação máxima).',()=>DECL(SD.get())>23.4,()=>data(SD.get())+': Sol a pino no Trópico de Câncer. O polo norte está inclinado para o Sol.',()=>'Declinação agora: '+r1(DECL(SD.get()))+'°. Procure o máximo.'],
+ ['Leve a Terra a um <b>equinócio</b> (declinação perto de 0°).',()=>Math.abs(DECL(SD.get()))<0.3,()=>data(SD.get())+': Sol a pino no Equador; nenhum dos polos está virado para o Sol.',()=>'Declinação agora: '+r1(DECL(SD.get()))+'°.'],
+ ['Leve a Terra ao dia <b>13 de julho</b>, o dia que o Téo acha que é.',()=>SD.get()==194,'Dia 194: declinação 21,7°. O Sol a pino está em 21,7° N.',()=>'Agora: '+data(SD.get())+'.']]);
+function draw(){const n=SD.get(),d=DECL(n);let g=RC(0,0,340,280,NOITE,'rx="10"');
+ g+=`<ellipse cx="${cx}" cy="${cy}" rx="${RX}" ry="${RY}" fill="none" stroke="#3A4A7A" stroke-dasharray="4 4"/>`;
+ for(let k=0;k<12;k++)g+=LN(cx+18*Math.cos(k*Math.PI/6),cy+18*Math.sin(k*Math.PI/6),cx+26*Math.cos(k*Math.PI/6),cy+26*Math.sin(k*Math.PI/6),OURO,2);g+=CIR(cx,cy,14,OURO);
+ const a=-(n-172)/365*2*Math.PI,ex=cx+RX*Math.cos(a),ey=cy+RY*Math.sin(a);
+ g+=CIR(ex,ey,16,BLUE);const ta=(90+23.4)*RAD;g+=LN(ex-26*Math.cos(ta),ey+26*Math.sin(ta),ex+26*Math.cos(ta),ey-26*Math.sin(ta),'#fff',2.5);
+ const vx=cx-ex,vy=cy-ey,L=Math.hypot(vx,vy);g+=`<path d="M${ex},${ey-16} A16,16 0 0,${vx>0?1:0} ${ex},${ey+16}" fill="#FFE9A8" opacity="0.5"/>`;
+ g+=TX(cx+RX,cy-RY-8,'junho',{fs:9,c:AZC,w:500})+TX(cx-RX,cy-RY-8,'dezembro',{fs:9,c:AZC,w:500});
+ const Y=v=>200+(30-v)/60*70;g+=RC(20,200,300,70,'#1F2C55','rx="6"');for(const[v,t]of[[23.44,'Câncer'],[0,'Equador'],[-23.44,'Capricórnio']])g+=LN(20,Y(v),320,Y(v),'#5A6A9A',1,'3 3')+TX(24,Y(v)-2,t,{fs:8,a:'start',c:AZC,w:500});
+ g+=LN(20,Y(d),320,Y(d),ORANGE,3);
+ $('fig').innerHTML=SVG(340,280,g);
+ $('k1').textContent=data(n)+' (dia '+n+')';$('k2').textContent=(d>=0?'+':'')+r1(d)+'°';$('k3').textContent=lat_(d);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
