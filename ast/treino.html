@@ -90,7 +90,29 @@ const LIV={'ast1':{T:["Ângulos no céu", "Paralaxe", "UA e ano-luz", "Notação
 6:()=>{const t=R(0,2);
  if(t==0){const r=P([1,2,3,5,10]);const V=4/3*Math.PI*r**3;return{q:`Qual o volume, em m³, de uma esfera de raio <b>${r} m</b>? (π ≈ 3,1416; 1 casa)`,a:Math.round(V*10)/10,tol:Math.max(0.1,V*0.003),exp:`(4/3) × π × ${r}³ = (4/3) × π × ${r**3} ≈ ${fmt(Math.round(V*10)/10)} m³.`};}
  if(t==1){const V=P([2,5,10,40]),rho=P([1190,2000,2700,7800]);return{q:`Um bloco tem <b>${V} m³</b> e densidade <b>${fmt(rho)} kg/m³</b>. Qual a massa, em kg?`,a:V*rho,exp:`${V} × ${fmt(rho)} = ${fmt(V*rho)} kg.`};}
- const k=P([2,3,4,10]);return{q:`O raio de um asteroide fica <b>${k} vezes</b> maior, com a mesma densidade. A massa fica quantas vezes maior?`,a:k**3,exp:`${k}³ = ${k**3}.`};}}}};
+ const k=P([2,3,4,10]);return{q:`O raio de um asteroide fica <b>${k} vezes</b> maior, com a mesma densidade. A massa fica quantas vezes maior?`,a:k**3,exp:`${k}³ = ${k**3}.`};}}},'ast4':{T:["Medidas e erros", "A curva do sino", "Probabilidade geométrica", "Monte Carlo", "A chance muda", "A escala de Torino"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const n=R(3,6),v=Array.from({length:n},()=>R(10,30));const m=v.reduce((a,b)=>a+b,0)/n;return{q:`Qual a média de <b>${v.join(', ')}</b>? (até 2 casas)`,a:Math.round(m*100)/100,tol:0.011,exp:`Soma ${v.reduce((a,b)=>a+b,0)} ÷ ${n} ≈ ${fmt(Math.round(m*100)/100)}.`};}
+ if(t==1){const [v,s]=P([[[2,4,6],1.63],[[1,3,5,7],2.24],[[10,12,14],1.63],[[5,5,5,5],0],[[4,8],2],[[10,12,11,13,14],1.41]]);return{q:`Qual o desvio padrão de <b>${v.join(', ')}</b>? (divida por n; até 2 casas)`,a:s,tol:0.02,exp:`Calcule a média, os quadrados das diferenças, a média deles e a raiz: σ ≈ ${fmt(s)}.`};}
+ const s=P([0.27,0.5,1,2]),n=P([4,9,16,25,100]);return{q:`Cada medida tem erro σ = <b>${fmt(s)}</b>. Qual o erro da média de <b>${n}</b> medidas? (σ ÷ √n; até 3 casas)`,a:Math.round(s/Math.sqrt(n)*1000)/1000,tol:0.002,exp:`${fmt(s)} ÷ √${n} = ${fmt(s)} ÷ ${Math.sqrt(n)} ≈ ${fmt(Math.round(s/Math.sqrt(n)*1000)/1000)}.`};},
+2:()=>{const t=R(0,2);const mu=P([50,100,160,200]),s=P([5,8,10,20]);
+ if(t==0){const k=R(1,3);return{q:`Com μ = <b>${mu}</b> e σ = <b>${s}</b>, que porcentagem fica entre <b>${mu-k*s}</b> e <b>${mu+k*s}</b>?`,a:[68,95,99.7][k-1],tol:0.05,exp:`São ${k} desvio${k>1?'s':''} para cada lado: ${['68','95','99,7'][k-1]}%.`};}
+ if(t==1){const k=R(1,2);return{q:`Com μ = <b>${mu}</b> e σ = <b>${s}</b>, que porcentagem fica <b>acima de ${mu+k*s}</b>?`,a:k==1?16:2.5,tol:0.05,exp:`(100% − ${k==1?'68':'95'}%) ÷ 2 = ${k==1?'16':'2,5'}%.`};}
+ const x=mu+P([-2,-1,1,1.5,2.5,3])*s;return{q:`Com μ = <b>${mu}</b> e σ = <b>${s}</b>, qual o z de uma medida igual a <b>${fmt(x)}</b>?`,a:(x-mu)/s,tol:0.01,exp:`z = (${fmt(x)} − ${mu}) ÷ ${s} = ${fmt((x-mu)/s)}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const N=P([20,50,200,400,600,1000]);return{q:`Escreva a chance de <b>1 em ${fmt(N)}</b> em porcentagem. (até 3 casas)`,a:Math.round(100/N*1000)/1000,tol:0.002,exp:`100 ÷ ${fmt(N)} = ${fmt(Math.round(100/N*1000)/1000)}%.`};}
+ if(t==1){const p=P([0.2,1.9,9.3,25,2.7]);return{q:`A chance de impacto é <b>${fmt(p)}%</b>. Qual a chance de <b>não</b> haver impacto, em %?`,a:Math.round((100-p)*10)/10,tol:0.01,exp:`100 − ${fmt(p)} = ${fmt(Math.round((100-p)*10)/10)}%.`};}
+ const L=P([10,20,40]),r=P([1,2,3]);return{q:`Um círculo de raio <b>${r}</b> está dentro de um quadrado de lado <b>${L}</b>. Qual a chance, em %, de um ponto ao acaso no quadrado cair no círculo? (π ≈ 3,14; até 2 casas)`,a:Math.round(3.14*r*r/(L*L)*10000)/100,tol:0.01,exp:`3,14 × ${r*r} ÷ ${L*L} ≈ ${fmt(Math.round(3.14*r*r/(L*L)*10000)/100)}%.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const n=P([100,200,400,1000]),k=Math.round(n*P([0.77,0.78,0.785,0.79,0.8]));return{q:`Com <b>${n}</b> pontos no quadrado, <b>${k}</b> caíram no quarto de círculo. Qual a estimativa de π? (até 2 casas)`,a:Math.round(4*k/n*100)/100,tol:0.011,exp:`4 × ${k} ÷ ${n} ≈ ${fmt(Math.round(4*k/n*100)/100)}.`};}
+ if(t==1){const n=P([1000,10000,50000]),k=P([5,17,25,40,190]);return{q:`De <b>${fmt(n)}</b> clones, <b>${k}</b> batem na Terra. Qual a chance estimada, em %? (até 3 casas)`,a:Math.round(k/n*100*1000)/1000,tol:0.002,exp:`${k} ÷ ${fmt(n)} = ${fmt(Math.round(k/n*100*1000)/1000)}%.`};}
+ const n=P([60,120,600,1200]);return{q:`Um dado é lançado <b>${n}</b> vezes. Quantas vezes você espera tirar 6?`,a:n/6,exp:`${n} ÷ 6 = ${n/6}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const p=P([2,4,5,10,20,25,50]);return{q:`Escreva <b>${p}%</b> como "1 em N". Quanto vale N?`,a:100/p,exp:`100 ÷ ${p} = ${100/p}.`};}
+ if(t==1){const a=P([1,2,5]),b=a*P([3,4.5,5,10]);return{q:`A chance subiu de <b>${a}%</b> para <b>${fmt(b)}%</b>. Ficou quantas vezes maior?`,a:b/a,exp:`${fmt(b)} ÷ ${a} = ${fmt(b/a)}.`};}
+ const p=P([1,2,5,10]);return{q:`Dois asteroides independentes têm, cada um, <b>${p}%</b> de chance de bater. Qual a chance de pelo menos um bater, em %? (até 2 casas)`,a:Math.round((1-(1-p/100)**2)*10000)/100,tol:0.011,exp:`1 − (1 − ${fmt(p/100)})² = ${fmt(Math.round((1-(1-p/100)**2)*10000)/100)}%.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const [m,v]=P([[2e9,15000],[1e10,10000],[2.8e10,12300],[1e8,20000]]);const E=0.5*m*v*v;return{q:`Qual a energia, em megatons, de uma rocha de <b>${SCI(m)} kg</b> a <b>${fmt(v/1000)} km/s</b>? (½mv²; 1 Mt = 4,184 × 10¹⁵ J; arredonde)`,a:Math.round(E/4.184e15),tol:Math.max(1,E/4.184e15*0.02),exp:`½ × ${SCI(m)} × ${fmt(v)}² = ${SCI(E,3)} J ≈ ${fmt(Math.round(E/4.184e15))} Mt.`};}
+ const [c,s,n]=P([[0.01,100000,1000],[0.001,5000000,5000],[0.05,20000,1000],[0.2,1000,200]]);return{q:`Uma chance de <b>${fmt(c*100)}%</b> de atingir <b>${fmt(s)}</b> pessoas. Qual o risco (chance × estrago), em pessoas?`,a:n,exp:`${fmt(c)} × ${fmt(s)} = ${fmt(n)}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ast1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

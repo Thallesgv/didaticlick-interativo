@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A nuvem que encolhe · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A nuvem que encolhe</h1></header>
+<main>
+<div class="card"><h2>A cada dia, mais medidas</h2><p class="muted" style="margin-top:0">O plano-alvo, com a Terra (raio efetivo) no meio. A elipse laranja mostra 1 desvio padrão da nuvem de órbitas possíveis, e a tracejada, 2 desvios. Avance os dias: com mais medidas, a nuvem encolhe e a chance é recalculada. Compare o Teimoso com outro asteroide, cuja nuvem está um pouco de lado.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Dia do mês</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Chance de impacto<b id="kp"></b></div><div>Em "1 em N"<b id="kn"></b></div><div>Tamanho da nuvem (1σ)<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Avance os dias.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;};
+const PHI=z=>0.5*(1+erf(z/Math.SQRT2));
+const GAUSS=()=>{let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const PCT=v=>v>=0.1?r1(v*100)+'%':v>=0.0001?r2(v*100)+'%':(v>0?'menos de 0,01%':'0%');
+const RE=15630;let sc=0;const CEN=[[4000,1000],[60000,8000]];
+chips('ch',['Teimoso','Outro asteroide'],0,i=>{sc=i;draw();});
+const S=SL('sd',0,30,0.5,0,draw,v=>'dia '+r1(v));
+const TD=[0,10,15,20,25,30],TX_=[1.2e6,3e5,1e5,4e4,1.5e4,5e3],TY_=[6e4,2e4,1e4,8e3,4e3,1.5e3];
+const itp=(T,d)=>{let i=0;while(i<4&&d>TD[i+1])i++;const f=(d-TD[i])/(TD[i+1]-TD[i]);return Math.exp(Math.log(T[i])+(Math.log(T[i+1])-Math.log(T[i]))*f);};
+const sx=d=>itp(TX_,d),sy=d=>itp(TY_,d);
+function chance(d){const a=sx(d),b=sy(d),[cx,cy]=CEN[sc];let s=0;const n=90,h=2*RE/n;for(let i=0;i<n;i++)for(let j=0;j<n;j++){const x=-RE+(i+0.5)*h,y=-RE+(j+0.5)*h;if(x*x+y*y<=RE*RE)s+=Math.exp(-((x+cx)**2/(2*a*a)+(y+cy)**2/(2*b*b)));}return Math.min(1,s*h*h/(2*Math.PI*a*b));}
+const p=()=>chance(S.get());const fk=v=>v>=1e6?r1(v/1e6)+' milhão de km':fmt(Math.round(v/1000)*1000)+' km';
+const NN=v=>v<=0?'—':v>=0.99?'quase certo':v>0.5?r1(v*100)+' em 100':'1 em '+fmt(Math.round(1/v));
+MIS.def(()=>[
+ ['Avance até o dia em que a chance do Teimoso passa de <b>1%</b> (entre 1% e 2,5%).',()=>sc==0&&p()>=0.01&&p()<=0.025,()=>'Dia '+r1(S.get())+': '+PCT(p())+'. A nuvem encolheu e a Terra continua no meio dela.',()=>sc!=0?'Escolha o Teimoso.':'Agora: '+PCT(p())+'.'],
+ ['Avance até a chance passar de <b>50%</b> (entre 50% e 80%).',()=>sc==0&&p()>=0.5&&p()<=0.8,()=>'Dia '+r1(S.get())+': '+PCT(p())+'. Agora é mais provável bater do que não bater.',()=>sc!=0?'Escolha o Teimoso.':'Agora: '+PCT(p())+'.'],
+ ['Vá ao <b>fim do mês</b>. Qual a chance?',()=>sc==0&&S.get()>=30,()=>PCT(p())+': a nuvem ficou menor que a Terra efetiva. É o que deu nota 9 na escala de Torino.',()=>sc!=0?'Escolha o Teimoso.':'Avance até o dia 30.'],
+ ['Escolha o <b>outro asteroide</b> e vá do dia 0 ao dia 30. O que acontece com a chance no fim?',()=>sc==1&&S.get()>=28,()=>'No fim, '+PCT(p())+'. A chance subiu no meio do mês e depois caiu a zero: a Terra ficou de fora, como no caso do Apophis.',()=>sc!=1?'Escolha o outro asteroide.':'Avance até o fim do mês e observe a chance ao longo do caminho.']]);
+function draw(){const W=340,H=240;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,232,40,11);const d=S.get(),a=sx(d),b=sy(d),[cx,cy]=CEN[sc];
+ const V=Math.max(5*RE,Math.min(2.2*a,6e5)+Math.abs(cx)),k=160/V,ox=170,oy=120;
+ g+=`<ellipse cx="${ox-cx*k}" cy="${oy+cy*k}" rx="${Math.min(2*a*k,2000)}" ry="${Math.min(2*b*k,2000)}" fill="${ORANGE}" fill-opacity=".12" stroke="${ORANGE}" stroke-dasharray="4 3"/>`;
+ g+=`<ellipse cx="${ox-cx*k}" cy="${oy+cy*k}" rx="${Math.min(a*k,2000)}" ry="${Math.min(b*k,2000)}" fill="${ORANGE}" fill-opacity=".28" stroke="${ORANGE}" stroke-width="1.5"/>`;
+ g+=`<circle cx="${ox}" cy="${oy}" r="${RE*k}" fill="${TERRA}" fill-opacity=".85" stroke="#fff"/>`;
+ g+=TX(10,H-10,'largura da imagem: '+fk(2*V),{fs:9,c:'#94A3B8',a:'start'})+TX(170,18,'chance: '+PCT(p()),{fs:12,c:'#FDBA74'});
+ $('fig').innerHTML=SVG(W,H,g);$('kp').textContent=PCT(p());$('kn').textContent=NN(p());$('kt').textContent=fk(a)+' × '+fk(b);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

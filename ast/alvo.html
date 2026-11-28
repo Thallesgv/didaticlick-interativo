@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O alvo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O alvo</h1></header>
+<main>
+<div class="card"><h2>Dardos ao acaso</h2><p class="muted" style="margin-top:0">O retângulo é a nuvem de incerteza, com a mesma chance em todo ponto. O disco no meio é a Terra vista de frente. Jogue dardos e compare a fração que acerta com a razão entre as áreas.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sw"><b>Largura da nuvem</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura da nuvem</b><input type="range"><span></span></div>
+<div class="row"><button id="j1">Jogar 100</button><button id="j2">Jogar 1.000</button><button class="alt" id="j0">Limpar</button></div>
+<div class="kpi"><div class="o">Razão das áreas<b id="kr"></b></div><div>Dardos que acertaram<b id="kd"></b></div><div>Fração de acertos<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a nuvem e jogue dardos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;};
+const PHI=z=>0.5*(1+erf(z/Math.SQRT2));
+const GAUSS=()=>{let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const PCT=v=>v>=0.1?r1(v*100)+'%':v>=0.0001?r2(v*100)+'%':(v>0?'menos de 0,01%':'0%');
+const RT=6371,RE=15630;let ef=0,D=[],ac=0;
+chips('ch',['Terra de verdade (6.371 km)','Raio efetivo (15.600 km)'],0,i=>{ef=i;D=[];ac=0;draw();});
+const fk=v=>fmt(Math.round(v/1000)*1000)+' km';
+const Wd=SL('sw',40000,1000000,1000,400000,()=>{D=[];ac=0;draw();},fk),Hd=SL('sh',32000,200000,1000,50000,()=>{D=[];ac=0;draw();},fk);
+const R=()=>ef?RE:RT,raz=()=>Math.PI*R()**2/(Wd.get()*Hd.get());
+const joga=n=>{for(let i=0;i<n;i++){const x=(Math.random()-0.5)*Wd.get(),y=(Math.random()-0.5)*Hd.get();const ok=x*x+y*y<=R()**2;if(ok)ac++;D.push([x,y,ok]);}draw();};
+$('j1').onclick=()=>joga(100);$('j2').onclick=()=>joga(1000);$('j0').onclick=()=>{D=[];ac=0;draw();};
+MIS.def(()=>[
+ ['Com a Terra de verdade, ajuste a nuvem para que a chance (razão das áreas) fique entre <b>0,9% e 1,1%</b>.',()=>ef==0&&raz()>=0.009&&raz()<=0.011,()=>'Razão de '+PCT(raz())+': 1 em '+fmt(Math.round(1/raz()))+'.',()=>'Agora a razão é '+PCT(raz())+'.'],
+ ['Jogue pelo menos <b>2.000 dardos</b> e compare a fração de acertos com a razão das áreas.',()=>D.length>=2000,()=>'Acertos: '+ac+' de '+D.length+' = '+PCT(ac/D.length)+'. A razão das áreas é '+PCT(raz())+'. Com mais dardos, os dois ficam mais perto.',()=>'Agora: '+D.length+' dardos.'],
+ ['Troque para o <b>raio efetivo</b>, sem mudar a nuvem. Quantas vezes a chance aumentou?',()=>ef==1,()=>'A razão passou a '+PCT(raz())+': (15.600 ÷ 6.371)² ≈ 6 vezes maior. A gravidade da Terra funciona como um funil.','Escolha o raio efetivo.'],
+ ['Com o raio efetivo, monte a nuvem de <b>400.000 km × 50.000 km</b> do exercício. Qual a chance?',()=>ef==1&&Wd.get()==400000&&Hd.get()==50000,()=>'Razão de '+PCT(raz())+', 1 em '+fmt(Math.round(1/raz()))+'.',()=>ef!=1?'Use o raio efetivo.':'Agora: '+fk(Wd.get())+' × '+fk(Hd.get())+'.']]);
+function draw(){const W=340,H=220;let g=RC(0,0,W,H,CEU,'rx="10"');const k=Math.min(310/Wd.get(),190/Hd.get()),cx=170,cy=110;
+ g+=RC(cx-Wd.get()*k/2,cy-Hd.get()*k/2,Wd.get()*k,Hd.get()*k,'#1E3A6E','stroke="#6B8FE0"');
+ const last=D.slice(-3000);last.forEach(([x,y,ok])=>{g+=`<circle cx="${cx+x*k}" cy="${cy-y*k}" r="${ok?2.2:1}" fill="${ok?ORANGE:'#CBD5E1'}"/>`;});
+ g+=`<circle cx="${cx}" cy="${cy}" r="${Math.max(R()*k,1.5)}" fill="${TERRA}" fill-opacity=".75" stroke="#fff" stroke-width="1"/>`;
+ g+=TX(cx,14,'nuvem: '+fk(Wd.get())+' × '+fk(Hd.get()),{fs:10,c:'#BFD0FF'});
+ $('fig').innerHTML=SVG(W,H,g);$('kr').textContent=PCT(raz());$('kd').textContent=ac+' de '+D.length;$('kf').textContent=D.length?PCT(ac/D.length):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

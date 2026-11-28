@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O sino · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O sino</h1></header>
+<main>
+<div class="card"><h2>A área embaixo da curva</h2><p class="muted" style="margin-top:0">Escolha a média μ e o desvio padrão σ. Depois escolha uma faixa de valores, "de" e "até": a área pintada é a porcentagem das medidas que cai nessa faixa.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Média μ</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Desvio padrão σ</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>De</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Até</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área pintada<b id="kp"></b></div><div>z do "de" e do "até"<b id="kz"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha a faixa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;};
+const PHI=z=>0.5*(1+erf(z/Math.SQRT2));
+const GAUSS=()=>{let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const PCT=v=>v>=0.1?r1(v*100)+'%':v>=0.0001?r2(v*100)+'%':(v>0?'menos de 0,01%':'0%');
+const Mu=SL('sm',80,200,1,100,draw,v=>v),Sg=SL('ss',2,30,1,10,draw,v=>v),A=SL('sa',0,300,1,95,draw,v=>v),B=SL('sb',0,300,1,105,draw,v=>v);
+const za=()=>(A.get()-Mu.get())/Sg.get(),zb=()=>(B.get()-Mu.get())/Sg.get(),area=()=>Math.max(0,PHI(zb())-PHI(za()));
+const zz=v=>(v>=0?'+':'−')+r2(Math.abs(v));
+MIS.def(()=>[
+ ['Com μ = 100 e σ = 10, pinte a faixa de <b>1 desvio</b> para cada lado da média. Quanto dá a área?',()=>Mu.get()==100&&Sg.get()==10&&A.get()==90&&B.get()==110,()=>'De 90 a 110: '+PCT(area())+'. É o 68% da regra.',()=>'De '+A.get()+' até '+B.get()+': '+PCT(area())+'. Use μ = 100 e σ = 10.'],
+ ['Agora pinte <b>2 desvios</b> para cada lado.',()=>Mu.get()==100&&Sg.get()==10&&A.get()==80&&B.get()==120,()=>'De 80 a 120: '+PCT(area())+'. O 95%.',()=>'De '+A.get()+' até '+B.get()+': '+PCT(area())+'.'],
+ ['Pinte <b>3 desvios</b> para cada lado.',()=>Mu.get()==100&&Sg.get()==10&&A.get()==70&&B.get()==130,()=>'De 70 a 130: '+PCT(area())+'. Fora disso, só 3 em cada 1.000.',()=>'De '+A.get()+' até '+B.get()+': '+PCT(area())+'.'],
+ ['Alturas com <b>μ = 160 cm</b> e <b>σ = 8 cm</b>: que porcentagem fica entre <b>152 e 176 cm</b>?',()=>Mu.get()==160&&Sg.get()==8&&A.get()==152&&B.get()==176,()=>PCT(area())+': de −1σ até +2σ, 34% + 47,5% ≈ 81,5%.',()=>'Agora μ = '+Mu.get()+', σ = '+Sg.get()+', de '+A.get()+' até '+B.get()+'.']]);
+function draw(){const W=340,H=200;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const m=Mu.get(),s=Sg.get(),lo=m-4*s,hi=m+4*s,x0=20,x1=320,y0=170,h=130;
+ const X=v=>x0+(v-lo)/(hi-lo)*(x1-x0),Y=v=>y0-h*Math.exp(-(((v-m)/s)**2)/2);
+ const a=Math.max(A.get(),lo),b=Math.min(B.get(),hi);
+ if(b>a){let pp=[[X(a),y0]];for(let i=0;i<=80;i++){const v=a+(b-a)*i/80;pp.push([X(v),Y(v)]);}pp.push([X(b),y0]);g+=PG(pp,'#F39A55','opacity=".85"');}
+ let c=[];for(let i=0;i<=160;i++){const v=lo+(hi-lo)*i/160;c.push(X(v)+','+Y(v));}g+=`<polyline points="${c.join(' ')}" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=LN(x0,y0,x1,y0,NAVY,1.2);for(let k=-3;k<=3;k++)g+=LN(X(m+k*s),y0-3,X(m+k*s),y0+3,NAVY,1)+TX(X(m+k*s),y0+15,String(m+k*s),{fs:9});
+ g+=TX(170,22,'área pintada: '+PCT(area()),{fs:12,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H,g);$('kp').textContent=PCT(area());$('kz').textContent=zz(za())+' e '+zz(zb());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
