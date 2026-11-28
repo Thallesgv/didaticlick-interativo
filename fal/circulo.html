@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O ponto que gira · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>O ponto que gira</h1></header>
+<main>
+<div class="card"><h2>Do círculo à onda</h2><p class="muted" style="margin-top:0">Arraste o ponto laranja pelo círculo de raio 1 (ou use − e +). A altura dele é o <b>seno</b> (laranja); a distância para o lado é o <b>cosseno</b> (verde). Ao lado, as duas ondas se desenham até o ângulo escolhido.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sg"><b>Ângulo</b><input type="range"><span></span></div>
+<div class="kpi"><div>Ângulo<b id="kg"></b></div><div>sen<b id="ks"></b></div><div class="o">cos<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Gire até achar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const SG=SL('sg',0,360,5,60,()=>draw(),v=>v+'°');
+const cx=70,cy=120,R=55,gx=145,kg=0.5;
+const rad=a=>a*Math.PI/180,sn=()=>Math.sin(rad(SG.get())),cs=()=>Math.cos(rad(SG.get()));
+toque('fig',(x,y)=>{if(x<135){let a=Math.atan2(cy-y,x-cx)*180/Math.PI;if(a<0)a+=360;SG.set(Math.round(a/5)*5%360);}else{SG.set(Math.max(0,Math.min(360,Math.round((x-gx)/kg/5)*5)));}draw();});
+MIS.def(()=>[
+ ['Ache um ângulo com <b>seno 0,5</b>.',()=>perto(sn(),0.5,0.001),'sen 30° = sen 150° = 0,5: o ponto está na metade da altura máxima, de um lado ou do outro.',()=>'sen '+SG.get()+'° ≈ '+r2(sn())+'.'],
+ ['Ache o ângulo com <b>seno −1</b>.',()=>SG.get()==270,'270°: o ponto mais baixo do círculo, o vale da onda.',()=>'sen '+SG.get()+'° ≈ '+r2(sn())+'. Procure o ponto mais baixo.'],
+ ['Ache um ângulo em que <b>seno e cosseno são iguais</b>.',()=>perto(sn(),cs(),0.001),'Em 45° (e em 225°), altura e distância para o lado são iguais: ≈ 0,71 cada (ou −0,71).',()=>'Agora sen ≈ '+r2(sn())+' e cos ≈ '+r2(cs())+'.']]);
+function draw(){const a=SG.get(),px=cx+R*Math.cos(rad(a)),py=cy-R*Math.sin(rad(a));let g=RC(0,0,340,240,'#fff','rx="10"');
+ g+=CIR(cx,cy,R,'none','stroke="'+GRAY+'" stroke-width="1.2"')+LN(cx-R-8,cy,cx+R+8,cy,GRAYL,1)+LN(cx,cy-R-8,cx,cy+R+8,GRAYL,1);
+ g+=LN(cx,cy,px,py,NAVY,1.5)+LN(px,py,px,cy,ORANGE,3)+LN(cx,cy,px,cy,GREEN,3)+CIR(px,py,7,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=LN(gx,cy,gx+360*kg,cy,GRAY,1)+LN(gx,cy-R-6,gx,cy+R+6,GRAY,1);
+ [90,180,270,360].forEach(t=>g+=TX(gx+t*kg,cy+R+18,t+'°',{fs:8,c:GRAY}));
+ const P1=[],P2=[];for(let t=0;t<=a;t+=2){P1.push([gx+t*kg,cy-R*Math.sin(rad(t))]);P2.push([gx+t*kg,cy-R*Math.cos(rad(t))]);}
+ if(P1.length>1){g+=PL(P2,GREEN,2)+PL(P1,ORANGE,2.5);}
+ g+=LN(px,py,gx+a*kg,py,ORANGE,0.8,'3 3')+CIR(gx+a*kg,py,4,ORANGE)+CIR(gx+a*kg,cy-R*cs(),4,GREEN);
+ g+=TX(gx+360*kg,22,'sen',{fs:10,c:ORANGE,a:'end'})+TX(gx+360*kg-30,22,'cos',{fs:10,c:GREEN,a:'end'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kg').textContent=a+'°';$('ks').textContent=r2(sn()+0);$('kc').textContent=r2(cs()+0);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

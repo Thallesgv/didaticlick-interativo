@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mexa na onda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Mexa na onda</h1></header>
+<main>
+<div class="card"><h2>Período e amplitude</h2><p class="muted" style="margin-top:0">Em cima, o fio da borda visto de perto, com os pregos. Embaixo, o gráfico da ondulação: y = A · sen(360° · x ÷ T). Mude o período T e a amplitude A (a amplitude aparece exagerada no fio).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Período T</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Amplitude A</b><input type="range"><span></span></div>
+<div class="kpi"><div>Período<b id="kt"></b></div><div>Frequência<b id="kf"></b></div><div class="o">Amplitude<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desenhe a onda certa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const ST=SL('st',1,12,0.5,4,()=>draw(),v=>vg(v)+' cm'),SA=SL('sa',0,2,0.1,0.5,()=>draw(),v=>vg(v)+' mm');
+const ox=20,W=300,kx=W/18,X=x=>ox+x*kx,y0=190,ky=30;
+toque('fig',(x,y)=>{if(y>110){SA.set(Math.max(0,Math.min(2,Math.round(Math.abs(y0-y)/ky*10)/10)));}else{SA.get();}draw();});
+MIS.def(()=>[
+ ['Refaça a onda dos festões: período <b>6 cm</b> e amplitude <b>0,9 mm</b>.',()=>ST.get()==6&&perto(SA.get(),0.9,0.001),'y = 0,9 · sen(60° · x): três ondas inteiras em 18 cm.',()=>'Agora T = '+vg(ST.get())+' cm e A = '+vg(SA.get())+' mm.'],
+ ['Faça uma onda com frequência de <b>0,5 por cm</b>.',()=>ST.get()==2,'f = 0,5 quer dizer meia onda por cm, ou seja, uma onda a cada 2 cm: T = 1 ÷ 0,5 = 2.',()=>'A frequência agora é '+r2(1/ST.get())+' por cm. Qual período dá 0,5?'],
+ ['Volte ao período de 6 cm e <b>dobre</b> a amplitude dos festões.',()=>ST.get()==6&&perto(SA.get(),1.8,0.001),'A = 1,8 mm: a onda fica mais alta, mas o período e a frequência não mudam.',()=>ST.get()!=6?'Volte para T = 6 cm.':'A amplitude está em '+vg(SA.get())+' mm. O dobro de 0,9 é quanto?']]);
+function draw(){const T=ST.get(),A=SA.get();let g=RC(0,0,340,260,'#fff','rx="10"');
+ g+=RC(ox,20,W,70,LINHO);for(let x=0;x<=18+1e-9;x+=T)g+=CIR(X(x),24,3,NAVY);
+ for(let j=0;j<4;j++){const pts=[];for(let i=0;i<=180;i++){const x=i/10;pts.push([X(x),40+j*14-A*6*Math.abs(Math.sin(Math.PI*x/T))*Math.max(0,1-j*0.3)]);}g+=PL(pts,'#8C7650',2);}
+ g+=TX(ox+W,104,'o fio perto da borda (pregos em azul)',{fs:8,c:GRAY,a:'end'});
+ g+=LN(ox,y0,ox+W,y0,GRAY,1)+LN(ox,y0-2.2*ky,ox,y0+2.2*ky,GRAY,1);
+ for(let x=0;x<=18;x+=3)g+=TX(X(x),y0+2.2*ky+12,x,{fs:8,c:GRAY});
+ [-2,-1,1,2].forEach(v=>g+=LN(ox,y0-v*ky,ox+W,y0-v*ky,GRAYL,.5)+TX(ox-3,y0-v*ky+3,v,{fs:7,c:GRAY,a:'end'}));
+ const pts=[];for(let i=0;i<=360;i++){const x=i/20;pts.push([X(x),y0-A*ky*Math.sin(2*Math.PI*x/T)]);}g+=PL(pts,COBALTO,2.5);
+ if(T<=18){g+=LN(X(0),y0-2.05*ky,X(T),y0-2.05*ky,ORANGE,2)+TX(X(T/2),y0-2.05*ky-4,'T',{fs:10,c:ORANGE});}
+ g+=LN(X(T/4),y0,X(T/4),y0-A*ky,GREEN,2);
+ $('fig').innerHTML=SVG(340,260,g);
+ $('kt').textContent=vg(T)+' cm';$('kf').textContent=r2(1/T)+' por cm';$('ka').textContent=vg(A)+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

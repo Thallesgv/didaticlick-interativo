@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Telas irmãs · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Telas irmãs</h1></header>
+<main>
+<div class="card"><h2>Compare os perfis</h2><p class="muted" style="margin-top:0">Cada faixa é o <b>mapa de trama</b> de uma tela: mais escura onde há mais fios, mais clara onde há menos (10 medidas, a cada 9 cm). Escolha o par, deslize a de baixo e veja o coeficiente r. No modo "invente", arraste os pontos do perfil.</p>
+<div id="chp" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Deslocamento da de baixo</b><input type="range"><span></span></div>
+<div class="kpi"><div>Pontos comparados<b id="kn"></b></div><div>Σab<b id="ks"></b></div><div class="o">r<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache as irmãs.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const A=[0.3,0.5,0.1,-0.4,-0.6,-0.2,0.2,0.4,0,-0.3],B=[0.4,0.4,0,-0.5,-0.5,-0.1,0.3,0.3,0.1,-0.4],M=[-0.1,0.2,-0.4,0.3,-0.2,0.5,-0.3,0,0.4,-0.4];
+let V=[0,0,0,0,0,0,0,0,0,0],par=0;const PARES=[['A','B'],['A','Misteriosa'],['B','Misteriosa'],['A','Inventada']];
+const perf=n=>n=='A'?A:n=='B'?B:n=='Misteriosa'?M:V;
+chips('chp',PARES.map(p=>p.join(' × ')),0,i=>{par=i;draw();});
+let mexeu=false;const SD=SL('sd',-3,3,1,0,()=>{if(SD.get()!=0)mexeu=true;draw();},v=>(v>0?'+':'')+v*9+' cm');
+const calc=(s)=>{const a=perf(PARES[par][0]),b=perf(PARES[par][1]);let sab=0,sa=0,sb=0,n=0;for(let i=0;i<10;i++){const j=i-s;if(j<0||j>9)continue;sab+=a[i]*b[j];sa+=a[i]*a[i];sb+=b[j]*b[j];n++;}return {n,sab,r:sa&&sb?sab/Math.sqrt(sa*sb):0};};
+const melhor=()=>{let bs=0,br=-9;for(let s=-3;s<=3;s++){const r=calc(s).r;if(r>br+1e-9){br=r;bs=s;}}return bs;};
+const ox=30,kx=29,X=i=>ox+i*kx+kx/2,yA=130,yB=230,ky=70;
+toque('fig',(x,y,ini)=>{if(par!=3||y<yB-60)return;const i=Math.round((x-ox-kx/2)/kx)-SD.get();if(i<0||i>9)return;V[i]=Math.max(-0.6,Math.min(0.6,Math.round((yB-y)/ky*10)/10));draw();});
+MIS.def(()=>[
+ ['Compare <b>A × B</b>: deslize a de baixo para um lado, veja o r cair, e volte ao encaixe (deslocamento 0).',()=>par==0&&SD.get()==0&&mexeu,'r ≈ 0,96: as faixas densas e ralas caem nos mesmos lugares. A e B saíram do mesmo rolo.',()=>par!=0?'Escolha o par A × B.':!mexeu?'Primeiro deslize a de baixo para algum lado.':'Agora volte o deslocamento para 0.'],
+ ['Agora <b>A × Misteriosa</b>: deslize a de baixo e ache o deslocamento com o <b>maior r</b>.',()=>par==1&&SD.get()==melhor(),'Mesmo no melhor encaixe, r fica longe de 0,96, e com menos pontos comparados. A tela misteriosa não é irmã de A.',()=>par!=1?'Escolha A × Misteriosa.':'r = '+r2(calc(SD.get()).r)+'. Teste os outros deslocamentos.'],
+ ['No modo <b>A × Inventada</b>, arraste os pontos da tela de baixo até ela virar irmã de A: <b>r ≥ 0,9</b> sem deslocamento.',()=>par==3&&SD.get()==0&&calc(0).r>=0.9,'Você copiou o desenho de A. Repare que nem precisa ser igual: basta subir e descer nos mesmos lugares.',()=>par!=3?'Escolha A × Inventada.':SD.get()!=0?'Deixe o deslocamento em 0.':'r = '+r2(calc(0).r)+'. Suba os pontos onde A sobe e desça onde A desce.']]);
+const cor=v=>{const t=Math.max(-1,Math.min(1,v/0.6));const l=t>0?62-28*t:62-28*t;return `hsl(36,45%,${Math.round(l)}%)`;};
+function draw(){const s=SD.get(),[na,nb]=PARES[par],a=perf(na),b=perf(nb),c=calc(s);let g=RC(0,0,340,300,'#fff','rx="10"');
+ a.forEach((v,i)=>g+=RC(ox+i*kx,14,kx,22,cor(v)));b.forEach((v,j)=>g+=RC(ox+(j+s)*kx,40,kx,22,cor(v)));
+ g+=TX(ox-4,29,na[0],{fs:9,a:'end'})+TX(ox-4,55,nb[0],{fs:9,a:'end'});
+ const lin=(P,sh,yb,colr)=>{const pts=P.map((v,i)=>[X(i+sh),yb-v*ky]);return LN(ox,yb,ox+10*kx,yb,GRAYL,.6)+PL(pts,colr,2)+pts.map(p=>CIR(p[0],p[1],par==3&&colr==ORANGE?6:3.5,colr)).join('');};
+ g+=lin(a,0,yA,COBALTO)+lin(b,s,yB,ORANGE);
+ g+=TX(ox,yA-50,'perfil '+na,{fs:9,c:COBALTO,a:'start'})+TX(ox,yB-50,'perfil '+nb,{fs:9,c:ORANGE,a:'start'});
+ for(let i=0;i<10;i++)g+=TX(X(i),292,9*i,{fs:7,c:GRAY});
+ $('fig').innerHTML=SVG(340,300,g);
+ $('kn').textContent=c.n;$('ks').textContent=r2(c.sab);$('kr').textContent=r2(c.r);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
