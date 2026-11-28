@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O relógio está certo? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O relógio está certo?</h1></header>
+<main>
+<div class="card"><h2>erro(d) = desvio + marcha × d</h2><p class="muted" style="margin-top:0">Mude o desvio inicial, a marcha e o número de dias desde que a produção acertou o relógio (arrastando ou com − e +). Em cima, as passagens de Alfa do Centauro lidas no relógio (pontos) e as esperadas (linha). Embaixo, o erro de longitude que isso causa.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Desvio inicial</b><input type="range"><span></span></div><div class="sl" id="sm"><b>Marcha</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Dias desde o acerto</b><input type="range"><span></span></div><div class="kpi"><div>Estrelas: medido − esperado (2 dias)<b id="k1"></b></div><div>Erro do relógio<b id="k2"></b></div><div class="o">Erro de longitude<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Fiscalize o relógio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const sg=v=>(v>0?'+':v<0?'−':'')+fmt(Math.abs(Math.round(v*10)/10));
+const SV=SL('sv',-180,180,5,0,()=>draw(),v=>sg(v)+' s'),SM=SL('sm',-60,60,1,0,()=>draw(),v=>sg(v)+' s/dia'),SD=SL('sd',1,30,1,7,()=>draw(),v=>v+' dias');
+const err=d=>SV.get()+SM.get()*d,km=d=>Math.abs(err(d))/4*1.82;
+const ms=s=>{s=Math.round(s);const m=Math.floor(s/60);return m+'min'+String(s%60).padStart(2,'0')+'s';};
+MIS.def(()=>[
+ ['Escolha uma marcha que as estrelas <b>denunciariam</b>: diferença de pelo menos 1 minuto entre medido e esperado em 2 dias.',()=>Math.abs(SM.get())*2>=60,()=>'Marcha de '+sg(SM.get())+' s/dia: em 2 dias, '+Math.abs(SM.get()*2)+' s. Um relógio de ponteiros já mostra isso.',()=>'Em 2 dias a diferença é de '+Math.abs(SM.get()*2)+' s.'],
+ ['Sem desvio inicial, ache uma marcha (diferente de zero) que deixe o erro de longitude <b>abaixo de 30 km</b> depois de 7 dias.',()=>SV.get()==0&&SD.get()==7&&SM.get()!=0&&km(7)<30,()=>'Marcha '+sg(SM.get())+' s/dia: '+r1(km(7))+' km. O limite é uns 9 s por dia.',()=>(SV.get()!=0?'Zere o desvio inicial. ':'')+(SD.get()!=7?'Ponha 7 dias. ':'')+'Erro agora: '+r1(km(SD.get()))+' km.'],
+ ['Deixe a marcha em zero e ponha um <b>desvio inicial de 2 minutos</b>. As estrelas percebem?',()=>SM.get()==0&&Math.abs(SV.get())==120,'Não: a diferença das estrelas fica em zero, mas o erro é de uns 55 km. Por isso o desvio fica na margem.',()=>'Desvio: '+sg(SV.get())+' s, marcha: '+sg(SM.get())+' s/dia.']]);
+function draw(){let g=RC(0,0,340,270,'#F8FAFC','rx="10"');
+ const X=d=>40+(d-3)/7*280,T0=19*3600+2*60;// passagem no dia 3: 19h02
+ const exp=d=>T0-(d-3)*236,lido=d=>exp(d)+(err(d)-err(3));
+ const Y=t=>110-(t-(T0-7*236))/(7*236+120)*85;
+ g+=TX(40,18,'passagens de Alfa do Centauro (relógio)',{fs:9,a:'start',c:NAVY,w:500});
+ g+=PL([[X(3),Y(exp(3))],[X(10),Y(exp(10))]],GRAY,1.5,'5 4');
+ for(let d=3;d<=10;d++){const t=lido(d);g+=CIR(X(d),Y(clamp(t,T0-7*236-300,T0+300)),4,ORANGE)+TX(X(d),124,'dia '+d,{fs:8,c:NAVY});}
+ g+=TX(X(3)+10,Y(exp(3))-6,'19h02',{fs:8,a:'start',c:GRAY,w:500})+TX(X(10)-6,Y(exp(10))-6,hm(exp(10)/60),{fs:8,a:'end',c:GRAY,w:500});
+ const D=SD.get(),Xe=d=>40+d/30*280,Ye=k=>250-Math.min(k,120)/120*100;
+ g+=LN(40,250,325,250,NAVY,1)+LN(40,150,40,250,NAVY,1)+TX(40,144,'erro de longitude (km)',{fs:9,a:'start',c:NAVY,w:500});
+ for(const k of [30,60,90,120])g+=LN(37,Ye(k),325,Ye(k),'#E5E7EB',1)+TX(35,Ye(k)+3,k,{fs:8,a:'end'});
+ g+=LN(40,Ye(30),325,Ye(30),VERDE,1,'4 3');let p=[];for(let d=0;d<=30;d++)p.push([Xe(d),Ye(km(d))]);g+=PL(p,BLUE,2.2)+CIR(Xe(D),Ye(km(D)),5,ORANGE,'stroke="#fff" stroke-width="1.5"');
+ g+=TX(325,264,'dias →',{fs:8,a:'end',c:NAVY,w:500});
+ $('fig').innerHTML=SVG(340,270,g);
+ $('k1').textContent=sg(SM.get()*2)+' s';$('k2').textContent=sg(err(D))+' s';$('k3').textContent=r1(km(D))+' km';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

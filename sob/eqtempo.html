@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A equação do tempo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A equação do tempo</h1></header>
+<main>
+<div class="card"><h2>E = inclinação + órbita</h2><p class="muted" style="margin-top:0">Mude o dia do ano e o peso de cada causa (arrastando no gráfico ou com − e +). Azul: efeito da inclinação do eixo. Verde: efeito da órbita elíptica. Laranja: a soma. À direita, o analema (a figura que o Sol desenha ao meio-dia do relógio).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Dia do ano</b><input type="range"><span></span></div><div class="sl" id="si"><b>Peso da inclinação</b><input type="range"><span></span></div><div class="sl" id="se"><b>Peso da órbita</b><input type="range"><span></span></div><div class="kpi"><div>Parte da inclinação<b id="k1"></b></div><div>Parte da órbita<b id="k2"></b></div><div class="o">Equação do tempo<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desmonte a curva.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};
+const SN=SL('sn',1,365,1,196,()=>draw(),data),SI=SL('si',0,2,0.1,1,()=>draw(),v=>fmt(v)+'×'),SE=SL('se',0,2,0.1,1,()=>draw(),v=>fmt(v)+'×');
+const Bn=n=>(360*(n-81)/364)*RAD,inc=n=>SI.get()*9.87*Math.sin(2*Bn(n)),orb=n=>SE.get()*(-7.53*Math.cos(Bn(n))-1.5*Math.sin(Bn(n))),E=n=>inc(n)+orb(n);
+const DEC=n=>23.44*Math.sin(2*Math.PI*(n-80)/365);
+const X=n=>30+(n-1)/364*200,Y=e=>120-e*5.2;
+toque('fig',(x,y)=>{if(x>232)return;SN.set(clamp(Math.round((x-30)/200*364+1),1,365));draw();});
+const sgn=v=>(v>0.05?'+':v<-0.05?'−':'')+fmt(Math.abs(Math.round(v*10)/10))+' min';
+const minE=()=>{let b=1;for(let n=1;n<=365;n++)if(E(n)<E(b))b=n;return b;};
+MIS.def(()=>[
+ ['Ache o valor de <b>15 de julho</b>, com as duas causas no peso real (1×).',()=>SN.get()==196&&SI.get()==1&&SE.get()==1,'Cerca de −5,6 min: o Sol passa uns 6 minutos depois do relógio. Por isso 12h12 viram só 6 min de longitude.',()=>(SI.get()!=1||SE.get()!=1)?'Volte os dois pesos para 1×.':'Data: '+data(SN.get())+'.'],
+ ['Ache o dia do ano em que o Sol <b>mais atrasa</b> (pesos 1×).',()=>SI.get()==1&&SE.get()==1&&Math.abs(SN.get()-minE())<=1,()=>data(SN.get())+': uns 14 minutos de atraso. Em novembro ele chega a adiantar 16.',()=>(SI.get()!=1||SE.get()!=1)?'Volte os dois pesos para 1×.':'Agora: '+sgn(E(SN.get()))+'.'],
+ ['E se o eixo da Terra <b>não fosse inclinado</b>? Zere o peso da inclinação.',()=>SI.get()==0,'Sobra só a onda verde, uma por ano, de uns ± 7,7 min. E o analema vira um traço.',()=>'Peso da inclinação: '+fmt(SI.get())+'×.']]);
+function draw(){const n=SN.get();let g=RC(0,0,340,240,'#F8FAFC','rx="10"');
+ g+=LN(30,Y(0),230,Y(0),NAVY,1)+LN(30,20,30,220,NAVY,1);for(const e of [-15,-10,-5,5,10,15])g+=LN(27,Y(e),30,Y(e),NAVY,1)+TX(25,Y(e)+3,(e>0?'+':'')+e,{fs:8,a:'end'});
+ for(let i=0;i<12;i+=2)g+=TX(X(15+30.4*i),234,MES[i],{fs:8,c:NAVY});
+ const cur=f=>{let p=[];for(let k=1;k<=365;k+=2)p.push([X(k),Y(clamp(f(k),-19,19))]);return p;};
+ g+=PL(cur(inc),BLUE,1.4,'4 3')+PL(cur(orb),VERDE,1.4,'4 3')+PL(cur(E),ORANGE,2.6);
+ g+=LN(X(n),20,X(n),220,GRAY,1,'2 3')+CIR(X(n),Y(clamp(E(n),-19,19)),5,ORANGE,'stroke="#fff" stroke-width="1.5"');
+ g+=RC(240,20,92,200,'#EEF3FB','rx="8"')+TX(286,34,'analema',{fs:9,c:NAVY,w:500});
+ const AX=e=>286+e*2.2,AY=d=>120-d*3.6;let ap=[];for(let k=1;k<=366;k+=3)ap.push([AX(E(Math.min(k,365))),AY(DEC(Math.min(k,365)))]);g+=PL(ap,NAVY,1.6)+CIR(AX(E(n)),AY(DEC(n)),5,OURO,'stroke="#8A5A2B" stroke-width="1"');
+ g+=TX(286,212,'← atrasa · adianta →',{fs:7.5,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=sgn(inc(n));$('k2').textContent=sgn(orb(n));$('k3').textContent=sgn(E(n))+(E(n)<-0.05?' (atrasado)':E(n)>0.05?' (adiantado)':'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

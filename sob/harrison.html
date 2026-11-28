@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O prêmio da longitude · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O prêmio da longitude</h1></header>
+<main>
+<div class="card"><h2>erro = marcha × dias</h2><p class="muted" style="margin-top:0">Mude a marcha do cronômetro, a duração da viagem e a latitude da rota (arrastando ou com − e +). O navio cheio está onde está de verdade; o contorno, onde o navegador pensa que está. A faixa verde é o meio grau do prêmio de 1714.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Marcha do cronômetro</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Dias de viagem</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Latitude da rota</b><input type="range"><span></span></div><div class="kpi"><div>Erro em tempo<b id="k1"></b></div><div>Erro em graus<b id="k2"></b></div><div class="o">Erro em km<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ganhe o prêmio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SAM=[[-80,8],[-60,10],[-35,-5],[-40,-22],[-58,-38],[-68,-55],[-75,-45],[-72,-18],[-81,-5]];
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const dentro=(lon,lat,poly)=>{let d=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>lat)!=(yj>lat)&&lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)d=!d;}return d;};
+const lonTX=l=>l==0?'0°':fmt(Math.abs(Math.round(l*10)/10))+'° '+(l<0?'O':'L');
+const latTX=l=>l==0?'0°':fmt(Math.abs(Math.round(l*10)/10))+'° '+(l<0?'S':'N');
+const SM=SL('sm',0,20,0.1,10,()=>draw(),v=>fmt(v)+' s/dia'),SD=SL('sd',1,120,1,42,()=>draw(),v=>v+' dias'),SLA=SL('sl',0,60,1,15,()=>draw(),v=>v+'°');
+const es=()=>SM.get()*SD.get(),eg=()=>es()/240,ek=()=>eg()*111*Math.cos(SLA.get()*RAD);
+const ms=s=>{s=Math.round(s);return s<60?s+' s':Math.floor(s/60)+' min '+String(s%60).padStart(2,'0')+' s';};
+const NAV=(x,y,cheio)=>`<path d="M${x-14},${y} L${x+14},${y} L${x+9},${y+8} L${x-9},${y+8} Z" fill="${cheio?MAD:'none'}" stroke="${MAD}" stroke-width="1.5"${cheio?'':' stroke-dasharray="3 2"'}/>`+LN(x,y,x,y-20,MAD,1.5)+`<path d="M${x},${y-20} L${x+11},${y-6} L${x},${y-6} Z" fill="${cheio?'#fff':'none'}" stroke="${MAD}" stroke-width="1"/>`;
+MIS.def(()=>[
+ ['Ganhe o prêmio de 1714: erro de até <b>meio grau</b> numa viagem de <b>42 dias</b>.',()=>SD.get()==42&&eg()<=0.5&&SM.get()>0,()=>'Marcha de '+fmt(SM.get())+' s/dia: '+r2(eg())+'°. O limite é 120 ÷ 42 ≈ 2,9 s por dia.',()=>SD.get()!=42?'Ponha 42 dias de viagem.':'Erro agora: '+r2(eg())+'°.'],
+ ['Veja o que acontece com um relógio bom de casa: <b>10 s por dia</b> em 42 dias.',()=>SM.get()==10&&SD.get()==42,()=>'1,75°, uns '+mil(ek())+' km: o navio pensa que ainda está longe da costa quando já está nas pedras.',()=>'Marcha '+fmt(SM.get())+' s/dia, '+SD.get()+' dias.'],
+ ['Viagem de <b>90 dias</b> perto do Equador (latitude 0°): qual a <b>maior</b> marcha que erra no máximo <b>30 km</b>?',()=>SD.get()==90&&SLA.get()==0&&ek()<=30&&SM.get()>=0.7,'0,7 s por dia: 63 s, 0,26°, 29 km. O H4 de Harrison chegou perto disso em 1762.',()=>(SD.get()!=90?'Ponha 90 dias. ':'')+(SLA.get()!=0?'Ponha latitude 0°. ':'')+'Erro agora: '+r1(ek())+' km.']]);
+function draw(){let g=RC(0,0,340,240,'#CFE3F5','rx="10"');
+ for(let i=0;i<6;i++)g+=`<path d="M${20+i*55},${150} q10,-6 20,0 t20,0" fill="none" stroke="#9CC0E4" stroke-width="1.5"/>`;
+ const k=Math.max(60,Math.min(1200,ek()*1.3)),sc=260/k,xr=290,xp=xr-Math.min(260,ek()*sc);
+ const meio=0.5*111*Math.cos(SLA.get()*RAD);g+=RC(Math.max(20,xr-meio*sc),40,Math.min(270,meio*sc)+12,120,'rgba(47,122,75,0.18)')+TX(xr+6,54,'½° do prêmio',{fs:8,a:'end',c:VERDE,w:500});
+ g+=RC(xr+14,40,40,140,'#C9DDB0')+NAV(xr,120,true)+NAV(xp,120,false)+TX(xr,146,'real',{fs:9,c:MAD})+TX(xp,146,'pensa',{fs:9,c:MAD});
+ g+=LN(xp,170,xr,170,'#C0392B',1.5)+TX((xp+xr)/2,186,mil(ek())+' km',{fs:11,c:'#C0392B'});
+ g+=LN(20,212,280,212,NAVY,1)+LN(20,208,20,216,NAVY,1)+LN(280,208,280,216,NAVY,1)+TX(150,230,'escala: '+mil(k)+' km',{fs:9,c:NAVY,w:500});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=ms(es());$('k2').textContent=r2(eg())+'°'+(eg()<=0.5?' ✓':'');$('k3').textContent=mil(ek())+' km';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
