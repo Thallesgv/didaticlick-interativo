@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A borda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A borda</h1></header>
+<main>
+<div class="card"><h2>Corda, flecha e raio</h2><p class="muted" style="margin-top:0">O caco (marrom) é um pedaço da boca. Ajuste a <b>corda</b> (a reta azul, de ponta a ponta do caco) e a <b>flecha</b> (a altura laranja, do meio da corda até o caco): o simulador desenha a boca inteira.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Corda</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Flecha</b><input type="range"><span></span></div>
+<div class="kpi"><div>r = (c²/4 + f²) ÷ (2f)<b id="kr"></b></div><div class="o">Diâmetro da boca<b id="kd"></b></div></div>
+<div class="kpi"><div>O caco cobre<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ajuste a corda e a flecha.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C=SL('sc',4,24,0.1,10,()=>draw(),v=>fmt(r1(v))+' cm'),Fl=SL('sf',0.5,12,0.1,1.5,()=>draw(),v=>fmt(r1(v))+' cm');
+const c=()=>Math.round(C.get()*10)/10,f=()=>Math.round(Fl.get()*10)/10,R=()=>(c()*c()/4+f()*f())/(2*f());
+const ang=()=>{const r=R(),s=Math.min(1,c()/2/r);let a=2*Math.asin(s);if(f()>r)a=2*Math.PI-a;return a;};
+MIS.def(()=>[
+ ['Meça o caco do vaso: corda <b>14,4 cm</b> e flecha <b>2,4 cm</b>. Qual o raio da boca?',()=>c()==14.4&&f()==2.4,'r = (51,84 + 5,76) ÷ 4,8 = 12 cm: boca de 24 cm de diâmetro.',()=>c()!=14.4?'Corda agora: '+fmt(c())+' cm. Precisa de 14,4.':'Flecha agora: '+fmt(f())+' cm. Precisa de 2,4.'],
+ ['Outro caco tem corda <b>16 cm</b>. Que flecha ele teria se a boca tivesse <b>20 cm</b> de diâmetro?',()=>c()==16&&Math.abs(R()-10)<0.06,'Flecha de 4 cm: (64 + 16) ÷ 8 = 10. Raio 10, diâmetro 20.',()=>c()!=16?'Ponha a corda em 16 cm.':'Diâmetro agora: '+fmt(r1(2*R()))+' cm.'],
+ ['Volte ao caco do vaso (corda 14,4) e erre a flecha em <b>1 mm</b>: ponha 2,3 cm. Quanto muda o raio?',()=>c()==14.4&&f()==2.3,'O raio vai para 12,42 cm: 1 mm de erro na flecha mudou o raio em mais de 4 mm. Por isso se prefere medir cacos grandes.',()=>c()!=14.4?'Corda em 14,4 cm.':'Flecha em 2,3 cm.'],
+ ['Faça o caco virar <b>meia boca</b> (um semicírculo).',()=>Math.abs(f()-c()/2)<0.01,'Quando a flecha é metade da corda, r = f = c/2: o caco é exatamente meia boca, 50% do contorno.',()=>'Flecha '+fmt(f())+' e corda '+fmt(c())+'. A flecha precisa ser a metade da corda.']]);
+function draw(){const r=R(),k=Math.min(7,120/r),cx=170,cy=30+r*k,a=ang();let g=RC(0,0,340,280,'#F8FAFC','rx="10"');
+ const vis=Math.min(r*k,1e4);g+=`<circle cx="${cx}" cy="${cy}" r="${vis}" fill="none" stroke="#B9C2D0" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+ const pts=[],pi=[];for(let i=0;i<=40;i++){const t=-Math.PI/2-a/2+a*i/40;pts.push([cx+r*k*Math.cos(t),cy+r*k*Math.sin(t)]);pi.push([cx+(r*k-7)*Math.cos(t),cy+(r*k-7)*Math.sin(t)]);}
+ g+=PG(pts.concat(pi.reverse()),CER);
+ const yc=30+f()*k;g+=LN(cx-c()/2*k,yc,cx+c()/2*k,yc,BLUE,2.5)+LN(cx,yc,cx,30,ORANGE,2.5);
+ if(r*k<240)g+=CIR(cx,cy,3,NAVY)+LN(cx,cy,cx+c()/2*k,yc,'#15803D',1.5)+TX(cx+8,Math.min(270,cy+14),'r = '+fmt(r2(r)),{fs:11,a:'start',c:'#15803D'});
+ g+=TX(cx-c()/2*k-4,yc+4,'c',{fs:12,a:'end',c:BLUE})+TX(cx+6,(yc+30)/2+4,'f',{fs:12,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,280,g);$('kr').textContent=fmt(r2(r))+' cm';$('kd').textContent=fmt(r1(2*r))+' cm';$('kp').textContent=fmt(r1(a*180/Math.PI))+'° = '+fmt(r1(a/2/Math.PI*100))+'% da boca';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

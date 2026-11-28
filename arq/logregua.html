@@ -20,8 +20,8 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const A=SL('sa',1,10,0.1,1,()=>draw(),v=>fmt(r1(v))),B=SL('sb',1,10,0.1,2,()=>draw(),v=>fmt(r1(v)));
-const a=()=>r1(A.get()),b=()=>r1(B.get()),pr=()=>Math.round(a()*b()*100)/100;
+const A=SL('sa',1,10,0.1,1,()=>draw(),v=>r1(v)),B=SL('sb',1,10,0.1,2,()=>draw(),v=>r1(v));
+const a=()=>Math.round(A.get()*10)/10,b=()=>Math.round(B.get()*10)/10,pr=()=>Math.round(a()*b()*100)/100;
 const x0=16,D=150,X=v=>x0+Math.log10(v)*D;
 MIS.def(()=>[
  ['Multiplique <b>2 × 4</b> com a régua.',()=>a()==2&&b()==4,'O 4 da régua de baixo fica sob o 8 da de cima: log 2 + log 4 = 0,301 + 0,602 = 0,903 = log 8.',()=>'Agora: '+fmt(a())+' × '+fmt(b())+'. a = 2 e b = 4.'],

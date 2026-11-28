@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O perfil do vaso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O perfil do vaso</h1></header>
+<main>
+<div class="card"><h2>Meio contorno basta</h2><p class="muted" style="margin-top:0">Toque no quadriculado (lado direito) para marcar pontos do perfil: x é o raio e y é a altura, em centímetros. Arraste para ajustar. O simulador liga os pontos de baixo para cima e desenha o reflexo: o vaso aparece.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin:6px 0"><button class="alt" id="desf">Desfazer ponto</button><button class="alt" id="limpa">Limpar</button></div>
+<div class="kpi"><div>Último ponto<b id="ku"></b></div><div class="o">Altura · maior diâmetro<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque no quadriculado.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let pts=[];const K=11,X0=170,Y0=295,X=v=>X0+v*K,Y=v=>Y0-v*K;
+toque('fig',(x,y,novo)=>{if(x<X0-4)return;let p=[Math.round((x-X0)/K*2)/2,Math.round((Y0-y)/K*2)/2];p=[Math.min(14.5,Math.max(0,p[0])),Math.min(22,Math.max(0,p[1]))];if(novo)pts.push(p);else pts[pts.length-1]=p;draw();});
+$('desf').onclick=()=>{pts.pop();draw();};$('limpa').onclick=()=>{pts=[];draw();};
+const tem=(a,b)=>pts.some(p=>p[0]==a&&p[1]==b);
+const maxX=()=>Math.max(0,...pts.map(p=>p[0])),topo=()=>pts.reduce((m,p)=>p[1]>m[1]?p:m,[0,-1]);
+MIS.def(()=>[
+ ['Marque os quatro pontos medidos nos cacos: <b>base (6; 0)</b>, <b>bojo (14; 9)</b>, <b>pescoço (10,5; 17)</b> e <b>boca (12; 20)</b>.',()=>tem(6,0)&&tem(14,9)&&tem(12,20)&&tem(10.5,17),'Os quatro pontos-chave do perfil. O reflexo mostra o vaso inteiro: 20 cm de altura e 28 cm no bojo.',()=>'Faltam: '+[[6,0],[14,9],[10.5,17],[12,20]].filter(p=>!tem(p[0],p[1])).map(p=>'('+vg(p[0])+'; '+vg(p[1])+')').join(', ')+'.'],
+ ['A parábola do Módulo 3 diz que, a 4,5 cm do fundo, o raio é 12 cm. Marque o ponto <b>(12; 4,5)</b>.',()=>tem(12,4.5),'É o ponto que Tomás conferiu num caco: 12,1 cm medidos contra 12 cm da parábola.',()=>'Último ponto: '+(pts.length?'('+vg(pts[pts.length-1][0])+'; '+vg(pts[pts.length-1][1])+')':'nenhum')+'.'],
+ ['Limpe e desenhe um vaso com a <b>boca mais larga</b> que qualquer outra parte (uma tigela), com pelo menos 3 pontos.',()=>pts.length>=3&&topo()[0]==maxX()&&pts.filter(p=>p[0]==maxX()).length==1,'Na tigela, o maior raio está no topo: o perfil sempre se abre para cima.',()=>pts.length<3?'Marque pelo menos 3 pontos.':'O ponto mais alto precisa ter o maior raio, sozinho.'],
+ ['Desenhe uma <b>garrafa</b>: altura de pelo menos <b>duas vezes</b> o maior diâmetro, com pelo menos 4 pontos.',()=>pts.length>=4&&topo()[1]>=2*2*maxX(),'Altura ≥ 2 × diâmetro. O diâmetro é o dobro do raio: cuidado para não comparar a altura com o raio.',()=>pts.length<4?'Marque pelo menos 4 pontos.':'Altura '+vg(topo()[1])+' cm; maior diâmetro '+vg(2*maxX())+' cm.']]);
+function draw(){let g=RC(0,0,340,330,'#F8FAFC','rx="10"');
+ for(let i=-14;i<=14;i++)g+=LN(X(i),Y(0),X(i),Y(22),i%2?'#F1F4F8':'#E5EAF1',1);for(let j=0;j<=22;j++)g+=LN(X(-14.5),Y(j),X(14.5),Y(j),j%2?'#F1F4F8':'#E5EAF1',1);
+ g+=LN(X(-14.5),Y(0),X(14.5),Y(0),NAVY,1.5)+LN(X0,Y(0),X0,Y(22),NAVY,1.5);
+ for(let i=2;i<=14;i+=2)g+=TX(X(i),Y(0)+14,i,{fs:9,c:GRAY,w:500});for(let j=4;j<=20;j+=4)g+=TX(X0-5,Y(j)+3,j,{fs:9,a:'end',c:GRAY,w:500});
+ g+=TX(X(-6),Y(21),'reflexo',{fs:10,c:CER});g+=TX(X(6),Y(21),'toque aqui',{fs:10,c:GRAY,w:500});
+ const s=pts.slice().sort((a,b)=>a[1]-b[1]);if(s.length>=2){const pd=s.map(p=>[X(p[0]),Y(p[1])]),pe=s.map(p=>[X(-p[0]),Y(p[1])]).reverse();g+=PG(pd.concat(pe),'#F2D2B6')+PL(pd,CER,3)+PL(pe.slice().reverse(),CER,1.5,'5 4');}
+ pts.forEach((p,i)=>g+=CIR(X(p[0]),Y(p[1]),i==pts.length-1?6:4.5,i==pts.length-1?ORANGE:BLUE,'stroke="#fff" stroke-width="1.5"'));
+ $('fig').innerHTML=SVG(340,330,g);const u=pts[pts.length-1];$('ku').textContent=u?'('+vg(u[0])+'; '+vg(u[1])+')':'—';
+ $('ka').textContent=pts.length?vg(topo()[1])+' cm · '+vg(2*maxX())+' cm':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
