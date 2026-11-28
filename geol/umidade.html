@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A estufa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A estufa</h1></header>
+<main>
+<div class="card"><h2>Pesar, secar, pesar de novo</h2><p class="muted" style="margin-top:0">Mude a massa úmida, a massa seca e a umidade de saturação (arraste ou use − e +). Na balança, a parte azul é a água que a estufa tira. O copo mostra quanto de água ainda cabe até saturar.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="su"><b>Massa úmida</b><input type="range"><span></span></div><div class="sl" id="ss"><b>Massa seca</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Saturação</b><input type="range"><span></span></div><div class="kpi"><div>Água<b id="k1"></b></div><div>Umidade (sobre o seco)<b id="k2"></b></div><div class="o">Conta errada (sobre o úmido)<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SU=SL('su',50,300,1,200,()=>draw(),v=>v+' g'),SS=SL('ss',40,300,1,180,()=>draw(),v=>v+' g'),SA=SL('sa',20,60,1,32,()=>draw(),v=>v+'%');
+const ok=()=>SS.get()<=SU.get(),ag=()=>SU.get()-SS.get(),w=()=>ag()/SS.get()*100,wu=()=>ag()/SU.get()*100;
+MIS.def(()=>[
+ ['Refaça a amostra do saco de 3 m: <b>150 g</b> úmida e <b>123 g</b> seca.',()=>SU.get()==150&&SS.get()==123,'27 ÷ 123 ≈ 22%. Até os 32% da saturação, faltam 10 pontos.',()=>SU.get()!=150?'A massa úmida é 150 g.':'A massa seca é 123 g.'],
+ ['Monte uma amostra <b>saturada</b> (umidade igual à saturação, com 0,5 ponto de tolerância).',()=>ok()&&Math.abs(w()-SA.get())<=0.5,()=>'Umidade '+r1(w())+'%: não cabe mais água. É assim que o solo fica no meio da chuva forte.',()=>!ok()?'A massa seca não pode passar da úmida.':'Umidade agora: '+r1(w())+'%; saturação: '+SA.get()+'%.'],
+ ['Faça a conta pelo seco passar <b>10 pontos</b> da conta errada (pelo úmido).',()=>ok()&&w()-wu()>=10,()=>'Pelo seco: '+r1(w())+'%; pelo úmido: '+r1(wu())+'%. Quanto mais água, maior o erro de quem divide pelo úmido.',()=>'Diferença agora: '+r1(w()-wu())+' pontos. Ponha mais água na amostra.']]);
+function draw(){let g=RC(0,0,340,240,'#fff','rx="10"');
+ if(!ok()){g+=TX(170,120,'A massa seca não pode ser maior que a úmida.',{fs:12,c:VERM});$('fig').innerHTML=SVG(340,240,g);['k1','k2','k3'].forEach(k=>$(k).textContent='—');MIS.ver('m');return;}
+ const k=0.5,base=200;g+=RC(30,base,140,10,NAVY,'rx="3"')+RC(95,base+10,10,20,NAVY,'');
+ const hs=SS.get()*k*0.5,ha=ag()*k*0.5;g+=RC(50,base-hs,100,hs,TERRA_E,'rx="4"')+RC(50,base-hs-ha,100,ha,AGUA,'rx="4"');
+ g+=TX(100,base-hs/2+4,'seco '+SS.get()+' g',{fs:10,c:'#fff'})+(ha>12?TX(100,base-hs-ha/2+4,'água '+ag()+' g',{fs:10,c:'#fff'}):'');
+ // copo
+ const cx=230,cy=60,ch=140,cw=70,sat=SA.get(),f=Math.min(1,w()/sat);
+ g+=RC(cx,cy,cw,ch,'none','stroke="'+NAVY+'" stroke-width="2"')+RC(cx+2,cy+ch-ch*f,cw-4,ch*f,AGUA_C,'');
+ g+=TX(cx+cw/2,cy-8,'até saturar',{fs:10})+TX(cx+cw/2,cy+ch+16,r1(w())+'% de '+sat+'%',{fs:10,c:AGUA});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=ag()+' g';$('k2').textContent=r1(w())+'%';$('k3').textContent=r1(wu())+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

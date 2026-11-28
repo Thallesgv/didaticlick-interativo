@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chuva × umidade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Chuva × umidade</h1></header>
+<main>
+<div class="card"><h2>Diagrama de dispersão e reta de tendência</h2><p class="muted" style="margin-top:0">Escolha um dos oito pontos e mude a umidade dele, e mude a chuva prevista (arraste ou use − e +). A reta de tendência (mínimos quadrados) e o r mudam juntos. A linha azul é a saturação (32%); o círculo vermelho é a previsão da reta.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Ponto escolhido</b><input type="range"><span></span></div><div class="sl" id="su"><b>Umidade do ponto</b><input type="range"><span></span></div><div class="sl" id="sc"><b>Chuva prevista</b><input type="range"><span></span></div><div class="kpi"><div>r<b id="k1"></b></div><div>Reta<b id="k2"></b></div><div class="o">Previsão da reta<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CH=[0,10,20,35,50,70,90,120],U=[19,20,21,22,24,26,27,24];let lig=false;
+const SP=SL('sp',1,8,1,8,v=>{lig=true;SU.set(U[v-1]);draw();},v=>'nº '+v+' ('+CH[v-1]+' mm)');
+const SU=SL('su',10,40,1,24,v=>{U[SP.get()-1]=v;draw();},v=>v+'%'),SC=SL('sc',0,200,1,60,()=>draw(),v=>v+' mm');
+function reg(){const n=8,mx=CH.reduce((a,b)=>a+b)/n,my=U.reduce((a,b)=>a+b)/n;let sxy=0,sxx=0,syy=0;for(let i=0;i<n;i++){sxy+=(CH[i]-mx)*(U[i]-my);sxx+=(CH[i]-mx)**2;syy+=(U[i]-my)**2;}
+ const b=sxy/sxx;return{b,a:my-b*mx,r:syy?sxy/Math.sqrt(sxx*syy):0};}
+const orig=()=>[19,20,21,22,24,26,27,30].every((v,i)=>U[i]==v),prev=()=>{const R=reg();return R.a+R.b*SC.get();};
+MIS.def(()=>[
+ ['O ponto de <b>120 mm</b> veio errado da planilha: a umidade certa é <b>30%</b>. Conserte.',()=>orig(),'r ≈ 0,997: os oito pontos quase formam uma reta.',()=>U[7]!=30?'O ponto nº 8 (120 mm) está com '+U[7]+'%.':'Algum outro ponto foi mudado: volte os valores do livro.'],
+ ['Com os dados certos, ache a chuva prevista em que a reta chega à <b>saturação de 32%</b>.',()=>orig()&&Math.abs(prev()-32)<=0.3,()=>SC.get()+' mm: o solo satura antes do fim dos 180 mm previstos.',()=>!orig()?'Volte os oito pontos do livro.':'Com '+SC.get()+' mm, a reta dá '+r1(prev())+'%.'],
+ ['Bagunce os pontos até o <b>r ficar abaixo de 0,5</b>.',()=>reg().r<0.5,()=>'r = '+r2(reg().r)+': a reta já não descreve bem os pontos, e a previsão perde o valor.',()=>'r agora: '+r2(reg().r)+'.']]);
+function draw(){const R=reg(),x0=34,y0=205,w=290,h=185,X=c=>x0+c/200*w,Y=u=>y0-(u-10)/30*h;
+ let g=RC(0,0,340,240,'#fff','rx="10"')+LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-h,NAVY,1);
+ for(let c=0;c<=200;c+=50)g+=TX(X(c),y0+14,c,{fs:9});for(let u=10;u<=40;u+=10)g+=TX(x0-4,Y(u)+3,u+'%',{fs:9,a:'end'})+LN(x0,Y(u),x0+w,Y(u),'#E5E7EB',1);
+ g+=LN(x0,Y(32),x0+w,Y(32),BLUE,1.5,'5 4')+TX(x0+w,Y(32)-4,'saturação 32%',{fs:9,a:'end',c:BLUE});
+ g+=LN(X(0),Y(R.a),X(200),Y(R.a+R.b*200),ORANGE,2);
+ CH.forEach((c,i)=>g+=CIR(X(c),Y(U[i]),i==SP.get()-1?7:5,i==SP.get()-1?NAVY:TERRA_E,'stroke="#fff" stroke-width="1.5"'));
+ const p=prev();g+=CIR(X(SC.get()),Y(Math.max(10,Math.min(40,p))),6,'none','stroke="'+VERM+'" stroke-width="2"');
+ g+=TX(x0+6,24,'chuva em 72 h (mm) × umidade',{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r2(R.r).replace(/^0/,'0');$('k2').textContent='u ≈ '+r1(R.a)+' + '+fmt(Math.round(R.b*1000)/1000)+'·c';$('k3').textContent=r1(p)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
