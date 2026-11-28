@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raio-X do vulcão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Raio-X do vulcão</h1></header>
+<main>
+<div class="card"><h2>Ondas P e S por dentro da ilha</h2><p class="muted" style="margin-top:0"><b>Toque no subsolo</b> para fazer um tremor. As frentes de onda <b style="color:#2457D6">P</b> (rápida) e <b style="color:#F7821F">S</b> (lenta) se espalham. A onda S não atravessa o magma: a estação que fica "atrás" dele não a recebe.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig" style="cursor:crosshair"></div>
+<div class="kpi" id="tab"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque no subsolo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SUP_Y=60,EST=[['Vila',26],['Pico',170],['Farol',314]],ELI={x:205,y:150,rx:38,ry:20},KM=0.1;
+let mag=true,H=null,t0=0;
+chips('ch',['Com câmara de magma','Sem magma'],0,i=>{mag=i==0;t0=performance.now();draw();});
+function corta(x1,y1,x2,y2){for(let i=0;i<=200;i++){const u=i/200,x=x1+(x2-x1)*u,y=y1+(y2-y1)*u;if(((x-ELI.x)/ELI.rx)**2+((y-ELI.y)/ELI.ry)**2<1)return true;}return false;}
+function yEst(x){return x==170?SUP_Y-48:SUP_Y;}
+function res(){if(!H)return null;return EST.map(([n,x])=>{const y=yEst(x),d=Math.hypot(x-H.x,y-H.y)*KM,bl=mag&&corta(H.x,H.y,x,y);return{n,x,y,d,tp:d/6,ts:d/3.5,bl};});}
+toque('fig',(x,y,ini)=>{if(!ini)return;if(y<SUP_Y+8||y>228)return;if(mag&&((x-ELI.x)/ELI.rx)**2+((y-ELI.y)/ELI.ry)**2<1.2)return;H={x,y};t0=performance.now();draw();});
+MIS.def(()=>[
+ ['Com a câmara de magma, faça um tremor que a estação <b>Farol</b> receba só a onda P (a S fica bloqueada).',()=>{const r=res();return mag&&r&&r[2].bl&&!r[0].bl;},'A S morreu no magma: no Farol só chega o tranco da P. Foi assim que a equipe achou a câmara.',()=>'Toque à esquerda do magma, um pouco abaixo dele, para o caminho até o Farol passar pelo líquido.'],
+ ['Faça um tremor que as <b>três</b> estações recebam a onda S.',()=>{const r=res();return mag&&r&&r.every(e=>!e.bl);},'Nenhum caminho passou pelo magma: as três estações registram P e S.',()=>'Procure um ponto de onde as linhas até as três estações não atravessem a mancha vermelha.'],
+ ['Agora faça a estação <b>Vila</b> perder a onda S.',()=>{const r=res();return mag&&r&&r[0].bl;},'A Vila ficou na "sombra" da onda S. Com várias estações, dá para desenhar o contorno da câmara de magma.',()=>'O tremor precisa ficar do lado direito do magma, com o caminho até a Vila passando por ele.'],
+ ['Escolha <b>Sem magma</b> e faça um tremor no mesmo lugar da missão anterior. A Vila recebe a S agora?',()=>{const r=res();return !mag&&r&&r.every(e=>!e.bl);},'Sem líquido no caminho, a onda S passa por tudo. A sombra só existe por causa do magma.',()=>mag?'Escolha "Sem magma".':'Toque no subsolo para fazer o tremor.']]);
+function quadro(){let g=RC(0,0,340,240,'#EEF4FA','rx="10"')+RC(0,SUP_Y,340,180,'#E9D9BF');
+ g+=PG([[110,SUP_Y],[155,SUP_Y-50],[185,SUP_Y-50],[230,SUP_Y]],ROCHA)+PG([[110,SUP_Y],[155,SUP_Y-50],[165,SUP_Y-50],[135,SUP_Y]],ROCHA_E);
+ if(mag)g+=`<ellipse cx="${ELI.x}" cy="${ELI.y}" rx="${ELI.rx}" ry="${ELI.ry}" fill="${LAVA}"/>`+LN(196,132,175,SUP_Y-48,LAVA,4)+TX(ELI.x,ELI.y+4,'magma',{fs:10,c:'#fff'});
+ EST.forEach(([n,x])=>{const y=yEst(x);g+=PG([[x-7,y],[x+7,y],[x,y-12]],NAVY)+TX(x,y-16,n,{fs:10});});
+ const r=res();
+ if(H){const t=(performance.now()-t0)/1000*0.8;
+  const rp=Math.min(6*t/KM,500),rs=Math.min(3.5*t/KM,500);
+  g+=`<defs><clipPath id="cl"><rect x="0" y="${SUP_Y}" width="340" height="180"/></clipPath></defs><g clip-path="url(#cl)">`;
+  g+=`<circle cx="${H.x}" cy="${H.y}" r="${rp}" fill="none" stroke="${BLUE}" stroke-width="2.5"/>`;
+  g+=`<circle cx="${H.x}" cy="${H.y}" r="${rs}" fill="none" stroke="${ORANGE}" stroke-width="3" stroke-dasharray="7 4"/>`;
+  g+='</g>';
+  r.forEach(e=>{const chegouP=e.tp<=t,chegouS=e.ts<=t;g+=LN(H.x,H.y,e.x,e.y,e.bl?'#9CA3AF':'#94A3B8',1,'2 3');
+   if(e.bl){const u=(()=>{for(let i=0;i<=200;i++){const uu=i/200,x=H.x+(e.x-H.x)*uu,y=H.y+(e.y-H.y)*uu;if(((x-ELI.x)/ELI.rx)**2+((y-ELI.y)/ELI.ry)**2<1)return uu;}return 1;})();
+    const bx=H.x+(e.x-H.x)*u,by=H.y+(e.y-H.y)*u;if(rs>=Math.hypot(bx-H.x,by-H.y))g+=TX(bx,by+5,'✕',{fs:16,c:'#B91C1C'});}
+   g+=TX(e.x,e.y+(e.x==170?62:20),(chegouP?'P ✔':'P …')+'  '+(e.bl?'S ✕':(chegouS?'S ✔':'S …')),{fs:9.5,c:e.bl?'#B91C1C':NAVY});});
+  g+=CI(H.x,H.y,6,NAVY,'stroke="#fff" stroke-width="2"');}
+ else g+=TX(170,200,'toque no subsolo para fazer um tremor',{fs:11,c:GRAY});
+ $('fig').innerHTML=SVG(340,240,g);}
+function draw(){const r=res();$('tab').innerHTML=r?r.map(e=>`<div${e.bl?' class="o"':''}>${e.n}<b>${r1(e.d)} km</b>P em ${r1(e.tp)} s · S ${e.bl?'bloqueada':'em '+r1(e.ts)+' s'}</div>`).join(''):'';MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>
