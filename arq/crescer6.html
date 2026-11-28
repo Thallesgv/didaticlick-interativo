@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Crescer ou ampliar? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Crescer ou ampliar?</h1></header>
+<main>
+<div class="card"><h2>O corpo cresce, a foto amplia</h2><p class="muted" style="margin-top:0">À esquerda, o corpo real na <b>idade</b> escolhida. À direita, o <b>bebê ampliado</b> k vezes, com as mesmas razões do recém-nascido. Compare a cabeça.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="si"><b>Idade</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Ampliação k</b><input type="range"><span></span></div>
+<div class="kpi"><div>Corpo real: cabeça ÷ altura<b id="kr"></b></div><div class="o">Bebê ampliado<b id="kb"></b></div></div>
+<div class="kpi"><div>Comprimentos × k<b id="k1"></b></div><div>Áreas × k²<b id="k2"></b></div><div>Massas × k³<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a idade e a ampliação.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1));
+// Boneco de palito: cx, pés em base, altura alt (px), fração da cabeça, cor; envergadura em px (opcional).
+function pessoa(cx,base,alt,fc,cor,env,w){w=w||2.4;const cab=alt*fc,topo=base-alt,rc=cab*0.42,yc=topo+cab*0.5,pesc=topo+cab,omb=topo+cab+alt*0.04,quad=base-alt*0.48,e=(env||alt*0.8)/2;
+ let g=`<circle cx="${cx}" cy="${yc}" r="${rc}" fill="#fff" stroke="${cor}" stroke-width="${w}"/>`;
+ g+=LN(cx,yc+rc,cx,quad,cor,w)+LN(cx,quad,cx-alt*0.09,base,cor,w)+LN(cx,quad,cx+alt*0.09,base,cor,w);
+ g+=env?LN(cx-e,omb,cx+e,omb,cor,w):LN(cx,omb,cx-alt*0.13,quad+alt*0.04,cor,w)+LN(cx,omb,cx+alt*0.13,quad+alt*0.04,cor,w);
+ return g;}
+const f2=v=>fmt((Math.round(v*100)/100).toFixed(2));
+// Idade (anos), altura (cm) e número de cabeças na altura, como nos desenhos de anatomia.
+const TAB=[[0,50,4],[1,75,4.5],[3,95,5],[6,115,6],[10,138,6.5],[12,150,7],[15,158,7.5],[18,160,8]];
+const it=(i,j)=>{const x=I.get();for(let n=1;n<TAB.length;n++)if(x<=TAB[n][0]){const [a,b]=[TAB[n-1],TAB[n]],t=(x-a[0])/(b[0]-a[0]);return a[j]+(b[j]-a[j])*t;}return TAB[TAB.length-1][j];};
+const I=SL('si',0,18,1,3,()=>{if(I.get()==0)viu0=true;draw();},v=>v+(v==1?' ano':' anos')),Kk=SL('sk',1,4,0.1,1.5,()=>draw(),v=>fmt((Math.round(v*10)/10).toFixed(1)));
+let viu0=false;const k=()=>Math.round(Kk.get()*10)/10,alt=()=>it(0,1),cab=()=>it(0,2);
+const S=1.4,Y0=290;
+toque('fig',(x,y)=>{if(x>170){Kk.set(Math.min(4,Math.max(1,Math.round((Y0-y)/S/50*10)/10)));}draw();});
+MIS.def(()=>[
+ ['Compare a cabeça do <b>recém-nascido</b> (idade 0) com a do <b>adulto</b> (18 anos).',()=>viu0&&I.get()==18,'Recém-nascido: cabeça de 1/4 da altura. Adulto: 1/8. A cabeça "encolheu" em relação ao corpo, porque as pernas cresceram muito mais.',()=>!viu0?'Ponha a idade em 0 primeiro.':'Agora ponha a idade em 18 anos (agora: '+I.get()+').'],
+ ['Amplie o bebê até ele ficar com <b>160 cm</b>, a altura do adulto.',()=>Math.abs(50*k()-160)<1,'k = 3,2. O bebê ampliado tem 160 cm, mas a cabeça ficou com 40 cm, o dobro da do adulto: ampliar não é crescer.',()=>'Bebê ampliado: '+Math.round(50*k())+' cm. Precisa de 160.'],
+ ['Com <b>k = 2</b>, um bebê de 3,5 kg ampliado teria que massa?',()=>k()==2,'Massa × 2³ = × 8: 3,5 × 8 = 28 kg. A altura só dobrou, mas a massa ficou 8 vezes maior.',()=>'k agora: '+fmt((Math.round(k()*10)/10).toFixed(1))+'. Ponha 2.'],
+ ['Encontre a idade em que a cabeça é <b>1/6</b> da altura.',()=>Math.abs(cab()-6)<0.01,'Por volta dos 6 anos, a cabeça é cerca de 1/6 da altura: a proporção muda aos poucos, de 1/4 até 1/8.',()=>'Agora: 1/'+fmt((Math.round(cab()*10)/10))+' na idade '+I.get()+'.']]);
+function draw(){let g=RC(0,0,340,320,'#F8FAFC','rx="10"');
+ for(let c=0;c<=200;c+=50)g+=LN(14,Y0-c*S,326,Y0-c*S,'#E5EAF1',1)+TX(12,Y0-c*S+3,c,{fs:8,a:'start',c:GRAY,w:500});
+ g+=pessoa(95,Y0,alt()*S,1/cab(),ORANGE)+TX(95,Y0+16,'real: '+Math.round(alt())+' cm',{fs:10,c:ORANGE});
+ const hb=Math.min(200,50*k());g+=pessoa(245,Y0,hb*S,1/4,'#9CA3AF')+TX(245,Y0+16,'bebê × '+fmt((Math.round(k()*10)/10).toFixed(1))+': '+Math.round(50*k())+' cm',{fs:10,c:GRAY});
+ g+=LN(170,20,170,Y0,'#E5EAF1',1,'4 4');
+ $('fig').innerHTML=SVG(340,320,g);$('kr').textContent='1/'+fmt(Math.round(cab()*10)/10)+' ≈ '+f2(1/cab());$('kb').textContent='cabeça 1/4 = '+fmt(Math.round(50*k()/4*10)/10)+' cm';
+ $('k1').textContent='× '+fmt((Math.round(k()*10)/10).toFixed(1));$('k2').textContent='× '+f2(k()*k());$('k3').textContent='× '+f2(k()*k()*k());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

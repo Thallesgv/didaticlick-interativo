@@ -140,7 +140,31 @@ const LIV={'arq1':{T:["Escala: do mapa ao terreno", "Curvas de nível", "Inclina
 7:()=>{const t=R(0,2);
  if(t==0){const n=P([4,5,6,8,9,10,12,15,18,20,24]);return{q:`Um friso tem <b>${n}</b> repetições em volta do vaso. Qual o menor giro, em graus, que o deixa igual?`,a:360/n,exp:`360 ÷ ${n} = ${fmt(360/n)}°.`};}
  if(t==1){const n=R(6,16),p=P([4,5,5.5,6,6.6,7.5]);const c=Math.round(n*p*10)/10;return{q:`O contorno é <b>${fmt(c)} cm</b> e cada repetição mede <b>${fmt(p)} cm</b>. Quantas repetições há?`,a:n,exp:`${fmt(c)} ÷ ${fmt(p)} = ${n}.`};}
- const n=P([8,10,12]),k=R(2,n-2);return{q:`Num friso de ${n} repetições, os cacos têm ${k}. Que porcentagem foi achada? (1 casa)`,a:Math.round(k/n*1000)/10,tol:0.06,exp:`${k} ÷ ${n} ≈ ${fmt(Math.round(k/n*1000)/10)}%.`};}}}};
+ const n=P([8,10,12]),k=R(2,n-2);return{q:`Num friso de ${n} repetições, os cacos têm ${k}. Que porcentagem foi achada? (1 casa)`,a:Math.round(k/n*1000)/10,tol:0.06,exp:`${k} ÷ ${n} ≈ ${fmt(Math.round(k/n*1000)/10)}%.`};}}},'arq6':{T:["Razões do corpo", "A tábua osteométrica", "Do fêmur à altura", "A reta dos dados", "Crescer não é ampliar", "O rosto de Luzia"],G:{1:()=>{const t=R(0,2),h=R(140,190);
+ if(t==0)return{q:`Uma pessoa mede <b>${h} cm</b>. Segundo Vitrúvio, quanto mede a cabeça (queixo ao alto), em cm?`,a:h/8,tol:0.01,exp:`${h} ÷ 8 = ${fmt(h/8)} cm.`};
+ if(t==1)return{q:`Uma pessoa mede <b>${h} cm</b>. Quanto mede o rosto (raiz do cabelo ao queixo), em cm?`,a:h/10,exp:`${h} ÷ 10 = ${fmt(h/10)} cm.`};
+ const c=P([18,19,20,20.5,21,22,22.5,23]);return{q:`A cabeça de alguém mede <b>${fmt(c)} cm</b>. Qual a altura estimada, em cm?`,a:8*c,exp:`8 × ${fmt(c)} = ${fmt(8*c)} cm.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const b=R(380,500)/10,d=[R(-2,2)/10,R(-2,2)/10,R(-2,2)/10];const v=d.map(x=>Math.round((b+x)*10)/10),m=Math.round((v[0]+v[1]+v[2])/3*100)/100;return{q:`Medidas de um fêmur: <b>${v.map(fmt).join('; ')} cm</b>. Qual a média, em cm? (2 casas)`,a:m,tol:0.011,exp:`(${v.map(fmt).join(' + ')}) ÷ 3 ≈ ${fmt(m)} cm.`};}
+ if(t==1){const b=R(380,500)/10,v=[0,1,2,3].map(()=>Math.round((b+R(-3,3)/10)*10)/10);const a=Math.round((Math.max(...v)-Math.min(...v))*10)/10;return{q:`Qual a amplitude das medidas <b>${v.map(fmt).join('; ')} cm</b>?`,a:a,tol:0.001,exp:`${fmt(Math.max(...v))} − ${fmt(Math.min(...v))} = ${fmt(a)} cm.`};}
+ const e=R(400,480)/10,d=R(1,4)/10,p=Math.round(d/e*1000)/10;return{q:`Fêmur esquerdo <b>${fmt(e)} cm</b>, direito <b>${fmt(Math.round((e+d)*10)/10)} cm</b>. Qual a diferença relativa, em %? (1 casa)`,a:p,tol:0.06,exp:`${fmt(d)} ÷ ${fmt(e)} ≈ ${fmt(p)}%.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const f=R(380,480)/10,e=Math.round((2.47*f+54.10)*10)/10;return{q:`Com E = 2,47F + 54,10 (mulheres), qual a altura para fêmur de <b>${fmt(f)} cm</b>? (1 casa)`,a:e,tol:0.06,exp:`2,47 × ${fmt(f)} + 54,10 ≈ ${fmt(e)} cm.`};}
+ if(t==1){const f=R(420,520)/10,e=Math.round((2.32*f+65.53)*10)/10;return{q:`Com E = 2,32F + 65,53 (homens), qual a altura para fêmur de <b>${fmt(f)} cm</b>? (1 casa)`,a:e,tol:0.06,exp:`2,32 × ${fmt(f)} + 65,53 ≈ ${fmt(e)} cm.`};}
+ const e=R(145,172),f=Math.round((e-54.10)/2.47*10)/10;return{q:`Uma mulher media <b>${e} cm</b>. Com E = 2,47F + 54,10, qual era o fêmur, em cm? (1 casa)`,a:f,tol:0.06,exp:`(${e} − 54,10) ÷ 2,47 ≈ ${fmt(f)} cm.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const f=R(400,520)/10,e=Math.round((2.46*f+55.8)*10)/10;return{q:`Com a reta E ≈ 2,46F + 55,8, qual a altura para fêmur de <b>${fmt(f)} cm</b>? (1 casa)`,a:e,tol:0.06,exp:`2,46 × ${fmt(f)} + 55,8 ≈ ${fmt(e)} cm.`};}
+ if(t==1){const x1=R(38,44),x2=x1+R(4,10),y1=R(145,165),y2=y1+R(8,28);const a=Math.round((y2-y1)/(x2-x1)*100)/100;return{q:`Qual a inclinação da reta que passa por (${x1}; ${y1}) e (${x2}; ${y2})? (2 casas)`,a:a,tol:0.011,exp:`(${y2} − ${y1}) ÷ (${x2} − ${x1}) ≈ ${fmt(a)}.`};}
+ const f=P([40.2,42.5,44,45.1,46.8,47.5,48.3,49.6,50.4,52]),D={40.2:154,42.5:161.5,44:163,45.1:167.5,46.8:170,47.5:173.5,48.3:173,49.6:178.5,50.4:179,52:184};const d=Math.round((D[f]-(2.46*f+55.8))*100)/100;
+ return{q:`O ponto (${fmt(f)}; ${fmt(D[f])}) tem que desvio em relação à reta E = 2,46F + 55,8? (positivo se acima, 2 casas)`,a:d,tol:0.011,exp:`${fmt(D[f])} − (2,46 × ${fmt(f)} + 55,8) ≈ ${fmt(d)} cm.`};},
+5:()=>{const t=R(0,2),k=P([2,3,4,1.5,2.5,10]);
+ if(t==0)return{q:`Uma figura é ampliada <b>${fmt(k)}</b> vezes. As áreas ficam multiplicadas por quanto?`,a:k*k,exp:`${fmt(k)}² = ${fmt(k*k)}.`};
+ if(t==1){const m=P([2,3,5,70,0.5]);return{q:`Uma estatueta de <b>${fmt(m)} kg</b> é copiada ${fmt(k)} vezes maior, no mesmo material. Qual a massa, em kg?`,a:m*k*k*k,tol:0.01,exp:`${fmt(m)} × ${fmt(k)}³ = ${fmt(m*k*k*k)} kg.`};}
+ const h=R(48,56);return{q:`Um recém-nascido mede <b>${h} cm</b> e a cabeça é 1/4 da altura. Quanto mede a cabeça, em cm?`,a:h/4,exp:`${h} ÷ 4 = ${fmt(h/4)} cm.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const r=P([15,15.3,16.2,16.8,18,13.5]);return{q:`Um rosto mede <b>${fmt(r)} cm</b> da raiz do cabelo ao queixo. Quanto mede cada terço?`,a:Math.round(r/3*100)/100,tol:0.011,exp:`${fmt(r)} ÷ 3 = ${fmt(Math.round(r/3*100)/100)} cm.`};}
+ if(t==1){const c=P([18,19,19.1,20,21,22,23]);return{q:`Uma cabeça mede <b>${fmt(c)} cm</b> do alto ao queixo. A que distância do queixo ficam os olhos, em cm?`,a:c/2,exp:`${fmt(c)} ÷ 2 = ${fmt(c/2)} cm.`};}
+ const h=R(145,185);return{q:`Com Vitrúvio, uma pessoa de <b>${h} cm</b> tem rosto de quantos cm? E cada terço? Responda o terço (2 casas).`,a:Math.round(h/30*100)/100,tol:0.011,exp:`Rosto ${fmt(h/10)} cm; terço ${fmt(h/10)} ÷ 3 ≈ ${fmt(Math.round(h/30*100)/100)} cm.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='arq1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

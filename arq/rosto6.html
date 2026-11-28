@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O rosto em terços · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O rosto em terços</h1></header>
+<main>
+<div class="card"><h2>Linhas do rosto</h2><p class="muted" style="margin-top:0">As alturas são medidas a partir do queixo. Mude a cabeça e as linhas pelos controles, ou arraste uma linha na figura. No modo <b>Pôr pinos</b>, toque no rosto para marcar a espessura do tecido.</p>
+<div id="cm" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sC"><b>Cabeça (alto ao queixo)</b><input type="range"><span></span></div>
+<div class="sl" id="sH"><b>Raiz do cabelo</b><input type="range"><span></span></div>
+<div class="sl" id="sS"><b>Sobrancelhas</b><input type="range"><span></span></div>
+<div class="sl" id="sN"><b>Base do nariz</b><input type="range"><span></span></div>
+<div class="sl" id="sO"><b>Olhos</b><input type="range"><span></span></div>
+<div class="kpi"><div>Terços (de cima para baixo)<b id="kt"></b></div><div class="o">Olhos ÷ cabeça<b id="ko"></b></div></div>
+<div class="row" style="margin:6px 0"><button class="alt" id="tira">Tirar pinos</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova as linhas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2));
+let modo=0,pinos=[];chips('cm',['Mover linhas','Pôr pinos'],0,i=>{modo=i;draw();});
+const sh=v=>f1(v)+' cm';
+const C=SL('sC',16,24,0.1,20,()=>draw(),sh),H=SL('sH',10,20,0.1,17,()=>draw(),sh),Sb=SL('sS',5,15,0.1,10.5,()=>draw(),sh),N=SL('sN',2,10,0.1,5,()=>draw(),sh),O=SL('sO',5,15,0.1,11,()=>draw(),sh);
+const r=s=>Math.round(s.get()*10)/10,K=12,cx=150,Y0=300,Y=v=>Y0-v*K;
+const LIN=[[H,'raiz do cabelo',BLUE],[Sb,'sobrancelhas',BLUE],[N,'base do nariz',BLUE],[O,'olhos',ORANGE]];let pega=null;
+toque('fig',(x,y,novo)=>{const v=(Y0-y)/K;
+ if(modo==1){if(novo){const rx=0.37*r(C)*K,ry=r(C)/2*K,dx=(x-cx)/rx,dy=(y-(Y0-ry))/ry;if(dx*dx+dy*dy<=1)pinos.push([x,y,v]);draw();}return;}
+ if(novo){pega=null;let best=1.2;LIN.forEach((l,i)=>{const d=Math.abs(v-r(l[0]));if(d<best){best=d;pega=i;}});if(Math.abs(v-r(C))<Math.min(best,1.2))pega=4;}
+ if(pega===null)return;const s=pega==4?C:LIN[pega][0];s.set(Math.round(v*10)/10);draw();});
+$('tira').onclick=()=>{pinos=[];draw();};
+const t=()=>[r(H)-r(Sb),r(Sb)-r(N),r(N)],igu=()=>{const [a,b,c]=t();return Math.abs(a-b)<0.15&&Math.abs(b-c)<0.15&&Math.abs(a-c)<0.15;},olh=()=>Math.abs(r(O)-r(C)/2)<0.1;
+const ter=v=>v>r(Sb)?0:v>r(N)?1:2;
+MIS.def(()=>[
+ ['Faça os <b>três terços</b> iguais: cabelo até sobrancelhas, sobrancelhas até nariz, nariz até queixo.',igu,()=>'Três terços de '+f1(r(N))+' cm. A raiz do cabelo ficou a '+f1(r(H))+' cm do queixo.',()=>'Terços agora: '+t().map(f1).join(', ')+' cm. Precisam ser iguais.'],
+ ['Ponha os <b>olhos na metade</b> da cabeça (do alto ao queixo).',olh,()=>'Olhos a '+f1(r(O))+' cm do queixo, metade de '+f1(r(C))+' cm. Repare: eles ficam mais baixo do que a gente costuma desenhar.',()=>'Olhos a '+f1(r(O))+' cm. A metade da cabeça é '+f2(r(C)/2)+' cm.'],
+ ['Monte o rosto da mulher do sambaqui: cabeça de <b>19,1 cm</b>, raiz do cabelo a <b>15,3 cm</b>, três terços iguais e olhos na metade.',()=>r(C)==19.1&&r(H)==15.3&&igu()&&olh(),'Terços de 5,1 cm e olhos a cerca de 9,6 cm do queixo: as razões de 1/8 e 1/10 de 152,9 cm.',()=>r(C)!=19.1?'Cabeça agora: '+f1(r(C))+' cm. Precisa de 19,1.':r(H)!=15.3?'Raiz do cabelo agora: '+f1(r(H))+' cm. Precisa de 15,3.':!igu()?'Terços agora: '+t().map(f1).join(', ')+'. Precisam ser 5,1 cada.':'Olhos a '+f1(r(O))+' cm; metade da cabeça: '+f2(r(C)/2)+'.'],
+ ['No modo <b>Pôr pinos</b>, cubra o rosto com pelo menos <b>8 pinos</b>, com no mínimo <b>2 em cada terço</b> (pinos acima do cabelo contam no de cima).',()=>{const n=[0,0,0];pinos.forEach(p=>n[ter(p[2])]++);return pinos.length>=8&&n.every(x=>x>=2);},'Cada pino marca a espessura do tecido naquele ponto. Ligando os pinos, o escultor sabe por onde passa a pele: o rosto é uma hipótese bem medida.',()=>{const n=[0,0,0];pinos.forEach(p=>n[ter(p[2])]++);return modo!=1?'Escolha o modo Pôr pinos.':'Pinos: '+pinos.length+' (terço de cima '+n[0]+', do meio '+n[1]+', de baixo '+n[2]+').';}]]);
+function draw(){let g=RC(0,0,340,320,'#F8FAFC','rx="10"');const c=r(C),ry=c/2*K,rx=0.37*c*K,cy=Y0-ry;
+ g+=ELI(cx,cy,rx,ry,'#F6E7D7','stroke="#7E4E2E" stroke-width="1.6"');
+ LIN.forEach((l,i)=>{const y=Y(r(l[0]));g+=LN(cx-rx-14,y,cx+rx+14,y,l[2],i==3?1.6:1.2,i==3?'':'5 3')+(i==3?TX(cx-rx-18,y+4,l[1],{fs:10,a:'end',c:l[2]}):TX(cx+rx+18,y+4,l[1],{fs:10,a:'start',c:l[2]}));});
+ g+=LN(cx-rx-14,Y0,cx+rx+14,Y0,BLUE,1.2,'5 3')+TX(cx+rx+18,Y0+4,'queixo',{fs:10,a:'start',c:BLUE})+TX(cx+rx+18,Y(c)+4,'alto',{fs:10,a:'start',c:GRAY});
+ const yo=Y(r(O));[-1,1].forEach(s=>g+=ELI(cx+s*0.26*c*K,yo,0.07*c*K,0.03*c*K,'#fff','stroke="'+NAVY+'" stroke-width="1.2"'));
+ const yn=Y(r(N)),ys=Y(r(Sb));g+=PL([[cx,ys+4],[cx-8,yn],[cx+8,yn]],'#7E4E2E',1.4)+LN(cx-0.12*c*K,Y(r(N)*0.55),cx+0.12*c*K,Y(r(N)*0.55),'#7E4E2E',1.8);
+ [-1,1].forEach(s=>g+=LN(cx+s*0.14*c*K,ys,cx+s*0.38*c*K,ys,'#7E4E2E',2));
+ pinos.forEach(p=>g+=LN(p[0],p[1],p[0],p[1]-10,GREEN,2.2)+CIR(p[0],p[1]-10,2.6,GREEN));
+ $('fig').innerHTML=SVG(340,320,g);$('kt').textContent=t().map(f1).join(' · ')+' cm';$('ko').textContent=f2(r(O)/c);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
