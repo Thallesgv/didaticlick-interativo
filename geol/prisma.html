@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O prisma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O prisma</h1></header>
+<main>
+<div class="card"><h2>Comprimento × largura × altura</h2><p class="muted" style="margin-top:0">Mude as três medidas da caixa (arraste ou use − e +). A caixa cresce na tela, em perspectiva (a escala se ajusta sozinha), e o volume aparece em m³, em litros e em caçambas de 12 m³.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="c"><b>Comprimento</b><input type="range"><span></span></div><div class="sl" id="l"><b>Largura</b><input type="range"><span></span></div><div class="sl" id="h"><b>Altura</b><input type="range"><span></span></div><div class="kpi"><div>Área da base<b id="k1"></b></div><div>Volume<b id="k2"></b></div><div class="o">Caçambas de 12 m³<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EQ=(a,b)=>Math.abs(a-b)<1e-6;
+const C=SL('c',1,80,1,4,()=>draw(),v=>v+' m'),L=SL('l',0.2,60,0.2,2,()=>draw(),v=>vg(Math.round(v*10)/10)+' m'),Hh=SL('h',0.1,6,0.1,0.5,()=>draw(),v=>vg(Math.round(v*10)/10)+' m');
+const V=()=>C.get()*L.get()*Hh.get();
+MIS.def(()=>[
+ ['Monte a <b>caçamba</b>: 5 m × 2,4 m × 1 m.',()=>C.get()==5&&EQ(L.get(),2.4)&&EQ(Hh.get(),1),'12 m³ = 12 000 litros: uma caçamba.',()=>'Agora: '+C.get()+' × '+vg(Math.round(L.get()*10)/10)+' × '+vg(Math.round(Hh.get()*10)/10)+'.'],
+ ['Monte o <b>prisma da cicatriz</b>: 60 m de comprimento, 44 m de largura média e 1,2 m de profundidade média.',()=>C.get()==60&&EQ(L.get(),44)&&EQ(Hh.get(),1.2),'3 168 m³, quase os 3 200 do drone: o prisma de mesma base e altura média.',()=>'Volume agora: '+fmt(Math.round(V()))+' m³.'],
+ ['Dobre as três medidas da caçamba: <b>10 × 4,8 × 2</b>. Quantas caçambas cabem?',()=>C.get()==10&&EQ(L.get(),4.8)&&EQ(Hh.get(),2),'96 m³ = 8 caçambas: dobrar as três medidas multiplica por 8.',()=>'Agora: '+fmt(Math.round(V()*10)/10)+' m³.']]);
+function draw(){const W=340,H=230,c=C.get(),l=L.get(),h=Hh.get(),m=Math.max(c+l*0.5,h*2+l*0.5,1),k=Math.min(220/(c+l*0.5),150/(h+l*0.5));
+ const x=40,y=200,dx=l*k*0.5,dy=l*k*0.5;let g=RC(0,0,W,H,'#fff','rx="10"');
+ g+=PG([[x,y-h*k],[x+c*k,y-h*k],[x+c*k+dx,y-h*k-dy],[x+dx,y-h*k-dy]],'#F7E3C9','stroke="'+NAVY+'"');
+ g+=PG([[x+c*k,y],[x+c*k+dx,y-dy],[x+c*k+dx,y-h*k-dy],[x+c*k,y-h*k]],'#D9A877','stroke="'+NAVY+'"');
+ g+=RC(x,y-h*k,c*k,h*k,'#F2C08E','stroke="'+NAVY+'"');
+ g+=TX(x+c*k/2,y+16,c+' m',{fs:10,c:NAVY})+TX(x-6,y-h*k/2+4,vg(Math.round(h*10)/10)+' m',{fs:10,a:'end',c:NAVY})+TX(x+c*k+dx/2+6,y-dy/2-h*k-4,vg(Math.round(l*10)/10)+' m',{fs:10,a:'start',c:NAVY});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=fmt(Math.round(c*l*10)/10)+' m²';$('k2').textContent=fmt(Math.round(V()*100)/100)+' m³';$('k3').textContent=fmt(Math.round(V()/12*10)/10);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

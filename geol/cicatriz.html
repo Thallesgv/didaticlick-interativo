@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A área da cicatriz · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A área da cicatriz</h1></header>
+<main>
+<div class="card"><h2>Planta e encosta</h2><p class="muted" style="margin-top:0">Mude a largura do topo, a do pé, o comprimento da cicatriz na planta e a inclinação da encosta (arraste ou use − e +). Em cima, a cicatriz vista do drone (um trapézio); embaixo, de lado: na encosta ela é mais comprida que na planta.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="lt"><b>Largura do topo</b><input type="range"><span></span></div><div class="sl" id="lp"><b>Largura do pé</b><input type="range"><span></span></div><div class="sl" id="cp"><b>Comprimento na planta</b><input type="range"><span></span></div><div class="sl" id="in"><b>Inclinação da encosta</b><input type="range"><span></span></div><div class="kpi"><div>Área na planta<b id="k1"></b></div><div>Área na encosta<b id="k2"></b></div><div class="o">Encosta ÷ planta<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const LT=SL('lt',10,100,2,40,()=>draw(),v=>v+' m'),LP=SL('lp',4,100,2,20,()=>draw(),v=>v+' m'),CP=SL('cp',10,100,5,40,()=>draw(),v=>v+' m'),IN=SL('in',0,60,1,10,()=>draw(),v=>v+'°');
+const Ap=()=>(LT.get()+LP.get())/2*CP.get(),Ae=()=>Ap()/Math.cos(IN.get()*RAD);
+MIS.def(()=>[
+ ['Faça o <b>trapézio único</b> da cicatriz: topo <b>60 m</b>, pé <b>24 m</b>, comprimento <b>60 m</b>.',()=>LT.get()==60&&LP.get()==24&&CP.get()==60,'2 520 m²: 120 m² a menos que os seis trapézios do Davi (2 640 m²).',()=>'Agora: '+LT.get()+', '+LP.get()+' e '+CP.get()+' m.'],
+ ['Ache a inclinação em que a área na encosta fica <b>20% maior</b> que a da planta.',()=>Ae()/Ap()>=1.195&&Ae()/Ap()<=1.21,()=>IN.get()+'°: 1 ÷ cos '+IN.get()+'° ≈ '+fmt(Math.round(Ae()/Ap()*1000)/1000)+'.',()=>'Agora a encosta tem '+fmt(Math.round((Ae()/Ap()-1)*1000)/10)+'% a mais.'],
+ ['Com pé de <b>24 m</b> e comprimento de <b>60 m</b>, que topo daria <b>3 000 m²</b> na planta?',()=>LP.get()==24&&CP.get()==60&&Ap()==3000,'76 m: (76 + 24) ÷ 2 × 60 = 3 000.',()=>LP.get()!=24||CP.get()!=60?'Ponha pé 24 e comprimento 60.':'Com topo '+LT.get()+' m: '+fmt(Ap())+' m².']]);
+function draw(){const W=340,H=250,k=2.4,lt=LT.get(),lp=LP.get(),c=CP.get(),cx=30,cy=70;let g=RC(0,0,W,H,'#fff','rx="10"');
+ g+=PG([[cx,cy-lt/2*0.55*k/1.3],[cx+c*k,cy-lp/2*0.55*k/1.3],[cx+c*k,cy+lp/2*0.55*k/1.3],[cx,cy+lt/2*0.55*k/1.3]],TERRA,'stroke="'+TERRA_E+'" stroke-width="2"');
+ g+=TX(cx,14,'vista de cima (planta)',{fs:9,a:'start',c:NAVY})+TX(cx-4,cy+3,lt,{fs:9,a:'end',c:NAVY})+TX(cx+c*k+4,cy+3,lp,{fs:9,a:'start',c:NAVY});
+ const i=IN.get()*RAD,ox=30,oy=225,Lp=c*k,Le=Lp/Math.cos(i),ex=ox+Lp,ey=oy-Lp*Math.tan(i);
+ const ey2=Math.max(ey,130);g+=TX(ox,145,'de lado',{fs:9,a:'start',c:NAVY})+LN(ox,oy,ox+Lp,oy,NAVY,2)+TX(ox+Lp/2,oy+14,'planta: '+c+' m',{fs:9,c:NAVY});
+ const sx=Lp/(ey<130?(oy-130)/Math.tan(i)/Lp*1:1);const t=ey<130?(oy-130)/(oy-ey):1;
+ g+=LN(ox,oy,ox+Lp*t,oy-(oy-ey)*t,ORANGE,4)+(ox+Lp*t<220?TX(ox+Lp*t+6,oy-(oy-ey)*t+4,'encosta: '+r1(c/Math.cos(i))+' m',{fs:9,a:'start',c:ORANGE}):TX(ox+Lp*t-2,oy-(oy-ey)*t-10,'encosta: '+r1(c/Math.cos(i))+' m',{fs:9,a:'end',c:ORANGE}))+TX(ox+34,oy-5,IN.get()+'°',{fs:9,a:'start',c:NAVY});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=fmt(Math.round(Ap()))+' m²';$('k2').textContent=fmt(Math.round(Ae()))+' m²';$('k3').textContent=fmt(Math.round(Ae()/Ap()*1000)/1000);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
