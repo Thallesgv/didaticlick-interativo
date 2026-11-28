@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Carvão ou giz? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Carvão ou giz?</h1></header>
+<main>
+<div class="card"><h2>Mesmo brilho, rochas diferentes</h2><p class="muted" style="margin-top:0">Duas rochas à mesma distância. O brilho que chega ao telescópio é proporcional a <b>albedo × diâmetro²</b>. Mude o tamanho e o albedo de cada uma e compare.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="d1"><b>Diâmetro da rocha 1</b><input type="range"><span></span></div>
+<div class="sl" id="p1"><b>Albedo da rocha 1</b><input type="range"><span></span></div>
+<div class="sl" id="d2"><b>Diâmetro da rocha 2</b><input type="range"><span></span></div>
+<div class="sl" id="p2"><b>Albedo da rocha 2</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Brilho 1 ÷ brilho 2<b id="kr"></b></div><div>Massa 1 ÷ massa 2 (mesma densidade)<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as duas rochas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const fp=v=>(Math.round(v*1000)/1000).toString().replace('.',',');
+const D1=SL('d1',50,800,10,200,draw,v=>v+' m'),P1=SL('p1',0.02,0.9,0.002,0.5,draw,fp),D2=SL('d2',50,800,10,300,draw,v=>v+' m'),P2=SL('p2',0.02,0.9,0.002,0.05,draw,fp);
+const b1=()=>P1.get()*D1.get()**2,b2=()=>P2.get()*D2.get()**2,raz=()=>b1()/b2(),mr=()=>(D1.get()/D2.get())**3;
+const igual=()=>raz()>=0.97&&raz()<=1.03;
+MIS.def(()=>[
+ ['Rocha 1 com albedo <b>0,5</b> e rocha 2 com <b>0,05</b>. Faça as duas brilharem igual (razão entre 0,97 e 1,03).',()=>Math.abs(P1.get()-0.5)<0.005&&Math.abs(P2.get()-0.05)<0.005&&igual(),()=>'A escura tem '+r2(D2.get()/D1.get())+' vezes o diâmetro da clara (√10 ≈ 3,16) e '+r1(1/mr())+' vezes a massa.',()=>'Agora a razão é '+r2(raz())+'.'],
+ ['Rocha 1 = <b>Teimoso</b> (300 m, albedo 0,15). Rocha 2 com o albedo do <b>Bennu</b> (0,044). Que tamanho a rocha 2 precisa para brilhar igual?',()=>D1.get()==300&&Math.abs(P1.get()-0.15)<0.003&&Math.abs(P2.get()-0.044)<0.003&&igual(),()=>'Uns '+D2.get()+' m: uma rocha escura quase do dobro do tamanho daria o mesmo pontinho de luz.',()=>'Agora a razão é '+r2(raz())+'.'],
+ ['Mesmo albedo nas duas. Faça a rocha 1 brilhar <b>9 vezes</b> mais que a 2 (entre 8,8 e 9,2).',()=>Math.abs(P1.get()-P2.get())<0.003&&raz()>=8.8&&raz()<=9.2,()=>'Diâmetro '+r2(D1.get()/D2.get())+' vezes maior: o brilho segue a área (3² = 9) e a massa vai a '+r1(mr())+' vezes.',()=>'Albedos: '+fp(P1.get())+' e '+fp(P2.get())+'; razão '+r2(raz())+'.'],
+ ['Mesmo tamanho nas duas. Faça uma brilhar <b>4 vezes</b> mais que a outra só pelo albedo.',()=>D1.get()==D2.get()&&raz()>=3.95&&raz()<=4.05,()=>'Albedos '+fp(P1.get())+' e '+fp(P2.get())+'. Mesma massa, brilhos bem diferentes.',()=>'Diâmetros '+D1.get()+' e '+D2.get()+' m; razão '+r2(raz())+'.']]);
+function draw(){const W=340,H=210;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,202,30,8);
+ const k=0.11,cor=p=>{const v=Math.round(40+215*Math.min(p/0.9,1));return `rgb(${v},${v},${Math.min(255,v+6)})`;};
+ const rock=(x,D,p)=>{const r=Math.max(4,D*k);return `<g>${ROCHA_SVG(x,92,r,5).replace(/fill="[^"]*"/,'fill="'+cor(p)+'"')}</g>`;};
+ g+=rock(90,D1.get(),P1.get())+rock(250,D2.get(),P2.get());
+ const pt=(x,b)=>{const r=Math.max(1.5,Math.min(14,2.2*Math.sqrt(b/2000)));return `<circle cx="${x}" cy="186" r="${r*1.8}" fill="${AMA}" opacity=".2"/><circle cx="${x}" cy="186" r="${r}" fill="#FDE68A"/>`;};
+ g+=pt(90,b1())+pt(250,b2())+TX(170,190,'← o que o telescópio vê →',{fs:9,c:'#94A3B8'});
+ g+=TX(90,20,'rocha 1',{fs:10,c:'#fff'})+TX(250,20,'rocha 2',{fs:10,c:'#fff'});
+ $('fig').innerHTML=SVG(W,H,g);$('kr').textContent=r2(raz());$('km').textContent=mr()>=100?fmt(Math.round(mr())):r2(mr());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
