@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Noites de luar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Noites de luar</h1></header>
+<main>
+<div class="card"><h2>h(d) = taxa · (d − Lua nova − 0,5)</h2><p class="muted" style="margin-top:0">Mude o atraso diário da Lua, o horário mínimo de luar desejado e o dia da Lua nova (arrastando ou com − e +). As barras mostram até que horas há Lua no céu, noite a noite; as laranjas servem para caminhar.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Atraso da Lua por dia</b><input type="range"><span></span></div><div class="sl" id="sh"><b>Luar pelo menos até</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Lua nova em julho, dia</b><input type="range"><span></span></div><div class="kpi"><div>Primeira noite boa<b id="k1"></b></div><div>Noites boas até o dia 29<b id="k2"></b></div><div class="o">Luar no dia 18<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Planeje as noites.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',30,70,1,49,()=>draw(),v=>v+' min'),SH=SL('sh',20,30,0.5,22,()=>draw(),v=>(v%24)+'h'+(v%1?'30':'00')),SN=SL('sn',1,20,1,14,()=>draw(),v=>v+' jul');
+const hs=d=>Math.min(12,Math.max(0,SA.get()/60*(d-SN.get()-0.5+1)));const fim=d=>18+hs(d);
+const hhm=h=>{const m=Math.round(h*60);return Math.floor(m/60)%24+'h'+String(m%60).padStart(2,'0');};
+const prim=()=>{for(let d=15;d<=29;d++)if(fim(d)>=SH.get())return d;return null;};
+MIS.def(()=>[
+ ['Com 49 min de atraso, ache a primeira noite com Lua <b>até meia-noite</b>.',()=>SA.get()==49&&SH.get()==24&&SN.get()==14,()=>'Dia '+prim()+' de julho: o quarto crescente.',()=>{if(SA.get()!=49)return 'Volte o atraso para 49 min.';if(SN.get()!=14)return 'A Lua nova foi no dia 14.';return 'Ponha o horário mínimo em 0h00.';}],
+ ['Agora ache a primeira noite com Lua <b>até as 3h</b>.',()=>SA.get()==49&&SH.get()==27&&SN.get()==14,()=>'Dia '+prim()+': a partir dele, quase a noite inteira de luar.',()=>'Ponha o horário mínimo em 3h00.'],
+ ['E se o atraso fosse de <b>40 minutos</b>? Com Lua até meia-noite, qual seria a primeira noite?',()=>SA.get()==40&&SH.get()==24,()=>'Dia '+prim()+': o modelo muda as datas. Por isso, para horas exatas, é preciso tabela.',()=>'Atraso: '+SA.get()+' min; mínimo: '+hhm(SH.get())+'.']]);
+function draw(){let g=RC(0,0,340,240,'#F8FAFC','rx="10"');const k=180/12,y0=200;
+ for(const [h,t] of [[0,'18h'],[3,'21h'],[6,'0h'],[9,'3h'],[12,'6h']])g+=LN(34,y0-h*k,330,y0-h*k,'#E5E7EB',1)+TX(30,y0-h*k+4,t,{fs:9,a:'end'});
+ g+=LN(34,y0-(SH.get()-18)*k,330,y0-(SH.get()-18)*k,ORANGE,1.5,'5 4');
+ for(let d=15;d<=29;d++){const x=40+(d-15)*19.5,h=hs(d);g+=RC(x,y0-h*k,14,h*k,fim(d)>=SH.get()?ORANGE:BLUE)+TX(x+7,y0+14,d,{fs:9});}
+ g+=TX(185,y0+32,'noites de julho',{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(340,240,g);
+ let n=0;for(let d=15;d<=29;d++)if(fim(d)>=SH.get())n++;
+ $('k1').textContent=prim()?prim()+' jul':'nenhuma';$('k2').textContent=n;$('k3').textContent='até '+hhm(fim(18));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

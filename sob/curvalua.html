@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva da Lua · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A curva da Lua</h1></header>
+<main>
+<div class="card"><h2>f(t) = 0,5 − 0,5 · cos(360° · t ÷ T)</h2><p class="muted" style="margin-top:0">Escolha a fração iluminada e o período (arrastando ou com − e +). A linha laranja corta a curva nas idades que têm essa fração; as duas Luas aparecem embaixo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>Fração iluminada</b><input type="range"><span></span></div><div class="sl" id="st"><b>Período T</b><input type="range"><span></span></div><div class="kpi"><div>Solução 1 (crescente)<b id="k1"></b></div><div>Solução 2 (minguante)<b id="k2"></b></div><div class="o">Quantas soluções<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a curva ao contrário.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const LUAC='#F3EBD3',ESC='#2E3550';
+function LUA(x,y,r,E){E=((E%360)+360)%360;const cr=E<=180;const c=Math.cos(E*RAD);let g=CIR(x,y,r,ESC);
+ const s=cr?0:1;// crescente: lado esquerdo aceso (hemisfério sul, ao anoitecer)
+ const half=`<path d="M${x},${y-r} A${r},${r} 0 0,${cr?0:1} ${x},${y+r} Z" fill="${LUAC}"/>`;g+=half;
+ const rx=Math.abs(c)*r;g+=ELI(x,y,Math.max(0.01,rx),r,c>0?ESC:LUAC);return g+CIR(x,y,r,'none','stroke="#8C9BC0" stroke-width="0.6"');}
+const frac=E=>(1-Math.cos(E*RAD))/2;
+const SF=SL('sf',0,100,1,50,()=>draw(),v=>v+'%'),ST=SL('st',20,40,0.01,29.53,()=>draw(),v=>fmt(v)+' d');
+const sol=()=>{const f=SF.get()/100,x=Math.acos(clamp(1-2*f,-1,1))*DEG,T=ST.get();return[x/360*T,(360-x)/360*T];};
+MIS.def(()=>[
+ ['Ache as duas idades da Lua de <b>21%</b> (período 29,53).',()=>SF.get()==21&&Math.abs(ST.get()-29.53)<0.005,()=>'4,5 dias (crescente) e 25,0 dias (minguante). A do Téo estava no oeste ao anoitecer: 4,5.',()=>Math.abs(ST.get()-29.53)>=0.005?'Volte o período para 29,53.':'Fração: '+SF.get()+'%.'],
+ ['Ache a fração que tem <b>uma solução só</b>.',()=>SF.get()==100||SF.get()==0,()=>SF.get()==100?'100%: só na Lua cheia, no meio do mês.':'0%: só na Lua nova.',()=>'Com '+SF.get()+'% há duas soluções.'],
+ ['Ache as idades da Lua de <b>50%</b>.',()=>SF.get()==50&&Math.abs(ST.get()-29.53)<0.005,'7,4 e 22,1 dias: quarto crescente e quarto minguante.',()=>'Fração: '+SF.get()+'%.']]);
+function draw(){const T=ST.get(),f=SF.get()/100,[t1,t2]=sol();let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ const X=t=>30+t/40*290,Y=v=>180-v*150;g+=LN(30,180,325,180,NAVY,1)+LN(30,30,30,180,NAVY,1)+TX(26,34,'100%',{fs:9,a:'end'})+TX(26,184,'0',{fs:9,a:'end'});
+ let pts=[];for(let i=0;i<=200;i++){const t=40*i/200;pts.push([X(t),Y(0.5-0.5*Math.cos(2*Math.PI*t/T))]);}g+=PL(pts,BLUE,2.5);
+ g+=LN(30,Y(f),325,Y(f),ORANGE,1.5,'5 4');
+ const sols=(f>0&&f<1)?[t1,t2]:[t1];for(const t of sols)if(t<=40)g+=CIR(X(t),Y(f),6,ORANGE)+TX(X(t),196,r1(t)+' d',{fs:10,c:ORANGE});
+ g+=RC(10,210,320,82,NOITE,'rx="8"')+LUA(110,251,30,t1/T*360)+LUA(230,251,30,t2/T*360);
+ $('fig').innerHTML=SVG(340,300,g);
+ $('k1').textContent=r1(t1)+' d';$('k2').textContent=(f>0&&f<1)?r1(t2)+' d':'—';$('k3').textContent=(f>0&&f<1)?'duas':'uma';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

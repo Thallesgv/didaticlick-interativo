@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dois meses · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Dois meses</h1></header>
+<main>
+<div class="card"><h2>Sideral e sinódico</h2><p class="muted" style="margin-top:0">Passe os dias e mude a duração do ano da Terra (arrastando ou com − e +). A seta cinza aponta sempre para a mesma estrela; a seta laranja aponta para o Sol.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Dias desde a Lua nova</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Duração do ano</b><input type="range"><span></span></div><div class="kpi"><div>Voltas da Lua (estrelas)<b id="k1"></b></div><div>Elongação<b id="k2"></b></div><div class="o">Mês das fases<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Compare os meses.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SD=SL('sd',0,32,0.1,0,()=>draw(),v=>fmt(v)+' d'),SA=SL('sa',100,2000,5,365,()=>draw(),v=>v+' d');
+const sid=27.32,sin=()=>1/(1/sid-1/SA.get());
+MIS.def(()=>[
+ ['Passe os dias até a Lua voltar à <b>mesma estrela</b> (mês sideral).',()=>Math.abs(SD.get()-27.3)<0.15&&SA.get()==365,'27,3 dias: a Lua apontada para a mesma estrela, mas ainda não alinhada com o Sol.',()=>SA.get()!=365?'Volte o ano para 365 dias.':'Dia '+fmt(SD.get())+'.'],
+ ['Agora ache a próxima <b>Lua nova</b> (mês sinódico).',()=>Math.abs(SD.get()-29.5)<0.15&&SA.get()==365,'29,5 dias: a Lua alcançou o Sol. São 2,2 dias a mais que o sideral.',()=>'Elongação agora: '+Math.round(elo())+'°.'],
+ ['Faça o ano ficar <b>muito longo</b> (2 000 dias). O que acontece com o mês das fases?',()=>SA.get()>=2000,()=>'Mês das fases = '+r2(sin())+' d: quase igual ao sideral. Se a Terra não andasse, os dois seriam iguais.',()=>'Ano de '+SA.get()+' dias: mês das fases = '+r2(sin())+' d.']]);
+const elo=()=>((360*SD.get()*(1/sid-1/SA.get()))%360+360)%360;
+function draw(){const t=SD.get();let g=RC(0,0,340,260,NOITE,'rx="10"');
+ const sx=40,sy=130,R=230,a0=-0.25,ae=a0+2*Math.PI*t/SA.get(),ex=sx+R*Math.cos(ae)*0.55+60,ey=sy+R*Math.sin(ae)*0.55*-1;
+ g+=CIR(sx,sy,16,OURO)+CIR(ex,ey,9,'#2457D6')+CIR(ex,ey,48,'none','stroke="#3A4A78" stroke-dasharray="3 4"');
+ const am=Math.PI+a0+2*Math.PI*t/sid,mx=ex+48*Math.cos(am),my=ey-48*Math.sin(am);g+=CIR(mx,my,6,LUAC0);
+ g+=LN(ex,ey,ex-60*Math.cos(a0),ey+60*Math.sin(a0),'#8C9BC0',1,'4 3')+TX(ex-60*Math.cos(a0)-4,ey+60*Math.sin(a0)+14,'estrela',{fs:9,c:AZC,w:500});
+ g+=LN(ex,ey,sx,sy,ORANGE,1,'4 3');
+ $('fig').innerHTML=SVG(340,260,g);
+ $('k1').textContent=r2(t/sid);$('k2').textContent=Math.round(elo())+'°';$('k3').textContent=r2(sin())+' d';MIS.ver('m');}
+const LUAC0='#F3EBD3';draw();
+})();
+</script>
+</body>
+</html>

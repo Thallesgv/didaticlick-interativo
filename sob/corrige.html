@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corrigindo as contas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Corrigindo as contas</h1></header>
+<main>
+<div class="card"><h2>Data → declinação → latitude</h2><p class="muted" style="margin-top:0">Mude a data do dia 2 e a margem do Sol (arrastando ou com − e +). O Sol estava a 57,9° ao norte (z = 32,1°). As estrelas dizem 10,6° S ± 0,3°; a barra laranja é a média ponderada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Data do dia 2</b><input type="range"><span></span></div><div class="sl" id="sm"><b>Margem do Sol</b><input type="range"><span></span></div><div class="kpi"><div>δ (fórmula)<b id="k1"></b></div><div>Latitude pelo Sol<b id="k2"></b></div><div class="o">Tudo junto<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Corrija a data.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DECL=n=>23.44*Math.sin(2*Math.PI*(n-80)/365);const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};
+const SD=SL('sd',182,212,1,190,()=>draw(),data),SM=SL('sm',0.1,1,0.1,0.5,()=>draw(),v=>'± '+fmt(v)+'°');
+const lat=()=>32.1-DECL(SD.get());const comb=()=>{const w1=1/SM.get()**2,w2=1/0.09;return[(w1*lat()+w2*10.6)/(w1+w2),1/Math.sqrt(w1+w2)];};
+MIS.def(()=>[
+ ['Refaça a conta <b>antiga</b>: dia 2 em <b>13 de julho</b>, margem ± 0,5°.',()=>SD.get()==194&&Math.abs(SM.get()-0.5)<0.01,'δ = 21,7° e latitude 10,4° S: a conta do Livro 2.',()=>'Data: '+data(SD.get())+', margem ± '+fmt(SM.get())+'°.'],
+ ['Corrija: dia 2 em <b>16 de julho</b>, margem <b>± 0,4°</b> (sem o erro da data).',()=>SD.get()==197&&Math.abs(SM.get()-0.4)<0.01,()=>'Sol: 10,9° S. Tudo junto: '+r1(comb()[0])+'° S ± '+r2(comb()[1])+'°. O acampamento está a 10,67° S.',()=>'Data: '+data(SD.get())+', margem ± '+fmt(SM.get())+'°.'],
+ ['Que data faria o Sol dizer <b>exatamente 10,6°</b>, como as estrelas?',()=>Math.abs(lat()-10.6)<0.08,()=>data(SD.get())+': mas a Lua garante 16 de julho. A diferença cabe nas margens.',()=>'Agora o Sol diz '+r1(lat())+'° S.']]);
+function draw(){const L=lat(),[c,mc]=comb();let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ const X=v=>20+(v-9.5)/2.5*300;g+=LN(20,170,320,170,NAVY,1);for(const v of [9.5,10,10.5,11,11.5,12])g+=LN(X(v),166,X(v),174,NAVY,1)+TX(X(v),188,fmt(v)+'° S',{fs:9,c:NAVY});
+ [['Sol',L,SM.get(),'#D9A21B'],['Estrelas',10.6,0.3,VERDE],['Tudo junto',c,mc,ORANGE]].forEach(([n,v,m,col],i)=>{const y=34+i*44;g+=TX(20,y-8,n+': '+r1(v)+' ± '+r2(m),{fs:10,a:'start',c:col})+LN(X(clamp(v-m,9.5,12)),y+4,X(clamp(v+m,9.5,12)),y+4,col,8)+CIR(X(clamp(v,9.5,12)),y+4,5,'#fff','stroke="'+col+'" stroke-width="2"');});
+ g+=LN(X(10.667),20,X(10.667),160,GRAY,1,'2 3')+TX(X(10.667)+3,160,'real',{fs:8,a:'start',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,200,g);
+ $('k1').textContent=r1(DECL(SD.get()))+'°';$('k2').textContent=r1(L)+'° S';$('k3').textContent=r1(c)+'° ± '+r2(mc)+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

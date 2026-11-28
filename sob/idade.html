@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A idade da Lua · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A idade da Lua</h1></header>
+<main>
+<div class="card"><h2>Idade ≈ E ÷ 12,2°</h2><p class="muted" style="margin-top:0">Mude a idade da Lua e a data da Lua nova (arrastando ou com − e +). O céu mostra o oeste logo depois do pôr do Sol, às 18h, e a página calcula a data e a hora em que a Lua se põe.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="si"><b>Idade da Lua</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Lua nova em julho, dia</b><input type="range"><span></span></div><div class="kpi"><div>Elongação<b id="k1"></b></div><div>Data desta noite<b id="k2"></b></div><div class="o">A Lua se põe às<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Date a Lua.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const LUAC='#F3EBD3',ESC='#2E3550';
+function LUA(x,y,r,E){E=((E%360)+360)%360;const cr=E<=180;const c=Math.cos(E*RAD);let g=CIR(x,y,r,ESC);
+ const s=cr?0:1;// crescente: lado esquerdo aceso (hemisfério sul, ao anoitecer)
+ const half=`<path d="M${x},${y-r} A${r},${r} 0 0,${cr?0:1} ${x},${y+r} Z" fill="${LUAC}"/>`;g+=half;
+ const rx=Math.abs(c)*r;g+=ELI(x,y,Math.max(0.01,rx),r,c>0?ESC:LUAC);return g+CIR(x,y,r,'none','stroke="#8C9BC0" stroke-width="0.6"');}
+const frac=E=>(1-Math.cos(E*RAD))/2;
+const SI=SL('si',0.5,15,0.1,2,()=>draw(),v=>fmt(v)+' dias'),SN=SL('sn',1,20,1,14,()=>draw(),v=>v+' jul');
+const hh=h=>{const m=Math.round(h*60);return Math.floor(m/60)%24+'h'+String(m%60).padStart(2,'0');};
+MIS.def(()=>[
+ ['Reproduza a Lua do dia 4: elongação de <b>55°</b>, com a Lua nova em 14 de julho.',()=>Math.abs(SI.get()*12.19-55)<1&&SN.get()==14,()=>'Idade '+fmt(SI.get())+' dias: hoje é 18 de julho, não 15.',()=>SN.get()!=14?'Ponha a Lua nova no dia 14.':'Elongação agora: '+Math.round(SI.get()*12.19)+'°.'],
+ ['Mostre a Lua que o Téo <b>esperava</b> ver: <b>1 dia</b> de idade.',()=>Math.abs(SI.get()-1)<0.05,'E ≈ 12° e 1% do disco: some no clarão do pôr do Sol.',()=>'Idade: '+fmt(SI.get())+' dias.'],
+ ['Ache a idade da Lua que se põe <b>à meia-noite</b>.',()=>Math.abs(18+SI.get()*0.813-24)<0.06,'Cerca de 7,4 dias: o quarto crescente. Lua até meia-noite.',()=>'Ela se põe às '+hh(18+SI.get()*0.813)+'.']]);
+function draw(){const I=SI.get(),E=I*12.19;let g=RC(0,0,340,250,'#2A3A66','rx="10"');
+ const sx=40,sy=210;g+=`<path d="M${sx-20},${sy} A20,20 0 0,1 ${sx+20},${sy} Z" fill="${OURO}"/>`;
+ const a=Math.min(E,170)*RAD,R=180,mx=sx+R*Math.cos(a)*1.4,my=sy-R*Math.sin(a)*0.95;
+ const X=Math.min(320,Math.max(20,mx)),Y=Math.max(22,my);g+=LN(sx,sy,X,Y,OURO,1,'4 3')+LUA(X,Y,15,E);
+ g+=RC(0,sy,340,40,'#2B2A20')+TX(sx,sy+22,'O',{fs:11,c:AZC})+TX(320,24,'18h, oeste',{fs:10,a:'end',c:AZC,w:500});
+ $('fig').innerHTML=SVG(340,250,g);
+ const dia=SN.get()+0.3+I;$('k1').textContent=Math.round(E)+'° ('+Math.round(frac(E)*100)+'%)';$('k2').textContent=Math.floor(dia)<=31?Math.floor(dia)+' de julho':(Math.floor(dia)-31)+' de agosto';$('k3').textContent=hh(18+I*0.813);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
