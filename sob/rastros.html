@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contando rastros · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Contando rastros</h1></header>
+<main>
+<div class="card"><h2>Frequência relativa → probabilidade</h2><p class="muted" style="margin-top:0">Mude a chance verdadeira do felino (as outras se ajustam na proporção do Téo) e o número de rastros observados (arrastando ou com − e +). Sorteie: as barras são as frequências; os traços, as probabilidades verdadeiras.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button id="bs">Sortear de novo</button></div><div class="sl" id="sp"><b>Chance verdadeira do felino</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Rastros observados</b><input type="range"><span></span></div><div class="kpi"><div>Felinos contados<b id="k1"></b></div><div>Frequência do felino<b id="k2"></b></div><div class="o">Erro em relação à chance<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Conte e compare.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const NOM=['veado','lobo-guará','tatu','ema','anta','felino'],BASE=[18,9,6,4,2];
+const SP=SL('sp',0.5,30,0.5,2.5,()=>{sor();draw();},v=>fmt(v)+'%'),SN=SL('sn',10,5000,10,40,()=>{sor();draw();},v=>mil(v));
+let sem=1,cont=[0,0,0,0,0,0],hist=[];
+const probs=()=>{const f=SP.get()/100,r=(1-f)/39;return BASE.map(b=>b*r).concat([f]);};
+function sor(){const r=RNG(sem*7919+SN.get()),p=probs(),n=SN.get();cont=[0,0,0,0,0,0];for(let i=0;i<n;i++){let u=r(),k=0;while(k<5&&u>p[k]){u-=p[k];k++;}cont[k]++;}}
+$('bs').onclick=()=>{sem++;sor();draw();};
+const fr=()=>cont[5]/SN.get(),err=()=>Math.abs(fr()-SP.get()/100)*100;
+MIS.def(()=>[
+ ['Sorteie <b>40</b> rastros com as chances do Téo (felino <b>2,5%</b>).',()=>SN.get()==40&&SP.get()==2.5,()=>cont[5]+' felino(s) em 40: frequência de '+pc(fr())+'. Sorteie de novo: com só 40 rastros, o número de felinos muda muito de um sorteio para outro.',()=>'Confira: 40 rastros e 2,5%.'],
+ ['Com poucos rastros (até 100), faça a frequência do felino errar por <b>2 pontos ou mais</b>.',()=>SN.get()<=100&&err()>=2,()=>'Erro de '+r1(err())+' pontos: com amostra pequena, um rastro a mais ou a menos muda muito a porcentagem.',()=>'Erro agora: '+r1(err())+' pontos. Sorteie de novo.'],
+ ['Chegue a um erro <b>menor que 0,2 ponto</b> com muitos rastros (pelo menos 2 000).',()=>SN.get()>=2000&&err()<0.2,()=>'Com '+mil(SN.get())+' rastros, a frequência fica colada na chance: a lei dos grandes números.',()=>'Rastros: '+mil(SN.get())+', erro: '+r2(err())+'.']]);
+function draw(){const p=probs(),n=SN.get();let g=RC(0,0,340,220,'#F8FAFC','rx="10"');
+ NOM.forEach((nm,i)=>{const y=16+i*32,f=cont[i]/n;g+=TX(84,y+14,nm,{fs:10,a:'end',c:NAVY,w:500})+RC(90,y,f*240,20,i==5?ORANGE:BLUE,'rx="3"')+LN(90+p[i]*240,y-3,90+p[i]*240,y+23,NAVY,2.5);
+  g+=TX(94+Math.max(f,p[i])*240,y+14,pc(f),{fs:9,a:'start',c:i==5?ORANGE:BLUE});});
+ $('fig').innerHTML=SVG(340,220,g);
+ $('k1').textContent=cont[5];$('k2').textContent=pc(fr());$('k3').textContent=r1(err())+' pontos';MIS.ver('m');}
+sor();draw();
+})();
+</script>
+</body>
+</html>

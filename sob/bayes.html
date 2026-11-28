@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bayes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Bayes</h1></header>
+<main>
+<div class="card"><h2>Depois = antes × pista ÷ total da pista</h2><p class="muted" style="margin-top:0">Mude a chance a priori de onça-pintada, as chances de cada pista em cada espécie e ligue ou desligue a segunda pista (arrastando ou com − e +). A árvore conta 1 000 onças.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button class="alt" id="b2">Segunda pista (passada longa): ligada</button></div><div class="sl" id="s0"><b>P(pintada) antes</b><input type="range"><span></span></div><div class="sl" id="s1"><b>P(larga | pintada)</b><input type="range"><span></span></div><div class="sl" id="s2"><b>P(larga | parda)</b><input type="range"><span></span></div><div class="sl" id="s3"><b>P(passada longa | pintada)</b><input type="range"><span></span></div><div class="sl" id="s4"><b>P(passada longa | parda)</b><input type="range"><span></span></div><div class="kpi"><div>Antes<b id="k1"></b></div><div>Depois da pegada<b id="k2"></b></div><div class="o">Depois de tudo<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Atualize a crença.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+let duas=true;const S0=SL('s0',0.01,0.99,0.01,0.3,()=>draw(),v=>fmt(v)),S1=SL('s1',0,1,0.05,0.8,()=>draw(),v=>fmt(v)),S2=SL('s2',0,1,0.05,0.25,()=>draw(),v=>fmt(v)),S3=SL('s3',0,1,0.05,0.6,()=>draw(),v=>fmt(v)),S4=SL('s4',0,1,0.05,0.3,()=>draw(),v=>fmt(v));
+$('b2').onclick=()=>{duas=!duas;$('b2').textContent='Segunda pista (passada longa): '+(duas?'ligada':'desligada');draw();};
+const post=(p,a,b)=>p*a+(1-p)*b?p*a/(p*a+(1-p)*b):NaN;const p1=()=>post(S0.get(),S1.get(),S2.get()),p2=()=>duas?post(p1(),S3.get(),S4.get()):p1();
+const teo=()=>Math.abs(S0.get()-0.3)<1e-9&&Math.abs(S1.get()-0.8)<1e-9&&Math.abs(S2.get()-0.25)<1e-9&&Math.abs(S3.get()-0.6)<1e-9&&Math.abs(S4.get()-0.3)<1e-9;
+MIS.def(()=>[
+ ['Refaça a conta do Téo: 0,3; 0,8 e 0,25; passada 0,6 e 0,3, com as duas pistas.',()=>teo()&&duas,'0,30 → 0,58 → 0,73: cada pista empurra a crença, nenhuma dá certeza.',()=>'Confira os cinco controles e ligue a segunda pista.'],
+ ['Com as verossimilhanças do Téo, ache um "antes" que deixe o resultado final em <b>50%</b> (entre 48,5% e 51,5%).',()=>duas&&Math.abs(S1.get()-0.8)<1e-9&&Math.abs(S2.get()-0.25)<1e-9&&Math.abs(S3.get()-0.6)<1e-9&&Math.abs(S4.get()-0.3)<1e-9&&Math.abs(p2()-0.5)<=0.015,()=>'Antes de '+fmt(S0.get())+': as pistas multiplicam a chance por 6,4, então começar em 1 para 6,4 termina em empate.',()=>'Final agora: '+pc(p2())+'.'],
+ ['Desligue a segunda pista e faça a pegada <b>não mudar nada</b>: depois = antes.',()=>!duas&&Math.abs(p1()-S0.get())<1e-9&&S1.get()>0,'Com P(larga | pintada) = P(larga | parda), a pista aparece igual nas duas espécies e não separa nada.',()=>duas?'Desligue a segunda pista.':'Depois: '+r2(p1())+', antes: '+fmt(S0.get())+'.']]);
+function draw(){const p=S0.get(),a=S1.get(),b=S2.get(),c=S3.get(),d=S4.get();let g=RC(0,0,340,250,'#F8FAFC','rx="10"');
+ const n=(x,y,t,col,w)=>RC(x-(w||44),y-11,2*(w||44),22,'#fff','rx="11" stroke="'+(col||NAVY)+'" stroke-width="1.4"')+TX(x,y+4,t,{fs:9.5,c:col||NAVY});
+ const pt=Math.round(1000*p),pa=1000-pt,pl=pt*a,ql=pa*b;
+ g+=n(46,125,'1 000 onças',NAVY,40);
+ g+=LN(86,125,118,62,NAVY,1)+LN(86,125,118,188,NAVY,1)+n(160,62,'pintada: '+pt,NAVY,42)+n(160,188,'parda: '+pa,NAVY,42);
+ g+=LN(202,62,232,40,ORANGE,1.2)+LN(202,188,232,166,ORANGE,1.2)+LN(202,62,232,84,GRAY,1)+LN(202,188,232,210,GRAY,1);
+ g+=n(282,40,'larga: '+mil(pl),ORANGE,50)+n(282,84,'estreita: '+mil(pt-pl),GRAY,50)+n(282,166,'larga: '+mil(ql),ORANGE,50)+n(282,210,'estreita: '+mil(pa-ql),GRAY,50);
+ g+=TX(170,244,'P(pintada | larga) = '+mil(pl)+' ÷ '+mil(pl+ql)+' ≈ '+(isNaN(p1())?'—':r2(p1())),{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(340,250,g);
+ $('k1').textContent=pc(p);$('k2').textContent=isNaN(p1())?'—':pc(p1());$('k3').textContent=isNaN(p2())?'—':pc(p2());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

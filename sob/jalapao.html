@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A hipótese Jalapão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A hipótese Jalapão</h1></header>
+<main>
+<div class="card"><h2>Chance depois = chance antes × RV₁ × RV₂ × RV₃</h2><p class="muted" style="margin-top:0">Mude a área do parque e do retângulo, a razão de verossimilhança de cada pista e ligue ou desligue as pistas (arrastando ou com − e +). Uma RV abaixo de 1 é uma pista contra.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button class="alt" id="p1">Dunas: ligada</button><button class="alt" id="p2">Capim-dourado: ligada</button><button class="alt" id="p3">Sem cercas: ligada</button></div><div class="sl" id="sp"><b>Área do parque</b><input type="range"><span></span></div><div class="sl" id="sr"><b>Área do retângulo</b><input type="range"><span></span></div><div class="sl" id="r1"><b>RV das dunas</b><input type="range"><span></span></div><div class="sl" id="r2"><b>RV do capim-dourado</b><input type="range"><span></span></div><div class="sl" id="r3"><b>RV da falta de cercas</b><input type="range"><span></span></div><div class="kpi"><div>Antes<b id="k1"></b></div><div>Chance final<b id="k2"></b></div><div class="o">P(Jalapão) final<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste a hipótese.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const on=[true,true,true];const SPq=SL('sp',100,3800,100,1600,()=>draw(),v=>mil(v)+' km²'),SR=SL('sr',1000,20000,100,3800,()=>draw(),v=>mil(v)+' km²');
+const R=[SL('r1',0.1,30,0.1,10,()=>draw(),v=>fmt(v)),SL('r2',0.1,30,0.1,2,()=>draw(),v=>fmt(v)),SL('r3',0.1,30,0.1,3,()=>draw(),v=>fmt(v))];
+const NM=['Dunas','Capim-dourado','Sem cercas'];[1,2,3].forEach(i=>$('p'+i).onclick=()=>{on[i-1]=!on[i-1];$('p'+i).textContent=NM[i-1]+': '+(on[i-1]?'ligada':'desligada');draw();});
+const pri=()=>Math.min(0.999,SPq.get()/SR.get());const etapas=()=>{let o=pri()/(1-pri());const v=[o];R.forEach((r,i)=>{if(on[i])o*=r.get();v.push(o);});return v;};
+const fin=()=>{const v=etapas(),o=v[v.length-1];return o/(1+o);};
+const teo=()=>SPq.get()==1600&&SR.get()==3800&&on.every(x=>x)&&Math.abs(R[0].get()-10)<1e-9&&Math.abs(R[1].get()-2)<1e-9&&Math.abs(R[2].get()-3)<1e-9;
+MIS.def(()=>[
+ ['Refaça a conta do Téo: parque 1 600, retângulo 3 800, RV 10, 2 e 3, todas ligadas.',()=>teo(),'0,42 → 0,98: três pistas razoáveis, multiplicadas, dão confiança alta.',()=>'Confira os controles.'],
+ ['Chegue a mais de <b>99%</b>.',()=>fin()>0.99,()=>'P = '+pc(fin())+': chance de '+r1(etapas().slice(-1)[0])+' para 1.',()=>'Agora: '+pc(fin())+'.'],
+ ['Volte aos números do Téo e transforme uma pista numa <b>pista contra</b> (RV menor que 1).',()=>SPq.get()==1600&&SR.get()==3800&&R.some((r,i)=>on[i]&&r.get()<1),()=>'Agora: '+pc(fin())+'. Uma pista contra divide a chance; se as outras forem fortes, a hipótese resiste.',()=>'Ponha parque 1 600 e retângulo 3 800 e baixe uma RV abaixo de 1.']]);
+function draw(){const v=etapas();let g=RC(0,0,340,200,'#F8FAFC','rx="10"');const nomes=['antes'].concat(NM.filter((n,i)=>on[i]));
+ v.forEach((o,i)=>{const p=o/(1+o),x=14+i*80,w=70;g+=RC(x,70,w,24,'#D1D5DB','rx="4"')+RC(x,70,w*p,24,ORANGE,'rx="4"')+TX(x+w/2,58,nomes[i],{fs:9.5,c:NAVY})+TX(x+w/2,112,pc(p),{fs:11,c:ORANGE})+TX(x+w/2,130,'chance '+r1(o)+':1',{fs:8.5,c:GRAY,w:500});
+  if(i<v.length-1)g+=TX(x+w+5,86,'→',{fs:11,c:GRAY});});
+ g+=TX(170,24,'P(Jalapão) depois de cada pista ligada',{fs:10,c:NAVY});g+=TX(170,170,'a priori = parque ÷ retângulo = '+mil(SPq.get())+' ÷ '+mil(SR.get()),{fs:9.5,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,200,g);
+ $('k1').textContent=pc(pri());$('k2').textContent=r1(v[v.length-1])+' : 1';$('k3').textContent=pc(fin());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
