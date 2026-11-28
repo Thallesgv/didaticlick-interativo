@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os tanques · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Os tanques</h1></header>
+<main>
+<div class="card"><h2>Receita e volume</h2><p class="muted" style="margin-top:0">Escolha o combustível, a razão de mistura (kg de oxigênio por kg de combustível) e a massa total de propelente. O simulador divide a massa, desenha os tanques em escala e diz o que sobra sem queimar.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Razão de mistura (oxigênio : combustível)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Massa total de propelente</b><input type="range"><span></span></div>
+<div class="kpi"><div>Combustível<b id="kc"></b></div><div>Oxigênio<b id="ko"></b></div><div class="o">Volume total<b id="kv"></b></div><div>Sobra sem queimar<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desenhe os tanques.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR_AT={C:'#374151',H:'#E5E7EB',O:'#D9342B'},TXT_AT={C:'#fff',H:NAVY,O:'#fff'};
+const at=(x,y,el,r)=>`<circle cx="${x}" cy="${y}" r="${r||9}" fill="${COR_AT[el]}" stroke="${NAVY}" stroke-width="1"/>`+TX(x,y+3.5,el,{fs:(r||9)>7?9:7,c:TXT_AT[el]});
+const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const formula=(c,h,o)=>(c?'C'+(c>1?sub(c):''):'')+(h?'H'+(h>1?sub(h):''):'')+(o?'O'+(o>1?sub(o):''):'')||'—';
+const fv=v=>(Math.round(v*10)/10).toString().replace('.',',');
+const PR=[{n:'hidrogênio',d:71,est:8},{n:'metano',d:423,est:4},{n:'querosene',d:810,est:3.48}];let pr=0;
+const R=SL('sr',1,10,0.1,8,draw,v=>fv(v)+' : 1'),Mt=SL('sm',5,400,1,10,draw,v=>v+' t');
+const mc=()=>Mt.get()/(1+R.get()),mo=()=>Mt.get()-mc(),vc=()=>mc()*1000/PR[pr].d,vo=()=>mo()*1000/1141;
+const sobra=()=>{const e=PR[pr].est,r=R.get();if(Math.abs(r-e)<0.05)return'nada';return r<e?fv((1-r/e)*100)+'% do '+PR[pr].n:fv((1-e/r)*100)+'% do oxigênio';};
+MIS.def(()=>[
+ ['Com <b>hidrogênio</b>, ache a razão da <b>receita exata</b>, em que nada sobra.',()=>pr==0&&Math.abs(R.get()-8)<0.05,'8 : 1, como diz a equação 2 H₂ + O₂ → 2 H₂O (4 g para 32 g).',()=>pr!=0?'Escolha o hidrogênio.':'Sobra: '+sobra()+'.'],
+ ['Desenhe os tanques do <b>2º estágio do Guará</b>: hidrogênio, razão 6 : 1, 34 t.',()=>pr==0&&Math.abs(R.get()-6)<0.05&&Mt.get()==34,()=>'4,9 t de hidrogênio em '+Math.round(vc())+' m³ e 29,1 t de oxigênio em '+Math.round(vo())+' m³. Sobra '+sobra()+', de propósito.',()=>'Agora: '+PR[pr].n+', '+fv(R.get())+' : 1, '+Mt.get()+' t.'],
+ ['Troque para <b>metano</b> na razão 3,6 : 1, com as mesmas 34 t. Quanto encolhem os tanques?',()=>pr==1&&Math.abs(R.get()-3.6)<0.05&&Mt.get()==34,()=>'Volume total de '+Math.round(vc()+vo())+' m³, contra 95 m³ com hidrogênio: menos da metade.',()=>'Agora: '+PR[pr].n+', '+fv(R.get())+' : 1, '+Mt.get()+' t.'],
+ ['Desenhe o <b>1º estágio</b>: querosene, razão 2,6 : 1, 350 t.',()=>pr==2&&Math.abs(R.get()-2.6)<0.05&&Mt.get()==350,()=>'97 t de querosene em '+Math.round(vc())+' m³ e 253 t de oxigênio em '+Math.round(vo())+' m³.',()=>'Agora: '+PR[pr].n+', '+fv(R.get())+' : 1, '+Mt.get()+' t.']]);
+function draw(){const W=340,H0=220;let g=RC(0,0,W,H0,'#F8FAFC','rx="10"');
+ const tot=vc()+vo(),k=Math.min(150/Math.max(vc(),vo()),150/40);
+ const tq=(x,v,c,n,m)=>{const h=Math.max(4,v*k);g+=RC(x,190-h,70,h,c,'rx="10" stroke="'+NAVY+'" stroke-width="1.2"')+TX(x+35,184-h,Math.round(v)+' m³',{fs:10})+TX(x+35,206,n+': '+fv(m)+' t',{fs:9.5});};
+ tq(60,vo(),'#9CC8F0','oxigênio',mo());tq(200,vc(),ORANGE,PR[pr].n,mc());
+ g+=TX(170,16,'receita exata: '+fv(PR[pr].est)+' : 1',{fs:9.5,c:GRAY});
+ $('fig').innerHTML=SVG(W,H0,g);$('kc').textContent=fv(mc())+' t';$('ko').textContent=fv(mo())+' t';$('kv').textContent=Math.round(tot)+' m³';$('ks').textContent=sobra();MIS.ver('m');}
+chips('ch',['Hidrogênio','Metano','Querosene'],0,i=>{pr=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

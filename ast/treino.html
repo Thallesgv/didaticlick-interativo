@@ -155,7 +155,26 @@ const LIV={'ast1':{T:["Ângulos no céu", "Paralaxe", "UA e ano-luz", "Notação
  return{q:`Rede: origem → A (<b>${sa}</b>), origem → B (<b>${sb}</b>), A → B (<b>${ab}</b>), A → destino (<b>${at}</b>), B → destino (<b>${bt}</b>). Qual o fluxo máximo? (teste os quatro cortes)`,a:m,exp:`Cortes: ${sa}+${sb} = ${cs[0]}; ${sb}+${ab}+${at} = ${cs[1]}; ${sa}+${bt} = ${cs[2]}; ${at}+${bt} = ${cs[3]}. O menor: ${m}.`};},
 6:()=>{const t=R(0,1);
  if(t==0){const [d,n,r]=P([['um triângulo',3,3],['um quadrado (ciclo de 4)',4,2],['um pentágono (ciclo de 5)',5,3],['um hexágono (ciclo de 6)',6,2],['4 vértices todos ligados',4,4],['5 vértices todos ligados',5,5],['uma linha de 6 vértices',6,2]]);return{q:`Qual o número mínimo de cores para colorir <b>${d}</b>?`,a:r,exp:`${r} cores.`};}
- const tu=R(2,5),h=P([4,6,8]);return{q:`Uma evacuação precisa de <b>${tu}</b> turnos de <b>${h} horas</b>. Quanto tempo ela dura, em horas?`,a:tu*h,exp:`${tu} × ${h} = ${tu*h} h.`};}}}};
+ const tu=R(2,5),h=P([4,6,8]);return{q:`Uma evacuação precisa de <b>${tu}</b> turnos de <b>${h} horas</b>. Quanto tempo ela dura, em horas?`,a:tu*h,exp:`${tu} × ${h} = ${tu*h} h.`};}}},'ast7':{T:["Massa molar", "Balancear", "Proporções", "Energia e exaustão", "Tsiolkovsky", "Estágios"],G:{1:()=>{const t=R(0,2);const MOL=[['H₂O',18],['CO₂',44],['CH₄',16],['O₂',32],['H₂',2],['C₂H₆',30],['C₃H₈',44],['C₂H₆O',46],['NH₃',17],['C₁₂H₂₆',170]];
+ if(t==0){const [f,m]=P(MOL.filter(x=>x[0]!='NH₃'));return{q:`Qual a massa molar de <b>${f}</b>? (H = 1, C = 12, O = 16)`,a:m,exp:`Somando as massas dos átomos: ${m} g/mol.`};}
+ if(t==1){const [f,m]=P(MOL.slice(0,6)),n=R(2,10);return{q:`Quantos gramas têm <b>${n} mol</b> de ${f} (${m} g/mol)?`,a:n*m,exp:`${n} × ${m} = ${n*m} g.`};}
+ const [f,m]=P(MOL.slice(0,5)),n=R(2,20);return{q:`Quantos mols há em <b>${n*m} g</b> de ${f} (${m} g/mol)?`,a:n,exp:`${n*m} ÷ ${m} = ${n}.`};},
+2:()=>{const [q,a,e]=P([['2 H₂ + ? O₂ → 2 H₂O',1,'2 O de cada lado.'],['CH₄ + ? O₂ → CO₂ + 2 H₂O',2,'2 + 2 = 4 O à direita.'],['C₂H₄ + ? O₂ → 2 CO₂ + 2 H₂O',3,'4 + 2 = 6 O.'],['C₃H₈ + ? O₂ → 3 CO₂ + 4 H₂O',5,'6 + 4 = 10 O.'],['2 C₂H₆ + ? O₂ → 4 CO₂ + 6 H₂O',7,'8 + 6 = 14 O.'],['2 C₁₂H₂₆ + ? O₂ → 24 CO₂ + 26 H₂O',37,'48 + 26 = 74 O.'],['C + ? O₂ → CO₂',1,'2 O.'],['CO₂ + ? H₂ → CH₄ + 2 H₂O',4,'4 + 4 = 8 H.']]);
+ return{q:`Qual o coeficiente que falta? <b>${q}</b>`,a:a,exp:`${e} Coeficiente: ${a}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const [n,r]=P([['hidrogênio',8],['metano',4]]),m=R(2,20);return{q:`Pela receita exata, quantos kg de oxigênio queimam <b>${m} kg</b> de ${n}?`,a:m*r,exp:`${m} × ${r} = ${m*r} kg.`};}
+ if(t==1){const [n,d]=P([['hidrogênio',71],['metano',423],['querosene',810],['oxigênio',1141]]),k=R(2,20);return{q:`Qual o volume, em m³, de <b>${fmt(k*d)} kg</b> de ${n} líquido (${d} kg/m³)?`,a:k,exp:`${fmt(k*d)} ÷ ${d} = ${k} m³.`};}
+ const r=P([2,3,4,6]),m=(r+1)*R(2,10);return{q:`Propelente com razão <b>${r} : 1</b> (oxigênio : combustível), total de <b>${m} t</b>. Quantas toneladas são de combustível?`,a:m/(r+1),exp:`${m} ÷ ${r+1} = ${m/(r+1)} t.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const E=P([2,4.5,8,12.5,18]);return{q:`Qual a velocidade ideal (em m/s) de um gás com <b>${fmt(E)} MJ</b> por kg? (v = √(2E))`,a:Math.round(Math.sqrt(2*E*1e6)),tol:2,exp:`√(2 × ${fmt(E)} × 10⁶) = ${fmt(Math.round(Math.sqrt(2*E*1e6)))} m/s.`};}
+ if(t==1){const i=P([250,300,350,400,450]);return{q:`Um motor tem Isp de <b>${i} s</b>. Qual a velocidade de exaustão, em m/s? (× 9,81; arredonde)`,a:Math.round(i*9.81),tol:2,exp:`${i} × 9,81 ≈ ${fmt(Math.round(i*9.81))} m/s.`};}
+ const m=R(10,300),v=P([2500,3000,3500,4500]);return{q:`Um motor joga <b>${m} kg</b> de gás por segundo a <b>${fmt(v)} m/s</b>. Qual o empuxo, em newtons?`,a:m*v,exp:`${m} × ${fmt(v)} = ${fmt(m*v)} N.`};},
+5:()=>{const t=R(0,1);
+ if(t==0){const [r,l]=P([[2,0.693],[3,1.099],[5,1.609],[10,2.303],[2.718,1]]),v=P([2.5,3,3.5,4,4.5]);return{q:`Um estágio tem vₑ = <b>${fmt(v)} km/s</b> e razão de massas <b>${fmt(r)}</b> (ln ${fmt(r)} ≈ ${fmt(l)}). Qual o Δv, em km/s? (até 2 casas)`,a:Math.round(v*l*100)/100,tol:0.011,exp:`${fmt(v)} × ${fmt(l)} ≈ ${fmt(Math.round(v*l*100)/100)} km/s.`};}
+ const r=P([2,4,5,10,20]);return{q:`Num estágio com razão de massas <b>${r}</b>, que porcentagem da massa inicial é propelente?`,a:Math.round((1-1/r)*1000)/10,tol:0.051,exp:`1 − 1/${r} = ${fmt(Math.round((1-1/r)*1000)/10)}%.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const a=Math.round(R(25,60))/10,b=Math.round(R(25,80))/10;return{q:`Dois estágios dão <b>${fmt(a)} km/s</b> e <b>${fmt(b)} km/s</b>. Qual o Δv total?`,a:Math.round((a+b)*10)/10,tol:0.01,exp:`${fmt(a)} + ${fmt(b)} = ${fmt(Math.round((a+b)*10)/10)} km/s.`};}
+ const m=P([300,414,550,2900]),c=P([5,10,15,45]);return{q:`Um foguete de <b>${fmt(m)} t</b> leva uma nave de <b>${c} t</b>. Que porcentagem da massa é a nave? (até 1 casa)`,a:Math.round(c/m*1000)/10,tol:0.051,exp:`${c} ÷ ${fmt(m)} ≈ ${fmt(Math.round(c/m*1000)/10)}%.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ast1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

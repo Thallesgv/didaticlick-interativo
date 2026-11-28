@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A chama · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A chama</h1></header>
+<main>
+<div class="card"><h2>Da energia à velocidade</h2><p class="muted" style="margin-top:0">Escolha o propelente e a eficiência do motor (a fração da energia que vira movimento do gás). A velocidade ideal é √(2E); a real é a ideal vezes √(eficiência). O impulso específico é vₑ ÷ 9,81.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Eficiência do motor</b><input type="range"><span></span></div>
+<div class="kpi"><div>Energia por kg<b id="kE"></b></div><div>Velocidade ideal<b id="ki"></b></div><div class="o">Velocidade de exaustão<b id="kv"></b></div><div>Impulso específico<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Acenda o motor.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR_AT={C:'#374151',H:'#E5E7EB',O:'#D9342B'},TXT_AT={C:'#fff',H:NAVY,O:'#fff'};
+const at=(x,y,el,r)=>`<circle cx="${x}" cy="${y}" r="${r||9}" fill="${COR_AT[el]}" stroke="${NAVY}" stroke-width="1"/>`+TX(x,y+3.5,el,{fs:(r||9)>7?9:7,c:TXT_AT[el]});
+const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const formula=(c,h,o)=>(c?'C'+(c>1?sub(c):''):'')+(h?'H'+(h>1?sub(h):''):'')+(o?'O'+(o>1?sub(o):''):'')||'—';
+const fv=v=>(Math.round(v*10)/10).toString().replace('.',',');
+const PR=[{n:'hidrogênio',E:13.4,c:'#7FB3FF'},{n:'metano',E:10.0,c:'#9D7CFF'},{n:'querosene',E:9.6,c:ORANGE}];let pr=0;
+const Ef=SL('se',40,100,1,100,draw,v=>v+'%');
+const vi=()=>Math.sqrt(2*PR[pr].E*1e6)/1000,ve=()=>vi()*Math.sqrt(Ef.get()/100),isp=()=>ve()*1000/9.81;
+MIS.def(()=>[
+ ['Com <b>hidrogênio</b> e eficiência de 100%, qual a velocidade ideal?',()=>pr==0&&Ef.get()==100,()=>'√(2 × 13,4 × 10⁶) ≈ '+fv(vi())+' km/s. Nenhum motor real chega lá.',()=>pr!=0?'Escolha o hidrogênio.':'Ponha a eficiência em 100%.'],
+ ['Ache a eficiência do motor <b>RL10</b>: hidrogênio com vₑ = 4,5 km/s.',()=>pr==0&&ve()>=4.45&&ve()<4.55,()=>'Cerca de '+Ef.get()+'%: Isp ≈ '+Math.round(isp())+' s, como o RL10 de verdade.',()=>pr!=0?'Escolha o hidrogênio.':'Agora vₑ = '+fv(ve())+' km/s.'],
+ ['Ache a eficiência do <b>Merlin</b>: querosene com vₑ = 3,4 km/s.',()=>pr==2&&ve()>=3.35&&ve()<3.45,()=>'Uns '+Ef.get()+'%. O querosene perde no hidrogênio duas vezes: menos energia por kg e motor menos eficiente.',()=>pr!=2?'Escolha o querosene.':'Agora vₑ = '+fv(ve())+' km/s.'],
+ ['Ache a eficiência do <b>Raptor</b>: metano com Isp de 380 s (entre 375 e 385 s).',()=>pr==1&&isp()>=375&&isp()<=385,()=>'Uns '+Ef.get()+'%, com vₑ ≈ '+fv(ve())+' km/s.',()=>pr!=1?'Escolha o metano.':'Agora Isp = '+Math.round(isp())+' s.']]);
+function draw(){const W=340,H0=170;let g=RC(0,0,W,H0,'#0F1B3D','rx="10"');
+ const L=ve()*48;
+ g+=`<polygon points="70,60 70,110 30,100 30,70" fill="#CBD5E1"/>`+RC(70,55,110,60,'#E5E7EB','rx="8"')+`<polygon points="180,55 230,85 180,115" fill="${ORANGE}"/>`;
+ g+=`<polygon points="30,72 ${30-L*0.12},85 30,98" fill="#fff" opacity=".9"/>`;
+ for(let i=0;i<3;i++)g+=`<polygon points="30,${70+i*2} ${Math.max(4,30-L*(0.45+i*0.25))},85 30,${100-i*2}" fill="${PR[pr].c}" opacity="${0.55-i*0.15}"/>`;
+ g+=TX(170,145,'gás saindo a '+fv(ve())+' km/s',{fs:11,c:'#fff'})+TX(125,90,'Guará',{fs:11})+TX(170,163,'ideal: '+fv(vi())+' km/s',{fs:9,c:'#CBD5E1'});
+ $('fig').innerHTML=SVG(W,H0,g);$('kE').textContent=fv(PR[pr].E)+' MJ/kg';$('ki').textContent=fv(vi())+' km/s';$('kv').textContent=fv(ve())+' km/s';$('ks').textContent=Math.round(isp())+' s';MIS.ver('m');}
+chips('ch',['Hidrogênio','Metano','Querosene'],0,i=>{pr=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

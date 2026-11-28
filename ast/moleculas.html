@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança de átomos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A balança de átomos</h1></header>
+<main>
+<div class="card"><h2>Massa molar</h2><p class="muted" style="margin-top:0">Escolha quantos átomos de carbono (C = 12), hidrogênio (H = 1) e oxigênio (O = 16) entram na molécula. O simulador soma as massas e conta quantos mols e quantas moléculas cabem em 1 tonelada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Carbono</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Hidrogênio</b><input type="range"><span></span></div>
+<div class="sl" id="so"><b>Oxigênio</b><input type="range"><span></span></div>
+<div class="kpi"><div>Fórmula<b id="kf"></b></div><div class="o">Massa molar<b id="km"></b></div><div>Mols em 1 tonelada<b id="kn"></b></div><div>Moléculas em 1 tonelada<b id="kq"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte as moléculas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR_AT={C:'#374151',H:'#E5E7EB',O:'#D9342B'},TXT_AT={C:'#fff',H:NAVY,O:'#fff'};
+const at=(x,y,el,r)=>`<circle cx="${x}" cy="${y}" r="${r||9}" fill="${COR_AT[el]}" stroke="${NAVY}" stroke-width="1"/>`+TX(x,y+3.5,el,{fs:(r||9)>7?9:7,c:TXT_AT[el]});
+const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const formula=(c,h,o)=>(c?'C'+(c>1?sub(c):''):'')+(h?'H'+(h>1?sub(h):''):'')+(o?'O'+(o>1?sub(o):''):'')||'—';
+const fv=v=>(Math.round(v*10)/10).toString().replace('.',',');
+const C=SL('sc',0,12,1,0,draw,v=>v),H=SL('sh',0,26,1,2,draw,v=>v),O=SL('so',0,4,1,0,draw,v=>v);
+const M=()=>12*C.get()+H.get()+16*O.get();
+const NOMES={'0,2,0':'gás hidrogênio','0,0,2':'gás oxigênio','0,2,1':'água','1,4,0':'metano','1,0,2':'gás carbônico','12,26,0':'querosene de foguete (dodecano)','2,6,1':'etanol','3,8,0':'propano','2,6,0':'etano'};
+const nm=()=>NOMES[[C.get(),H.get(),O.get()].join(',')]||'';
+const tem=(c,h,o)=>C.get()==c&&H.get()==h&&O.get()==o;
+MIS.def(()=>[
+ ['Monte uma molécula de <b>água</b>.',()=>tem(0,2,1),'H₂O: 2 + 16 = 18 g/mol. Uma tonelada de água tem 55.556 mols.',()=>'Agora: '+formula(C.get(),H.get(),O.get())+'.'],
+ ['Monte o <b>metano</b>, o combustível dos motores novos.',()=>tem(1,4,0),'CH₄: 12 + 4 = 16 g/mol.',()=>'Agora: '+formula(C.get(),H.get(),O.get())+', '+M()+' g/mol.'],
+ ['Monte o <b>gás carbônico</b>, que sai da queima do metano e do querosene.',()=>tem(1,0,2),'CO₂: 12 + 32 = 44 g/mol.',()=>'Agora: '+formula(C.get(),H.get(),O.get())+'.'],
+ ['Monte o <b>querosene de foguete</b>: 12 carbonos e massa molar 170 g/mol.',()=>tem(12,26,0),'C₁₂H₂₆: 144 + 26 = 170 g/mol. Uma tonelada tem uns 5.900 mols.',()=>'Agora: '+formula(C.get(),H.get(),O.get())+', '+M()+' g/mol.']]);
+function draw(){const W=340,H0=190;let g=RC(0,0,W,H0,'#F8FAFC','rx="10"');
+ const lst=[];for(let i=0;i<C.get();i++)lst.push('C');for(let i=0;i<O.get();i++)lst.push('O');for(let i=0;i<H.get();i++)lst.push('H');
+ const n=lst.length,cols=Math.min(14,Math.max(1,n)),r=n>28?8:10;
+ lst.forEach((el,i)=>{const x=W/2-(cols-1)*(r*2+2)/2+(i%cols)*(r*2+2),y=40+Math.floor(i/cols)*(r*2+4);g+=at(x,y,el,r);});
+ if(!n)g+=TX(W/2,60,'escolha os átomos',{fs:11,c:GRAY});
+ g+=TX(W/2,150,formula(C.get(),H.get(),O.get()),{fs:20})+TX(W/2,175,nm()||' ',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H0,g);$('kf').textContent=formula(C.get(),H.get(),O.get());$('km').textContent=M()+' g/mol';
+ $('kn').textContent=M()?fmt(Math.round(1e6/M())):'—';$('kq').textContent=M()?SCI(1e6/M()*6.02e23,2):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
