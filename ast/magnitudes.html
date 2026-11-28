@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua de magnitudes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A régua de magnitudes</h1></header>
+<main>
+<div class="card"><h2>Número maior, brilho menor</h2><p class="muted" style="margin-top:0">Escolha a magnitude de dois astros, A e B. A razão entre os brilhos é 2,512 elevado à diferença. Os botões colocam astros de verdade em A.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Magnitude de A</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Magnitude de B</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Diferença m<sub>B</sub> − m<sub>A</sub><b id="kd"></b></div><div>A brilha mais que B<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as magnitudes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const fm=v=>(v<0?'−':'')+(Math.round(Math.abs(v)*100)/100).toString().replace('.',',');
+const A=SL('sa',-27,31,0.01,1,draw,fm),B=SL('sb',-27,31,0.01,6,draw,fm);
+const AS=[['Sol',-26.7],['Lua cheia',-12.7],['Vênus',-4.6],['Sírius',-1.46],['Vega',0],['Teimoso',20.4]];
+chips('ch',AS.map(x=>x[0]),-1,i=>{A.set(AS[i][1]);draw();});
+const dif=()=>B.get()-A.get(),raz=()=>Math.pow(10,0.4*dif());
+const RZ=v=>v>=1e4||v<0.01?SCI(v,3):(v>=100?fmt(Math.round(v)):r2(v));
+const perto=(x,v)=>Math.abs(x-v)<0.02;
+MIS.def(()=>[
+ ['Deixe A <b>100 vezes</b> mais brilhante que B (razão entre 99 e 101). Qual a diferença de magnitudes?',()=>raz()>=99&&raz()<=101,()=>'Diferença de '+fm(dif())+' magnitudes. A regra de Pogson: 5 magnitudes = 100 vezes.',()=>'Agora a razão é '+RZ(raz())+'.'],
+ ['Ponha o <b>Sol</b> em A e a <b>Lua cheia</b> (−12,7) em B. Quantas vezes o Sol brilha mais?',()=>perto(A.get(),-26.7)&&perto(B.get(),-12.7),()=>'14 magnitudes: 10^5,6 ≈ '+RZ(raz())+' vezes.',()=>'A = '+fm(A.get())+' e B = '+fm(B.get())+'.'],
+ ['Compare <b>Sírius</b> (A, −1,46) com <b>Vega</b> (B, 0).',()=>perto(A.get(),-1.46)&&perto(B.get(),0),()=>'Sírius brilha '+r2(raz())+' vezes mais que Vega, com só 1,46 de diferença.',()=>'A = '+fm(A.get())+' e B = '+fm(B.get())+'.'],
+ ['Ponha o <b>limite do olho</b> (6) em A e o <b>Teimoso</b> (20,4) em B. Quantas vezes mais fraco é o Teimoso?',()=>perto(A.get(),6)&&perto(B.get(),20.4),()=>'O Teimoso é '+RZ(raz())+' vezes mais fraco que a estrela mais fraca que o olho vê.',()=>'A = '+fm(A.get())+' e B = '+fm(B.get())+'.']]);
+function draw(){const W=340,H=200;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,192,40,19);
+ const rad=m=>Math.max(1.2,Math.min(44,22*Math.pow(10,-0.1*(m-0))));const glow=(x,m,c)=>{const r=rad(m);return `<circle cx="${x}" cy="88" r="${r*1.8}" fill="${c}" opacity=".18"/><circle cx="${x}" cy="88" r="${r}" fill="${c}"/>`;};
+ g+=glow(90,A.get(),AMA)+glow(250,B.get(),'#FDE68A');
+ g+=TX(90,160,'A · m = '+fm(A.get()),{fs:11,c:'#fff'})+TX(250,160,'B · m = '+fm(B.get()),{fs:11,c:'#fff'});
+ const x0=20,x1=320,X=m=>x0+(m+27)/58*(x1-x0);g+=LN(x0,186,x1,186,'#94A3B8',1);
+ g+=`<circle cx="${X(A.get())}" cy="186" r="4" fill="${AMA}"/><circle cx="${X(B.get())}" cy="186" r="4" fill="#FDE68A" stroke="#fff"/>`+TX(x0,180,'−27',{fs:8,c:'#94A3B8',a:'start'})+TX(x1,180,'+31',{fs:8,c:'#94A3B8',a:'end'});
+ g+=TX(170,22,raz()>=1?'A brilha '+RZ(raz())+' vezes mais':'B brilha '+RZ(1/raz())+' vezes mais',{fs:11.5,c:'#FDBA74'});
+ $('fig').innerHTML=SVG(W,H,g);$('kd').textContent=fm(dif());$('kr').textContent=RZ(raz())+' vezes';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

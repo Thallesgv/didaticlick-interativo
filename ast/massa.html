@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança dos asteroides · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A balança dos asteroides</h1></header>
+<main>
+<div class="card"><h2>Volume × densidade = massa</h2><p class="muted" style="margin-top:0">Escolha o diâmetro e o material. A esfera dá o volume, V = (4/3)·π·r³, e a densidade dá a massa. A balança compara com o Teimoso (300 m, 2.000 kg/m³).</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Diâmetro</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Volume<b id="kv"></b></div><div>Densidade<b id="kr"></b></div><div>Massa<b id="km"></b></div><div>Em toneladas<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o diâmetro e o material.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MAT=[['Entulho escuro (1.190)',1190,'#3F3F46'],['Entulho rochoso (2.000)',2000,'#8A8F9C'],['Rocha maciça (2.700)',2700,'#A8A29E'],['Ferro (7.800)',7800,'#9CA3AF']];
+let mt=1;chips('ch',MAT.map(x=>x[0]),1,i=>{mt=i;draw();});
+const S=SL('sd',10,1000,1,300,draw,v=>v+' m');
+const V=()=>4/3*Math.PI*Math.pow(S.get()/2,3),M=()=>V()*MAT[mt][1],MT=4/3*Math.PI*Math.pow(150,3)*2000;
+MIS.def(()=>[
+ ['Pese o <b>Teimoso</b>: 300 m de entulho rochoso (2.000 kg/m³).',()=>S.get()==300&&mt==1,()=>'m = 2.000 × '+SCI(V(),3)+' ≈ '+SCI(M(),3)+' kg: uns 28 milhões de toneladas.',()=>'Agora: '+S.get()+' m de '+MAT[mt][0]+'.'],
+ ['Monte o <b>Bennu</b>: 490 m de entulho escuro (1.190 kg/m³). Confira a massa medida pela sonda (7,3 × 10¹⁰ kg).',()=>S.get()==490&&mt==0,()=>SCI(M(),3)+' kg, mais que o dobro do Teimoso, mesmo sendo bem mais leve por metro cúbico.',()=>'Agora: '+S.get()+' m de '+MAT[mt][0]+'.'],
+ ['Volte ao entulho rochoso e <b>dobre</b> o diâmetro do Teimoso (600 m). Quantas vezes a massa aumenta?',()=>S.get()==600&&mt==1,()=>r1(M()/MT)+' vezes: a lei do cubo.',()=>'Agora: '+S.get()+' m de '+MAT[mt][0]+'.'],
+ ['Escolha <b>ferro</b> e ache o diâmetro com a <b>mesma massa do Teimoso</b> (entre 98% e 102%).',()=>mt==3&&M()/MT>=0.98&&M()/MT<=1.02,()=>S.get()+' m de ferro pesam o mesmo que 300 m de entulho: (2.000 ÷ 7.800)^(1/3) ≈ 0,635.',()=>mt!=3?'Escolha o ferro.':'Agora: '+r1(M()/MT*100)+'% da massa do Teimoso.']]);
+function draw(){const W=340,H=220;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');
+ const r=Math.max(3,Math.min(70,S.get()/1000*70*1.3));g+=ROCHA_SVG(90,100,r,6).replace(/fill="[^"]*"/,'fill="'+MAT[mt][2]+'"')+TX(90,196,S.get()+' m',{fs:11});
+ const q=M()/MT,ang=Math.max(-0.35,Math.min(0.35,Math.log10(q)*0.25));const cx=235,cy=110,L=62;
+ const x1=cx-L*Math.cos(ang),y1=cy+L*Math.sin(ang),x2=cx+L*Math.cos(ang),y2=cy-L*Math.sin(ang);
+ g+=PG([[cx,cy],[cx-14,186],[cx+14,186]],NAVY)+LN(x1,y1,x2,y2,NAVY,3);
+ g+=LN(x1,y1,x1,y1+30,GRAY,1)+LN(x2,y2,x2,y2+30,GRAY,1)+RC(x1-24,y1+30,48,5,GRAY)+RC(x2-24,y2+30,48,5,GRAY);
+ g+=`<circle cx="${x1}" cy="${y1+22}" r="8" fill="${MAT[mt][2]}"/>`+`<circle cx="${x2}" cy="${y2+22}" r="8" fill="#8A8F9C"/>`;
+ g+=TX(x1,y1+50,'esta',{fs:9})+TX(x2,y2+50,'Teimoso',{fs:9,c:ORANGE})+TX(cx,30,q>=1?'× '+(q>=100?fmt(Math.round(q)):r2(q))+' o Teimoso':(q>=0.01?r2(q*100)+'% do Teimoso':SCI(q*100,2)+'% do Teimoso'),{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H,g);$('kv').textContent=SCI(V(),3)+' m³';$('kr').textContent=fmt(MAT[mt][1])+' kg/m³';$('km').textContent=SCI(M(),3)+' kg';$('kt').textContent=M()/1000>=1e6?MI(M()/1000).replace('km','t'):fmt(Math.round(M()/1000))+' t';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

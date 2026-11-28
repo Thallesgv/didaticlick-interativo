@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A fórmula do tamanho · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A fórmula do tamanho</h1></header>
+<main>
+<div class="card"><h2>D = (1.329 ÷ √p) × 10^(−H/5)</h2><p class="muted" style="margin-top:0">Escolha a magnitude absoluta H e o albedo p. A rocha aparece na mesma escala de um prédio de 100 m, da Torre Eiffel (330 m) e do Pão de Açúcar (396 m). Se ela for grande demais, a escala muda.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Magnitude absoluta H</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Albedo p</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Diâmetro D<b id="kd"></b></div><div>1.329 ÷ √p<b id="ka"></b></div><div>10^(−H/5)<b id="kb"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude H e p.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const fx=v=>(Math.round(v*1000)/1000).toString().replace('.',',');
+const Hs=SL('sh',14,28,0.1,20.3,draw,v=>r1(v)),Ps=SL('sp',0.02,0.6,0.005,0.25,draw,fx);
+const D=()=>1329/Math.sqrt(Ps.get())*Math.pow(10,-Hs.get()/5)*1000;
+const fD=v=>v>=1000?r2(v/1000)+' km':fmt(Math.round(v))+' m';
+MIS.def(()=>[
+ ['Com o H do Teimoso (<b>20,3</b>), ponha o albedo de uma rocha <b>escura</b>, tipo C (0,05). Que tamanho ele teria?',()=>Math.abs(Hs.get()-20.3)<0.05&&Math.abs(Ps.get()-0.05)<0.003,()=>'Uns '+fD(D())+'. Escuro e grande.',()=>'Agora H = '+r1(Hs.get())+' e p = '+fx(Ps.get())+'.'],
+ ['Agora o albedo de uma rocha <b>muito clara</b> (0,5), com o mesmo H.',()=>Math.abs(Hs.get()-20.3)<0.05&&Math.abs(Ps.get()-0.5)<0.003,()=>'Só '+fD(D())+'. O mesmo pontinho de luz pode ser uma rocha 3 vezes menor.',()=>'Agora H = '+r1(Hs.get())+' e p = '+fx(Ps.get())+'.'],
+ ['Use o albedo medido no infravermelho (<b>0,15</b>) e confira o tamanho do Teimoso: entre 290 e 310 m.',()=>Math.abs(Ps.get()-0.15)<0.003&&D()>=290&&D()<=310,()=>fD(D())+', perto da altura da Torre Eiffel.',()=>'Agora D = '+fD(D())+'.'],
+ ['Com albedo 0,15, ache o H de um asteroide de <b>1 km</b> (entre 0,95 e 1,05 km).',()=>Math.abs(Ps.get()-0.15)<0.003&&D()>=950&&D()<=1050,()=>'H = '+r1(Hs.get())+'. Com 2,6 magnitudes a menos que o Teimoso, a rocha fica 3,3 vezes mais larga.',()=>'Agora D = '+fD(D())+'.']]);
+function draw(){const W=340,H=220;let g=RC(0,0,W,H,'#E0F2FE','rx="10"')+RC(0,190,W,30,'#A7C98E','rx="0"');
+ const Dm=D(),top=Math.max(420,Dm*1.15),k=165/top,y0=190;
+ const ob=[[30,100,'prédio','#F4C9A0'],[80,330,'Torre Eiffel',null],[270,396,'Pão de Açúcar','#7FB069']];
+ g+=RC(22,y0-100*k,22,100*k,'#F4C9A0')+TX(33,y0-100*k-5,'100 m',{fs:8.5});
+ g+=PG([[62,y0],[78,y0-330*k],[94,y0]],'none','stroke="'+NAVY+'" stroke-width="1.4"')+TX(78,y0-330*k-5,'330 m',{fs:8.5});
+ g+=PG([[255,y0],[270,y0-396*k],[300,y0-330*k],[322,y0]],'#7FB069')+TX(272,y0-396*k-5,'396 m',{fs:8.5});
+ const r=Math.max(1.5,Dm/2*k);g+=(r>4?ROCHA_SVG(170,y0-r,r,2):`<circle cx="170" cy="${y0-r}" r="${r}" fill="${ROCHA}"/>`)+TX(170,Math.max(y0-2*r-6,14),fD(Dm),{fs:11,c:ORANGE});
+ g+=TX(W-8,212,'escala: '+fmt(Math.round(top))+' m de altura',{fs:8,c:'#33532A',a:'end'});
+ $('fig').innerHTML=SVG(W,H,g);$('kd').textContent=fD(Dm);$('ka').textContent=fmt(Math.round(1329/Math.sqrt(Ps.get())));$('kb').textContent=SCI(Math.pow(10,-Hs.get()/5),3);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
