@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O plano da camada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O plano da camada</h1></header>
+<main>
+<div class="card"><h2>Mergulho e sentido do mergulho</h2><p class="muted" style="margin-top:0">Mude o mergulho e o sentido para onde o plano desce (arraste ou use − e +). Azul: a reta horizontal (direção). Laranja: a reta de maior declive, por onde a bolinha rola. O disco cinza é o chão horizontal, com o norte marcado.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Mergulho</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Sentido do mergulho</b><input type="range"><span></span></div><div class="kpi"><div>Direção (reta horizontal)<b id="k1"></b></div><div>Notação<b id="k2"></b></div><div class="o">Desce a cada 10 m<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SD=SL('sd',0,90,1,50,()=>draw(),v=>v+'°'),SA=SL('sa',0,355,5,90,()=>draw(),v=>v+'°');
+const th=35*RAD,cx=170,cy=130,s=70;
+const pr=(e,n,u)=>{const x=e*Math.cos(th)-n*Math.sin(th),y=e*Math.sin(th)+n*Math.cos(th);return[cx+s*x,cy-s*(u+0.6*y)];};
+MIS.def(()=>[
+ ['Deixe o plano <b>horizontal</b>.',()=>SD.get()==0,'Mergulho 0°: não existe reta de maior declive, a bolinha fica parada em qualquer lugar.',()=>'O mergulho está em '+SD.get()+'°.'],
+ ['Monte a placa da Sílvia: <b>30°</b> descendo para <b>210°</b>.',()=>SD.get()==30&&SA.get()==210,'210/30: a direção (reta horizontal) fica a 120° ou 300°.',()=>SD.get()!=30?'O mergulho ainda não é 30°.':'Agora o sentido: está em '+SA.get()+'°.'],
+ ['Deixe o plano <b>em pé</b> (vertical).',()=>SD.get()==90,'Mergulho 90°: a reta de maior declive é a vertical. Uma fratura assim corta o morro como uma faca.',()=>'O mergulho está em '+SD.get()+'°.']]);
+function draw(){const d=SD.get()*RAD,a=SA.get()*RAD;
+ const sv=[Math.sin(a-Math.PI/2),Math.cos(a-Math.PI/2),0],dv=[Math.sin(a)*Math.cos(d),Math.cos(a)*Math.cos(d),-Math.sin(d)];
+ const P3=(u,v)=>pr(u*sv[0]+v*dv[0],u*sv[1]+v*dv[1],u*sv[2]+v*dv[2]);
+ let g=RC(0,0,340,260,CEU,'rx="10"');
+ let disco=[];for(let i=0;i<=40;i++){const t=i/40*2*Math.PI;disco.push(pr(1.7*Math.cos(t),1.7*Math.sin(t),0));}
+ g+=PG(disco,'#E5E7EB','stroke="#9CA3AF"')+LN(...pr(0,0,0),...pr(0,1.7,0),GRAY,1,'4 3')+TX(...pr(0,1.95,0),'N',{fs:12,c:NAVY});
+ g+=PG([P3(-1,-1),P3(1,-1),P3(1,1),P3(-1,1)],ROCHA,'stroke="'+ROCHA_E+'" opacity="0.85"');
+ for(let k=-0.6;k<=0.61;k+=0.4)g+=LN(...P3(-1,k),...P3(1,k),ROCHA_E,0.8);
+ g+=LN(...P3(-1,0),...P3(1,0),BLUE,3);
+ if(SD.get()>0){g+=LN(...P3(0,0),...P3(0,1),ORANGE,3)+CIR(...P3(0,0.75),7,ORANGE);}
+ g+=TX(14,22,'mergulho '+SD.get()+'°',{fs:12,a:'start',c:ORANGE})+TX(14,40,'para '+SA.get()+'°',{fs:12,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,260,g);
+ const dir=(SA.get()+270)%360;$('k1').textContent=dir+'° ou '+((dir+180)%360)+'°';$('k2').textContent=SA.get()+'/'+SD.get();
+ $('k3').textContent=SD.get()==90?'vertical':r1(10*Math.tan(d))+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

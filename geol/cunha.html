@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A cunha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A cunha</h1></header>
+<main>
+<div class="card"><h2>Duas fraturas e o eixo da cunha</h2><p class="muted" style="margin-top:0">Mude o mergulho das duas fraturas, a abertura β (de cada lado do eixo) e a inclinação do talude (arraste ou use − e +). À esquerda, a cunha vista de frente; à direita, o corte ao longo do eixo, com o talude. O atrito é φ = 25°.</p>
+<div class="fig" id="fig"></div><div id="luz" style="display:grid;gap:6px;margin:10px 0"></div><div class="sl" id="sd"><b>Mergulho das fraturas</b><input type="range"><span></span></div><div class="sl" id="sb"><b>Abertura β</b><input type="range"><span></span></div><div class="sl" id="st"><b>Talude</b><input type="range"><span></span></div><div class="kpi"><div>tg δ × cos β<b id="k1"></b></div><div>Mergulho do eixo<b id="k2"></b></div><div class="o">A cunha<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function luzes(L){$('luz').innerHTML=L.map(([t,ok])=>`<div style="display:flex;gap:8px;align-items:center;font-size:14px"><span style="width:14px;height:14px;border-radius:50%;background:${ok?VERDE:VERM};flex:none"></span>${t}</div>`).join('');}
+const dif=(a,b)=>{let d=Math.abs(a-b)%360;return d>180?360-d:d;};
+const SD=SL('sd',20,85,1,60,()=>draw(),v=>v+'°'),SB=SL('sb',0,90,1,10,()=>draw(),v=>v+'°'),ST=SL('st',20,90,1,35,()=>draw(),v=>v+'°');
+const tp=()=>Math.tan(SD.get()*RAD)*Math.cos(SB.get()*RAD),p=()=>Math.atan(tp())*DEG,a1=()=>p()<ST.get(),a2=()=>p()>25,cai=()=>a1()&&a2();
+MIS.def(()=>[
+ ['Reproduza a cunha do Seu Lauro: fraturas de <b>50°</b>, β = <b>30°</b>, no barranco de <b>80°</b>.',()=>SD.get()==50&&SB.get()==30&&ST.get()==80,'Eixo de 45,9°: aflora no corte de 80° e vence o atrito. As cunhas caem.',()=>SD.get()!=50?'As fraturas mergulham 50°.':SB.get()!=30?'A abertura é de 30° de cada lado.':'O barranco tem 80°.'],
+ ['Mesma cunha, mas na <b>encosta natural de 35°</b>.',()=>SD.get()==50&&SB.get()==30&&ST.get()==35,'45,9° > 35°: o eixo não aflora, a cunha fica presa. Foi o corte que soltou as pedras.',()=>SD.get()!=50||SB.get()!=30?'Volte a cunha do Seu Lauro (50° e β = 30°).':'Leve o talude para 35°.'],
+ ['Ache a abertura em que o eixo fica <b>horizontal</b>.',()=>SB.get()==90,'β = 90°: as fraturas mergulham para lados opostos e formam uma crista. Não há para onde escorregar.',()=>'Eixo agora: '+r1(p())+'°.']]);
+function draw(){const d=SD.get(),b=SB.get(),pp=p();
+ let g=RC(0,0,340,240,'#fff','rx="10"');
+ // frente: V com abertura proporcional a β e profundidade ligada a δ
+ const cx=85,cy=200,w=20+b*0.9,h=150;
+ g+=PG([[cx,cy],[cx-w,cy-h],[cx,cy-h*0.75]],'#D7D0C4','stroke="#7D776E"')+PG([[cx,cy],[cx,cy-h*0.75],[cx+w,cy-h]],'#BDB4A6','stroke="#7D776E"');
+ g+=LN(cx,cy,cx,cy-h*0.75,VERM,3)+TX(cx,cy+16,'de frente',{fs:10});
+ // corte ao longo do eixo
+ const x0=180,y0=200,L=140,tt=Math.tan(Math.min(ST.get(),89.9)*RAD);
+ const tx=Math.min(L,150/tt);g+=PG([[x0,y0],[x0+tx,y0-tx*tt],[330,y0-tx*tt],[330,y0]],'#C9C3B8','');
+ g+=LN(x0,y0,x0+tx,y0-tx*tt,TERRA_E,4)+TX(x0+6,y0-6,'talude '+ST.get()+'°',{fs:10,a:'start'});
+ const te=Math.tan(pp*RAD),ex=Math.min(150,150/Math.max(te,0.01));g+=LN(x0,y0,x0+ex,y0-ex*te,VERM,3,'6 4')+TX(x0+ex,y0-ex*te-6,'eixo '+r1(pp)+'°',{fs:10,c:VERM,a:'end'});
+ g+=LN(170,y0,330,y0,NAVY,1);
+ $('fig').innerHTML=SVG(340,240,g);
+ luzes([['O eixo aflora ('+r1(pp)+'° < '+ST.get()+'°)',a1()],['Vence o atrito ('+r1(pp)+'° > 25°)',a2()]]);
+ $('k1').textContent=r2(tp());$('k2').textContent=r1(pp)+'°';$('k3').textContent=cai()?'pode cair':'fica presa';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

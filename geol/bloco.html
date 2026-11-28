@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O bloco que pode descer · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O bloco que pode descer</h1></header>
+<main>
+<div class="card"><h2>O pacote entre a encosta e a camada</h2><p class="muted" style="margin-top:0">Mude a distância da trinca até a borda, a largura do setor e o mergulho da camada (arraste ou use − e +). A encosta do setor A tem 110%. O pacote vermelho é desenhado em perspectiva cavaleira.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Trinca até a borda</b><input type="range"><span></span></div><div class="sl" id="sw"><b>Largura do setor</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Mergulho da camada</b><input type="range"><span></span></div><div class="kpi"><div>Profundidade na trinca<b id="k1"></b></div><div>Volume<b id="k2"></b></div><div class="o">Massa (1,8 t/m³)<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SLL=SL('sl',2,20,1,5,()=>draw(),v=>v+' m'),SW=SL('sw',10,100,5,30,()=>draw(),v=>v+' m'),SD=SL('sd',15,50,1,35,()=>draw(),v=>v+'°');
+const prof=()=>Math.max(0,SLL.get()*(1.10-Math.tan(SD.get()*RAD))),vol=()=>SLL.get()*prof()/2*SW.get();
+MIS.def(()=>[
+ ['Reproduza o pacote do setor A: trinca a <b>10 m</b>, largura <b>60 m</b>, camada de <b>30°</b>.',()=>SLL.get()==10&&SW.get()==60&&SD.get()==30,'≈ 1 570 m³ e ≈ 2 800 toneladas sobre o tobogã.',()=>SLL.get()!=10?'A trinca está a 10 m da borda.':SW.get()!=60?'O setor tem 60 m de largura.':'A camada mergulha 30°.'],
+ ['Leve a trinca para <b>20 m</b> (o dobro), sem mudar o resto. O volume dobrou?',()=>SLL.get()==20&&SW.get()==60&&SD.get()==30,'Não: quadruplicou (≈ 6 280 m³). Base e altura do triângulo dobram juntas.',()=>SW.get()!=60||SD.get()!=30?'Mantenha 60 m e 30°.':'A trinca está a '+SLL.get()+' m.'],
+ ['Com trinca a 10 m e 60 m de largura, ache um mergulho que deixa o pacote com <b>menos de 500 m³</b>.',()=>SLL.get()==10&&SW.get()==60&&vol()<500,()=>'Com '+SD.get()+'°, a camada quase acompanha a encosta e o pacote fica fino: '+fmt(Math.round(vol()))+' m³.',()=>SLL.get()!=10||SW.get()!=60?'Volte para 10 m e 60 m.':'Volume agora: '+fmt(Math.round(vol()))+' m³.']]);
+function draw(){const L=SLL.get(),W=SW.get(),ts=1.10,tc=Math.tan(SD.get()*RAD),s=6.2,ox=40,oy=205;
+ const P=(x,z,y)=>[ox+(x+y*0.354)*s,oy-(z+y*0.354)*s];   // cavaleira: fundo a 45°, pela metade
+ let g=RC(0,0,340,240,CEU,'rx="10"');
+ const Wd=W/3,X=22,zt=L*ts;
+ // frente: rocha (abaixo da camada) e solo (acima da camada, além da trinca)
+ g+=PG([P(-5,0,0),P(0,0,0),P(X,X*tc,0),P(X,-4,0),P(-5,-4,0)],'#C9C3B8','stroke="#7D776E"');
+ for(let k=1;k<4;k++)g+=LN(...P(0,-k,0),...P(X,X*tc-k,0),'#8E8579',1);
+ if(tc<ts){g+=PG([P(L,L*tc,0),P(L,zt,0),P(X,zt,0),P(X,X*tc,0)],TERRA,'stroke="'+TERRA_E+'"');
+  const A=P(0,0,0),B=P(L,zt,0),C=P(L,L*tc,0),A2=P(0,0,Wd),B2=P(L,zt,Wd),C2=P(L,L*tc,Wd);
+  g+=PG([A,B,B2,A2],'#F4A79A','stroke="'+VERM+'"')+PG([B,C,C2,B2],'#E57F6E','stroke="'+VERM+'"')+PG([A,B,C],'#F7B9AE','stroke="'+VERM+'" stroke-width="2"');
+  g+=LN(...P(L,zt,0),...P(L,zt+3,0),VERM,1.5,'3 2')+TX(...P(L,zt+3.8,0),'trinca',{fs:10,c:VERM});
+  g+=TX(C[0]-4,(B[1]+C[1])/2,r1(prof())+' m',{fs:10,a:'end',c:VERM});}
+ else g+=PG([P(0,0,0),P(X,X*ts,0),P(X,X*tc,0)],TERRA,'stroke="'+TERRA_E+'"')+TX(170,120,'a camada não aflora: sem tobogã',{fs:12,c:VERDE});
+ g+=LN(...P(-5,0,0),...P(0,0,0),TERRA_E,3)+TX(...P(-3,0.8,0),'borda',{fs:9});
+ g+=TX(330,22,fmt(Math.round(vol()))+' m³',{fs:15,a:'end',c:VERM,w:700})+TX(330,38,'largura desenhada a 1/3',{fs:9,a:'end',c:GRAY});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(prof())+' m';$('k2').textContent=fmt(Math.round(vol()))+' m³';$('k3').textContent=fmt(Math.round(vol()*1.8))+' t';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
