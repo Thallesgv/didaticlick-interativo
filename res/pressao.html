@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O barômetro da cápsula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O barômetro da cápsula</h1></header>
+<main>
+<div class="card"><h2>p(z) = p₀ + 0,012 · z</h2><p class="muted" style="margin-top:0">Perto do nível do mar, a pressão do ar muda cerca de 1,2 kPa a cada 100 m. Mude a pressão na boca da mina (p₀) e a profundidade da cápsula. O barômetro acompanha a descida, e o pulmão mostra o oxigênio de cada respiração (21% da pressão).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sz"><b>Profundidade</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Pressão na boca</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Pressão<b id="k1"></b></div><div>Oxigênio (21%)<b id="k2"></b></div><div>Em relação à boca<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desça com o barômetro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',G=9.8,FURO=761.6,COS=700/761.6,SEN=300/761.6;
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);const N0=v=>fmt(Math.round(v));
+function SETA(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return '';const h=Math.min(10,L*0.4);
+ return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||3)+PG([[x2,y2],[x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)],[x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)]],c);}
+function CAPS(cx,cy,ang,h,w,cor){const ux=Math.sin(ang),uy=-Math.cos(ang),vx=Math.cos(ang),vy=Math.sin(ang);const p=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*vx+b*h/2*ux,cy+a*w/2*vy+b*h/2*uy]);
+ return PG(p,cor||ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+const Z=SL('sz',0,1000,5,100,draw,v=>v+' m'),P0=SL('sp',80,102,0.1,95,draw,v=>d1(v)+' kPa');const p=()=>P0.get()+0.012*Z.get();
+MIS.def(()=>[
+ ['Na Mina Esperança, a boca tem <b>92,0 kPa</b>. Desça até o refúgio, a <b>700 m</b>.',()=>perto(P0.get(),92,0.01)&&Z.get()==700,'100,4 kPa: 92 + 8,4. Quase a pressão do nível do mar, e uns 9% mais oxigênio por respiração que na boca.',()=>'Agora: '+d1(p())+' kPa.'],
+ ['Ache a profundidade em que se chega à pressão do <b>nível do mar</b>, 101,3 kPa.',()=>perto(P0.get(),92,0.01)&&Z.get()==775,'775 m: 0,012z = 9,3. Só 75 m abaixo do refúgio.',()=>'Agora: '+d1(p())+' kPa a '+Z.get()+' m.'],
+ ['E se a mina ficasse no <b>litoral</b> (101,3 kPa na boca)? Qual a pressão no refúgio?',()=>perto(P0.get(),101.3,0.01)&&Z.get()==700,'109,7 kPa: 8,4 kPa acima da boca, uns 8% a mais. Os ouvidos sentem a mesma diferença, onde quer que a mina esteja.',()=>'Agora: '+d1(p())+' kPa.']]);
+function draw(){const z=Z.get(),pr=p();let g='';const y0=16,H=200,sy=H/1000;
+ g+=RC(30,y0,60,H,ROCHA)+RC(56,y0,8,H,'#F6EEDF')+RC(50,y0+z*sy-12,20,24,ORANGE,'rx="3" stroke="#0E2354" stroke-width="1"')+LN(30,y0+700*sy,90,y0+700*sy,VERM,1.5,'4 3');
+ const cx=180,cy=110,R=56,a0=Math.PI*0.9,a1=Math.PI*0.1,ang=v=>a0-(Math.min(115,Math.max(80,v))-80)/35*(a0-a1);
+ g+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="#fff" stroke="${NAVY}" stroke-width="2"/>`;for(let q=80;q<=115;q+=5){const a=ang(q);g+=LN(cx+(R-8)*Math.cos(a),cy-(R-8)*Math.sin(a),cx+R*Math.cos(a),cy-R*Math.sin(a),NAVY,1.5)+TX(cx+(R-18)*Math.cos(a),cy-(R-18)*Math.sin(a)+3,q,{fs:8,c:GRAY,w:500});}
+ const a=ang(pr);g+=LN(cx,cy,cx+(R-10)*Math.cos(a),cy-(R-10)*Math.sin(a),VERM,3)+`<circle cx="${cx}" cy="${cy}" r="4" fill="${NAVY}"/>`+TX(cx,cy+30,d1(pr)+' kPa',{fs:12,c:VERM});
+ const o2=0.21*pr,n=Math.round(o2*2);g+=`<ellipse cx="290" cy="110" rx="36" ry="52" fill="#FDE2E2" stroke="${NAVY}" stroke-width="1.5"/>`;
+ let s=7;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;for(let i=0;i<n;i++){const t=rnd()*2*Math.PI,r=Math.sqrt(rnd());g+=`<circle cx="${(290+30*r*Math.cos(t)).toFixed(1)}" cy="${(110+46*r*Math.sin(t)).toFixed(1)}" r="2.6" fill="${AZP}"/>`;}
+ g+=TX(290,180,'O₂: '+d1(o2)+' kPa',{fs:11,c:AZP});$('fig').innerHTML=SVG(340,224,g);
+ $('k1').textContent=d1(pr)+' kPa';$('k2').textContent=d1(o2)+' kPa';$('k3').textContent='+'+d1(pr-P0.get())+' kPa ('+d1((pr/P0.get()-1)*100)+'%)';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

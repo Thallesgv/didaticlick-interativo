@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cabo do Seu Valdir · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O cabo do Seu Valdir</h1></header>
+<main>
+<div class="card"><h2>A tração ao longo do cabo</h2><p class="muted" style="margin-top:0">O cabo tem 761,6 m e rompe com 120.000 N. Mude a massa do mineiro, a massa do cabo por metro e a aceleração da partida. O gráfico mostra a tração em cada ponto do cabo: lá embaixo, só a cápsula; lá em cima, a cápsula e o cabo inteiro. Tudo ao longo do furo (× cos 23,2°).</p>
+<div class="fig" id="gr"></div><div class="fig" id="fs"></div>
+<div class="sl" id="sm"><b>Mineiro</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Cabo</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Aceleração da partida</b><input type="range"><span></span></div>
+<div class="kpi"><div>Na cápsula<b id="k1"></b></div><div class="o">No alto do cabo<b id="k2"></b></div><div>Fator de segurança<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Confira o cabo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',G=9.8,FURO=761.6,COS=700/761.6,SEN=300/761.6;
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);const N0=v=>fmt(Math.round(v));
+function SETA(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return '';const h=Math.min(10,L*0.4);
+ return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||3)+PG([[x2,y2],[x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)],[x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)]],c);}
+function CAPS(cx,cy,ang,h,w,cor){const ux=Math.sin(ang),uy=-Math.cos(ang),vx=Math.cos(ang),vy=Math.sin(ang);const p=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*vx+b*h/2*ux,cy+a*w/2*vy+b*h/2*uy]);
+ return PG(p,cor||ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+const M=SL('sm',40,120,1,60,draw,v=>v+' kg'),C=SL('sc',0.5,4,0.01,1,draw,v=>r2(v)+' kg/m'),A=SL('sa',0,1,0.01,0,draw,v=>r2(v)+' m/s²');
+const mc=()=>420+M.get(),tr=s=>(mc()+C.get()*s)*(G*COS+A.get()),topo=()=>tr(FURO),fsg=()=>120000/topo();
+MIS.def(()=>[
+ ['Com o mineiro de <b>80 kg</b>, um cabo de <b>2 kg/m</b> e partida suave (aceleração <b>0</b>), quanto o guincho puxa lá no alto?',()=>M.get()==80&&perto(C.get(),2,0.001)&&A.get()==0,'18.225 N: 4.504 da cápsula e 13.721 do próprio cabo. Fator de segurança 6,6.',()=>'No alto agora: '+N0(topo())+' N.'],
+ ['Agora um <b>tranco</b>: a cápsula vai de 0 a 0,63 m/s em 1 s (aceleração <b>0,63</b>). O que acontece no alto?',()=>M.get()==80&&perto(C.get(),2,0.001)&&perto(A.get(),0.63,0.001),'Uns 19.500 N: o tranco acelera a cápsula e os 1.523 kg de cabo, 1.275 N a mais. O fator cai para 6,2.',()=>'No alto agora: '+N0(topo())+' N.'],
+ ['Sem tranco, ache o cabo <b>mais pesado</b> (kg/m) que ainda dá fator de segurança de pelo menos <b>5</b>.',()=>M.get()==80&&A.get()==0&&perto(C.get(),2.84,0.001),'2,84 kg/m: 23.987 N no alto, fator 5,003. Com 2,85 kg/m, o fator ficaria abaixo de 5.',()=>'Fator agora: '+r2(fsg())+'.']]);
+function draw(){$('gr').innerHTML=PLOT({xmin:0,xmax:800,ymin:0,ymax:40000,dx:100,dy:10000,xl:'metros de cabo acima da cápsula',yl:'tração (N)',fy:v=>fmt(v/1000)+' mil'},(X,Y)=>{
+  const pts=[];for(let s=0;s<=FURO;s+=20)pts.push([s,tr(s)]);pts.push([FURO,tr(FURO)]);return linha([[0,24000],[800,24000]],X,Y,VERM,1.5,'6 4')+linha(pts,X,Y,ORANGE,3.5)+ponto(FURO,topo(),X,Y,NAVY)+ponto(0,tr(0),X,Y,ORANGE);});
+ const f=fsg();let g=RC(20,10,300,20,'#F3F4F6','rx="6"')+RC(20,10,Math.min(300,f/10*300),20,f>=5?GREEN:VERM,'rx="6"')+LN(20+150,6,20+150,34,NAVY,2)+TX(170,48,'fator 5',{fs:10});
+ g+=TX(330,48,'fator '+r2(f),{fs:11,a:'end',c:f>=5?GREEN:VERM});$('fs').innerHTML=SVG(340,54,g);
+ $('k1').textContent=N0(tr(0))+' N';$('k2').textContent=N0(topo())+' N';$('k3').textContent=r2(f);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

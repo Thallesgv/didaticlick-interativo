@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A soma das setas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A soma das setas</h1></header>
+<main>
+<div class="card"><h2>Peso, tração e resultante</h2><p class="muted" style="margin-top:0">A cápsula tem 420 kg. Mude a massa do mineiro e a força do cabo. A seta vermelha é o peso (m · g, com g = 9,8), a azul é a tração, e a laranja é a soma das duas. Com soma zero, a velocidade não muda.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Mineiro</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Força do cabo</b><input type="range"><span></span></div>
+<div class="kpi"><div>Peso<b id="k1"></b></div><div class="o">Resultante<b id="k2"></b></div><div>Aceleração<b id="k3"></b></div><div>A cápsula<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Equilibre a cápsula.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',G=9.8,FURO=761.6,COS=700/761.6,SEN=300/761.6;
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);const N0=v=>fmt(Math.round(v));
+function SETA(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return '';const h=Math.min(10,L*0.4);
+ return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||3)+PG([[x2,y2],[x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)],[x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)]],c);}
+function CAPS(cx,cy,ang,h,w,cor){const ux=Math.sin(ang),uy=-Math.cos(ang),vx=Math.cos(ang),vy=Math.sin(ang);const p=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*vx+b*h/2*ux,cy+a*w/2*vy+b*h/2*uy]);
+ return PG(p,cor||ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+const M=SL('sm',40,120,1,60,draw,v=>v+' kg'),T=SL('st',0,8000,1,4000,draw,v=>fmt(v)+' N');
+const mt=()=>420+M.get(),P_=()=>mt()*G,R=()=>T.get()-P_();let y=100,vel=0,last=performance.now();
+MIS.def(()=>[
+ ['Com o mineiro de <b>80 kg</b>, ache a força do cabo que deixa a soma das forças em <b>zero</b>.',()=>M.get()==80&&T.get()==4900,'4.900 N: o mesmo módulo do peso, 500 × 9,8. A cápsula fica parada, ou sobe sem mudar a velocidade.',()=>'Resultante agora: '+N0(R())+' N.'],
+ ['Faça a cápsula com o mineiro de 80 kg <b>acelerar para cima</b> com 100 N de sobra.',()=>M.get()==80&&T.get()==5000,'5.000 N: sobram 100 N para cima. a = 100 ÷ 500 = 0,2 m/s², uma partida suave.',()=>'Resultante agora: '+N0(R())+' N.'],
+ ['O próximo mineiro tem <b>95 kg</b>. Qual a tração para subir com velocidade constante?',()=>M.get()==95&&T.get()==5047,'5.047 N: 515 × 9,8. Cada quilo a mais pede 9,8 N a mais do cabo.',()=>'Resultante agora: '+N0(R())+' N.']]);
+function cena(){const el=$('cn');if(!el)return;const now=performance.now(),dt=Math.min(0.05,(now-last)/1000);last=now;const a=R()/mt();
+ vel+=a*dt*40;if(Math.abs(R())<0.5)vel*=0.9;y-=vel*dt;if(y<40){y=40;vel=0;}if(y>170){y=170;vel=0;}
+ const k=0.012,cx=110;let g=LN(cx,0,cx,y-30,'#6B7280',2)+CAPS(cx,y,0,60,22);
+ g+=SETA(cx+30,y,cx+30,y-T.get()*k,AZP,4)+SETA(cx+30,y,cx+30,y+P_()*k,VERM,4)+(Math.abs(R())>0.5?SETA(cx+60,y,cx+60,y-R()*k*3,ORANGE,5):'');el.innerHTML=g;}
+function anima(){cena();requestAnimationFrame(anima);}
+function draw(){let g='<g id="cn"></g>';g+=TX(230,40,'tração',{fs:11,a:'start',c:AZP})+TX(230,58,fmt(T.get())+' N',{fs:13,a:'start',c:AZP});
+ g+=TX(230,90,'peso',{fs:11,a:'start',c:VERM})+TX(230,108,N0(P_())+' N',{fs:13,a:'start',c:VERM});
+ g+=TX(230,140,'soma',{fs:11,a:'start',c:ORANGE})+TX(230,158,(R()>0.5?'+':'')+N0(R())+' N',{fs:13,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,230,g);cena();const a=R()/mt();
+ $('k1').textContent=N0(P_())+' N';$('k2').textContent=N0(R())+' N';$('k3').textContent=r2(a)+' m/s²';$('k4').textContent=Math.abs(R())<0.5?'velocidade constante':R()>0?'acelera para cima':'acelera para baixo';MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>

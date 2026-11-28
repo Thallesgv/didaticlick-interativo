@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A viagem da cápsula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A viagem da cápsula</h1></header>
+<main>
+<div class="card"><h2>O vetor velocidade e o relógio do resgate</h2><p class="muted" style="margin-top:0">O furo tem 761,6 m: 700 m para baixo e 300 m para o lado. Mude os tempos de subida, de descida e de embarque. A cápsula faz a viagem em escala (1 minuto vira 0,3 s), e o relógio soma as 35 subidas do resgate (33 mineiros e 2 socorristas).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Subida com uma pessoa</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Descida vazia</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Embarque</b><input type="range"><span></span></div>
+<div class="kpi"><div>Ao longo do furo<b id="k1"></b></div><div>Para cima<b id="k2"></b></div><div>Para o lado<b id="k3"></b></div><div class="o">Resgate (35 ciclos)<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Cronometre a subida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',G=9.8,FURO=761.6,COS=700/761.6,SEN=300/761.6;
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);const N0=v=>fmt(Math.round(v));
+function SETA(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return '';const h=Math.min(10,L*0.4);
+ return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||3)+PG([[x2,y2],[x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)],[x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)]],c);}
+function CAPS(cx,cy,ang,h,w,cor){const ux=Math.sin(ang),uy=-Math.cos(ang),vx=Math.cos(ang),vy=Math.sin(ang);const p=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*vx+b*h/2*ux,cy+a*w/2*vy+b*h/2*uy]);
+ return PG(p,cor||ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+const S=SL('ss',5,40,0.5,30,()=>{t0=performance.now();draw();},v=>fmt(v)+' min'),D=SL('sd',5,30,0.5,15,()=>{t0=performance.now();draw();},v=>fmt(v)+' min'),E=SL('se',2,15,0.5,5,()=>{t0=performance.now();draw();},v=>fmt(v)+' min');
+const ciclo=()=>S.get()+D.get()+E.get(),tot=()=>35*ciclo();let t0=performance.now();
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+MIS.def(()=>[
+ ['Ponha os tempos do Seu Valdir: subida de <b>20 min</b>, descida de <b>15</b> e embarque de <b>5</b>. Qual a velocidade ao longo do furo?',()=>S.get()==20&&D.get()==15&&E.get()==5,'38,1 m/min (0,63 m/s): 35 m/min para cima e 15 para o lado. O resgate leva 23 h 20 min.',()=>'Agora: '+d1(FURO/S.get())+' m/min.'],
+ ['Com 15 min de descida e 5 de embarque, ache a <b>maior</b> duração da subida que faz o resgate caber em <b>20 horas</b>.',()=>S.get()==14&&D.get()==15&&E.get()==5,'14 min (14,3 na conta exata): ciclos de 34 min, 19 h 50 min de resgate. A cápsula sobe a 54,4 m/min.',()=>'Resgate agora: '+hm(tot())+'.'],
+ ['Veja uma subida de <b>10 min</b>. Qual a velocidade vertical?',()=>S.get()==10,'70 m/min para cima e 30 para o lado: o dobro da subida de 20 min. Mais rápido, mas a médica pediu uma subida suave.',()=>'Para cima agora: '+d1(700/S.get())+' m/min.']]);
+function cena(){const el=$('cn');if(!el)return;const esc=0.3,c=ciclo(),tm=((performance.now()-t0)/1000/esc)%c;let f,fase;
+ if(tm<D.get()){f=tm/D.get();fase='descendo vazia';}else if(tm<D.get()+E.get()){f=1;fase='embarque';}else{f=1-(tm-D.get()-E.get())/S.get();fase='subindo';}
+ const x0=30,y0=20,X=x0+f*300*0.42,Y=y0+f*700*0.26;let g=CAPS(X,Y,Math.atan2(300,700),26,10,fase=='subindo'?ORANGE:'#9CA3AF');
+
+ g+=TX(250,40,fase,{fs:12,c:fase=='subindo'?ORANGE:GRAY})+TX(250,58,'minuto '+d1(tm)+' de '+d1(c),{fs:11});el.innerHTML=g;}
+function anima(){cena();requestAnimationFrame(anima);}
+function draw(){const s=S.get(),vl=FURO/s,vz=700/s,vx=300/s;let g='';const x0=30,y0=20;
+ g+=LN(x0,y0,x0+300*0.42,y0+700*0.26,'#6B4E34',14)+LN(x0,y0,x0+300*0.42,y0+700*0.26,'#F6EEDF',8)+TX(x0-4,y0-6,'boca',{fs:9,a:'start',c:GRAY,w:500})+TX(x0+300*0.42+8,y0+700*0.26+4,'refúgio',{fs:9,a:'start',c:GRAY,w:500});
+ const bx=310,by=200,k=1.4;g+=PG([[bx,by],[bx-vx*k,by],[bx-vx*k,by-vz*k]],PEACH)+SETA(bx,by,bx-vx*k,by-vz*k,ORANGE,3.5)+SETA(bx,by,bx-vx*k,by,AZP,2)+SETA(bx-vx*k,by,bx-vx*k,by-vz*k,NAVY,2);
+ g+=TX(bx-vx*k/2,by+14,d1(vx)+' m/min',{fs:10,c:AZP})+TX(bx-vx*k-6,by-vz*k/2+12,d1(vz)+' m/min',{fs:10,a:'end',c:NAVY})+TX(bx-vx*k-6,by-vz*k+4,d1(vl)+' m/min',{fs:10,a:'end',c:ORANGE});
+ g+='<g id="cn"></g>';$('fig').innerHTML=SVG(340,226,g);cena();
+ $('k1').textContent=d1(vl)+' m/min ('+r2(vl/60)+' m/s)';$('k2').textContent=d1(vz)+' m/min';$('k3').textContent=d1(vx)+' m/min';$('k4').textContent=hm(tot());MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>

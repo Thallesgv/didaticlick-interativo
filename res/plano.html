@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O peso no furo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O peso no furo</h1></header>
+<main>
+<div class="card"><h2>Decompor o peso</h2><p class="muted" style="margin-top:0">A cápsula com o mineiro pesa 4.900 N. Mude o ângulo entre o furo e a vertical. O peso se divide em uma parte ao longo do furo (o cabo segura) e outra contra a parede (as rodas seguram).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo com a vertical</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Ao longo do furo (cabo)<b id="k1"></b></div><div>Contra a parede (rodas)<b id="k2"></b></div><div>cos e sen<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Incline o furo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',G=9.8,FURO=761.6,COS=700/761.6,SEN=300/761.6;
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);const N0=v=>fmt(Math.round(v));
+function SETA(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return '';const h=Math.min(10,L*0.4);
+ return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||3)+PG([[x2,y2],[x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)],[x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)]],c);}
+function CAPS(cx,cy,ang,h,w,cor){const ux=Math.sin(ang),uy=-Math.cos(ang),vx=Math.cos(ang),vy=Math.sin(ang);const p=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*vx+b*h/2*ux,cy+a*w/2*vy+b*h/2*uy]);
+ return PG(p,cor||ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+const A=SL('sa',0,90,0.1,10,draw,v=>fmt(Math.round(v*10)/10)+'°');const PW=4900;
+MIS.def(()=>[
+ ['Ponha o ângulo do furo da Mina Esperança, <b>23,2°</b>. Quanto o cabo segura?',()=>perto(A.get(),23.2,0.01),'4.504 N ao longo do furo e 1.930 N contra a parede. Os dois catetos e o peso formam um triângulo retângulo.',()=>'Cabo agora: '+N0(PW*Math.cos(A.get()*RAD))+' N.'],
+ ['Ache o ângulo em que as <b>duas partes ficam iguais</b>.',()=>perto(A.get(),45,0.01),'45°: cos 45° = sen 45° ≈ 0,707, uns 3.465 N para cada lado.',()=>'Agora: '+N0(PW*Math.cos(A.get()*RAD))+' N e '+N0(PW*Math.sin(A.get()*RAD))+' N.'],
+ ['Ache o ângulo em que o cabo segura <b>só metade</b> do peso.',()=>perto(A.get(),60,0.01),'60°: cos 60° = 0,5, 2.450 N no cabo. As rodas seguram os outros 4.243 N, mais que o cabo.',()=>'Cabo agora: '+N0(PW*Math.cos(A.get()*RAD))+' N.']]);
+function draw(){const t=A.get()*RAD,c=Math.cos(t),s=Math.sin(t);let g='';const ox=40,oy=212,L=230,ex=ox+L*s,ey=oy-L*c;
+ for(const k of [-1,1])g+=LN(ox+k*17*c,oy+k*17*s,ex+k*17*c,ey+k*17*s,'#6B4E34',2.5);
+ const cx=ox+130*s+5*c,cy=oy-130*c+5*s;g+=CAPS(cx,cy,t,56,20);
+ const k=0.018,fx=cx,fy=cy;g+=SETA(fx,fy,fx,fy+PW*k,VERM,3.5);
+ const par=PW*c,per=PW*s;g+=SETA(fx,fy,fx-par*k*s,fy+par*k*c,AZP,3)+SETA(fx,fy,fx+per*k*c,fy+per*k*s,ORANGE,3);
+ g+=LN(fx-par*k*s,fy+par*k*c,fx,fy+PW*k,'#9CA3AF',1,'3 3')+LN(fx+per*k*c,fy+per*k*s,fx,fy+PW*k,'#9CA3AF',1,'3 3');
+ const bx=236,bw=90;g+=TX(bx,24,'peso: 4.900 N',{fs:11,a:'start',c:VERM});
+ g+=RC(bx,40,bw,14,'#F3F4F6')+RC(bx,40,bw*c,14,AZP)+TX(bx,70,'cabo: '+N0(par)+' N',{fs:11,a:'start',c:AZP});
+ g+=RC(bx,84,bw,14,'#F3F4F6')+RC(bx,84,bw*s,14,ORANGE)+TX(bx,114,'rodas: '+N0(per)+' N',{fs:11,a:'start',c:ORANGE});
+ g+=TX(bx,150,A.get()==0?'furo vertical':A.get()>=89.9?'túnel horizontal':'',{fs:11,a:'start'});
+ $('fig').innerHTML=SVG(340,236,g);$('k1').textContent=N0(par)+' N';$('k2').textContent=N0(per)+' N';$('k3').textContent=fmt(Math.round(c*1000)/1000)+' e '+fmt(Math.round(s*1000)/1000);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
