@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O canteiro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O canteiro</h1></header>
+<main>
+<div class="card"><h2>Binomial e simulação</h2><p class="muted" style="margin-top:0">Cada canteiro tem n covas com uma semente; cada uma germina com chance p. As barras verdes mostram quantos canteiros tiveram 0, 1, 2, ... plantas; os tracinhos laranja, o que a binomial prevê.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin:8px 0"><button id="b1">Plantar 1 canteiro</button><button class="alt" id="b1000">Plantar 1.000</button><button class="alt" id="bz">Limpar</button></div>
+<div class="sl" id="sn"><b>Covas por canteiro (n)</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Germinação (p)</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Destacar k plantas</b><input type="range"><span></span></div>
+<div class="kpi"><div>Canteiros<b id="kc"></b></div><div>Germinação medida<b id="kg"></b></div><div class="o">P(X = k)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Plante.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0',VERDE='#2F7D4A',VERDEC='#CFE8D6',GRAD='#E5E7EB';
+const F2=v=>fmt(Math.round(v*100)/100),F3=v=>fmt(Math.round(v*1000)/1000);
+const COMB=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const eqv=(a,b)=>Math.abs(a-b)<1e-6;
+let H=[],ult=null;const zera=()=>{H=Array(N.get()+1).fill(0);ult=null;};
+const N=SL('sn',1,30,1,10,()=>{K.set(Math.min(K.get(),N.get()));zera();draw();}),Pp=SL('sp',0.5,1,0.05,0.8,()=>{zera();draw();},v=>fmt(v)),K=SL('sk',0,30,1,10,()=>draw());
+const um=()=>{let c=0;for(let i=0;i<N.get();i++)if(Math.random()<Pp.get())c++;H[c]++;ult=c;};
+$('b1').onclick=()=>{um();draw();};$('b1000').onclick=()=>{for(let i=0;i<1000;i++)um();draw();};$('bz').onclick=()=>{zera();draw();};
+const tot=()=>H.reduce((a,b)=>a+b,0),bin=k=>COMB(N.get(),k)*Math.pow(Pp.get(),k)*Math.pow(1-Pp.get(),N.get()-k),germ=()=>tot()?H.reduce((a,b,i)=>a+b*i,0)/(tot()*N.get()):0;
+const base=()=>N.get()==10&&eqv(Pp.get(),0.8);
+MIS.def(()=>[
+ ['Com 10 covas e germinação 0,8, plante <b>um canteiro</b>. Quantas plantas nasceram?',()=>base()&&tot()>=1,()=>'Nasceram '+ult+' de 10. O esperado é 10 × 0,8 = 8, mas cada canteiro é um sorteio.',()=>'n = 10, p = 0,8 e "Plantar 1 canteiro".'],
+ ['Destaque <b>k = 8</b>: qual a chance de exatamente 8 plantas?',()=>base()&&K.get()==8,'C(10, 8) × 0,8⁸ × 0,2² = 45 × 0,168 × 0,04 ≈ 0,30. O resultado mais provável acontece só em 30% dos canteiros.',()=>'Mova "Destacar k" para 8.'],
+ ['Plante <b>mais 1.000 canteiros</b> e compare as barras com a binomial.',()=>base()&&tot()>=1000,()=>'Em '+fmt(tot())+' canteiros, '+PC(H[8]/tot()*100)+' tiveram 8 plantas. As barras encostam nos tracinhos: com muitas repetições, a frequência se aproxima da probabilidade.',()=>'Faltam '+(1000-tot())+' canteiros.'],
+ ['Agora meça a germinação com covas soltas: <b>n = 1</b> e 1.000 plantios.',()=>N.get()==1&&eqv(Pp.get(),0.8)&&tot()>=1000,()=>'Germinação medida: '+PC(germ()*100)+' em '+fmt(tot())+' covas. Com 10 covas variava de 60% a 100%; com 1.000, fica colada em 80%: é a lei dos grandes números.',()=>N.get()!=1?'n = 1.':'Faltam '+(1000-tot())+' plantios.']]);
+function quadro(){const W=340,H_=220,n=N.get(),y0=180,w=Math.min(28,300/(n+1)),x0=20;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');
+ let mx=0.05;for(let k=0;k<=n;k++)mx=Math.max(mx,bin(k),tot()?H[k]/tot():0);const sc=150/mx;
+ for(let k=0;k<=n;k++){const x=x0+k*w,f=tot()?H[k]/tot():0;g+=RC(x+1,y0-f*sc,w-2,f*sc,k==K.get()?'#9BD3AE':VERDEC,'stroke="'+VERDE+'" stroke-width=".8"');
+  g+=LN(x+1,y0-bin(k)*sc,x+w-1,y0-bin(k)*sc,ORANGE,2.5);if(n<=15||k%5==0)g+=TX(x+w/2,y0+14,k,{fs:9,c:GRAY,w:500});}
+ g+=LN(x0,y0,x0+(n+1)*w,y0,NAVY,1.5);if(ult!==null)g+=TX(326,22,'último canteiro: '+ult+' de '+n,{fs:10,c:NAVY,a:'end'});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){if(H.length!=N.get()+1)zera();$('kc').textContent=fmt(tot());$('kg').textContent=tot()?PC(germ()*100):'—';$('kp').textContent=K.get()<=N.get()?F3(bin(K.get())):'—';quadro();MIS.ver('m');}
+zera();draw();
+})();
+</script>
+</body>
+</html>

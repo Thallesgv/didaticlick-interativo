@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A árvore das noites · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A árvore das noites</h1></header>
+<main>
+<div class="card"><h2>Árvore e tabela</h2><p class="muted" style="margin-top:0">Primeiro o céu, depois a geada. Mude as chances e veja a árvore (multiplicando pelos galhos) e a tabela das 100 noites que ela representa.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Noites de céu limpo</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>P(geada | céu limpo)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>P(geada | céu nublado)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">P(geada)<b id="kg"></b></div><div>P(céu limpo | geada)<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a árvore.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0',VERDE='#2F7D4A',VERDEC='#CFE8D6',GRAD='#E5E7EB';
+const F2=v=>fmt(Math.round(v*100)/100),F3=v=>fmt(Math.round(v*1000)/1000);
+const COMB=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);return s*(1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x));};
+const Phi=z=>0.5*(1+erf(z/Math.SQRT2));
+const eqv=(a,b)=>Math.abs(a-b)<1e-6;
+let inv=0;chips('ch',['Do céu para a geada','Da geada para o céu'],0,i=>{inv=i;draw();});
+const L=SL('sl',0,1,0.05,0.5,()=>draw(),v=>PC(v*100,0)),A=SL('sa',0,1,0.01,0.3,()=>draw(),v=>fmt(v)),B=SL('sb',0,0.5,0.01,0.1,()=>draw(),v=>fmt(v));
+const pg=()=>L.get()*A.get()+(1-L.get())*B.get(),plg=()=>pg()>0?L.get()*A.get()/pg():0;
+const encosta=()=>eqv(A.get(),0.55)&&eqv(B.get(),0.05);
+MIS.def(()=>[
+ ['Monte a <b>encosta</b>: 40% das noites limpas, P(geada | limpo) = 0,55 e P(geada | nublado) = 0,05.',()=>inv==0&&eqv(L.get(),0.4)&&encosta(),'0,4 × 0,55 = 0,22 e 0,6 × 0,05 = 0,03. Somando os galhos de geada: P(geada) = 0,25, a mesma frequência das 100 noites.',()=>'Céu limpo 40%, 0,55 e 0,05.'],
+ ['Olhe de trás para a frente: dado que <b>houve geada</b>, qual a chance de a noite ter sido limpa?',()=>inv==1&&eqv(L.get(),0.4)&&encosta(),'P(limpo | geada) = 0,22 ÷ 0,25 = 0,88. Não confunda com P(geada | limpo) = 0,55.',()=>'Escolha "Da geada para o céu".'],
+ ['Agora a <b>várzea</b>: metade das noites limpas, P(geada | limpo) = 0,04 e nenhuma geada com céu nublado.',()=>eqv(L.get(),0.5)&&eqv(A.get(),0.04)&&eqv(B.get(),0),'0,5 × 0,04 = 0,02: as duas geadas em cem noites. Todas vieram de noites limpas, então P(limpo | geada) = 1.',()=>'Céu limpo 50%, 0,04 e 0.'],
+ ['A previsão diz "céu limpo" e acerta <b>90%</b> das vezes. Use a encosta (0,55 e 0,05) com 90% de céu limpo.',()=>eqv(L.get(),0.9)&&encosta(),()=>'0,9 × 0,55 + 0,1 × 0,05 = '+F2(pg())+': com essa previsão, a geada vira meio a meio.',()=>'Céu limpo 90%, 0,55 e 0,05.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const l=L.get(),a=A.get(),b=B.get();
+ const rx=16,ry=80,ys=[40,120],nomes=['limpo','nublado'],pc=[l,1-l],pgz=[a,b];
+ g+=CI(rx,ry,4,NAVY);
+ for(let i=0;i<2;i++){const y=ys[i];g+=LN(rx,ry,96,y,NAVY,2)+TX(52,(ry+y)/2+(i?14:-4),F2(pc[i]),{fs:9,c:ORANGE})+TX(100,y+4,nomes[i],{fs:10,c:NAVY,a:'start'});
+  for(let j=0;j<2;j++){const yy=y+(j?16:-16),p=j?1-pgz[i]:pgz[i];g+=LN(150,y,196,yy,NAVY,1.5)+TX(172,(y+yy)/2+(j?12:-3),F2(p),{fs:8.5,c:ORANGE})+TX(200,yy+4,j?'sem geada':'geada',{fs:9,c:j?GRAY:AZ2,a:'start'})
+   +TX(330,yy+4,F2(pc[i]*p),{fs:10,c:j?GRAY:AZ2,a:'end'});}}
+ const yt=176,c=[[Math.round(100*l*a),Math.round(100*l*(1-a))],[Math.round(100*(1-l)*b),Math.round(100*(1-l)*(1-b))]];
+ g+=TX(14,yt,'Em 100 noites:',{fs:9,c:GRAY,w:500,a:'start'});const cx=[120,200,280];
+ g+=TX(cx[0],yt,'geada',{fs:9,c:AZ2})+TX(cx[1],yt,'sem geada',{fs:9,c:GRAY})+TX(cx[2],yt,'total',{fs:9,c:NAVY});
+ for(let i=0;i<2;i++){const y=yt+18+i*18;g+=TX(14,y,nomes[i],{fs:9,c:NAVY,a:'start'})+TX(cx[0],y,c[i][0],{fs:10,c:inv?ORANGE:AZ2})+TX(cx[1],y,c[i][1],{fs:10,c:GRAY})+TX(cx[2],y,c[i][0]+c[i][1],{fs:10,c:NAVY});}
+ if(inv)g+=RC(cx[0]-22,yt+5,44,40,'none','stroke="'+ORANGE+'" stroke-width="2" rx="6"');
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kg').textContent=F2(pg());$('kl').textContent=pg()>0?F2(plg()):'—';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
