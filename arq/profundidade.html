@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua do tempo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A régua do tempo</h1></header>
+<main>
+<div class="card"><h2>p(t) = 200 − 0,2 · t</h2><p class="muted" style="margin-top:0">Escolha um ano da construção da camada E: o simulador mostra a que profundidade está hoje o que foi deixado naquele ano. Troque o eixo para ver o gráfico como a Dra. Nádia gosta, com a profundidade crescendo para baixo. Depois dos 650 anos, a reta tracejada é só extrapolação.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Ano (desde o começo)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Profundidade hoje<b id="kp"></b></div><div>Situação<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o ano.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let inv=0;chips('ch',['Profundidade para cima','Profundidade para baixo'],0,i=>{inv=i;draw();});
+const TT=SL('st',0,1000,10,100,()=>draw(),v=>'ano '+fmt(v));
+const pp=t=>200-0.2*t;
+MIS.def(()=>[
+ ['Um osso foi deixado no ano <b>300</b>. A que profundidade ele está hoje?',()=>TT.get()==300,'p(300) = 200 − 60 = 140 cm.',()=>'Leve o ano a 300.'],
+ ['Um caco está a <b>100 cm</b> de profundidade. De que ano ele é?',()=>TT.get()==500,'200 − 0,2t = 100 → t = 500.',()=>'Profundidade agora: '+fmt(pp(TT.get()))+' cm.'],
+ ['Troque para <b>profundidade para baixo</b> e leve o ano ao fim da camada E (650). A reta sobe no desenho: a função ficou crescente?',()=>inv&&TT.get()==650,'Não: p caiu de 200 para 70. O eixo invertido muda só o desenho; a função continua decrescente.',()=>!inv?'Troque o eixo.':'Ano 650.'],
+ ['Leve o ano até o <b>zero</b> da função, onde p(t) = 0.',()=>TT.get()==1000,'t = 1.000: se a camada E tivesse continuado no mesmo ritmo, o morro estaria pronto aí. Mas é extrapolação: a parede mostra que o ritmo mudou aos 650 anos.',()=>'Profundidade agora: '+fmt(pp(TT.get()))+' cm.']]);
+function draw(){const t=TT.get(),p=pp(t);let g=RC(0,0,340,230,'#F8FAFC','rx="10"');const x0=40,y0=200,w=190,h=180,X=v=>x0+v/1000*w,Y=v=>inv?y0-h+v/200*h:y0-v/200*h;
+ g+=RC(x0,y0-h,w,h,'#fff','stroke="#D7DEEA"');for(let v=0;v<=200;v+=50)g+=TX(x0-4,Y(v)+3,v,{fs:8,c:GRAY,a:'end',w:500});for(let v=0;v<=1000;v+=250)g+=TX(X(v),y0+12,v,{fs:8,c:GRAY,w:500});
+ g+=LN(X(0),Y(200),X(650),Y(70),ORANGE,2.5)+LN(X(650),Y(70),X(1000),Y(0),ORANGE,1.5,'5 4')+CIR(X(t),Y(p),6,NAVY,'stroke="#fff" stroke-width="2"');
+ g+=TX(x0,y0-h-6,'profundidade (cm)',{fs:8,c:GRAY,a:'start',w:500})+TX(x0+w/2,224,'ano',{fs:8,c:GRAY,w:500});
+ const wx=262,ww=60,wk=0.9;g+=RC(wx,20,ww,200*wk,'#D9D4CB','stroke="#7E4E2E"')+RC(wx,20,ww,70*wk,'#BBA98F')+LN(wx-6,20+p*wk,wx+ww+6,20+p*wk,ORANGE,2.5)+TX(wx+ww/2,14,'parede',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,230,g);$('kp').textContent=fmt(p)+' cm';$('ks').textContent=t<=650?'camada E':'extrapolação';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

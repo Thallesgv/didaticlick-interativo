@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O morro em fases · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O morro em fases</h1></header>
+<main>
+<div class="card"><h2>Uma fórmula para cada trecho</h2><p class="muted" style="margin-top:0">Avance o tempo e veja o morro crescer, camada por camada, na parede e no gráfico. Cada trecho tem sua taxa, e a enchente faz a altura saltar.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Tempo (anos desde o começo)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Altura H(t)<b id="kh"></b></div><div>Trecho<b id="kt"></b></div><div>Taxa<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Avance o tempo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CAM=[['A',0,10,'#6E5A3C','terra vegetal'],['B',10,25,'#4A3222','chão 1 (cabana)'],['C',25,45,'#FBF4EA','conchas (aterro)'],["D'",45,50,'#E8D9A8','areia da enchente'],['D',50,70,'#4A3222','chão 2'],['E',70,200,'#D9D4CB','conchas e cinzas']];
+const camada=p=>CAM.find(c=>p>=c[1]&&p<c[2])||CAM[5];
+const HH=t=>t<=650?0.2*t:t<=850?130+0.1*(t-650):t<=900?155+0.4*(t-850):175+0.1*(Math.min(t,1050)-900);
+const TT=SL('st',0,1100,5,300,()=>draw(),v=>fmt(v)+' anos');
+const H2=t=>t<=850?HH(t):HH(t);
+const trecho=t=>t<=650?['E: corpo do morro','2 mm/ano']:t<=850?['D: chão 2','1 mm/ano']:t<=900?['C: aterro (depois da enchente)','4 mm/ano']:t<=1050?['B: chão 1','1 mm/ano']:['construção parou','0'];
+MIS.def(()=>[
+ ['Qual a altura do morro no ano <b>700</b>?',()=>TT.get()==700,'2º trecho: 130 + 0,1 × 50 = 135 cm.',()=>'Leve o tempo a 700.'],
+ ['Ache o primeiro instante <b>depois da enchente</b> (o salto de 5 cm).',()=>TT.get()==855,'No ano 850 a altura era 150; logo depois da enchente, 155 + 0,4 × 5 = 157 cm. O gráfico dá um salto: a função é descontínua ali.',()=>'Procure onde a linha pula, perto do ano 850.'],
+ ['Quando o aterro de conchas terminou e o morro chegou a <b>175 cm</b>?',()=>TT.get()==900,'Ano 900: o aterro durou só 50 anos, a 4 mm/ano.',()=>'Altura agora: '+r1(HH(TT.get()))+' cm.'],
+ ['Leve o tempo ao <b>fim da construção</b>. Qual a taxa média de tudo?',()=>TT.get()==1050,'190 cm em 1.050 anos: cerca de 1,8 mm/ano. Uma média que esconde trechos de 1, 2 e 4 mm/ano.',()=>'Altura agora: '+r1(HH(TT.get()))+' cm. Quando ela para de crescer?']]);
+function draw(){const t=TT.get(),h=HH(t);let g=RC(0,0,340,230,'#F8FAFC','rx="10"');const x0=36,y0=200,w=190,hh=180,X=v=>x0+v/1100*w,Y=v=>y0-v/200*hh;
+ g+=RC(x0,y0-hh,w,hh,'#fff','stroke="#D7DEEA"');for(let v=0;v<=200;v+=50)g+=TX(x0-4,Y(v)+3,v,{fs:8,c:GRAY,a:'end',w:500});for(let v=0;v<=1100;v+=275)g+=TX(X(v),y0+12,v,{fs:8,c:GRAY,w:500});
+ const seg=(a,b,c,w2)=>{let pts=[];for(let s=a;s<=b;s+=5)pts.push([X(s),Y(HH(s))]);return PL(pts,c,w2||2.5);};
+ g+=seg(0,650,'#6B7280')+seg(650,850,'#4A3222')+seg(855,900,ORANGE)+seg(900,1050,'#4A3222')+LN(X(850),Y(155),X(855),Y(157),ORANGE,2.5)+LN(X(1050),Y(190),X(1100),Y(190),'#CBD5E1',2,'4 3');
+ g+=LN(X(850),Y(150),X(850),Y(155),BLUE,1,'2 2')+CIR(X(850),Y(150),3,'#fff','stroke="#4A3222"');
+ g+=CIR(X(t),Y(h),6,NAVY,'stroke="#fff" stroke-width="2"');
+ const wx=255,ww=65,wk=0.9;g+=RC(wx,20,ww,200*wk,'#F1F5F9','stroke="#CBD5E1"');
+ [...CAM].reverse().forEach(c=>{const hb=200-c[2],ht=200-c[1];if(h>hb){const top=Math.min(h,ht);g+=RC(wx,20+(200-top)*wk,ww,(top-hb)*wk,c[3],'stroke="#7E4E2E" stroke-width=".4"');}});
+ g+=TX(wx+ww/2,14,'parede',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,230,g);$('kh').textContent=r1(h)+' cm';$('kt').textContent=trecho(t)[0];$('kr').textContent=trecho(t)[1];MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

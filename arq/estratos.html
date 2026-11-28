@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A parede da trincheira · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A parede da trincheira</h1></header>
+<main>
+<div class="card"><h2>Embaixo é mais antigo</h2><p class="muted" style="margin-top:0">Toque na parede (e arraste para ajustar): o simulador mostra a camada, a profundidade a partir do topo e a cota. Ele compara o ponto com o toque anterior: quem é mais antigo? O retângulo escuro é um buraco de estaca que corta B e C.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Camada<b id="kc">—</b></div><div>Profundidade · cota<b id="kp">—</b></div></div>
+<div class="kpi"><div class="o">Comparação<b id="kx" style="font-size:15px">—</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque na parede.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CAM=[['A',0,10,'#6E5A3C','terra vegetal'],['B',10,25,'#4A3222','chão 1 (cabana)'],['C',25,45,'#FBF4EA','conchas (aterro)'],["D'",45,50,'#E8D9A8','areia da enchente'],['D',50,70,'#4A3222','chão 2'],['E',70,200,'#D9D4CB','conchas e cinzas']];
+const camada=p=>CAM.find(c=>p>=c[1]&&p<c[2])||CAM[5];
+const HH=t=>t<=650?0.2*t:t<=850?130+0.1*(t-650):t<=900?155+0.4*(t-850):175+0.1*(Math.min(t,1050)-900);
+const K=2,TOP=20,X0=70,W=150;let pts=[];
+const ehEstaca=q=>q&&q.x>X0+100&&q.x<X0+114&&q.p>=10&&q.p<=48;
+const nome=q=>ehEstaca(q)?'buraco de estaca':camada(q.p)[0]+' · '+camada(q.p)[4];
+const idade=q=>ehEstaca(q)?11:CAM.indexOf(camada(q.p)); // maior = mais antigo, estaca mais nova que B (índice 1) e C
+const ordem=(a,b)=>{const ia=ehEstaca(a)?-0.5:CAM.indexOf(camada(a.p)),ib=ehEstaca(b)?-0.5:CAM.indexOf(camada(b.p));return ia==ib?0:ia>ib?1:-1;};
+toque('fig',(x,y,novo)=>{const q={x:x,p:Math.max(0,Math.min(199.9,Math.round((y-TOP)/K)))};if(x<X0||x>X0+W)return;if(novo){pts.push(q);if(pts.length>2)pts.shift();}else pts[pts.length-1]=q;draw();});
+const ult=()=>pts[pts.length-1],pen=()=>pts[pts.length-2];
+MIS.def(()=>[
+ ['Toque no <b>chão 2</b>, a camada da primeira casa.',()=>ult()&&!ehEstaca(ult())&&camada(ult().p)[0]=='D','O chão 2 vai de 50 a 70 cm de profundidade, entre as cotas 301,50 e 301,30.',()=>ult()?'Você está em '+nome(ult())+'.':'Toque na parede.'],
+ ['Um caco foi achado na <b>cota 301,20</b>. Toque na altura dele.',()=>ult()&&Math.abs(ult().p-80)<=2,'Profundidade = 100 × (302 − 301,20) = 80 cm: camada E.',()=>ult()?'Cota '+fmt(Math.round((302-ult().p/100)*100)/100)+'. Precisa de 301,20.':'Toque na parede.'],
+ ['Toque no <b>buraco de estaca</b> e depois na <b>areia da enchente</b> (a faixa amarela fina). Quem é mais novo?',()=>pen()&&ult()&&ehEstaca(pen())&&!ehEstaca(ult())&&camada(ult().p)[0]=="D'",'A estaca é mais nova: ela corta B e C, que estão por cima da areia. Quem corta é mais novo.',()=>!pen()||!ehEstaca(pen())?'Primeiro toque no buraco de estaca (o retângulo escuro).':'Agora toque na faixa amarela fina (arraste para ajustar).'],
+ ['Toque primeiro na camada <b>mais nova</b> de todas e depois na <b>mais antiga</b>.',()=>pen()&&ult()&&!ehEstaca(pen())&&!ehEstaca(ult())&&camada(pen().p)[0]=='A'&&camada(ult().p)[0]=='E','A terra vegetal (A) é a mais nova; o corpo de conchas e cinzas (E), na base, é o mais antigo. Steno, 1669.',()=>'Primeiro a de cima, depois a de baixo.']]);
+function draw(){let g=RC(0,0,340,440,'#F8FAFC','rx="10"');
+ CAM.forEach(c=>{g+=RC(X0,TOP+c[1]*K,W,(c[2]-c[1])*K,c[3],'stroke="#7E4E2E" stroke-width=".6"')+TX(X0+W+8,TOP+(c[1]+c[2])/2*K+4,c[0],{fs:11,a:'start',c:NAVY});});
+ for(let i=0;i<6;i++)g+=LN(X0,TOP+(85+i*20)*K,X0+W,TOP+(85+i*20)*K,'#8C8577',1);
+ for(let i=0;i<60;i++){const xx=X0+8+((i*37)%134),yy=TOP+(72+((i*53)%126))*K;g+=ELI(xx,yy,3,1.8,'#fff','stroke="#B9AE9C" stroke-width=".5"');}
+ g+=RC(X0+100,TOP+10*K,14,38*K,'#2B1B10');
+ for(let c=0;c<=200;c+=25)g+=TX(X0-6,TOP+c*K+4,c,{fs:9,a:'end',c:GRAY,w:500});
+ g+=TX(X0-6,12,'cm',{fs:9,a:'end',c:GRAY});
+ pts.forEach((q,i)=>g+=LN(X0-4,TOP+q.p*K,X0+W+4,TOP+q.p*K,i==pts.length-1?ORANGE:BLUE,2)+CIR(q.x,TOP+q.p*K,6,i==pts.length-1?ORANGE:BLUE,'stroke="#fff" stroke-width="2"'));
+ $('fig').innerHTML=SVG(340,440,g);
+ const u=ult();if(u){$('kc').textContent=nome(u);$('kp').textContent=u.p+' cm · '+fmt(Math.round((302-u.p/100)*100)/100)+' m';}
+ if(pen()&&u){const o=ordem(u,pen());$('kx').textContent=o==0?'mesma camada':o>0?'o último toque é mais ANTIGO':'o último toque é mais NOVO';}
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

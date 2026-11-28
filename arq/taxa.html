@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A pilha que cresce · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A pilha que cresce</h1></header>
+<main>
+<div class="card"><h2>H(t) = taxa × t</h2><p class="muted" style="margin-top:0">Escolha a taxa de deposição e avance o tempo: a pilha de conchas sobe e o gráfico desenha a reta. A linha tracejada marca os 130 cm da camada E.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Taxa</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Tempo</b><input type="range"><span></span></div>
+<div class="kpi"><div>Fórmula<b id="kf"></b></div><div class="o">Altura<b id="kh"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Avance o tempo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const TX_=SL('sr',0.5,6,0.1,2,()=>draw(),v=>r1(v)+' mm/ano'),TT=SL('st',0,1500,10,100,()=>draw(),v=>fmt(v)+' anos');
+const Hc=()=>TX_.get()/10*TT.get();
+MIS.def(()=>[
+ ['Com a hipótese da Dra. Nádia (<b>2 mm/ano</b>), quanto tempo leva para a pilha chegar aos <b>130 cm</b> da camada E?',()=>Math.abs(TX_.get()-2)<0.01&&TT.get()==650,'130 ÷ 0,2 = 650 anos.',()=>Math.abs(TX_.get()-2)>0.01?'Taxa 2 mm/ano.':'Altura agora: '+r1(Hc())+' cm.'],
+ ['E se a taxa fosse <b>3 mm/ano</b>? Ache o tempo em que a pilha passa perto dos 130 cm.',()=>Math.abs(TX_.get()-3)<0.01&&Math.abs(Hc()-130)<=3,'130 ÷ 0,3 ≈ 433 anos. Uma taxa 50% maior encurta o tempo em um terço: a hipótese muda tudo.',()=>Math.abs(TX_.get()-3)>0.01?'Taxa 3 mm/ano.':'Altura agora: '+r1(Hc())+' cm.'],
+ ['Que taxa faria os 130 cm levarem exatamente <b>1.000 anos</b>?',()=>TT.get()==1000&&Math.abs(Hc()-130)<0.01,'1,3 mm/ano: H(t) = 0,13t. A taxa é o "a" da função afim.',()=>TT.get()!=1000?'Leve o tempo a 1.000 anos.':'Altura agora: '+r1(Hc())+' cm.'],
+ ['Um anzol de osso estava <b>46 cm</b> acima da base. Com 2 mm/ano, em que ano ele foi deixado?',()=>Math.abs(TX_.get()-2)<0.01&&TT.get()==230,'46 ÷ 0,2 = 230 anos depois do começo do morro.',()=>'Taxa 2 mm/ano; altura agora: '+r1(Hc())+' cm.']]);
+function draw(){const h=Hc(),t=TT.get();let g=RC(0,0,340,220,'#F8FAFC','rx="10"');
+ const x0=40,y0=190,w=170,hh=170,X=v=>x0+v/1500*w,Y=v=>y0-Math.min(v,300)/300*hh;
+ g+=RC(x0,y0-hh,w,hh,'#fff','stroke="#D7DEEA"');for(let v=0;v<=300;v+=50)g+=TX(x0-4,Y(v)+3,v,{fs:8,c:GRAY,a:'end',w:500});for(let v=0;v<=1500;v+=500)g+=TX(X(v),y0+12,v,{fs:8,c:GRAY,w:500});
+ g+=LN(x0,Y(130),x0+w,Y(130),TERRA_E,1,'4 3')+LN(X(0),Y(0),X(1500),Y(TX_.get()/10*1500),ORANGE,2)+CIR(X(t),Y(h),5,NAVY);
+ g+=TX(x0+w/2,214,'anos',{fs:8,c:GRAY,w:500})+TX(x0,y0-hh-6,'cm',{fs:8,c:GRAY,a:'start',w:500});
+ const px=250,pw=70,ph=Math.min(h,300)/300*hh;g+=RC(px,y0-ph,pw,ph,'#D9D4CB','stroke="#7E4E2E"');for(let i=0;i<Math.floor(ph/6);i++)g+=ELI(px+8+(i*23)%54,y0-3-i*6,3,1.6,'#fff');
+ g+=LN(px-4,Y(130),px+pw+4,Y(130),TERRA_E,1,'4 3')+TX(px+pw/2,y0+12,r1(h)+' cm',{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(340,220,g);$('kf').textContent='H = '+fmt(Math.round(TX_.get()*10)/100)+' · t';$('kh').textContent=r1(h)+' cm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
