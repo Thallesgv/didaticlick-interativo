@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Medir a pincelada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Medir a pincelada</h1></header>
+<main>
+<div class="card"><h2>Do papel milimetrado ao número</h2><p class="muted" style="margin-top:0">A pincelada começa em <b>A (0, 0)</b>. Arraste a ponta <b>B</b> sobre o papel milimetrado (ou use os botões − e +). O simulador mede o comprimento por Pitágoras e o ângulo com a horizontal.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sx"><b>Δx (mm)</b><input type="range"><span></span></div>
+<div class="sl" id="sy"><b>Δy (mm)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Δx² + Δy²<b id="kq"></b></div><div>Comprimento<b id="kc"></b></div><div class="o">Ângulo<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça como a perita.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const media=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const ord=a=>[...a].sort((x,y)=>x-y);
+const mediana=a=>{const o=ord(a),n=o.length;return n%2?o[(n-1)/2]:(o[n/2-1]+o[n/2])/2;};
+const dp=a=>{const m=media(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const quartis=a=>{const o=ord(a),n=o.length,h=Math.floor(n/2);const lo=o.slice(0,h),hi=o.slice(n%2?h+1:h);return [mediana(lo),mediana(o),mediana(hi)];};
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const k=12,ox=40,oy=262,X=x=>ox+x*k,Y=y=>oy-y*k;
+const SX=SL('sx',0,20,0.5,6,()=>draw(),v=>vg(v)+' mm'),SY=SL('sy',0,20,0.5,8,()=>draw(),v=>vg(v)+' mm');
+toque('fig',(x,y)=>{SX.set(Math.max(0,Math.min(20,Math.round((x-ox)/k*2)/2)));SY.set(Math.max(0,Math.min(20,Math.round((oy-y)/k*2)/2)));draw();});
+const C=()=>Math.hypot(SX.get(),SY.get()),A=()=>Math.atan2(SY.get(),SX.get())*180/Math.PI;
+MIS.def(()=>[
+ ['Refaça a pincelada do livro: ela vai 12 mm para a direita e 16 mm para cima. Quanto ela mede?',()=>SX.get()==12&&SY.get()==16,'144 + 256 = 400, e √400 = 20 mm. O ângulo é de cerca de 53°.',()=>'Agora B está em ('+vg(SX.get())+', '+vg(SY.get())+'). Leve B até (12, 16).'],
+ ['Faça uma pincelada inclinada a exatamente <b>45°</b>, com pelo menos 10 mm.',()=>SX.get()>0&&SX.get()==SY.get()&&C()>=10,'Com Δx = Δy, a tangente é 1 e o ângulo é 45°. O comprimento é Δx × √2.',()=>SX.get()!=SY.get()?'O ângulo está em '+r1(A())+'°. Para 45°, Δx e Δy precisam ser iguais.':'Está em 45°, mas a pincelada tem '+r1(C())+' mm. Faça uma maior.'],
+ ['Ache uma pincelada de exatamente <b>13 mm</b> com Δx e Δy inteiros e diferentes de zero.',()=>perto(C(),13,0.001)&&SX.get()%1==0&&SY.get()%1==0&&SX.get()>0&&SY.get()>0,'5² + 12² = 25 + 144 = 169 = 13². Um terno pitagórico!',()=>'Agora Δx² + Δy² = '+vg(SX.get()**2+SY.get()**2)+'. Para 13 mm, a soma precisa dar 169.']]);
+function draw(){const dx=SX.get(),dy=SY.get();let g=RC(0,0,330,290,PAPEL,'rx="10"');
+ for(let i=0;i<=20;i++){const c=i%5?'#F4C9A8':'#E89B6A',w=i%5?0.5:1;g+=LN(X(i),Y(0),X(i),Y(20),c,w)+LN(X(0),Y(i),X(20),Y(i),c,w);}
+ for(let i=0;i<=20;i+=5)g+=TX(X(i),Y(0)+14,i,{fs:9,c:GRAY})+TX(X(0)-8,Y(i)+3,i,{fs:9,c:GRAY,a:'end'});
+ g+=LN(X(0),Y(0),X(dx),Y(0),NAVY,1.2,'4 3')+LN(X(dx),Y(0),X(dx),Y(dy),NAVY,1.2,'4 3');
+ g+=LN(X(0),Y(0),X(dx),Y(dy),COBALTO,9)+CIR(X(0),Y(0),5,NAVY)+CIR(X(dx),Y(dy),8,ORANGE,'stroke="#fff" stroke-width="2"');
+ if(dx>0||dy>0){const a=Math.atan2(dy,dx),r=28;g+=`<path d="M${X(0)+r} ${Y(0)} A${r} ${r} 0 0 0 ${X(0)+r*Math.cos(a)} ${Y(0)-r*Math.sin(a)}" fill="none" stroke="${GREEN}" stroke-width="2"/>`;
+  g+=TX(X(0)+r+14,Y(0)-6,r1(A())+'°',{fs:10,c:GREEN,a:'start'});}
+ g+=TX(X(0)-6,Y(0)+26,'A',{fs:11})+TX(X(dx)+10,Y(dy)-8,'B',{fs:11,c:ORANGE,a:'start'});
+ $('fig').innerHTML=SVG(330,290,g);
+ $('kq').textContent=vg(dx*dx)+' + '+vg(dy*dy)+' = '+vg(dx*dx+dy*dy);$('kc').textContent=r1(C())+' mm';$('ka').textContent=r1(A())+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

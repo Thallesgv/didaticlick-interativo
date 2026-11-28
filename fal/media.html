@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Puxando a média · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Puxando a média</h1></header>
+<main>
+<div class="card"><h2>Arraste uma pincelada</h2><p class="muted" style="margin-top:0">São as <b>10 pinceladas</b> do suspeito. Toque numa bolinha e arraste (ou escolha-a e use − e +). Veja a <b>média</b> (laranja) e a <b>mediana</b> (verde) se moverem.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b id="lv">Pincelada escolhida</b><input type="range"><span></span></div>
+<div class="kpi"><div>Média<b id="km"></b></div><div>Mediana<b id="kd"></b></div><div class="o">Moda<b id="ko"></b></div></div>
+<div class="row"><button class="alt" id="rz">Voltar aos dados do livro</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa num valor por vez.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const media=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const ord=a=>[...a].sort((x,y)=>x-y);
+const mediana=a=>{const o=ord(a),n=o.length;return n%2?o[(n-1)/2]:(o[n/2-1]+o[n/2])/2;};
+const dp=a=>{const m=media(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const quartis=a=>{const o=ord(a),n=o.length,h=Math.floor(n/2);const lo=o.slice(0,h),hi=o.slice(n%2?h+1:h);return [mediana(lo),mediana(o),mediana(hi)];};
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const S0=[9,12,15,17,18,19,20,21,24,25];let d=[...S0],sel=0;
+const ox=20,W=300,X=v=>ox+v/50*W,yl=120;
+const SV=SL('sv',0,50,1,d[0],v=>{d[sel]=v;draw();},v=>v+' mm');
+$('rz').onclick=()=>{d=[...S0];SV.set(d[sel]);draw();};
+const pos=()=>{const c={};return d.map(v=>{c[v]=(c[v]||0)+1;return c[v]-1;});};
+toque('fig',(x,y,ini)=>{if(ini){const p=pos();let b=1e9;d.forEach((v,i)=>{const dd=Math.hypot(X(v)-x,yl-12-p[i]*14-y);if(dd<b){b=dd;sel=i;}});}
+ d[sel]=Math.max(0,Math.min(50,Math.round((x-ox)/W*50)));SV.set(d[sel]);draw();});
+const moda=()=>{const c={};d.forEach(v=>c[v]=(c[v]||0)+1);const mx=Math.max(...Object.values(c));return mx==1?'nenhuma':Object.keys(c).filter(k=>c[k]==mx).join('; ');};
+MIS.def(()=>[
+ ['Mexendo numa pincelada só, faça a <b>média passar de 20 mm</b>.',()=>media(d)>20,'Um valor maior empurra a média: cada mm a mais nele soma 0,1 mm na média de 10 valores.',()=>'A média está em '+r1(media(d))+' mm. Aumente algum valor.'],
+ ['Agora crie um <b>valor extremo</b> que deixe a média pelo menos 2 mm acima da mediana.',()=>media(d)-mediana(d)>=2,'A mediana quase não se mexe com um valor extremo; a média é puxada por ele. Por isso a mediana é "resistente".',()=>'Diferença atual: '+r1(media(d)-mediana(d))+' mm. Leve um valor para bem longe, à direita.'],
+ ['Volte aos dados do livro e faça <b>média e mediana ficarem iguais</b>.',()=>perto(media(d),mediana(d),0.001),'Quando os dados se equilibram em volta do meio, média e mediana coincidem.',()=>'Média '+r1(media(d))+' e mediana '+r1(mediana(d))+'. Tente mexer no 9 ou no 25.']]);
+function draw(){const p=pos(),m=media(d),md=mediana(d);let g=RC(0,0,340,170,'#fff','rx="10"');
+ g+=LN(ox,yl,ox+W,yl,NAVY,1.2);for(let v=0;v<=50;v+=5)g+=LN(X(v),yl,X(v),yl+4,NAVY,1)+TX(X(v),yl+16,v,{fs:8,c:GRAY});
+ g+=LN(X(md),yl-90,X(md),yl,GREEN,2,'4 3')+TX(X(md),yl+34,'mediana '+vg(r1(md)),{fs:9,c:GREEN});
+ g+=LN(X(m),yl-95,X(m),yl,ORANGE,2.5)+TX(X(m),yl-100,'média '+vg(r1(m)),{fs:9,c:ORANGE});
+ d.forEach((v,i)=>g+=CIR(X(v),yl-12-p[i]*14,6,i==sel?ORANGE:CROMO,'stroke="'+NAVY+'" stroke-width="1"'));
+ g+=PG([[X(m)-7,yl+2],[X(m)+7,yl+2],[X(m),yl-6]],ORANGE);
+ $('fig').innerHTML=SVG(340,170,g);$('lv').textContent='Pincelada escolhida';
+ $('km').textContent=r1(m)+' mm';$('kd').textContent=r1(md)+' mm';$('ko').textContent=moda();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

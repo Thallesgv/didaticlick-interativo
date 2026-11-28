@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A mão firme · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A mão firme</h1></header>
+<main>
+<div class="card"><h2>Espalhe ou junte</h2><p class="muted" style="margin-top:0">As 10 pinceladas do suspeito, com média 18 mm. O controle <b>espalhamento</b> afasta ou aproxima todas da média. As barras são os desvios; à direita, o desvio² de cada uma (a variância é a média deles).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>Espalhamento</b><input type="range"><span></span></div>
+<div class="kpi"><div>Média<b id="km"></b></div><div>Variância<b id="kv"></b></div><div class="o">Desvio padrão<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Imite mãos diferentes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const media=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const ord=a=>[...a].sort((x,y)=>x-y);
+const mediana=a=>{const o=ord(a),n=o.length;return n%2?o[(n-1)/2]:(o[n/2-1]+o[n/2])/2;};
+const dp=a=>{const m=media(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const quartis=a=>{const o=ord(a),n=o.length,h=Math.floor(n/2);const lo=o.slice(0,h),hi=o.slice(n%2?h+1:h);return [mediana(lo),mediana(o),mediana(hi)];};
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const S0=[9,12,15,17,18,19,20,21,24,25];
+const SF=SL('sf',0,2,0.05,1,()=>draw(),v=>'× '+vg(v));
+const d=()=>S0.map(v=>18+SF.get()*(v-18));
+const ox=160,k=5.6,y0=26,h=17;
+toque('fig',(x,y)=>{const i=Math.max(0,Math.min(9,Math.round((y-y0)/h)));const dv=S0[i]-18;if(dv)SF.set(Math.max(0,Math.min(2,Math.round((x-ox)/k/dv*20)/20)));draw();});
+MIS.def(()=>[
+ ['Faça o desvio padrão <b>zerar</b>.',()=>SF.get()==0,'Todas as pinceladas iguais a 18 mm: nenhum desvio. Uma mão de máquina, que nenhum pintor tem.',()=>'O DP está em '+r1(dp(d()))+' mm. Junte tudo na média.'],
+ ['Imite a mão de Van Gogh: DP de cerca de <b>1,7 mm</b>.',()=>perto(dp(d()),1.73,0.08),'Com o espalhamento perto de × 0,35, o suspeito fica com a "mão firme" das 10 pinceladas de Van Gogh.',()=>'O DP está em '+vg(r1(dp(d())))+' mm. '+(dp(d())>1.73?'Junte mais.':'Espalhe um pouco.')],
+ ['Agora <b>dobre</b> o espalhamento original do suspeito (4,8 mm). Quanto vira o DP? E a variância?',()=>SF.get()==2,'O DP dobra (≈ 9,5 mm), mas a variância fica 4 vezes maior (22,6 → 90,4): ela é medida em mm².',()=>'Leve o espalhamento até × 2.']]);
+function draw(){const v=d(),m=media(v);let g=RC(0,0,340,212,'#fff','rx="10"');
+ g+=LN(ox,10,ox,200,ORANGE,2)+TX(ox,206,'média 18',{fs:8,c:ORANGE});
+ for(let t=-20;t<=20;t+=10){if(t)g+=TX(ox+t*k,206,18+t,{fs:7,c:GRAY});}
+ v.forEach((x,i)=>{const dv=x-m,y=y0+i*h;const s=Math.min(Math.abs(dv)*k,14);
+  g+=LN(ox,y,ox+dv*k,y,dv<0?'#7A93D6':COBALTO,4)+CIR(ox+dv*k,y,4.5,CROMO,'stroke="'+NAVY+'"');
+  g+=TX(332,y+3,vg(r1(dv*dv)),{fs:8,c:GRAY,a:'end'});});
+ g+=TX(332,12,'desvio²',{fs:8,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(340,212,g);
+ const s=dp(v);$('km').textContent=r1(m)+' mm';$('kv').textContent=vg(r1(s*s))+' mm²';$('kd').textContent=vg(r1(s))+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mais ou menos quanto? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Mais ou menos quanto?</h1></header>
+<main>
+<div class="card"><h2>O tamanho da amostra</h2><p class="muted" style="margin-top:0">Médias e desvios padrão das duas amostras ficam fixos (19,9 mm; DP 5,1 e 7,7). O que muda é <b>quantas pinceladas</b> foram medidas. Intervalos de 95%: média ± 2·DP/√n e DP ± 2·DP/√(2n).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Pinceladas por amostra (n)</b><input type="range"><span></span></div>
+<div class="kpi"><div>√n<b id="kr"></b></div><div>Médias<b id="km"></b></div><div class="o">Desvios padrão<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Quantas pinceladas bastam?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const media=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const ord=a=>[...a].sort((x,y)=>x-y);
+const mediana=a=>{const o=ord(a),n=o.length;return n%2?o[(n-1)/2]:(o[n/2-1]+o[n/2])/2;};
+const dp=a=>{const m=media(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const quartis=a=>{const o=ord(a),n=o.length,h=Math.floor(n/2);const lo=o.slice(0,h),hi=o.slice(n%2?h+1:h);return [mediana(lo),mediana(o),mediana(hi)];};
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+const SN=SL('sn',4,400,1,20,()=>draw(),v=>'n = '+v);
+const MV=19.9,MS=19.9,DV=5.1,DS=7.7;
+const iv=n=>({mv:2*DV/Math.sqrt(n),ms:2*DS/Math.sqrt(n),dv:2*DV/Math.sqrt(2*n),ds:2*DS/Math.sqrt(2*n)});
+const sep=n=>{const e=iv(n);return DV+e.dv<DS-e.ds;};
+const XM=v=>20+(v-14)/12*140,XD=v=>190+(v-2)/10*140;
+toque('fig',x=>{const f=Math.max(0,Math.min(1,(x-20)/300));SN.set(Math.round(4+f*f*396));draw();});
+MIS.def(()=>[
+ ['Confira os intervalos do livro: <b>n = 200</b>.',()=>SN.get()==200,'Média: 19,9 ± 0,7 e 19,9 ± 1,1 (sobrepostas). DP: 5,1 ± 0,5 e 7,7 ± 0,8 (separados).',()=>'Leve n até 200 (agora n = '+SN.get()+').'],
+ ['Ache a <b>menor amostra</b> que já separa os intervalos dos desvios padrão.',()=>sep(SN.get())&&!sep(SN.get()-1),'Com 49 pinceladas por amostra os intervalos dos DPs já não se tocam. Com 48, ainda se tocam.',()=>sep(SN.get())?'Já separou. Tente um n menor.':'Ainda se sobrepõem. Aumente n.'],
+ ['Leve n até <b>400</b>. As médias se separam?',()=>SN.get()==400,'Nunca: as duas médias são iguais (19,9), então os intervalos sempre se sobrepõem. A diferença entre as mãos está no espalhamento, não no centro.',()=>'Leve n até 400.']]);
+function bar(x1,x2,y,cor,lab){return RC(x1,y-7,Math.max(2,x2-x1),14,cor,'stroke="'+NAVY+'" stroke-width=".8" opacity=".9"')+TX((x1+x2)/2,y-11,lab,{fs:8});}
+function draw(){const n=SN.get(),e=iv(n);let g=RC(0,0,340,200,'#fff','rx="10"');
+ g+=TX(90,18,'Média (mm)',{fs:10})+TX(260,18,'Desvio padrão (mm)',{fs:10});
+ g+=bar(XM(MS-e.ms),XM(MS+e.ms),62,CROMO,'Suspeito')+bar(XM(MV-e.mv),XM(MV+e.mv),112,COBALTO_C,'Van Gogh');
+ g+=bar(XD(DS-e.ds),XD(DS+e.ds),62,CROMO,'Suspeito')+bar(XD(DV-e.dv),XD(DV+e.dv),112,COBALTO_C,'Van Gogh');
+ g+=LN(XM(MV),40,XM(MV),130,ORANGE,1.5,'3 3');
+ g+=LN(20,150,160,150,NAVY,1)+LN(190,150,330,150,NAVY,1);
+ for(let v=14;v<=26;v+=2)g+=TX(XM(v),163,v,{fs:8,c:GRAY});for(let v=2;v<=12;v+=2)g+=TX(XD(v),163,v,{fs:8,c:GRAY});
+ const s=sep(n);g+=TX(260,188,s?'DPs separados':'DPs se sobrepõem',{fs:10,c:s?GREEN:ORANGE})+TX(90,188,'médias se sobrepõem',{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(340,200,g);
+ $('kr').textContent=vg(r2(Math.sqrt(n)));$('km').textContent='± '+vg(r1(e.mv))+' e ± '+vg(r1(e.ms));$('kd').textContent='± '+vg(r1(e.dv))+' e ± '+vg(r1(e.ds));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
