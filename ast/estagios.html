@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os estágios · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Os estágios</h1></header>
+<main>
+<div class="card"><h2>Um estágio ou dois?</h2><p class="muted" style="margin-top:0">O Guará tem 384 t de propelente: 350 t de querosene e oxigênio no 1º estágio e 34 t de hidrogênio e oxigênio no 2º, com 25 t de estruturas. Compare com um foguete de um estágio só, de querosene, com a mesma massa. Mude também a massa da nave.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Massa da nave</b><input type="range"><span></span></div>
+<div class="kpi"><div>Δv do 1º estágio<b id="k1"></b></div><div>Δv do 2º estágio<b id="k2"></b></div><div class="o">Δv total<b id="kt"></b></div><div>Chega a<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Compare os foguetes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR_AT={C:'#374151',H:'#E5E7EB',O:'#D9342B'},TXT_AT={C:'#fff',H:NAVY,O:'#fff'};
+const at=(x,y,el,r)=>`<circle cx="${x}" cy="${y}" r="${r||9}" fill="${COR_AT[el]}" stroke="${NAVY}" stroke-width="1"/>`+TX(x,y+3.5,el,{fs:(r||9)>7?9:7,c:TXT_AT[el]});
+const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const formula=(c,h,o)=>(c?'C'+(c>1?sub(c):''):'')+(h?'H'+(h>1?sub(h):''):'')+(o?'O'+(o>1?sub(o):''):'')||'—';
+const fv=v=>(Math.round(v*10)/10).toString().replace('.',',');
+let est=1;const Pm=SL('sp',1,15,0.1,5,draw,v=>fv(v)+' t');
+const dvs=()=>{const p=Pm.get();if(est==0)return[3.0*Math.log((409+p)/(25+p)),0];return[3.0*Math.log((409+p)/(59+p)),4.5*Math.log((38+p)/(4+p))];};
+const tot=()=>dvs()[0]+dvs()[1];
+const r2_=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const chega=()=>tot()>=12.6?'o Teimoso':tot()>=9.4?'só a órbita':'nem a órbita';
+MIS.def(()=>[
+ ['Com <b>um estágio só</b> e a Martelo de 5 t, aonde o foguete chega?',()=>est==0&&Math.abs(Pm.get()-5)<0.05,()=>'Só '+fv(tot())+' km/s: nem a órbita. Ele carrega até o fim 25 t de tanques vazios.',()=>'Escolha "Um estágio" e a nave de 5 t.'],
+ ['Agora com os <b>dois estágios</b> do Guará e a Martelo de 5 t.',()=>est==1&&Math.abs(Pm.get()-5)<0.05,()=>fv(dvs()[0])+' + '+fv(dvs()[1])+' ≈ '+fv(tot())+' km/s: a Martelo chega ao Teimoso. Mesma massa de propelente, 4,7 km/s a mais.',()=>'Escolha "Dois estágios" e a nave de 5 t.'],
+ ['Qual a <b>maior</b> nave que o Guará leva até os 12,6 km/s?',()=>est==1&&tot()>=12.6&&Pm.get()>=4.95,()=>fv(Pm.get())+' t: a Martelo foi projetada no limite. Com 100 kg a mais, ela já não chegaria.',()=>est!=1?'Escolha "Dois estágios".':tot()>=12.6?'Chega, com '+r2_(tot())+' km/s. Dá para carregar mais.':'Com '+fv(Pm.get())+' t, só '+r2_(tot())+' km/s. Diminua.'],
+ ['E uma nave de <b>15 t</b>? Aonde ela chegaria?',()=>est==1&&Math.abs(Pm.get()-15)<0.05,()=>fv(tot())+' km/s: chega à órbita, mas não escapa da Terra. Cada tonelada de nave custa velocidade.',()=>'Escolha "Dois estágios" e a nave de 15 t.']]);
+function draw(){const W=340,H0=210;let g=RC(0,0,W,H0,'#F8FAFC','rx="10"');
+ const [a,b]=dvs(),k=230/14,x0=40;
+ g+=RC(x0,70,a*k,40,'#FDE9D8','stroke="'+NAVY+'"')+TX(x0+a*k/2,95,fv(a),{fs:11});
+ if(b>0)g+=RC(x0+a*k,70,b*k,40,LIGHT,'stroke="'+NAVY+'"')+TX(x0+a*k+b*k/2,95,fv(b),{fs:11});
+ [[9.4,'órbita'],[12.6,'Teimoso']].forEach(([v,n])=>{g+=LN(x0+v*k,45,x0+v*k,135,v>10?GREEN:BLUE,2,'5 4')+TX(x0+v*k+(v>10?4:-4),38,n+' ('+fv(v)+')',{fs:9.5,c:v>10?GREEN:BLUE,a:v>10?'start':'end'});});
+ g+=LN(x0,140,x0+14*k,140,NAVY,1);for(let v=0;v<=14;v+=2)g+=TX(x0+v*k,155,v,{fs:8.5,c:GRAY});g+=TX(x0+14*k,172,'Δv (km/s)',{fs:9,a:'end'});
+ g+=TX(170,198,(est?'dois estágios':'um estágio')+', nave de '+fv(Pm.get())+' t',{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H0,g);$('k1').textContent=r2_(a)+' km/s';$('k2').textContent=b?r2_(b)+' km/s':'—';$('kt').textContent=r2_(tot())+' km/s';$('kc').textContent=chega();MIS.ver('m');}
+chips('ch',['Um estágio','Dois estágios'],1,i=>{est=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

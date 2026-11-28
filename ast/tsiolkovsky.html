@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A equação do foguete · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A equação do foguete</h1></header>
+<main>
+<div class="card"><h2>Δv = vₑ · ln(m₀ ÷ mf)</h2><p class="muted" style="margin-top:0">Escolha a velocidade de exaustão e a fração da massa inicial que é propelente. O foguete à esquerda mostra o propelente (laranja) e o resto; o gráfico mostra o ponto na curva do logaritmo natural.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Velocidade de exaustão vₑ</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Fração de propelente</b><input type="range"><span></span></div>
+<div class="kpi"><div>Razão de massas<b id="kr"></b></div><div>ln da razão<b id="kl"></b></div><div class="o">Δv<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ajuste o foguete.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR_AT={C:'#374151',H:'#E5E7EB',O:'#D9342B'},TXT_AT={C:'#fff',H:NAVY,O:'#fff'};
+const at=(x,y,el,r)=>`<circle cx="${x}" cy="${y}" r="${r||9}" fill="${COR_AT[el]}" stroke="${NAVY}" stroke-width="1"/>`+TX(x,y+3.5,el,{fs:(r||9)>7?9:7,c:TXT_AT[el]});
+const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const formula=(c,h,o)=>(c?'C'+(c>1?sub(c):''):'')+(h?'H'+(h>1?sub(h):''):'')+(o?'O'+(o>1?sub(o):''):'')||'—';
+const fv=v=>(Math.round(v*10)/10).toString().replace('.',',');
+const V=SL('sv',2,5,0.1,3,draw,v=>fv(v)+' km/s'),F=SL('sf',0,95,0.1,50,draw,v=>fv(v)+'%');
+const rz=()=>1/(1-F.get()/100),dv=()=>V.get()*Math.log(rz());
+const r2_=v=>(Math.round(v*100)/100).toString().replace('.',',');
+MIS.def(()=>[
+ ['Monte o <b>2º estágio do Guará</b>: vₑ = 4,5 km/s e razão de massas 43 ÷ 9 (Δv entre 6,9 e 7,1 km/s).',()=>Math.abs(V.get()-4.5)<0.01&&dv()>=6.9&&dv()<=7.1,()=>'Razão '+r2_(rz())+', ln ≈ '+r2_(Math.log(rz()))+', Δv ≈ '+fv(dv())+' km/s. '+fv(F.get())+'% do estágio é propelente.',()=>'Agora Δv = '+r2_(dv())+' km/s com vₑ = '+fv(V.get())+'.'],
+ ['Com querosene (vₑ = 3,0 km/s), que fração de propelente dá <b>Δv = 6 km/s</b>?',()=>Math.abs(V.get()-3)<0.01&&dv()>=5.95&&dv()<=6.05,()=>'Cerca de '+fv(F.get())+'%: razão e² ≈ 7,4. Dobrar o Δv pede razão ao quadrado.',()=>'Agora Δv = '+r2_(dv())+' km/s.'],
+ ['Ainda com vₑ = 3,0 km/s, ponha <b>95%</b> de propelente. Chega aos 9,4 km/s da órbita?',()=>Math.abs(V.get()-3)<0.01&&F.get()>=94.95,()=>'Só '+fv(dv())+' km/s, mesmo com 95% de propelente. Um estágio de querosene não chega à órbita sozinho.',()=>'Agora: '+fv(F.get())+'% de propelente.'],
+ ['Com <b>hidrogênio</b> (vₑ = 4,5 km/s), ache a menor fração de propelente que chega a <b>9,4 km/s</b>.',()=>Math.abs(V.get()-4.5)<0.01&&dv()>=9.4&&dv()<=9.5,()=>'Cerca de '+fv(F.get())+'% (razão ≈ '+r2_(rz())+'). Com hidrogênio é possível no papel, mas os tanques enormes pesariam demais.',()=>'Agora Δv = '+r2_(dv())+' km/s com vₑ = '+fv(V.get())+'.']]);
+function draw(){const W=340,H0=200;let g=RC(0,0,W,H0,'#F8FAFC','rx="10"');
+ const f=F.get()/100,hT=150,hp=hT*f;g+=RC(25,30,40,hT,'#E5E7EB','rx="6" stroke="'+NAVY+'"')+RC(25,30+hT-hp,40,hp,ORANGE,'rx="6"')+`<polygon points="25,30 65,30 45,10" fill="${NAVY}"/>`+TX(45,195,fv(F.get())+'%',{fs:9.5,c:ORANGE});
+ const x0=100,y0=175,Wg=225,Hg=150,X=r=>x0+(r-1)/19*Wg,Y=l=>y0-l/3.2*Hg;
+ g+=LN(x0,y0,x0+Wg,y0,NAVY,1.2)+LN(x0,y0,x0,y0-Hg,NAVY,1.2);[1,5,10,15,20].forEach(r=>g+=TX(X(r),y0+12,r,{fs:8.5,c:GRAY}));[1,2,3].forEach(l=>g+=TX(x0-4,Y(l)+3,l,{fs:8.5,a:'end',c:GRAY}));
+ let pts=[];for(let i=0;i<=190;i++){const r=1+i/10;pts.push(X(r)+','+Y(Math.log(r)));}g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="2.5"/>`;
+ const r=Math.min(rz(),20);g+=`<circle cx="${X(r)}" cy="${Y(Math.log(r))}" r="6" fill="${NAVY}" stroke="#fff" stroke-width="2"/>`+TX(x0+4,y0-Hg-6,'ln(m₀ ÷ mf)',{fs:9,a:'start'})+TX(x0+Wg,y0+24,'razão de massas',{fs:9,a:'end'});
+ $('fig').innerHTML=SVG(W,H0,g);$('kr').textContent=r2_(rz());$('kl').textContent=r2_(Math.log(rz()));$('kd').textContent=r2_(dv())+' km/s';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança da reação · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A balança da reação</h1></header>
+<main>
+<div class="card"><h2>Balancear a combustão</h2><p class="muted" style="margin-top:0">Escolha a reação e ajuste os coeficientes. As barras mostram quantos átomos de cada tipo há antes (reagentes) e depois (produtos). A equação está balanceada quando as barras de cada átomo ficam iguais.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b id="n0"></b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b id="n1"></b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b id="n2"></b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b id="n3"></b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Equação<b id="ke"></b></div><div>Massa antes e depois<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Balanceie as reações.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const COR_AT={C:'#374151',H:'#E5E7EB',O:'#D9342B'},TXT_AT={C:'#fff',H:NAVY,O:'#fff'};
+const at=(x,y,el,r)=>`<circle cx="${x}" cy="${y}" r="${r||9}" fill="${COR_AT[el]}" stroke="${NAVY}" stroke-width="1"/>`+TX(x,y+3.5,el,{fs:(r||9)>7?9:7,c:TXT_AT[el]});
+const sub=n=>String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join('');
+const formula=(c,h,o)=>(c?'C'+(c>1?sub(c):''):'')+(h?'H'+(h>1?sub(h):''):'')+(o?'O'+(o>1?sub(o):''):'')||'—';
+const fv=v=>(Math.round(v*10)/10).toString().replace('.',',');
+const RE=[{r:[['H₂',0,2,0],['O₂',0,0,2]],p:[['H₂O',0,2,1]]},{r:[['CH₄',1,4,0],['O₂',0,0,2]],p:[['CO₂',1,0,2],['H₂O',0,2,1]]},{r:[['C₁₂H₂₆',12,26,0],['O₂',0,0,2]],p:[['CO₂',1,0,2],['H₂O',0,2,1]]},{r:[['C₃H₈',3,8,0],['O₂',0,0,2]],p:[['CO₂',1,0,2],['H₂O',0,2,1]]}];
+let re=0;const S=[0,1,2,3].map(i=>SL('s'+i,1,40,1,1,draw,v=>v));
+const esp=()=>RE[re].r.concat(RE[re].p);
+const conta=(lista,off)=>{const t=[0,0,0];lista.forEach((e,i)=>{for(let k=0;k<3;k++)t[k]+=S[off+i].get()*e[k+1];});return t;};
+const antes=()=>conta(RE[re].r,0),depois=()=>conta(RE[re].p,RE[re].r.length);
+const ok=()=>{const a=antes(),d=depois();return a.every((v,k)=>v==d[k]);};
+const mm=e=>12*e[1]+e[2]+16*e[3];
+const massa=(lista,off)=>lista.reduce((s,e,i)=>s+S[off+i].get()*mm(e),0);
+const coefs=()=>esp().map((_,i)=>S[i].get());
+const eq=()=>{const c=coefs(),f=(e,i)=>(c[i]>1?c[i]+' ':'')+e[0];const n=RE[re].r.length;return RE[re].r.map((e,i)=>f(e,i)).join(' + ')+' → '+RE[re].p.map((e,i)=>f(e,i+n)).join(' + ');};
+MIS.def(()=>[
+ ['Balanceie a queima do <b>hidrogênio</b>.',()=>re==0&&ok(),()=>eq()+'. Quatro H e dois O de cada lado.',()=>re!=0?'Escolha a reação do hidrogênio.':'Ainda não: compare as barras de H e de O.'],
+ ['Balanceie a queima do <b>metano</b>.',()=>re==1&&ok(),()=>eq()+'. Massa: '+massa(RE[1].r,0)+' g antes e '+massa(RE[1].p,2)+' g depois.',()=>re!=1?'Escolha a reação do metano.':'Comece pelo carbono, depois o hidrogênio e por último o oxigênio.'],
+ ['Balanceie a queima do <b>querosene</b>.',()=>re==2&&ok(),()=>eq()+'. A massa se conservou: '+fmt(massa(RE[2].r,0))+' g dos dois lados.',()=>re!=2?'Escolha a reação do querosene.':'Dica: com 2 moléculas de querosene, o resto sai inteiro.'],
+ ['Balanceie a queima do <b>propano</b>, o gás de cozinha, com os menores coeficientes.',()=>re==3&&ok()&&S[0].get()==1,()=>eq()+'. O mesmo método serve para qualquer combustível de carbono e hidrogênio.',()=>re!=3?'Escolha a reação do propano.':ok()?'Balanceada, mas dá com coeficientes menores.':'Ainda não: comece pelo carbono.']]);
+function draw(){const W=340,H0=200,a=antes(),d=depois();let g=RC(0,0,W,H0,'#F8FAFC','rx="10"');
+ const mx=Math.max(...a,...d,1),els=['C','H','O'];
+ els.forEach((el,k)=>{const x=40+k*100,h1=a[k]/mx*130,h2=d[k]/mx*130,igual=a[k]==d[k];
+  g+=RC(x,170-h1,30,h1,'#9CC8F0')+RC(x+34,170-h2,30,h2,ORANGE)+TX(x+15,165-h1,a[k],{fs:9.5})+TX(x+49,165-h2,d[k],{fs:9.5})+at(x+32,188,el,8)+(a[k]||d[k]?TX(x+32,22,igual?'✔':'✘',{fs:14,c:igual?GREEN:VERM}):'');});
+ g+=TX(330,14,'antes',{fs:9,a:'end',c:'#3B82C4'})+TX(330,28,'depois',{fs:9,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(W,H0,g);
+ esp().forEach((e,i)=>{$('n'+i).textContent='Coeficiente de '+e[0]+(i<RE[re].r.length?' (reagente)':' (produto)');});
+ for(let i=0;i<4;i++)$('s'+i).style.display=i<esp().length?'':'none';
+ $('ke').textContent=eq();$('km').textContent=fmt(massa(RE[re].r,0))+' g → '+fmt(massa(RE[re].p,RE[re].r.length))+' g';MIS.ver('m');}
+chips('ch',['Hidrogênio','Metano','Querosene','Propano'],0,i=>{re=i;S.forEach(s=>s.set(1));draw();});
+draw();
+})();
+</script>
+</body>
+</html>
