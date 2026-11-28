@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A lanterna · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A lanterna</h1></header>
+<main>
+<div class="card"><h2>A mesma luz, cada vez mais espalhada</h2><p class="muted" style="margin-top:0">A lâmpada manda luz para todos os lados. A tela quadriculada mostra a luz que, a 1 unidade de distância, cabia num quadradinho só. Afaste a tela: a mesma luz se espalha em mais quadradinhos, e cada um fica mais fraco. Use o botão do Sol para trocar a lâmpada pelo Sol, com a distância em UA.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância até a tela</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Luz em cada quadradinho<b id="ki"></b></div><div>Quadradinhos iluminados (d²)<b id="kq"></b></div><div id="kwl">W/m² (Sol)<b id="kw"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Afaste e aproxime a tela.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let sol=0;const S=SL('sd',0.3,6,0.01,1,draw,v=>r2(v)+(sol?' UA':' m'));
+chips('ch',['Lâmpada (distância em m)','Sol (distância em UA)'],0,i=>{sol=i;draw();});
+const d=()=>S.get(),I=()=>1/(d()*d());
+MIS.def(()=>[
+ ['Afaste a tela até cada quadradinho receber <b>1/4</b> da luz que recebia a 1 unidade.',()=>Math.abs(I()-0.25)<0.005,()=>'Distância '+r2(d())+': o dobro. A luz se espalhou em 4 quadradinhos.',()=>'Agora cada quadradinho recebe '+r2(I()*100)+'% da luz.'],
+ ['Agora ache a distância em que chega só <b>1/9</b> da luz.',()=>Math.abs(I()-1/9)<0.003,()=>'Distância '+r2(d())+': o triplo. 3² = 9 quadradinhos.',()=>'Agora: '+r2(I()*100)+'%.'],
+ ['Escolha <b>o Sol</b> e leve a tela até <b>Marte</b> (1,52 UA). Quantos W/m² chegam lá?',()=>sol==1&&Math.abs(d()-1.52)<=0.01,()=>'1.361 ÷ 1,52² ≈ '+fmt(Math.round(1361*I()))+' W/m²: menos da metade da luz da Terra.',()=>sol!=1?'Escolha o Sol.':'Agora a '+r2(d())+' UA.'],
+ ['Ainda com o Sol, leve a tela ao <b>periélio do Teimoso</b> (0,80 UA). Quanto de luz a rocha recebe a mais que a Terra?',()=>sol==1&&Math.abs(d()-0.8)<=0.01,()=>fmt(Math.round(1361*I()))+' W/m²: '+r2(I())+' vezes a luz que chega à Terra.',()=>sol!=1?'Escolha o Sol.':'Agora a '+r2(d())+' UA.']]);
+function draw(){const W=340,H=220;let g=RC(0,0,W,H,sol?CEU:'#1E293B','rx="10"');
+ const lx=30,ly=110,X=lx+40+d()*45,n=Math.max(1,d()),s=18*d(),lado=Math.min(s,190);
+ g+=`<circle cx="${lx}" cy="${ly}" r="${sol?16:9}" fill="${AMA}"/>`;
+ if(!sol)for(let k=0;k<8;k++){const a=k*Math.PI/4;g+=LN(lx+12*Math.cos(a),ly+12*Math.sin(a),lx+18*Math.cos(a),ly+18*Math.sin(a),AMA,2);}
+ const y0=ly-lado/2,y1=ly+lado/2;g+=PG([[lx,ly],[X,y0],[X,y1]],AMA,'opacity="'+Math.max(0.08,0.35*I())+'"');
+ g+=LN(lx,ly,X,y0,'#FDE68A',1,'3 3')+LN(lx,ly,X,y1,'#FDE68A',1,'3 3');
+ const ref=18;const nq=Math.min(Math.ceil(lado/ref),12);const q=lado/Math.max(lado/ref,1);
+ g+=RC(X,y0,8,lado,'rgba(255,255,255,'+Math.min(0.95,0.2+0.75*I())+')');
+ for(let i=0;i<=nq;i++){const yy=y0+i*lado/Math.max(lado/ref,1);if(yy<=y1+0.5)g+=LN(X,yy,X+8,yy,'#64748B',0.6);}
+ // tela vista de frente (à direita)
+ const fx=W-100,fy=36,fw=80,cel=Math.min(fw/Math.max(d(),1),80);let m=Math.ceil(fw/cel);
+ g+=RC(fx,fy,fw,fw,'#0F172A');const a=Math.min(1,I());
+ for(let i=0;i<m;i++)for(let j=0;j<m;j++){const x=fx+i*cel,y=fy+j*cel;if(x<fx+fw&&y<fy+fw)g+=`<rect x="${x}" y="${y}" width="${Math.min(cel,fx+fw-x)}" height="${Math.min(cel,fy+fw-y)}" fill="${AMA}" fill-opacity="${a}" stroke="#334155" stroke-width="0.6"/>`;}
+ g+=TX(fx+fw/2,fy-8,'a tela de frente',{fs:9,c:'#CBD5E1'})+TX(fx+fw/2,fy+fw+14,'1 quadrado = luz a 1 '+(sol?'UA':'m'),{fs:8.5,c:'#94A3B8'});
+ g+=TX(X+4,y1+16>H-6?H-6:y1+16,'d = '+r2(d())+(sol?' UA':' m'),{fs:10.5,c:'#fff'});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('ki').textContent=(I()>=0.1?r2(I()*100):r1(I()*1000)/10+'')+'%';$('kq').textContent=r2(d()*d());$('kw').textContent=sol?fmt(Math.round(1361*I()))+' W/m²':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

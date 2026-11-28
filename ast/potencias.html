@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Do quadrado ao cubo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Do quadrado ao cubo</h1></header>
+<main>
+<div class="card"><h2>Comprimento, área e volume</h2><p class="muted" style="margin-top:0">A rocha da esquerda é o modelo (1 × 1 × 1). A da direita foi aumentada k vezes em todas as direções. Veja quanto cresce cada medida: k, k² e k³. Também dá para diminuir (k menor que 1), como numa maquete.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sk"><b>Fator de escala k (10 elevado a…)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">k (comprimento)<b id="k1"></b></div><div>k² (área, brilho)<b id="k2"></b></div><div>k³ (volume, massa)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o fator de escala.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const K=SL('sk',-4,1.5,0.001,0.3,draw,v=>{const k=Math.pow(10,v);return k>=1?r2(k):SCI(k,3);});
+const k=()=>Math.pow(10,K.get());
+const show=v=>v>=1e4||v<1e-2?SCI(v,3):(v>=100?fmt(Math.round(v)):r2(v));
+MIS.def(()=>[
+ ['Deixe o <b>volume 1.000 vezes</b> maior (entre 990 e 1.010). Quantas vezes aumentou o comprimento?',()=>k()**3>=990&&k()**3<=1010,()=>'k = '+r2(k())+': 10 vezes mais largo dá 10³ = 1.000 vezes mais volume, mas só 100 vezes mais área.',()=>'Volume: '+show(k()**3)+' vezes.'],
+ ['Dobre o volume: k³ entre 1,98 e 2,02. Que aumento no comprimento basta?',()=>k()**3>=1.98&&k()**3<=2.02,()=>'k = '+r2(k())+' (∛2 ≈ 1,26): uns 26% mais largo, e a massa já dobrou.',()=>'Volume: '+show(k()**3)+' vezes.'],
+ ['Faça a rocha ficar <b>4 vezes mais brilhante</b> (área 4 vezes). Quanto aumentou a massa?',()=>k()**2>=3.96&&k()**2<=4.04,()=>'k = 2: área × 4 e massa × '+r1(k()**3)+'. O brilho engana: a massa cresce mais depressa.',()=>'Área: '+show(k()**2)+' vezes.'],
+ ['Monte a <b>maquete do Otávio</b>: escala 1 para 3.000 (k entre 0,00033 e 0,00034). Que fração do volume ela tem?',()=>k()>=1/3030&&k()<=1/2970,()=>'k³ ≈ '+SCI(k()**3,3)+': a maquete tem 1 vinte e sete bilionésimos do volume do Teimoso (3.000³ = 2,7 × 10¹⁰).',()=>'Agora k = '+SCI(k(),3)+'. Diminua bastante.']]);
+function draw(){const W=340,H=220;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,212,30,7);
+ const r0=26,big=k()>=1;const rm=big?Math.max(6,Math.min(r0,80/k())):r0,rk=Math.max(1.5,Math.min(rm*k(),95));
+ g+=ROCHA_SVG(70,118,rm,3)+TX(70,118+rm+18,'modelo',{fs:10,c:'#BFD0FF'});
+ g+=(rk>4?ROCHA_SVG(225,118,rk,3):`<circle cx="225" cy="118" r="${rk}" fill="${ROCHA}"/>`)+TX(225,Math.min(118+rk+18,212),'× '+(k()>=1?r2(k()):SCI(k(),3)),{fs:10,c:'#FDBA74'});
+ const bw=90,bx=W-bw-8;
+ [['k',k(),ORANGE],['k²',k()**2,'#6B8FE0'],['k³',k()**3,'#A78BFA']].forEach(([n,v,c],i)=>{const y=16+i*16,l=Math.max(0,Math.min(1,(Math.log10(v)+12)/16));g+=TX(bx-4,y+8,n,{fs:9.5,c:'#fff',a:'end'})+RC(bx,y,bw,10,'#1E3A6E','rx="3"')+RC(bx,y,bw*l,10,c,'rx="3"');});
+ g+=TX(bx+bw/2,70,'escala de potências de 10',{fs:7.5,c:'#94A3B8'});
+ $('fig').innerHTML=SVG(W,H,g);$('k1').textContent=show(k());$('k2').textContent=show(k()**2);$('k3').textContent=show(k()**3);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
