@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Terços e diagonais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Terços e diagonais</h1></header>
+<main>
+<div class="card"><h2>Onde ficam as coisas</h2><p class="muted" style="margin-top:0">Mova o <b>horizonte</b> e o <b>cipreste</b> e veja as frações da altura e da largura. Ligue uma grade de linhas-guia.</p>
+<div id="chg" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Horizonte (cm do chão)</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Cipreste (cm da esquerda)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Horizonte<b id="kh"></b></div><div class="o">Cipreste<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Componha a tela.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let gr=1;chips('chg',['sem grade','terços','diagonais','razão áurea'],1,i=>{gr=i;draw();});
+const QW=92.3,QH=73.4,PHI=(1+Math.sqrt(5))/2;
+const SH=SL('sh',5,68,0.1,40,()=>draw(),v=>r1(v)+' cm');const SC=SL('sc',5,88,0.1,30,()=>draw(),v=>r1(v)+' cm');
+const k=3.4,ox=13,oy=262,X=x=>ox+x*k,Y=y=>oy-y*k;
+toque('fig',(x,y)=>{const cx=(x-ox)/k,cy=(oy-y)/k;if(Math.abs(cx-SC.get())*k<26&&Math.abs(cy-SH.get())*k>12)SC.set(Math.max(5,Math.min(88,Math.round(cx*10)/10)));else SH.set(Math.max(5,Math.min(68,Math.round(cy*10)/10)));draw();});
+const p=(a,b)=>Math.abs(a-b)<=0.25;
+MIS.def(()=>[
+ ['Coloque o horizonte exatamente no <b>terço de baixo</b> da altura.',()=>p(SH.get(),QH/3),'73,4 ÷ 3 ≈ 24,5 cm: o céu fica com 2/3 da tela, o chão com 1/3.',()=>'Agora o horizonte está em '+r2(SH.get()/QH)+' da altura. Precisa de 0,33 (ligue a grade dos terços).'],
+ ['Ponha o cipreste numa <b>interseção</b> dos terços: na linha dos 2/3 da largura, com o horizonte numa linha dos terços.',()=>p(SC.get(),2*QW/3)&&(p(SH.get(),QH/3)||p(SH.get(),2*QH/3)),'Cipreste em 61,5 cm (2/3 da largura). Um dos quatro "pontos fortes" da regra dos terços.',()=>!p(SC.get(),2*QW/3)?'2/3 de 92,3 ≈ 61,5 cm. O cipreste está em '+r1(SC.get())+' cm.':'Agora ponha o horizonte em 24,5 ou 48,9 cm.'],
+ ['Reproduza o quadro misterioso: horizonte em <b>28 cm</b> e cipreste em <b>57 cm</b>. Ligue a grade da razão áurea.',()=>p(SH.get(),28)&&p(SC.get(),57),'28 ÷ 73,4 ≈ 0,382 = 1/φ² e 57 ÷ 92,3 ≈ 0,618 = 1/φ. O quadro segue a razão áurea quase exata nas duas linhas: perfeito demais?',()=>'Horizonte '+r1(SH.get())+' cm e cipreste '+r1(SC.get())+' cm. Faltam: '+(p(SH.get(),28)?'':'horizonte em 28 ')+(p(SC.get(),57)?'':'cipreste em 57')+'.']]);
+function draw(){const h=SH.get(),c=SC.get();let g=RC(0,0,340,280,'#F8FAFC','rx="10"');
+ g+=RC(X(0),Y(QH),QW*k,(QH-h)*k,COBALTO_C)+RC(X(0),Y(h),QW*k,h*k,CROMO_C);
+ g+=CIR(X(80),Y(Math.min(66,h+30)),12,'#fff7d6');
+ g+=PG([[X(c-2.5),Y(Math.max(2,h-6))],[X(c+2.5),Y(Math.max(2,h-6))],[X(c),Y(Math.min(QH-3,h+38))]],CIPRESTE);
+ g+=RC(X(0),Y(QH),QW*k,QH*k,'none','stroke="'+NAVY+'" stroke-width="1.5"');
+ const L=(x1,y1,x2,y2,c)=>LN(X(x1),Y(y1),X(x2),Y(y2),c||ORANGE,1.4,'5 4');
+ if(gr==1){[1/3,2/3].forEach(f=>{g+=L(QW*f,0,QW*f,QH)+L(0,QH*f,QW,QH*f);});}
+ if(gr==2){g+=L(0,0,QW,QH)+L(0,QH,QW,0);const a=Math.atan2(QH,QW),px=QW*Math.cos(a)**2,py=QW*Math.cos(a)*Math.sin(a);g+=L(QW,0,px,py,BLUE);}
+ if(gr==3){[1/PHI,1-1/PHI].forEach(f=>{g+=L(QW*f,0,QW*f,QH,GREEN)+L(0,QH*f,QW,QH*f,GREEN);});}
+ g+=LN(X(0),Y(h),X(QW),Y(h),NAVY,1.5);
+ $('fig').innerHTML=SVG(340,280,g);$('kh').textContent=r1(h)+' cm = '+r2(h/QH).replace(/^0/,'0')+' da altura';$('kc').textContent=r1(c)+' cm = '+r2(c/QW)+' da largura';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
