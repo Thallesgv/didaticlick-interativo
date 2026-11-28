@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O piezômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O piezômetro</h1></header>
+<main>
+<div class="card"><h2>Coluna de água e poropressão</h2><p class="muted" style="margin-top:0">Mude a chuva acumulada, a coluna de água antes da chuva e quantos milímetros de chuva fazem a água subir 1 m (arraste ou use − e +). O nível sobe dentro do cano de 5 m e no solo em volta; o mostrador dá a poropressão na ponta do cano.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Chuva acumulada</b><input type="range"><span></span></div><div class="sl" id="sh"><b>Coluna antes da chuva</b><input type="range"><span></span></div><div class="sl" id="sk"><b>Chuva para subir 1 m</b><input type="range"><span></span></div><div class="kpi"><div>Coluna de água<b id="k1"></b></div><div>Profundidade do nível<b id="k2"></b></div><div class="o">Poropressão<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',0,300,1,0,()=>draw(),v=>v+' mm'),SH=SL('sh',0,3,0.1,1,()=>draw(),v=>vg(v)+' m'),SK=SL('sk',20,120,5,60,()=>draw(),v=>v+' mm');
+const hb=()=>SH.get()+SA.get()/SK.get(),h=()=>Math.min(5,hb()),base=()=>Math.abs(SH.get()-1)<0.01&&SK.get()==60;
+MIS.def(()=>[
+ ['Reproduza a manhã do dia 7: depois de <b>36 mm</b>, onde está o nível?',()=>base()&&SA.get()==36,'Coluna de 1,6 m: o nível a 3,4 m, como a fita da Joana mostrou.',()=>!base()?'Deixe a coluna inicial em 1 m e 60 mm para subir 1 m.':'A chuva está em '+SA.get()+' mm.'],
+ ['Preveja o nível com os <b>180 mm</b> da frente fria.',()=>base()&&SA.get()==180,'Coluna de 4 m: a água a 1 m do chão do quintal, com 40 kPa na ponta do cano.',()=>!base()?'Deixe a coluna inicial em 1 m e 60 mm para subir 1 m.':'A chuva está em '+SA.get()+' mm.'],
+ ['Ache a <b>menor chuva</b> que faz a água chegar à superfície do quintal.',()=>base()&&SA.get()==240,'240 mm: 1 + 240 ÷ 60 = 5 m. Daí em diante a função deixa de valer: a água corre pelo chão.',()=>!base()?'Deixe a coluna inicial em 1 m e 60 mm para subir 1 m.':hb()>=5?'Com '+SA.get()+' mm a água já brotou. Existe uma chuva menor.':'Com '+SA.get()+' mm, o nível está a '+r2(5-h())+' m do chão.']]);
+function draw(){const x0=20,top=40,k=34,H=h();let g=RC(0,0,340,240,'#fff','rx="10"')+RC(0,0,340,top,CEU,'rx="10"');
+ g+=RC(x0,top,200,5*k+10,TERRA,'')+RC(x0,top+(5-H)*k,200,H*k+10,'#BFD8F2','')+LN(x0,top,x0+200,top,TERRA_E,3);
+ g+=LN(x0,top+(5-H)*k,x0+200,top+(5-H)*k,AGUA,1.5,'5 4');
+ const cx=120;g+=RC(cx-9,top-14,18,5*k+14,'#fff','stroke="'+NAVY+'" stroke-width="1.5"')+RC(cx-6,top+(5-H)*k,12,H*k,AGUA,'');
+ for(let z=0;z<=5;z++)g+=TX(x0+204,top+z*k+4,z+' m',{fs:9,a:'start',c:GRAY});
+ if(hb()>=5)g+=TX(cx,top-20,'a água brotou no chão!',{fs:11,c:VERM});
+ // mostrador
+ const mx=285,my=150,u=10*H,ang=Math.PI*(1-Math.min(1,u/50));g+=CIR(mx,my,36,'#fff','stroke="'+NAVY+'" stroke-width="2"')+LN(mx,my,mx+30*Math.cos(ang),my-30*Math.sin(ang),u>=40?VERM:ORANGE,3);
+ g+=TX(mx,my+18,r1(u)+' kPa',{fs:11})+TX(mx,my-42,'poropressão',{fs:9});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r2(H)+' m';$('k2').textContent=r2(5-H)+' m';$('k3').textContent=r1(10*H)+' kPa';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

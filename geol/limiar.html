@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva do limiar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A curva do limiar</h1></header>
+<main>
+<div class="card"><h2>A potência A = a · D<sup>b</sup></h2><p class="muted" style="margin-top:0">Mude o a, o b e a escala dos eixos: 0 = comum, 1 = logarítmica (arraste ou use − e +). Os pontos azuis são os limiares do DRM-RJ (30 mm em 1 h, 70 mm em 24 h, 110 mm em 96 h); o ponto vermelho é a previsão da frente fria (180 mm em 72 h).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>a (limiar de 1 h)</b><input type="range"><span></span></div><div class="sl" id="sb"><b>b (expoente)</b><input type="range"><span></span></div><div class="sl" id="se"><b>Escala (0 comum, 1 log)</b><input type="range"><span></span></div><div class="kpi"><div>Curva em 24 h<b id="k1"></b></div><div>Curva em 96 h<b id="k2"></b></div><div class="o">Curva em 72 h<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',10,60,1,20,()=>draw(),v=>v+' mm'),SB=SL('sb',0,1,0.01,0.5,()=>draw(),v=>vg(v)),SE=SL('se',0,1,1,0,()=>draw(),v=>v?'logarítmica':'comum');
+const f=D=>SA.get()*Math.pow(D,SB.get()),ok1=()=>SA.get()==30&&Math.abs(f(24)-70)<=1.5;
+MIS.def(()=>[
+ ['Ajuste a curva aos limiares de <b>1 h (30 mm)</b> e de <b>24 h (70 mm)</b>.',()=>ok1(),()=>'a = 30 e b = '+vg(SB.get())+': A(24) ≈ '+r1(f(24))+' mm.',()=>SA.get()!=30?'O a é o limiar de 1 hora.':'A curva dá '+r1(f(24))+' mm em 24 h.'],
+ ['Com a curva ajustada, passe para a <b>escala logarítmica</b>.',()=>ok1()&&SE.get()==1,'Nos dois eixos log, a potência vira uma reta, de inclinação b.',()=>!ok1()?'Volte a curva para a = 30 e o b da missão 1.':'A escala está comum.'],
+ ['Faça a curva passar a menos de 2 mm de <b>30 mm em 1 h</b> e de <b>110 mm em 96 h</b>.',()=>Math.abs(f(1)-30)<=2&&Math.abs(f(96)-110)<=2,()=>'Conseguiu, mas agora 24 h dá '+r1(f(24))+' mm. Uma potência não passa exatamente pelos três: os limiares do cartaz são arredondados.',()=>'A curva dá '+r1(f(1))+' mm em 1 h e '+r1(f(96))+' mm em 96 h.']]);
+function draw(){const lg=SE.get()==1,x0=40,y0=210,w=285,h=185;
+ const X=D=>lg?x0+Math.log10(D)/2*w:x0+D/100*w,Y=A=>lg?y0-(Math.log10(Math.max(A,10))-1)/(Math.log10(300)-1)*h:y0-Math.min(A,200)/200*h;
+ let g=RC(0,0,340,240,'#fff','rx="10"')+LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-h,NAVY,1);
+ (lg?[1,10,100]:[0,24,48,72,96]).forEach(D=>g+=LN(X(Math.max(D,lg?1:0)),y0,X(Math.max(D,lg?1:0)),y0-h,'#E5E7EB',1)+TX(X(Math.max(D,lg?1:0)),y0+14,D+' h',{fs:9,c:GRAY}));
+ (lg?[10,30,100,300]:[50,100,150,200]).forEach(A=>g+=LN(x0,Y(A),x0+w,Y(A),'#E5E7EB',1)+TX(x0-4,Y(A)+3,A,{fs:9,a:'end'}));
+ let pts=[];for(let i=0;i<=100;i++){const D=lg?Math.pow(10,i/50):Math.max(1,i);pts.push([X(D),Y(f(D))]);}
+ g+=PL(pts,ORANGE,2.5);
+ [[1,30],[24,70],[96,110]].forEach(([D,A])=>g+=CIR(X(D),Y(A),6,BLUE,'stroke="#fff" stroke-width="1.5"'));
+ g+=CIR(X(72),Y(180),6,VERM,'stroke="#fff" stroke-width="1.5"')+TX(X(72)-8,Y(180)-6,'previsão',{fs:9,a:'end',c:VERM});
+ g+=TX(x0+6,24,'chuva A (mm) × duração D',{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(f(24))+' mm';$('k2').textContent=r1(f(96))+' mm';$('k3').textContent=r1(f(72))+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
