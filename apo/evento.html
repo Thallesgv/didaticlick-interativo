@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o evento · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Monte o evento</h1></header>
+<main>
+<div class="card"><h2>Quais faces contam?</h2><p class="muted" style="margin-top:0">Toque nas faces para colocá-las no evento (ficam laranja) ou tirá-las. A barra mostra a probabilidade, de <b>impossível</b> a <b>certo</b>.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Favoráveis<b id="k1"></b></div><div>Fração<b id="k2"></b></div><div class="o">Probabilidade<b id="k3"></b></div></div>
+<div class="row" style="margin-top:8px"><button class="alt" id="lim">Limpar</button><button class="alt" id="tud">Todas</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte eventos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const sel=[false,false,false,false,false,false];
+const mdc=(a,b)=>b?mdc(b,a%b):a;const fr=k=>k==0?'0':k==6?'1':(k/mdc(k,6))+'/'+(6/mdc(k,6));
+const nk=()=>sel.filter(x=>x).length;
+toque('fig',(x,y,ini)=>{if(!ini)return;if(y<20||y>90)return;const i=Math.floor((x-14)/53);if(i<0||i>5)return;sel[i]=!sel[i];draw();});
+$('lim').onclick=()=>{sel.fill(false);draw();};$('tud').onclick=()=>{sel.fill(true);draw();};
+MIS.def(()=>[
+ ['Monte um evento com probabilidade <b>1/2</b>.',()=>nk()==3,()=>'Três faces de seis: '+[1,2,3,4,5,6].filter((v,i)=>sel[i]).join(', ')+'. Por exemplo, "sair par" ou "sair menor que 4".',()=>'Agora são '+nk()+' faces: '+fr(nk())+'. Para 1/2 você precisa de metade das 6 faces.'],
+ ['Monte um evento com probabilidade <b>1/3</b>.',()=>nk()==2,'Duas faces de seis: 2/6 = 1/3. Por exemplo, "sair 5 ou 6".',()=>'Agora são '+nk()+' faces ('+fr(nk())+'). 1/3 de 6 faces dá quantas?'],
+ ['Monte um evento <b>impossível</b>.',()=>nk()==0,'Nenhuma face: probabilidade 0. É o "sair 7" de um dado comum.',()=>'Ainda há '+nk()+' face(s) no evento. Tire todas.'],
+ ['Monte um evento <b>certo</b>.',()=>nk()==6,'As seis faces: probabilidade 1, ou 100%. Sempre acontece.',()=>'Faltam '+(6-nk())+' face(s) para o evento ser certo.']]);
+function draw(){let g=RC(0,0,340,170,'#F8FAFC','rx="10"');
+ for(let i=0;i<6;i++){const x=14+i*53;g+=DADO(x+4,26,44,i+1,sel[i]?PEACH:'#fff',NAVY,sel[i]?ORANGE:NAVY);if(sel[i])g+=RC(x+2,24,48,48,'none','rx="9" stroke="'+ORANGE+'" stroke-width="3"');}
+ const k=nk(),p=k/6,x0=20,w=300;g+=RC(x0,110,w,16,GRAYL,'rx="8"')+RC(x0,110,Math.max(0.001,w*p),16,ORANGE,'rx="8"');
+ g+=TX(x0,146,'impossível',{fs:10,a:'start',c:GRAY})+TX(x0+w,146,'certo',{fs:10,a:'end',c:GRAY})+TX(x0+w/2,146,'1/2',{fs:10,c:GRAY});
+ g+=LN(x0+w/2,106,x0+w/2,130,NAVY,1,'3 3');
+ $('fig').innerHTML=SVG(340,170,g);
+ $('k1').textContent=k+' de 6';$('k2').textContent=fr(k);$('k3').textContent=pct(p*100,1);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

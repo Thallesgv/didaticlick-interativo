@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lance o dado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Lance o dado</h1></header>
+<main>
+<div class="card"><h2>Frequências de verdade</h2><p class="muted" style="margin-top:0">Lance o dado e veja a <b>frequência relativa</b> de cada face ao lado da linha de <b>1/6</b>. A barra de baixo volta no tempo: arraste (ou use − e +) para ver como estava depois de cada lance.</p>
+<div class="row"><button id="b1">Lançar 1</button><button id="b10">Lançar 10</button><button id="b100">Lançar 100</button><button class="alt" id="br">Recomeçar</button></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Ver depois do lance nº</b><input type="range"><span></span></div>
+<div class="kpi"><div>Lances<b id="k1"></b></div><div>Último<b id="k2"></b></div><div class="o">Face mais longe de 1/6<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Lance o dado.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let H=[];let viu25=false;
+const ST=SL('st',0,100000,1,0,()=>draw(),v=>fmt(v));
+function aj(){const i=$('st').querySelector('input');i.max=Math.max(1,H.length);ST.set(H.length);}
+function lanca(n){for(let i=0;i<n;i++)H.push(1+Math.floor(Math.random()*6));aj();draw();}
+$('b1').onclick=()=>lanca(1);$('b10').onclick=()=>lanca(10);$('b100').onclick=()=>lanca(100);$('br').onclick=()=>{H=[];viu25=false;aj();draw();};
+function cont(t){const c=[0,0,0,0,0,0];for(let i=0;i<t;i++)c[H[i]-1]++;return c;}
+toque('fig',(x,y)=>{if(!H.length)return;const t=Math.round(clamp((x-30)/290,0,1)*H.length);ST.set(t);draw();});
+MIS.def(()=>[
+ ['Lance até chegar a <b>60 lances</b>, como Davi.',()=>H.length>=60,()=>'Pronto: '+H.length+' lances. Compare as barras com a linha de 1/6: algumas passam, outras não chegam.',()=>'Faltam '+(60-H.length)+' lances. Use os botões.'],
+ ['Encontre um momento em que alguma face está <b>acima de 25%</b>, com pelo menos 12 lances. Use a barra do tempo para procurar no começo.',()=>viu25,'Achou! No começo, com poucos lances, uma face passa fácil de 25%, mesmo num dado honesto. É o acaso, não um vício.',()=>{const t=ST.get();if(t<12)return 'Escolha um momento com pelo menos 12 lances (agora: '+t+').';const c=cont(t),mx=Math.max(...c)/t;return 'Depois do lance '+t+', a maior face está com '+pct(mx*100,1)+'. Procure outro momento ou recomece e lance de 1 em 1.';}],
+ ['Passe de <b>600 lances</b> e deixe a barra do tempo no fim. Todas as faces ficam entre 13% e 20%?',()=>{const t=ST.get();if(t<600)return false;const c=cont(t);return c.every(v=>v/t>=0.13&&v/t<=0.2);},'Com 600 lances, todas as faces ficam perto de 16,7%. É a lei dos grandes números começando a aparecer (módulo 5).',()=>{const t=ST.get();if(H.length<600)return 'Faltam '+(600-H.length)+' lances.';if(t<600)return 'Leve a barra do tempo até o fim.';return 'Quase sempre todas entram entre 13% e 20% com 600 lances; se não, lance mais 100.';}]]);
+function draw(){const t=ST.get(),c=cont(t);let g=RC(0,0,340,250,'#F8FAFC','rx="10"');
+ const x0=30,y0=200,hm=160,mx=0.5,bw=48;
+ for(const v of [0.1,0.2,0.3,0.4])g+=LN(x0,y0-hm*v/mx,x0+6*bw,y0-hm*v/mx,GRAYL,1)+TX(x0-4,y0-hm*v/mx+3,(v*100)+'%',{fs:8,a:'end',c:GRAY,w:500});
+ if(t>=12&&Math.max(...c)/t>0.25)viu25=true;
+ for(let i=0;i<6;i++){const f=t?c[i]/t:0,x=x0+i*bw;g+=RC(x+8,y0-hm*Math.min(f,mx),bw-16,hm*Math.min(f,mx),f>0.25?ORANGE:BLUE,'rx="3"');
+  g+=DADO(x+14,y0+8,20,i+1)+TX(x+bw/2,y0-hm*Math.min(f,mx)-4,t?pct(f*100,1):'',{fs:8});}
+ const yp=y0-hm/6/mx;g+=LN(x0,yp,x0+6*bw,yp,ORANGE,2,'6 4')+TX(x0+6*bw+2,yp+3,'1/6',{fs:9,a:'start',c:ORANGE});
+ if(t)g+=DADO(290,14,34,H[t-1],PEACH,NAVY,ORANGE);
+ $('fig').innerHTML=SVG(340,250,g);
+ let far=0;if(t){const d=c.map(v=>Math.abs(v/t-1/6));far=d.indexOf(Math.max(...d));}
+ $('k1').textContent=t+(t<H.length?' de '+H.length:'');$('k2').textContent=t?H[t-1]:'–';$('k3').textContent=t?'face '+(far+1)+': '+pct(c[far]/t*100,1):'–';MIS.ver('m');}
+aj();draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva que se acalma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A curva que se acalma</h1></header>
+<main>
+<div class="card"><h2>Lei dos grandes números</h2><p class="muted" style="margin-top:0">Escolha o evento e quantos lances jogar por toque (arrastando a barra ou com − e +). O gráfico mostra a <b>frequência relativa</b> a cada lance; a linha laranja é a <b>probabilidade</b>.</p>
+<div id="che" style="margin:4px 0"></div>
+<div class="sl" id="sn"><b>Lances por toque</b><input type="range"><span></span></div>
+<div class="row"><button id="bl">Lançar</button><button class="alt" id="br">Recomeçar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Lances<b id="k1"></b></div><div>Frequência<b id="k2"></b></div><div>Diferença em vezes<b id="k3"></b></div><div class="o">Diferença em pontos<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Lance muitas vezes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EV=[['soma 7 com dois dados',1/6,()=>2+Math.floor(Math.random()*6)+Math.floor(Math.random()*6)==7],['cara numa moeda',1/2,()=>Math.random()<0.5],['face 6 num dado',1/6,()=>Math.random()<1/6]];
+let ev=0,n=0,k=0,F=[],d36=null;
+const CE=chips('che',EV.map(e=>e[0]),0,i=>{ev=i;zera();draw();});
+const SN=SL('sn',1,500,1,10,null,v=>fmt(v));
+function zera(){n=0;k=0;F=[];d36=null;}
+$('bl').onclick=()=>{const m=SN.get();for(let i=0;i<m;i++){n++;if(EV[ev][2]())k++;F.push(k/n);if(n==36)d36=Math.abs(k-36*EV[ev][1]);}draw();};
+$('br').onclick=()=>{zera();draw();};
+const p=()=>EV[ev][1];
+MIS.def(()=>[
+ ['Lance de pouco em pouco até <b>36 lances</b> e veja a frequência pular.',()=>n>=36,()=>'Em 36 lances a frequência ficou em '+pct(F[35]*100,1)+'. No começo, cada lance mexe muito na curva.',()=>'Faltam '+(36-n)+' lances. Use 1 a 5 lances por toque para ver os pulos.'],
+ ['Chegue a <b>3 600 lances</b> com a frequência a menos de <b>1 ponto</b> da probabilidade.',()=>n>=3600&&Math.abs(k/n-p())<0.01,()=>'Diferença de '+r2(Math.abs(k/n-p())*100)+' ponto: a curva se acalmou na linha laranja.',()=>n<3600?'Faltam '+fmt(3600-n)+' lances. Use 500 por toque.':'A frequência está a '+r2(Math.abs(k/n-p())*100)+' ponto(s). Lance mais um pouco: com mais lances, ela chega mais perto.'],
+ ['Compare: em 3 600 lances, a diferença <b>em número de vezes</b> é maior que em 36 lances, mesmo com a porcentagem menor?',()=>n>=3600&&d36!==null&&Math.abs(k-n*p())>d36,()=>'Em 36 lances faltavam ou sobravam '+r1(d36)+'; agora são '+r1(Math.abs(k-n*p()))+'. A diferença em vezes cresceu, mas virou uma fração pequena do total. O dado não compensa nada: ele dilui.',()=>n<3600?'Recomece e lance até 3 600 (os primeiros 36 lances ficam guardados).':'Desta vez a diferença em vezes ('+r1(Math.abs(k-n*p()))+') não passou a de 36 lances ('+r1(d36||0)+'). Recomece e tente de novo: na maioria das vezes ela passa.']]);
+function draw(){let g=RC(0,0,340,240,'#F8FAFC','rx="10"');const x0=40,y0=200,gw=286,gh=180;const hi=Math.min(1,p()*2.4);
+ const Y=f=>y0-gh*Math.min(f,hi)/hi;const N=Math.max(100,n);const X=i=>x0+gw*i/N;
+ for(let q=0;q<=4;q++){const f=hi*q/4;g+=LN(x0,Y(f),x0+gw,Y(f),GRAYL,1)+TX(x0-4,Y(f)+3,pct(f*100,0),{fs:8,a:'end',c:GRAY,w:500});}
+ g+=LN(x0,Y(p()),x0+gw,Y(p()),ORANGE,2,'6 4');
+ if(F.length){const st=Math.max(1,Math.floor(F.length/400));const pts=[];for(let i=0;i<F.length;i+=st)pts.push([X(i+1),Y(F[i])]);pts.push([X(F.length),Y(F[F.length-1])]);g+=PL(pts,BLUE,2);}
+ g+=TX(x0,y0+16,'0',{fs:8,c:GRAY,w:500})+TX(x0+gw,y0+16,fmt(N)+' lances',{fs:8,a:'end',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(n);$('k2').textContent=n?pct(k/n*100,1):'–';$('k3').textContent=n?r1(k-n*p()):'–';$('k4').textContent=n?r2((k/n-p())*100):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

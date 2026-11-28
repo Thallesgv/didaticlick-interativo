@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O detector de dado viciado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O detector de dado viciado</h1></header>
+<main>
+<div class="card"><h2>O qui-quadrado do dado inteiro</h2><p class="muted" style="margin-top:0">Arraste as barras para cima e para baixo (ou escolha uma face e use − e +). Cada face soma (observado − esperado)² ÷ esperado ao <b>χ²</b>. Acima de <b>11,07</b>, o dado é suspeito.</p>
+<div id="chp" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Contagem da face escolhida</b><input type="range"><span></span></div>
+<div class="kpi"><div>Total<b id="k1"></b></div><div>Esperado por face<b id="k2"></b></div><div class="o">χ²<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste os dados.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MA=[589,614,597,622,583,595],MB=[662,611,592,603,600,532];let O=[600,600,600,600,600,600],fs=0;
+chips('chp',['600 de cada','Mesa A','Mesa B'],0,i=>{O=[[600,600,600,600,600,600],MA,MB][i].slice();SV.set(O[fs]);draw();});
+const SV=SL('sv',400,800,1,600,v=>{O[fs]=v;draw();},v=>'face '+(fs+1)+': '+fmt(v));
+const x0=40,bw=48,y0=200,gh=170,lo=400,hi=800,Y=v=>y0-gh*(v-lo)/(hi-lo);
+toque('fig',(x,y)=>{const i=Math.floor((x-x0)/bw);if(i<0||i>5)return;fs=i;if(y<=y0){O[i]=clamp(Math.round(lo+(y0-y)/gh*(hi-lo)),lo,hi);}SV.set(O[fs]);draw();});
+const qui=A=>{const t=A.reduce((a,b)=>a+b,0),e=t/6;return A.reduce((s,v)=>s+(v-e)*(v-e)/e,0);};
+const igual=(A,B)=>A.every((v,i)=>v==B[i]);
+const outros600=i=>O.every((v,j)=>j==i||v==600);
+MIS.def(()=>[
+ ['Carregue a <b>Mesa B</b> e veja a agulha passar do limite.',()=>igual(O,MB),'χ² = 14,44 > 11,07. As faces 1 e 6 respondem por quase tudo: 6,41 + 7,71.',()=>'Toque no botão "Mesa B".'],
+ ['Volte a "600 de cada" e mexa <b>só na face 6</b> até o detector disparar.',()=>outros600(5)&&O[5]!=600&&qui(O)>11.07,()=>'Com a face 6 em '+O[5]+', o χ² chegou a '+r2(qui(O))+'. Sozinha, uma face precisa se afastar bastante.',()=>!outros600(5)?'As outras faces precisam ficar em 600: use "600 de cada" e mexa só na barra do 6.':'χ² = '+r2(qui(O))+'. Afaste mais a face 6 de 600 (para cima ou para baixo).'],
+ ['Agora só na <b>face 1</b>: ache o <b>menor</b> afastamento de 600 que dispara o alarme.',()=>{if(!outros600(0)||O[0]==600||qui(O)<=11.07)return false;const B=O.slice();B[0]+=O[0]>600?-1:1;return qui(B)<=11.07;},()=>'Na face 1 em '+O[0]+' ('+(O[0]>600?'+':'')+(O[0]-600)+'), o χ² é '+r2(qui(O))+'; um lance mais perto de 600 e ele cai abaixo de 11,07. Um dado só pode errar uns 80 lances numa face antes de virar suspeito.',()=>{if(!outros600(0))return 'Use "600 de cada" e mexa só na face 1.';const q=qui(O);return q<=11.07?'χ² = '+r2(q)+': ainda abaixo de 11,07. Afaste mais a face 1.':'χ² = '+r2(q)+': passou. Mas dá para disparar com menos? Aproxime de 600 com − e + até o limite.';}]]);
+function draw(){const t=O.reduce((a,b)=>a+b,0),e=t/6,q=qui(O);let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ for(const v of [500,600,700])g+=LN(x0,Y(v),x0+6*bw,Y(v),GRAYL,1)+TX(x0-4,Y(v)+3,v,{fs:8,a:'end',c:GRAY,w:500});
+ g+=LN(x0,Y(e),x0+6*bw,Y(e),ORANGE,2,'6 4');
+ for(let i=0;i<6;i++){const x=x0+i*bw,pa=(O[i]-e)*(O[i]-e)/e;g+=RC(x+8,Y(O[i]),bw-16,y0-Y(O[i]),i==fs?ORANGE:BLUE,'rx="3"')+TX(x+bw/2,Y(O[i])-4,O[i],{fs:8});
+  g+=DADO(x+14,y0+6,20,i+1,i==fs?PEACH:'#fff',NAVY,i==fs?ORANGE:NAVY)+TX(x+bw/2,y0+42,r2(pa),{fs:8,c:pa>3?VERM:GRAY});}
+ g+=TX(x0-6,y0+42,'parcela',{fs:8,a:'end',c:GRAY,w:500});
+ const rx=40,rw=280,ry=268,mx=20,RX=v=>rx+rw*Math.min(v,mx)/mx;
+ g+=RC(rx,ry,RX(11.07)-rx,10,'#CDEBD6')+RC(RX(11.07),ry,rx+rw-RX(11.07),10,'#F6C9CC')+LN(RX(11.07),ry-4,RX(11.07),ry+14,NAVY,2)+TX(RX(11.07),ry+26,'11,07',{fs:8});
+ g+=PG([[RX(q),ry],[RX(q)-6,ry-10],[RX(q)+6,ry-10]],q>11.07?VERM:GREEN);
+ $('fig').innerHTML=SVG(340,300,g);
+ $('k1').textContent=fmt(t);$('k2').textContent=r1(e);$('k3').textContent=r2(q)+(q>11.07?' · suspeito':' · normal');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

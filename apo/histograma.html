@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O histograma das somas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O histograma das somas</h1></header>
+<main>
+<div class="card"><h2>Do monte de números ao desenho</h2><p class="muted" style="margin-top:0">Escolha quantos lances jogar de uma vez (arrastando a barra ou com − e +) e aperte <b>Lançar</b>. As barras azuis são o que saiu; os tracinhos laranja, o <b>esperado</b>.</p>
+<div class="sl" id="sn"><b>Lances por toque</b><input type="range"><span></span></div>
+<div class="row"><button id="bl">Lançar</button><button class="alt" id="br">Recomeçar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Lances<b id="k1"></b></div><div>Soma 7 (esperado)<b id="k2"></b></div><div class="o">Maior diferença<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o histograma.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let C=Array(11).fill(0),n=0;
+const SN=SL('sn',1,1000,1,100,null,v=>fmt(v));
+$('bl').onclick=()=>{const k=SN.get();for(let i=0;i<k;i++){const s=2+Math.floor(Math.random()*6)+Math.floor(Math.random()*6);C[s-2]++;}n+=k;draw();};
+$('br').onclick=()=>{C.fill(0);n=0;draw();};
+const ESP=s=>n*(6-Math.abs(s-7))/36;
+MIS.def(()=>[
+ ['Chegue a <b>360 lances</b>.',()=>n>=360,'Com 360 lances, o esperado da soma 7 é 60 e o da soma 2 é só 10.',()=>'Faltam '+fmt(360-n)+' lances. Dica: escolha 100 lances por toque.'],
+ ['Faça a soma 7 passar de <b>100</b> vezes.',()=>C[5]>100,()=>'A soma 7 já saiu '+C[5]+' vezes em '+fmt(n)+' lances: cerca de 1 em cada 6.',()=>'A soma 7 saiu '+C[5]+' vezes. Para passar de 100, precisa de uns 600 lances ao todo (agora: '+fmt(n)+').'],
+ ['Chegue a <b>3 600 lances</b>, como na Mesa A, e compare com o esperado.',()=>n>=3600,()=>'O "telhado" aparece: a maior diferença foi de '+fmt(Math.round(Math.max(...C.map((v,i)=>Math.abs(v-ESP(i+2))))))+' lances numa soma, pouco perto das centenas de cada barra.',()=>'Faltam '+fmt(3600-n)+' lances. Use 1 000 por toque.']]);
+function draw(){let g=RC(0,0,340,250,'#F8FAFC','rx="10"');const x0=34,y0=210,hm=180,bw=26;
+ const mx=Math.max(10,...C,ESP(7))*1.1;
+ for(let k=0;k<=3;k++){const v=mx*k/4;g+=LN(x0,y0-hm*k/4,x0+11*bw,y0-hm*k/4,GRAYL,1)+TX(x0-4,y0-hm*k/4+3,fmt(Math.round(v)),{fs:8,a:'end',c:GRAY,w:500});}
+ for(let i=0;i<11;i++){const x=x0+i*bw,h=hm*C[i]/mx,e=hm*ESP(i+2)/mx;g+=RC(x+3,y0-h,bw-6,h,BLUE,'rx="2"')+LN(x+1,y0-e,x+bw-1,y0-e,ORANGE,3)+TX(x+bw/2,y0+14,i+2,{fs:10});}
+ g+=TX(x0+5.5*bw,y0+30,'soma dos dois dados',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,250,g);
+ const md=n?Math.max(...C.map((v,i)=>Math.abs(v-ESP(i+2)))):0;
+ $('k1').textContent=fmt(n);$('k2').textContent=C[5]+' ('+fmt(Math.round(ESP(7)))+')';$('k3').textContent=fmt(Math.round(md));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
