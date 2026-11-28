@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ponto de fuga · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Ponto de fuga</h1></header>
+<main>
+<div class="card"><h2>Onde as paralelas se encontram</h2><p class="muted" style="margin-top:0">O quadro está num plano cartesiano em cm. Arraste o <b>ponto laranja</b> (ou use os botões − e +) até onde as linhas se encontram. Ligue as retas prolongadas para conferir.</p>
+<div id="chl" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sx"><b>x do ponto (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="sy"><b>y do ponto (cm)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Ponto<b id="kp"></b></div><div class="o">Até a reta mais longe<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache os pontos de fuga.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const QW=92.3,QH=73.4;
+function quadro(X,Y,k,claro){let g='';
+ g+=RC(X(0),Y(QH),QW*k,(QH-28)*k,claro?COBALTO_C:COBALTO)+RC(X(0),Y(28),QW*k,28*k,claro?CROMO_C:CROMO);
+ g+=CIR(X(80),Y(60),4.5*k,CROMO_C);
+ g+=PG([[X(24),Y(0)],[X(80),Y(0)],[X(52),Y(28)]],claro?'#E9D3A6':OCRE);
+ [8,20,32].forEach(x=>{const yb=34/70*x,yt=22+12/70*x,h=yt-yb;g+=RC(X(x)-0.5*k,Y(yb+h*0.5),k,h*0.5*k,'#7E5A33')+ELI(X(x),Y(yt-h*0.27),h*0.32*k,h*0.27*k,claro?VERDE_C:VERDE_T);});
+ g+=PG([[X(54.5),Y(22)],[X(59.5),Y(22)],[X(57),Y(66)]],claro?'#6FA47F':CIPRESTE);
+ return g;}
+let lin=0;
+chips('chl',['retas escondidas','prolongar o caminho','prolongar as oliveiras'],0,i=>{lin=i;draw();});
+const SX=SL('sx',0,92,0.5,40,()=>draw(),v=>r1(v));const SY=SL('sy',0,73,0.5,50,()=>draw(),v=>r1(v));
+const k=3.4,ox=10,oy=262,X=x=>ox+x*k,Y=y=>oy-y*k;
+toque('fig',(x,y)=>{SX.set(Math.max(0,Math.min(92,Math.round((x-ox)/k*2)/2)));SY.set(Math.max(0,Math.min(73,Math.round((oy-y)/k*2)/2)));draw();});
+// retas: caminho y=x-24 e y=-x+80; oliveiras (copas) y=22+6x/35 e (pés) y=17x/35
+const RE={c:[[1,-24],[-1,80]],o:[[6/35,22],[17/35,0]]};
+const dist=(m,b,x,y)=>Math.abs(m*x-y+b)/Math.hypot(m,1);
+const dmax=par=>{const x=SX.get(),y=SY.get();return Math.max(...RE[par].map(([m,b])=>dist(m,b,x,y)));};
+MIS.def(()=>[
+ ['Ache o ponto de fuga do <b>caminho</b>: onde as duas bordas do caminho se encontram.',()=>dmax('c')<=0.8,'F1 = (52, 28). É ali que fica a linha do horizonte do caminho: y = 28.',()=>{const x=SX.get(),y=SY.get();return 'O ponto está a '+r1(dmax('c'))+' cm da borda mais longe. '+(y>28.5?'Desça':'Suba ou ande para o lado')+': as bordas se cruzam na ponta do caminho.';}],
+ ['Agora ache o ponto de fuga das <b>oliveiras</b>: onde se encontram a linha das copas e a linha dos pés.',()=>dmax('o')<=0.8,'F2 = (70, 34): seis centímetros acima de F1. O caminho e as árvores foram vistos de alturas diferentes.',()=>'Ligue "prolongar as oliveiras" para ver as duas retas. Agora o ponto está a '+r1(dmax('o'))+' cm da mais longe.'],
+ ['Ponha o ponto no horizonte do caminho (<b>y = 28</b>) bem embaixo de F2. Quanto F2 está acima dele?',()=>SX.get()==70&&SY.get()==28,'De (70, 28) até (70, 34) são 6 cm. Pista para a perícia, mas não prova: Van Gogh distorcia a perspectiva de propósito.',()=>'Use x = 70 e y = 28 (agora: ('+r1(SX.get())+', '+r1(SY.get())+')).']]);
+function draw(){let g=RC(0,0,340,280,'#F8FAFC','rx="10"');g+=quadro(X,Y,k,true);
+ for(let x=0;x<=90;x+=10)g+=LN(X(x),Y(0),X(x),Y(0)+4,NAVY,1)+TX(X(x),Y(0)+14,x,{fs:8,c:GRAY,w:500});
+ for(let y=10;y<=70;y+=10)g+=LN(X(0),Y(y),X(0)+4,Y(y),NAVY,1)+TX(X(0)+7,Y(y)+3,y,{fs:8,c:GRAY,w:500,a:'start'});
+ g+=LN(X(24),Y(0),X(38),Y(14),BLUE,2.5)+LN(X(80),Y(0),X(66),Y(14),BLUE,2.5);
+ g+=LN(X(0),Y(22),X(35),Y(28),GREEN,2.5)+LN(X(0),Y(0),X(35),Y(17),GREEN,2.5);
+ if(lin==1)g+=LN(X(24),Y(0),X(70),Y(46),BLUE,1.2,'4 3')+LN(X(80),Y(0),X(34),Y(46),BLUE,1.2,'4 3');
+ if(lin==2)g+=LN(X(0),Y(22),X(92),Y(22+6*92/35),GREEN,1.2,'4 3')+LN(X(0),Y(0),X(92),Y(17*92/35),GREEN,1.2,'4 3');
+ const x=SX.get(),y=SY.get();g+=LN(X(0),Y(y),X(92.3),Y(y),ORANGE,1,'2 3')+CIR(X(x),Y(y),7,ORANGE,'stroke="#fff" stroke-width="2"');
+ $('fig').innerHTML=SVG(340,280,g);$('kp').textContent='('+r1(x)+', '+r1(y)+')';
+ $('kd').textContent=r1(Math.max(dmax('c'),0))+' cm (caminho) · '+r1(dmax('o'))+' cm (oliveiras)';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

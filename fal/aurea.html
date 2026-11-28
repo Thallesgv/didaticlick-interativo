@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A razão de ouro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A razão de ouro</h1></header>
+<main>
+<div class="card"><h2>O corte de ouro</h2><p class="muted" style="margin-top:0">Arraste o corte do segmento (ou use − e +). Quando o todo ÷ a parte maior for igual à parte maior ÷ a menor, você achou φ.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Parte maior (de 100)</b><input type="range"><span></span></div>
+<div class="kpi"><div>a ÷ b<b id="k1"></b></div><div class="o">(a + b) ÷ a<b id="k2"></b></div></div></div>
+<div class="card"><h2>Fibonacci e o acaso</h2><p class="muted" style="margin-top:0">Divida cada termo de Fibonacci pelo anterior. Depois, sorteie 6 medidas de um "quadro" qualquer e conte quantas das 15 divisões parecem áureas (entre 1,55 e 1,69).</p>
+<div class="fig" id="fib"></div>
+<div class="sl" id="sn"><b>Termo n</b><input type="range"><span></span></div>
+<div class="row" style="margin:8px 0"><button id="sort">Sortear 6 medidas</button></div><p id="acaso" class="muted"></p>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache φ.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PHI=(1+Math.sqrt(5))/2;const SA=SL('sa',50.5,90,0.1,70,()=>draw(),v=>r1(v));
+toque('fig',(x,y)=>{SA.set(Math.max(50.5,Math.min(90,Math.round((x-20)/3*10)/10)));draw();});
+const FIB=[1,1];while(FIB.length<20)FIB.push(FIB[FIB.length-1]+FIB[FIB.length-2]);
+const SN=SL('sn',2,16,1,4,()=>draw(),v=>'F('+v+') ÷ F('+(v-1)+')');
+let nsort=0,tot=0;
+$('sort').onclick=()=>{const m=[...Array(6)].map(()=>10+Math.random()*80);let c=0,ex=[];for(let i=0;i<6;i++)for(let j=i+1;j<6;j++){const r=Math.max(m[i],m[j])/Math.min(m[i],m[j]);if(r>=1.55&&r<=1.69){c++;ex.push(r2(r));}}
+ nsort++;tot+=c;$('acaso').innerHTML='Medidas: '+m.map(v=>r1(v)).join(' · ')+' cm<br><b>'+c+'</b> divisões "áureas" nesta vez'+(c?' ('+ex.join('; ')+')':'')+'. Média até agora: <b>'+r2(tot/nsort)+'</b> por quadro em '+nsort+' sorteios.';draw();};
+MIS.def(()=>[
+ ['Arraste o corte até que <b>a ÷ b</b> e <b>(a + b) ÷ a</b> fiquem iguais (diferença menor que 0,01).',()=>{const a=SA.get(),b=100-a;return Math.abs(a/b-100/a)<0.01;},'a ≈ 61,8 e b ≈ 38,2: as duas razões dão 1,618. Esse é φ, a divisão "em média e extrema razão" de Euclides.',()=>{const a=SA.get(),b=100-a;return 'Agora a ÷ b = '+r2(a/b)+' e (a + b) ÷ a = '+r2(100/a)+'. '+(a/b>100/a?'Diminua':'Aumente')+' a parte maior.';}],
+ ['Na sequência de Fibonacci, ache o primeiro termo n em que F(n) ÷ F(n − 1) fica a menos de <b>0,001</b> de φ.',()=>SN.get()==10,'F(10) ÷ F(9) = 55 ÷ 34 ≈ 1,6176: a diferença para φ é 0,0004. Antes disso, 34 ÷ 21 ≈ 1,6190 ainda erra por 0,0010.',()=>'Agora F('+SN.get()+') ÷ F('+(SN.get()-1)+') = '+(FIB[SN.get()-1]/FIB[SN.get()-2]).toFixed(4).replace('.',',')+'. A diferença para φ é '+Math.abs(FIB[SN.get()-1]/FIB[SN.get()-2]-PHI).toFixed(4).replace('.',',')+'.'],
+ ['Sorteie medidas de "quadros" quaisquer pelo menos <b>8 vezes</b> e veja a média de divisões "áureas" por acaso.',()=>nsort>=8,'Em média aparecem 1 ou 2 razões "áureas" por quadro, sem ninguém planejar. Achar φ uma vez não prova nada; achar φ exato nas duas linhas principais é que chama a atenção.',()=>'Você sorteou '+nsort+' vez(es). Faltam '+(8-nsort)+'.']]);
+function draw(){const a=SA.get(),b=100-a;let g=RC(0,0,340,110,'#F8FAFC','rx="10"');
+ g+=LN(20,55,20+a*3,55,ORANGE,10)+LN(20+a*3,55,320,55,BLUE,10)+LN(20+a*3,38,20+a*3,72,NAVY,2);
+ g+=TX(20+a*1.5,32,'a = '+r1(a),{fs:11,c:ORANGE})+TX(20+a*3+b*1.5,32,'b = '+r1(b),{fs:11,c:BLUE});
+ const ok=Math.abs(a/b-100/a)<0.01;g+=TX(170,96,ok?'φ ≈ 1,618!':'todo ÷ maior = maior ÷ menor ?',{fs:12,c:ok?GREEN:GRAY});
+ $('fig').innerHTML=SVG(340,110,g);$('k1').textContent=r2(a/b);$('k2').textContent=r2(100/a);
+ const n=SN.get();let h=RC(0,0,340,170,'#F8FAFC','rx="10"');const sx=i=>30+(i-2)/14*290,sy=v=>150-(v-0.9)/1.2*130;
+ h+=LN(30,sy(PHI),320,sy(PHI),GREEN,1.5,'5 4')+TX(318,sy(PHI)-5,'φ',{fs:12,c:GREEN,a:'end'});
+ for(let i=2;i<=16;i++){const r=FIB[i-1]/FIB[i-2];h+=CIR(sx(i),sy(r),i==n?6:3.5,i<=n?ORANGE:GRAYL);}
+ h+=TX(30,18,FIB[n-1]+' ÷ '+FIB[n-2]+' = '+(FIB[n-1]/FIB[n-2]).toFixed(4).replace('.',','),{fs:12,a:'start'});
+ $('fib').innerHTML=SVG(340,170,h);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

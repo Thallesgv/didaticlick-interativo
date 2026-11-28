@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Medir pela foto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Medir pela foto</h1></header>
+<main>
+<div class="card"><h2>Pixels viram centímetros</h2><p class="muted" style="margin-top:0">A régua de referência tem <b>10 cm</b>. Escolha o zoom e a direção, e estique a <b>régua laranja</b> (arrastando sobre a foto ou com os botões − e +). O simulador conta os pixels e converte.</p>
+<div id="chz" style="margin:4px 0"></div><div id="chd" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sb"><b>Régua laranja (pixels)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Pixels<b id="kp"></b></div><div>Escala da foto<b id="ke"></b></div><div class="o">Medida real<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça pela foto.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const QW=92.3,QH=73.4;
+function quadro(X,Y,k,claro){let g='';
+ g+=RC(X(0),Y(QH),QW*k,(QH-28)*k,claro?COBALTO_C:COBALTO)+RC(X(0),Y(28),QW*k,28*k,claro?CROMO_C:CROMO);
+ g+=CIR(X(80),Y(60),4.5*k,CROMO_C);
+ g+=PG([[X(24),Y(0)],[X(80),Y(0)],[X(52),Y(28)]],claro?'#E9D3A6':OCRE);
+ [8,20,32].forEach(x=>{const yb=34/70*x,yt=22+12/70*x,h=yt-yb;g+=RC(X(x)-0.5*k,Y(yb+h*0.5),k,h*0.5*k,'#7E5A33')+ELI(X(x),Y(yt-h*0.27),h*0.32*k,h*0.27*k,claro?VERDE_C:VERDE_T);});
+ g+=PG([[X(54.5),Y(22)],[X(59.5),Y(22)],[X(57),Y(66)]],claro?'#6FA47F':CIPRESTE);
+ return g;}
+const ZO=[1,1.5,2];let zi=0,dir=0;
+const esc=()=>24*ZO[zi];
+const CZ=chips('chz',['zoom 1×','zoom 1,5×','zoom 2×'],0,i=>{const cm=SB.get()/esc();zi=i;SB.set(Math.round(cm*esc()));draw();});
+const CD=chips('chd',['horizontal →','vertical ↑'],0,i=>{dir=i;draw();});
+const SB=SL('sb',0,4600,1,100,()=>draw(),v=>fmt(v)+' px');
+// desenho: 1 cm da tela = 2,6 unidades do SVG (o zoom muda os pixels da foto, não o desenho)
+const k=2.6,ox=36,oy=236,X=x=>ox+x*k,Y=y=>oy-y*k;
+toque('fig',(x,y)=>{const cm=dir==0?(x-ox)/k:(oy-y)/k;SB.set(Math.max(0,Math.min(4600,Math.round(cm*esc()))));draw();});
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+MIS.def(()=>[
+ ['No zoom 1×, estique a régua laranja exatamente sobre a <b>régua de 10 cm</b> da mesa. Quantos pixels ela ocupa? Essa é a escala da foto.',()=>zi==0&&dir==0&&perto(SB.get(),240,2),'240 pixels para 10 cm: 240 ÷ 10 = 24 px por centímetro. Agora toda medida em pixels pode virar centímetro.',()=>zi!=0?'Volte para o zoom 1×.':dir!=0?'Use a direção horizontal.':'A régua laranja tem '+fmt(SB.get())+' px. A régua da mesa tem 240 px: '+(SB.get()<240?'estique mais.':'encurte um pouco.')],
+ ['Ainda no zoom 1×, meça a <b>largura</b> da área pintada (sem a moldura).',()=>zi==0&&dir==0&&perto(SB.get(),2215,6),'2.215 px ÷ 24 ≈ 92,3 cm. A largura de um figure 30!',()=>zi!=0?'Volte para o zoom 1×.':dir!=0?'Escolha horizontal.':'Faça a régua terminar na borda direita da pintura (agora ela mede '+r1(SB.get()/esc())+' cm).'],
+ ['Troque para a direção <b>vertical</b> e meça a <b>altura</b> da área pintada.',()=>zi==0&&dir==1&&perto(SB.get(),1762,6),'1.762 px ÷ 24 ≈ 73,4 cm.',()=>zi!=0?'Volte para o zoom 1×.':dir!=1?'Escolha a direção vertical.':'A altura da pintura tem 1.762 px; a régua está com '+fmt(SB.get())+' px.'],
+ ['Agora use o <b>zoom 2×</b> e meça a largura de novo. Os pixels mudam. E os centímetros?',()=>zi==2&&dir==0&&perto(SB.get(),4430,8),'4.430 px ÷ 48 ≈ 92,3 cm. Com o dobro do zoom, a régua de 10 cm também ocupa o dobro (480 px): a medida real não muda.',()=>zi!=2?'Escolha o zoom 2×.':dir!=0?'Escolha horizontal.':'Estique até a borda direita da pintura.']]);
+function draw(){const e=esc(),b=SB.get(),cm=b/e;let g=RC(0,0,340,290,'#F1F5F9','rx="10"');
+ g+=RC(X(-11.4),Y(QH+11.4),(QW+22.8)*k,(QH+22.8)*k,MOLDURA)+RC(X(-5),Y(QH+5),(QW+10)*k,(QH+10)*k,MOLDURA_E);
+ g+=quadro(X,Y,k,false);
+ // régua de 10 cm na mesa
+ g+=RC(X(0),Y(-13),10*k,6,'#fff','stroke="'+NAVY+'"');for(let i=0;i<=10;i++)g+=LN(X(i),Y(-13),X(i),Y(-13)+(i%5?3:5),NAVY,0.8);
+ g+=TX(X(5),Y(-13)+16,'10 cm',{fs:8});
+ // régua laranja
+ if(dir==0){const y=Y(-6);g+=RC(X(0),y-4,Math.min(cm,130)*k,8,ORANGE,'rx="3" opacity=".9"');}
+ else{const x=X(QW+14);g+=RC(x-4,Y(Math.min(cm,95)),8,Math.min(cm,95)*k,ORANGE,'rx="3" opacity=".9"');}
+ g+=TX(330,16,'foto com '+fmt(6000*ZO[zi])+' px de largura',{fs:9,a:'end',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,290,g);
+ $('kp').textContent=fmt(b)+' px';$('ke').textContent=r1(e)+' px/cm';$('kr').textContent=r1(cm)+' cm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

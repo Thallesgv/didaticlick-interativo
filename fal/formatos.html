@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os formatos de 1890 · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Os formatos de 1890</h1></header>
+<main>
+<div class="card"><h2>Que tela é essa?</h2><p class="muted" style="margin-top:0">O tracejado laranja é o quadro misterioso: <b>92,3 × 73,4 cm</b>. Escolha um número e uma família da tabela francesa e a tolerância. O formato bate?</p>
+<div id="chn" style="margin:4px 0"></div><div id="chf" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Tolerância</b><input type="range"><span></span></div>
+<div class="kpi"><div>Formato<b id="kf"></b></div><div>Diferenças<b id="kd"></b></div><div class="o">Bate?<b id="kb"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Compare os formatos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const T={F:{10:[55,46],12:[61,50],15:[65,54],20:[73,60],25:[81,65],30:[92,73],40:[100,81]},P:{10:[55,38],12:[61,46],15:[65,50],20:[73,54],25:[81,60],30:[92,65],40:[100,73]},M:{10:[55,33],12:[61,38],15:[65,46],20:[73,50],25:[81,54],30:[92,60],40:[100,65]}};
+const NS=[10,12,15,20,25,30,40],FS=['F','P','M'],NOME={F:'figure',P:'paysage',M:'marine'};let ni=0,fi=0;
+chips('chn',NS.map(n=>'nº '+n),0,i=>{ni=i;draw();});chips('chf',['figure','paysage','marine'],0,i=>{fi=i;draw();});
+const TL=SL('st',0.5,3,0.5,1,()=>draw(),v=>'± '+r1(v)+' cm');
+const QW=92.3,QH=73.4;const cur=()=>T[FS[fi]][NS[ni]];
+const bate=()=>{const [w,h]=cur();return Math.abs(w-QW)<=TL.get()&&Math.abs(h-QH)<=TL.get();};
+MIS.def(()=>[
+ ['Com tolerância de <b>± 1 cm</b>, ache o formato que bate com o quadro.',()=>bate()&&TL.get()==1,'Figure 30: 92 × 73. As diferenças são 0,3 cm e 0,4 cm.',()=>TL.get()!=1?'Ajuste a tolerância para ± 1 cm.':'A largura de 92,3 cm aponta para um número; a altura de 73,4 cm, para uma família.'],
+ ['Aperte a tolerância para <b>± 0,5 cm</b>. O figure 30 ainda bate?',()=>FS[fi]=='F'&&NS[ni]==30&&TL.get()==0.5,'Bate: 0,3 e 0,4 são menores que 0,5. Por pouco na altura!',()=>TL.get()!=0.5?'Mude a tolerância para ± 0,5 cm.':'Escolha o figure 30.'],
+ ['Escolha um formato com a <b>mesma largura</b> do figure 30, mas que <b>não</b> bate.',()=>NS[ni]==30&&FS[fi]!='F','O '+NOME[FS[fi]]+' 30 também tem 92 cm de largura, mas a altura erra por '+r1(QH-cur()[1])+' cm.',()=>NS[ni]!=30?'A largura de 92 cm é a do nº 30.':'Troque a família.'],
+ ['Ache o <b>maior figure</b> que cabe inteiro dentro do quadro com folga de pelo menos 5 cm em cada lado.',()=>FS[fi]=='F'&&NS[ni]==25,'Figure 25: 81 × 65. Sobra 11,3 cm na largura e 8,4 cm na altura.',()=>FS[fi]!='F'?'Escolha a família figure.':NS[ni]>=30?'Esse é grande demais: precisa sobrar 5 cm.':'Tem um maior que ainda cabe com folga.']]);
+function draw(){const [w,h]=cur(),k=2.9,ox=26,oy=318;let g=RC(0,0,340,330,'#F8FAFC','rx="10"');
+ const X=x=>ox+x*k,Y=y=>oy-y*k;
+ g+=RC(X(0),Y(h),w*k,h*k,bate()?'#BFE3C6':COBALTO_C,'stroke="'+NAVY+'" stroke-width="1.5"');
+ g+=RC(X(0),Y(QH),QW*k,QH*k,'none','stroke="'+ORANGE+'" stroke-width="2.5" stroke-dasharray="7 5"');
+ const t=TL.get();g+=RC(X(QW-t),Y(QH+t),2*t*k,2*t*k,'none','stroke="'+ORANGE+'" stroke-width="1" opacity=".7"');
+ g+=TX(X(w/2),Y(h/2),NOME[FS[fi]]+' '+NS[ni],{fs:13})+TX(X(w/2),Y(h/2)+16,w+' × '+h+' cm',{fs:11,c:GRAY,w:500});
+ g+=TX(330,16,'quadro: 92,3 × 73,4',{fs:10,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(340,330,g);
+ $('kf').textContent=w+' × '+h;$('kd').textContent=r1(Math.abs(QW-w))+' e '+r1(Math.abs(QH-h))+' cm';$('kb').textContent=bate()?'sim':'não';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

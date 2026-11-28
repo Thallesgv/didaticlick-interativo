@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mesma forma? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Mesma forma?</h1></header>
+<main>
+<div class="card"><h2>Ampliar sem deformar</h2><p class="muted" style="margin-top:0">O contorno azul é o figure 30 (92 × 73). Mude o fator <b>k</b> da cópia e escolha a família dela. Se o canto laranja ficar sobre a diagonal, as figuras são semelhantes.</p>
+<div id="chf" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sk"><b>Fator k</b><input type="range"><span></span></div>
+<div class="kpi"><div>Cópia<b id="kc"></b></div><div>Razão L ÷ A<b id="kr"></b></div><div class="o">Área (vezes)<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Amplie e reduza.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let fam=0;const FA=[[92,73,'figure 30'],[92,60,'marine 30']];
+chips('chf',['cópia figure 30','cópia marine 30'],0,i=>{fam=i;draw();});
+const SK=SL('sk',0.1,1.5,0.01,0.5,()=>draw(),v=>r2(v));
+toque('fig',(x,y)=>{const k=2.2,ox=18;SK.set(Math.max(0.1,Math.min(1.5,Math.round((x-ox)/k/FA[fam][0]*100)/100)));draw();});
+MIS.def(()=>[
+ ['Faça a foto do catálogo: o quadro reduzido para <b>1/5</b> do tamanho. Que medidas ela tem?',()=>fam==0&&SK.get()==0.2,'k = 0,2: 92 × 0,2 = 18,4 cm e 73 × 0,2 = 14,6 cm. A área ficou 0,04 vez a original (4%).',()=>fam!=0?'Use a cópia figure 30.':'1/5 = 0,2. Agora k = '+r2(SK.get())+'.'],
+ ['Ache o fator que deixa a cópia com o <b>dobro da área</b> do original.',()=>fam==0&&Math.abs(SK.get()*SK.get()-2)<0.03,'k ≈ 1,41 = √2. Os lados crescem 41%, mas a área dobra, porque a área cresce com k².',()=>fam!=0?'Use a cópia figure 30.':'A área agora é '+r2(SK.get()*SK.get())+' vez. Precisa de 2.'],
+ ['Troque para a cópia <b>marine 30</b>. Existe algum k que ponha o canto dela sobre a diagonal azul?',()=>fam==1&&SK.get()>=1.2,'Não existe: com qualquer k, o canto da marine fica abaixo da diagonal, porque a razão dela (1,53) é diferente da do figure (1,26). Não são semelhantes.',()=>fam!=1?'Escolha a cópia marine 30.':'Teste valores grandes de k (até 1,2 ou mais) e observe o canto.']]);
+function draw(){const k=2.2,ox=18,oy=250,X=x=>ox+x*k,Y=y=>oy-y*k,[w,h,nm]=FA[fam],f=SK.get(),cw=w*f,ch=h*f;let g=RC(0,0,340,260,'#F8FAFC','rx="10"');
+ g+=RC(X(0),Y(73),92*k,73*k,'none','stroke="'+BLUE+'" stroke-width="2"');
+ g+=LN(X(0),Y(0),X(140),Y(140*73/92),BLUE,1.2,'5 4');
+ const sem=fam==0;g+=RC(X(0),Y(ch),cw*k,ch*k,sem?'#BFE3C6':CROMO_C,'opacity=".75" stroke="'+NAVY+'"');
+ g+=CIR(X(cw),Y(ch),5,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=TX(330,16,nm+' × '+r2(f),{fs:10,a:'end'});
+ $('fig').innerHTML=SVG(340,260,g);
+ $('kc').textContent=r1(cw)+' × '+r1(ch);$('kr').textContent=r2(w/h);$('ka').textContent=r2(f*f);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

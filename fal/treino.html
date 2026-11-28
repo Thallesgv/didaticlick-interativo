@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'fal1':{T:["Medir sem tocar: escala e fotografia", "Os formatos de tela da época", "Razão de aspecto e semelhança", "Perspectiva: o ponto de fuga", "Composição: terços e diagonais", "Áurea: mito ou verdade?"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const c=P([5,10,15,20]),e=P([12,16,20,24,30,40]);return{q:`Numa foto, uma régua de <b>${c} cm</b> ocupa <b>${c*e} pixels</b>. Qual a escala da foto, em px/cm?`,a:e,exp:`${c*e} ÷ ${c} = ${e} px/cm.`};}
+ if(t==1){const e=P([12,16,20,24,30]),cm=P([15,22,35,46,55,61,73,92]);return{q:`A escala da foto é <b>${e} px/cm</b>. Um objeto ocupa <b>${fmt(cm*e)} px</b>. Quanto ele mede, em cm?`,a:cm,exp:`${fmt(cm*e)} ÷ ${e} = ${cm} cm.`};}
+ const e=P([20,24,30]),cm=P([6.5,8,12.5,18]);return{q:`Com escala de <b>${e} px/cm</b>, quantos pixels ocupa um detalhe de <b>${fmt(cm)} cm</b>?`,a:cm*e,exp:`${fmt(cm)} × ${e} = ${fmt(cm*e)} px.`};},
+2:()=>{const T=[['figure 30',92,73],['paysage 30',92,65],['marine 30',92,60],['figure 25',81,65],['paysage 25',81,60],['figure 20',73,60],['marine 20',73,50],['figure 15',65,54]];const t=R(0,1);
+ if(t==0){const [n,w,h]=P(T);const dw=P([-0.4,-0.2,0.1,0.3]),dh=P([-0.3,0.2,0.4]);const op=[n,...T.filter(x=>x[0]!=n).sort(()=>Math.random()-0.5).slice(0,2).map(x=>x[0])].sort();
+  return{q:`Um quadro mede <b>${fmt(Math.round((w+dw)*10)/10)} × ${fmt(Math.round((h+dh)*10)/10)} cm</b>. Com tolerância de 1 cm, que formato é?`,opts:op,a:n,exp:`${n} mede ${w} × ${h}: as diferenças são menores que 1 cm.`};}
+ const [n,w,h]=P(T);return{q:`Qual a área de uma tela <b>${n}</b> (${w} × ${h} cm), em cm²?`,a:w*h,exp:`${w} × ${h} = ${fmt(w*h)} cm².`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const k=P([0.2,0.25,0.5,0.75]),w=92,h=73;return{q:`O figure 30 (92 × 73 cm) foi reduzido com fator <b>k = ${fmt(k)}</b>. Qual a nova altura, em cm?`,a:Math.round(h*k*100)/100,tol:0.02,exp:`73 × ${fmt(k)} = ${fmt(Math.round(h*k*100)/100)} cm.`};}
+ if(t==1){const k=P([2,3,0.5,0.2,1.5]);return{q:`Os lados de uma figura foram multiplicados por <b>${fmt(k)}</b>. A área fica multiplicada por quanto?`,a:k*k,tol:0.001,exp:`k² = ${fmt(k)}² = ${fmt(Math.round(k*k*1000)/1000)}.`};}
+ const [w,h]=P([[92,73],[81,65],[92,60],[65,54],[73,50]]);return{q:`Qual a razão de aspecto (largura ÷ altura) de uma tela de <b>${w} × ${h}</b>? Duas casas.`,a:Math.round(w/h*100)/100,tol:0.011,exp:`${w} ÷ ${h} ≈ ${fmt(Math.round(w/h*100)/100)}.`};},
+4:()=>{const t=R(0,1);
+ if(t==0){const x=P([20,30,40,50,52,60]),y=P([20,25,28,30,34]),m=P([1,2,0.5]);const b1=y-m*x,b2=y+m*x;return{q:`Onde se encontram as retas <b>y = ${fmt(m)}x ${b1<0?'− '+fmt(-b1):'+ '+fmt(b1)}</b> e <b>y = −${fmt(m)}x + ${fmt(b2)}</b>? Dê o valor de x.`,a:x,exp:`${fmt(m)}x ${b1<0?'− '+fmt(-b1):'+ '+fmt(b1)} = −${fmt(m)}x + ${fmt(b2)} → ${fmt(2*m)}x = ${fmt(b2-b1)} → x = ${x} (e y = ${y}).`};}
+ const x1=P([0,10,20]),y1=P([0,5,10]),dx=P([10,20,30]),m=P([0.5,1,1.5,2]);return{q:`Uma reta passa por <b>(${x1}, ${y1})</b> e <b>(${x1+dx}, ${fmt(y1+m*dx)})</b>. Qual a inclinação m?`,a:m,exp:`m = ${fmt(m*dx)} ÷ ${dx} = ${fmt(m)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const L=P([92,81,73,65,60,54]);return{q:`Numa tela de <b>${L} cm</b> de largura, onde fica a linha dos <b>2/3</b>? Uma casa.`,a:Math.round(2*L/3*10)/10,tol:0.06,exp:`2 × ${L} ÷ 3 ≈ ${fmt(Math.round(2*L/3*10)/10)} cm.`};}
+ if(t==1){const H=P([73,65,60]),f=P([0.25,0.4,0.5,0.6]);return{q:`O horizonte está a <b>${fmt(Math.round(H*f*10)/10)} cm</b> do chão numa tela de <b>${H} cm</b> de altura. Em que fração da altura? Duas casas.`,a:Math.round(f*100)/100,tol:0.011,exp:`${fmt(Math.round(H*f*10)/10)} ÷ ${H} ≈ ${fmt(f)}.`};}
+ const [w,h,d]=P([[60,45,75],[80,60,100],[92,73,117.4],[24,18,30]]);return{q:`Quanto mede a diagonal de uma tela de <b>${w} × ${h} cm</b>? Uma casa.`,a:d,tol:0.1,exp:`√(${w}² + ${h}²) = √${fmt(w*w+h*h)} ≈ ${fmt(d)} cm.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const L=P([50,80,92.3,100,120]);return{q:`Um segmento de <b>${fmt(L)} cm</b> é dividido na razão áurea. Quanto mede a parte maior? (use 0,618) Uma casa.`,a:Math.round(L*0.618*10)/10,tol:0.11,exp:`${fmt(L)} × 0,618 ≈ ${fmt(Math.round(L*0.618*10)/10)} cm.`};}
+ if(t==1){const F=[1,1,2,3,5,8,13,21,34,55,89,144];const i=R(5,11);return{q:`Na sequência de Fibonacci, quanto vale <b>${F[i]} + ${F[i-1]}</b>, o próximo termo depois de ${F[i]}?`,a:F[i]+F[i-1],exp:`Cada termo é a soma dos dois anteriores: ${F[i]} + ${F[i-1]} = ${F[i]+F[i-1]}.`};}
+ return P([{q:'Achar uma razão perto de 1,618 num quadro prova que o pintor usou a razão áurea?',opts:['sim','não'],a:'não',exp:'Com muitas medidas, algumas caem perto de 1,6 por acaso.'},{q:'φ² é igual a:',opts:['φ + 1','2φ','φ − 1'],a:'φ + 1',exp:'φ² = φ + 1 ≈ 2,618.'},{q:'1 ÷ φ é aproximadamente:',opts:['0,382','0,618','1,618'],a:'0,618',exp:'1/φ = φ − 1.'}]);}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='fal1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>
