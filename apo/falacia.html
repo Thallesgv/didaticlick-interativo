@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A estratégia do atrasado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A estratégia do atrasado</h1></header>
+<main>
+<div class="card"><h2>Esperar os pretos ajuda?</h2><p class="muted" style="margin-top:0">A estratégia: apostar R$ 10 no vermelho só depois de <b>k pretos seguidos</b>. Ao lado, um jogador que aposta R$ 10 no vermelho em todas as rodadas. Escolha o k e aperte <b>Jogar 20 mil rodadas</b> (as apostas se somam enquanto o k não muda).</p>
+<div class="sl" id="sk"><b>Apostar depois de k pretos</b><input type="range"><span></span></div>
+<div class="row"><button id="bj">Jogar 20 mil rodadas</button><button class="alt" id="b0">Zerar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Suas apostas<b id="k1"></b></div><div>Suas vitórias<b id="k2"></b></div><div>Seu saldo<b id="k3"></b></div><div class="o">Quem aposta sempre<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste a estratégia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const gira=()=>{const u=Math.random();return u<18/37?'V':u<36/37?'P':'Z';};
+const marg=(p,n)=>n>0?2*Math.sqrt(p*(1-p)/n):0;
+let A={n:0,v:0},B={n:0,v:0},kAt=-1,run=0;
+const SK=SL('sk',0,10,1,2,()=>{if(SK.get()!=kAt){A={n:0,v:0};B={n:0,v:0};}draw();},v=>v);
+function jogar(){const k=SK.get();if(k!=kAt){A={n:0,v:0};B={n:0,v:0};kAt=k;}
+ for(let i=0;i<20000;i++){const r=gira();B.n++;if(r=='V')B.v++;if(run>=k){A.n++;if(r=='V')A.v++;}run=r=='P'?run+1:0;}draw();}
+$('bj').onclick=jogar;$('b0').onclick=()=>{A={n:0,v:0};B={n:0,v:0};kAt=-1;draw();};
+const sal=X=>10*(2*X.v-X.n),fa=()=>A.n?A.v/A.n:0;
+const alvo=K=>[()=>kAt==K&&SK.get()==K&&A.n>=100,()=>'Com k = '+K+': '+fmt(A.n)+' apostas, '+pct(fa()*100,1)+' de vitórias, com margem de ± '+pct(marg(18/37,A.n)*100,1)+' (quem aposta sempre: '+pct(B.v/B.n*100,1)+'). '+(K==0?'Aqui você é quem aposta sempre.':'Esperar os pretos não mudou a chance de cada aposta.'),
+ ()=>SK.get()!=K?'Ponha k = '+K+'.':A.n==0?'Aperte Jogar.':'Só '+fmt(A.n)+' apostas até agora: jogue de novo para juntar pelo menos 100.'];
+MIS.def(()=>[['Teste <b>k = 0</b> (apostar sempre), com pelo menos 100 apostas.',...alvo(0)],['Teste <b>k = 4</b>, com pelo menos 100 apostas.',...alvo(4)],['Teste <b>k = 8</b>, a estratégia de Rafael, com pelo menos 100 apostas.',...alvo(8)]]);
+function draw(){let g=RC(0,0,340,200,'#F8FAFC','rx="10"');const y0=160,gh=120,lo=.3,hi=.7,Y=v=>y0-gh*(v-lo)/(hi-lo);
+ [.3,.4,.5,.6,.7].forEach(v=>{g+=LN(40,Y(v),330,Y(v),GRAYL,.6)+TX(36,Y(v)+3,Math.round(v*100)+'%',{fs:8,a:'end',c:GRAY,w:500});});
+ const bar=(x,X,c,t)=>{if(!X.n){g+=TX(x+45,y0-10,'–',{fs:12,c:GRAY});}else{const f=X.v/X.n,e=marg(18/37,X.n);g+=RC(x,Y(f),90,y0-Y(f),c,'rx="3"')+LN(x+45,Y(clamp(f-e,lo,hi)),x+45,Y(clamp(f+e,lo,hi)),NAVY,1.5)+TX(x+45,Y(Math.min(hi,f+e))-5,pct(f*100,1),{fs:10});}
+  g+=TX(x+45,y0+14,t,{fs:9});};
+ bar(70,A,ORANGE,'depois de '+SK.get()+' pretos');bar(200,B,BLUE,'aposta sempre');
+ g+=LN(40,Y(18/37),330,Y(18/37),NAVY,1,'5 4')+TX(330,Y(18/37)-4,'18/37',{fs:8,a:'end'});
+ $('fig').innerHTML=SVG(340,200,g);
+ const sg=v=>(v<0?'−':'')+R0(Math.abs(v));
+ $('k1').textContent=fmt(A.n);$('k2').textContent=A.n?fmt(A.v)+' ('+pct(fa()*100,1)+')':'–';$('k3').textContent=A.n?sg(sal(A)):'–';$('k4').textContent=B.n?pct(B.v/B.n*100,1)+' · '+sg(sal(B)):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

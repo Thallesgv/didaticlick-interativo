@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moeda de verdade ou inventada? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Moeda de verdade ou inventada?</h1></header>
+<main>
+<div class="card"><h2>O detector de sequências</h2><p class="muted" style="margin-top:0">Escreva 50 lances tocando em <b>Cara</b> e <b>Coroa</b>, como achar "bem aleatório", ou aperte <b>A moeda lança</b>. Com 50 lances, o detector mede a maior sequência e o número de trocas.</p>
+<div class="row"><button id="bc">Cara</button><button id="bk">Coroa</button><button class="alt" id="bx">Apagar</button></div>
+<div class="row" style="margin-top:6px"><button class="alt" id="bm">A moeda lança 50</button><button class="alt" id="b0">Limpar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Lances<b id="k1"></b></div><div>Maior sequência<b id="k2"></b></div><div class="o">Trocas<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Invente e teste.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let S=[],orig='';
+const add=v=>{if(S.length>=50)return;if(!S.length)orig='mão';S.push(v);draw();};
+$('bc').onclick=()=>add(1);$('bk').onclick=()=>add(0);$('bx').onclick=()=>{S.pop();if(!S.length)orig='';draw();};
+$('bm').onclick=()=>{S=[];for(let i=0;i<50;i++)S.push(Math.random()<.5?1:0);orig='moeda';draw();};$('b0').onclick=()=>{S=[];orig='';draw();};
+function med(){let b=S.length?1:0,bi=0,r=1,t=0;for(let i=1;i<S.length;i++){if(S[i]==S[i-1]){r++;}else{r=1;t++;}if(r>b){b=r;bi=i-r+1;}}return{b,bi,t};}
+const ok50=()=>S.length==50;const vere=()=>{const M=med();return M.b>=5&&M.t>=18&&M.t<=31;};
+MIS.def(()=>[
+ ['Aperte <b>A moeda lança 50</b> e veja a maior sequência de uma moeda de verdade.',()=>ok50()&&orig=='moeda',()=>'Maior sequência: '+med().b+', com '+med().t+' trocas. Em 50 lances, uma sequência de 5 ou mais aparece em 82% das vezes.',()=>'Aperte "A moeda lança 50".'],
+ ['Agora <b>invente</b> 50 lances você mesmo, tocando em Cara e Coroa.',()=>ok50()&&orig=='mão',()=>'Sua maior sequência: '+med().b+'; trocas: '+med().t+'. '+(vere()?'Parece moeda!':'O detector desconfiou: '+(med().b<5?'sequência curta demais':'trocas fora de 18 a 31')+'.'),()=>orig=='moeda'?'Aperte Limpar e escreva os lances tocando nos botões.':'Faltam '+(50-S.length)+' lances.'],
+ ['Invente uma sequência que <b>engane o detector</b>: maior sequência de 5 ou mais e entre 18 e 31 trocas.',()=>ok50()&&orig=='mão'&&vere(),'Enganou! Para parecer acaso, você teve de pôr de propósito uma sequência longa e trocar menos. É o contrário do que a intuição manda.',
+  ()=>orig=='moeda'?'Aperte Limpar e invente tocando nos botões.':S.length<50?'Faltam '+(50-S.length)+' lances.':'Ainda não: maior sequência '+med().b+', trocas '+med().t+'. Apague alguns lances e tente.']]);
+function draw(){let g=RC(0,0,340,170,'#F8FAFC','rx="10"');const M=med(),c=30;
+ for(let i=0;i<50;i++){const x=20+(i%10)*c,y=10+Math.floor(i/10)*c;if(i<S.length){const on=i>=M.bi&&i<M.bi+M.b&&S.length>1;g+=RC(x+2,y+2,c-4,c-4,S[i]?(on?ORANGE:BLUE):(on?LIGHT:AZC),'rx="5"')+TX(x+c/2,y+c/2+4,S[i]?'C':'K',{fs:11,c:S[i]?'#fff':NAVY});}
+  else g+=RC(x+2,y+2,c-4,c-4,'none','rx="5" stroke="'+GRAYL+'" stroke-dasharray="3 3"');}
+ g+=TX(170,166,ok50()?(vere()?'Detector: parece moeda de verdade':'Detector: parece inventada'):'C = cara · K = coroa · laranja = maior sequência',{fs:10,c:ok50()?(vere()?GREEN:ORANGE):GRAY});
+ $('fig').innerHTML=SVG(340,172,g);$('k1').textContent=S.length+' de 50';$('k2').textContent=S.length?M.b:'–';$('k3').textContent=S.length>1?M.t:'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

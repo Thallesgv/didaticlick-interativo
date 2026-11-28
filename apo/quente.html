@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quentes de hoje, frios de amanhã · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Quentes de hoje, frios de amanhã</h1></header>
+<main>
+<div class="card"><h2>Os números quentes</h2><p class="muted" style="margin-top:0">Escolha quantas rodadas (arrastando ou com − e +) e aperte <b>Girar</b>: o app marca os 3 números que mais saíram (os "quentes"). Depois aperte <b>Girar as próximas</b> e confira como esses mesmos números se saem.</p>
+<div class="sl" id="sn"><b>Rodadas</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Girar</button><button class="alt" id="b2">Girar as próximas</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Média por número<b id="k1"></b></div><div>Quentes, antes<b id="k2"></b></div><div class="o">Quentes, depois<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste os quentes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const gira=()=>{const u=Math.random();return u<18/37?'V':u<36/37?'P':'Z';};
+const marg=(p,n)=>n>0?2*Math.sqrt(p*(1-p)/n):0;
+let C1=null,C2=null,Q=[],NN=0;
+const SN=SL('sn',100,2000,100,100,()=>draw(),v=>fmt(v));
+const conta=n=>{const c=new Array(37).fill(0);for(let i=0;i<n;i++)c[Math.floor(Math.random()*37)]++;return c;};
+$('b1').onclick=()=>{NN=SN.get();C1=conta(NN);C2=null;Q=[...Array(37).keys()].sort((a,b)=>C1[b]-C1[a]).slice(0,3);draw();};
+$('b2').onclick=()=>{if(!C1)return;C2=conta(NN);draw();};
+const mq=C=>C?Q.reduce((s,q)=>s+C[q],0)/3:0;
+MIS.def(()=>[
+ ['Com <b>100 rodadas</b>, ache um número que saiu <b>6 vezes ou mais</b>.',()=>C1&&NN==100&&Math.max(...C1)>=6,()=>'O '+Q[0]+' saiu '+C1[Q[0]]+' vezes, contra a média de 2,7. Com 37 números, algum sempre dispara.',()=>!C1?'Aperte Girar.':NN!=100?'Use 100 rodadas.':'Desta vez o máximo foi '+Math.max(...C1)+'. Gire de novo.'],
+ ['Aperte <b>Girar as próximas</b> e veja se os quentes continuam quentes.',()=>C2&&NN==100,()=>'Antes: '+r1(mq(C1))+' saídas em média. Depois: '+r1(mq(C2))+'. Perto da média de 2,7: o calor ficou no passado.',()=>!C1||NN!=100?'Gire 100 rodadas primeiro.':'Aperte "Girar as próximas".'],
+ ['Repita com <b>1 000 rodadas</b> e confira as próximas 1 000.',()=>C2&&NN==1000,()=>'Antes: '+r1(mq(C1))+'; depois: '+r1(mq(C2))+' (média '+r1(1000/37)+'). Os quentes de um período não esquentam o seguinte.',()=>NN!=1000?'Ponha 1 000 rodadas e aperte Girar.':!C2?'Agora aperte "Girar as próximas".':'']]);
+function graf(C,y0,tit){let g='';const gh=70,mx=Math.max(8,...(C1||[0]),...(C2||[0])),bw=300/37;
+ g+=TX(20,y0-gh-6,tit,{fs:9,a:'start'});
+ if(!C){g+=TX(170,y0-30,'–',{fs:12,c:GRAY});return g;}
+ for(let i=0;i<37;i++){const h=gh*C[i]/mx,q=Q.includes(i);g+=RC(20+i*bw+.8,y0-h,bw-1.6,h,q?ORANGE:(i==0?'#1F7A4D':corN(i)==VERM?'#E08A8F':'#8A8F99'));
+  if(q)g+=TX(20+i*bw+bw/2,y0-h-3,i,{fs:8,c:ORANGE});}
+ const m=NN/37;g+=LN(20,y0-gh*m/mx,320,y0-gh*m/mx,NAVY,1,'4 3');return g;}
+function draw(){let g=RC(0,0,340,210,'#F8FAFC','rx="10"');
+ g+=graf(C1,95,'Primeiras '+fmt(NN||SN.get())+' rodadas (os 3 quentes em laranja)')+graf(C2,195,'Próximas '+fmt(NN||SN.get())+' rodadas');
+ $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=r1((NN||SN.get())/37);$('k2').textContent=C1?r1(mq(C1)):'–';$('k3').textContent=C2?r1(mq(C2)):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

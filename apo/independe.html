@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A roleta não lembra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A roleta não lembra</h1></header>
+<main>
+<div class="card"><h2>Depois de k pretos</h2><p class="muted" style="margin-top:0">Gire muitas rodadas de uma vez. Para cada rodada, o simulador vê quantos pretos seguidos vieram antes e anota se ela deu vermelho. Escolha o k (arrastando a barra ou com − e +).</p>
+<div class="sl" id="sk"><b>Pretos seguidos antes (k)</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Girar 10 mil</button><button id="b2">Girar 100 mil</button><button class="alt" id="b0">Zerar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Rodadas<b id="k1"></b></div><div>Vezes com k pretos<b id="k2"></b></div><div>Vermelho em seguida<b id="k3"></b></div><div class="o">Margem de erro<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste a memória da roleta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const gira=()=>{const u=Math.random();return u<18/37?'V':u<36/37?'P':'Z';};
+const marg=(p,n)=>n>0?2*Math.sqrt(p*(1-p)/n):0;
+const KM=10;let tot=new Array(KM+1).fill(0),red=new Array(KM+1).fill(0),N=0,run=0;
+const SK=SL('sk',0,KM,1,3,()=>draw(),v=>v);
+function girar(n){for(let i=0;i<n;i++){const r=gira();for(let k=0;k<=Math.min(run,KM);k++){tot[k]++;if(r=='V')red[k]++;}run=r=='P'?run+1:0;N++;}draw();}
+$('b1').onclick=()=>girar(10000);$('b2').onclick=()=>girar(100000);$('b0').onclick=()=>{tot.fill(0);red.fill(0);N=0;run=0;draw();};
+const fr=k=>tot[k]?red[k]/tot[k]:0;
+const alvo=(K)=>[()=>SK.get()==K&&tot[K]>=100,()=>'Depois de '+K+' preto'+(K>1?'s':'')+': '+fmt(tot[K])+' vezes, vermelho em '+pct(fr(K)*100,1)+' (esperado 48,6% ± '+pct(marg(18/37,tot[K])*100,1)+').',
+ ()=>SK.get()!=K?'Ponha k = '+K+'.':'Ainda são '+fmt(tot[K])+' casos com '+K+' pretos antes. Gire mais até passar de 100.'];
+MIS.def(()=>[['Olhe o vermelho logo depois de <b>1 preto</b>, com pelo menos 100 casos.',...alvo(1)],
+ ['Agora depois de <b>5 pretos</b> seguidos, com pelo menos 100 casos.',...alvo(5)],
+ ['E depois de <b>8 pretos</b> seguidos, com pelo menos 100 casos. O vermelho ficou "atrasado"?',...alvo(8)]]);
+function draw(){let g=RC(0,0,340,220,'#F8FAFC','rx="10"');const x0=40,y0=180,gw=290,gh=150,lo=.3,hi=.7,bw=gw/(KM+1);const Y=v=>y0-gh*(v-lo)/(hi-lo);
+ [.3,.4,.5,.6,.7].forEach(v=>{g+=LN(x0,Y(v),x0+gw,Y(v),GRAYL,.6)+TX(x0-4,Y(v)+3,Math.round(v*100)+'%',{fs:8,a:'end',c:GRAY,w:500});});
+ for(let k=0;k<=KM;k++){const x=x0+k*bw;if(tot[k]){const f=fr(k),e=marg(18/37,tot[k]);g+=RC(x+3,Y(f),bw-6,y0-Y(f),k==SK.get()?ORANGE:BLUE,'rx="2"');
+   g+=LN(x+bw/2,Y(clamp(f-e,lo,hi)),x+bw/2,Y(clamp(f+e,lo,hi)),NAVY,1.2);}
+  g+=TX(x+bw/2,y0+13,k,{fs:9,c:k==SK.get()?ORANGE:NAVY});}
+ g+=LN(x0,Y(18/37),x0+gw,Y(18/37),ORANGE,1.4,'5 4')+TX(x0+gw,Y(18/37)-5,'48,6%',{fs:8,a:'end',c:ORANGE});
+ g+=TX(x0+gw/2,y0+28,'pretos seguidos antes da rodada',{fs:8,c:GRAY,w:500});
+ if(!N)g+=TX(185,100,'Aperte Girar',{fs:13,c:GRAY});
+ $('fig').innerHTML=SVG(340,220,g);const K=SK.get();
+ $('k1').textContent=fmt(N);$('k2').textContent=fmt(tot[K]);$('k3').textContent=tot[K]?pct(fr(K)*100,1):'–';$('k4').textContent=tot[K]?'± '+pct(marg(18/37,tot[K])*100,1):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
