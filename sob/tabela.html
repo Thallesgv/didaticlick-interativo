@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A tabela de dupla entrada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A tabela de dupla entrada</h1></header>
+<main>
+<div class="card"><h2>P(A | B): o grupo de referência</h2><p class="muted" style="margin-top:0">Mude as quatro contagens (arrastando ou com − e +). No mosaico, a largura de cada coluna é a proporção da espécie; a altura de cada parte, a proporção de pegadas largas dentro dela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="a"><b>Pintada, larga</b><input type="range"><span></span></div><div class="sl" id="b"><b>Pintada, estreita</b><input type="range"><span></span></div><div class="sl" id="c"><b>Parda, larga</b><input type="range"><span></span></div><div class="sl" id="d"><b>Parda, estreita</b><input type="range"><span></span></div><div class="kpi"><div>P(larga | pintada)<b id="k1"></b></div><div>P(larga | parda)<b id="k2"></b></div><div class="o">P(pintada | larga)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a tabela nos dois sentidos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const A=SL('a',0,100,1,32,()=>draw(),v=>v),B=SL('b',0,100,1,8,()=>draw(),v=>v),C=SL('c',0,100,1,15,()=>draw(),v=>v),D=SL('d',0,100,1,45,()=>draw(),v=>v);
+const q=(x,y)=>y?x/y:NaN,pl=()=>q(A.get(),A.get()+B.get()),ql=()=>q(C.get(),C.get()+D.get()),pi=()=>q(A.get(),A.get()+C.get());
+MIS.def(()=>[
+ ['Monte a tabela do livro: <b>32, 8, 15 e 45</b>.',()=>A.get()==32&&B.get()==8&&C.get()==15&&D.get()==45,'P(larga | pintada) = 0,8, mas P(pintada | larga) = 0,68: trocar a ordem muda o grupo de referência.',()=>'Confira as quatro contagens.'],
+ ['Faça P(pintada | larga) passar de <b>0,9</b>.',()=>pi()>0.9,()=>'P(pintada | larga) = '+r2(pi())+': quase só pintadas deixam pegada larga nesta tabela.',()=>'Agora: '+r2(pi())+'.'],
+ ['Faça a largura da pegada <b>não dizer nada</b> sobre a espécie: P(larga | pintada) = P(larga | parda), com as duas espécies presentes.',()=>A.get()+B.get()>0&&C.get()+D.get()>0&&A.get()+C.get()>0&&Math.abs(pl()-ql())<1e-9,()=>'As duas em '+r2(pl())+': a pista é independente da espécie e não separa nada.',()=>'Agora: '+r2(pl())+' e '+r2(ql())+'.']]);
+function draw(){const a=A.get(),b=B.get(),c=C.get(),d=D.get(),N=a+b+c+d||1,wp=(a+b)/N*300,h=170;let g=RC(0,0,340,220,'#F8FAFC','rx="10"');
+ const col=(x,w,l,e,nm)=>{const t=l+e||1,hl=l/t*h;return RC(x,24,w,hl,ORANGE,'stroke="#fff" stroke-width="2"')+RC(x,24+hl,w,h-hl,'#D1D5DB','stroke="#fff" stroke-width="2"')+
+  (w>30?TX(x+w/2,24+hl/2+4,'larga: '+l,{fs:10,c:'#fff'})+TX(x+w/2,24+hl+(h-hl)/2+4,'estreita: '+e,{fs:10,c:NAVY}):'')+TX(x+w/2,16,nm+' ('+(l+e)+')',{fs:10,c:NAVY});};
+ g+=col(20,wp,a,b,'pintada')+col(20+wp,300-wp,c,d,'parda');
+ g+=TX(170,212,'total: '+(a+b+c+d)+' pegadas · largas: '+(a+c),{fs:10,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,220,g);
+ const f=v=>isNaN(v)?'—':r2(v);$('k1').textContent=f(pl());$('k2').textContent=f(ql());$('k3').textContent=f(pi());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

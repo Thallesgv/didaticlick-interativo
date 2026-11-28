@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pelo menos uma vez · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Pelo menos uma vez</h1></header>
+<main>
+<div class="card"><h2>1 − (1 − p)ⁿ</h2><p class="muted" style="margin-top:0">Mude a probabilidade de cada noite e o número de noites (arrastando ou com − e +). A curva laranja é a conta certa; a linha cinza, a soma ingênua p × n.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Probabilidade por noite</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Número de noites</b><input type="range"><span></span></div><div class="kpi"><div>Nenhuma vez: (1 − p)ⁿ<b id="k1"></b></div><div>Pelo menos uma vez<b id="k2"></b></div><div class="o">Soma ingênua p × n<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Repita a chance.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const pc=v=>fmt(Math.round(v*1000)/10)+'%';
+const SP=SL('sp',0.01,0.9,0.01,0.1,()=>draw(),v=>fmt(v)),SN=SL('sn',1,60,1,5,()=>draw(),v=>v);
+const pm=n=>1-(1-SP.get())**n;
+MIS.def(()=>[
+ ['Refaça a conta das <b>5 noites</b> com p = <b>0,1</b>.',()=>SN.get()==5&&Math.abs(SP.get()-0.1)<1e-9,'0,41: menos que a soma ingênua de 0,5.',()=>'Confira: p = 0,1 e 5 noites.'],
+ ['Com p = 0,1, ache o <b>menor</b> número de noites que deixa a chance <b>acima de 90%</b>.',()=>Math.abs(SP.get()-0.1)<1e-9&&pm(SN.get())>0.9&&pm(SN.get()-1)<=0.9,'22 noites: 0,9²² ≈ 0,098. Um evento de 10% vira quase certo com tempo.',()=>pm(SN.get())>0.9?'Dá com menos noites.':'Agora: '+pc(pm(SN.get()))+'.'],
+ ['Faça a soma ingênua <b>passar de 1</b> e compare com a conta certa.',()=>SP.get()*SN.get()>1,()=>'Soma '+r2(SP.get()*SN.get())+' (impossível como probabilidade); conta certa '+r2(pm(SN.get()))+'.',()=>'Soma agora: '+r2(SP.get()*SN.get())+'.']]);
+function draw(){const N=Math.max(10,SN.get()*1.5|0);let g=RC(0,0,340,230,'#F8FAFC','rx="10"');
+ const X=n=>34+n/N*294,Y=v=>200-Math.min(v,1.3)/1.3*180;g+=LN(34,200,330,200,NAVY,1)+LN(34,20,34,200,NAVY,1);
+ for(const v of [0.5,1])g+=LN(31,Y(v),330,Y(v),'#E5E7EB',1)+TX(29,Y(v)+3,fmt(v),{fs:8,a:'end'});
+ g+=LN(34,Y(1),330,Y(1),'#C0392B',1,'4 3')+TX(330,Y(1)-4,'certeza',{fs:8,a:'end',c:'#C0392B'});
+ let a=[],b=[];for(let n=0;n<=N;n++){a.push([X(n),Y(pm(n))]);b.push([X(n),Y(SP.get()*n)]);}g+=PL(b,GRAY,1.5,'5 4')+PL(a,ORANGE,2.6);
+ const n=SN.get();g+=LN(X(n),200,X(n),Y(pm(n)),NAVY,1,'2 3')+CIR(X(n),Y(pm(n)),5,ORANGE,'stroke="#fff" stroke-width="1.5"')+TX(X(n),214,n+' noites',{fs:9,c:NAVY});
+ $('fig').innerHTML=SVG(340,230,g);
+ $('k1').textContent=r2((1-SP.get())**n);$('k2').textContent=pc(pm(n));$('k3').textContent=r2(SP.get()*n);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
