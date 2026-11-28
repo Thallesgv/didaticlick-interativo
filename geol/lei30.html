@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua da lei · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A régua da lei</h1></header>
+<main>
+<div class="card"><h2>O perfil do morro e as faixas da lei</h2><p class="muted" style="margin-top:0">O morro tem quatro trechos, do pé ao topo. Mude a declividade e a horizontal de cada um (arraste ou use − e +). Verde: abaixo de 30%. Amarelo: 30% a 100% (só com exigências). Vermelho: acima de 100% (45°), área de preservação.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="d1"><b>Trecho 1 · declividade</b><input type="range"><span></span></div><div class="sl" id="h1"><b>Trecho 1 · horizontal</b><input type="range"><span></span></div><div class="sl" id="d2"><b>Trecho 2 · declividade</b><input type="range"><span></span></div><div class="sl" id="h2"><b>Trecho 2 · horizontal</b><input type="range"><span></span></div><div class="sl" id="d3"><b>Trecho 3 · declividade</b><input type="range"><span></span></div><div class="sl" id="h3"><b>Trecho 3 · horizontal</b><input type="range"><span></span></div><div class="sl" id="d4"><b>Trecho 4 · declividade</b><input type="range"><span></span></div><div class="sl" id="h4"><b>Trecho 4 · horizontal</b><input type="range"><span></span></div><div class="kpi"><div>Desnível total<b id="k1"></b></div><div>Acima de 30%<b id="k2"></b></div><div class="o">Área de preservação<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=[20,20,20,20],HZ=[25,25,25,25],SD=[],SH=[];
+for(let i=0;i<4;i++){SD.push(SL('d'+(i+1),0,200,1,D[i],()=>draw(),v=>v+'%'));SH.push(SL('h'+(i+1),5,40,1,HZ[i],()=>draw(),v=>v+' m'));}
+const dv=i=>SD[i].get(),hz=i=>SH[i].get(),cor=p=>p<30?VERDE:p<=100?OURO:VERM;
+MIS.def(()=>[
+ ['Monte o <b>Morro do Cruzeiro</b>: trechos de <b>12%, 38%, 70% e 110%</b>.',()=>[12,38,70,110].every((v,i)=>dv(i)==v),'É o perfil do livro: só o primeiro trecho é verde, e o último é área de preservação.',()=>{const i=[12,38,70,110].findIndex((v,i)=>dv(i)!=v);return 'O trecho '+(i+1)+' está com '+dv(i)+'% e deveria ter '+[12,38,70,110][i]+'%.';}],
+ ['Deixe <b>todos os trechos lotáveis</b> sem exigências (todos verdes) e o desnível total de <b>pelo menos 25 m</b>.',()=>[0,1,2,3].every(i=>dv(i)<30)&&tot()>=25,'Com todos abaixo de 30%, é preciso muita distância horizontal para subir pouco.',()=>{const i=[0,1,2,3].find(i=>dv(i)>=30);return i!==undefined?'O trecho '+(i+1)+' ainda está com '+dv(i)+'%.':'Todos verdes, mas o desnível total é '+r1(tot())+' m: aumente as horizontais.';}],
+ ['No trecho 1, com <b>20 m</b> de horizontal, ache o <b>maior desnível</b> ainda verde.',()=>hz(0)==20&&dv(0)==29,'29% de 20 m = 5,8 m. Com 30%, já passa a exigir estudo.',()=>hz(0)!=20?'Primeiro deixe a horizontal do trecho 1 em 20 m.':(dv(0)>=30?'Passou: '+dv(0)+'% já não é verde.':'Ainda dá para subir mais: '+dv(0)+'%.')]]);
+function tot(){let s=0;for(let i=0;i<4;i++)s+=dv(i)/100*hz(i);return s;}
+function draw(){const H=[0,1,2,3].map(hz),DD=[0,1,2,3].map(i=>dv(i)/100*hz(i)),th=H.reduce((a,b)=>a+b),td=DD.reduce((a,b)=>a+b);
+ const k=Math.min(300/th,190/Math.max(td,1));let x=20,y=220,g=RC(0,0,340,240,CEU,'rx="10"');
+ for(let i=0;i<4;i++){const x2=x+H[i]*k,y2=y-DD[i]*k;g+=PG([[x,232],[x,y],[x2,y2],[x2,232]],TERRA,'')+LN(x,y,x2,y2,cor(dv(i)),5)+TX((x+x2)/2,Math.min(y,y2)-8,dv(i)+'%',{fs:10});x=x2;y=y2;}
+ $('fig').innerHTML=SVG(340,240,g);
+ const ac=[0,1,2,3].filter(i=>dv(i)>=30).reduce((a,i)=>a+H[i],0),ap=[0,1,2,3].filter(i=>dv(i)>100).reduce((a,i)=>a+H[i],0);
+ $('k1').textContent=r1(td)+' m';$('k2').textContent=Math.round(ac/th*100)+'% da horizontal';$('k3').textContent=ap+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

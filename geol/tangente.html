@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A tangente da encosta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A tangente da encosta</h1></header>
+<main>
+<div class="card"><h2>O ângulo e a tangente</h2><p class="muted" style="margin-top:0">Gire o ângulo da encosta e mude o tamanho do triângulo (arraste ou use − e +). Embaixo, o gráfico mostra a porcentagem para cada ângulo, de 0° a 85°.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo</b><input type="range"><span></span></div><div class="sl" id="sh"><b>Horizontal</b><input type="range"><span></span></div><div class="kpi"><div>Desnível<b id="k1"></b></div><div>tg = desnível ÷ horizontal<b id="k2"></b></div><div class="o">Declividade<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',1,85,1,20,()=>draw(),v=>v+'°'),SH=SL('sh',10,100,1,60,()=>draw(),v=>v+' m');
+const tg=()=>Math.tan(SA.get()*RAD);
+MIS.def(()=>[
+ ['Ache o ângulo de uma encosta de <b>70%</b> (a tangente entre 0,68 e 0,72).',()=>tg()>=0.68&&tg()<=0.72,'35°: tg 35° = 0,700. É a encosta atrás da padaria.',()=>'tg agora: '+r2(tg())+'. '+(tg()<0.68?'Aumente o ângulo.':'Diminua o ângulo.')],
+ ['Ache o ângulo de <b>100%</b>.',()=>SA.get()==45,'45°: desnível igual à horizontal.',()=>'Declividade agora: '+Math.round(tg()*100)+'%.'],
+ ['Com o ângulo em <b>35°</b>, mude a horizontal para <b>90 m</b>. A tangente mudou?',()=>SA.get()==35&&SH.get()==90,'Não: o desnível foi para 63 m, mas 63 ÷ 90 continua 0,70. Triângulos semelhantes têm a mesma tangente.',()=>SA.get()!=35?'Primeiro volte o ângulo para 35°.':'Agora a horizontal: '+SH.get()+' m. Leve para 90 m.']]);
+function draw(){const a=SA.get(),h=SH.get(),d=h*tg();
+ const k=Math.min(130/h,110/d),x0=14,y0=130,w=h*k,y=d*k;
+ let g=RC(0,0,340,300,CEU,'rx="10"')+PG([[x0,y0],[x0+w,y0],[x0+w,y0-y]],TERRA,'')+LN(x0,y0,x0+w,y0-y,ORANGE,4)+LN(x0,y0,x0+w,y0,NAVY,1.2)+LN(x0+w,y0,x0+w,y0-y,NAVY,1.2);
+ g+=TX(x0+w/2,y0+14,h+' m',{fs:10})+TX(x0+w+4,y0-y/2,r1(d)+' m',{fs:10,a:'start'})+TX(x0+26,y0-5,a+'°',{fs:11,c:ORANGE,a:'start'});
+ // gráfico % × ângulo
+ const gx=200,gy=125,gw=130,gh=110,sx=t=>gx+t/85*gw,sy=p=>gy-Math.min(p,400)/400*gh;
+ g+=RC(gx-4,gy-gh-6,gw+10,gh+22,'#fff','rx="6"')+LN(gx,gy,gx+gw,gy,NAVY,1)+LN(gx,gy,gx,gy-gh,NAVY,1);
+ let pts=[];for(let t=0;t<=85;t+=1)pts.push([sx(t),sy(Math.tan(t*RAD)*100)]);g+=PL(pts,BLUE,2);
+ g+=LN(gx,sy(100),gx+gw,sy(100),GRAY,0.8,'3 3')+TX(gx+gw,sy(100)-3,'100%',{fs:9,a:'end',c:GRAY})+LN(sx(45),gy,sx(45),gy-gh,GRAY,0.8,'3 3');
+ g+=CIR(sx(a),sy(tg()*100),5,ORANGE)+TX(gx+gw/2,gy+12,'ângulo (0° a 85°)',{fs:9})+TX(gx,gy-gh-9,'% (até 400)',{fs:9,a:'start'});
+ // tabela embaixo
+ const T=[10,20,30,35,40,45,60];g+=TX(170,170,'Tabela: ângulo → tangente',{fs:11});
+ T.forEach((t,i)=>{const x=25+i*44;g+=RC(x-20,180,40,48,t==a?PEACH:'#fff','rx="5"')+TX(x,198,t+'°',{fs:11,c:t==a?ORANGE:NAVY})+TX(x,218,r2(Math.tan(t*RAD)).replace(/^0/,'0'),{fs:10,w:500});});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(d)+' m';$('k2').textContent=fmt(Math.round(tg()*1000)/1000);$('k3').textContent=r1(tg()*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
