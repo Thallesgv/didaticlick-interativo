@@ -111,7 +111,32 @@ const LIV={'fal1':{T:["Medir sem tocar: escala e fotografia", "Os formatos de te
 7:()=>P([{q:'A negação de "todo pigmento do quadro é antigo" é:',opts:['nenhum pigmento é antigo','existe um pigmento que não é antigo','todo pigmento é novo'],a:'existe um pigmento que não é antigo',exp:'Basta um que falhe.'},
  {q:'Quantos contraexemplos derrubam uma frase com "todo"?',opts:['um','dois','todos'],a:'um',exp:'Um elemento que falha já basta.'},
  {q:'A negação de "existe uma amostra com titânio" é:',opts:['nenhuma amostra tem titânio','todas têm titânio','existe uma sem titânio'],a:'nenhuma amostra tem titânio',exp:'"Existe" vira "nenhum".'},
- {q:'Cinco amostras compatíveis com 1889 provam que o quadro é de 1889?',opts:['sim','não'],a:'não',exp:'Compatível não é prova: um falsificador pode usar cores antigas.'}])}}};
+ {q:'Cinco amostras compatíveis com 1889 provam que o quadro é de 1889?',opts:['sim','não'],a:'não',exp:'Compatível não é prova: um falsificador pode usar cores antigas.'}])}},'fal5':{T:["A luz que atravessa", "Cada camada tira uma fração", "A função exponencial", "Logaritmo: quanta espessura?", "Contraste: chumbo e linho", "A pintura escondida"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const N=R(2,20)*1000,T=R(40,95)/100,s=Math.round(N*T);return{q:`De <b>${fmt(N)}</b> fótons, <b>${fmt(s)}</b> atravessam uma camada. Qual o T? (Duas casas.)`,a:T,tol:0.005,exp:`${fmt(s)} ÷ ${fmt(N)} = ${fmt(T)}.`};}
+ if(t==1){const T=R(40,95)/100;return{q:`Uma camada tem T = <b>${fmt(T)}</b>. Que porcentagem ela absorve?`,a:Math.round((1-T)*100),tol:0.5,exp:`1 − ${fmt(T)} = ${fmt(Math.round((1-T)*100)/100)}: ${Math.round((1-T)*100)}%.`};}
+ const a=R(60,95)/100,b=R(60,95)/100,p=Math.round(a*b*1000)/1000;return{q:`O feixe passa por uma camada com T = ${fmt(a)} e depois por outra com T = ${fmt(b)}. Qual o T do conjunto? (Três casas.)`,a:p,tol:0.0015,exp:`As frações se multiplicam: ${fmt(a)} × ${fmt(b)} ≈ ${fmt(p)}.`};},
+2:()=>{const t=R(0,1);
+ if(t==0){const T=P([0.5,0.6,0.7,0.8,0.9]),n=R(2,5),v=Math.round(Math.pow(T,n)*10000)/10000;return{q:`Cada lâmina deixa passar ${fmt(T)}. Quanto passa por <b>${n}</b> lâminas? (Quatro casas.)`,a:v,tol:0.00015,exp:`${fmt(T)} multiplicado ${n} vezes: ${fmt(T)}^${n} ≈ ${fmt(v)}.`};}
+ const T=P([0.5,0.6,0.7,0.8]),lim=P([0.1,0.2,0.05]);let n=0;while(Math.pow(T,n)>=lim)n++;return{q:`Cada lâmina deixa passar ${fmt(T)}. Qual o menor número de lâminas para passar <b>menos de ${fmt(lim*100)}%</b>?`,a:n,exp:`${fmt(T)}^${n-1} ≈ ${fmt(Math.round(Math.pow(T,n-1)*1000)/1000)} e ${fmt(T)}^${n} ≈ ${fmt(Math.round(Math.pow(T,n)*1000)/1000)}. Resposta: ${n}.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const s=P([0.1,0.2,0.05]),k=R(1,4),x=Math.round(s*k*100)/100,v=Math.pow(0.5,k);return{q:`A camada semirredutora é ${fmt(s)} mm. Que fração passa por <b>${fmt(x)} mm</b>? (Quatro casas.)`,a:v,tol:0.00015,exp:`${fmt(x)} ÷ ${fmt(s)} = ${k} meias camadas: 0,5^${k} = ${fmt(v)}.`};}
+ if(t==1){const N=R(2,10)*100,k=R(2,5);return{q:`Uma colônia começa com ${N} bactérias e dobra a cada hora. Quantas haverá em <b>${k} horas</b>?`,a:N*Math.pow(2,k),exp:`${N} × 2^${k} = ${fmt(N*Math.pow(2,k))}.`};}
+ return P([{q:'A função T(x) = 0,5^(x ÷ 0,1) é:',opts:['crescente','decrescente','constante'],a:'decrescente',exp:'Base entre 0 e 1: quanto mais espessura, menos passa.'},
+  {q:'A curva exponencial T(x) = 0,5^(x ÷ 0,1) chega a zero?',opts:['sim, em x = 0,2','sim, em x = 1','nunca'],a:'nunca',exp:'Metade de algo positivo é sempre positiva.'},
+  {q:'Quanto vale qualquer número positivo elevado a 0?',opts:['0','1','ele mesmo'],a:'1',exp:'b^0 = 1: espessura zero, passa tudo.'}]);},
+4:()=>{const t=R(0,2);
+ if(t==0){const b=P([2,3,10]),e=b==10?R(1,5):R(2,6);return{q:`Quanto vale o logaritmo de <b>${fmt(Math.pow(b,e))}</b> na base ${b}?`,a:e,exp:`${b}^${e} = ${fmt(Math.pow(b,e))}, então o logaritmo é ${e}.`};}
+ if(t==1){const k=R(1,5),T=Math.pow(0.5,k);return{q:`No branco de chumbo (meia camada de 0,1 mm), uma região mede T = <b>${fmt(T)}</b>. Qual a espessura, em mm?`,a:Math.round(k*0.1*10)/10,tol:0.005,exp:`${fmt(T)} = 0,5^${k}: ${k} meias camadas, ${fmt(Math.round(k*0.1*10)/10)} mm.`};}
+ const T=P([0.35,0.4,0.6,0.7,0.8,0.2,0.3]),x=Math.round(0.1*Math.log10(T)/Math.log10(0.5)*100)/100;return{q:`Uma região tem T = <b>${fmt(T)}</b> no branco de chumbo. Use x = 0,1 · log(T) ÷ log(0,5) e dê a espessura em mm (duas casas).`,a:x,tol:0.006,exp:`log(${fmt(T)}) ≈ ${fmt(Math.round(Math.log10(T)*1000)/1000)}; ÷ (−0,301) × 0,1 ≈ ${fmt(x)} mm.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const a=R(40,80)/100,b=R(10,35)/100,r=Math.round(a/b*100)/100;return{q:`O fundo tem T = ${fmt(a)} e o rosto escondido T = ${fmt(b)}. Qual a razão fundo ÷ rosto? (Duas casas.)`,a:r,tol:0.006,exp:`${fmt(a)} ÷ ${fmt(b)} ≈ ${fmt(r)}.`};}
+ if(t==1){const T=R(10,90)/100;return{q:`Uma região tem T = ${fmt(T)}. Qual o seu brilho na radiografia (1 − T)?`,a:Math.round((1-T)*100)/100,tol:0.005,exp:`1 − ${fmt(T)} = ${fmt(Math.round((1-T)*100)/100)}.`};}
+ return P([{q:'Qual absorve mais raios X?',opts:['chumbo','titânio','carbono'],a:'chumbo',exp:'Número atômico 82: o mais pesado dos três.'},
+  {q:'Uma camada de tinta por cima de tudo muda a razão de contraste entre rosto e fundo?',opts:['sim, aumenta','sim, diminui','não'],a:'não',exp:'Ela multiplica os dois T pelo mesmo número: a razão fica igual.'},
+  {q:'Se o horizonte tivesse sido repintado em 1974 sobre o original, o raio X mostraria:',opts:['um horizonte','dois horizontes','nenhum'],a:'dois horizontes',exp:'O original continuaria embaixo do retoque.'}]);},
+6:()=>{const Wd=P([[92.3,73.4],[100,80],[60,50],[73,60]]),x=R(3,Wd[0]-3),y=R(3,Wd[1]-3),t=R(0,1);
+ if(t==0)return{q:`Numa tela de ${fmt(Wd[0])} × ${fmt(Wd[1])} cm, o ponto (${x}; ${y}) vai para onde depois de girar 180°? Responda a <b>primeira coordenada</b>.`,a:Math.round((Wd[0]-x)*10)/10,tol:0.05,exp:`(${fmt(Wd[0])} − ${x}; ${fmt(Wd[1])} − ${y}) = (${fmt(Math.round((Wd[0]-x)*10)/10)}; ${fmt(Math.round((Wd[1]-y)*10)/10)}).`};
+ return{q:`Numa tela de ${fmt(Wd[0])} × ${fmt(Wd[1])} cm, o ponto (${x}; ${y}) vai para onde depois de girar 180°? Responda a <b>segunda coordenada</b>.`,a:Math.round((Wd[1]-y)*10)/10,tol:0.05,exp:`(${fmt(Wd[0])} − ${x}; ${fmt(Wd[1])} − ${y}) = (${fmt(Math.round((Wd[0]-x)*10)/10)}; ${fmt(Math.round((Wd[1]-y)*10)/10)}).`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='fal1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

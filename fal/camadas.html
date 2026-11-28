@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Empilhe as lâminas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Empilhe as lâminas</h1></header>
+<main>
+<div class="card"><h2>Multiplicar ou subtrair?</h2><p class="muted" style="margin-top:0">Cada lâmina deixa passar a mesma fração T do que chega nela. As barras laranja mostram a conta certa (multiplicar por T a cada lâmina). A linha cinza tracejada é a conta errada: subtrair sempre a mesma porcentagem do total.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Número de lâminas</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>T de cada lâmina</b><input type="range"><span></span></div>
+<div class="kpi"><div>Conta certa: Tⁿ<b id="kc"></b></div><div>Conta errada<b id="ke"></b></div><div class="o">Passa<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Empilhe e compare.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SNn=SL('sn',0,10,1,1,()=>draw(),v=>v),ST=SL('st',0.5,0.95,0.01,0.8,()=>draw(),v=>fmt(v));
+toque('fig',(x,y)=>{if(y<200){SNn.set(Math.max(0,Math.min(10,Math.round((x-30)/28))));draw();}});
+const certa=(t,n)=>Math.pow(t,n),errada=(t,n)=>1-n*(1-t);
+MIS.def(()=>[
+ ['Reproduza a tabela do livro: <b>T = 0,71</b> e <b>4 lâminas</b>.',()=>Math.abs(ST.get()-0.71)<1e-9&&SNn.get()==4,'0,71⁴ ≈ 0,25: quatro lâminas de 0,05 mm (0,2 mm de chumbo) deixam passar só um quarto.',()=>Math.abs(ST.get()-0.71)>1e-9?'Ajuste o T de cada lâmina para 0,71.':'Agora são '+SNn.get()+' lâminas. Leve para 4.'],
+ ['Com T = 0,71, ache o <b>menor número de lâminas</b> que deixa passar <b>menos de 10%</b>.',()=>Math.abs(ST.get()-0.71)<1e-9&&certa(0.71,SNn.get())<0.1&&certa(0.71,SNn.get()-1)>=0.1,'7 lâminas: 0,71⁷ ≈ 0,091. Com 6, ainda passa 0,128.',()=>Math.abs(ST.get()-0.71)>1e-9?'Volte o T para 0,71.':certa(0.71,SNn.get())>=0.1?'Ainda passa '+vg(Math.round(certa(0.71,SNn.get())*1000)/10)+'%. Ponha mais lâminas.':'Já passa menos de 10%. Será que com uma a menos também passaria?'],
+ ['Mude para <b>T = 0,8</b> e ache com quantas lâminas a <b>conta errada fica negativa</b> pela primeira vez.',()=>Math.abs(ST.get()-0.8)<1e-9&&errada(0.8,SNn.get())<-1e-9&&errada(0.8,SNn.get()-1)>-1e-9,'6 lâminas: a conta errada dá 1 − 6 × 0,2 = −0,2, um absurdo, enquanto a certa dá 0,8⁶ ≈ 0,26. Subtrair 20% do total a cada lâmina esquece que a segunda só recebe o que sobrou da primeira.',()=>Math.abs(ST.get()-0.8)>1e-9?'Ajuste o T de cada lâmina para 0,8.':'A conta errada agora dá '+vg(Math.round(errada(0.8,SNn.get())*100)/100)+(errada(0.8,SNn.get())<0?'. Já é negativa: e com uma lâmina a menos?':'. Ponha mais lâminas.')]]);
+function draw(){const n=SNn.get(),t=ST.get();let g=RC(0,0,340,240,'#fff','rx="10"');
+ const Y=v=>200-v*170;g+=LN(24,Y(0),330,Y(0),NAVY,1)+LN(24,Y(0),24,Y(1),NAVY,1);
+ [0,0.25,0.5,0.75,1].forEach(v=>g+=TX(20,Y(v)+3,vg(v),{fs:8,a:'end',c:GRAY})+LN(24,Y(v),330,Y(v),GRAYL,.5));
+ let pe=[];for(let k=0;k<=10;k++){const x=30+k*28,c=certa(t,k),on=k<=n;
+  g+=RC(x,Y(c),20,c*170,on?ORANGE:'#F6D2B4','rx="2"')+TX(x+10,214,k,{fs:9,c:on?NAVY:'#B0B7C3'});
+  pe.push([x+10,Y(Math.max(-0.15,errada(t,k)))]);}
+ g+=PL(pe,'#6B7280',1.5,'4 3');pe.forEach((p,k)=>{if(errada(t,k)<0&&k<=n)g+=CIR(p[0],p[1],3.5,'#C62828');});
+ g+=TX(177,232,'número de lâminas',{fs:9,c:GRAY});
+ const x=30+n*28;g+=RC(x-2,Y(certa(t,n))-2,24,certa(t,n)*170+4,'none','stroke="'+NAVY+'" stroke-width="2" rx="3"');
+ $('fig').innerHTML=SVG(340,240,g);
+ const e=errada(t,n);$('kc').textContent=vg(Math.round(certa(t,n)*1000)/1000);$('ke').textContent=vg(Math.round(e*1000)/1000)+(e<0?' (absurdo!)':'');$('kp').textContent=vg(Math.round(certa(t,n)*1000)/10)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

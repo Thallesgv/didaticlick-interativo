@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte o contraste · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Monte o contraste</h1></header>
+<main>
+<div class="card"><h2>O rosto aparece?</h2><p class="muted" style="margin-top:0">A radiografia ao lado é calculada: cada região tem o seu T, e quanto menor o T, mais clara ela fica. Mude o chumbo do rosto escondido, a tinta da paisagem por cima e uma camada extra de chumbo no fundo (o truque de um falsificador).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Chumbo no rosto (mm)</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>T da paisagem por cima</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Chumbo extra no fundo (mm)</b><input type="range"><span></span></div>
+<div class="kpi"><div>T do fundo<b id="kf"></b></div><div>T do rosto<b id="kr"></b></div><div class="o">Razão fundo ÷ rosto<b id="kz"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o rosto aparecer e sumir.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SC=SL('sc',0,0.3,0.01,0.05,()=>draw(),v=>fmt(v)),SP=SL('sp',0.3,0.95,0.01,0.95,()=>draw(),v=>fmt(v)),SE=SL('se',0,0.3,0.01,0,()=>draw(),v=>fmt(v));
+const h=x=>Math.pow(0.5,x/0.1),eq=(a,b)=>Math.abs(a-b)<1e-9;let mexeuP=false;
+const tf=()=>0.8*SP.get()*0.95*h(SE.get()),tr=()=>0.8*SP.get()*h(SC.get()),raz=()=>tf()/tr();
+MIS.def(()=>[
+ ['Reproduza o quadro: <b>0,15 mm</b> de chumbo no rosto, paisagem com <b>T = 0,71</b> e nada de chumbo extra. Qual a razão?',()=>eq(SC.get(),0.15)&&eq(SP.get(),0.71)&&eq(SE.get(),0),'Razão ≈ 2,7: o rosto deixa passar quase três vezes menos que o fundo e salta na imagem.',()=>!eq(SC.get(),0.15)?'Chumbo no rosto: leve a 0,15 mm.':!eq(SP.get(),0.71)?'T da paisagem: leve a 0,71.':'Zere o chumbo extra do fundo.'],
+ ['Tente <b>esconder o rosto com uma paisagem grossa</b>: baixe o T da paisagem até 0,35 ou menos (mantenha 0,15 mm no rosto).',()=>SP.get()<=0.35+1e-9&&eq(SC.get(),0.15)&&eq(SE.get(),0),'Não adianta: a imagem toda clareia, mas a razão continua ≈ 2,7. A paisagem multiplica rosto e fundo pelo mesmo número.',()=>!eq(SC.get(),0.15)||!eq(SE.get(),0)?'Volte o rosto para 0,15 mm e o extra para 0.':'T da paisagem agora: '+fmt(SP.get())+'. Desça até 0,35.'],
+ ['Agora seja o falsificador: com 0,15 mm no rosto, ponha <b>chumbo extra no fundo</b> até o rosto sumir (razão perto de 1).',()=>eq(SC.get(),0.15)&&Math.abs(raz()-1)<0.04,'≈ 0,14 mm de chumbo em todo o fundo. Possível, mas enorme e visível na textura. O falsificador de verdade não fez isso: confiou que ninguém faria raio X.',()=>!eq(SC.get(),0.15)?'Volte o rosto para 0,15 mm.':'Razão agora: '+vg(Math.round(raz()*100)/100)+'. '+(raz()>1?'Ponha mais chumbo no fundo.':'Passou: tire um pouco.')]]);
+const ox=40,oy=14,k=2.8;
+function draw(){const f=tf(),r=tr(),z=f/r;const cor=t=>{const v=Math.round(30+215*(1-t));return `rgb(${v},${v},${Math.min(255,v+6)})`;};
+ const fh=0.8*SP.get()*0.92;let g=RC(0,0,340,245,'#fff','rx="10"');
+ g+=RC(ox,oy,92.3*k,73.4*k,cor(f),'stroke="'+NAVY+'"');
+ g+=RC(ox,oy+(73.4-30)*k,92.3*k,4*k,cor(Math.min(f,fh*0.6)));
+ const cx=ox+40.3*k,cy=oy+(73.4-22.4)*k;
+ g+=PG([[cx-26*k,oy],[cx+26*k,oy],[cx+12*k,cy-16*k],[cx-12*k,cy-16*k]],cor(f-(f-r)*0.4));
+ g+=ELI(cx,cy,9*k,12*k,cor(r));
+ g+=TX(ox+92.3*k/2,oy+73.4*k+14,'radiografia calculada (claro = absorve muito)',{fs:8,c:GRAY});
+ $('fig').innerHTML=SVG(340,245,g);
+ $('kf').textContent=vg(Math.round(f*100)/100);$('kr').textContent=vg(Math.round(r*100)/100);$('kz').textContent=vg(Math.round(z*100)/100)+(Math.abs(z-1)<0.04?' (sumiu!)':'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

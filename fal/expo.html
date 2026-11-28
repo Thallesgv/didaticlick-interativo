@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva da meia camada · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A curva da meia camada</h1></header>
+<main>
+<div class="card"><h2>T(x) = 0,5^(x ÷ s)</h2><p class="muted" style="margin-top:0">A camada semirredutora s é a espessura que deixa passar metade. Mude s e a espessura x (ou toque no gráfico) e veja o ponto andar sobre a curva. A reta cinza é a conta errada: perder metade a cada s, sempre do total.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Camada semirredutora s (mm)</b><input type="range"><span></span></div>
+<div class="sl" id="sx"><b>Espessura x (mm)</b><input type="range"><span></span></div>
+<div class="kpi"><div>x ÷ s<b id="kq"></b></div><div>T(x)<b id="kt"></b></div><div class="o">Reta errada<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a curva.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SS=SL('ss',0.05,0.3,0.01,0.1,()=>draw(),v=>fmt(v)),SX=SL('sx',0,0.6,0.01,0.05,()=>draw(),v=>fmt(v));
+const ox=34,W=290,X=x=>ox+x/0.6*W,Y=v=>200-v*170;
+toque('fig',(x,y)=>{SX.set(Math.max(0,Math.min(0.6,Math.round((x-ox)/W*60)/100)));draw();});
+const Tf=(x,s)=>Math.pow(0.5,x/s),Er=(x,s)=>1-0.5*x/s;const eq=(a,b)=>Math.abs(a-b)<1e-9;
+MIS.def(()=>[
+ ['Com o branco de chumbo (<b>s = 0,1 mm</b>), ache a espessura que deixa passar <b>25%</b>.',()=>eq(SS.get(),0.1)&&eq(SX.get(),0.2),'x = 0,2 mm: duas meias camadas, 0,5 × 0,5 = 0,25.',()=>!eq(SS.get(),0.1)?'Volte s para 0,1 mm.':'Agora T = '+vg(Math.round(Tf(SX.get(),0.1)*1000)/1000)+'. Procure T = 0,25.'],
+ ['Faça uma tinta <b>mais transparente</b> (s maior) e ache onde ela deixa passar 25%.',()=>SS.get()>0.1+1e-9&&eq(SX.get(),2*SS.get()),()=>'Sempre em x = 2s: com s = '+fmt(SS.get())+' mm, x = '+fmt(2*SS.get())+' mm. Tinta mais leve, curva mais "lenta".',()=>SS.get()<=0.1+1e-9?'Aumente a camada semirredutora acima de 0,1 mm.':'Com s = '+fmt(SS.get())+', T = 0,25 acontece quando x for duas vezes s.'],
+ ['Volte s para <b>0,1 mm</b> e leve x até onde a <b>reta errada chega a zero</b>. Quanto a curva certa ainda mostra?',()=>eq(SS.get(),0.1)&&eq(SX.get(),0.2),'A reta diz "nada passa" em x = 2s, mas a curva ainda deixa passar 25%. A exponencial nunca chega a zero.',()=>!eq(SS.get(),0.1)?'Volte s para 0,1 mm.':'A reta errada vale '+vg(Math.round(Er(SX.get(),SS.get())*100)/100)+' agora. Ache onde ela vale 0.']]);
+function draw(){const s=SS.get(),x=SX.get(),t=Tf(x,s);let g=RC(0,0,340,240,'#fff','rx="10"');
+ g+=LN(ox,Y(0),ox+W,Y(0),NAVY,1)+LN(ox,Y(0),ox,Y(1.05),NAVY,1);
+ [0,0.25,0.5,0.75,1].forEach(v=>g+=TX(ox-4,Y(v)+3,vg(v),{fs:8,a:'end',c:GRAY})+LN(ox,Y(v),ox+W,Y(v),GRAYL,.5));
+ for(let k=0;k<=6;k++)g+=TX(X(k/10),Y(0)+13,vg(k/10),{fs:8,c:GRAY});g+=TX(ox+W,Y(0)+26,'x (mm)',{fs:8,a:'end',c:GRAY});
+ let c=[],r=[];for(let i=0;i<=120;i++){const xx=i*0.005;c.push([X(xx),Y(Tf(xx,s))]);const e=Er(xx,s);if(e>=-0.02)r.push([X(xx),Y(e)]);}
+ g+=PL(r,'#6B7280',1.5,'5 4')+PL(c,COBALTO,3);
+ for(let k=1;k*s<=0.6;k++)g+=LN(X(k*s),Y(0),X(k*s),Y(Math.pow(0.5,k)),'#C7CDD6',1,'2 3');
+ g+=LN(X(x),Y(0),X(x),Y(t),ORANGE,1.2,'3 3')+LN(ox,Y(t),X(x),Y(t),ORANGE,1.2,'3 3')+CIR(X(x),Y(t),6,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=TX(X(x)+8,Y(t)-8,'T = '+vg(Math.round(t*1000)/1000),{fs:10,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kq').textContent=vg(Math.round(x/s*100)/100);$('kt').textContent=vg(Math.round(t*1000)/1000);const e=Er(x,s);$('ke').textContent=vg(Math.round(e*100)/100)+(e<0?' (absurdo)':'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

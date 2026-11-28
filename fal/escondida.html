@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O retrato de cabeça para baixo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>O retrato de cabeça para baixo</h1></header>
+<main>
+<div class="card"><h2>Gire e meça</h2><p class="muted" style="margin-top:0">Deslize da pintura para a radiografia. Use o botão para girar a imagem meia volta. Toque em qualquer ponto para ver as coordenadas (em cm) na paisagem e no retrato: a rotação leva (x, y) em (92,3 − x, 73,4 − y).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Pintura → raio X</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button id="gira">Girar 180°</button></div>
+<div class="kpi"><div>Na paisagem<b id="kp"></b></div><div>No retrato<b id="kr"></b></div><div class="o">Posição<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a imagem escondida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SM=SL('sm',0,100,5,0,()=>draw(),v=>v+'%');let rot=false,pt=null;
+$('gira').onclick=()=>{rot=!rot;if(pt)pt={u:92.3-pt.u,v:73.4-pt.v};draw();};
+const ox=13,oy=12,k=3.4,Wc=92.3,Hc=73.4;
+toque('fig',(x,y)=>{const u=(x-ox)/k,v=Hc-(y-oy)/k;if(u<0||u>Wc||v<0||v>Hc)return;pt={u:Math.round(u*10)/10,v:Math.round(v*10)/10};draw();});
+const pais=()=>pt?(rot?[Wc-pt.u,Hc-pt.v]:[pt.u,pt.v]):null,retr=()=>pt?(rot?[pt.u,pt.v]:[Wc-pt.u,Hc-pt.v]):null;
+const perto=(p,a,b,d)=>p&&Math.hypot(p[0]-a,p[1]-b)<d;
+MIS.def(()=>[
+ ['Passe para o <b>raio X</b> (70% ou mais) e toque no <b>rosto escondido</b>.',()=>SM.get()>=70&&perto(pais(),40.3,22.4,7),'Rosto em (40,3; 22,4) na paisagem: na parte de baixo da tela, com os ombros indo para a borda de cima. Está de cabeça para baixo.',()=>SM.get()<70?'Deslize para o raio X.':'Toque na mancha oval clara.'],
+ ['<b>Gire</b> a imagem para o retrato ficar de pé e toque no rosto de novo. Quais as coordenadas no retrato?',()=>rot&&SM.get()>=70&&perto(retr(),52,51,7),'(92,3 − 40,3; 73,4 − 22,4) = (52; 51): um pouco acima do meio, como em quase todo retrato.',()=>!rot?'Aperte "Girar 180°".':'Toque no rosto, agora de pé.'],
+ ['Com o retrato de pé, toque na <b>data</b>. Em que canto ela fica?',()=>rot&&SM.get()>=70&&perto(retr(),85,6,7),'(85; 6): canto de baixo, à direita, onde os pintores assinam. "189?": o último algarismo está borrado. Para lê-lo, só tratando a imagem (Livro 6).',()=>!rot?'Gire a imagem primeiro.':'Procure os números claros perto de um canto.']]);
+function draw(){const a=SM.get()/100;let g=RC(0,0,340,290,'#fff','rx="10"');
+ const P=(x,y)=>[ox+x*k,oy+(Hc-y)*k];
+ let pin=RC(ox,oy,Wc*k,(Hc-30)*k,'#F2B46B')+RC(ox,oy+(Hc-30)*k,Wc*k,30*k,'#7C8C4A')+RC(ox,oy+(Hc-30)*k-2,Wc*k,5,CROMO);
+ [[15,18],[32,14],[72,16],[84,20]].forEach(([x,y])=>{const p=P(x,y);pin+=RC(p[0]-2,p[1],4,26,'#6B4A2B')+ELI(p[0],p[1],22,13,'#8FA37A');});
+ const c1=P(54.5,22),c2=P(59.5,22),c3=P(57,66);pin+=PG([c1,c2,c3],CIPRESTE);
+ let rx=RC(ox,oy,Wc*k,Hc*k,'#3A3F47')+RC(ox,oy+(Hc-30)*k,Wc*k,4*k,'#5A606A')+PG([c1,c2,c3],'#4C525B');
+ const f=P(40.3,22.4);
+ rx+=PG([P(14.3,Hc),P(66.3,Hc),P(52.3,38.4),P(28.3,38.4)],'#A9AFB8')+ELI(f[0],f[1]-15*k,10*k,3*k,'#E6E9ED')+ELI(f[0],f[1],9*k,12*k,'#D7DBE0')+ELI(f[0],f[1]+9*k,11*k,6*k,'#8E949D');
+ [-3.5,3.5].forEach(e=>rx+=ELI(f[0]+e*k,f[1]+2*k,1.4*k,0.9*k,'#5A606A'));rx+=LN(f[0]-2.5*k,f[1]-4.5*k,f[0]+2.5*k,f[1]-4.5*k,'#6E747D',2);
+ const d=P(7.3,67.4);rx+=`<text x="${d[0]}" y="${d[1]}" font-size="15" font-weight="700" fill="#E6E9ED" text-anchor="middle" dominant-baseline="middle" transform="rotate(180 ${d[0]} ${d[1]})">189?</text>`;
+ const cx=ox+Wc*k/2,cy=oy+Hc*k/2;
+ g+=`<g transform="rotate(${rot?180:0} ${cx} ${cy})"><g>${pin}</g><g opacity="${a}">${rx}</g></g>`+RC(ox,oy,Wc*k,Hc*k,'none','stroke="'+NAVY+'" stroke-width="1.5"');
+ if(pt){const q=P(pt.u,pt.v);g+=CIR(q[0],q[1],7,'none','stroke="'+ORANGE+'" stroke-width="3"')+CIR(q[0],q[1],2,ORANGE);}
+ g+=TX(cx,oy+Hc*k+18,rot?'imagem girada: o retrato de pé':'como o quadro é pendurado: a paisagem',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,290,g);
+ const p=pais(),r=retr(),c=v=>'('+vg(Math.round(v[0]*10)/10)+'; '+vg(Math.round(v[1]*10)/10)+')';
+ $('kp').textContent=p?c(p):'toque';$('kr').textContent=r?c(r):'toque';$('kg').textContent=rot?'retrato de pé':'paisagem';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
