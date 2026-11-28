@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A névoa em camadas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A névoa em camadas</h1></header>
+<main>
+<div class="card"><h2>t<sup>n</sup> e e<sup>−τ/sen h</sup></h2><p class="muted" style="margin-top:0">À esquerda, folhas de papel vegetal: cada uma deixa passar a fração t do que chega a ela. À direita, a névoa contínua: passa e<sup>−τ/sen h</sup> da luz direta.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Número de folhas</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Cada folha deixa passar</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Névoa (τ)</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura do Sol</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Passa pelas folhas<b id="kf"></b></div><div>Passa pela névoa<b id="kn"></b></div><div>Caminho (1/sen h)<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Empilhe folhas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const SOLC='#FFB13B',AMAR='#F2C230';
+const N=SL('sn',0,12,1,1,()=>draw()),F=SL('sf',50,99,1,90,()=>draw(),v=>v+'%'),Tau=SL('st',0,0.5,0.01,0.15,()=>draw(),v=>fmt(v)),H=SL('sh',5,90,1,90,()=>draw(),v=>v+'°');
+const pf=()=>Math.pow(F.get()/100,N.get()),m=()=>1/Math.sin(H.get()*RAD),pn=()=>Math.exp(-Tau.get()*m());
+MIS.def(()=>[
+ ['Ponha <b>2 folhas</b> de 90%. Passam 80%?',()=>N.get()==2&&F.get()==90,'Não: 0,9 × 0,9 = 81%. A segunda folha tira 10% do que sobrou, não do total.',()=>'2 folhas, 90% cada.'],
+ ['Com folhas de 90%, quantas são precisas para passar <b>menos da metade</b>?',()=>F.get()==90&&pf()<0.5&&Math.pow(0.9,N.get()-1)>=0.5,()=>N.get()+' folhas: 0,9⁷ ≈ 47,8%. Com 6, ainda passavam 53,1%.',()=>F.get()!=90?'Volte a 90%.':pf()<0.5?'Já passou da metade: tente menos folhas.':'Ainda passam '+PC(pf()*100)+'.'],
+ ['Névoa de τ = 0,15: compare o Sol a pino com o Sol a <b>10°</b>.',()=>Math.abs(Tau.get()-0.15)<0.001&&H.get()==10,()=>'Caminho '+r1(m())+' vezes maior: passa só '+PC(pn()*100)+', contra 86% ao meio-dia.',()=>'τ = 0,15 e Sol a 10°.'],
+ ['Ao meio-dia (Sol a <b>70°</b>), passaram <b>86%</b>. Ache o τ da névoa.',()=>H.get()==70&&Math.abs(pn()-0.86)<0.006,()=>'τ ≈ '+fmt(Tau.get())+': e^(−τ ÷ 0,94) ≈ 0,86.',()=>H.get()!=70?'Ponha o Sol a 70°.':'Agora passa '+PC(pn()*100)+'.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');let v=1;
+ for(let i=0;i<=Math.min(N.get(),12);i++){const x=14+i*12,h=v*150;g+=RC(x,200-h,9,h,AMAR);v*=F.get()/100;}
+ g+=TX(90,24,'folhas: '+PC(pf()*100),{fs:11,c:NAVY});g+=LN(10,125,170,125,GRAY,1,'3 3')+TX(168,121,'50%',{fs:8,c:GRAY,a:'end',w:500});
+ const cx=250,top=50,bot=196;g+=RC(190,top,140,bot-top,'#F2F2EE','opacity="'+clamp(0.15+Tau.get()*1.5,0,0.9)+'"')+LN(190,bot,330,bot,NAVY,1.5);
+ const a=H.get()*RAD,x0=cx-Math.cos(a)/Math.sin(a)*(bot-top);g+=LN(clamp(x0,192,330),x0<192?bot-(cx-192)*Math.tan(a):top,cx,bot,ORANGE,3)+CI(cx,bot,4,NAVY);
+ g+=TX(260,24,'névoa: '+PC(pn()*100),{fs:11,c:NAVY});g+=TX(260,40,'caminho × '+r1(m()),{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kf').textContent=PC(pf()*100);$('kn').textContent=PC(pn()*100);$('km').textContent=r2(m());quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
