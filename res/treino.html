@@ -45,7 +45,30 @@ const LIV={'res1':{T:["A mina em escala", "A rampa: inclinação em %", "Coorden
 6:()=>{const t=R(0,2);
  if(t==0){const L=P([100,200,300,500,700,800]),e=P([0.5,1,2,3]);return{q:`Um furo de <b>${L} m</b> desviou <b>${fmt(e)}°</b>. Qual o erro lateral no fundo? (uma casa decimal)`,a:Math.round(L*tg(e)*10)/10,tol:0.11,exp:`${L} × tg ${fmt(e)}° ≈ ${L} × ${fmt(Math.round(tg(e)*10000)/10000)} ≈ ${r1(L*tg(e))} m.`};}
  if(t==1){const w=P([6,8,10,12]),L=P([400,600,700,800]);return{q:`Um alvo de <b>${w} m</b> de largura está a <b>${L} m</b>. Mirando no centro, qual o maior erro de ângulo aceitável, em graus? (duas casas)`,a:Math.round(atg(w/2/L)*100)/100,tol:0.011,exp:`tg(erro) = ${w/2} ÷ ${L}; erro ≈ ${r2(atg(w/2/L))}°.`};}
- const e=P([1,2]),L=P([200,400]),k=P([2,3]);return{q:`Com ${e}° de erro, um furo de ${L} m erra por ${r1(L*tg(e))} m. Se o furo fosse <b>${k} vezes</b> mais comprido, o erro seria quantas vezes maior?`,a:k,exp:`O erro é proporcional ao comprimento: ${k} vezes.`};}}}};
+ const e=P([1,2]),L=P([200,400]),k=P([2,3]);return{q:`Com ${e}° de erro, um furo de ${L} m erra por ${r1(L*tg(e))} m. Se o furo fosse <b>${k} vezes</b> mais comprido, o erro seria quantas vezes maior?`,a:k,exp:`O erro é proporcional ao comprimento: ${k} vezes.`};}}},'res2':{T:["Do que é feito o ar", "O volume do refúgio", "Quanto oxigênio gastamos", "A reta que desce: oxigênio", "A reta que sobe: gás carbônico", "Até quando o ar dura?"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const p=P([0.04,0.1,0.5,1,2,3]);return{q:`Quantas <b>ppm</b> correspondem a <b>${fmt(p)}%</b>?`,a:p*10000,exp:`1% = 10.000 ppm; ${fmt(p)} × 10.000 = ${fmt(p*10000)} ppm.`};}
+ if(t==1){const v=P([100,500,1000,2000,40000]),g=P([[21,'oxigênio'],[78,'nitrogênio'],[0.04,'gás carbônico']]);return{q:`Quantos m³ de <b>${g[1]}</b> há em <b>${fmt(v)} m³</b> de ar seco (${fmt(g[0])}%)?`,a:v*g[0]/100,tol:0.01,exp:`${fmt(g[0]/100)} × ${fmt(v)} = ${fmt(Math.round(v*g[0])/100)} m³.`};}
+ const ppm=P([400,1000,2000,5000,30000]);return{q:`Quanto por cento correspondem a <b>${fmt(ppm)} ppm</b>?`,a:ppm/10000,tol:0.0001,exp:`${fmt(ppm)} ÷ 10.000 = ${fmt(ppm/10000)}%.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const c=R(3,10),l=R(2,8),a=R(2,5);return{q:`Qual é o volume, em m³, de uma sala de <b>${c} m × ${l} m × ${a} m</b>?`,a:c*l*a,exp:`${c} × ${l} × ${a} = ${c*l*a} m³.`};}
+ if(t==1){const v=P([2,6,12,40,120,250]);return{q:`Quantos <b>litros</b> cabem em <b>${v} m³</b>?`,a:v*1000,exp:`1 m³ = 1.000 L; ${v} × 1.000 = ${fmt(v*1000)} L.`};}
+ const w=P([3,4,5]),h=P([3,4]),L=P([100,300,500,1000,2000]);return{q:`Uma galeria tem seção de <b>${w} m × ${h} m</b> e <b>${fmt(L)} m</b> de comprimento. Qual é o volume, em m³?`,a:w*h*L,exp:`Seção: ${w*h} m²; ${w*h} × ${fmt(L)} = ${fmt(w*h*L)} m³.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const r=P([10,12,14,15,16,20]),v=P([0.4,0.5,0.6]);return{q:`Uma pessoa respira <b>${r} vezes</b> por minuto, com <b>${fmt(v)} L</b> por respiração. Quantos litros de ar por minuto?`,a:r*v,tol:0.001,exp:`${r} × ${fmt(v)} = ${fmt(Math.round(r*v*100)/100)} L/min.`};}
+ if(t==1){const m=P([0.25,0.3,0.5,0.75]);return{q:`Quantos litros de oxigênio uma pessoa gasta em <b>um dia</b>, a <b>${fmt(m)} L/min</b>?`,a:m*1440,tol:0.01,exp:`${fmt(m)} × 60 × 24 = ${fmt(m*1440)} L.`};}
+ const n=P([5,10,20,33,40]);return{q:`Cada pessoa gasta 0,36 m³ de oxigênio por dia. Quanto gastam <b>${n} pessoas</b>, em m³ por dia?`,a:Math.round(n*36)/100,tol:0.001,exp:`0,36 × ${n} = ${fmt(Math.round(n*36)/100)} m³/dia.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const q=P([0.02,0.03,0.05,0.06]),d=P([5,10,17,20,30]);return{q:`O oxigênio segue p(t) = 21 − ${fmt(q)}t (t em dias). Quanto vale p(${d}), em %?`,a:Math.round((21-q*d)*1000)/1000,tol:0.001,exp:`21 − ${fmt(q)} × ${d} = ${fmt(Math.round((21-q*d)*1000)/1000)}%.`};}
+ if(t==1){const q=P([0.02,0.03,0.05,0.06,0.09]);return{q:`Com p(t) = 21 − ${fmt(q)}t, em que dia o oxigênio chega a <b>19,5%</b>? (uma casa decimal)`,a:Math.round(1.5/q*10)/10,tol:0.11,exp:`21 − ${fmt(q)}t = 19,5 → t = 1,5 ÷ ${fmt(q)} ≈ ${r1(1.5/q)} dias.`};}
+ const c=P([6,12,18,24,36]),V=P([20000,40000,60000]);return{q:`Consumo de <b>${c} m³</b> de O₂ por dia num ar de <b>${fmt(V)} m³</b>. Quantos pontos percentuais o oxigênio cai por dia? (três casas)`,a:Math.round(100*c/V*1000)/1000,tol:0.0011,exp:`100 × ${c} ÷ ${fmt(V)} = ${fmt(Math.round(100*c/V*1000)/1000)} ponto percentual por dia.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const o=P([5,10,12,20,36]);return{q:`Com quociente respiratório 0,8, quantos m³ de CO₂ saem de <b>${o} m³</b> de oxigênio consumido?`,a:o*0.8,tol:0.001,exp:`0,8 × ${o} = ${fmt(Math.round(o*8)/10)} m³.`};}
+ if(t==1){const q=P([0.012,0.024,0.048,0.072]),d=P([5,10,17,20]);return{q:`O gás carbônico segue c(t) = 0,04 + ${fmt(q)}t. Quanto vale c(${d}), em %? (três casas)`,a:Math.round((0.04+q*d)*1000)/1000,tol:0.0011,exp:`0,04 + ${fmt(q)} × ${d} = ${fmt(Math.round((0.04+q*d)*1000)/1000)}%.`};}
+ const q=P([0.012,0.024,0.046,0.072]);return{q:`Com c(t) = 0,04 + ${fmt(q)}t, em que dia o gás carbônico chega a <b>0,5%</b>? (uma casa decimal)`,a:Math.round(0.46/q*10)/10,tol:0.11,exp:`0,04 + ${fmt(q)}t = 0,5 → t = 0,46 ÷ ${fmt(q)} ≈ ${r1(0.46/q)} dias.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const a=R(10,60),b=R(5,40);return{q:`O oxigênio chega ao limite no dia <b>${a}</b> e o gás carbônico no dia <b>${b}</b>. Até que dia o ar dura?`,a:Math.min(a,b),exp:`Vale o primeiro limite: o menor dos dois, dia ${Math.min(a,b)}.`};}
+ if(t==1){const k=P([2,3,4]);return{q:`O ar duraria 19,2 dias. Se todos gastarem <b>${k} vezes</b> mais oxigênio, quantos dias dura? (uma casa decimal)`,a:Math.round(19.2/k*10)/10,tol:0.11,exp:`O tempo cai na mesma proporção: 19,2 ÷ ${k} ≈ ${r1(19.2/k)} dias.`};}
+ const k=P([2,3,1.5]);return{q:`Com 40.000 m³ o ar dura 19,2 dias. Quantos dias duraria com <b>${fmt(40000*k)} m³</b>? (uma casa decimal)`,a:Math.round(19.2*k*10)/10,tol:0.11,exp:`O tempo é proporcional ao volume: 19,2 × ${fmt(k)} ≈ ${r1(19.2*k)} dias.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='res1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

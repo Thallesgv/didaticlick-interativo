@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta do oxigênio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A reta do oxigênio</h1></header>
+<main>
+<div class="card"><h2>p(t) = 21 − (consumo ÷ volume) · t</h2><p class="muted" style="margin-top:0">A reta laranja é a porcentagem de oxigênio no ar, dia a dia. A linha vermelha é o limite de segurança, 19,5%. Mais gente ou mais trabalho inclinam a reta; mais ar a deixa mais deitada.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sv"><b>Volume de ar (m³)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Chega a 19,5% no dia<b id="k1"></b></div><div>Consumo de O₂<b id="k2"></b></div><div>Taxa da reta<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a reta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const V=SL('sv',10000,80000,1000,40000,draw,v=>fmt(v)+' m³'),N=SL('sn',1,50,1,33,draw);let at=0;chips('ch',['Repouso (×1)','Trabalho leve (×2)','Trabalho pesado (×3)'],0,i=>{at=i;draw();});
+const cons=()=>N.get()*AR.o2pp*(at+1);// m³ de O2 por dia
+const livro=()=>V.get()==40000&&N.get()==33&&at==0;
+const taxa=()=>100*cons()/V.get(),fim=()=>1.5/taxa();
+MIS.def(()=>[
+ ['Monte a situação do livro: <b>40.000 m³</b>, <b>33 pessoas</b> em repouso. Em que dia o oxigênio chega a 19,5%?',livro,'Dia 50: p(t) = 21 − 0,03t, e 21 − 0,03 × 50 = 19,5.',()=>'Confira: 40.000 m³, 33 pessoas, repouso.'],
+ ['Agora coloque todos em <b>trabalho pesado</b>. Quantos dias sobram?',()=>V.get()==40000&&N.get()==33&&at==2,'Cerca de 16,7 dias: a taxa triplica (0,09 por dia) e o tempo cai para um terço.',()=>'Mantenha 40.000 m³ e 33 pessoas e escolha o trabalho pesado.'],
+ ['Em repouso, com 33 pessoas, ache o volume de ar que faz o oxigênio durar só <b>25 dias</b>.',()=>V.get()==20000&&N.get()==33&&at==0,'20.000 m³: metade do ar, metade do tempo. O tempo é proporcional ao volume.',()=>'Agora o oxigênio dura '+r1(fim())+' dias.']]);
+function draw(){const f=fim();$('fig').innerHTML=PLOT({xmin:0,xmax:80,ymin:15,ymax:21.5,dx:10,dy:1,xl:'dias',yl:'% de oxigênio',fy:v=>fmt(v)},(X,Y)=>{
+ let g=linha([[0,AR.o2lim],[80,AR.o2lim]],X,Y,VERM,1.5,'6 4')+linha([[0,21],[80,21-taxa()*80]],X,Y,ORANGE,3);
+ if(f<=80)g+=LN(X(f),Y(AR.o2lim),X(f),Y(15),VERM,1,'3 3')+ponto(f,AR.o2lim,X,Y,VERM)+TX(X(f)+(f>60?-6:6),Y(AR.o2lim)-10,'dia '+r1(f),{fs:11,c:VERM,a:f>60?'end':'start'});
+ return g;});
+ $('k1').textContent=r1(f);$('k2').textContent=fmt(r1(cons()))+' m³/dia';$('k3').textContent='−'+fmt(Math.round(taxa()*1000)/1000)+' por dia';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
