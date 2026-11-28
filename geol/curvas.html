@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fatiando o morro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Fatiando o morro</h1></header>
+<main>
+<div class="card"><h2>Planos de corte e curvas de nível</h2><p class="muted" style="margin-top:0">Mude a equidistância e a altura do plano de corte (arraste ou use − e +). Em cima, o morro de lado com o plano laranja; embaixo, o mapa: todas as curvas em marrom e a curva do corte em laranja.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Equidistância</b><input type="range"><span></span></div><div class="sl" id="sz"><b>Altura do corte</b><input type="range"><span></span></div><div class="kpi"><div>Curvas no mapa<b id="k1"></b></div><div>Distância do corte ao topo<b id="k2"></b></div><div class="o">Altura do corte<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SEG=[[32,0.12],[30,0.38],[30,0.70],[16,1.10]];
+function zDe(x){let z=928,x0=0;for(const [w,s] of SEG){if(x<=x0+w)return z+(x-x0)*s;z+=w*s;x0+=w;}return z;}
+function xDe(zq){let z=928,x0=0;for(const [w,s] of SEG){if(zq<=z+w*s)return x0+(zq-z)/s;z+=w*s;x0+=w;}return 108;}
+function sDe(x){let x0=0;for(const [w,s] of SEG){if(x<x0+w)return s;x0+=w;}return SEG[3][1];}
+function curva(cx,cy,k,zq){const r0=108-xDe(zq);let p=[];for(let i=0;i<=48;i++){const t=2*Math.PI*i/48,f=1+0.5*(1+Math.cos(t))/2+0.06*Math.sin(3*t);p.push([cx-k*r0*f*Math.cos(t),cy+k*r0*f*0.62*Math.sin(t)]);}return p;}
+const SE=SL('se',1,10,1,10,()=>draw(),v=>v+' m'),SZ=SL('sz',929,981,1,960,()=>draw(),v=>v+' m');
+const nCurvas=()=>{const e=SE.get();let n=0;for(let z=Math.ceil(929/e)*e;z<982;z+=e)n++;return n;};
+MIS.def(()=>[
+ ['Corte o morro na altura da <b>Rua da Bica</b>, a <b>940 m</b>.',()=>SZ.get()==940,'É a curva da praça e da Rua da Bica: tudo nela está na mesma altitude.',()=>'O corte está em '+SZ.get()+' m. '+(SZ.get()>940?'Desça.':'Suba.')],
+ ['Deixe o mapa com <b>11 curvas</b>, como o mapa velho da prefeitura.',()=>nCurvas()==11,'Equidistância de 5 m: 930, 935, ..., 980.',()=>'Agora são '+nCurvas()+' curvas. '+(nCurvas()<11?'Diminua a equidistância.':'Aumente a equidistância.')],
+ ['Faça o mapa do drone, com curvas de <b>metro em metro</b>. Quantas curvas aparecem?',()=>SE.get()==1,()=>nCurvas()+' curvas, de 929 a 981 m. Por isso só uma a cada cinco tem o número escrito: a curva mestra.',()=>'A equidistância está em '+SE.get()+' m.']]);
+function draw(){const e=SE.get(),zc=SZ.get();
+ let g=RC(0,0,340,300,'#fff','rx="10"')+RC(0,0,340,110,CEU,'rx="10"');
+ // de lado (exagero 1,5)
+ const x0=40,y0=100,kx=2.4,kz=1.5*kx,pts=[[x0,y0]];
+ for(let x=0;x<=108;x+=2)pts.push([x0+x*kx,y0-(zDe(x)-928)*kz]);pts.push([x0+108*kx,y0]);
+ g+=PG(pts,TERRA,'stroke="'+TERRA_E+'"');
+ for(let z=Math.ceil(929/e)*e;z<982;z+=e){const y=y0-(z-928)*kz;g+=LN(x0+xDe(z)*kx,y,x0+108*kx,y,TERRA_E,0.6);}
+ const yc=y0-(zc-928)*kz;g+=LN(10,yc,330,yc,ORANGE,2,'6 4')+TX(12,yc-4,zc+' m',{fs:10,a:'start',c:ORANGE});
+ g+=TX(x0+108*kx-4,y0-(982-928)*kz-4,'topo 982',{fs:9,a:'end'});
+ // de cima
+ const cx=210,cy=205,k=0.85;
+ g+=RC(20,118,300,175,PAPEL,'rx="6"');
+ for(let z=Math.ceil(929/e)*e;z<982;z+=e)g+=PL(curva(cx,cy,k,z),TERRA_E,(z%25==0||(e>=5&&z%10==0))?1.6:0.7);
+ g+=PL(curva(cx,cy,k,zc),ORANGE,2.6)+CIR(cx,cy,3,VERM);
+ g+=TX(cx-k*(108-xDe(zc))-4,cy+4,zc,{fs:10,a:'end',c:ORANGE})+TX(28,134,'mapa (de cima)',{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,300,g);
+ $('k1').textContent=nCurvas();$('k2').textContent=r1(108-xDe(zc))+' m';$('k3').textContent=zc+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

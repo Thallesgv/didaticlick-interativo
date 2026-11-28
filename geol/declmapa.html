@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Régua de declividade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Régua de declividade</h1></header>
+<main>
+<div class="card"><h2>Do espaço entre as curvas à declividade</h2><p class="muted" style="margin-top:0">Mude o espaço entre duas curvas no mapa, a equidistância e a escala (arraste ou use − e +). Em cima, as duas curvas no papel (ampliadas); embaixo, o terreno de lado. Verde: até 30%. Amarelo: de 30% a 100%. Vermelho: acima de 100%.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Espaço no mapa</b><input type="range"><span></span></div><div class="sl" id="se"><b>Equidistância</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Escala 1 :</b><input type="range"><span></span></div><div class="kpi"><div>Horizontal no chão<b id="k1"></b></div><div>Ângulo<b id="k2"></b></div><div class="o">Declividade<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SM=SL('sm',0.5,15,0.1,6,()=>draw(),v=>vg(v)+' mm'),SE=SL('se',1,10,1,5,()=>draw(),v=>v+' m'),SN=SL('sn',1000,10000,500,2000,()=>draw(),v=>'1 : '+v.toLocaleString('pt-BR'));
+const hz=()=>SM.get()*SN.get()/1000,dec=()=>SE.get()/hz()*100,cor=p=>p<=30?VERDE:p<=100?OURO:VERM;
+MIS.def(()=>[
+ ['Curvas de <b>5 m</b> em <b>1 : 2 000</b>: ache o espaço que dá os <b>70%</b> atrás da padaria (entre 68,5% e 71,5%).',()=>SE.get()==5&&SN.get()==2000&&dec()>=68.5&&dec()<=71.5,'3,6 mm × 2 000 = 7,2 m; 5 ÷ 7,2 ≈ 69%.',()=>SE.get()!=5||SN.get()!=2000?'Deixe a equidistância em 5 m e a escala em 1 : 2 000.':'Agora: '+r1(dec())+'%. '+(dec()<68.5?'Aproxime as curvas.':'Afaste as curvas.')],
+ ['Com as mesmas curvas e escala, ache o risquinho dos <b>30%</b> (entre 29,5% e 30,5%).',()=>SE.get()==5&&SN.get()==2000&&dec()>=29.5&&dec()<=30.5,'8,3 mm: 5 ÷ 16,6 m ≈ 30%. É o limite da Lei 6.766.',()=>SE.get()!=5||SN.get()!=2000?'Volte para curvas de 5 m e 1 : 2 000.':'Agora: '+r1(dec())+'%.'],
+ ['No mapa do drone (curvas de <b>1 m</b>, <b>1 : 2 000</b>), ache o espaço de <b>100%</b>.',()=>SE.get()==1&&SN.get()==2000&&Math.abs(dec()-100)<0.5,'Só 0,5 mm entre as curvas: fino demais para a régua. Por isso se mede entre as curvas mestras.',()=>SE.get()!=1||SN.get()!=2000?'Deixe a equidistância em 1 m e a escala em 1 : 2 000.':'Agora: '+r1(dec())+'%.']]);
+function draw(){const p=dec(),h=hz(),e=SE.get(),c=cor(p);
+ let g=RC(0,0,340,260,'#fff','rx="10"')+RC(10,8,320,100,PAPEL,'rx="6"');
+ const esp=SM.get()*12,xa=170-esp/2,xb=170+esp/2;   // 12 px por mm (ampliado)
+ g+=`<path d="M ${xa-14} 98 Q ${xa} 58 ${xa+10} 18" stroke="${TERRA_E}" stroke-width="2" fill="none"/><path d="M ${xb-14} 98 Q ${xb} 58 ${xb+10} 18" stroke="${TERRA_E}" stroke-width="2" fill="none"/>`;
+ g+=LN(xa,58,xb,58,ORANGE,2)+TX(170,52,vg(SM.get())+' mm',{fs:11,c:ORANGE})+TX(20,24,'no mapa (ampliado)',{fs:10,a:'start'});
+ // terreno de lado
+ const k=Math.min(240/h,120/e),w=h*k,y=e*k,x0=50,y0=240;
+ g+=PG([[x0,y0],[x0+w,y0],[x0+w,y0-y]],c,'opacity="0.55"')+LN(x0,y0,x0+w,y0-y,c,4);
+ g+=TX(x0+w/2,y0+14,r1(h)+' m',{fs:10})+TX(x0+w+6,y0-y/2,e+' m',{fs:10,a:'start'});
+ g+=TX(320,130,p<=30?'até 30%':p<=100?'30% a 100%':'acima de 100%',{fs:12,a:'end',c:c,w:700});
+ $('fig').innerHTML=SVG(340,260,g);
+ $('k1').textContent=r2(h)+' m';$('k2').textContent=r1(Math.atan(p/100)*DEG)+'°';$('k3').textContent=r1(p)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

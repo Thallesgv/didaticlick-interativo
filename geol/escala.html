@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Régua de escala · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Régua de escala</h1></header>
+<main>
+<div class="card"><h2>Escala, régua e distância real</h2><p class="muted" style="margin-top:0">Mude o denominador da escala e a medida na régua (arraste ou use − e +). O mapa da Rua do Mirante se aproxima ou se afasta, e a escala gráfica muda junto. Na tela, cada centímetro do mapa aparece com 20 pixels.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Escala 1 :</b><input type="range"><span></span></div><div class="sl" id="sm"><b>Medida na régua</b><input type="range"><span></span></div><div class="kpi"><div>1 cm no mapa vale<b id="k1"></b></div><div>Distância real da régua<b id="k2"></b></div><div class="o">Rua do Mirante no mapa<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SN=SL('sn',500,25000,500,10000,()=>draw(),v=>'1 : '+v.toLocaleString('pt-BR')),SM=SL('sm',0.5,15,0.1,3,()=>draw(),v=>vg(v)+' cm');
+const vale=()=>SN.get()/100,real=()=>SM.get()*vale(),rua=()=>50/vale();
+MIS.def(()=>[
+ ['Em <b>1 : 2 000</b>, ponha na régua o comprimento da <b>Rua do Mirante</b> (50 m).',()=>SN.get()==2000&&Math.abs(SM.get()-2.5)<0.01,'2,5 cm × 2 000 = 5 000 cm = 50 m.',()=>SN.get()!=2000?'Primeiro deixe a escala em 1 : 2 000.':'A régua mede '+vg(SM.get())+' cm = '+r1(real())+' m. Faltam '+r1(50-real())+' m.'],
+ ['Ache a escala em que a Rua do Mirante aparece com só <b>0,5 cm</b>, como no mapa velho.',()=>Math.abs(rua()-0.5)<0.001,'1 : 10 000: 50 m = 5 000 cm; 5 000 ÷ 10 000 = 0,5 cm.',()=>'Agora a rua tem '+r2(rua())+' cm no mapa. '+(rua()>0.5?'Aumente o denominador.':'Diminua o denominador.')],
+ ['Ache uma escala em que <b>1 cm vale 250 m</b>.',()=>vale()==250,'1 : 25 000, a escala das cartas de suscetibilidade do DRM.',()=>'Agora 1 cm vale '+fmt(vale())+' m.']]);
+function draw(){const N=SN.get(),px=20,pm=px/vale();   // pixels por metro
+ let g=RC(0,0,340,240,PAPEL,'rx="10"');
+ const cx=170,cy=95;
+ // quadras e casas em volta da rua (em metros, centradas na padaria)
+ const quad=[[-70,-40,40,30],[-20,-40,60,30],[50,-40,40,30],[-70,15,60,35],[0,15,40,35],[50,15,50,35]];
+ quad.forEach(q=>{g+=RC(cx+q[0]*pm,cy+q[1]*pm,q[2]*pm,q[3]*pm,'#EDE4D3','');});
+ g+=RC(cx-25*pm,cy-8*pm,50*pm,16*pm,'#D1D5DB','')+TX(cx,cy+Math.min(8*pm,40)+12,'Rua do Mirante',{fs:10});
+ g+=RC(cx+25*pm,cy-22*pm,12*pm,12*pm,ORANGE,'');
+ if(pm>0.8)g+=TX(cx+31*pm,cy-24*pm-4,'padaria',{fs:9,c:ORANGE});
+ // régua (laranja) e escala gráfica
+ const L=SM.get()*px,x0=20;g+=RC(x0,170,Math.min(L,300),10,ORANGE,'rx="3"')+TX(x0,165,'régua: '+vg(SM.get())+' cm = '+fmt(Math.round(real()*10)/10)+' m',{fs:10,a:'start',c:ORANGE});
+ const passos=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,5000],alvo=60/pm;let st=passos.find(s=>s>=alvo)||5000;
+ for(let i=0;i<4;i++)g+=RC(x0+i*st*pm,205,st*pm,8,i%2?'#fff':NAVY,'stroke="'+NAVY+'"');
+ for(let i=0;i<=4;i++)g+=TX(x0+i*st*pm,228,fmt(i*st)+(i==4?' m':''),{fs:9});
+ g+=TX(330,20,'1 : '+N.toLocaleString('pt-BR'),{fs:13,a:'end',c:NAVY});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(vale())+' m';$('k2').textContent=fmt(Math.round(real()*10)/10)+' m';$('k3').textContent=fmt(Math.round(rua()*100)/100)+' cm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
