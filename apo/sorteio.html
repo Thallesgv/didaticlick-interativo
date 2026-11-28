@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O sorteio sem fim · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O sorteio sem fim</h1></header>
+<main>
+<div class="card"><h2>Seu jogo contra milhares de sorteios</h2><p class="muted" style="margin-top:0">Toque em 6 números do volante (toque de novo para desmarcar). Depois sorteie muitas vezes: o simulador conta quantas vezes você faria a quadra, a quina e a sena.</p>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="b1">1 000 sorteios</button><button id="b2">10 000</button><button id="b3">100 000</button><button class="alt" id="b0">Zerar</button></div>
+<div class="kpi"><div>Sorteios<b id="k1"></b></div><div>Quadras<b id="k2"></b></div><div>Quinas<b id="k3"></b></div><div class="o">Senas<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Marque e sorteie.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);};
+const VERDE_L='#1F7A4D',VERDE_C='#E9F5EE';
+const sg=v=>(v<0?'−':'')+R$(Math.abs(v));
+const M=new Set();let N=0,Q=[0,0,0,0,0,0,0],ult=[];
+const cw=33,ch=30,x0=5,y0=5;
+toque('fig',(x,y,ini)=>{if(!ini)return;const c=Math.floor((x-x0)/cw),r=Math.floor((y-y0)/ch);if(c<0||c>9||r<0||r>5)return;const n=r*10+c+1;if(M.has(n))M.delete(n);else if(M.size<6)M.add(n);N=0;Q.fill(0);draw();});
+function sortear(t){if(M.size<6)return;for(let i=0;i<t;i++){const s=new Set();while(s.size<6)s.add(1+Math.floor(Math.random()*60));let a=0;M.forEach(x=>{if(s.has(x))a++;});Q[a]++;if(i==t-1)ult=[...s];}N+=t;draw();}
+$('b1').onclick=()=>sortear(1000);$('b2').onclick=()=>sortear(10000);$('b3').onclick=()=>sortear(100000);$('b0').onclick=()=>{N=0;Q.fill(0);ult=[];draw();};
+MIS.def(()=>[
+ ['Marque <b>6 números</b> no volante.',()=>M.size==6,'Jogo marcado: '+'um dos 50 063 860 possíveis.',()=>'Marcados: '+M.size+' de 6.'],
+ ['Faça pelo menos <b>10 000 sorteios</b> e conte as quadras.',()=>M.size==6&&N>=10000,()=>Q[4]+' quadras em '+fmt(N)+' sorteios. A conta diz uma a cada 2 332: cerca de '+r1(N/2332)+'.',()=>M.size<6?'Marque 6 números.':'Agora são '+fmt(N)+' sorteios.'],
+ ['Junte pelo menos <b>300 000 sorteios</b>. Saiu alguma quina?',()=>M.size==6&&N>=300000,()=>Q[5]+' quina(s) e '+Q[6]+' sena(s) em '+fmt(N)+' sorteios. Esperado: '+r1(N/154518)+' quinas e '+(N/50063860).toFixed(3).replace('.',',')+' senas. Se houvesse 2 sorteios por semana, '+fmt(N)+' sorteios levariam '+fmt(Math.round(N/104))+' anos.',()=>'Agora são '+fmt(N)+'. Continue.']]);
+function draw(){let g=RC(0,0,340,190,VERDE_C,'rx="8"');const S=new Set(ult);
+ for(let n=1;n<=60;n++){const c=(n-1)%10,r=Math.floor((n-1)/10),x=x0+c*cw,y=y0+r*ch,m=M.has(n),s=S.has(n);
+  g+=RC(x+2,y+2,cw-4,ch-4,m?ORANGE:'#fff','rx="4" stroke="'+(s?VERDE_L:GRAYL)+'" stroke-width="'+(s?2.5:1)+'"')+TX(x+cw/2,y+ch/2+4,String(n).padStart(2,'0'),{fs:10,c:m?'#fff':VERDE_L});}
+ g+=TX(170,186,ult.length?'borda verde: último sorteio ('+[...ult].sort((a,b)=>a-b).join(', ')+')':'toque para marcar 6 números',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,192,g);$('k1').textContent=fmt(N);$('k2').textContent=fmt(Q[4]);$('k3').textContent=fmt(Q[5]);$('k4').textContent=fmt(Q[6]);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O volante grande · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O volante grande</h1></header>
+<main>
+<div class="card"><h2>Marcar mais números</h2><p class="muted" style="margin-top:0">Escolha quantos números marcar na Mega-Sena (arrastando ou com − e +). Cada volante de k números contém todos os jogos de 6 que se formam com eles, a R$ 6 cada.</p>
+<div class="sl" id="sk"><b>Números marcados</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Jogos no volante<b id="k1"></b></div><div>Preço<b id="k2"></b></div><div>Chance da sena<b id="k3"></b></div><div class="o">Preço ÷ chance<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Quanto custa a chance?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);};
+const VERDE_L='#1F7A4D',VERDE_C='#E9F5EE';
+const sg=v=>(v<0?'−':'')+R$(Math.abs(v));
+const SK=SL('sk',6,20,1,6,()=>{vis.add(SK.get());draw();},v=>v);const vis=new Set([6]);const TOT=50063860;
+MIS.def(()=>[
+ ['Ache o <b>menor volante</b> com chance da sena melhor que <b>1 em 100 000</b>.',()=>SK.get()==12,'12 números: 924 jogos, 1 em 54 182, por R$ 5.544. Com 11, ainda era 1 em 108 363.',()=>{const k=SK.get(),n=TOT/C2(k,6);return n>100000?'Com '+k+', ainda é 1 em '+fmt(Math.round(n))+'. Aumente.':'Passou, mas é o menor? Diminua e confira.';}],
+ ['Veja o volante de <b>20 números</b>.',()=>SK.get()==20,'38 760 jogos por R$ 232.560, e a chance ainda é de 1 em 1 292.',()=>'Leve até 20.'],
+ ['Passe por pelo menos <b>5 volantes diferentes</b> e repare na última caixinha.',()=>vis.size>=5,'Preço ÷ chance dá sempre R$ 300.383.160: o preço de "uma sena inteira" de chance. Não há desconto.',()=>'Volantes vistos: '+vis.size+' de 5.']]);
+function draw(){const k=SK.get(),j=C2(k,6);let g=RC(0,0,340,180,'#F8FAFC','rx="10"');
+ const x0=30,y0=150,gw=300,gh=120,lm=Math.log10(38760);
+ for(let q=6;q<=20;q++){const jj=C2(q,6),h=Math.max(2,gh*Math.log10(jj)/lm),x=x0+(q-6)*gw/15;g+=RC(x+2,y0-h,gw/15-4,h,q==k?ORANGE:AZC,'rx="2"')+TX(x+gw/30,y0+12,q,{fs:8,c:q==k?ORANGE:NAVY});}
+ g+=TX(170,20,fmt(j)+' jogos · R$ '+fmt(j*6),{fs:13,c:ORANGE});g+=TX(170,172,'jogos por volante (escala dos expoentes de 10)',{fs:8,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,180,g);$('k1').textContent=fmt(j);$('k2').textContent=R$(j*6);$('k3').textContent='1 em '+fmt(Math.round(TOT/j));$('k4').textContent=R$(6*TOT,0);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
