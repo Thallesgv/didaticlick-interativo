@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua de cálculo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A régua de cálculo</h1></header>
+<main>
+<div class="card"><h2>Somar comprimentos é multiplicar</h2><p class="muted" style="margin-top:0">Na régua, cada número fica a uma distância do 1 igual ao seu logaritmo. Deslize a régua de baixo até o 1 dela ficar sob o primeiro número (a) e escolha o segundo número (b) na régua de baixo: o produto aparece na régua de cima, porque log a + log b = log (a × b).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>a (onde fica o 1 da régua de baixo)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>b (na régua de baixo)</b><input type="range"><span></span></div>
+<div class="kpi"><div>log a + log b<b id="kl"></b></div><div class="o">a × b<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Deslize a régua.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const A=SL('sa',1,10,0.1,1,()=>draw(),v=>fmt(r1(v))),B=SL('sb',1,10,0.1,2,()=>draw(),v=>fmt(r1(v)));
+const a=()=>r1(A.get()),b=()=>r1(B.get()),pr=()=>Math.round(a()*b()*100)/100;
+const x0=16,D=150,X=v=>x0+Math.log10(v)*D;
+MIS.def(()=>[
+ ['Multiplique <b>2 × 4</b> com a régua.',()=>a()==2&&b()==4,'O 4 da régua de baixo fica sob o 8 da de cima: log 2 + log 4 = 0,301 + 0,602 = 0,903 = log 8.',()=>'Agora: '+fmt(a())+' × '+fmt(b())+'. a = 2 e b = 4.'],
+ ['Divida <b>12 por 3</b>: ponha o 3 da régua de baixo sob o 12 da de cima. Onde fica o 1 de baixo?',()=>a()==4&&b()==3,'O 1 fica sob o 4: 12 ÷ 3 = 4. Dividir é subtrair comprimentos: log 12 − log 3 = log 4.',()=>b()!=3?'Primeiro ponha b = 3.':'O produto agora é '+fmt(pr())+'. Mova a até ele dar 12.'],
+ ['Ache a <b>raiz quadrada de 49</b>: um número que, vezes ele mesmo, dá 49.',()=>a()==b()&&Math.abs(pr()-49)<0.01,'7 × 7 = 49: log 7 + log 7 = 2 · log 7 = log 49. A raiz quadrada divide o logaritmo por 2.',()=>a()!=b()?'Use a e b iguais.':fmt(a())+' × '+fmt(a())+' = '+fmt(pr())+'.'],
+ ['Ache dois números <b>diferentes</b> cujo produto seja <b>36</b>.',()=>a()!=b()&&Math.abs(pr()-36)<0.01,'Muitos pares servem: 4 × 9, 9 × 4, 4,5 × 8... Na régua, todos têm a mesma soma de comprimentos: log 36 ≈ 1,556.',()=>a()==b()?'Os números precisam ser diferentes.':'Agora o produto é '+fmt(pr())+'.']]);
+function draw(){let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ g+=RC(x0-8,30,2*D+16,40,'#FFF7EC','stroke="#7E4E2E" stroke-width="1" rx="4"');
+ for(let d=0;d<2;d++)for(let k=1;k<10;k++){const v=k*Math.pow(10,d);for(let j=0;j<10;j++){const w=v+j*Math.pow(10,d)/10*1;if(w>100)break;const big=j==0;g+=LN(X(w),30,X(w),30+(big?14:6),NAVY,big?1.2:0.6);}if(v<10||[10,20,30,50].includes(v))g+=TX(X(v),58,fmt(v),{fs:v>=10?8:9,c:NAVY});}
+ g+=LN(X(100),30,X(100),44,NAVY,1.2)+TX(X(100)-6,58,'100',{fs:8,c:NAVY});
+ const off=X(a())-x0;g+=RC(x0-8+off,78,D+16,40,'#EAF2FF','stroke="#2457D6" stroke-width="1" rx="4"');
+ for(let k=1;k<=10;k++){g+=LN(X(k)+off,118,X(k)+off,104,BLUE,1.2)+TX(X(k)+off,98,k,{fs:9,c:BLUE});for(let j=1;j<10&&k<10;j++){const w=k+j/10;g+=LN(X(w)+off,118,X(w)+off,112,BLUE,0.6);}}
+ g+=LN(X(a()),22,X(a()),126,GRAY,1,'3 3');const xp=X(a())+Math.log10(b())*D;
+ if(pr()<=100)g+=LN(xp,22,xp,126,ORANGE,2.5)+TX(xp,16,fmt(pr()),{fs:12,c:ORANGE});else g+=TX(300,16,'passou de 100',{fs:11,c:ORANGE});
+ g+=LN(x0,150,X(a()),150,GRAY,3)+TX((x0+X(a()))/2,166,'log a',{fs:9,c:GRAY});
+ g+=LN(X(a()),150,Math.min(xp,X(100)),150,BLUE,3)+TX((X(a())+Math.min(xp,X(100)))/2,166,'log b',{fs:9,c:BLUE});
+ g+=TX(170,190,'cinza + azul = comprimento do produto',{fs:10,c:NAVY,w:500});
+ $('fig').innerHTML=SVG(340,200,g);$('kl').textContent=Math.log10(a()).toFixed(3).replace('.',',')+' + '+Math.log10(b()).toFixed(3).replace('.',',')+' = '+Math.log10(a()*b()).toFixed(3).replace('.',',');$('kp').textContent=fmt(pr());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
