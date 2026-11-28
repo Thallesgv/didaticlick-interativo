@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A bússola · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A bússola</h1></header>
+<main>
+<div class="card"><h2>Norte magnético, norte verdadeiro</h2><p class="muted" style="margin-top:0">Mude o azimute que a agulha lê e a declinação do lugar (arraste ou use − e +; declinação negativa = para oeste). Vermelho: norte magnético. Azul: norte verdadeiro. Laranja: a direção medida.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Leitura da bússola</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Declinação</b><input type="range"><span></span></div><div class="kpi"><div>Azimute magnético<b id="k1"></b></div><div>Azimute verdadeiro<b id="k2"></b></div><div class="o">Rumo verdadeiro<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SLe=SL('sl',0,359,1,100,()=>draw(),v=>v+'°'),SDc=SL('sd',-30,30,1,0,()=>draw(),v=>v==0?'0°':Math.abs(v)+'° '+(v<0?'O':'L'));
+const ver=()=>((SLe.get()+SDc.get())%360+360)%360;
+const rumo=a=>a==0?'N':a==90?'L':a==180?'S':a==270?'O':a<90?'N'+a+'°L':a<180?'S'+(180-a)+'°L':a<270?'S'+(a-180)+'°O':'N'+(360-a)+'°O';
+MIS.def(()=>[
+ ['Corrija a leitura da Sílvia: a bússola lê <b>142°</b> e a declinação é <b>22° O</b>.',()=>SLe.get()==142&&SDc.get()==-22,'142° − 22° = 120°: a direção verdadeira da camada.',()=>SLe.get()!=142?'Deixe a leitura em 142°.':'Agora a declinação: 22° para oeste (−22).'],
+ ['Com a declinação de Pedra Alta, ache a leitura que dá o sentido do mergulho, <b>210°</b> verdadeiro.',()=>SDc.get()==-22&&ver()==210,'A bússola mostra 232°: 232° − 22° = 210°.',()=>SDc.get()!=-22?'Deixe a declinação em 22° O.':'Verdadeiro agora: '+ver()+'°.'],
+ ['Ache a direção verdadeira de rumo <b>N60°O</b>.',()=>ver()==300,'Azimute 300°: 360° − 60°.',()=>'Rumo agora: '+rumo(ver())+'.']]);
+function draw(){const cx=170,cy=125,r=95,dec=SDc.get(),L=SLe.get(),V=ver();
+ const pt=(az,k)=>[cx+r*k*Math.sin(az*RAD),cy-r*k*Math.cos(az*RAD)];
+ let g=RC(0,0,340,250,CEU,'rx="10"')+CIR(cx,cy,r,'#fff','stroke="'+NAVY+'" stroke-width="2"');
+ for(let a=0;a<360;a+=10){const k=a%30?0.9:0.82;g+=LN(...pt(a,k),...pt(a,1),NAVY,1);}
+ [['N',0],['L',90],['S',180],['O',270]].forEach(([s,a])=>g+=TX(...pt(a,0.7),s,{fs:13}));
+ g+=LN(cx,cy,...pt(0,1.12),BLUE,3)+TX(...pt(0,1.22),'N verdadeiro',{fs:10,c:BLUE});
+ g+=LN(cx,cy,...pt(-dec,1.0),VERM,3)+TX(...pt(-dec,0.5).map((v,i)=>v+(i?0:-24)),'N mag.',{fs:10,c:VERM});
+ g+=LN(cx,cy,...pt(V,0.95),ORANGE,4)+CIR(...pt(V,0.95),5,ORANGE)+CIR(cx,cy,5,NAVY);
+ g+=TX(330,238,'lida '+L+'° · verdadeira '+V+'°',{fs:11,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(340,250,g);
+ $('k1').textContent=L+'°';$('k2').textContent=V+'°';$('k3').textContent=rumo(V);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mergulho aparente · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Mergulho aparente</h1></header>
+<main>
+<div class="card"><h2>O corte e o mergulho que ele mostra</h2><p class="muted" style="margin-top:0">Mude o mergulho real da camada e o ângulo β entre o corte e o sentido do mergulho (arraste ou use − e +). À esquerda, a face do corte com as camadas no mergulho aparente. À direita, vista de cima: o corte (cinza) e o sentido do mergulho (laranja).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Mergulho real</b><input type="range"><span></span></div><div class="sl" id="sb"><b>Ângulo β</b><input type="range"><span></span></div><div class="kpi"><div>tg(real) × cos β<b id="k1"></b></div><div>cos β<b id="k2"></b></div><div class="o">Mergulho aparente<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SD=SL('sd',0,89,1,45,()=>draw(),v=>v+'°'),SB=SL('sb',0,90,1,30,()=>draw(),v=>v+'°');
+const ap=()=>Math.atan(Math.tan(SD.get()*RAD)*Math.cos(SB.get()*RAD))*DEG;
+MIS.def(()=>[
+ ['Reproduza o <b>barranco da Rua da Bica</b>: camada de <b>30°</b> e corte paralelo à direção.',()=>SD.get()==30&&SB.get()==90,'β = 90°: cos 90° = 0, e a camada parece deitada. Ninguém desconfiava.',()=>SD.get()!=30?'Primeiro deixe o mergulho real em 30°.':'β está em '+SB.get()+'°. O corte paralelo à direção faz 90° com o mergulho.'],
+ ['Com a mesma camada, ache o corte que mostra os <b>30° verdadeiros</b>.',()=>SD.get()==30&&SB.get()==0,'β = 0°: o corte está no sentido do mergulho.',()=>SD.get()!=30?'Volte o mergulho para 30°.':'Aparente agora: '+r1(ap())+'°.'],
+ ['Ainda com 30°, ache o β que dá um mergulho aparente de <b>16°</b> (entre 15,5° e 16,5°).',()=>SD.get()==30&&ap()>=15.5&&ap()<=16.5,()=>'β = '+SB.get()+'°: tg = 0,577 × '+r2(Math.cos(SB.get()*RAD))+'.',()=>SD.get()!=30?'Volte o mergulho para 30°.':'Aparente agora: '+r1(ap())+'°. '+(ap()>16.5?'Aumente β.':'Diminua β.')]]);
+function draw(){const a=ap();
+ let g=RC(0,0,340,240,'#fff','rx="10"');
+ // face do corte
+ g+=RC(14,30,190,190,'#F1E6D6','stroke="'+TERRA_E+'"');
+ const t=Math.tan(a*RAD);g+=`<clipPath id="cc"><rect x="14" y="30" width="190" height="190"/></clipPath><g clip-path="url(#cc)">`;
+ for(let k=-8;k<=8;k++){const y0=125+k*24;g+=LN(14,y0,204,y0-190*t*-1,BANDA,3);}
+ g+='</g>'+TX(109,20,'face do corte: '+r1(a)+'°',{fs:12,c:ORANGE});
+ // vista de cima
+ const cx=272,cy=125,r=52;g+=CIR(cx,cy,r,PAPEL,'stroke="'+NAVY+'"')+TX(cx,cy-r-6,'de cima',{fs:10});
+ const b=SB.get()*RAD;g+=LN(cx-r*Math.cos(b),cy-r*Math.sin(b),cx+r*Math.cos(b),cy+r*Math.sin(b),'#6B7280',5);
+ g+=LN(cx,cy,cx+r*0.9,cy,ORANGE,3)+CIR(cx+r*0.9,cy,4,ORANGE)+TX(cx,cy+r+16,'β = '+SB.get()+'°',{fs:11});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r2(Math.tan(SD.get()*RAD)*Math.cos(b));$('k2').textContent=r2(Math.cos(b));$('k3').textContent=r1(a)+'°';MIS.ver('m');}
+const BANDA='#8E8579';
+draw();
+})();
+</script>
+</body>
+</html>

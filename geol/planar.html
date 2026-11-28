@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O teste do tobogã · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O teste do tobogã</h1></header>
+<main>
+<div class="card"><h2>Deslizamento planar: as três condições</h2><p class="muted" style="margin-top:0">Mude a encosta, a camada e o ângulo de atrito (arraste ou use − e +). O corte mostra a encosta no sentido em que ela desce, com as camadas no mergulho que aparece nesse corte. As três luzes mostram as condições.</p>
+<div class="fig" id="fig"></div><div id="luz" style="display:grid;gap:6px;margin:10px 0"></div><div class="sl" id="se"><b>Encosta: inclinação</b><input type="range"><span></span></div><div class="sl" id="sea"><b>Encosta: desce para</b><input type="range"><span></span></div><div class="sl" id="sc"><b>Camada: mergulho</b><input type="range"><span></span></div><div class="sl" id="sca"><b>Camada: desce para</b><input type="range"><span></span></div><div class="sl" id="sf"><b>Atrito φ</b><input type="range"><span></span></div><div class="kpi"><div>Diferença de sentidos<b id="k1"></b></div><div>Mergulho no corte<b id="k2"></b></div><div class="o">Deslizamento planar<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function luzes(L){$('luz').innerHTML=L.map(([t,ok])=>`<div style="display:flex;gap:8px;align-items:center;font-size:14px"><span style="width:14px;height:14px;border-radius:50%;background:${ok?VERDE:VERM};flex:none"></span>${t}</div>`).join('');}
+const dif=(a,b)=>{let d=Math.abs(a-b)%360;return d>180?360-d:d;};
+const SE=SL('se',20,80,0.1,35,()=>draw(),v=>vg(v)+'°'),SEA=SL('sea',0,355,5,210,()=>draw(),v=>v+'°'),SC=SL('sc',0,80,1,45,()=>draw(),v=>v+'°'),SCA=SL('sca',0,355,5,120,()=>draw(),v=>v+'°'),SF=SL('sf',10,45,1,30,()=>draw(),v=>v+'°');
+const c1=()=>dif(SEA.get(),SCA.get())<=20,c2=()=>SC.get()<SE.get(),c3=()=>SC.get()>SF.get(),ok=()=>c1()&&c2()&&c3();
+MIS.def(()=>[
+ ['Monte o <b>setor A</b>: encosta de <b>47,7°</b> para <b>210°</b>, camada <b>210/30</b>, φ = <b>25°</b>.',()=>Math.abs(SE.get()-47.7)<0.05&&SEA.get()==210&&SC.get()==30&&SCA.get()==210&&SF.get()==25,'As três luzes verdes: deslizamento planar possível.',()=>Math.abs(SE.get()-47.7)>=0.05?'A encosta precisa de 47,7°.':SEA.get()!=210?'A encosta desce para 210°.':SC.get()!=30?'A camada mergulha 30°.':SCA.get()!=210?'A camada desce para 210°.':'Falta o atrito: 25°.'],
+ ['Volte ao setor A e salve a encosta mudando <b>só o sentido da camada</b>.',()=>Math.abs(SE.get()-47.7)<0.05&&SEA.get()==210&&SC.get()==30&&SF.get()==25&&!c1(),()=>'Com a camada descendo para '+SCA.get()+'°, a diferença passa de 20° e o tobogã não aponta para a rua.',()=>!(Math.abs(SE.get()-47.7)<0.05&&SEA.get()==210&&SC.get()==30&&SF.get()==25)?'Mantenha encosta 47,7° para 210°, camada de 30° e φ = 25°.':'Diferença agora: '+dif(SEA.get(),SCA.get())+'°.'],
+ ['Com a camada de <b>30°</b>, ache a inclinação de encosta em que ela <b>para de aflorar</b> (a maior possível).',()=>SC.get()==30&&Math.abs(SE.get()-30)<0.05,'30°: a camada fica paralela à encosta. Abaixo disso, ela mergulha mais que o terreno e fica presa.',()=>SC.get()!=30?'Deixe a camada em 30°.':(SE.get()>30?'A camada ainda aflora: diminua a encosta.':'Passou: a encosta está menor que 30°.')]]);
+function draw(){const e=SE.get(),dd=dif(SEA.get(),SCA.get()),apar=Math.atan(Math.tan(SC.get()*RAD)*Math.cos(dd*RAD))*DEG;
+ const x0=40,y0=210,te=Math.tan(e*RAD),W=Math.min(230,170/te);
+ let g=RC(0,0,340,240,CEU,'rx="10"');
+ const top=[x0+W,y0-W*te];
+ g+=`<clipPath id="cp"><polygon points="${x0},${y0} ${top[0]},${top[1]} 340,${top[1]} 340,240 0,240 0,${y0}"/></clipPath>`;
+ g+=`<g clip-path="url(#cp)">`+RC(0,0,340,240,'#C9C3B8','');
+ const ta=Math.tan(apar*RAD);for(let k=-12;k<=12;k++){const yy=y0+k*20;g+=LN(0,yy+x0*ta,340,yy-(340-x0)*ta,'#8E8579',2);}
+ g+='</g>'+LN(x0,y0,...top,TERRA_E,4)+LN(...top,340,top[1],TERRA_E,4)+LN(0,y0,x0,y0,TERRA_E,4)+TX(14,y0-6,'rua',{fs:10,a:'start'});
+ if(ok())g+=`<path d="M ${top[0]-20} ${top[1]+40} l -40 ${40*ta}" stroke="${VERM}" stroke-width="3"/>`+TX(top[0]-70,top[1]+30,'pode escorregar',{fs:11,c:VERM});
+ $('fig').innerHTML=SVG(340,240,g);
+ luzes([['1. Mesmo sentido (diferença '+dd+'° ≤ 20°)',c1()],['2. A camada aflora ('+SC.get()+'° < '+vg(e)+'°)',c2()],['3. Vence o atrito ('+SC.get()+'° > '+SF.get()+'°)',c3()]]);
+ $('k1').textContent=dd+'°';$('k2').textContent=dd>90?'para dentro':r1(apar)+'°';$('k3').textContent=ok()?'possível':'não';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
