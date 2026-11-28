@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clinômetro e trena · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Clinômetro e trena</h1></header>
+<main>
+<div class="card"><h2>O comprimento inclinado e as suas duas partes</h2><p class="muted" style="margin-top:0">Escolha o ângulo da encosta e o comprimento medido ao longo dela com a trena (arraste ou use − e +). O simulador separa o comprimento em horizontal (cosseno) e desnível (seno). No canto, o clinômetro com o prumo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo da encosta</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Comprimento na encosta</b><input type="range"><span></span></div><div class="kpi"><div>Horizontal (L·cos)<b id="k1"></b></div><div>Desnível (L·sen)<b id="k2"></b></div><div class="o">Declividade<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',5,80,1,30,()=>draw(),v=>v+'°'),SLL=SL('sl',1,100,0.1,50,()=>draw(),v=>vg(v)+' m');
+const H=()=>SLL.get()*Math.cos(SA.get()*RAD),D=()=>SLL.get()*Math.sin(SA.get()*RAD);
+MIS.def(()=>[
+ ['Reproduza a medida do Davi: <b>35°</b> e <b>73,2 m</b> na encosta.',()=>SA.get()==35&&Math.abs(SLL.get()-73.2)<0.05,'Horizontal ≈ 60 m e desnível ≈ 42 m: o mapa velho estava certo nessa parte.',()=>SA.get()!=35?'O ângulo ainda não está em 35°.':'O ângulo está certo; falta o comprimento: agora '+vg(SLL.get())+' m.'],
+ ['A <b>45°</b>, ache o comprimento que dá <b>42 m de desnível</b> (entre 41,7 e 42,3 m).',()=>SA.get()==45&&D()>=41.7&&D()<=42.3,()=>'L ≈ '+vg(SLL.get())+' m: 42 ÷ sen 45° ≈ 59,4 m.',()=>SA.get()!=45?'Primeiro deixe o ângulo em 45°.':'Desnível agora: '+r1(D())+' m. '+(D()<41.7?'Aumente L.':'Diminua L.')],
+ ['Descubra o ângulo em que a <b>horizontal fica igual ao desnível</b> (diferença menor que 0,5 m, com L de pelo menos 20 m).',()=>SLL.get()>=20&&Math.abs(H()-D())<0.5,'45°: seno e cosseno ficam iguais (0,707).',()=>SLL.get()<20?'Use um comprimento de pelo menos 20 m.':'Horizontal '+r1(H())+' m e desnível '+r1(D())+' m. '+(H()>D()?'Aumente o ângulo.':'Diminua o ângulo.')]]);
+function draw(){const a=SA.get(),L=SLL.get(),h=H(),d=D(),k=Math.min(220/Math.max(h,1),170/Math.max(d,1),4),x0=20,y0=205,w=h*k,y=d*k;
+ let g=RC(0,0,340,240,CEU,'rx="10"')+PG([[x0,y0],[x0+w,y0],[x0+w,y0-y]],TERRA,'')+LN(x0,y0,x0+w,y0-y,ORANGE,4);
+ g+=LN(x0,y0+10,x0+w,y0+10,NAVY,2)+LN(x0+w+8,y0,x0+w+8,y0-y,BLUE,2);
+ g+=TX(x0+w/2,y0+24,'horizontal '+r1(h)+' m',{fs:10})+TX(Math.min(x0+w+12,262),Math.max(y0-y/2,20),r1(d)+' m',{fs:10,c:BLUE,a:'start'});
+ g+=TX(x0+w/2-10,y0-y/2-8,'L = '+vg(L)+' m',{fs:10,c:ORANGE,a:'end'});
+ // clinômetro
+ const cx=290,cy=40,r=36;g+=`<path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 0 ${cx+r} ${cy} Z" fill="#C9CED6"/>`+RC(cx-r,cy-3,2*r,5,NAVY,'');
+ for(let t=0;t<=180;t+=10){const q=t*RAD,k2=t%30?0.8:0.68;g+=LN(cx+r*k2*Math.cos(q),cy+r*k2*Math.sin(q),cx+r*0.95*Math.cos(q),cy+r*0.95*Math.sin(q),GRAY,0.8);}
+ const q=(90-a)*RAD;g+=LN(cx,cy,cx+r*0.9*Math.cos(q),cy+r*0.9*Math.sin(q),ORANGE,2)+CIR(cx+r*0.9*Math.cos(q),cy+r*0.9*Math.sin(q),3,ORANGE)+TX(cx,cy+r+12,a+'°',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(h)+' m';$('k2').textContent=r1(d)+' m';$('k3').textContent=r1(d/h*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dois ângulos, uma altura · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Dois ângulos, uma altura</h1></header>
+<main>
+<div class="card"><h2>Medir o topo sem subir</h2><p class="muted" style="margin-top:0">De P1 (longe) o topo aparece com o ângulo a; de P2 (perto), com o ângulo b. Mude os dois ângulos e a distância entre os pontos (arraste ou use − e +). As visadas se cruzam no topo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo a (de P1, longe)</b><input type="range"><span></span></div><div class="sl" id="sb"><b>Ângulo b (de P2, perto)</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Distância P1–P2</b><input type="range"><span></span></div><div class="kpi"><div>Altura h<b id="k1"></b></div><div>Distância de P2 ao topo<b id="k2"></b></div><div class="o">tg b − tg a<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',5,80,1,30,()=>draw(),v=>v+'°'),SB=SL('sb',5,85,1,40,()=>draw(),v=>v+'°'),SD=SL('sd',1,60,1,20,()=>draw(),v=>v+' m');
+const ta=()=>Math.tan(SA.get()*RAD),tb=()=>Math.tan(SB.get()*RAD),ok=()=>SB.get()>SA.get();
+const X=()=>SD.get()*ta()/(tb()-ta()),Hh=()=>X()*tb();
+MIS.def(()=>[
+ ['Reproduza a medida do Davi: <b>a = 35°</b>, <b>b = 45°</b>, <b>18 m</b>.',()=>SA.get()==35&&SB.get()==45&&SD.get()==18,'h = 42 m e x = 42 m: bate com o desnível medido de manhã.',()=>SA.get()!=35?'Falta o ângulo a (35°).':SB.get()!=45?'Falta o ângulo b (45°).':'Falta a distância: 18 m.'],
+ ['Deixe os <b>dois ângulos iguais</b>. O que acontece?',()=>SA.get()==SB.get(),'As visadas ficam paralelas e não se cruzam: tg b − tg a = 0 e a conta não existe.',()=>'a = '+SA.get()+'° e b = '+SB.get()+'°.'],
+ ['Ache uma combinação que dê um topo de <b>30 m</b> (entre 29,5 e 30,5 m).',()=>ok()&&Hh()>=29.5&&Hh()<=30.5,()=>'h = '+r1(Hh())+' m. Há muitas combinações possíveis!',()=>!ok()?'O ângulo b (de perto) precisa ser maior que a.':'Agora h = '+r1(Hh())+' m.']]);
+function draw(){let g=RC(0,0,340,240,CEU,'rx="10"')+RC(0,205,340,35,TERRA,'');const y0=205;
+ if(!ok()){g+=TX(170,90,SA.get()==SB.get()?'Visadas paralelas: nunca se cruzam':'b precisa ser maior que a',{fs:13,c:ORANGE});
+  const x1=30,x2=30+SD.get()*3;g+=LN(x1,y0,x1+300,y0-300*ta(),ORANGE,1.5)+LN(x2,y0,x2+300,y0-300*tb(),BLUE,1.5)+CIR(x1,y0,4,NAVY)+CIR(x2,y0,4,NAVY);
+  $('fig').innerHTML=SVG(340,240,g);$('k1').textContent='—';$('k2').textContent='—';$('k3').textContent=r2(tb()-ta());MIS.ver('m');return;}
+ const x=X(),h=Hh(),tot=SD.get()+x,k=Math.min(280/tot,180/h),x1=25,x2=x1+SD.get()*k,xt=x1+tot*k,yt=y0-h*k;
+ g+=PG([[xt-40,y0],[xt,yt],[xt+25,yt+8],[xt+50,y0]],TERRA_L,'')+LN(xt,y0,xt,yt,NAVY,1,'4 4');
+ g+=LN(x1,y0,xt,yt,ORANGE,1.6)+LN(x2,y0,xt,yt,BLUE,1.6)+CIR(xt,yt,5,NAVY)+CIR(x1,y0,4,NAVY)+CIR(x2,y0,4,NAVY);
+ g+=TX(x1,y0+16,'P1',{fs:10})+TX(x2,y0+16,'P2',{fs:10})+TX((x1+x2)/2,y0+28,SD.get()+' m',{fs:10});
+ g+=TX(x1+28,y0-4,SA.get()+'°',{fs:10,c:ORANGE,a:'start'})+TX(x2+26,y0-4,SB.get()+'°',{fs:10,c:BLUE,a:'start'})+TX(xt+6,(y0+yt)/2,'h = '+r1(h)+' m',{fs:11,a:xt>270?'end':'start'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(h)+' m';$('k2').textContent=r1(x)+' m';$('k3').textContent=r2(tb()-ta());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

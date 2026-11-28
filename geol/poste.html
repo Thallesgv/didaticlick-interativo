@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O poste torto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O poste torto</h1></header>
+<main>
+<div class="card"><h2>Fio de prumo e inclinação</h2><p class="muted" style="margin-top:0">Mude a altura do poste, o comprimento do fio de prumo e o afastamento medido embaixo (arraste ou use − e +). O poste se inclina na tela com o ângulo verdadeiro, e o simulador mostra quanto o topo andou.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Altura do poste</b><input type="range"><span></span></div><div class="sl" id="sf"><b>Fio de prumo</b><input type="range"><span></span></div><div class="sl" id="sx"><b>Afastamento</b><input type="range"><span></span></div><div class="kpi"><div>Tangente<b id="k1"></b></div><div>Ângulo<b id="k2"></b></div><div class="o">Topo deslocado<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SP=SL('sp',3,15,0.5,8,()=>draw(),v=>vg(v)+' m'),SF=SL('sf',0.5,3,0.1,1.5,()=>draw(),v=>vg(v)+' m'),SX=SL('sx',0,60,0.5,5,()=>draw(),v=>vg(v)+' cm');
+const tg=()=>SX.get()/100/SF.get(),ang=()=>Math.atan(tg())*DEG;
+MIS.def(()=>[
+ ['Reproduza o poste da esquina: fio de <b>1,5 m</b> e afastamento de <b>10,5 cm</b>.',()=>Math.abs(SF.get()-1.5)<0.01&&Math.abs(SX.get()-10.5)<0.01,'tg = 0,07: uns 4°. O topo de um poste de 8 m andou 56 cm.',()=>Math.abs(SF.get()-1.5)>0.01?'O fio ainda não está em 1,5 m.':'O fio está certo; o afastamento está em '+vg(SX.get())+' cm.'],
+ ['Com o fio que quiser, deixe o poste com <b>2°</b> (entre 1,9° e 2,1°).',()=>ang()>=1.9&&ang()<=2.1,'tg 2° ≈ 0,035: metade do poste da esquina.',()=>'Ângulo agora: '+r1(ang())+'°. '+(ang()<1.9?'Aumente o afastamento.':'Diminua o afastamento.')],
+ ['Um poste de <b>12 m</b> inclinado uns <b>4°</b> (entre 3,9° e 4,1°): quanto o topo andou?',()=>SP.get()==12&&ang()>=3.9&&ang()<=4.1,()=>'O topo andou '+Math.round(12*tg()*100)+' cm: 12 × 0,07 ≈ 0,84 m.',()=>SP.get()!=12?'Primeiro deixe o poste com 12 m.':'O poste está com 12 m; o ângulo está em '+r1(ang())+'°.']]);
+function draw(){const a=ang(),H=SP.get(),k=170/15,x0=110,y0=215,hp=H*k,tx=x0+hp*Math.sin(a*RAD),ty=y0-hp*Math.cos(a*RAD);
+ let g=RC(0,0,340,240,CEU,'rx="10"')+RC(0,y0,340,25,TERRA,'');
+ g+=LN(x0,y0,x0,ty,GRAY,1,'4 4')+LN(x0,y0,tx,ty,'#9CA3AF',8)+CIR(tx,ty,4,NAVY);
+ const fp=SF.get()*k,fx=tx+6,fy=ty+4;g+=LN(fx,fy,fx,fy+fp,NAVY,1)+CIR(fx,fy+fp+4,4,NAVY);
+ g+=TX(tx+12,fy+fp/2,'fio '+vg(SF.get())+' m',{fs:10,a:'start'})+TX(tx+12,fy+fp+8,'afastamento '+vg(SX.get())+' cm',{fs:10,a:'start',c:ORANGE});
+ g+=TX(x0-6,y0-hp/2,vg(H)+' m',{fs:10,a:'end'})+TX(x0+(tx-x0)/2,ty-10,'topo andou '+Math.round(H*tg()*100)+' cm',{fs:10,c:ORANGE});
+ g+=`<path d="M 290 215 q -10 -20 -4 -40 q 4 -30 2 -60" stroke="${MAD}" stroke-width="6" fill="none" transform="rotate(${-Math.min(a*2,25)} 290 215)"/>`+CIR(288,150,18,VERDE);
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=fmt(Math.round(tg()*1000)/1000);$('k2').textContent=r1(a)+'°';$('k3').textContent=r2(H*tg())+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

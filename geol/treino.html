@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'geo1':{T:["Inclinação: ângulo e porcentagem", "A tangente da encosta", "O clinômetro e o fio de prumo", "Postes, árvores e muros tortos", "A lei dos 30%", "Altura do morro sem subir nele"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const h=R(4,40)*5,d=R(1,Math.round(h*0.6));return{q:`Uma rua sobe <b>${d} m</b> em <b>${h} m</b> de distância horizontal. Qual a declividade, em %? (uma casa)`,a:Math.round(d/h*1000)/10,tol:0.06,exp:`${d} ÷ ${h} × 100 ≈ ${fmt(Math.round(d/h*1000)/10)}%.`};}
+ if(t==1){const p=R(5,90),h=R(2,20)*5;return{q:`Um terreno tem <b>${p}%</b> de declividade e <b>${h} m</b> na horizontal. Qual o desnível, em metros?`,a:p*h/100,tol:0.01,exp:`${fmt(p/100)} × ${h} = ${fmt(p*h/100)} m.`};}
+ return P([{q:'Uma rampa de 100% tem ângulo de:',opts:['45°','90°','100°'],a:'45°',exp:'Desnível igual à horizontal.'},{q:'Uma encosta pode ter mais de 100%?',opts:['sim','não'],a:'sim',exp:'Basta passar de 45°.'},{q:'A distância usada na declividade é:',opts:['a horizontal','a medida na rampa','a altura'],a:'a horizontal',exp:'A do mapa.'}]);},
+2:()=>{const T={10:0.176,15:0.268,20:0.364,25:0.466,30:0.577,35:0.700,40:0.839,45:1,50:1.192,60:1.732};const ks=Object.keys(T);const t=R(0,2);
+ if(t==0){const a=P(ks),h=R(2,20)*5;return{q:`Uma encosta de <b>${a}°</b> tem <b>${h} m</b> na horizontal. Qual o desnível? (tg ${a}° ≈ ${fmt(T[a])}; uma casa)`,a:Math.round(h*T[a]*10)/10,tol:0.06,exp:`${h} × ${fmt(T[a])} ≈ ${fmt(Math.round(h*T[a]*10)/10)} m.`};}
+ if(t==1){const a=P(ks);return{q:`Qual a declividade de uma encosta de <b>${a}°</b>, em %? (tg ${a}° ≈ ${fmt(T[a])}; uma casa)`,a:Math.round(T[a]*1000)/10,tol:0.06,exp:`100 × ${fmt(T[a])} = ${fmt(Math.round(T[a]*1000)/10)}%.`};}
+ const o=R(3,30),ad=R(4,40);return{q:`Num triângulo retângulo, o cateto oposto mede <b>${o}</b> e o adjacente <b>${ad}</b>. Quanto vale a tangente? (duas casas)`,a:Math.round(o/ad*100)/100,tol:0.011,exp:`${o} ÷ ${ad} ≈ ${fmt(Math.round(o/ad*100)/100)}.`};},
+3:()=>{const S={20:[0.342,0.940],30:[0.5,0.866],35:[0.574,0.819],40:[0.643,0.766],45:[0.707,0.707],60:[0.866,0.5]};const a=P(Object.keys(S)),L=R(10,100),t=R(0,1);
+ if(t==0)return{q:`Uma encosta de <b>${a}°</b> tem <b>${L} m</b> medidos ao longo dela. Qual o desnível? (sen ${a}° ≈ ${fmt(S[a][0])}; uma casa)`,a:Math.round(L*S[a][0]*10)/10,tol:0.06,exp:`${L} × ${fmt(S[a][0])} ≈ ${fmt(Math.round(L*S[a][0]*10)/10)} m.`};
+ return{q:`Uma encosta de <b>${a}°</b> tem <b>${L} m</b> medidos ao longo dela. Qual a distância horizontal? (cos ${a}° ≈ ${fmt(S[a][1])}; uma casa)`,a:Math.round(L*S[a][1]*10)/10,tol:0.06,exp:`${L} × ${fmt(S[a][1])} ≈ ${fmt(Math.round(L*S[a][1]*10)/10)} m.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const f=P([1,1.5,2]),g=R(1,6);const x=Math.round(f*100*0.0175*g*10)/10;return{q:`Fio de prumo de <b>${fmt(f)} m</b>, afastado <b>${fmt(x)} cm</b> do poste. Quantos graus, aproximadamente? (tg 1° ≈ 0,0175)`,a:g,tol:0.15,exp:`tg = ${fmt(x)} ÷ ${f*100} ≈ ${fmt(Math.round(x/(f*100)*1000)/1000)}; ÷ 0,0175 ≈ ${g}°.`};}
+ if(t==1){const h=R(4,14),tg=P([0.03,0.05,0.07,0.1]);return{q:`Um poste de <b>${h} m</b> está inclinado com tangente <b>${fmt(tg)}</b>. Quantos centímetros o topo andou?`,a:Math.round(h*tg*100),tol:0.6,exp:`${h} × ${fmt(tg)} = ${fmt(Math.round(h*tg*100)/100)} m = ${Math.round(h*tg*100)} cm.`};}
+ const c=R(10,80),a=R(2,20);return{q:`O topo de um poste andou <b>${c*a} cm</b> em <b>${a} anos</b>. Quantos cm por ano, em média?`,a:c,exp:`${c*a} ÷ ${a} = ${c} cm/ano.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const h=R(4,20)*5,d=R(1,Math.round(h*0.6));const p=d/h*100;return{q:`Um terreno sobe <b>${d} m</b> em <b>${h} m</b> na horizontal. Pela Lei 6.766, ele pode ser loteado sem exigências especiais?`,opts:['sim','não'],a:p<30?'sim':'não',exp:`${fmt(Math.round(p*10)/10)}% ${p<30?'<':'≥'} 30%.`};}
+ if(t==1){const h=R(2,20)*5;return{q:`Num terreno com <b>${h} m</b> na horizontal, qual o desnível que já atinge o limite de 30%?`,a:0.3*h,tol:0.01,exp:`0,30 × ${h} = ${fmt(0.3*h)} m.`};}
+ const p=P([[40,'não'],[95,'não'],[100,'não'],[110,'sim'],[150,'sim']]);return{q:`Uma encosta de <b>${p[0]}%</b> é área de preservação permanente pelo Código Florestal (acima de 45°)?`,opts:['sim','não'],a:p[1],exp:`45° = 100%: ${p[0]}% ${p[1]=='sim'?'passa':'não passa'} disso.`};},
+6:()=>{const T={25:0.466,30:0.577,35:0.700,40:0.839,45:1,60:1.732};const t=R(0,2);
+ if(t==0){const a=P(Object.keys(T)),d=R(5,60);return{q:`De <b>${d} m</b> da base, o topo de uma árvore aparece a <b>${a}°</b>. Qual a altura? (tg ${a}° ≈ ${fmt(T[a])}; uma casa)`,a:Math.round(d*T[a]*10)/10,tol:0.06,exp:`${d} × ${fmt(T[a])} ≈ ${fmt(Math.round(d*T[a]*10)/10)} m.`};}
+ if(t==1){const ab=P([[30,45],[35,45],[25,45],[30,60],[40,60]]),d=R(2,10)*5;const ta=T[ab[0]],tb=T[ab[1]];const h=Math.round(d*ta*tb/(tb-ta)*10)/10;return{q:`De P1 o topo aparece a <b>${ab[0]}°</b>; andando <b>${d} m</b> até P2, aparece a <b>${ab[1]}°</b>. Qual a altura? (tg ${ab[0]}° ≈ ${fmt(ta)}; tg ${ab[1]}° ≈ ${fmt(tb)}; uma casa)`,a:h,tol:0.15,exp:`h = ${d} × ${fmt(ta)} × ${fmt(tb)} ÷ (${fmt(tb)} − ${fmt(ta)}) ≈ ${fmt(h)} m.`};}
+ const h=R(5,40),o=P([1.5,1.6,1.7]);return{q:`A conta deu <b>${h} m</b> acima dos olhos, que estão a <b>${fmt(o)} m</b> do chão. Qual a altura do objeto?`,a:h+o,tol:0.01,exp:`${h} + ${fmt(o)} = ${fmt(h+o)} m.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='geo1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>
