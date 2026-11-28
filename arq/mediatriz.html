@@ -20,8 +20,8 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const H={H1:[3.5,5],H2:[4,6.5],H3:[4.5,7],H4:[6,7.5],H5:[4,3.5]};
-const C1=[['H1','H3'],['H1','H2'],['H2','H5'],['H4','H5']],C2=[['H3','H4'],['H1','H5'],['H2','H4'],['H2','H3']];
+const H={P1:[3.5,5],P2:[4,6.5],P3:[4.5,7],P4:[6,7.5],P5:[4,3.5]};
+const C1=[['P1','P3'],['P1','P2'],['P2','P5'],['P4','P5']],C2=[['P3','P4'],['P1','P5'],['P2','P4'],['P2','P3']];
 let modo=0,a=0,b=0,pts=[];
 chips('cm',['Buracos da cabana','Seus 3 pontos'],0,i=>{modo=i;$('c1').style.display=$('c2').style.display=i?'none':'';draw();});
 chips('c1',C1.map(c=>'Corda 1: '+c.join('')),0,i=>{a=i;draw();});chips('c2',C2.map(c=>'Corda 2: '+c.join('')),0,i=>{b=i;draw();});
@@ -33,15 +33,15 @@ function inter(p1,q1,p2,q2){const m1=[(p1[0]+q1[0])/2,(p1[1]+q1[1])/2],d1=[-(q1[
  const den=d1[0]*d2[1]-d1[1]*d2[0];if(Math.abs(den)<1e-9)return null;const t=((m2[0]-m1[0])*d2[1]-(m2[1]-m1[1])*d2[0])/den;return [m1[0]+t*d1[0],m1[1]+t*d1[1]];}
 let C=null;
 MIS.def(()=>[
- ['Use as cordas do livro: <b>H1H3</b> e <b>H3H4</b>. Onde as mediatrizes se cruzam?',()=>!modo&&a==0&&b==0,'No centro (6; 5), com raio 2,5 m: as contas do Módulo 3.',()=>'Escolha Corda 1: H1H3 e Corda 2: H3H4.'],
- ['Troque a corda 1 por <b>H2H5</b>. A mediatriz dela ficou horizontal. O centro mudou?',()=>!modo&&a==2,'Não mudou: qualquer par de cordas dá o mesmo centro. H2H5 é vertical, então a mediatriz é a reta y = 5.',()=>'Escolha Corda 1: H2H5.'],
+ ['Use as cordas do livro: <b>P1P3</b> e <b>P3P4</b>. Onde as mediatrizes se cruzam?',()=>!modo&&a==0&&b==0,'No centro (6; 5), com raio 2,5 m: as contas do Módulo 3.',()=>'Escolha Corda 1: P1P3 e Corda 2: P3P4.'],
+ ['Troque a corda 1 por <b>P2P5</b>. A mediatriz dela ficou horizontal. O centro mudou?',()=>!modo&&a==2,'Não mudou: qualquer par de cordas dá o mesmo centro. P2P5 é vertical, então a mediatriz é a reta y = 5.',()=>'Escolha Corda 1: P2P5.'],
  ['No modo <b>Seus 3 pontos</b>, toque três pontos que formem um círculo de raio <b>maior que 5 m</b>.',()=>modo&&pts.length==3&&C&&C[2]>5,'Pontos quase alinhados pedem um círculo enorme: o arco fica quase reto.',()=>pts.length<3?'Toque três pontos.':C?'O raio está em '+r2(C[2])+' m.':'Esses três estão alinhados: não há círculo.'],
  ['Agora toque três pontos <b>exatamente alinhados</b>. O que acontece com as mediatrizes?',()=>modo&&pts.length==3&&!C,'As mediatrizes ficam paralelas e nunca se cruzam: por três pontos alinhados não passa círculo.',()=>'Coloque os três na mesma reta (por exemplo, todos com o mesmo y).']]);
 function medi(p,q,cor){const m=[(p[0]+q[0])/2,(p[1]+q[1])/2],d=[-(q[1]-p[1]),q[0]-p[0]],L=Math.hypot(...d);const u=[d[0]/L*30,d[1]/L*30];
  return LN(X(p[0]),Y(p[1]),X(q[0]),Y(q[1]),cor,3)+LN(X(m[0]-u[0]),Y(m[1]-u[1]),X(m[0]+u[0]),Y(m[1]+u[1]),cor,1.5,'6 4')+RC(X(m[0])-3,Y(m[1])-3,6,6,cor);}
 function draw(){let g=RC(0,0,340,280,'#F8FAFC','rx="10"');
  for(let i=0;i<=11;i++)g+=LN(X(i),0,X(i),280,'#EEF1F6',1);for(let j=0;j<=9;j++)g+=LN(0,Y(j),340,Y(j),'#EEF1F6',1);
- if(!modo){const c1=C1[a].map(n=>H[n]),c2=C2[b].map(n=>H[n]);const I=inter(c1[0],c1[1],c2[0],c2[1]);C=I?[I[0],I[1],Math.hypot(H.H1[0]-I[0],H.H1[1]-I[1])]:null;
+ if(!modo){const c1=C1[a].map(n=>H[n]),c2=C2[b].map(n=>H[n]);const I=inter(c1[0],c1[1],c2[0],c2[1]);C=I?[I[0],I[1],Math.hypot(H.P1[0]-I[0],H.P1[1]-I[1])]:null;
   if(C)g+=CIR(X(C[0]),Y(C[1]),C[2]*k,'none','stroke="'+TERRA_E+'" stroke-dasharray="4 4"');
   g+=medi(...c1,BLUE)+medi(...c2,ORANGE);
   Object.entries(H).forEach(([n,p])=>g+=CIR(X(p[0]),Y(p[1]),6,TERRA_E,'stroke="#fff" stroke-width="1.5"')+TX(X(p[0])-9,Y(p[1])+4,n,{fs:9,c:TERRA_E,a:'end'}));}
