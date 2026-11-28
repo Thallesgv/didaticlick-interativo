@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina de frutas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A máquina de frutas</h1></header>
+<main>
+<div class="card"><h2>Fortuna Frutas</h2><p class="muted" style="margin-top:0">Toque num símbolo para mudar quantas vezes ele aparece em cada rolo e quanto paga a trinca (arrastando ou com − e +). Depois gire. O RTP calculado vem da tabela; o medido, dos giros.</p>
+<div id="chs" style="margin:4px 0"></div>
+<div class="sl" id="sq"><b>Posições do símbolo em cada rolo</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Prêmio da trinca (por R$ 1)</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Giros por toque</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Girar</button><button class="alt" id="b0">Zerar giros</button><button class="alt" id="br">Máquina original</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>RTP calculado<b id="k1"></b></div><div>Frequência de acerto<b id="k2"></b></div><div>Giros feitos<b id="k3"></b></div><div class="o">RTP medido<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Confira os 96%.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v),0);
+const VM='#B91C1C',OURO='#E0A800';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const NM=['777','BAR','sino','uva','cereja','limão'],COR=[ORANGE,'#7C3AED',OURO,'#6D28D9','#DC2626','#65A30D'];const ORIG=[[1,1000],[2,225],[3,50],[4,20],[5,10],[5,8]];
+let T=ORIG.map(x=>x.slice()),si=0,giros=0,pago=0,ult=null,ori=true;
+chips('chs',NM,0,i=>{si=i;SQ.set(T[i][0]);SP.set(T[i][1]);draw();});
+const SQ=SL('sq',0,10,1,1,v=>{T[si][0]=v;giros=0;pago=0;ori=false;draw();},v=>v),SP=SL('sp',0,2000,1,1000,v=>{T[si][1]=v;giros=0;pago=0;ori=false;draw();},v=>v+'×'),SG=SL('sg',1,20000,1,100,()=>{},v=>fmt(v));
+const N=()=>T.reduce((a,t)=>a+t[0],0)||1;const rtp=()=>T.reduce((a,t)=>a+t[0]**3*t[1],0)/N()**3,freq=()=>T.reduce((a,t)=>a+t[0]**3,0)/N()**3;
+const isOrig=()=>T.every((t,i)=>t[0]==ORIG[i][0]&&t[1]==ORIG[i][1]);
+function rolo(){let u=Math.random()*N();for(let i=0;i<6;i++){u-=T[i][0];if(u<0)return i;}return 5;}
+$('b1').onclick=()=>{const n=SG.get();for(let k=0;k<n;k++){const a=rolo(),b=rolo(),c=rolo();if(a==b&&b==c)pago+=T[a][1];if(k==n-1)ult=[a,b,c];}giros+=n;ori=isOrig();draw();};
+$('b0').onclick=()=>{giros=0;pago=0;ult=null;draw();};$('br').onclick=()=>{T=ORIG.map(x=>x.slice());SQ.set(T[si][0]);SP.set(T[si][1]);giros=0;pago=0;ult=null;draw();};
+MIS.def(()=>[
+ ['Com a máquina original, faça pelo menos <b>1 000 giros</b>.',()=>isOrig()&&giros>=1000,()=>'RTP medido: '+pct(100*pago/giros,1)+' em '+fmt(giros)+' giros; o calculado é 96%. A diferença ainda é enorme, porque o 777 e o BAR pagam muito e saem pouco.',()=>!isOrig()?'Toque em "Máquina original".':'Giros: '+fmt(giros)+' de 1 000.'],
+ ['Mude a máquina para o RTP calculado passar de <b>100%</b>.',()=>rtp()>1,()=>'RTP '+pct(100*rtp(),1)+': no longo prazo, a casa perderia. Nenhuma máquina comercial é assim.',()=>'RTP agora: '+pct(100*rtp(),1)+'. Aumente um prêmio ou mude as posições.'],
+ ['Volte à máquina original e junte pelo menos <b>100 000 giros</b>. O medido já bate com os 96%?',()=>isOrig()&&giros>=100000,()=>'RTP medido: '+pct(100*pago/giros,1)+'. A margem de erro com '+fmt(giros)+' giros ainda é de ± '+vir(100*1.96*13.744/Math.sqrt(giros),1)+' pontos (Módulo 6).',()=>!isOrig()?'Toque em "Máquina original".':'Giros: '+fmt(giros)+'. Aumente os giros por toque.']]);
+function draw(){let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ for(let r=0;r<3;r++){const x=40+r*92;g+=RC(x,12,80,62,'#fff','rx="8" stroke="'+NAVY+'" stroke-width="2"');const s=ult?ult[r]:r==0?0:r==1?1:2;g+=TX(x+40,50,NM[s],{fs:NM[s].length>4?13:17,c:COR[s]});}
+ if(ult&&ult[0]==ult[1]&&ult[1]==ult[2])g+=TX(170,90,'último giro: '+NM[ult[0]]+' paga '+T[ult[0]][1]+'×',{fs:10,c:GREEN});
+ const n3=N()**3,esc=300/Math.max(1.05,rtp()*1.05);let x=20;T.forEach((t,i)=>{const v=t[0]**3*t[1]/n3,w=esc*v;if(w>0){g+=RC(x,110,w,26,COR[i],'stroke="#fff"');if(w>26)g+=TX(x+w/2,127,NM[i],{fs:8,c:'#fff'});}x+=w;});
+ g+=LN(20+esc,102,20+esc,144,NAVY,1.5)+TX(20+esc,158,'100%',{fs:9});g+=TX(20,100,'RTP calculado: '+pct(100*rtp(),1)+' ('+N()+' posições por rolo, '+fmt(N()**3)+' combinações)',{fs:9,a:'start',w:500});
+ g+=TX(170,186,giros?'nos giros: apostado '+R$(giros,0)+', pago '+R$(pago,0)+', saldo '+sg(pago-giros):'gire para comparar com a conta',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=pct(100*rtp(),1);$('k2').textContent=pct(100*freq(),2);$('k3').textContent=fmt(giros);$('k4').textContent=giros?pct(100*pago/giros,1):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pacote de figurinhas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O pacote de figurinhas</h1></header>
+<main>
+<div class="card"><h2>Esperando o lendário</h2><p class="muted" style="margin-top:0">Escolha a chance de vir um lendário, o preço do pacote e quantos pacotes abrir de uma vez (arrastando ou com − e +). Os quadradinhos são os últimos pacotes; os dourados trouxeram um lendário.</p>
+<div class="sl" id="sp"><b>Chance de lendário (%)</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Preço do pacote (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Pacotes por toque</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Abrir</button><button class="alt" id="b0">Começar de novo</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Pacotes abertos<b id="k1"></b></div><div>Gasto<b id="k2"></b></div><div>Lendários<b id="k3"></b></div><div class="o">Média até 1 lendário<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Quanto custa o raro?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v),0);
+const VM='#B91C1C',OURO='#E0A800';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const SP=SL('sp',0.1,10,0.1,0.5,()=>{zera();draw();},v=>vir(v,1)+'%'),SR=SL('sr',1,30,1,5,()=>draw(),v=>R$(v,0)),SN=SL('sn',1,500,1,1,()=>{},v=>v);
+let n=0,gasto=0,len=0,ult=[],prim=0;const zera=()=>{n=0;gasto=0;len=0;ult=[];prim=0;};
+$('b1').onclick=()=>{const p=SP.get()/100,k=SN.get();for(let i=0;i<k;i++){const L=Math.random()<p;n++;gasto+=SR.get();if(L){len++;if(!prim)prim=n;}ult.push(L);}ult=ult.slice(-120);draw();};
+$('b0').onclick=()=>{zera();draw();};
+MIS.def(()=>[
+ ['Com <b>0,5%</b> de chance, abra pacotes até sair o <b>primeiro lendário</b>.',()=>Math.abs(SP.get()-0.5)<1e-6&&len>=1,()=>'Saiu no pacote '+prim+'. A média é 200 pacotes; metade das pessoas precisa de mais de 139.',()=>Math.abs(SP.get()-0.5)>=1e-6?'Volte a chance para 0,5%.':'Abertos: '+n+' ('+R$(gasto,0)+'). Chance de ainda não ter vindo nenhum: '+pct(100*Math.pow(0.995,n),0)+'.'],
+ ['Compare: ponha o pacote "especial" de <b>1,2%</b> por <b>R$ 12</b>. Quanto custa, em média, cada lendário?',()=>Math.abs(SP.get()-1.2)<1e-6&&SR.get()==12,'12 ÷ 0,012 = R$ 1.000 por lendário: o mesmo do pacote comum de R$ 5 com 0,5%. A chance aumentou; o preço por lendário, não.',()=>'Chance '+vir(SP.get(),1)+'%, preço '+R$(SR.get(),0)+': '+R$(SR.get()/(SP.get()/100),0)+' por lendário, em média.'],
+ ['Volte a <b>0,5%</b> e abra pelo menos <b>1 000 pacotes</b>. Quantos lendários?',()=>Math.abs(SP.get()-0.5)<1e-6&&n>=1000,()=>len+' lendário(s) em '+fmt(n)+' pacotes ('+R$(gasto,0)+'). Esperado: '+r1(n*0.005)+'.',()=>Math.abs(SP.get()-0.5)>=1e-6?'Volte a chance para 0,5%.':'Abertos: '+fmt(n)+' de 1 000. Aumente os pacotes por toque.']]);
+function draw(){const p=SP.get()/100;let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ for(let i=0;i<120;i++){const c=i%20,r=Math.floor(i/20),x=12+c*10.5,y=12+r*10.5,L=ult[i];g+=RC(x,y,8.5,8.5,L===undefined?'#E5E9F2':L?OURO:AZC,'rx="1.5"');}
+ g+=TX(12,86,'últimos 120 pacotes',{fs:8.5,a:'start',c:GRAY,w:500});
+ const NM=Math.max(600,Math.ceil(3/p/100)*100),X=k=>230+100*k/NM,Y=q=>80-66*q;g+=RC(228,12,104,70,'#fff');
+ let pts=[];for(let k=0;k<=NM;k+=NM/50)pts.push([X(k),Y(1-Math.pow(1-p,k))]);g+=PL(pts,BLUE,2)+LN(228,Y(0.5),332,Y(0.5),GRAYL,1,'3 2');
+ const kk=Math.min(n,NM);g+=CIR(X(kk),Y(1-Math.pow(1-p,kk)),4,ORANGE);g+=TX(280,96,'chance de ≥ 1 lendário',{fs:8,c:GRAY,w:500});
+ const m50=Math.ceil(Math.log(0.5)/Math.log(1-p));g+=TX(170,130,'média até o 1º: '+fmt(Math.round(1/p))+' pacotes = '+R$(SR.get()/p,0),{fs:11,c:ORANGE});
+ g+=TX(170,152,'para 50% de chance: '+fmt(m50)+' pacotes ('+R$(m50*SR.get(),0)+')',{fs:10});g+=TX(170,176,n?'você: '+fmt(n)+' pacotes, '+len+' lendário(s); chance de pelo menos um até aqui: '+pct(100*(1-Math.pow(1-p,n)),0):'toque em "Abrir"',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=fmt(n);$('k2').textContent=R$(gasto,0);$('k3').textContent=len;$('k4').textContent=fmt(Math.round(1/p));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
