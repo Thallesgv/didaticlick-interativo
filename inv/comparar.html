@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gráfico linear ou log · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Gráfico linear ou log</h1></header>
+<main>
+<div class="card"><h2>Comparando gigantes</h2><p class="muted" style="margin-top:0">Sete erupções num gráfico de barras. Alterne entre o eixo <b>linear</b> e o <b>logarítmico</b>, mova o volume do <b>Monte Brasa</b> e toque numa barra para compará-la com ele.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig" style="cursor:pointer"></div>
+<div class="sl" id="sb"><b>Volume do Monte Brasa</b><input type="range"><span></span></div>
+<div class="kpi"><div>Comparando com<b id="kn"></b></div><div class="o">Brasa ÷ ela<b id="kr"></b></div><div>Diferença de log<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque numa barra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const ER=[['Eyjafjalla.',0.25],['S. Helena',1.2],['Pinatubo',10],['Krakatoa',20],['Brasa',120],['Tambora',150],['Yellowstone',2500]];
+let modo=1,sel=2;
+const C=chips('ch',['Eixo logarítmico','Eixo linear'],0,i=>{modo=i==0?1:0;draw();});
+const S=SL('sb',0,3.6,0.01,Math.log10(120),()=>draw(),v=>SIG(Math.pow(10,v))+' km³');
+const vb=()=>Math.pow(10,S.get()),vol=i=>i==4?vb():ER[i][1],rz=()=>vb()/ER[sel][1];
+const x0=40,W=290,bw=W/7;
+toque('fig',(x,y)=>{const i=Math.floor((x-x0)/bw);if(i>=0&&i<7&&i!=4){sel=i;draw();}});
+MIS.def(()=>[
+ ['Com o Brasa em 120 km³, toque no <b>Pinatubo</b>. Quantas vezes o Brasa é maior?',()=>sel==2&&Math.abs(vb()/120-1)<0.03,'120 ÷ 10 = 12 vezes. No gráfico log, a barra do Brasa fica 1,08 linha acima da do Pinatubo.',()=>sel!=2?'Toque na barra do Pinatubo.':'Deixe o Brasa em 120 km³.'],
+ ['Troque para o <b>eixo linear</b>, com o Brasa em 120 km³. O que acontece com as barras menores?',()=>modo==0&&Math.abs(vb()/120-1)<0.03,'Com o Yellowstone no gráfico, o Eyjafjallajökull e o Santa Helena viram risquinhos invisíveis. No eixo linear, quem é muito menor some.',()=>modo!=0?'Escolha "Eixo linear".':'Brasa em 120 km³.'],
+ ['Toque no <b>Santa Helena</b> e mova o Brasa até ele ficar cerca de <b>2.000 vezes</b> maior. Que erupção real tem esse tamanho?',()=>sel==1&&Math.abs(rz()/2000-1)<0.06,'Cerca de 2.400 km³: o tamanho da supererupção de Yellowstone. São 3,3 linhas de grade acima do Santa Helena.',()=>sel!=1?'Toque na barra do Santa Helena.':'Agora é '+SIG(rz())+' vezes.'],
+ ['Toque no <b>Tambora</b> e deixe o Brasa do mesmo tamanho que ele.',()=>sel==5&&Math.abs(rz()-1)<0.04,'Razão 1, diferença de log 0. Na escala VEI os dois são 7.',()=>sel!=5?'Toque na barra do Tambora.':'Agora é '+r2(rz())+' vezes.']]);
+function quadro(){let g=RC(0,0,340,240,'#F8FAFC','rx="10"');const y0=200,H=180;
+ const mx=Math.max(2500,vb());const Y=modo==1?(q=>y0-(Math.log10(q)+1)/4.6*H):(q=>y0-q/mx*H);
+ if(modo==1){for(let e=-1;e<=3;e++)g+=LN(x0,Y(Math.pow(10,e)),x0+W,Y(Math.pow(10,e)),'#E5E7EB',1)+TX(x0-4,Y(Math.pow(10,e))+3,fmt(Math.pow(10,e)),{fs:8.5,c:GRAY,a:'end',w:500});}
+ else{const st=mx>3000?1000:500;for(let q=0;q<=mx;q+=st)g+=LN(x0,Y(q),x0+W,Y(q),'#E5E7EB',1)+TX(x0-4,Y(q)+3,fmt(q),{fs:8.5,c:GRAY,a:'end',w:500});}
+ g+=TX(4,12,'km³',{fs:9,c:GRAY,a:'start'});
+ for(let i=0;i<7;i++){const q=vol(i),x=x0+i*bw+5,yt=Math.min(Y(q),y0-0.5),c=i==4?LAVA:i==sel?ORANGE:BLUE;
+  g+=RC(x,yt,bw-10,y0-yt,c,'rx="2"')+TX(x+(bw-10)/2,yt-4,SIG(q),{fs:8.5,c:c})+TX(x+(bw-10)/2,y0+13,ER[i][0],{fs:7.5,c:i==sel||i==4?c:NAVY});}
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.4);
+ g+=TX(330,236,modo==1?'cada linha: ×10':'eixo linear',{fs:9,c:GRAY,a:'end',w:500});
+ $('fig').innerHTML=SVG(340,240,g);}
+function draw(){$('kn').textContent=ER[sel][0];$('kr').textContent=SIG(rz())+' ×';$('kd').textContent=fmt(Math.round(Math.log10(rz())*100)/100);quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

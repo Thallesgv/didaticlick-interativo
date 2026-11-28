@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Régua linear ou log · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Régua linear ou log</h1></header>
+<main>
+<div class="card"><h2>Duas réguas, os mesmos vulcões</h2><p class="muted" style="margin-top:0">Os pontos são os volumes de sete erupções, em km³. Troque a régua e mova o <b>cursor laranja</b>. Na régua linear cada marca <b>soma</b>; na logarítmica cada marca <b>multiplica por 10</b>.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Cursor</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Cursor<b id="kc"></b></div><div>Em potência de 10<b id="kp"></b></div><div>Vezes o Santa Helena<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o cursor.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const ER=[['Eyjafjallajökull',0.25],['Santa Helena',1.2],['Pinatubo',10],['Krakatoa',20],['Monte Brasa',120],['Tambora',150],['Yellowstone',2500]];
+let modo=0;
+const C=chips('ch',['Régua linear','Régua logarítmica'],0,i=>{modo=i;draw();});
+const S=SL('sc',-2,4,0.01,0,()=>draw(),v=>SIG(Math.pow(10,v))+' km³');
+const v=()=>Math.pow(10,S.get());
+MIS.def(()=>[
+ ['Na <b>régua linear</b>, leve o cursor até <b>1.000 km³</b>. Onde ele fica?',()=>modo==0&&Math.abs(S.get()-3)<0.006,'Na régua linear, 1.000 fica a 40% do caminho até 2.500. E quase todos os vulcões ficaram espremidos no começo.',()=>modo!=0?'Escolha "Régua linear".':'O cursor está em '+SIG(v())+' km³.'],
+ ['Agora troque para a <b>régua logarítmica</b> e deixe o cursor em 1.000. Onde ele ficou agora?',()=>modo==1&&Math.abs(S.get()-3)<0.006,'Na régua log, 1.000 = 10³ fica na marca 3: a distância de 1 a 10 é igual à de 100 a 1.000. Cada vulcão ganhou seu lugar.',()=>modo!=1?'Escolha "Régua logarítmica".':'Leve o cursor a 1.000.'],
+ ['Leve o cursor a um volume <b>10 vezes</b> o do Santa Helena.',()=>Math.abs(v()/12-1)<0.03,'12 km³: um degrau de ×10 acima do Santa Helena. Na régua log, um degrau é sempre a mesma distância.',()=>'O cursor está em '+r1(v()/1.2)+' vezes o Santa Helena.'],
+ ['Quantos degraus de ×10 separam o Santa Helena do Monte Brasa? Leve o cursor até o <b>Monte Brasa</b>.',()=>Math.abs(v()/120-1)<0.03,'De 1,2 a 120 km³: ×100, ou seja, 2 degraus de ×10. Na régua log, a distância entre eles é de duas marcas.',()=>'O Monte Brasa tem 120 km³.']]);
+function quadro(){let g=RC(0,0,340,200,'#F8FAFC','rx="10"');const x0=24,x1=318,y=118;
+ const X=modo==0?(q=>x0+q/2600*(x1-x0)):(q=>x0+(Math.log10(q)+2)/6*(x1-x0));
+ g+=LN(x0,y,x1,y,NAVY,2);
+ if(modo==0){for(let q=0;q<=2500;q+=500)g+=LN(X(q),y-6,X(q),y+6,NAVY,1.5)+TX(X(q),y+22,fmt(q),{fs:9.5,c:NAVY});}
+ else{for(let e=-2;e<=4;e++){g+=LN(X(Math.pow(10,e)),y-7,X(Math.pow(10,e)),y+7,NAVY,1.6)+TX(X(Math.pow(10,e)),y+22,fmt(Math.pow(10,e)),{fs:9.5,c:NAVY});
+  if(e<4)for(let m=2;m<10;m++)g+=LN(X(m*Math.pow(10,e)),y-3,X(m*Math.pow(10,e)),y+3,GRAY,0.8);}
+  for(let e=-2;e<4;e++)g+=TX((X(Math.pow(10,e))+X(Math.pow(10,e+1)))/2,y+36,'×10',{fs:8,c:GREEN});}
+ ER.forEach(([n,q],i)=>{const c=n=='Monte Brasa'?LAVA:BLUE,yy=y-18-(i%3)*16;g+=CI(X(q),y,5,c,'stroke="#fff" stroke-width="1.5"');
+  if(modo==1||q>=1000)g+=LN(X(q),y-5,X(q),yy+3,'#CBD5E1',1)+TX(X(q),yy,n.length>12?n.slice(0,9)+'.':n,{fs:8.5,c:c,a:i==6?'end':'middle'});});
+ if(modo==0)g+=TX(x0-4,y-30,'↓ 6 vulcões espremidos perto do zero',{fs:9,c:BLUE,a:'start'});
+ const xc=X(v());g+=LN(xc,y-70,xc,y+8,ORANGE,2.5)+PG([[xc-6,y-78],[xc+6,y-78],[xc,y-68]],ORANGE)+TX(clamp(xc,40,300),y-84,SIG(v())+' km³',{fs:11,c:ORANGE});
+ g+=TX(330,192,modo==0?'cada marca: +500 km³':'cada marca: ×10',{fs:9.5,c:GRAY,a:'end',w:500});
+ $('fig').innerHTML=SVG(340,200,g);}
+function draw(){$('kc').textContent=SIG(v())+' km³';$('kp').textContent='10'+SUP(fmt(Math.round(S.get()*100)/100));$('ks').textContent=SIG(v()/1.2)+' ×';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

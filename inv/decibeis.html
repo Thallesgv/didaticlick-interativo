@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O medidor de decibéis · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O medidor de decibéis</h1></header>
+<main>
+<div class="card"><h2>Do sussurro ao Krakatoa</h2><p class="muted" style="margin-top:0">Escolha a fonte de som, quantas fontes iguais tocam juntas e a que distância você está. O medidor mostra o nível em decibéis e a intensidade em W/m².</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Fontes iguais juntas</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Distância</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Nível sonoro<b id="kl"></b></div><div>Intensidade<b id="ki"></b></div><div>Em relação à referência<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha uma fonte.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+// [nome, nível na referência (dB), distância de referência, unidade, mín, máx, passo]
+const F=[['Conversa',60,1,'m',0.5,16,0.5],['Show de rock',110,10,'m',5,200,5],['Avião a jato',140,30,'m',10,600,10],['Monte Brasa',140,40,'km',10,1000,10],['Krakatoa',172,160,'km',20,5000,20]];
+let fi=0;
+const C=chips('ch',F.map(f=>f[0]),0,i=>{fi=i;const f=F[i];D.lim(f[4],f[5],f[6],f[2]);draw();});
+const N=SL('sn',1,10,1,1,()=>draw(),v=>v==1?'1 fonte':v+' fontes');
+const D=(()=>{const el=$('sd'),inp=el.querySelector('input'),sp=el.querySelector('span');inp.oninput=()=>draw();
+ return{get:()=>+inp.value,lim:(a,b,s,v)=>{inp.min=a;inp.max=b;inp.step=s;inp.value=v;},show:()=>sp.textContent=fmt(+inp.value)+' '+F[fi][3]};})();
+D.lim(0.5,16,0.5,1);
+const L=()=>{const f=F[fi];return f[1]+10*Math.log10(N.get())-20*Math.log10(D.get()/f[2]);};
+const I=()=>Math.pow(10,L()/10-12);
+MIS.def(()=>[
+ ['Com a <b>conversa</b> a 1 m, junte <b>10 pessoas</b> falando igual. Quantos dB a mais? E a intensidade?',()=>fi==0&&N.get()==10&&D.get()==1,'10 fontes = intensidade 10 vezes maior = só +10 dB (de 60 para 70 dB). Somar sons não soma decibéis.',()=>fi!=0?'Escolha "Conversa".':'10 fontes, a 1 m.'],
+ ['Volte para 1 fonte e <b>dobre a distância</b> da conversa (de 1 m para 2 m). Quanto o nível caiu?',()=>fi==0&&N.get()==1&&D.get()==2,'Caiu cerca de 6 dB (de 60 para 54): o som se espalha numa área 4 vezes maior, e a intensidade cai para 1/4.',()=>fi!=0?'Escolha "Conversa".':N.get()!=1?'Volte para 1 fonte.':'Leve a distância a 2 m.'],
+ ['Escolha o <b>Monte Brasa</b> e vá até o continente, a <b>300 km</b>. Quanto o estrondo ainda mede?',()=>fi==3&&N.get()==1&&D.get()==300,'Cerca de 122 dB: 7,5 vezes mais longe tira só 20 · log 7,5 ≈ 17,5 dB. Sem contar a absorção do ar, ainda seria um som de dor.',()=>fi!=3?'Escolha "Monte Brasa".':'Leve a distância a 300 km, com 1 fonte.'],
+ ['Escolha o <b>Krakatoa</b> e chegue aos <b>172 dB</b> medidos em 1883. Depois vá até a ilha Rodrigues, a 4.800 km.',()=>fi==4&&N.get()==1&&D.get()==4800,'Pela conta, cerca de 142 dB. Na realidade chegou bem mais fraco, pela absorção do ar, mas ainda foi ouvido como tiros de canhão ao longe.',()=>fi!=4?'Escolha "Krakatoa".':'Leve a distância a 4.800 km, com 1 fonte.']]);
+let t0=performance.now();
+function quadro(){const l=L(),t=(performance.now()-t0)/1000;let g=RC(0,0,340,220,'#F8FAFC','rx="10"');
+ // ondas saindo da fonte
+ const fx=30,fy=70,f=F[fi];g+=CI(fx,fy,10+N.get(),fi>=3?LAVA:NAVY);
+ for(let k=0;k<6;k++){const r=((t*40+k*30)%180)+12;g+=`<circle cx="${fx}" cy="${fy}" r="${r}" fill="none" stroke="${BLUE}" stroke-width="${clamp(l/40,0.5,4)}" opacity="${(1-r/192)*clamp(l/120,0.15,1)}"/>`;}
+ // ouvinte numa régua log de distância
+ const x0=50,x1=320,lo=Math.log10(f[4]),hi=Math.log10(f[5]),X=d=>x0+(Math.log10(d)-lo)/(hi-lo)*(x1-x0);
+ g+=LN(x0,120,x1,120,NAVY,1.2);[f[4],f[2],f[5]].forEach(d=>g+=LN(X(d),116,X(d),124,NAVY,1)+TX(X(d),134,fmt(d)+' '+f[3],{fs:8,c:GRAY,w:500}));
+ g+=CI(X(D.get()),120,6,ORANGE)+TX(X(D.get()),108,'você',{fs:9,c:ORANGE});
+ // medidor
+ const cx=170,cy=210,R=60;g+=`<path d="M ${cx-R} ${cy} A ${R} ${R} 0 0 1 ${cx+R} ${cy}" fill="none" stroke="#D7DEEA" stroke-width="12"/>`;
+ for(let v=0;v<=180;v+=30){const a=Math.PI*(1-v/180);g+=TX(cx+(R+16)*Math.cos(a),cy-(R+16)*Math.sin(a)+3,v,{fs:8,c:GRAY,w:500});}
+ const a=Math.PI*(1-clamp(l,0,180)/180);g+=LN(cx,cy,cx+(R-4)*Math.cos(a),cy-(R-4)*Math.sin(a),l>=120?'#B91C1C':ORANGE,3)+CI(cx,cy,5,NAVY);
+ g+=TX(332,206,r1(l)+' dB',{fs:16,c:l>=120?'#B91C1C':NAVY,a:'end'});if(l>=120)g+=TX(332,184,'dor!',{fs:11,c:'#B91C1C',a:'end'});
+ $('fig').innerHTML=SVG(340,220,g);}
+function draw(){D.show();const f=F[fi];$('kl').textContent=r1(L())+' dB';$('ki').textContent=CIENT(I(),1)+' W/m²';const d=L()-f[1];$('kr').textContent=(d>=0?'+':'')+r1(d)+' dB';MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>

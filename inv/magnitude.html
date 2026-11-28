@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comparador de tremores · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Comparador de tremores</h1></header>
+<main>
+<div class="card"><h2>Dois tremores lado a lado</h2><p class="muted" style="margin-top:0">Escolha a magnitude de cada tremor. Os sismogramas estão na <b>mesma escala</b>, e a área de cada bola é proporcional à <b>energia</b> liberada.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Tremor A</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Tremor B</b><input type="range"><span></span></div>
+<div class="kpi"><div>Amplitude: B ÷ A<b id="ka"></b></div><div class="o">Energia: B ÷ A<b id="ke"></b></div><div>Energia de B<b id="kj"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as magnitudes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const A=SL('sa',1,9.5,0.1,3,()=>draw(),v=>'M '+r1(v));
+const B=SL('sb',1,9.5,0.1,3.5,()=>draw(),v=>'M '+r1(v));
+const dM=()=>Math.round((B.get()-A.get())*10)/10,RA=()=>Math.pow(10,dM()),RE=()=>Math.pow(10,1.5*dM());
+MIS.def(()=>[
+ ['Faça o sismograma de B ficar <b>10 vezes</b> maior que o de A. E a energia?',()=>dM()==1,'Um ponto de magnitude: amplitude ×10 e energia ×10¹,⁵ ≈ 32.',()=>'Diferença atual: '+r1(dM())+' ponto(s).'],
+ ['Faça B ter <b>1.000 vezes</b> a energia de A.',()=>dM()==2,'10^(1,5 × 2) = 10³ = 1.000. Dois pontos de magnitude, e o sismograma 100 vezes maior.',()=>'Energia atual: '+SIG(RE())+' vezes. 1,5 · ΔM tem que dar 3.'],
+ ['Quantos tremores de <b>M 3</b> equivalem a um de <b>M 5</b>? Monte a comparação (A = 3, B = 5).',()=>A.get()==3&&B.get()==5,'Mil tremores de M 3 liberam a energia de um só M 5. Por isso vários tremores pequenos não "descarregam" um grande.',()=>'Coloque A em 3 e B em 5.'],
+ ['Compare o maior terremoto já medido, <b>Valdivia (M 9,5)</b>, com um de <b>M 6,5</b>.',()=>A.get()==6.5&&B.get()==9.5,'3 pontos: sismograma 1.000 vezes maior e energia 10^4,5 ≈ 32 mil vezes maior.',()=>'A = 6,5 e B = 9,5.']]);
+function traco(y,amp,sem,c){let p=[];for(let i=0;i<=300;i++){const t=i/300,env=t<0.12?0.02:0.02+Math.exp(-(t-0.12)*4.5)*(1-Math.exp(-(t-0.12)*60));p.push((14+t*220).toFixed(1)+','+(y+amp*env*(0.7*Math.sin(2*Math.PI*30*t+sem)+0.3*Math.sin(2*Math.PI*47*t+2*sem))).toFixed(1));}return `<polyline points="${p.join(' ')}" fill="none" stroke="${c}" stroke-width="1.4"/>`;}
+function quadro(){const a=A.get(),b=B.get(),mx=Math.max(a,b);let g=RC(0,0,340,230,'#F8FAFC','rx="10"');
+ const amp=m=>52*Math.pow(10,m-mx);
+ g+=RC(10,14,228,98,'#FFF8EE','stroke="#E5E7EB"')+RC(10,122,228,98,'#FFF8EE','stroke="#E5E7EB"');
+ g+=traco(63,amp(a),1,BLUE)+TX(18,28,'A · M '+r1(a),{fs:10,c:BLUE,a:'start'});
+ g+=traco(171,amp(b),2,ORANGE)+TX(18,136,'B · M '+r1(b),{fs:10,c:ORANGE,a:'start'});
+ const rr=m=>46*Math.sqrt(Math.pow(10,1.5*(m-mx)));
+ g+=CI(290,63,Math.max(rr(a),0.8),LAVA)+CI(290,171,Math.max(rr(b),0.8),LAVA)+TX(290,226,'energia',{fs:9,c:LAVA});
+ $('fig').innerHTML=SVG(340,230,g);}
+function draw(){$('ka').textContent=SIG(RA())+' ×';$('ke').textContent=SIG(RE())+' ×';$('kj').textContent='≈ '+CIENT(Math.pow(10,4.8+1.5*B.get()),1)+' J';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
