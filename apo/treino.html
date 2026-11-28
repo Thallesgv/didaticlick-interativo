@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'apo1':{T:["Experimento e resultados possíveis", "Frequência absoluta e relativa", "Dois dados: por que o 7 sai mais", "Tabelas e histogramas", "Lei dos grandes números", "Margem de erro: honesto ou viciado?", "O detector de dado viciado"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const F=P([4,6,8,10,12,20]),k=R(1,F-1);return{q:`Num dado de <b>${F} faces</b> (1 a ${F}), qual a probabilidade de sair um número <b>menor ou igual a ${k}</b>? Responda em porcentagem, com uma casa.`,a:Math.round(k/F*1000)/10,tol:0.06,exp:`${k} favoráveis em ${F}: ${k} ÷ ${F} ≈ ${fmt(Math.round(k/F*1000)/10)}%.`};}
+ if(t==1){const F=P([6,8,10,12,20]),m=P([2,3,4,5].filter(x=>x<F));const k=Math.floor(F/m);return{q:`Num dado de <b>${F} faces</b>, qual a probabilidade de sair um <b>múltiplo de ${m}</b>? Responda em porcentagem, com uma casa.`,a:Math.round(k/F*1000)/10,tol:0.06,exp:`Múltiplos de ${m} até ${F}: ${k}. ${k} ÷ ${F} ≈ ${fmt(Math.round(k/F*1000)/10)}%.`};}
+ const F=P([6,8,12,20]),k=R(1,F-1);return{q:`Num dado de ${F} faces, P(A) = ${k}/${F}. Qual a probabilidade de <b>não A</b>? Responda em porcentagem, com uma casa.`,a:Math.round((F-k)/F*1000)/10,tol:0.06,exp:`1 − ${k}/${F} = ${F-k}/${F} ≈ ${fmt(Math.round((F-k)/F*1000)/10)}%.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const n=P([20,30,40,50,60,80,120]),k=R(Math.round(n/12),Math.round(n/4));return{q:`Um dado foi lançado <b>${n}</b> vezes e o 3 saiu <b>${k}</b> vezes. Qual a frequência relativa do 3, em porcentagem com uma casa?`,a:Math.round(k/n*1000)/10,tol:0.06,exp:`${k} ÷ ${n} ≈ ${fmt(Math.round(k/n*1000)/10)}%.`};}
+ if(t==1){const n=P([60,120,180,240,300,600,1200]);return{q:`Em <b>${n}</b> lances de um dado honesto, quantas vezes esperamos cada face?`,a:n/6,exp:`${n} ÷ 6 = ${n/6}.`};}
+ const n=P([40,50,80,100,200]),f=P([10,15,20,25,30,35]);return{q:`A frequência relativa de vitórias foi <b>${f}%</b> em <b>${n}</b> apostas. Quantas vitórias?`,a:n*f/100,exp:`${f}% de ${n} = ${fmt(n*f/100)}.`};},
+3:()=>{const t=R(0,2);const ca=s=>6-Math.abs(s-7);
+ if(t==0){const s=R(2,12);return{q:`Com dois dados de cores diferentes, quantas das 36 casas têm <b>soma ${s}</b>?`,a:ca(s),exp:`Casas da soma ${s}: 6 − |${s} − 7| = ${ca(s)}.`};}
+ if(t==1){const s=R(3,11);return{q:`Qual a probabilidade de a soma de dois dados ser <b>${s}</b>? Responda em porcentagem, com uma casa.`,a:Math.round(ca(s)/36*1000)/10,tol:0.06,exp:`${ca(s)}/36 ≈ ${fmt(Math.round(ca(s)/36*1000)/10)}%.`};}
+ const s=R(8,11);let k=0;for(let x=s;x<=12;x++)k+=ca(x);return{q:`Quantas das 36 casas têm soma <b>${s} ou mais</b>?`,a:k,exp:`Some as casas de ${s} até 12: ${k}.`};},
+4:()=>{const t=R(0,1);const ca=s=>6-Math.abs(s-7);
+ if(t==0){const n=P([360,720,1080,1800,3600,7200]),s=R(2,12);return{q:`Em <b>${fmt(n)}</b> lances de dois dados, qual a frequência esperada da <b>soma ${s}</b>?`,a:n*ca(s)/36,exp:`${fmt(n)} × ${ca(s)}/36 = ${fmt(n*ca(s)/36)}.`};}
+ const s=R(2,12),e=3600*ca(s)/36,o=e+P([-1,1])*R(3,25);return{q:`Em 3 600 lances, a soma ${s} saiu <b>${o}</b> vezes. Qual a diferença para o esperado (pode ser negativa)?`,a:o-e,exp:`Esperado: 3 600 × ${ca(s)}/36 = ${e}. Diferença: ${o} − ${e} = ${o-e}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const n=P([100,400,1000,10000]),k=Math.round(n*(0.5+P([-1,1])*R(1,8)/100));return{q:`Uma moeda deu <b>${fmt(k)}</b> caras em <b>${fmt(n)}</b> lances. Qual a diferença, em pontos percentuais, entre a frequência de caras e 50%? (pode ser negativa, uma casa)`,a:Math.round((k/n-0.5)*1000)/10,tol:0.06,exp:`${fmt(k)} ÷ ${fmt(n)} = ${fmt(Math.round(k/n*1000)/10)}%; menos 50% dá ${fmt(Math.round((k/n-0.5)*1000)/10)} ponto(s).`};}
+ if(t==1){const a=P([10,20,30,40]),n=P([100,200]),m=P([400,900,1900]);return{q:`Uma moeda deu <b>${n/2+a/2}</b> caras em <b>${n}</b> lances. Se nos próximos <b>${m}</b> lances der exatamente 50%, qual a frequência de caras no total? (porcentagem, uma casa)`,a:Math.round((n/2+a/2+m/2)/(n+m)*1000)/10,tol:0.06,exp:`(${n/2+a/2} + ${m/2}) ÷ ${n+m} ≈ ${fmt(Math.round((n/2+a/2+m/2)/(n+m)*1000)/10)}%: o excesso é diluído, não corrigido.`};}
+ return P([{q:'Depois de 10 lances sem 6, a chance do 6 no próximo lance:',opts:['aumenta','continua 1/6','diminui'],a:'continua 1/6',exp:'O dado não lembra o passado.'},{q:'A lei dos grandes números fala de:',opts:['proporções','compensações','sorte'],a:'proporções',exp:'A frequência relativa se aproxima da probabilidade.'},{q:'Para quem a lei dos grandes números funciona primeiro?',opts:['para a casa, que tem milhões de apostas','para o apostador','para ninguém'],a:'para a casa, que tem milhões de apostas',exp:'Muitas repetições: resultado quase certo.'}]);},
+6:()=>{const t=R(0,2);
+ if(t==0){const n=P([180,360,720,1800,3600,7200]);return{q:`Num dado lançado <b>${fmt(n)}</b> vezes, qual o desvio padrão da contagem de uma face, √(n × 1/6 × 5/6)? Uma casa.`,a:Math.round(Math.sqrt(n*5/36)*10)/10,tol:0.06,exp:`√(${fmt(n)} × 5/36) = √${fmt(Math.round(n*5/36*10)/10)} ≈ ${fmt(Math.round(Math.sqrt(n*5/36)*10)/10)}.`};}
+ if(t==1){const n=P([100,400,900,1600,2500]);return{q:`Uma moeda é lançada <b>${fmt(n)}</b> vezes. Qual a margem de erro de 95% do número de caras (2 desvios padrão)?`,a:Math.sqrt(n),exp:`Desvio: √(${fmt(n)} × 0,5 × 0,5) = ${fmt(Math.sqrt(n)/2)}. Margem: 2 × ${fmt(Math.sqrt(n)/2)} = ${fmt(Math.sqrt(n))}.`};}
+ const v=600+P([-1,1])*R(10,70);const ok=Math.abs(v-600)<=45;return{q:`Em 3 600 lances (faixa 555 a 645), uma face saiu <b>${v}</b> vezes. Ela está dentro da faixa?`,opts:['dentro','fora'],a:ok?'dentro':'fora',exp:ok?`${v} fica entre 555 e 645.`:`${v} fica fora de 555 a 645: um sinal para olhar de perto.`};},
+7:()=>{const t=R(0,2);
+ if(t==0){const e=P([20,50,100,600]),d=R(2,Math.round(e/5));return{q:`Esperado <b>${e}</b>, observado <b>${e+d}</b>. Quanto vale (O − E)² ÷ E? Duas casas.`,a:Math.round(d*d/e*100)/100,tol:0.011,exp:`${d}² ÷ ${e} = ${d*d} ÷ ${e} ≈ ${fmt(Math.round(d*d/e*100)/100)}.`};}
+ if(t==1){const n=P([100,200,400]),c=n/2+P([-1,1])*R(2,Math.round(n/8));const q=2*(c-n/2)*(c-n/2)/(n/2);return{q:`Uma moeda deu <b>${c}</b> caras em <b>${n}</b> lances. Qual o χ² (esperado ${n/2} e ${n/2})? Duas casas.`,a:Math.round(q*100)/100,tol:0.011,exp:`2 × (${c} − ${n/2})² ÷ ${n/2} ≈ ${fmt(Math.round(q*100)/100)}. ${q>3.84?'Acima de 3,84: suspeita.':'Abaixo de 3,84: normal.'}`};}
+ const q=Math.round((R(10,180)/10)*100)/100;return{q:`O χ² de um dado de 6 faces deu <b>${fmt(q)}</b>. Com o limite de 11,07, o dado é:`,opts:['normal','suspeito'],a:q>11.07?'suspeito':'normal',exp:q>11.07?`${fmt(q)} > 11,07: suspeito.`:`${fmt(q)} ≤ 11,07: compatível com um dado honesto.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='apo1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A faixa do acaso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A faixa do acaso</h1></header>
+<main>
+<div class="card"><h2>Honesto ou viciado?</h2><p class="muted" style="margin-top:0">Escolha o número de lances (arrastando a barra ou com − e +). Para cada face, a faixa laranja vai de <b>esperado − 2 desvios</b> a <b>esperado + 2 desvios</b>. Mostre as mesas e toque numa face para ver os detalhes.</p>
+<div id="chd" style="margin:4px 0"></div>
+<div class="sl" id="sn"><b>Lances</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Esperado<b id="k1"></b></div><div>Desvio padrão<b id="k2"></b></div><div>Faixa de 95%<b id="k3"></b></div><div class="o">Face escolhida<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Use a margem de erro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MA=[589,614,597,622,583,595],MB=[662,611,592,603,600,532];let dad=0,fs=0;
+const CD=chips('chd',['só a faixa','Mesa A','Mesa B'],0,i=>{dad=i;if(i)SN.set(3600);draw();});
+const SN=SL('sn',60,7200,60,600,()=>draw(),v=>fmt(v));
+toque('fig',(x,y)=>{const i=Math.floor((x-40)/48);if(i>=0&&i<6){fs=i;draw();}});
+const E=()=>SN.get()/6,D=()=>Math.sqrt(SN.get()*5/36);
+const dados=()=>dad==1?MA:dad==2?MB:null;
+const fora=v=>v<E()-2*D()||v>E()+2*D();
+MIS.def(()=>[
+ ['Ache a faixa de 95% de uma face em <b>3 600 lances</b>.',()=>SN.get()==3600,'600 ± 45: de 555 a 645. O desvio padrão é √500 ≈ 22,4.',()=>'Agora são '+fmt(SN.get())+' lances. Leve a barra até 3 600.'],
+ ['Descubra quantos lances deixam a margem em exatamente <b>± 20</b>.',()=>Math.abs(2*D()-20)<0.05,'720 lances: esperado 120, desvio √100 = 10, margem ± 20. Com 5 vezes menos lances que 3 600, a margem não ficou 5 vezes menor: só √5 ≈ 2,2 vezes.',()=>'Com '+fmt(SN.get())+' lances a margem é ± '+r1(2*D())+'. '+(2*D()>20?'Diminua':'Aumente')+' o número de lances.'],
+ ['Mostre a <b>Mesa B</b> e toque na face que ficou <b>mais longe</b> da faixa.',()=>dad==2&&SN.get()==3600&&fs==5,'Face 6: 532, 23 abaixo do limite de 555. A face 1 (662) passou 17 do limite de cima. O dado azul da Mesa B tinha uma quina lascada.',()=>dad!=2?'Escolha "Mesa B".':SN.get()!=3600?'Os dados das mesas são de 3 600 lances.':'A face '+(fs+1)+' saiu '+MB[fs]+' vezes. Procure a que escapou mais da faixa.']]);
+function draw(){let g=RC(0,0,340,260,'#F8FAFC','rx="10"');const e=E(),d=D(),lo=e-4.2*d,hi=e+4.2*d,y0=215,gh=190;const Y=v=>y0-gh*(v-lo)/(hi-lo);
+ for(const v of [e-2*d,e,e+2*d])g+=LN(36,Y(v),330,Y(v),v==e?NAVY:GRAYL,1,v==e?'4 3':'')+TX(34,Y(v)+3,fmt(Math.round(v)),{fs:8,a:'end',c:v==e?NAVY:ORANGE});
+ const ds=dados();
+ for(let i=0;i<6;i++){const x=40+i*48+24;g+=RC(x-12,Y(e+2*d),24,Y(e-2*d)-Y(e+2*d),i==fs?LIGHT:PEACH,'rx="5"');
+  g+=DADO(x-10,y0+10,20,i+1,i==fs?PEACH:'#fff',NAVY,i==fs?ORANGE:NAVY);
+  if(ds){const v=ds[i],yy=clamp(Y(v),12,y0);g+=CIR(x,yy,7,fora(v)?VERM:BLUE,'stroke="#fff" stroke-width="2"')+(fora(v)?TX(x,yy-11,v,{fs:9,c:VERM}):'');}}
+ $('fig').innerHTML=SVG(340,260,g);
+ $('k1').textContent=fmt(Math.round(e));$('k2').textContent=r1(d);$('k3').textContent=fmt(Math.round(e-2*d))+' a '+fmt(Math.round(e+2*d));
+ $('k4').textContent='face '+(fs+1)+(ds?': '+ds[fs]+(fora(ds[fs])?' (fora)':' (dentro)'):'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
