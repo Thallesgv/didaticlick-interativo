@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A altura da coluna · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A altura da coluna</h1></header>
+<main>
+<div class="card"><h2>h = d · tg α</h2><p class="muted" style="margin-top:0">Do navio, a Dra. Alice mira o topo da coluna de cinzas com o clinômetro. Mude a <b>distância</b> até a cratera e o <b>ângulo de elevação</b>. A linha tracejada é a tropopausa dos trópicos (uns 16 km).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância d</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Ângulo α</b><input type="range"><span></span></div>
+<div class="kpi"><div>tg α<b id="kt"></b></div><div class="o">Altura h<b id="kh"></b></div><div>Acima do mar<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mire o topo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const KM3=v=>SIG(v)+' km³';
+function nuvemSVG(x,y,w,h,c){let g='';[[-0.35,0,0.3],[-0.1,-0.12,0.36],[0.18,-0.05,0.32],[0.38,0.05,0.26],[0,0.12,0.3]].forEach(([dx,dy,r])=>g+=CI(x+dx*w,y+dy*h,r*h*1.2,c||'#9AA0AC'));return g;}
+const D=SL('sd',5,60,1,20,()=>draw(),v=>v+' km');
+const A=SL('sa',2,60,0.5,30,()=>draw(),v=>fmt(v)+'°');
+const tg=()=>Math.tan(A.get()*RAD),h=()=>D.get()*tg();
+MIS.def(()=>[
+ ['A coluna das 6h40: o navio está a <b>30 km</b> e o ângulo é <b>18°</b>. Qual a altura?',()=>D.get()==30&&A.get()==18,()=>'h = 30 × 0,325 ≈ '+r2(h())+' km. Com o cume de 1,5 km, o topo fica a uns 11 km acima do mar.',()=>'Ponha d = 30 km e α = 18°.'],
+ ['Ainda a 30 km: que ângulo faria a coluna passar dos <b>16 km</b> da tropopausa?',()=>D.get()==30&&h()>=16&&h()<17.5,()=>'Com α = '+fmt(A.get())+'°, h ≈ '+r1(h())+' km. Acima de uns 28°, a coluna já estaria na estratosfera.',()=>D.get()!=30?'Volte para d = 30 km.':'Agora h ≈ '+r1(h())+' km.'],
+ ['A primeira explosão teve coluna de <b>40 km</b>. Vista de 40 km de distância, qual seria o ângulo?',()=>D.get()==40&&Math.abs(h()-40)<0.5,'45°: tg 45° = 1, então a altura é igual à distância.',()=>D.get()!=40?'Ponha d = 40 km.':'Agora h ≈ '+r1(h())+' km. Procure 40 km.'],
+ ['Uma coluna de cerca de <b>10 km</b> vista de <b>60 km</b>: o ângulo fica grande ou pequeno?',()=>D.get()==60&&Math.abs(h()-10)<0.6,()=>'Só uns '+fmt(A.get())+'°. De longe, o ângulo é pequeno e um erro de meio grau já muda a altura em mais de 0,5 km.',()=>D.get()!=60?'Ponha d = 60 km.':'Agora h ≈ '+r1(h())+' km. Procure 10 km.']]);
+function quadro(){const W=340,H=236,y0=196,s=280/60,vs=170/42,xn=36,xc=xn+D.get()*s,hp=Math.min(h(),55)*vs;let g=RC(0,0,W,H,'#EAF2FB','rx="10"')+RC(0,y0,W,H-y0,MAR);
+ const yt=y0-16*vs;g+=LN(0,yt,W,yt,'#2457D6',1,'5 4')+TX(W-6,yt-4,'tropopausa ≈ 16 km',{fs:9,c:BLUE,a:'end',w:500});
+ g+=PG([[xc-26,y0],[xc-5,y0-12],[xc+5,y0-12],[xc+26,y0]],ROCHA);
+ g+=PG([[xc-4,y0-12],[xc+4,y0-12],[xc+9,y0-hp],[xc-9,y0-hp]],CINZA_C)+nuvemSVG(xc,y0-hp,36,14,'#9AA0AC');
+ g+=PG([[xn-14,y0-2],[xn+14,y0-2],[xn+9,y0+5],[xn-9,y0+5]],NAVY)+RC(xn-6,y0-8,10,6,'#fff','stroke="#0E2354"');
+ g+=LN(xn,y0-4,xc,y0-4,ORANGE,1.4,'4 3')+LN(xn,y0-4,xc,y0-hp,ORANGE,2)+LN(xc,y0-4,xc,y0-hp,NAVY,1.2,'3 2');
+ const ang=Math.atan2(hp,xc-xn);let arc='';for(let i=0;i<=12;i++){const a=ang*i/12;arc+=(xn+30*Math.cos(a)).toFixed(1)+','+(y0-4-30*Math.sin(a)).toFixed(1)+' ';}
+ g+=`<polyline points="${arc}" fill="none" stroke="${ORANGE}" stroke-width="1.5"/>`+TX(xn+36,y0-10,fmt(A.get())+'°',{fs:10,c:ORANGE,a:'start'});
+ g+=TX((xn+xc)/2,y0+18,'d = '+D.get()+' km',{fs:10,c:NAVY});
+ g+=TX(Math.min(xc+12,W-50),Math.max(y0-hp/2,24),'h ≈ '+r1(h())+' km',{fs:10,c:ORANGE,a:'start'});
+ g+=TX(W-6,H-6,'escala vertical exagerada',{fs:8,c:GRAY,a:'end',w:500});
+ $('fig').innerHTML=SVG(W,H,g);}
+function draw(){$('kt').textContent=fmt(Math.round(tg()*1000)/1000);$('kh').textContent=r2(h())+' km';$('km').textContent=r1(h()+1.5)+' km';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
