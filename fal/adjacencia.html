@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quem vendeu para quem · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Quem vendeu para quem</h1></header>
+<main>
+<div class="card"><h2>Quem vendeu para quem</h2><p class="muted" style="margin-top:0">Toque nas casas da matriz para criar ou apagar uma venda (linha = quem vendeu, coluna = quem comprou). As setas que fazem parte de um ciclo ficam laranja. Escolha um vértice para contar os caminhos de dois e de três passos.</p>
+<div class="fig" id="fig"></div>
+<div id="cs" style="margin:4px 0"></div>
+<div class="row" style="margin:4px 0"><button class="alt" id="bz" style="padding:5px 11px;font-size:13px">Apagar tudo</button></div>
+<div class="kpi"><div>Vendeu<b id="kv"></b></div><div>Comprou<b id="kc"></b></div><div>Caminhos de 2 passos<b id="k2"></b></div><div class="o">Voltas de 3 passos<b id="k3"></b></div></div>
+<p class="muted" id="lista" style="margin:6px 0 0"></p>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia as vendas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SETA=(x1,y1,x2,y2,c,w,r1_,r2_,dl)=>{const L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L,ox=-uy*(dl||0),oy=ux*(dl||0);
+ const a=[x1+ux*r1_+ox,y1+uy*r1_+oy],b=[x2-ux*r2_+ox,y2-uy*r2_+oy];const h=9,k=4.5;
+ return LN(a[0],a[1],b[0]-ux*h*0.6,b[1]-uy*h*0.6,c,w)+PG([[b[0],b[1]],[b[0]-ux*h-uy*k,b[1]-uy*h+ux*k],[b[0]-ux*h+uy*k,b[1]-uy*h-ux*k]],c);};
+const NOS=["A", "B", "C", "D", "E"],NOMES={"A": "Galeria Aurora", "B": "Marchand Lemos", "C": "Leilões Vale", "D": "Colecionador Prado", "E": "Atelier Sena"},ADJ=[[0, 1, 0, 1, 0], [0, 0, 1, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 0], [1, 0, 0, 0, 0]];
+
+const XY=[[140,92],[268,32],[268,152],[140,170],[36,92]];let M=[...Array(5)].map(()=>Array(5).fill(0)),sel=4;
+const CS=chips('cs',NOS.map(n=>n+' · '+NOMES[n].split(' ').slice(-1)[0]),4,i=>{sel=i;draw();});
+$('bz').onclick=()=>{M=[...Array(5)].map(()=>Array(5).fill(0));draw();};
+const mul=(A,B)=>A.map((r,i)=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+function alc(){const R=M.map(r=>r.map(v=>!!v));for(let k=0;k<5;k++)for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(R[i][k]&&R[k][j])R[i][j]=true;return R;}
+const X0=95,Y0=222,S=30;
+toque('fig',(x,y,ini)=>{if(!ini)return;const j=Math.floor((x-X0)/S),i=Math.floor((y-Y0)/S);if(i>=0&&i<5&&j>=0&&j<5&&i!=j){M[i][j]=1-M[i][j];draw();}});
+const pomar=()=>M.every((r,i)=>r.every((v,j)=>v==ADJ[i][j]));
+MIS.def(()=>[
+ ['Reproduza as <b>5 vendas</b> do Pomar em flor: E→A, A→B, B→C, C→A e A→D.',pomar,'Linha A = [0 1 0 1 0]: a Aurora vendeu duas vezes. Coluna A = [0 0 1 0 1]: comprou duas vezes. E o ciclo A → B → C → A acendeu.',()=>{let f=[],x=[];for(let i=0;i<5;i++)for(let j=0;j<5;j++){if(ADJ[i][j]&&!M[i][j])f.push(NOS[i]+'→'+NOS[j]);if(!ADJ[i][j]&&M[i][j])x.push(NOS[i]+'→'+NOS[j]);}return (f.length?'Faltam: '+f.join(', ')+'. ':'')+(x.length?'Sobram: '+x.join(', ')+'.':'');}],
+ ['Com as vendas do Pomar, escolha um vértice do ciclo e veja a <b>diagonal de A³</b>.',()=>pomar()&&sel<3,()=>'O elemento '+NOS[sel]+NOS[sel]+' de A³ vale 1: um caminho de 3 passos que sai de '+NOS[sel]+' e volta para '+NOS[sel]+'. É assim que um computador acha voltas em milhares de vendas.',()=>pomar()?'Escolha A, B ou C.':'Volte às 5 vendas do Pomar.'],
+ ['Com as vendas do Pomar, escolha o <b>Atelier Sena (E)</b>. Quantos caminhos de dois passos saem dele?',()=>pomar()&&sel==4,'2: E → A → B e E → A → D. É a soma da linha E de A².',()=>pomar()?'Escolha o E.':'Volte às 5 vendas do Pomar.'],
+ ['Invente: crie uma venda de <b>ida e volta</b> entre dois vértices (um ciclo de 2 passos).',()=>M.some((r,i)=>r.some((v,j)=>v&&M[j][i])),'Duas setas opostas: o quadro foi e voltou. Na diagonal de A², esse vértice ganha 1.',()=>'Toque em duas casas simétricas da matriz, como AD e DA.']]);
+function draw(){const R=alc(),A2=mul(M,M),A3=mul(A2,M);let s=RC(0,0,340,400,'#fff','rx="10"');
+ for(let i=0;i<5;i++)for(let j=0;j<5;j++)if(M[i][j]){const cic=R[j][i],du=M[j][i];const [x1,y1]=XY[i],[x2,y2]=XY[j];s+=SETA(x1,y1,x2,y2,cic?ORANGE:NAVY,2.5,20,21,du?6:0);}
+ const LO=[[0,-24,'middle'],[-24,4,'end'],[0,32,'middle'],[-24,4,'end'],[0,-24,'middle']];XY.forEach(([x,y],i)=>{s+=CIR(x,y,18,i==sel?ORANGE:NAVY,'stroke="#fff" stroke-width="2"')+TX(x,y+5,NOS[i],{fs:13,c:'#fff'})+TX(x+LO[i][0],y+LO[i][1],NOMES[NOS[i]],{fs:9,c:GRAY,a:LO[i][2]});});
+ NOS.forEach((n,j)=>{s+=TX(X0+j*S+S/2,Y0-6,n,{fs:11,c:GRAY});s+=TX(X0-8,Y0+j*S+S/2+4,n,{fs:11,c:GRAY,a:'end'});});
+ s+=TX(X0+5*S+20,Y0-6,'vendeu',{fs:9,c:GRAY})+TX(X0-48,Y0+5*S+19,'comprou',{fs:9,c:GRAY});
+ for(let i=0;i<5;i++){for(let j=0;j<5;j++){const v=M[i][j],x=X0+j*S,y=Y0+i*S;s+=RC(x,y,S,S,i==j?'#EEF0F3':v?(R[j][i]?PEACH:'#DCE6FA'):'#fff','stroke="'+GRAYL+'"')+TX(x+S/2,y+S/2+5,i==j?'·':v,{fs:13,c:v?(R[j][i]?ORANGE:NAVY):'#B0B7C3'});}
+  s+=TX(X0+5*S+20,Y0+i*S+S/2+5,M[i].reduce((a,b)=>a+b,0),{fs:12,c:NAVY});s+=TX(X0+i*S+S/2,Y0+5*S+19,M.reduce((a,r)=>a+r[i],0),{fs:12,c:NAVY});}
+ $('fig').innerHTML=SVG(340,400,s);
+ const c2=[];for(let j=0;j<5;j++)for(let k=0;k<5;k++)if(M[sel][j]&&M[j][k])c2.push(NOS[sel]+' → '+NOS[j]+' → '+NOS[k]);
+ $('kv').textContent=M[sel].reduce((a,b)=>a+b,0);$('kc').textContent=M.reduce((a,r)=>a+r[sel],0);$('k2').textContent=A2[sel].reduce((a,b)=>a+b,0);$('k3').textContent=A3[sel][sel];
+ $('lista').innerHTML=c2.length?'Caminhos de 2 passos saindo de '+NOS[sel]+': '+c2.join('; ')+'.':'Nenhum caminho de 2 passos sai de '+NOS[sel]+'.';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

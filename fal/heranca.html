@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A árvore da herança · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A árvore da herança</h1></header>
+<main>
+<div class="card"><h2>A árvore da herança</h2><p class="muted" style="margin-top:0">Otávio Fontes deixa o quadro em partes iguais para os filhos. Se Marcos morre, a parte dele se divide entre os filhos dele. Raul pode comprar a parte da irmã Helena. A árvore se redesenha com as frações.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Filhos de Otávio</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Filhos de Marcos que herdam (0 = Marcos vivo)</b><input type="range"><span></span></div>
+<div id="cc" style="margin:4px 0"></div>
+<p class="muted" style="margin:8px 0 2px">Valor do quadro</p><div id="cv" style="margin:4px 0"></div>
+<div class="kpi"><div>Parte de Raul<b id="kr"></b></div><div>Raul recebe<b id="kd"></b></div><div>Soma das folhas<b id="ks"></b></div><div class="o">Vértices e arestas<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Divida a herança.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const FI=['Raul','Helena','Marcos','Clara','Jorge'],NE=['Ana','Pedro','Lia','Tito'],VAL=[800,1e6,5e7,2.5e8];
+const SN=SL('sn',2,5,1,3,()=>draw(),v=>v),SK=SL('sk',0,4,1,0,()=>draw(),v=>v);let compra=0,iv=0;
+chips('cc',['Raul não compra','Raul compra a parte de Helena'],0,i=>{compra=i;draw();});
+chips('cv',['R$ 800 (2009)','R$ 1 milhão','R$ 50 milhões','R$ 250 milhões (leilão)'],0,i=>{iv=i;draw();});
+const mdc=(a,b)=>b?mdc(b,a%b):a,fr=(n,d)=>{if(!n)return '0';const g=mdc(n,d);return d/g==1?String(n/g):(n/g)+'/'+(d/g);};
+const din=v=>v>=1e6?'R$ '+vg(Math.round(v/1e5)/10)+' mi':'R$ '+fmt(Math.round(v*100)/100);
+function estado(){const n=SN.get(),k=n>=3?SK.get():0;return{n,k,raul:[1+(compra?1:0),n],V:1+n+k};}
+MIS.def(()=>[
+ ['Reproduza a herança dos Fontes: <b>3 filhos</b>, Marcos morre e deixa a parte para <b>2 filhos</b>, e Raul <b>compra a parte de Helena</b>.',()=>{const e=estado();return e.n==3&&e.k==2&&compra==1;},'Raul: 1/3 + 1/3 = 2/3. Ana e Pedro: 1/6 cada. As folhas somam 1.',()=>{const e=estado();return e.n!=3?'Otávio teve 3 filhos.':e.k!=2?'Marcos deixou 2 filhos: Ana e Pedro.':'Falta a compra de Raul.';}],
+ ['Com a herança dos Fontes, ponha o quadro no <b>leilão</b>. Quanto Raul recebe?',()=>{const e=estado();return e.n==3&&e.k==2&&compra==1&&iv==3;},'2/3 de R$ 250 milhões ≈ R$ 166,7 milhões. Em 2009, os mesmos 2/3 valiam R$ 533,33.',()=>'Mantenha a família dos Fontes e escolha o valor do leilão.'],
+ ['Monte uma árvore com <b>8 vértices</b>. Quantas arestas ela tem?',()=>estado().V==8,'8 vértices e 7 arestas: numa árvore, sempre uma aresta a menos que os vértices. A compra não é aresta da árvore, é só uma troca de dono.',()=>'Agora são '+estado().V+' vértices. Mude o número de filhos e de netos.'],
+ ['Ache uma família em que Raul fica com <b>exatamente metade</b> do quadro.',()=>{const e=estado();return e.raul[0]*2==e.raul[1];},'Com 4 filhos e a compra: 1/4 + 1/4 = 1/2. (Com 2 filhos e sem compra também dá 1/2.)',()=>'Raul tem '+fr(...estado().raul)+'. Mude o número de filhos e a compra.']]);
+function draw(){const {n,k,raul,V}=estado();const W=340,H=250;let s=RC(0,0,W,H,'#fff','rx="10"');
+ const ox=170,oy=34,cy=120,ny=205,cx=i=>W*(i+0.5)/n;
+ const xs=[...Array(n).keys()].map(cx);const mx=n>=3?xs[2]:0,nx=j=>Math.max(30,Math.min(W-30,mx+(j-(k-1)/2)*58));
+ xs.forEach(x=>s+=LN(ox,oy,x,cy,GRAYL,2.5));if(k)for(let j=0;j<k;j++)s+=LN(mx,cy,nx(j),ny,GRAYL,2.5);
+ if(compra)s+=`<path d="M${xs[1]},${cy+34} Q${(xs[0]+xs[1])/2},${cy+72} ${xs[0]+6},${cy+36}" fill="none" stroke="${ORANGE}" stroke-width="2" stroke-dasharray="5 4"/>`+PG([[xs[0]+6,cy+33],[xs[0]+2,cy+43],[xs[0]+12,cy+41]],ORANGE)+TX((xs[0]+xs[1])/2,cy+66,'venda',{fs:9,c:ORANGE});
+ const no=(x,y,nome,f,cor,sub)=>{s+=RC(x-30,y-15,60,30,cor,'rx="8"')+TX(x,y-2,nome,{fs:10,c:'#fff'})+TX(x,y+11,f,{fs:10,c:'#fff',w:500});if(sub)s+=TX(x,y+28,sub,{fs:9,c:GRAY,w:500});};
+ no(ox,oy,'Otávio','1',NAVY,'');
+ FI.slice(0,n).forEach((nm,i)=>{let f=fr(1,n),c=NAVY,sub='herdou '+fr(1,n);
+  if(i==0){f=fr(...raul);c=ORANGE;sub=compra?fr(1,n)+' + '+fr(1,n):'';}
+  if(i==1&&compra){f='0';c=GRAY;sub='vendeu a Raul';}
+  if(i==2&&k){f='–';c=GRAY;sub='morreu';}
+  no(xs[i],cy,nm,f,c,sub);});
+ for(let j=0;j<k;j++)no(nx(j),ny,NE[j],fr(1,n*k),VERDE_T,'');
+ $('fig').innerHTML=SVG(W,H,s);
+ $('kr').textContent=fr(...raul);$('kd').textContent=din(VAL[iv]*raul[0]/raul[1]);$('ks').textContent='1';$('kv').textContent=V+' e '+(V-1);
+ $('sk').style.opacity=n>=3?1:.4;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

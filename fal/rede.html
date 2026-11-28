@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A rede dos quatro quadros · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A rede dos quatro quadros</h1></header>
+<main>
+<div class="card"><h2>A rede dos quatro quadros</h2><p class="muted" style="margin-top:0">Ligue e desligue cada quadro para ver o seu caminho na rede. Toque num vértice: o número dentro de cada círculo vira a distância até ele. Você também pode tirar o vértice tocado da rede e ver o que se desliga.</p>
+<div id="cq" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin:4px 0"><button class="alt" id="bt" style="padding:5px 11px;font-size:13px">Tirar o vértice tocado</button><button class="alt" id="br" style="padding:5px 11px;font-size:13px">Devolver todos</button></div>
+<div class="kpi"><div>Vértice<b id="kn"></b></div><div>Grau<b id="kg"></b></div><div>Presença<b id="kp"></b></div><div class="o">Mais longe<b id="kl"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache o centro da rede.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROXO='#8E44AD';
+const POS={"Atelier Sena": [152, 124, 0, -22, "middle"], "Galeria Aurora": [219, 177, 0, 30, "middle"], "Marchand Lemos": [249, 82, 0, -21, "middle"], "Leilões Vale": [292, 141, 0, 30, "middle"], "Col. Prado": [148, 208, -19, 4, "end"], "Raul Fontes": [57, 76, 0, 30, "middle"], "Casa Vieira": [50, 161, 0, 30, "middle"], "Comprador estrangeiro": [184, 46, 0, -20, "middle"]},QD=[["Oliveiras ao entardecer (2026)", ["Raul Fontes", "Atelier Sena", "Casa Vieira"]], ["Marinha com barcos (2017)", ["Galeria Aurora", "Atelier Sena", "Col. Prado"]], ["Pomar em flor (2019)", ["Atelier Sena", "Galeria Aurora", "Marchand Lemos", "Leilões Vale", "Galeria Aurora", "Col. Prado"]], ["Retrato de camponesa (2023)", ["Marchand Lemos", "Atelier Sena", "Galeria Aurora", "Comprador estrangeiro"]]];
+
+const NM=Object.keys(POS),CQ=[ORANGE,COBALTO,VERDE_T,ROXO];let on=[1,1,1,1],sel='Raul Fontes',fora=new Set();
+function botoes(){$('cq').innerHTML=QD.map(([t],i)=>`<button class="${on[i]?'':'alt'}" style="padding:5px 11px;font-size:12px;margin:2px;${on[i]?'background:'+CQ[i]+';border-color:'+CQ[i]:''}" data-i="${i}">${t}</button>`).join('');
+ document.querySelectorAll('#cq button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;on[i]=1-on[i];botoes();draw();});}
+$('bt').onclick=()=>{if(sel){fora.add(sel);draw();}};$('br').onclick=()=>{fora.clear();draw();};
+function arestas(){const E=[];QD.forEach(([t,c],q)=>{if(!on[q])return;for(let i=0;i+1<c.length;i++){const a=c[i],b=c[i+1];if(fora.has(a)||fora.has(b))continue;E.push([a,b,q]);}});return E;}
+const k2=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+function viz(){const E=arestas(),V={};NM.forEach(n=>V[n]=new Set());E.forEach(([a,b])=>{V[a].add(b);V[b].add(a);});return V;}
+function bfs(s){const V=viz(),d={};NM.forEach(n=>d[n]=Infinity);if(fora.has(s))return d;d[s]=0;const f=[s];while(f.length){const x=f.shift();V[x].forEach(y=>{if(d[y]==Infinity){d[y]=d[x]+1;f.push(y);}});}return d;}
+const pres=n=>QD.filter(([t,c],q)=>on[q]&&c.includes(n)).length;
+toque('fig',(x,y,ini)=>{if(!ini)return;let b=null,bd=24;NM.forEach(n=>{const d=Math.hypot(x-POS[n][0],y-POS[n][1]);if(d<bd){bd=d;b=n;}});if(b){sel=b;draw();}});
+const todos=()=>on.every(v=>v)&&!fora.size;
+MIS.def(()=>[
+ ['Com os 4 quadros ligados, toque no vértice que aparece em <b>todos os quatro</b>.',()=>todos()&&sel=='Atelier Sena','Atelier Sena: presença 4, grau 5. Ligue um quadro de cada vez e veja o Atelier aparecer em todos.',()=>!todos()?'Ligue os 4 quadros e devolva os vértices tirados.':'O vértice '+sel+' aparece em '+pres(sel)+' quadro(s).'],
+ ['Toque na <b>Galeria Aurora</b> e compare com o Atelier: mesmo grau, presença diferente?',()=>todos()&&sel=='Galeria Aurora','Aurora: grau 5, presença 3. O grau empata; a presença desempata, e só o Atelier está nos quatro.',()=>todos()?'Toque na Galeria Aurora.':'Ligue os 4 quadros.'],
+ ['Toque em <b>Raul Fontes</b> e leia as distâncias. Qual galeria ou leilão fica mais longe dele?',()=>todos()&&sel=='Raul Fontes','Raul → Atelier: 1; → Aurora: 2; → Leilões Vale: 3, o mais longe (empatado com o comprador estrangeiro). Todos os caminhos de Raul passam pelo Atelier.',()=>todos()?'Toque em Raul Fontes.':'Ligue os 4 quadros.'],
+ ['Tire o <b>Atelier Sena</b> da rede. O que acontece com Raul?',()=>fora.has('Atelier Sena')&&on.every(v=>v),'Raul fica isolado: grau 0, distância infinita até todos. O Atelier é a única ponte entre o quadro de Raul e o resto da rede.',()=>'Toque no Atelier Sena e aperte "Tirar o vértice tocado".']]);
+function draw(){const E=arestas(),cnt={},vis={},d=bfs(sel),V=viz();E.forEach(([a,b])=>cnt[k2(a,b)]=(cnt[k2(a,b)]||0)+1);let s=RC(0,0,340,252,'#fff','rx="10"');
+ E.forEach(([a,b,q])=>{const k=k2(a,b),m=cnt[k];vis[k]=vis[k]||0;const o=(vis[k]-(m-1)/2)*4.5;vis[k]++;const [x1,y1]=POS[a],[x2,y2]=POS[b],L=Math.hypot(x2-x1,y2-y1),nx=-(y2-y1)/L*o,ny=(x2-x1)/L*o;
+  s+=LN(x1+nx,y1+ny,x2+nx,y2+ny,CQ[q],3);});
+ NM.forEach(n=>{const [x,y]=POS[n],f=fora.has(n),c=n==sel;const dv=d[n];
+  s+=CIR(x,y,c?17:14,f?'#E5E7EB':c?ORANGE:NAVY,'stroke="#fff" stroke-width="2"')+TX(x,y+4.5,f?'×':dv==Infinity?'∞':dv,{fs:12,c:f?GRAY:'#fff'});
+  s+=TX(x+POS[n][2],y+POS[n][3],n,{fs:9,c:f?'#B0B7C3':NAVY,w:c?700:500,a:POS[n][4]});});
+ s+=TX(10,246,'número no círculo = distância até o vértice tocado',{fs:8.5,c:GRAY,a:'start',w:500});
+ $('fig').innerHTML=SVG(340,252,s);
+ const fin=NM.filter(n=>n!=sel&&!fora.has(n)&&d[n]<Infinity),mx=fin.length?Math.max(...fin.map(n=>d[n])):0;
+ $('kn').textContent=sel;$('kg').textContent=fora.has(sel)?'fora':V[sel].size;$('kp').textContent=pres(sel)+' de '+on.reduce((a,b)=>a+b,0);
+ $('kl').textContent=fora.has(sel)?'–':fin.length?fin.filter(n=>d[n]==mx).join(', ')+' ('+mx+')':'isolado';MIS.ver('m');}
+botoes();draw();
+})();
+</script>
+</body>
+</html>
