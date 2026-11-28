@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fusos horários · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Fusos horários</h1></header>
+<main>
+<div class="card"><h2>15° por hora</h2><p class="muted" style="margin-top:0">Mude a longitude do lugar e a hora em Greenwich (arrastando no mapa ou com − e +). A faixa clara é o lado dia do planeta; o Sol está a pino na linha amarela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="so"><b>Longitude do lugar</b><input type="range"><span></span></div><div class="sl" id="sg"><b>Hora em Greenwich</b><input type="range"><span></span></div><div class="kpi"><div>Hora solar do lugar<b id="k1"></b></div><div>Fuso mais próximo<b id="k2"></b></div><div class="o">Meio-dia solar (Brasília)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Gire o planeta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SAM=[[-80,8],[-60,10],[-35,-5],[-40,-22],[-58,-38],[-68,-55],[-75,-45],[-72,-18],[-81,-5]];
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const dentro=(lon,lat,poly)=>{let d=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[xi,yi]=poly[i],[xj,yj]=poly[j];if((yi>lat)!=(yj>lat)&&lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)d=!d;}return d;};
+const lonTX=l=>l==0?'0°':fmt(Math.abs(Math.round(l*10)/10))+'° '+(l<0?'O':'L');
+const latTX=l=>l==0?'0°':fmt(Math.abs(Math.round(l*10)/10))+'° '+(l<0?'S':'N');
+const CONT=[[[-168,66],[-140,70],[-95,72],[-60,60],[-55,50],[-80,25],[-97,16],[-80,8],[-105,20],[-118,33],[-125,48],[-150,60]],
+ [[-80,8],[-60,10],[-35,-5],[-40,-22],[-58,-38],[-68,-55],[-75,-45],[-72,-18],[-81,-5]],
+ [[-17,21],[-5,35],[10,37],[32,31],[43,12],[51,11],[40,-15],[32,-28],[20,-35],[12,-17],[9,4],[-8,5],[-17,14]],
+ [[-10,36],[-9,43],[-5,48],[5,52],[10,58],[20,70],[60,70],[100,77],[140,72],[180,68],[160,60],[140,50],[122,30],[108,20],[105,10],[98,15],[92,22],[80,10],[72,20],[57,25],[50,30],[35,30],[27,40],[20,40],[10,44],[3,43]],
+ [[114,-22],[130,-12],[142,-11],[153,-27],[146,-39],[135,-34],[115,-34]],[[-55,60],[-20,70],[-30,83],[-60,80],[-70,77]]];
+const SO=SL('so',-180,180,0.5,-45,()=>draw(),lonTX),SG=SL('sg',0,24,0.25,12,()=>draw(),v=>hm(v*60));
+const W=340,H=230,X=l=>10+(l+180)/360*320,Y=b=>20+(80-b)/160*170;
+toque('fig',(x,y)=>{if(y>195)return;SO.set(clamp(Math.round(((x-10)/320*360-180)*2)/2,-180,180));draw();});
+const solar=()=>((SG.get()+SO.get()/15)%24+24)%24;
+MIS.def(()=>[
+ ['É meio-dia em Greenwich. Ponha o lugar em <b>45° O</b> e leia a hora solar.',()=>SO.get()==-45&&SG.get()==12,'9h: o Sol ainda está 45° a leste do meridiano. 45 ÷ 15 = 3 horas antes.',()=>SG.get()!=12?'Ponha Greenwich ao meio-dia.':'Longitude agora: '+lonTX(SO.get())+'.'],
+ ['Com Greenwich ao meio-dia, ache um lugar onde é <b>meia-noite</b> solar.',()=>SG.get()==12&&Math.abs(SO.get())==180,'180°: o antimeridiano, do outro lado do planeta, no Pacífico. Ali passa a linha da data.',()=>SG.get()!=12?'Ponha Greenwich ao meio-dia.':'Hora solar aqui: '+hm(solar()*60)+'.'],
+ ['Ponha o lugar em <b>Rio Branco (68° O)</b> e compare o meio-dia dele com o de Recife (35° O).',()=>SO.get()==-68,'Meio-dia solar às 13h32 de Brasília. Recife: 11h40. São 33° × 4 min = 2h12 de diferença.',()=>'Longitude agora: '+lonTX(SO.get())+'.']]);
+function draw(){const L=SO.get(),g0=SG.get(),sun=((12-g0)*15+540)%360-180;let g=RC(0,0,W,H,'#0E1838','rx="10"');
+ for(let k=-1;k<=1;k++){const a=X(sun-90+360*k),b=X(sun+90+360*k);const x1=Math.max(10,a),x2=Math.min(330,b);if(x2>x1)g+=RC(x1,20,x2-x1,170,'#CFE2F7');}
+ for(const p of CONT)g+=PG(p.map(([a,b])=>[X(a).toFixed(1),Y(clamp(b,-80,80)).toFixed(1)]),'#9DBB8A','stroke="#5F7F4E" stroke-width="0.6" opacity="0.9"');
+ for(let l=-180;l<=180;l+=15)g+=LN(X(l),20,X(l),190,l==-45?ORANGE:'#5B6F9E',l==-45?1.4:0.5);
+ g+=LN(X(sun),20,X(sun),190,OURO,2.5)+CIR(X(sun),14,6,OURO);
+ g+=LN(X(L),20,X(L),190,'#C0392B',2)+CIR(X(L),Y(-10),5,'#C0392B','stroke="#fff" stroke-width="1.5"');
+ for(const l of [-180,-90,0,90,180])g+=TX(X(l),204,lonTX(l),{fs:9,c:AZC,w:500});
+ g+=TX(X(L),220,'lugar: '+hm(solar()*60),{fs:10,c:'#FFB4A8'});
+ $('fig').innerHTML=SVG(W,H,g);
+ const fz=Math.round(L/15);$('k1').textContent=hm(solar()*60);$('k2').textContent='UTC'+(fz==0?'':(fz>0?'+':'−')+Math.abs(fz));$('k3').textContent=hm(((720+(-45-L)*4)%1440+1440)%1440);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
