@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O carro de som · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O carro de som</h1></header>
+<main>
+<div class="card"><h2>Todas as ruas, repetindo o mínimo</h2><p class="muted" style="margin-top:0">Toque nas esquinas, uma depois da outra, para guiar o carro de som. Ele só anda entre esquinas vizinhas. Ruas percorridas ficam laranja; ruas repetidas, vermelhas. Esquinas de grau ímpar têm anel laranja.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<button class="alt" id="rb" style="margin:6px 0">Recomeçar</button>
+<div class="kpi"><div class="o">Ruas cobertas<b id="kc"></b></div><div>Repetições<b id="kr"></b></div><div>Trajeto<b id="kt"></b></div><div>Caminho<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Guie o carro de som.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const BAI=[{n:'Centro',c:3,l:2,m:300},{n:'Bairro Alto',c:3,l:3,m:200}];let b=0,cam=[];
+const L='ABCDEFGHI';
+function vert(){const B=BAI[b],v={};for(let j=0;j<B.l;j++)for(let i=0;i<B.c;i++)v[L[j*B.c+i]]=[i,j];return v;}
+function ruas(){const v=vert(),r=[];const ks=Object.keys(v);ks.forEach(a=>ks.forEach(c=>{if(a<c&&Math.abs(v[a][0]-v[c][0])+Math.abs(v[a][1]-v[c][1])==1)r.push(a+c);}));return r;}
+const chave=(a,c)=>a<c?a+c:c+a;
+function usos(){const u={};for(let i=1;i<cam.length;i++){const k=chave(cam[i-1],cam[i]);u[k]=(u[k]||0)+1;}return u;}
+const cobertas=()=>ruas().filter(r=>usos()[r]).length,reps=()=>Object.values(usos()).reduce((s,x)=>s+x-1,0),passos=()=>Math.max(0,cam.length-1);
+const grau=k=>ruas().filter(r=>r.includes(k)).length;
+const todas=()=>cobertas()==ruas().length;
+function esq(k){const v=vert();if(!v[k])return;if(!cam.length){cam=[k];}else{const u=cam[cam.length-1],[a,c]=[v[u],v[k]];if(Math.abs(a[0]-c[0])+Math.abs(a[1]-c[1])==1)cam.push(k);}draw();}
+window.__esq=esq;window.__zera=()=>{cam=[];draw();};
+MIS.def(()=>[
+ ['No <b>Centro</b>, cubra as 7 ruas <b>sem repetir</b> nenhuma.',()=>b==0&&todas()&&reps()==0,()=>'Sem repetir: '+cam.join(', ')+'. Começou e terminou nas esquinas de grau ímpar, B e E.',()=>b!=0?'Escolha o Centro.':reps()>0?'Repetiu '+reps()+' rua(s). Recomece: por qual esquina é preciso começar?':'Cobertas: '+cobertas()+' de 7.'],
+ ['No <b>Centro</b>, comece pela esquina <b>A</b> e cubra tudo repetindo <b>só uma</b> rua.',()=>b==0&&cam[0]=='A'&&todas()&&reps()==1,()=>'Uma repetição: começando em A, A passa a ser um "ímpar" junto com E. Trajeto de '+fmt(passos()*300)+' m.',()=>b!=0?'Escolha o Centro.':cam.length&&cam[0]!='A'?'Recomece e toque primeiro em A.':'Cobertas: '+cobertas()+' de 7, repetições: '+reps()+'.'],
+ ['No <b>Bairro Alto</b>, cubra as 12 ruas repetindo <b>no máximo 2</b>.',()=>b==1&&todas()&&reps()<=2,()=>'Com '+reps()+' repetições: '+fmt(passos()*200)+' m. Há 4 esquinas ímpares (B, D, F e H): é preciso "consertar" um par.',()=>b!=1?'Escolha o Bairro Alto.':'Cobertas: '+cobertas()+' de 12, repetições: '+reps()+'. Dica: comece numa esquina ímpar.'],
+ ['No <b>Bairro Alto</b>, cubra tudo e <b>volte à esquina de partida</b>, com no máximo 4 repetições.',()=>b==1&&todas()&&reps()<=4&&cam.length>1&&cam[0]==cam[cam.length-1],()=>'Circuito de '+fmt(passos()*200)+' m, com '+reps()+' repetições: o problema do carteiro chinês resolvido.',()=>b!=1?'Escolha o Bairro Alto.':'Cobertas: '+cobertas()+' de 12, repetições: '+reps()+(cam.length?', partida em '+cam[0]+', agora em '+cam[cam.length-1]:'')+'.']]);
+function draw(){const B=BAI[b],W=340,H=B.l==2?190:290,s=B.l==2?120:110,ox=B.l==2?50:60,oy=B.l==2?40:35,v=vert(),u=usos();
+ const X=i=>ox+i*s,Y=j=>oy+j*s;let g=RC(0,0,W,H,'#F3F4F6','rx="10"');
+ ruas().forEach(r=>{const[a,c]=[v[r[0]],v[r[1]]];const n=u[r]||0;g+=LN(X(a[0]),Y(a[1]),X(c[0]),Y(c[1]),n>1?VERM:n?ORANGE:'#C5CBD6',n?7:10);if(n>1)g+=TX((X(a[0])+X(c[0]))/2+(a[0]==c[0]?14:0),(Y(a[1])+Y(c[1]))/2+(a[0]==c[0]?4:-8),'×'+n,{fs:10,c:VERM});});
+ for(const k in v){const[i,j]=v[k],odd=grau(k)%2==1,at=cam.length&&cam[cam.length-1]==k;g+=(odd?`<circle cx="${X(i)}" cy="${Y(j)}" r="17" fill="none" stroke="${ORANGE}" stroke-width="3"/>`:'')+`<circle cx="${X(i)}" cy="${Y(j)}" r="12" fill="${at?ORANGE:NAVY}" stroke="#fff" stroke-width="2"/>`+TX(X(i),Y(j)+4,k,{fs:11,c:'#fff'});}
+ if(cam.length){const[i,j]=v[cam[cam.length-1]];g+=TX(X(i),Y(j)-21,'🔊',{fs:13});}
+ $('fig').innerHTML=SVG(W,H,g);$('kc').textContent=cobertas()+' de '+ruas().length;$('kr').textContent=reps();$('kt').textContent=fmt(passos()*B.m)+' m';$('kp').textContent=cam.length?cam.join(' '):'—';MIS.ver('m');}
+toque('fig',(x,y,ini)=>{if(!ini)return;const B=BAI[b],s=B.l==2?120:110,ox=B.l==2?50:60,oy=B.l==2?40:35,v=vert();for(const k in v){if(Math.hypot(x-(ox+v[k][0]*s),y-(oy+v[k][1]*s))<24){esq(k);return;}}});
+chips('ch',['Centro (ruas de 300 m)','Bairro Alto (ruas de 200 m)'],0,i=>{b=i;cam=[];draw();});
+$('rb').onclick=()=>{cam=[];draw();};
+draw();
+})();
+</script>
+</body>
+</html>

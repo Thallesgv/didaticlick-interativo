@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os turnos de saída · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Os turnos de saída</h1></header>
+<main>
+<div class="card"><h2>Pintar o grafo das zonas</h2><p class="muted" style="margin-top:0">Cada zona é um vértice; zonas ligadas usam a mesma saída e não podem sair no mesmo turno. <b>Toque numa zona</b> para trocar o turno dela (1º, 2º, 3º, 4º ou nenhum). Conflitos aparecem em vermelho. Cada turno dura 6 horas.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<button class="alt" id="rb" style="margin:6px 0">Apagar os turnos</button>
+<div class="kpi"><div class="o">Turnos usados<b id="ku"></b></div><div>Conflitos<b id="kc"></b></div><div>Zonas sem turno<b id="kz"></b></div><div>Tempo total<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Pinte as zonas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Z={A:['Centro',110,120],B:['Norte',200,45],C:['Leste',290,120],D:['Sul',200,195],E:['Vila Seca',40,45],F:['Rio Claro',40,195]};
+const HOJE=['AB','AC','AD','BC','CD','AE','AF','EF','BE'];
+const CEN=[HOJE,['AB','AD','BC','CD','AE','AF'],HOJE.concat(['BD'])];let cen=0,cor={};
+const CORES=['#fff',ORANGE,BLUE,GREEN,'#8E5BBF'];
+const ed=()=>CEN[cen];
+const conf=()=>ed().filter(e=>cor[e[0]]&&cor[e[0]]==cor[e[1]]).length;
+const sem=()=>Object.keys(Z).filter(k=>!cor[k]).length;
+const usados=()=>new Set(Object.values(cor).filter(x=>x)).size;
+const valido=()=>sem()==0&&conf()==0;
+function pinta(k,c){cor[k]=c;draw();}window.__z=pinta;
+MIS.def(()=>[
+ ['No mapa de <b>hoje</b>, dê um turno a cada zona, <b>sem conflitos</b>.',()=>cen==0&&valido(),()=>'Sem conflitos, com '+usados()+' turnos ('+usados()*6+' horas).',()=>cen!=0?'Escolha o mapa de hoje.':'Zonas sem turno: '+sem()+', conflitos: '+conf()+'.'],
+ ['Ainda <b>hoje</b>: use só <b>3 turnos</b>.',()=>cen==0&&valido()&&usados()==3,()=>'3 turnos, 18 horas. E menos é impossível: Centro, Norte e Leste formam um triângulo.',()=>cen!=0?'Escolha o mapa de hoje.':valido()?'Sem conflitos, mas com '+usados()+' turnos.':'Zonas sem turno: '+sem()+', conflitos: '+conf()+'.'],
+ ['Com a <b>saída nova</b>, alguns conflitos somem. Organize tudo em <b>2 turnos</b>.',()=>cen==1&&valido()&&usados()==2,()=>'2 turnos, 12 horas: sem triângulos, o grafo pode ser pintado com duas cores.',()=>cen!=1?'Escolha "Com a saída nova".':'Turnos usados: '+usados()+', conflitos: '+conf()+', sem turno: '+sem()+'.'],
+ ['Com a <b>ponte em obras</b>, Norte e Sul passam a dividir uma saída. Resolva sem conflitos com o <b>mínimo</b> de turnos.',()=>cen==2&&valido()&&usados()==4,()=>'4 turnos, 24 horas: Centro, Norte, Leste e Sul ficaram todos ligados entre si, e quatro vizinhos dois a dois precisam de quatro cores.',()=>cen!=2?'Escolha "Com a ponte em obras".':valido()?'Sem conflitos, com '+usados()+' turnos.':'Conflitos: '+conf()+', sem turno: '+sem()+'. Tente com 3... e depois aceite o 4.']]);
+function draw(){const W=340,H=235;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');
+ ed().forEach(e=>{const[,x1,y1]=Z[e[0]],[,x2,y2]=Z[e[1]],bad=cor[e[0]]&&cor[e[0]]==cor[e[1]];g+=LN(x1,y1,x2,y2,bad?VERM:NAVY,bad?4:1.8);});
+ for(const k in Z){const[n,x,y]=Z[k],c=cor[k]||0;g+=`<circle cx="${x}" cy="${y}" r="20" fill="${CORES[c]}" stroke="${NAVY}" stroke-width="${c?0:2}"/>`+TX(x,y+5,k,{fs:14,c:c?'#fff':NAVY})+TX(x,y+(y>150?34:-26),n+(c?' · '+c+'º':''),{fs:9.5});}
+ $('fig').innerHTML=SVG(W,H,g);$('ku').textContent=usados();$('kc').textContent=conf();$('kz').textContent=sem();$('kt').textContent=valido()?usados()*6+' h':'—';MIS.ver('m');}
+toque('fig',(x,y,ini)=>{if(!ini)return;for(const k in Z){if(Math.hypot(x-Z[k][1],y-Z[k][2])<24){cor[k]=((cor[k]||0)+1)%5;draw();return;}}});
+chips('ch',['Hoje','Com a saída nova','Com a ponte em obras'],0,i=>{cen=i;cor={};draw();});
+$('rb').onclick=()=>{cor={};draw();};
+draw();
+})();
+</script>
+</body>
+</html>

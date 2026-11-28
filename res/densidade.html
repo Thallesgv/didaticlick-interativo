@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança da paloma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A balança da paloma</h1></header>
+<main>
+<div class="card"><h2>Densidade: massa ÷ volume</h2><p class="muted" style="margin-top:0">A paloma leva 11,8 L, e o cabo aguenta 12 kg. Escolha a carga, quanto do tubo encher e, se quiser, ponha pilhas (2,5 kg/L) junto. A balança mostra a massa; o alarme toca acima de 12 kg. As densidades do pó e da ração foram medidas pela equipe.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>Quanto do tubo encher</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Pilhas</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Massa<b id="k1"></b></div><div>Espaço usado<b id="k2"></b></div><div>Folga de peso<b id="k3"></b></div><div>Folga de espaço<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encha a paloma.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EL=(cx,cy,rx,ry,f,extra)=>`<ellipse cx="${cx}" cy="${cy}" rx="${Math.max(0.1,rx)}" ry="${Math.max(0.1,ry)}" fill="${f}" ${extra||''}/>`;
+const AZP='#3B7DD8',AZC='#BFD7F5',LIOH='#B57EDC',PILHA='#4B5563',AREIA='#A16207';
+function TUBO(x,y,w,h,cor){const e=h*0.18;return RC(x,y,w,h,cor)+LN(x,y,x+w,y,NAVY,1.4)+LN(x,y+h,x+w,y+h,NAVY,1.4)+EL(x+w,y+h/2,e,h/2,'#fff','stroke="#0E2354" stroke-width="1.4"')+EL(x,y+h/2,e,h/2,cor,'stroke="#0E2354" stroke-width="1.4"');}
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);
+const MAT=[['água',1,AZP],['pó de LiOH',0.6,LIOH],['ração',0.5,ORANGE],['areia molhada',1.8,AREIA]];let mi=0;
+chips('ch',MAT.map(m=>m[0]+' ('+fmt(m[1])+' kg/L)'),0,i=>{mi=i;draw();});
+const F=SL('sf',0,100,5,50,draw,v=>v+'%'),Pi=SL('sp',0,6,0.1,0,draw,v=>r1(v)+' L');const CAP=11.8;
+const vp=()=>Math.max(0,Math.min(F.get()/100*CAP,CAP-Pi.get())),massa=()=>MAT[mi][1]*vp()+2.5*Pi.get(),usado=()=>vp()+Pi.get();
+MIS.def(()=>[
+ ['Encha a paloma <b>inteira de água</b>. Ela sobe?',()=>mi==0&&F.get()==100&&Pi.get()==0,'11,8 kg: sobe raspando, com 0,2 kg de folga. Com água, peso e espaço acabam quase juntos.',()=>'Agora: '+r2(massa())+' kg.'],
+ ['Agora encha <b>inteira de pó de LiOH</b>. O que sobra: peso ou espaço?',()=>mi==1&&F.get()==100&&Pi.get()==0,'7,1 kg com o tubo cheio: sobram 4,9 kg de peso, mas nenhum espaço. O pó é leve demais para usar o cabo todo.',()=>'Agora: '+r2(massa())+' kg.'],
+ ['Com o tubo cheio de LiOH, troque pó por <b>pilhas</b> até chegar o mais perto possível de 12 kg, sem passar.',()=>mi==1&&F.get()==100&&perto(Pi.get(),2.5),'2,5 L de pilhas e 9,3 L de pó: 6,25 + 5,58 = 11,83 kg. Com 2,6 L de pilhas, passaria de 12 kg.',()=>'Agora: '+r2(massa())+' kg.']]);
+function draw(){const m=massa(),p=Pi.get(),v=vp(),alarme=m>12+1e-9;let g='';const x0=30,W=280,y0=24,hT=40,k=W/CAP;
+ g+=RC(x0,y0,W,hT,'#fff')+RC(x0,y0,p*k,hT,PILHA)+RC(x0+p*k,y0,v*k,hT,MAT[mi][2]);
+ for(let i=0;i<p*4;i++)g+=RC(x0+3+i*k/4,y0+8,k/4-4,hT-16,'#9CA3AF','rx="2"');
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.4)+LN(x0,y0+hT,x0+W,y0+hT,NAVY,1.4)+EL(x0+W,y0+hT/2,7,hT/2,'#fff','stroke="#0E2354" stroke-width="1.4"')+EL(x0,y0+hT/2,7,hT/2,p>0?PILHA:v>0?MAT[mi][2]:'#fff','stroke="#0E2354" stroke-width="1.4"');
+ g+=TX(x0+W/2,y0+hT+16,'11,8 L'+(p>0?' · pilhas '+r1(p)+' L + '+MAT[mi][0]+' '+r1(v)+' L':' · '+MAT[mi][0]+' '+r1(v)+' L'),{fs:10,c:GRAY,w:500});
+ const cx=170,cy=200,R=72,ang=x=>Math.PI*(1-Math.min(x,15)/15);g+=`<path d="M${cx-R},${cy} A${R},${R} 0 0 1 ${cx+R},${cy}" fill="#F3F4F6" stroke="${NAVY}" stroke-width="2"/>`;
+ const a12=ang(12);g+=`<path d="M${cx+R*Math.cos(a12)},${cy-R*Math.sin(a12)} A${R},${R} 0 0 1 ${cx+R},${cy}" fill="none" stroke="${VERM}" stroke-width="8"/>`;
+ for(let q=0;q<=15;q+=3)g+=TX(cx+(R+12)*Math.cos(ang(q)),cy-(R+12)*Math.sin(ang(q))+4,q,{fs:9,c:GRAY,w:500});
+ const an=ang(m);g+=LN(cx,cy,cx+(R-8)*Math.cos(an),cy-(R-8)*Math.sin(an),alarme?VERM:NAVY,3)+`<circle cx="${cx}" cy="${cy}" r="5" fill="${NAVY}"/>`;
+ g+=TX(42,cy-20,r2(m)+' kg',{fs:16,c:alarme?VERM:NAVY});if(alarme)g+=TX(cx,cy+20,'PASSOU DE 12 kg: O CABO NÃO AGUENTA',{fs:11,c:VERM});
+ $('fig').innerHTML=SVG(340,232,g);$('k1').textContent=r2(m)+' kg';$('k2').textContent=r1(usado())+' de 11,8 L';$('k3').textContent=alarme?'passou '+r2(m-12)+' kg':r2(12-m)+' kg';$('k4').textContent=r1(CAP-usado())+' L';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O dia do guincho · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O dia do guincho</h1></header>
+<main>
+<div class="card"><h2>Velocidade, tempo e 24 horas</h2><p class="muted" style="margin-top:0">O furo tem 761,6 m. Mude a velocidade de descida e de subida e o tempo para carregar (em cima) e descarregar (embaixo). A linha do tempo enche o dia de viagens e pinta o que cada uma leva: 5 de LiOH, 3 de comida e 1 com o resto. Viagens a mais são folga.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Velocidade de descida</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Velocidade de subida</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Carga e descarga (cada)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Descida<b id="k1"></b></div><div>Viagem completa<b id="k2"></b></div><div class="o">Viagens por dia<b id="k3"></b></div><div>Lista do dia<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Planeje o dia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EL=(cx,cy,rx,ry,f,extra)=>`<ellipse cx="${cx}" cy="${cy}" rx="${Math.max(0.1,rx)}" ry="${Math.max(0.1,ry)}" fill="${f}" ${extra||''}/>`;
+const AZP='#3B7DD8',AZC='#BFD7F5',LIOH='#B57EDC',PILHA='#4B5563',AREIA='#A16207';
+function TUBO(x,y,w,h,cor){const e=h*0.18;return RC(x,y,w,h,cor)+LN(x,y,x+w,y,NAVY,1.4)+LN(x,y+h,x+w,y+h,NAVY,1.4)+EL(x+w,y+h/2,e,h/2,'#fff','stroke="#0E2354" stroke-width="1.4"')+EL(x,y+h/2,e,h/2,cor,'stroke="#0E2354" stroke-width="1.4"');}
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);
+const VD=SL('sd',5,30,0.1,10,draw,v=>r1(v)+' m/min'),VS=SL('ss',5,40,0.1,10,draw,v=>r1(v)+' m/min'),C=SL('sc',5,30,1,15,draw,v=>v+' min');
+const PROF=761.6,td=()=>PROF/VD.get(),ts=()=>PROF/VS.get(),T=()=>2*C.get()+td()+ts(),nv=()=>Math.floor(1440/T()+1e-9);
+const LISTA=[];for(let i=0;i<5;i++)LISTA.push(['LiOH',LIOH]);for(let i=0;i<3;i++)LISTA.push(['comida',ORANGE]);LISTA.push(['resto',GRAY]);
+MIS.def(()=>[
+ ['Confira a conta do Seu Valdir: descida e subida a <b>12,7 m/min</b> e <b>15 min</b> de carga de cada lado.',()=>perto(VD.get(),12.7)&&perto(VS.get(),12.7)&&C.get()==15,'Uma hora para cada lado: 150 min por viagem. 24 h dão 9,6, ou seja, 9 viagens completas, e a lista ocupa as 9.',()=>'Agora: '+nv()+' viagens por dia.'],
+ ['Mantendo a descida e a carga, ache a <b>menor</b> velocidade de subida que dá <b>12 viagens</b> por dia.',()=>perto(VD.get(),12.7)&&C.get()==15&&perto(VS.get(),25.4),'25,4 m/min: a paloma vazia sobe em 30 min e cada viagem leva 2 h. Sobram 3 viagens de folga.',()=>'Agora: '+nv()+' viagens por dia.'],
+ ['Com subida <b>igual</b> à descida e 15 min de carga, ache a <b>menor</b> velocidade que dá <b>10 viagens</b> (uma de folga).',()=>perto(VD.get(),13.4)&&perto(VS.get(),13.4)&&C.get()==15,'13,4 m/min: cerca de 57 min para cada lado, 144 min por viagem. Com 13,3 m/min, a décima viagem não fecha.',()=>'Agora: '+nv()+' viagens por dia.']]);
+let t0=performance.now();
+function marca(){const el=$('mk');if(!el)return;const W=270,x0=16,ciclo=16000,tm=((performance.now()-t0)%ciclo)/ciclo*1440;let g='';
+ g+=LN(x0+tm/1440*W,96,x0+tm/1440*W,132,NAVY,2);const tt=T(),fase=tm%tt,c=C.get();let prof;
+ if(Math.floor(tm/tt)>=nv())prof=0;else if(fase<c)prof=0;else if(fase<c+td())prof=(fase-c)/td();else if(fase<2*c+td())prof=1;else prof=1-(fase-2*c-td())/ts();
+ g+=RC(311,36+prof*150,14,22,AZP,'rx="3" stroke="#0E2354" stroke-width="1"');el.innerHTML=g;}
+function anima(){marca();requestAnimationFrame(anima);}
+function draw(){const tt=T(),n=nv(),c=C.get(),W=270,x0=16;let g='';
+ const k1=W/tt,parts=[['carregar',c,'#D7DEEA'],['descer',td(),AZP],['descarregar',c,'#D7DEEA'],['subir',ts(),'#F6C48E']];let x=x0;
+ g+=TX(x0,18,'uma viagem: '+fmt(Math.round(tt))+' min',{fs:11,a:'start'});
+ parts.forEach(([nm,t,cor])=>{g+=RC(x,26,t*k1,22,cor,'stroke="#0E2354" stroke-width=".5"');if(t*k1>34)g+=TX(x+t*k1/2,41,nm,{fs:9,c:cor==AZP?'#fff':NAVY,w:500});x+=t*k1;});
+ g+=TX(x0,88,'o dia de 24 h',{fs:11,a:'start'});const k=W/1440;
+ for(let i=0;i<n;i++){const cor=i<LISTA.length?LISTA[i][1]:GREEN;g+=RC(x0+i*tt*k,100,tt*k-1,28,cor);}
+ if(n*tt<1440)g+=RC(x0+n*tt*k,100,(1440-n*tt)*k,28,'#F3F4F6');g+=RC(x0,100,W,28,'none','stroke="#0E2354" stroke-width="1"');
+ for(let h=0;h<=24;h+=6)g+=TX(x0+h*60*k,146,h+' h',{fs:9,c:GRAY,w:500});
+ const fal=Math.max(0,LISTA.length-n);
+ [['LiOH',LIOH],['comida',ORANGE],['resto',GRAY],['folga',GREEN]].forEach(([nm,cor],i)=>{g+=RC(x0+i*68,160,12,12,cor)+TX(x0+i*68+16,170,nm,{fs:10,a:'start'});});
+ g+=TX(x0,200,fal?'Faltam '+fal+' viagem(ns): parte da lista não desce hoje.':n>LISTA.length?'A lista cabe, com '+(n-LISTA.length)+' viagem(ns) de folga.':'A lista cabe, sem folga nenhuma.',{fs:11,a:'start',c:fal?VERM:n>LISTA.length?GREEN:ORANGE});
+ g+=RC(309,30,18,186,ROCHA)+RC(314,30,8,186,'#F6EEDF')+TX(318,26,'furo',{fs:8,c:GRAY,w:500})+'<g id="mk"></g>';
+ $('fig').innerHTML=SVG(340,222,g);marca();
+ $('k1').textContent=fmt(Math.round(td()))+' min';$('k2').textContent=fmt(Math.round(tt))+' min';$('k3').textContent=n+' (24 ÷ '+r2(tt/60)+' h)';$('k4').textContent=fal?'faltam '+fal:'cabe';MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>
