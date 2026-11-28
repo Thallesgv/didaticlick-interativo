@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O termômetro do furo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O termômetro do furo</h1></header>
+<main>
+<div class="card"><h2>T(z) = T₀ + g · z</h2><p class="muted" style="margin-top:0">Mude a temperatura perto da superfície (T₀), o gradiente geotérmico e a profundidade vertical da cápsula. O termômetro acompanha a descida, e o gráfico mostra a reta da temperatura da rocha.</p>
+<div class="fig" id="fig"></div><div class="fig" id="gr"></div>
+<div class="sl" id="sz"><b>Profundidade da cápsula</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>T₀ (perto da superfície)</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Gradiente</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Temperatura da rocha<b id="k1"></b></div><div>Por metro<b id="k2"></b></div><div>No refúgio (700 m)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desça com o termômetro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',G=9.8,FURO=761.6,COS=700/761.6,SEN=300/761.6;
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);const N0=v=>fmt(Math.round(v));
+function SETA(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1);if(L<2)return '';const h=Math.min(10,L*0.4);
+ return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||3)+PG([[x2,y2],[x2-h*Math.cos(a-0.45),y2-h*Math.sin(a-0.45)],[x2-h*Math.cos(a+0.45),y2-h*Math.sin(a+0.45)]],c);}
+function CAPS(cx,cy,ang,h,w,cor){const ux=Math.sin(ang),uy=-Math.cos(ang),vx=Math.cos(ang),vy=Math.sin(ang);const p=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([a,b])=>[cx+a*w/2*vx+b*h/2*ux,cy+a*w/2*vy+b*h/2*uy]);
+ return PG(p,cor||ORANGE,'stroke="#0E2354" stroke-width="1.5"');}
+const Z=SL('sz',0,1000,10,0,draw,v=>v+' m'),T0=SL('st',5,25,0.5,18,draw,v=>fmt(v)+' °C'),GR=SL('sg',10,50,1,20,draw,v=>v+' °C/km');
+const T=z=>T0.get()+GR.get()/1000*z;
+MIS.def(()=>[
+ ['Ponha os valores da Serra do Cobre (<b>14 °C</b> e <b>25 °C/km</b>) e desça até o refúgio, a <b>700 m</b>.',()=>T0.get()==14&&GR.get()==25&&Z.get()==700,'31,5 °C: 14 + 0,025 × 700. Perto dos 31 °C medidos no refúgio real.',()=>'Agora: '+d1(T(Z.get()))+' °C.'],
+ ['Com T₀ = 14 °C, ache o gradiente que daria <b>35 °C</b> no refúgio.',()=>T0.get()==14&&GR.get()==30&&Z.get()==700,'30 °C/km: 14 + 0,03 × 700 = 35 °C. É o limite de cima do gradiente típico.',()=>'No refúgio: '+d1(T(700))+' °C.'],
+ ['Volte aos 25 °C/km e ache a profundidade em que a rocha chega a <b>25 °C</b>.',()=>T0.get()==14&&GR.get()==25&&Z.get()==440,'440 m: 0,025z = 11. Um pouco depois da metade da descida vertical.',()=>'Agora: '+d1(T(Z.get()))+' °C a '+Z.get()+' m.']]);
+function draw(){const z=Z.get(),t=T(z);let g='';const y0=16,H=200,sy=H/1000;
+ g+=RC(40,y0,80,H,ROCHA)+RC(76,y0,8,H,'#F6EEDF')+RC(70,y0+z*sy-12,20,24,ORANGE,'rx="3" stroke="#0E2354" stroke-width="1"');
+ for(let q=0;q<=1000;q+=200)g+=TX(34,y0+q*sy+4,q+' m',{fs:9,a:'end',c:GRAY,w:500});g+=LN(40,y0+700*sy,120,y0+700*sy,VERM,1.5,'4 3')+TX(124,y0+700*sy+4,'refúgio',{fs:9,a:'start',c:VERM});
+ const tx=250,fr=Math.max(0,Math.min(1,(t-0)/50));g+=RC(tx-8,y0,16,H-20,'#fff','rx="8" stroke="#0E2354" stroke-width="1.5"')+`<circle cx="${tx}" cy="${y0+H-12}" r="14" fill="${VERM}" stroke="#0E2354" stroke-width="1.5"/>`;
+ g+=RC(tx-4,y0+(H-20)*(1-fr),8,(H-20)*fr+4,VERM);for(let q=0;q<=50;q+=10)g+=LN(tx+8,y0+(H-20)*(1-q/50),tx+14,y0+(H-20)*(1-q/50),NAVY,1)+TX(tx+18,y0+(H-20)*(1-q/50)+4,q+' °C',{fs:9,a:'start',c:GRAY,w:500});
+ g+=TX(tx-24,y0+40,d1(t)+' °C',{fs:14,a:'end',c:VERM});$('fig').innerHTML=SVG(340,224,g);
+ $('gr').innerHTML=PLOT({xmin:0,xmax:1000,ymin:0,ymax:60,dx:200,dy:10,xl:'profundidade (m)',yl:'temperatura (°C)'},(X,Y)=>linha([[0,T(0)],[1000,T(1000)]],X,Y,VERM,3)+ponto(z,t,X,Y,ORANGE));
+ $('k1').textContent=d1(t)+' °C';$('k2').textContent=fmt(GR.get()/1000)+' °C';$('k3').textContent=d1(T(700))+' °C';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
