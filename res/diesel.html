@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O tanque da sonda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O tanque da sonda</h1></header>
+<main>
+<div class="card"><h2>Litros por dia, por metro e no total</h2><p class="muted" style="margin-top:0">Escolha o plano e mude o consumo diário. O furo avança na velocidade do livro (A 12, B 22, C 30 m/dia) enquanto o tanque de 30.000 L se esvazia; quando seca, chega outro caminhão-tanque. 1 L de diesel ≈ 10 kWh e 2,6 kg de CO₂.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Consumo</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Diesel até o refúgio<b id="k1"></b></div><div>Por metro<b id="k2"></b></div><div>Caminhões de 30.000 L<b id="k3"></b></div><div>CO₂<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encha o tanque.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ROXO='#8B5CF6',AZP='#3B7DD8',CINZA='#9CA3AF',FURO=761.6;const CORES={A:ROXO,B:AZP,C:ORANGE};
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);
+const VEL={A:12,B:22,C:30},CONS={A:1500,B:2500,C:6000},LIV={A:1500,B:2500,C:6000};let cur='A';const vistos=new Set();
+const C=SL('sc',500,8000,50,1500,v=>{CONS[cur]=v;t0=performance.now();draw();},v=>fmt(v)+' L/dia');
+chips('ch',['Plano A','Plano B','Plano C'],0,i=>{cur='ABC'[i];C.set(CONS[cur]);t0=performance.now();draw();});
+const dias=()=>FURO/VEL[cur],tot=()=>CONS[cur]*dias(),cam=()=>Math.ceil(tot()/30000-1e-9);let t0=performance.now();
+MIS.def(()=>[
+ ['Ache o diesel do <b>Plano B</b> (2.500 L/dia) até o refúgio.',()=>cur=='B'&&CONS.B==2500,'86.500 L em 34,6 dias: 114 L por metro de furo e 225 toneladas de CO₂.',()=>'Agora: Plano '+cur+', '+fmt(Math.round(tot()/100)*100)+' L.'],
+ ['Que consumo faria o <b>Plano C</b> gastar o mesmo que o B?',()=>cur=='C'&&CONS.C==3400,'Uns 3.400 L/dia: 86.300 L. Pouco mais da metade dos 6.000 L/dia da sonda de verdade.',()=>'Agora: Plano '+cur+', '+fmt(Math.round(tot()/100)*100)+' L.'],
+ ['Volte aos consumos do livro e veja os caminhões de <b>cada um</b> dos três planos.',()=>{if(CONS[cur]==LIV[cur])vistos.add(cur);return vistos.size==3&&CONS.C==6000;},'A: 4 caminhões, B: 3, C: 6. O C gasta quase o dobro de diesel do B.',()=>'Já vistos com o consumo do livro: '+([...vistos].join(', ')||'nenhum')+'.']]);
+function cena(){const el=$('cn');if(!el)return;const ciclo=8000,f=((performance.now()-t0)%ciclo)/ciclo,dia=f*dias(),gasto=dia*CONS[cur],nc=Math.floor(gasto/30000),resto=1-(gasto%30000)/30000;let g='';
+ g+=RC(30,40,60,120,'#fff','stroke="#0E2354" stroke-width="2" rx="4"')+RC(32,40+120*(1-resto),56,120*resto-2,'#FBBF24')+TX(60,176,'tanque',{fs:10,c:GRAY,w:500})+TX(60,32,Math.round(resto*100)+'%',{fs:11});
+ for(let i=0;i<Math.min(nc+1,8);i++)g+=RC(110+i*26,150,22,12,i<=nc?'#F97316':'#eee','rx="3"');g+=TX(110,140,'caminhões: '+(nc+1),{fs:10,a:'start'});
+ const prof=Math.min(1,dia/dias());g+=RC(300,20,16,180,ROCHA)+RC(304,20,8,180*prof,'#F6EEDF')+RC(302,20+180*prof-8,12,8,CORES[cur]);
+ g+=TX(240,60,'dia '+d1(dia)+' de '+d1(dias()),{fs:11})+TX(240,80,fmt(Math.round(prof*FURO))+' m de furo',{fs:11,c:CORES[cur]})+TX(240,100,fmt(Math.round(gasto))+' L',{fs:11,c:ORANGE});el.innerHTML=g;}
+function anima(){cena();requestAnimationFrame(anima);}
+function draw(){$('fig').innerHTML=SVG(340,206,'<g id="cn"></g>');cena();
+ $('k1').textContent=fmt(Math.round(tot()/100)*100)+' L';$('k2').textContent=fmt(Math.round(CONS[cur]/VEL[cur]))+' L/m';$('k3').textContent=cam();$('k4').textContent=fmt(Math.round(tot()*2.6/1000))+' t';MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>
