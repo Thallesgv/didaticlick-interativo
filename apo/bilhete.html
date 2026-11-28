@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto vale um bilhete? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Quanto vale um bilhete?</h1></header>
+<main>
+<div class="card"><h2>O valor esperado da Mega Fortuna</h2><p class="muted" style="margin-top:0">6 números de 1 a 50. Ajuste os prêmios e o preço (arrastando ou com − e +). As barras mostram quanto cada faixa devolve, em média, por bilhete.</p>
+<div class="sl" id="s6"><b>Prêmio da sena (milhões)</b><input type="range"><span></span></div>
+<div class="sl" id="s5"><b>Prêmio da quina (mil)</b><input type="range"><span></span></div>
+<div class="sl" id="s4"><b>Prêmio da quadra (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Preço do bilhete (R$)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Volta por bilhete<b id="k1"></b></div><div>Retorno<b id="k2"></b></div><div>Valor esperado<b id="k3"></b></div><div class="o">Rafael (16 cotas)<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça a conta da Mega Fortuna.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);};
+const VERDE_L='#1F7A4D',VERDE_C='#E9F5EE';
+const sg=v=>(v<0?'−':'')+R$(Math.abs(v));
+const S6=SL('s6',1,100,1,5,()=>draw(),v=>'R$ '+v+' mi'),S5=SL('s5',1,100,1,10,()=>draw(),v=>'R$ '+v+' mil'),S4=SL('s4',50,2000,50,200,()=>draw(),v=>R$(v,0)),SB=SL('sb',1,10,0.5,5,()=>draw(),v=>R$(v));
+const N=15890700;const calc=()=>{const a=S6.get()*1e6/N,b=S5.get()*1e3*264/N,c=S4.get()*14190/N,t=a+b+c;return{a,b,c,t,ret:t/SB.get(),ve:t-SB.get(),raf:16*(105*t/SB.get()-126)};};
+MIS.def(()=>[
+ ['Ponha o regulamento: sena <b>R$ 10 mi</b>, quina <b>R$ 20 mil</b>, quadra <b>R$ 500</b>, bilhete <b>R$ 5</b>.',()=>S6.get()==10&&S5.get()==20&&S4.get()==500&&SB.get()==5,()=>'Volta '+R$(calc().t)+' por bilhete: retorno de '+pct(calc().ret*100,1)+'. Valor esperado: '+sg(calc().ve)+'.',()=>'Ajuste as quatro barras.'],
+ ['Mantendo quina e quadra, que prêmio da sena deixa o jogo <b>justo</b> (valor esperado perto de zero)?',()=>S5.get()==20&&S4.get()==500&&SB.get()==5&&Math.abs(calc().ve)<0.04,()=>'Com R$ '+S6.get()+' milhões, o valor esperado fica em '+sg(calc().ve)+'. Quase 7 vezes o prêmio anunciado.',()=>S5.get()!=20||S4.get()!=500||SB.get()!=5?'Volte quina R$ 20 mil, quadra R$ 500 e bilhete R$ 5.':'Valor esperado agora: '+sg(calc().ve)+'. Mude o prêmio da sena.'],
+ ['Volte ao regulamento e veja a última caixinha: quanto Rafael esperava perder em <b>16 cotas</b>?',()=>S6.get()==10&&S5.get()==20&&S4.get()==500&&SB.get()==5,()=>'Cerca de '+sg(calc().raf)+': ele pagou R$ 2.016 em cotas para receber, em média, uns R$ 473.',()=>'Volte a 10 mi, 20 mil, 500 e R$ 5.']]);
+function draw(){const c=calc();let g=RC(0,0,340,150,'#F8FAFC','rx="10"');const mx=Math.max(SB.get(),c.t)*1.1,W=v=>270*v/mx;
+ const barras=[['sena',c.a,ORANGE],['quina',c.b,'#F2A65A'],['quadra',c.c,LIGHT]];let x=60;
+ g+=TX(55,40,'volta',{fs:10,a:'end'});barras.forEach(([t,v,col])=>{g+=RC(x,26,W(v),22,col);if(W(v)>34)g+=TX(x+W(v)/2,41,t,{fs:8,c:'#fff'});x+=W(v);});
+ g+=TX(x+4,41,R$(c.t),{fs:10,a:'start',c:ORANGE});
+ g+=TX(55,86,'preço',{fs:10,a:'end'})+RC(60,72,W(SB.get()),22,BLUE)+TX(60+W(SB.get())+4,87,R$(SB.get()),{fs:10,a:'start'});
+ g+=TX(170,130,'valor esperado por bilhete: '+sg(c.ve),{fs:12,c:c.ve<0?'#B91C1C':GREEN});
+ $('fig').innerHTML=SVG(340,150,g);$('k1').textContent=R$(c.t);$('k2').textContent=pct(c.ret*100,1);$('k3').textContent=sg(c.ve);$('k4').textContent=sg(c.raf);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

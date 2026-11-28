@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A calculadora do bolão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A calculadora do bolão</h1></header>
+<main>
+<div class="card"><h2>Duas divisões</h2><p class="muted" style="margin-top:0">Ajuste as barras (arrastando ou com − e +). O prêmio é dividido pelos bilhetes ganhadores e depois pelas cotas do bolão.</p>
+<div class="sl" id="sp"><b>Prêmio (milhões)</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Bilhetes ganhadores</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Cotas do bolão</b><input type="range"><span></span></div>
+<div class="sl" id="sj"><b>Preço dos jogos do bolão (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Taxa de serviço (%)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Por bilhete<b id="k1"></b></div><div>Por cota<b id="k2"></b></div><div>Custo da cota<b id="k3"></b></div><div class="o">Taxa na cota<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Divida o prêmio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);};
+const VERDE_L='#1F7A4D',VERDE_C='#E9F5EE';
+const sg=v=>(v<0?'−':'')+R$(Math.abs(v));
+const SP=SL('sp',1,100,1,20,()=>draw(),v=>'R$ '+v+' mi'),SG=SL('sg',1,10,1,1,()=>draw(),v=>v),SC=SL('sc',1,50,1,5,()=>draw(),v=>v),SJ=SL('sj',100,5000,50,500,()=>draw(),v=>R$(v,0)),ST=SL('st',0,40,1,0,()=>draw(),v=>v+'%');
+const val=()=>{const pb=SP.get()*1e6/SG.get(),pc=pb/SC.get(),base=SJ.get()/SC.get(),cu=base*(1+ST.get()/100);return{pb,pc,base,cu,tx:cu-base};};
+MIS.def(()=>[
+ ['Monte o caso da figura do livro: <b>R$ 10 milhões</b>, <b>3 bilhetes</b> ganhadores, bolão de <b>10 cotas</b>.',()=>SP.get()==10&&SG.get()==3&&SC.get()==10,()=>'Cada cota premiada vale '+R$(val().pc,0)+'.',()=>'Prêmio 10, ganhadores 3, cotas 10.'],
+ ['Refaça o bolão de Rafael: jogos de <b>R$ 1 050</b>, <b>10 cotas</b> e taxa de <b>20%</b>.',()=>SJ.get()==1050&&SC.get()==10&&ST.get()==20,()=>'Cada cota custa '+R$(val().cu)+', dos quais '+R$(val().tx)+' são taxa.',()=>'Jogos R$ 1.050, cotas 10, taxa 20%.'],
+ ['Com o bolão de Rafael, ponha prêmio de <b>R$ 10 milhões</b> e <b>1 bilhete</b> ganhador. Quanto valeria a cota dele?',()=>SJ.get()==1050&&ST.get()==20&&SP.get()==10&&SG.get()==1&&SC.get()==10,'R$ 1 milhão por cota. Mas a chance de o bolão ganhar, em cada sorteio, era de 1 em 75 670, e a taxa de R$ 21 ele pagava sempre.',()=>'Mantenha o bolão de Rafael (R$ 1.050, 10 cotas, 20%) com prêmio de 10 milhões e 1 ganhador.']]);
+function draw(){const v=val();let g=RC(0,0,340,120,'#F8FAFC','rx="10"');
+ const G=SG.get(),C=SC.get();for(let i=0;i<G;i++){const w=300/G;g+=RC(20+i*w,14,w-3,30,i==0?ORANGE:AZC,'rx="4"');}
+ g+=TX(20,10,'prêmio dividido em '+G+' bilhete'+(G>1?'s':''),{fs:9,a:'start',c:GRAY,w:500});
+ const w0=300/G;for(let j=0;j<Math.min(C,50);j++){const w=w0/C;g+=RC(20+j*w,58,Math.max(1,w-1),30,j==0?ORANGE:PEACH);}
+ g+=LN(20,44,20,58,ORANGE,1)+LN(20+w0-3,44,20+w0,58,ORANGE,1);
+ g+=TX(20,104,'o bilhete do bolão em '+C+' cota'+(C>1?'s':'')+': cada uma vale '+R$(v.pc,0),{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,120,g);$('k1').textContent=R$(v.pb,0);$('k2').textContent=R$(v.pc,0);$('k3').textContent=R$(v.cu);$('k4').textContent=R$(v.tx);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

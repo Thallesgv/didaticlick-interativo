@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A loteria de bolso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A loteria de bolso</h1></header>
+<main>
+<div class="card"><h2>Quantos jogos?</h2><p class="muted" style="margin-top:0">Escolha quantos números há na grade (n) e quantos se marcam (k), arrastando ou com − e +. Até 60 jogos, todos aparecem na tela.</p>
+<div class="sl" id="sn"><b>Números na grade (n)</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Números marcados (k)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Jogos C(n, k)<b id="k1"></b></div><div>Chance de um jogo<b id="k2"></b></div><div class="o">Conta<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Conte os jogos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r);};
+const VERDE_L='#1F7A4D',VERDE_C='#E9F5EE';
+const sg=v=>(v<0?'−':'')+R$(Math.abs(v));
+const SN=SL('sn',2,60,1,6,()=>draw(),v=>v),SK=SL('sk',1,6,1,3,()=>draw(),v=>v);
+function combs(n,k){const o=[];const r=(s,a)=>{if(a.length==k){o.push(a);return;}for(let i=s;i<=n;i++)r(i+1,[...a,i]);};r(1,[]);return o;}
+MIS.def(()=>[
+ ['Confira a rifa escolar: <b>2 números de 1 a 5</b>.',()=>SN.get()==5&&SK.get()==2,'C(5, 2) = 10: os 10 pares estão na tela.',()=>'Ponha n = 5 e k = 2.'],
+ ['Ache uma loteria (n, k) com exatamente <b>120 jogos</b>.',()=>C2(SN.get(),SK.get())==120,()=>'C('+SN.get()+', '+SK.get()+') = 120. '+(SN.get()==10?'É o C(10, 3) do livro.':'Há mais de uma resposta: C(10, 3) e C(10, 7) também dão 120.'),()=>'Agora: '+fmt(C2(SN.get(),SK.get()))+' jogos. Tente outros valores (dica: n = 10).'],
+ ['Chegue à <b>Mega-Sena</b>: 6 números de 1 a 60.',()=>SN.get()==60&&SK.get()==6,'C(60, 6) = 50 063 860 jogos. A lista não cabe em nenhuma tela.',()=>'Ponha n = 60 e k = 6.']]);
+function draw(){let n=SN.get(),k=Math.min(SK.get(),n);const N=C2(n,k);let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ if(N<=60){const L=combs(n,k),cols=N<=12?2:N<=30?3:4,cw=320/cols,rh=Math.min(22,190/Math.ceil(N/cols));
+  L.forEach((c,i)=>{const x=10+(i%cols)*cw,y=8+Math.floor(i/cols)*rh;g+=RC(x,y,cw-6,rh-3,VERDE_C,'rx="4"')+TX(x+(cw-6)/2,y+rh/2+2,'{'+c.join(',')+'}',{fs:Math.min(11,rh*.55),c:VERDE_L});});}
+ else{g+=TX(170,80,fmt(N)+' jogos',{fs:22,c:VERDE_L})+TX(170,112,'muitos para listar',{fs:11,c:GRAY,w:500});
+  let f=[];for(let i=0;i<k;i++)f.push(n-i);g+=TX(170,150,f.join(' × ')+' ÷ '+k+'!',{fs:11});}
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=fmt(N);$('k2').textContent='1 em '+fmt(N);$('k3').textContent='C('+n+', '+k+')';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
