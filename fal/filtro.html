@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A janela 3 × 3 · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A janela 3 × 3</h1></header>
+<main>
+<div class="card"><h2>A janela que anda</h2><p class="muted" style="margin-top:0">Um pedaço de 7 × 7 pixels da radiografia: fundo à esquerda, uma pincelada clara à direita e um ponto de ruído (240). Escolha o filtro e veja a imagem toda mudar. Toque num pixel para ver a conta com os nove vizinhos.</p>
+<div id="chf" style="margin:4px 0;display:flex;flex-wrap:wrap;gap:4px"></div>
+<div class="fig" id="fig"></div>
+<div class="card" style="background:#F5F7FB;margin:8px 0;padding:10px 12px" id="conta">Toque num pixel de dentro (a borda da imagem não tem os 8 vizinhos).</div>
+<div class="kpi"><div>Pixel<b id="kp"></b></div><div>Antes<b id="ka"></b></div><div class="o">Depois<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Filtre a imagem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DIG=[[98, 150, 150, 138, 101], [134, 103, 75, 101, 174], [117, 120, 91, 90, 160], [89, 75, 138, 139, 127], [96, 117, 84, 135, 167], [158, 94, 76, 125, 134], [113, 136, 121, 177, 84]];const MOD={"0":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"3":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"8":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]]};
+const cz=v=>{v=Math.max(0,Math.min(255,Math.round(v)));return `rgb(${v},${v},${v})`;};
+const GRADE=(M,x0,y0,s,o)=>{o=o||{};let g='';M.forEach((r,i)=>r.forEach((v,j)=>{const x=x0+j*s,y=y0+i*s;
+ g+=RC(x,y,s,s,o.cor?o.cor(v,i,j):cz(v),'stroke="#9AA3AF" stroke-width=".6"');
+ if(o.marca&&o.marca(i,j))g+=RC(x+1.5,y+1.5,s-3,s-3,'none','stroke="'+ORANGE+'" stroke-width="2.4"');
+ if(o.num)g+=TX(x+s/2,y+s/2+4,o.txt?o.txt(v):Math.round(v),{fs:o.fs||10,c:(o.esc?o.esc(v):v<140)?'#fff':NAVY,w:500});}));return g;};
+const IMG=[[92,88,95,90,150,152,149],[89,94,90,87,151,148,150],[91,90,240,92,149,150,147],[95,87,91,94,152,151,150],[90,93,89,91,148,150,152],[88,91,90,92,150,149,151],[93,90,92,89,151,150,148]];
+const NOM=['nenhum','média','mediana','borda','nitidez'];let k=0,sel=null;
+const CF=chips('chf',NOM.map(n=>n=='nenhum'?'sem filtro':'filtro: '+n),0,i=>{k=i;draw();});
+const viz=(i,j)=>{const w=[];for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)w.push(IMG[i+a][j+b]);return w;};
+const ap=(i,j)=>{if(i<1||i>5||j<1||j>5||k==0)return IMG[i][j];const w=viz(i,j),c=IMG[i][j],l=IMG[i-1][j]+IMG[i+1][j]+IMG[i][j-1]+IMG[i][j+1];
+ if(k==1)return w.reduce((s,v)=>s+v,0)/9;if(k==2)return [...w].sort((a,b)=>a-b)[4];if(k==3)return 4*c-l;return 5*c-l;};
+toque('fig',(x,y)=>{const s=40,x0=(340-7*s)/2;const j=Math.floor((x-x0)/s),i=Math.floor((y-8)/s);if(i>=0&&i<7&&j>=0&&j<7){sel=[i,j];draw();}});
+const eh=(i,j)=>sel&&sel[0]==i&&sel[1]==j;
+MIS.def(()=>[
+ ['Escolha o <b>filtro da média</b> e toque no ruído de 240 (linha 3, coluna 3).',()=>k==1&&eh(2,2),'865 ÷ 9 ≈ 96: o ponto falso se dissolve nos vizinhos. Veja como a borda da pincelada também ficou mole.',()=>k!=1?'Escolha "filtro: média".':'Toque no pixel que valia 240.'],
+ ['Agora a <b>mediana</b> no mesmo pixel. Ela é melhor que a média?',()=>k==2&&eh(2,2),'Mediana 91: o 240 fica no fim da fila e não puxa o resultado. E a borda da pincelada não amolece.',()=>k!=2?'Escolha "filtro: mediana".':'Toque no pixel do ruído.'],
+ ['Use o <b>filtro da borda</b> e ache um pixel em que ele dê <b>mais de 50</b>.',()=>k==3&&sel&&ap(sel[0],sel[1])>50,'Ali a imagem muda de repente: fundo de um lado, pincelada do outro. Onde é liso, o filtro dá perto de 0.',()=>k!=3?'Escolha "filtro: borda".':sel?'Aqui deu '+r1(ap(sel[0],sel[1]))+'. Procure onde o fundo encontra a pincelada.':'Toque num pixel de dentro.'],
+ ['Com a <b>nitidez</b>, toque no primeiro pixel da pincelada (coluna 5). O que ela faz?',()=>k==4&&sel&&sel[1]==4&&sel[0]>=1&&sel[0]<=5,'O lado claro da borda fica ainda mais claro: nitidez = imagem + borda. A pincelada parece mais definida.',()=>k!=4?'Escolha "filtro: nitidez".':'Toque num pixel da coluna 5, longe das bordas de cima e de baixo.']]);
+function draw(){const s=40,x0=(340-7*s)/2,y0=8;const O=IMG.map((r,i)=>r.map((v,j)=>ap(i,j)));let g=RC(0,0,340,7*s+16,'#fff','rx="10"');
+ const vis=v=>k==3?cz(128+v):cz(v);
+ g+=GRADE(O,x0,y0,s,{num:true,fs:10,cor:vis,esc:v=>(k==3?128+v:v)<140,marca:(i,j)=>sel&&Math.abs(i-sel[0])<=1&&Math.abs(j-sel[1])<=1&&sel[0]>=1&&sel[0]<=5&&sel[1]>=1&&sel[1]<=5});
+ $('fig').innerHTML=SVG(340,7*s+16,g);
+ if(sel){const [i,j]=sel;$('kp').textContent='l'+(i+1)+', c'+(j+1);$('ka').textContent=IMG[i][j];$('kd').textContent=r1(ap(i,j));
+  if(i<1||i>5||j<1||j>5)$('conta').innerHTML='Esse pixel está na borda da imagem: a janela 3 × 3 não cabe. Fica como está.';
+  else{const w=viz(i,j),c=IMG[i][j],l=[IMG[i-1][j],IMG[i+1][j],IMG[i][j-1],IMG[i][j+1]];
+   $('conta').innerHTML=k==0?'Sem filtro: o pixel fica '+c+'.':k==1?'<b>Média:</b> ('+w.join(' + ')+') ÷ 9 = '+w.reduce((s,v)=>s+v,0)+' ÷ 9 ≈ <b>'+r1(ap(i,j))+'</b>':k==2?'<b>Mediana:</b> em ordem, '+[...w].sort((a,b)=>a-b).join(', ')+'. O 5º é <b>'+ap(i,j)+'</b>.':
+   (k==3?'<b>Borda:</b> 4 · ':'<b>Nitidez:</b> 5 · ')+c+' − ('+l.join(' + ')+') = <b>'+(ap(i,j))+'</b>';}}
+ else{$('kp').textContent='toque';$('ka').textContent='–';$('kd').textContent='–';}
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

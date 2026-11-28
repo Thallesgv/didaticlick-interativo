@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A máquina de mover pontos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A máquina de mover pontos</h1></header>
+<main>
+<div class="card"><h2>Matriz vezes ponto</h2><p class="muted" style="margin-top:0">Escolha a primeira transformação e, se quiser, uma segunda, feita depois. O 7 cinza é o original; o laranja é o resultado. Embaixo aparece a matriz que faz as duas de uma vez: o produto.</p>
+<div style="font-size:13px;color:#6B7280;margin-top:4px">Primeiro:</div><div id="ch1" style="margin:2px 0;display:flex;flex-wrap:wrap;gap:4px"></div>
+<div style="font-size:13px;color:#6B7280;margin-top:4px">Depois:</div><div id="ch2" style="margin:2px 0 6px;display:flex;flex-wrap:wrap;gap:4px"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Matriz final<b id="km"></b></div><div>Ponto (1, 2) vai para<b id="kp"></b></div><div class="o">Equivale a<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o 7.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const TR=[['nada',[1,0,0,1]],['girar 90°',[0,-1,1,0]],['girar 180°',[-1,0,0,-1]],['espelhar |',[-1,0,0,1]],['espelhar —',[1,0,0,-1]],['ampliar 2×',[2,0,0,2]]];
+let t1=0,t2=0;const C1=chips('ch1',TR.map(t=>t[0]),0,i=>{t1=i;draw();}),C2=chips('ch2',TR.map(t=>t[0]),0,i=>{t2=i;draw();});
+const mul=(A,B)=>[A[0]*B[0]+A[1]*B[2],A[0]*B[1]+A[1]*B[3],A[2]*B[0]+A[3]*B[2],A[2]*B[1]+A[3]*B[3]];
+const M=()=>mul(TR[t2][1],TR[t1][1]),igual=(A,B)=>A.every((v,i)=>v==B[i]);
+const nome=A=>{const t=TR.find(t=>igual(t[1],A));return t?(t[0]=='nada'?'identidade':t[0]):igual(A,[0,1,-1,0])?'girar 90° no outro sentido':igual(A,[0,1,1,0])||igual(A,[0,-1,-1,0])?'espelhar numa diagonal':'outra';};
+const ms=A=>'['+A[0]+' '+A[1]+' ; '+A[2]+' '+A[3]+']';
+const SETE=[[-1,2],[1,2],[0,-2]];
+MIS.def(()=>[
+ ['Faça o 7 <b>girar 180°</b> (só a primeira, depois "nada").',()=>t1==2&&t2==0,'[−1 0 ; 0 −1]: cada ponto (x, y) vai para (−x, −y). Foi assim que o retrato escondido ficou de pé.',()=>'Primeiro: girar 180°. Depois: nada.'],
+ ['Agora <b>espelhe no eixo vertical</b> e depois <b>no horizontal</b>. Que transformação única dá o mesmo resultado?',()=>t1==3&&t2==4,'O produto é [−1 0 ; 0 −1]: duas reflexões em eixos perpendiculares dão uma rotação de 180°.',()=>'Primeiro: espelhar |. Depois: espelhar —.'],
+ ['Gire <b>90° duas vezes</b>. Que matriz aparece?',()=>t1==1&&t2==1,'[0 −1 ; 1 0] · [0 −1 ; 1 0] = [−1 0 ; 0 −1]: dois quartos de volta são meia volta.',()=>'Primeiro: girar 90°. Depois: girar 90°.'],
+ ['Teste a ordem: <b>girar 90° e depois espelhar |</b>. Depois troque a ordem. O 7 vai para o mesmo lugar?',()=>t1==3&&t2==1&&MIS._viu,'Não: [0 1 ; 1 0] e [0 −1 ; −1 0] são diferentes. Com matrizes, a ordem importa.',()=>t1==1&&t2==3?'Viu onde o 7 foi parar? Agora troque: primeiro espelhar |, depois girar 90°.':'Primeiro: girar 90°. Depois: espelhar |.']]);
+function draw(){if(t1==1&&t2==3)MIS._viu=true;const A=M(),s=22,cx=170,cy=120;let g=RC(0,0,340,240,'#fff','rx="10"');
+ for(let k=-7;k<=7;k++){g+=LN(cx+k*s,cy-5*s,cx+k*s,cy+5*s,GRAYL,.5);if(Math.abs(k)<=5)g+=LN(cx-7*s,cy+k*s,cx+7*s,cy+k*s,GRAYL,.5);}
+ g+=LN(cx-7*s,cy,cx+7*s,cy,GRAY,1)+LN(cx,cy-5*s,cx,cy+5*s,GRAY,1);
+ const P=(p,T)=>[cx+(T[0]*p[0]+T[1]*p[1])*s,cy-(T[2]*p[0]+T[3]*p[1])*s];
+ const sete=(T,c,w)=>{const q=SETE.map(p=>P(p,T));return PL(q,c,w);};
+ g+=sete([1,0,0,1],'#C7CDD6',6)+sete(A,ORANGE,6);const q=P([1,2],A);g+=CIR(q[0],q[1],5,NAVY);
+ $('fig').innerHTML=SVG(340,240,g);
+ $('km').textContent=ms(A);$('kp').textContent='('+(A[0]+2*A[1])+', '+(A[2]+2*A[3])+')';$('ke').textContent=nome(A);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

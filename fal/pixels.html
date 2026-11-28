@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zoom nos pixels · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Zoom nos pixels</h1></header>
+<main>
+<div class="card"><h2>A imagem é uma tabela</h2><p class="muted" style="margin-top:0">Esta é a matriz D do algarismo borrado. Aumente o zoom até os números aparecerem e toque num pixel para ver o endereço d<sub>ij</sub> (linha i, coluna j). Embaixo, mude a resolução da digitalização e veja quantos números a radiografia inteira teria.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sz"><b>Zoom</b><input type="range"><span></span></div>
+<div class="kpi"><div>Pixel tocado<b id="ke"></b></div><div>Valor<b id="kv"></b></div><div class="o">Leitura<b id="kl"></b></div></div>
+<div class="sl" id="sr"><b>Resolução (pixels por cm)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Colunas × linhas<b id="kd"></b></div><div class="o">Pixels na tela toda<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a matriz.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DIG=[[98, 150, 150, 138, 101], [134, 103, 75, 101, 174], [117, 120, 91, 90, 160], [89, 75, 138, 139, 127], [96, 117, 84, 135, 167], [158, 94, 76, 125, 134], [113, 136, 121, 177, 84]];const MOD={"0":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"3":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"8":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]]};
+const cz=v=>{v=Math.max(0,Math.min(255,Math.round(v)));return `rgb(${v},${v},${v})`;};
+const GRADE=(M,x0,y0,s,o)=>{o=o||{};let g='';M.forEach((r,i)=>r.forEach((v,j)=>{const x=x0+j*s,y=y0+i*s;
+ g+=RC(x,y,s,s,o.cor?o.cor(v,i,j):cz(v),'stroke="#9AA3AF" stroke-width=".6"');
+ if(o.marca&&o.marca(i,j))g+=RC(x+1.5,y+1.5,s-3,s-3,'none','stroke="'+ORANGE+'" stroke-width="2.4"');
+ if(o.num)g+=TX(x+s/2,y+s/2+4,o.txt?o.txt(v):Math.round(v),{fs:o.fs||10,c:(o.esc?o.esc(v):v<140)?'#fff':NAVY,w:500});}));return g;};
+const SZ=SL('sz',1,5,1,1,()=>draw(),v=>v+'×'),SR=SL('sr',5,60,5,20,()=>draw(),v=>v);let sel=null;
+const cel=()=>8+SZ.get()*8;
+toque('fig',(x,y)=>{const s=cel(),x0=(340-5*s)/2,y0=10;const j=Math.floor((x-x0)/s),i=Math.floor((y-y0)/s);if(i>=0&&i<7&&j>=0&&j<5){sel=[i,j];draw();}});
+const tot=r=>Math.round(92.3*r)*Math.round(73.4*r);const eh=(i,j)=>sel&&sel[0]==i&&sel[1]==j;
+MIS.def(()=>[
+ ['Aumente o zoom até ver os números e toque no elemento <b>d<sub>23</sub></b>.',()=>eh(1,2),'d<sub>23</sub> = 75: linha 2, coluna 3. Um ponto escuro, de fundo.',()=>sel?'Você tocou em d'+(sel[0]+1)+(sel[1]+1)+'. Linha 2 é a segunda de cima para baixo; coluna 3 é a do meio.':'Toque num pixel.'],
+ ['Toque no pixel <b>mais claro</b> da matriz.',()=>eh(6,3),'d<sub>74</sub> = 177: o maior valor, tinta de chumbo com certeza.',()=>sel?'Esse vale '+DIG[sel[0]][sel[1]]+'. Procure um valor maior.':'Toque num pixel.'],
+ ['Ache a <b>menor resolução</b> que passa de <b>10 milhões</b> de pixels na tela inteira.',()=>tot(SR.get())>1e7&&tot(SR.get()-5)<=1e7,'40 pixels por cm: 3.692 × 2.936 ≈ 10,8 milhões. O dobro de 20 por cm dá 4 vezes mais pixels.',()=>tot(SR.get())>1e7?'Passou de 10 milhões. Será que uma resolução menor também passa?':'Ainda são '+fmt(tot(SR.get()))+'. Aumente a resolução.']]);
+function draw(){const s=cel(),x0=(340-5*s)/2,y0=10,H=Math.max(7*s+20,120);let g=RC(0,0,340,H,'#fff','rx="10"');
+ g+=GRADE(DIG,x0,y0,s,{num:s>=32,fs:s>=40?11:9,marca:(i,j)=>eh(i,j)});
+ if(s>=32){for(let j=0;j<5;j++)g+=TX(x0+j*s+s/2,y0+7*s+12,'c'+(j+1),{fs:8,c:GRAY});}
+ $('fig').innerHTML=SVG(340,H,g);
+ if(sel){const v=DIG[sel[0]][sel[1]];$('ke').innerHTML='d<sub>'+(sel[0]+1)+(sel[1]+1)+'</sub>';$('kv').textContent=v;$('kl').textContent=v>=128?'claro: tinta':'escuro: fundo';}else{$('ke').textContent='toque';$('kv').textContent='–';$('kl').textContent='–';}
+ const r=SR.get();$('kd').textContent=fmt(Math.round(92.3*r))+' × '+fmt(Math.round(73.4*r));$('kt').textContent=fmt(tot(r));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

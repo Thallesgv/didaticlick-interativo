@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O misturador de cores · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>O misturador de cores</h1></header>
+<main>
+<div class="card"><h2>Três números, uma cor</h2><p class="muted" style="margin-top:0">Mexa no vermelho (R), no verde (G) e no azul (B). O quadrado grande mostra a cor; o pequeno, o seu cinza (0,3 R + 0,59 G + 0,11 B). À direita, a cor da pincelada S6 e a distância até ela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>R (vermelho)</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>G (verde)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>B (azul)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Cinza<b id="kc"></b></div><div>Diferença até a S6<b id="kd"></b></div><div class="o">Distância<b id="kx"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Misture as cores.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DIG=[[98, 150, 150, 138, 101], [134, 103, 75, 101, 174], [117, 120, 91, 90, 160], [89, 75, 138, 139, 127], [96, 117, 84, 135, 167], [158, 94, 76, 125, 134], [113, 136, 121, 177, 84]];const MOD={"0":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"3":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"8":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]]};
+const cz=v=>{v=Math.max(0,Math.min(255,Math.round(v)));return `rgb(${v},${v},${v})`;};
+const GRADE=(M,x0,y0,s,o)=>{o=o||{};let g='';M.forEach((r,i)=>r.forEach((v,j)=>{const x=x0+j*s,y=y0+i*s;
+ g+=RC(x,y,s,s,o.cor?o.cor(v,i,j):cz(v),'stroke="#9AA3AF" stroke-width=".6"');
+ if(o.marca&&o.marca(i,j))g+=RC(x+1.5,y+1.5,s-3,s-3,'none','stroke="'+ORANGE+'" stroke-width="2.4"');
+ if(o.num)g+=TX(x+s/2,y+s/2+4,o.txt?o.txt(v):Math.round(v),{fs:o.fs||10,c:(o.esc?o.esc(v):v<140)?'#fff':NAVY,w:500});}));return g;};
+const SR=SL('sr',0,255,1,128,()=>draw(),v=>v),SG=SL('sg',0,255,1,128,()=>draw(),v=>v),SB=SL('sb',0,255,1,128,()=>draw(),v=>v);
+const S6=[229,184,70],cin=(r,g,b)=>0.3*r+0.59*g+0.11*b,c=()=>[SR.get(),SG.get(),SB.get()];
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2]);
+MIS.def(()=>[
+ ['Faça um <b>amarelo puro</b>: só vermelho e verde, no máximo, sem azul.',()=>c().join()=='255,255,0','(255, 255, 0): na luz, vermelho + verde = amarelo. Na tinta é diferente!',()=>{const [r,g,b]=c();return r<255||g<255?'Leve R e G até 255.':'Zere o azul.';}],
+ ['Reproduza a cor da <b>pincelada S6</b> (229, 184, 70), até distância 3.',()=>dist(c(),S6)<=3,'Agora compare com o horizonte (226, 178, 62): distância 10,4. Para o olho, é o mesmo amarelo.',()=>'Distância agora: '+r1(dist(c(),S6))+'. Ajuste R, G e B um de cada vez.'],
+ ['Ache uma cor com o <b>mesmo cinza</b> da S6 (185 ± 1) que fique a mais de 100 de distância dela.',()=>Math.abs(cin(...c())-185)<=1&&dist(c(),S6)>100,'Cores muito diferentes podem dar o mesmo cinza. Por isso uma foto em preto e branco esconde diferenças que a cor mostra.',()=>'Cinza agora: '+r1(cin(...c()))+'; distância até a S6: '+r1(dist(c(),S6))+'.']]);
+function draw(){const [r,g,b]=c(),k=cin(r,g,b);let s=RC(0,0,340,170,'#fff','rx="10"');
+ s+=RC(14,14,120,120,`rgb(${r},${g},${b})`,'rx="8" stroke="'+NAVY+'"')+RC(102,102,40,40,cz(k),'rx="4" stroke="'+NAVY+'"');
+ s+=TX(74,154,'sua cor (e o cinza)',{fs:9,c:GRAY});
+ [[r,'#D93B3B','R'],[g,'#2E9E4F','G'],[b,'#2F55B8','B']].forEach(([v,co,n],i)=>{const y=22+i*22;s+=TX(160,y+10,n,{fs:10,c:co})+RC(170,y,80,14,'#F2F4F7','rx="3"')+RC(170,y,80*v/255,14,co,'rx="3"');});
+ s+=RC(270,14,56,56,'rgb(229,184,70)','rx="6" stroke="'+NAVY+'"')+TX(298,84,'S6',{fs:9,c:GRAY});
+ s+=RC(270,96,56,56,'rgb(226,178,62)','rx="6" stroke="'+NAVY+'"')+TX(298,166,'horizonte',{fs:8,c:GRAY});
+ s+=TX(160,110,'(' + r + ', ' + g + ', ' + b + ')',{fs:13,a:'start',c:NAVY});
+ $('fig').innerHTML=SVG(340,170,s);
+ $('kc').textContent=r1(k);$('kd').textContent='('+(r-229)+', '+(g-184)+', '+(b-70)+')';$('kx').textContent=r1(dist(c(),S6));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
