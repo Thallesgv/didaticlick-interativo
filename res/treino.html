@@ -68,7 +68,31 @@ const LIV={'res1':{T:["A mina em escala", "A rampa: inclinação em %", "Coorden
 6:()=>{const t=R(0,2);
  if(t==0){const a=R(10,60),b=R(5,40);return{q:`O oxigênio chega ao limite no dia <b>${a}</b> e o gás carbônico no dia <b>${b}</b>. Até que dia o ar dura?`,a:Math.min(a,b),exp:`Vale o primeiro limite: o menor dos dois, dia ${Math.min(a,b)}.`};}
  if(t==1){const k=P([2,3,4]);return{q:`O ar duraria 19,2 dias. Se todos gastarem <b>${k} vezes</b> mais oxigênio, quantos dias dura? (uma casa decimal)`,a:Math.round(19.2/k*10)/10,tol:0.11,exp:`O tempo cai na mesma proporção: 19,2 ÷ ${k} ≈ ${r1(19.2/k)} dias.`};}
- const k=P([2,3,1.5]);return{q:`Com 40.000 m³ o ar dura 19,2 dias. Quantos dias duraria com <b>${fmt(40000*k)} m³</b>? (uma casa decimal)`,a:Math.round(19.2*k*10)/10,tol:0.11,exp:`O tempo é proporcional ao volume: 19,2 × ${fmt(k)} ≈ ${r1(19.2*k)} dias.`};}}}};
+ const k=P([2,3,1.5]);return{q:`Com 40.000 m³ o ar dura 19,2 dias. Quantos dias duraria com <b>${fmt(40000*k)} m³</b>? (uma casa decimal)`,a:Math.round(19.2*k*10)/10,tol:0.11,exp:`O tempo é proporcional ao volume: 19,2 × ${fmt(k)} ≈ ${r1(19.2*k)} dias.`};}}},'res3':{T:["Contando átomos", "O mol: contar por pacotes", "Balancear é conservar", "O fogo também respira", "Capturar o gás carbônico", "Fabricar oxigênio"],G:{1:()=>{const M=P([['CO₂',{C:1,O:2},44],['H₂O',{H:2,O:1},18],['CH₄',{C:1,H:4},16],['C₃H₈',{C:3,H:8},44],['NH₃',{N:1,H:3},17],['C₂H₆O',{C:2,H:6,O:1},46],['LiOH',{Li:1,O:1,H:1},24],['NaClO₃',{Na:1,Cl:1,O:3},106.5]]),t=R(0,2);
+ const n=Object.values(M[1]).reduce((a,b)=>a+b);
+ if(t==0)return{q:`Quantos átomos há numa molécula de <b>${M[0]}</b>?`,a:n,exp:`Some os índices: ${Object.entries(M[1]).map(([e,k])=>k+' '+e).join(' + ')} = ${n}.`};
+ if(t==1)return{q:`Qual é a massa de uma molécula de <b>${M[0]}</b>, em u? (H = 1, Li = 7, C = 12, N = 14, O = 16, Na = 23, Cl = 35,5)`,a:M[2],tol:0.01,exp:`Soma das massas dos átomos: ${fmt(M[2])} u.`};
+ const k=R(2,6);return{q:`Quantos átomos há, ao todo, em <b>${k} ${M[0]}</b>?`,a:k*n,exp:`${k} × ${n} = ${k*n}.`};},
+2:()=>{const t=R(0,2),G=P([['CO₂',44],['O₂',32],['N₂',28],['CH₄',16],['H₂O',18]]);
+ if(t==0){const n=P([2,3,5,10,25]);return{q:`Qual é a massa, em gramas, de <b>${n} mol</b> de ${G[0]}?`,a:n*G[1],exp:`${n} × ${G[1]} = ${n*G[1]} g.`};}
+ if(t==1){const n=P([2,4,10,50,400]);return{q:`Quantos litros ocupam <b>${n} mol</b> de gás a 20 °C (24 L por mol)?`,a:n*24,exp:`${n} × 24 = ${fmt(n*24)} L.`};}
+ const L=P([240,480,1200,2400,9600,12000]);return{q:`Quantos <b>gramas</b> de ${G[0]} há em <b>${fmt(L)} L</b> desse gás a 20 °C?`,a:L/24*G[1],tol:0.01,exp:`${fmt(L)} ÷ 24 = ${fmt(L/24)} mol; × ${G[1]} = ${fmt(L/24*G[1])} g.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const E=P([['CH₄ + __ O₂ → CO₂ + 2 H₂O',2],['C₃H₈ + __ O₂ → 3 CO₂ + 4 H₂O',5],['C₆H₁₂O₆ + __ O₂ → 6 CO₂ + 6 H₂O',6],['2 H₂ + __ O₂ → 2 H₂O',1],['C₂H₆O + __ O₂ → 2 CO₂ + 3 H₂O',3]]);return{q:`Qual coeficiente completa a equação? <b>${E[0]}</b>`,a:E[1],exp:`Conte os oxigênios depois da seta e divida por 2 (descontando os que já estão no combustível): ${E[1]}.`};}
+ if(t==1){const a=R(2,40),b=R(2,40);return{q:`Numa reação em frasco fechado, <b>${a} g</b> de um reagente reagem com <b>${b} g</b> de outro, formando um só produto. Quantos gramas de produto?`,a:a+b,exp:`Lei de Lavoisier: ${a} + ${b} = ${a+b} g.`};}
+ const k=P([2,3,5,10]);return{q:`Na glicose, C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O. Quantas moléculas de CO₂ saem de <b>${k}</b> moléculas de glicose?`,a:6*k,exp:`6 × ${k} = ${6*k}.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const v=P([5,10,20,50]),f=P([['metano',2,1],['propano',5,3]]);return{q:`Quantos litros de oxigênio a queima de <b>${v} L de ${f[0]}</b> gasta?`,a:v*f[1],exp:`${f[0]=='metano'?'CH₄ + 2 O₂':'C₃H₈ + 5 O₂'}: ${v} × ${f[1]} = ${v*f[1]} L.`};}
+ if(t==1){const g=P([44,88,132,220]);return{q:`Quantos mols de O₂ gasta a queima de <b>${g} g de propano</b> (44 g/mol; C₃H₈ + 5 O₂)?`,a:g/44*5,exp:`${g} ÷ 44 = ${g/44} mol; × 5 = ${g/44*5} mol.`};}
+ const h=P([0.5,1,1.5,2,3]);return{q:`O motor solta 2,9 m³ de CO₂ por hora. Ligado <b>${fmt(h)} h</b> por dia, junto com os 33 (9,6 m³/dia), em que dia o CO₂ chega ao limite (184 m³)? (uma casa decimal)`,a:Math.round(184/(9.6+2.9*h)*10)/10,tol:0.11,exp:`9,6 + 2,9 × ${fmt(h)} = ${fmt(Math.round((9.6+2.9*h)*100)/100)} m³/dia; 184 ÷ isso ≈ ${r1(184/(9.6+2.9*h))} dias.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const c=P([11,22,44,88,176]);return{q:`Em teoria, quantos gramas de LiOH prendem <b>${c} g de CO₂</b>? (48 g de LiOH para 44 g de CO₂)`,a:c*48/44,tol:0.01,exp:`${c} × 48 ÷ 44 = ${fmt(c*48/44)} g.`};}
+ if(t==1){const k=P([10,20,30,40]);return{q:`Na prática, 1 kg de LiOH absorve 0,5 kg de CO₂. Quantos quilos de CO₂ absorvem <b>${k} kg</b> de LiOH?`,a:k/2,exp:`${k} × 0,5 = ${fmt(k/2)} kg.`};}
+ const p=P([0.3,0.4,0.5,0.6]),te=0.92;return{q:`A teoria diz que 1 kg de pó prende 0,92 kg de CO₂, mas na prática prende <b>${fmt(p)} kg</b>. Qual é o rendimento, em %? (sem casas decimais)`,a:Math.round(p/te*100),tol:0.6,exp:`${fmt(p)} ÷ 0,92 ≈ ${fmt(Math.round(p/te*100))}%.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const n=P([2,4,6,10,20]);return{q:`Na vela, 2 NaClO₃ → 2 NaCl + 3 O₂. Quantos mols de O₂ saem de <b>${n} mol</b> de clorato?`,a:n*1.5,exp:`${n} × 3 ÷ 2 = ${fmt(n*1.5)} mol.`};}
+ if(t==1){const k=P([1,2,3,5]);return{q:`<b>${fmt(213*k)} g</b> de clorato liberam quantos gramas de oxigênio? (213 g → 96 g)`,a:96*k,exp:`${k} × 96 = ${96*k} g.`};}
+ const p=P([1,5,10,20,33]);return{q:`Cada quilo de vela dá oxigênio para 6,5 horas de uma pessoa. Quantos quilos mantêm <b>${p} pessoa(s)</b> por 24 horas? (uma casa decimal)`,a:Math.round(p*24/6.5*10)/10,tol:0.11,exp:`${p} × 24 ÷ 6,5 ≈ ${r1(p*24/6.5)} kg.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='res1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

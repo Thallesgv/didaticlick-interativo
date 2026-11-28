@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Do litro ao quilo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Do litro ao quilo</h1></header>
+<main>
+<div class="card"><h2>Volume → mol → massa → moléculas</h2><p class="muted" style="margin-top:0">Escolha o gás, o volume e a temperatura. Cada caixinha laranja é um pacote de <b>10 mol</b>. O volume de 1 mol muda com a temperatura: 22,4 L a 0 °C, cerca de 24 L a 20 °C.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sv"><b>Volume de gás</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Temperatura</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>1 mol ocupa<b id="k1"></b></div><div>Mols<b id="k2"></b></div><div class="o">Massa<b id="k3"></b></div><div>Moléculas<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o volume.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const G=[['CO₂',44],['O₂',32],['N₂',28],['CH₄',16]];let gi=0;chips('ch',G.map(g=>g[0]),0,i=>{gi=i;draw();});
+const V=SL('sv',0,20000,100,2400,draw,v=>fmt(v)+' L = '+fmt(v/1000)+' m³'),Tt=SL('st',0,40,1,20,draw,v=>v+' °C');
+const vm=()=>22.4*(273+Tt.get())/273,n=()=>V.get()/vm(),ms=()=>n()*G[gi][1];
+const cient=x=>{if(x<=0)return '0';const e=Math.floor(Math.log10(x));return fmt(Math.round(x/10**e*100)/100)+' × 10'+SUP(e);};
+MIS.def(()=>[
+ ['Transforme o <b>gás carbônico de um dia</b> dos 33 (9,6 m³, a 20 °C) em quilos.',()=>gi==0&&V.get()==9600&&Tt.get()==20,'400 mol × 44 g = 17,6 kg de CO₂ por dia: 2,4 × 10²⁶ moléculas.',()=>gi?'Escolha o CO₂.':'Agora: '+fmt(Math.round(n()))+' mol, '+r1(ms()/1000)+' kg.'],
+ ['Ache o volume de <b>oxigênio</b>, a 20 °C, que pesa <b>16 kg</b>: o consumo de um dia dos 33.',()=>gi==1&&V.get()==12000&&Tt.get()==20,'12.000 L = 12 m³: 500 mol × 32 g = 16 kg. Bate com o Livro 2.',()=>gi!=1?'Escolha o O₂.':'Agora: '+r1(ms()/1000)+' kg de O₂.'],
+ ['Volte para os 9,6 m³ de CO₂ e esquente para <b>35 °C</b>, a temperatura perto do refúgio. Há mais ou menos mols?',()=>gi==0&&V.get()==9600&&Tt.get()==35,()=>'Menos: '+fmt(Math.round(n()))+' mol. O gás quente ocupa mais espaço, então o mesmo volume guarda menos moléculas.',()=>'Ajuste o gás, o volume e a temperatura.']]);
+function draw(){const N=n(),cx=Math.round(N/10);let g='';const lim=Math.min(cx,120);
+ for(let i=0;i<lim;i++){const x=12+(i%20)*16,y=150-Math.floor(i/20)*18;g+=RC(x,y,13,14,ORANGE,'rx="2" stroke="#0E2354" stroke-width=".6"');}
+ g+=TX(170,186,cx>120?'mais de 1.200 mol: a pilha não cabe ('+fmt(cx)+' caixinhas)':fmt(cx)+' caixinhas de 10 mol',{fs:11});
+ g+=TX(170,24,fmt(V.get())+' L de '+G[gi][0]+' a '+Tt.get()+' °C',{fs:12});
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=r1(vm())+' L';$('k2').textContent=fmt(Math.round(N*10)/10);$('k3').textContent=ms()>=1000?r2(ms()/1000)+' kg':r1(ms())+' g';$('k4').textContent=cient(N*6.02e23);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

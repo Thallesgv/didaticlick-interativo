@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A vela de oxigênio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A vela de oxigênio</h1></header>
+<main>
+<div class="card"><h2>Velas contra pulmões</h2><p class="muted" style="margin-top:0">Cada quilograma de mistura de vela dá oxigênio para cerca de <b>6,5 horas de uma pessoa</b>. Escolha quantos quilos queimar por dia e veja quantas pessoas as velas mantêm.</p>
+<div class="sl" id="sk"><b>Velas por dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Pessoas mantidas o dia todo<b id="k1"></b></div><div>O₂ produzido<b id="k2"></b></div><div class="o">Comparado ao LiOH (35,2 kg)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Queime velas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const K=SL('sk',0,200,1,10,draw,v=>v+' kg');const pes=()=>K.get()*6.5/24;let t0=performance.now();
+MIS.def(()=>[
+ ['Ache o <b>menor número de quilos</b> (inteiro) que mantém <b>uma pessoa</b> o dia todo.',()=>K.get()==4,'4 kg (a conta dá 3,7 kg): 24 horas ÷ 6,5 horas por quilo.',()=>'Agora as velas mantêm '+r2(pes())+' pessoa(s).'],
+ ['Agora mantenha <b>os 33</b>. Quantos quilos por dia?',()=>K.get()==122,'122 kg por dia: mais de três vezes o LiOH. Por isso as velas descem só como reserva.',()=>'Agora: '+r1(pes())+' pessoas.'],
+ ['Coloque <b>35 kg</b> de velas, o peso do LiOH de um dia. Quantas pessoas elas mantêm?',()=>K.get()==35,'Cerca de 9,5 pessoas. O mesmo peso de LiOH limpa o gás carbônico dos 33.',()=>'Agora: '+K.get()+' kg.']]);
+function velas(f){let g='';const n=Math.min(K.get(),200),w=n>100?7:n>40?11:16,por=Math.floor(320/w);
+ for(let i=0;i<n;i++){const x=10+(i%por)*w,y=16+Math.floor(i/por)*(w*2.2);const h=w*1.6;g+=RC(x,y+w*0.5,w-2,h,'#D1D5DB','stroke="#0E2354" stroke-width=".5"');
+  const fl=0.7+0.3*Math.sin(f*6+i);g+=`<path d="M${x+(w-2)/2} ${y+w*0.5-w*0.9*fl} Q${x+w-2} ${y+w*0.4} ${x+(w-2)/2} ${y+w*0.5} Q${x} ${y+w*0.4} ${x+(w-2)/2} ${y+w*0.5-w*0.9*fl}Z" fill="${ORANGE}"/>`;}
+ return g;}
+function pessoas(){let g='';const p=pes();for(let i=0;i<33;i++){const x=14+(i%11)*29,y=150+Math.floor(i/11)*20;const f=clamp(p-i,0,1);g+=`<circle cx="${x}" cy="${y}" r="7" fill="${f>=1?GREEN:f>0?'#86C59B':'#E5E7EB'}" stroke="#0E2354" stroke-width=".8"/>`;}
+ return g+TX(170,222,'verde: pessoa com o oxigênio do dia garantido pelas velas',{fs:10,c:GRAY,w:500});}
+function anima(){const el=$('vv');if(el)el.innerHTML=velas((performance.now()-t0)/1000);requestAnimationFrame(anima);}
+function draw(){$('fig').innerHTML=SVG(340,232,'<g id="vv">'+velas(0)+'</g>'+pessoas());
+ $('k1').textContent=r1(pes());$('k2').textContent=r1(pes()*12/33)+' m³/dia';$('k3').textContent=r1(K.get()/35.2)+' vezes o peso';MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>

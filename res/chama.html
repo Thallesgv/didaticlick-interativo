@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quem respira o ar? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Quem respira o ar?</h1></header>
+<main>
+<div class="card"><h2>Pessoas, lampião e motor</h2><p class="muted" style="margin-top:0">Lampião: 100 g de propano por hora (0,27 m³ de O₂ e 0,16 m³ de CO₂). Motor parado e ligado: 2 L de diesel por hora (4,28 m³ de O₂ e 2,9 m³ de CO₂). Pessoas em repouso: 12/33 m³ de O₂ por dia cada uma. Ar: os 40.000 m³ do Livro 2.</p>
+<div class="sl" id="sp"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Lampião aceso (horas por dia)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Motor ligado (horas por dia)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><div class="fig" id="gr"></div>
+<div class="kpi"><div>O₂ gasto por dia<b id="k1"></b></div><div>CO₂ por dia<b id="k2"></b></div><div class="o">CO₂ chega a 0,5% no dia<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as fontes.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Pp=SL('sp',0,33,1,33,draw),La=SL('sl',0,24,1,0,draw,v=>v+' h'),Mo=SL('sm',0,8,0.5,0,draw,v=>fmt(v)+' h');
+const o2=()=>[Pp.get()*12/33,La.get()*0.273,Mo.get()*4.28],co2=()=>[Pp.get()*9.6/33,La.get()*0.164,Mo.get()*2.9],sum=a=>a.reduce((x,y)=>x+y,0),dias=()=>sum(co2())>0?184/sum(co2()):Infinity;
+MIS.def(()=>[
+ ['Com os 33, ligue o motor só <b>meia hora</b> por dia, como Seu Ari pediu. Quantos dias de ar se perdem?',()=>Pp.get()==33&&Mo.get()==0.5&&La.get()==0,'O limite chega no dia 16,7 em vez de 19,2: meia hora de motor custa dois dias e meio de ar.',()=>'Agora o limite chega no dia '+r1(dias())+'.'],
+ ['Acenda o lampião <b>o dia todo</b> e ache quantas pessoas, junto com ele, gastam os mesmos 12 m³ de O₂ que os 33 sozinhos.',()=>La.get()==24&&Mo.get()==0&&Pp.get()==15,'15 pessoas + lampião ≈ 12 m³: um lampião aceso o dia inteiro respira como 18 pessoas.',()=>'O₂ por dia agora: '+r1(sum(o2()))+' m³.'],
+ ['Com os 33, ache o <b>menor tempo de motor</b> que faria o gás carbônico chegar ao limite <b>antes do 10º dia</b>.',()=>Pp.get()==33&&La.get()==0&&Mo.get()==3.5,'3,5 h: o limite chega no dia 9,3. Com 3 h, seria no dia 10,05.',()=>'Agora o limite chega no dia '+r1(dias())+'.']]);
+function draw(){const a=o2(),c=co2(),T=sum(a),mx=Math.max(12,T);let g='';const nomes=['pessoas','lampião','motor'],cores=[NAVY,ORANGE,VERM];
+ nomes.forEach((n,i)=>{const y=14+i*30;g+=TX(70,y+13,n,{fs:11,a:'end'})+RC(78,y,a[i]/mx*190,18,cores[i],'rx="3"')+TX(82+a[i]/mx*190,y+13,r1(a[i])+' m³',{fs:10,a:'start'});});
+ $('fig').innerHTML=SVG(340,104,g);const d=dias();
+ $('gr').innerHTML=PLOT({xmin:0,xmax:30,ymin:0,ymax:1,dx:5,dy:0.2,xl:'dias',yl:'% de gás carbônico',fy:v=>fmt(Math.round(v*10)/10)},(X,Y)=>linha([[0,0.5],[30,0.5]],X,Y,VERM,1.5,'6 4')+linha([[0,0.04],[30,0.04+sum(c)*100/40000*30]],X,Y,'#111',3)+linha([[0,0.04],[30,0.04+0.024*30]],X,Y,GRAY,1.5,'3 3')+(d<=30?ponto(d,0.5,X,Y,VERM):''));
+ $('k1').textContent=r1(T)+' m³';$('k2').textContent=r1(sum(c))+' m³';$('k3').textContent=d==Infinity?'nunca':r1(d);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
