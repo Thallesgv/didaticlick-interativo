@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta dos dados · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A reta dos dados</h1></header>
+<main>
+<div class="card"><h2>Ajuste a reta</h2><p class="muted" style="margin-top:0">Os dez pontos são pessoas da coleção de referência. Mude a <b>inclinação</b> e a <b>altura da reta no meio</b> (F = 46,64), ou arraste: perto do meio, a reta sobe e desce; longe dele, ela gira. Os traços cinza são os desvios.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Inclinação</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Altura no meio</b><input type="range"><span></span></div>
+<div class="kpi"><div>Reta<b id="kq"></b></div><div class="o">Desvio médio<b id="kd"></b></div></div>
+<div class="sl" id="st"><b>Fêmur para prever</b><input type="range"><span></span></div>
+<div class="kpi"><div>Previsão da reta<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova a reta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2));
+const D=[[40.2,154],[42.5,161.5],[44,163],[45.1,167.5],[46.8,170],[47.5,173.5],[48.3,173],[49.6,178.5],[50.4,179],[52,184]],MX=46.64,MY=170.4;
+const SA=SL('sa',1,4,0.01,1.8,()=>draw(),v=>f2(v)),SC=SL('sc',160,180,0.1,166,()=>draw(),v=>f1(v)+' cm'),ST=SL('st',5,80,1,45,()=>draw(),v=>v+' cm');
+const a=()=>Math.round(SA.get()*100)/100,c=()=>Math.round(SC.get()*10)/10,b=()=>c()-a()*MX,L=f=>a()*(f-MX)+c();
+const mad=()=>D.reduce((s,p)=>s+Math.abs(p[1]-L(p[0])),0)/D.length;
+const X=f=>40+(f-38)*17.5,Y=e=>270-(e-148)*240/42,iF=x=>(x-40)/17.5+38,iE=y=>148+(270-y)*42/240;
+toque('fig',(x,y)=>{const f=iF(x),e=iE(y);if(Math.abs(f-MX)<2.5)SC.set(Math.min(180,Math.max(160,Math.round(e*10)/10)));else SA.set(Math.min(4,Math.max(1,Math.round((e-c())/(f-MX)*100)/100)));draw();});
+let viuX=false;
+MIS.def(()=>[
+ ['Faça a reta passar pelo <b>ponto médio</b> (46,64; 170,4), o círculo vazio.',()=>Math.abs(c()-170.4)<0.15,'A reta de melhor ajuste sempre passa pelo ponto médio. Agora falta acertar a inclinação.',()=>'A reta passa a '+f1(c())+' cm no meio. Precisa de 170,4.'],
+ ['Gire a reta até o <b>desvio médio</b> ficar abaixo de <b>1,2 cm</b>.',()=>mad()<1.2,'Os traços cinza encolheram: a reta já representa bem os pontos.',()=>'Desvio médio agora: '+f2(mad())+' cm. Precisa ficar abaixo de 1,2.'],
+ ['Ache a <b>reta de melhor ajuste</b>: desvio médio abaixo de <b>0,9 cm</b>.',()=>mad()<0.9,()=>'Sua reta: E ≈ '+f2(a())+' · F + '+f1(b())+'. A conta com todos os pontos dá cerca de 2,46 · F + 55,8, com desvio médio de 0,88 cm.',()=>'Desvio médio agora: '+f2(mad())+' cm. Inclinação '+f2(a())+' e meio '+f1(c())+': mexa nos dois.'],
+ ['Use a reta para um <b>bebê recém-nascido</b>: fêmur de cerca de <b>8 cm</b>. O bebê mede uns 50 cm. A reta acerta?',()=>ST.get()<=8,()=>'A reta prevê '+f1(L(ST.get()))+' cm para um bebê de uns 50 cm. Isso é extrapolar: os dados vão só de 40 a 52 cm de fêmur.',()=>'Fêmur para prever: '+ST.get()+' cm. Ponha 8 cm ou menos.']]);
+function draw(){let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ for(let f=38;f<=54;f+=2)g+=LN(X(f),Y(148),X(f),Y(190),'#E5EAF1',1)+TX(X(f),Y(148)+14,f,{fs:9,c:GRAY,w:500});
+ for(let e=150;e<=190;e+=10)g+=LN(X(38),Y(e),X(54),Y(e),'#E5EAF1',1)+TX(X(38)-4,Y(e)+3,e,{fs:9,a:'end',c:GRAY,w:500});
+ const cl=e=>Math.min(Y(148),Math.max(Y(190),e));
+ g+=`<clipPath id="cp"><rect x="${X(38)}" y="${Y(190)}" width="${X(54)-X(38)}" height="${Y(148)-Y(190)}"/></clipPath><g clip-path="url(#cp)">`+LN(X(38),Y(L(38)),X(54),Y(L(54)),ORANGE,2.5)+'</g>';
+ D.forEach(p=>{g+=LN(X(p[0]),Y(p[1]),X(p[0]),cl(Y(L(p[0]))),'#9CA3AF',2);g+=CIR(X(p[0]),Y(p[1]),5,BLUE,'stroke="#fff" stroke-width="1.5"');});
+ g+=CIR(X(MX),Y(MY),7,'none','stroke="'+NAVY+'" stroke-width="2"');
+ g+=TX(X(46),Y(148)+28,'fêmur (cm)',{fs:10,c:NAVY})+TX(X(38),Y(190)-8,'altura (cm)',{fs:10,a:'start',c:NAVY});
+ $('fig').innerHTML=SVG(340,300,g);$('kq').textContent='E = '+f2(a())+' · F + '+f1(b());$('kd').textContent=f2(mad())+' cm';
+ const t=ST.get();$('kp').innerHTML=f1(L(t))+' cm'+(t<40||t>52?' <span style="color:#B91C1C;font-size:13px">fora dos dados!</span>':'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
