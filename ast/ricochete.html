@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O empurrão extra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O empurrão extra</h1></header>
+<main>
+<div class="card"><h2>Δv = β · m · v ÷ M</h2><p class="muted" style="margin-top:0">Escolha a rocha, a massa e a velocidade da nave e o fator β dos detritos. Com β = 1, a nave só gruda; com β maior, a nuvem de detritos que volta para trás empurra a rocha para a frente.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Massa da nave</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Velocidade no choque</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Fator β</b><input type="range"><span></span></div>
+<div class="kpi"><div>Momento da nave<b id="kp"></b></div><div>Massa da rocha<b id="kM"></b></div><div class="o">Δv da rocha<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Empurre as rochas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZC='#3B82C4';
+const SETA=(x1,y1,x2,y2,c,w)=>{const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),t=Math.min(9,L*0.45);if(L<0.5)return '';
+ return LN(x1,y1,x2-Math.cos(a)*t*0.6,y2-Math.sin(a)*t*0.6,c,w||2.5)+PG([[x2,y2],[x2-t*Math.cos(a-0.42),y2-t*Math.sin(a-0.42)],[x2-t*Math.cos(a+0.42),y2-t*Math.sin(a+0.42)]],c);};
+const CID=[['Pedra Alta',35,19],['Vila Seca',-52,47],['Rio Claro do Sul',-72,-83],['Campo Largo',40,145],['Ponte Funda',85,-50],['Três Barras',175,20],['Serra Nova',142,-141]];
+const ROC=[['Teimoso',2.8e10,'300 m'],['Dimorphos',4.3e9,'150 m']];let alvo=0;
+const Mn=SL('sm',100,10000,10,1000,draw,v=>fmt(v)+' kg'),Vn=SL('sv',1,15,0.1,5,draw,v=>r1(v)+' km/s'),B=SL('sb',1,5,0.1,1,draw,v=>r1(v));
+const dv=()=>B.get()*Mn.get()*Vn.get()*1000/ROC[alvo][1]*1000;   // mm/s
+MIS.def(()=>[
+ ['Refaça a <b>DART</b>: 580 kg a 6,1 km/s em <b>Dimorphos</b>, com β = 3,6.',()=>alvo==1&&Mn.get()==580&&Math.abs(Vn.get()-6.1)<0.05&&Math.abs(B.get()-3.6)<0.05,()=>'Δv ≈ '+r1(dv())+' mm/s. Os astrônomos mediram uns 2,7 mm/s ao longo da órbita, e a volta de Dimorphos encurtou 33 minutos.',()=>'Agora: '+ROC[alvo][0]+', '+fmt(Mn.get())+' kg, '+r1(Vn.get())+' km/s, β = '+r1(B.get())+'.'],
+ ['Agora a <b>Martelo</b>: 5.000 kg a 6,2 km/s no <b>Teimoso</b>, com β = 3,6.',()=>alvo==0&&Mn.get()==5000&&Math.abs(Vn.get()-6.2)<0.05&&Math.abs(B.get()-3.6)<0.05,()=>'Δv ≈ '+r1(dv())+' mm/s: a velocidade de uma lesma, numa rocha de 28 milhões de toneladas.',()=>'Agora: '+ROC[alvo][0]+', '+fmt(Mn.get())+' kg, '+r1(Vn.get())+' km/s, β = '+r1(B.get())+'.'],
+ ['Ache uma nave que dê pelo menos <b>1 cm/s</b> (10 mm/s) ao <b>Teimoso</b>.',()=>alvo==0&&dv()>=10,()=>'Δv = '+r1(dv())+' mm/s. É preciso uma nave bem mais pesada, mais rápida ou com mais detritos que a Martelo.',()=>alvo!=0?'Escolha o Teimoso.':'Agora: '+r1(dv())+' mm/s. Faltam '+r1(10-dv())+'.']]);
+function draw(){const W=340,H=210;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(0,0,W,H,50,5);
+ const r=alvo==0?46:30,cx=190,cy=100,ej=(B.get()-1)/4;
+ let s=7;const rnd=()=>{s=(s*9301+49297)%233280;return s/233280;};
+ const n=Math.round(ej*80);for(let i=0;i<n;i++){const a=Math.PI+(rnd()-0.5)*1.4,d=r+8+rnd()*(30+ej*80);g+=`<circle cx="${(cx-r*0.6+d*Math.cos(a)).toFixed(1)}" cy="${(cy+d*Math.sin(a)*0.8).toFixed(1)}" r="${(1+rnd()*2).toFixed(1)}" fill="#C9CED8" opacity="0.85"/>`;}
+ g+=ROCHA_SVG(cx,cy,r,alvo?5:3)+`<circle cx="${cx-r*0.9}" cy="${cy}" r="5" fill="#FDE68A"/>`;
+ g+=TX(cx,cy+r+22,ROC[alvo][0]+' · '+ROC[alvo][2],{fs:11,c:'#fff'});
+ const L=Math.min(110,dv()*9);g+=SETA(cx+r+8,cy,cx+r+8+L,cy,ORANGE,4)+TX(cx+r+10,cy-12,r1(dv())+' mm/s',{fs:11,c:ORANGE,a:'start'});
+ if(n)g+=TX(56,28,'detritos',{fs:10,c:'#C9CED8'});
+ $('fig').innerHTML=SVG(W,H,g);$('kp').textContent=SCI(Mn.get()*Vn.get()*1000,2)+' kg·m/s';$('kM').textContent=SCI(ROC[alvo][1],1)+' kg';$('kd').textContent=r2(dv())+' mm/s';MIS.ver('m');}
+chips('ch',['Teimoso','Dimorphos'],0,i=>{alvo=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

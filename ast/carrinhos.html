@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A colisão dos carrinhos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A colisão dos carrinhos</h1></header>
+<main>
+<div class="card"><h2>O momento se conserva</h2><p class="muted" style="margin-top:0">O carrinho laranja vem com velocidade v₁ e bate no azul, parado. Escolha as massas, a velocidade e se eles <b>grudam</b> ou <b>quicam</b> (choque elástico, sem perda de energia). Aperte <b>Bater</b> para ver o choque.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm1"><b>Massa do laranja</b><input type="range"><span></span></div>
+<div class="sl" id="sv1"><b>Velocidade do laranja</b><input type="range"><span></span></div>
+<div class="sl" id="sm2"><b>Massa do azul (parado)</b><input type="range"><span></span></div>
+<div class="row"><button id="vai">Bater</button></div>
+<div class="kpi"><div>Laranja depois<b id="k1"></b></div><div>Azul depois<b id="k2"></b></div><div class="o">Momento antes e depois<b id="kp"></b></div><div>Energia antes e depois<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça os choques.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZC='#3B82C4';
+const SETA=(x1,y1,x2,y2,c,w)=>{const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),t=Math.min(9,L*0.45);if(L<0.5)return '';
+ return LN(x1,y1,x2-Math.cos(a)*t*0.6,y2-Math.sin(a)*t*0.6,c,w||2.5)+PG([[x2,y2],[x2-t*Math.cos(a-0.42),y2-t*Math.sin(a-0.42)],[x2-t*Math.cos(a+0.42),y2-t*Math.sin(a+0.42)]],c);};
+const CID=[['Pedra Alta',35,19],['Vila Seca',-52,47],['Rio Claro do Sul',-72,-83],['Campo Largo',40,145],['Ponte Funda',85,-50],['Três Barras',175,20],['Serra Nova',142,-141]];
+let tipo=0,quadro=0,anim=0;
+const M1=SL('sm1',0.5,5,0.5,2,draw,v=>r1(v)+' kg'),V1=SL('sv1',1,6,0.5,3,draw,v=>r1(v)+' m/s'),M2=SL('sm2',0.5,5,0.5,1,draw,v=>r1(v)+' kg');
+const dep=()=>{const m1=M1.get(),m2=M2.get(),v=V1.get();if(tipo==0){const u=m1*v/(m1+m2);return[u,u];}return[(m1-m2)/(m1+m2)*v,2*m1/(m1+m2)*v];};
+MIS.def(()=>[
+ ['Refaça o exemplo: carrinho de <b>2 kg a 3 m/s</b> contra um de <b>1 kg</b>, e os dois <b>grudam</b>.',()=>tipo==0&&M1.get()==2&&V1.get()==3&&M2.get()==1,'Momento antes: 2 × 3 = 6. Depois: 3 kg × 2 m/s = 6. A energia caiu de 9 J para 6 J; o momento, não.',()=>'Agora: '+r1(M1.get())+' kg a '+r1(V1.get())+' m/s contra '+r1(M2.get())+' kg, '+(tipo?'quicando':'grudando')+'.'],
+ ['Faça o carrinho laranja <b>parar</b> no choque, como no pêndulo de Newton.',()=>tipo==1&&M1.get()==M2.get(),'Massas iguais, choque elástico: o primeiro para e o segundo sai com toda a velocidade. O momento passou inteiro de um para o outro.',()=>tipo==0?'Grudados, eles nunca param. Experimente quicar.':'O laranja ainda anda a '+r2(dep()[0])+' m/s. Mude as massas.'],
+ ['Os dois <b>grudam</b> e saem com <b>um quarto</b> da velocidade do laranja. Que massa o azul precisa ter?',()=>tipo==0&&Math.abs(dep()[0]-V1.get()/4)<1e-9,()=>'O azul tem 3 vezes a massa do laranja: a massa total fica 4 vezes maior, e a velocidade, 4 vezes menor. É o caso da Martelo, só que com 5,6 milhões de vezes.',()=>'Juntos, saem a '+r2(dep()[0])+' m/s; um quarto de v₁ é '+r2(V1.get()/4)+'.']]);
+function cena(t){const W=340,H=170,m1=M1.get(),m2=M2.get(),v=V1.get(),[a,b]=dep();let g=RC(0,0,W,H,'#F8FAFC','rx="10"');
+ g+=LN(10,130,W-10,130,'#94A3B8',2);
+ const w1=34+m1*9,w2=34+m2*9,xc=190,tc=1;   // choque em t = 1
+ let x1,x2;if(t<tc){x1=xc-w1-(tc-t)*v*22;x2=xc;}else{x1=xc-w1+(t-tc)*a*22;x2=xc+(t-tc)*b*22;}
+ const car=(x,w,c,txt)=>RC(x,92,w,30,c,'rx="6" stroke="'+NAVY+'"')+`<circle cx="${x+w*0.25}" cy="${126}" r="6" fill="${NAVY}"/><circle cx="${x+w*0.75}" cy="${126}" r="6" fill="${NAVY}"/>`+TX(x+w/2,112,txt,{fs:11,c:c==ORANGE?'#fff':NAVY});
+ g+=car(x1,w1,ORANGE,r1(m1)+' kg')+car(x2,w2,'#BFDBFE',r1(m2)+' kg');
+ const vv1=t<tc?v:a,vv2=t<tc?0:b;
+ if(Math.abs(vv1)>0.01)g+=SETA(x1+w1/2,78,x1+w1/2+vv1*14,78,ORANGE,2.5);
+ if(Math.abs(vv2)>0.01)g+=SETA(x2+w2/2,78,x2+w2/2+vv2*14,78,AZC,2.5);
+ g+=TX(12,22,t<tc?'antes do choque':'depois do choque',{fs:11,a:'start'})+TX(W-12,22,'momento total: '+r2(t<tc?m1*v:m1*a+m2*b)+' kg·m/s',{fs:10,a:'end',c:GREEN});
+ return SVG(W,H,g);}
+let T=0;
+function draw(){cancelAnimationFrame(anim);T=0;$('fig').innerHTML=cena(0.15);const m1=M1.get(),m2=M2.get(),v=V1.get(),[a,b]=dep();
+ $('k1').textContent=r2(a)+' m/s';$('k2').textContent=r2(b)+' m/s';$('kp').textContent=r2(m1*v)+' → '+r2(m1*a+m2*b);
+ $('ke').textContent=r2(m1*v*v/2)+' J → '+r2(m1*a*a/2+m2*b*b/2)+' J';MIS.ver('m');}
+$('vai').onclick=()=>{cancelAnimationFrame(anim);let t0=performance.now();const go=()=>{const t=(performance.now()-t0)/1000*0.9;$('fig').innerHTML=cena(Math.min(t,3));if(t<3)anim=requestAnimationFrame(go);};go();};
+chips('ch',['Grudam','Quicam'],0,i=>{tipo=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

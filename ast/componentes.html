@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O empurrão inclinado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O empurrão inclinado</h1></header>
+<main>
+<div class="card"><h2>Ao longo e de lado</h2><p class="muted" style="margin-top:0">O Teimoso anda da esquerda para a direita. Escolha o tamanho do empurrão (em mm/s) e o ângulo dele com o caminho. A parte <b style="color:#F7821F">ao longo</b> do caminho só atrasa a chegada; a parte <b style="color:#3B82C4">de lado</b> tira a rocha do alvo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Tamanho do empurrão</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Ângulo com o caminho</b><input type="range"><span></span></div>
+<div class="kpi"><div>Ao longo = v · cos θ<b id="kl"></b></div><div class="o">De lado = v · sen θ<b id="kd"></b></div><div>Fração de lado<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Decomponha o empurrão.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZC='#3B82C4';
+const SETA=(x1,y1,x2,y2,c,w)=>{const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),t=Math.min(9,L*0.45);if(L<0.5)return '';
+ return LN(x1,y1,x2-Math.cos(a)*t*0.6,y2-Math.sin(a)*t*0.6,c,w||2.5)+PG([[x2,y2],[x2-t*Math.cos(a-0.42),y2-t*Math.sin(a-0.42)],[x2-t*Math.cos(a+0.42),y2-t*Math.sin(a+0.42)]],c);};
+const CID=[['Pedra Alta',35,19],['Vila Seca',-52,47],['Rio Claro do Sul',-72,-83],['Campo Largo',40,145],['Ponte Funda',85,-50],['Três Barras',175,20],['Serra Nova',142,-141]];
+const V=SL('sv',0.5,10,0.1,5,draw,v=>r1(v)+' mm/s'),TH=SL('st',0,90,1,30,draw,v=>v+'°');
+const lon=()=>V.get()*Math.cos(TH.get()*RAD),lad=()=>V.get()*Math.sin(TH.get()*RAD);
+MIS.def(()=>[
+ ['Refaça o empurrão da <b>Martelo</b>: 4 mm/s, inclinado 53° em relação ao caminho. Quanto sai de lado?',()=>Math.abs(V.get()-4)<0.05&&TH.get()==53,'4 × sen 53° ≈ 3,2 mm/s de lado e 4 × cos 53° ≈ 2,4 mm/s ao longo. São os números de Otávio.',()=>'Agora: '+r1(V.get())+' mm/s a '+TH.get()+'°.'],
+ ['Ache o ângulo em que as duas componentes ficam <b>iguais</b>.',()=>V.get()>0&&Math.abs(lon()-lad())<0.01,()=>'Com '+TH.get()+'°, seno e cosseno são iguais (≈ 0,71): a seta é a diagonal de um quadrado.',()=>'Ao longo '+r2(lon())+' e de lado '+r2(lad())+'.'],
+ ['Ache o ângulo em que a parte de lado é <b>exatamente a metade</b> do empurrão.',()=>Math.abs(lad()/V.get()-0.5)<0.002,()=>'Com 30°, sen 30° = 0,5: metade do empurrão vai para o lado. É o triângulo do Livro 1.',()=>'Fração de lado: '+r2(lad()/V.get())+'.']]);
+function draw(){const W=340,H=250,ox=70,oy=200,k=Math.min(26,250/Math.max(V.get(),1));let g=RC(0,0,W,H,'#F8FAFC','rx="10"');
+ g+=LN(10,oy,W-10,oy,'#CBD5E1',1.4,'6 4')+SETA(W-80,oy+18,W-20,oy+18,GRAY,1.2)+TX(W-50,oy+34,'caminho do Teimoso',{fs:9,c:GRAY});
+ g+=ROCHA_SVG(ox,oy,16,3);
+ const lx=ox+lon()*k,ly=oy,dx=ox,dy=oy-lad()*k,px=ox+lon()*k,py=oy-lad()*k;
+ g+=LN(lx,ly,px,py,'#94A3B8',1,'3 3')+LN(dx,dy,px,py,'#94A3B8',1,'3 3');
+ g+=SETA(ox,oy,lx,ly,ORANGE,3.5)+SETA(ox,oy,dx,dy,AZC,3.5)+SETA(ox,oy,px,py,NAVY,3.5);
+ const a0=0,a1=-TH.get()*RAD;g+=`<path d="M ${ox+34} ${oy} A 34 34 0 0 0 ${ox+34*Math.cos(a1)} ${oy+34*Math.sin(a1)}" fill="none" stroke="${NAVY}" stroke-width="1.2"/>`;
+ g+=TX(ox+48*Math.cos(a1/2),oy+48*Math.sin(a1/2)+4,TH.get()+'°',{fs:11});
+ g+=TX(px+6,py-6,r1(V.get())+' mm/s',{fs:11,a:'start'})+TX((ox+lx)/2,oy+16,r2(lon()),{fs:10,c:ORANGE})+TX(ox-8,(oy+dy)/2,r2(lad()),{fs:10,c:AZC,a:'end'});
+ $('fig').innerHTML=SVG(W,H,g);$('kl').textContent=r2(lon())+' mm/s';$('kd').textContent=r2(lad())+' mm/s';$('kf').textContent=fmt(Math.round(lad()/V.get()*100))+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
