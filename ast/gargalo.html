@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O gargalo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O gargalo</h1></header>
+<main>
+<div class="card"><h2>Fluxo máximo e corte mínimo</h2><p class="muted" style="margin-top:0">As estradas de Pedra Alta até os abrigos de Serra Nova, com as capacidades em mil carros por hora. O simulador testa os quatro cortes possíveis: o menor (em vermelho) é o fluxo máximo. A estrada de Pedra Alta a Três Barras (8) e a ligação Ponte Funda–Três Barras (5) ficam fixas.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Pedra Alta → Ponte Funda</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Ponte Funda → Serra Nova</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Três Barras → Serra Nova</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Fluxo máximo<b id="kf"></b></div><div>Tempo para 72.000 carros<b id="kt"></b></div><div>Gargalo<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as capacidades.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const fm=v=>v+' mil/h';const A=SL('sa',6,16,1,10,draw,fm),Pn=SL('sp',2,12,1,4,draw,fm),B=SL('sb',4,14,1,9,draw,fm);
+const SB=8,AB=5;
+function cortes(){const sa=A.get(),at=Pn.get(),bt=B.get();return[{n:'saídas de Pedra Alta',v:sa+SB,e:['sa','sb']},{n:'em volta de Pedra Alta e Ponte Funda',v:SB+AB+at,e:['sb','ab','at']},{n:'em volta de Pedra Alta e Três Barras',v:sa+bt,e:['sa','bt']},{n:'chegadas a Serra Nova',v:at+bt,e:['at','bt']}];}
+const minC=()=>cortes().reduce((m,c)=>c.v<m.v?c:m);
+const flx=()=>minC().v;
+MIS.def(()=>[
+ ['Com contrafluxo, a estrada <b>Ponte Funda → Serra Nova</b> passa de 4 para <b>8</b>. Qual o novo fluxo máximo?',()=>Pn.get()==8&&A.get()==10&&B.get()==9,()=>'17 mil carros por hora: 72.000 carros em cerca de 4,2 horas. O gargalo mudou de lugar.',()=>'Deixe as outras em 10 e 9 e a de Ponte Funda em 8. Fluxo agora: '+flx()+'.'],
+ ['Com as outras em 10 e 9, ache a <b>menor</b> capacidade de Ponte Funda → Serra Nova que leva o fluxo a <b>18</b>.',()=>flx()==18&&Pn.get()==9&&A.get()==10&&B.get()==9,()=>'9 mil por hora. Daí para cima, o limite passa a ser a saída da própria cidade: 10 + 8 = 18.',()=>'Fluxo agora: '+flx()+' com '+Pn.get()+'.'],
+ ['Ponha Ponte Funda → Serra Nova em <b>12</b> e Três Barras → Serra Nova em <b>4</b>. Onde fica o gargalo?',()=>Pn.get()==12&&B.get()==4&&A.get()==10,()=>'Fluxo de '+flx()+': o corte '+minC().n+'. Alargar uma estrada e estreitar outra muda o gargalo de lugar.',()=>'Agora: '+Pn.get()+' e '+B.get()+' (com 10 na saída para Ponte Funda).'],
+ ['Chegue a pelo menos <b>22 mil carros por hora</b>.',()=>flx()>=22,()=>flx()+' mil por hora: 72.000 carros em '+r1(72/flx())+' horas. Foi preciso alargar a saída de Pedra Alta também.',()=>'Fluxo agora: '+flx()+'. O gargalo é o corte '+minC().n+'.']]);
+function draw(){const W=340,H=230,N={s:[40,115,'Pedra Alta'],a:[170,190,'Ponte Funda'],b:[170,40,'Três Barras'],t:[300,115,'Serra Nova']};
+ const cap={sa:A.get(),sb:SB,ab:AB,at:Pn.get(),bt:B.get()},mc=minC();let g=RC(0,0,W,H,'#F8FAFC','rx="10"');
+ const ar=(p,q,k)=>{const[x1,y1]=N[p],[x2,y2]=N[q],L=Math.hypot(x2-x1,y2-y1),ux=(x2-x1)/L,uy=(y2-y1)/L,on=mc.e.includes(k),c=on?VERM:NAVY,w=1.2+cap[k]*0.45;
+  const ax=x2-ux*16,ay=y2-uy*16;g+=LN(x1+ux*14,y1+uy*14,ax,ay,c,w)+PG([[ax+ux*2,ay+uy*2],[ax-ux*10-uy*6,ay-uy*10+ux*6],[ax-ux*10+uy*6,ay-uy*10-ux*6]],c);
+  const mx=(x1+x2)/2,my=(y1+y2)/2;g+=RC(mx-13,my-9,26,17,'#fff','rx="4" stroke="'+(on?VERM:'#D1D5DB')+'"')+TX(mx,my+4,cap[k],{fs:10,c});};
+ ar('s','a','sa');ar('s','b','sb');ar('a','b','ab');ar('a','t','at');ar('b','t','bt');
+ for(const k in N){const[x,y,n]=N[k];g+=`<circle cx="${x}" cy="${y}" r="12" fill="${k=='t'?GREEN:k=='s'?ORANGE:NAVY}" stroke="#fff" stroke-width="2"/>`+(k=='a'?TX(x+16,y+4,n,{fs:9.5,a:'start'}):TX(x,y+(k=='b'?-17:-18),n,{fs:9.5}));}
+ g+=TX(170,222,'menor corte: '+mc.v+' mil carros por hora',{fs:10,c:VERM});
+ $('fig').innerHTML=SVG(W,H,g);$('kf').textContent=flx()+' mil carros/h';$('kt').textContent=r1(72/flx())+' h';$('kg').textContent=mc.n;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
