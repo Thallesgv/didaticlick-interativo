@@ -2,46 +2,41 @@
 <html lang="pt-BR" translate="no" class="notranslate">
 <head>
 <meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>A grade dos dois dados · DidatiClick</title>
+<title>A soma das chances · DidatiClick</title>
 <link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
 <script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
 </head>
 <body>
-<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A grade dos dois dados</h1></header>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A soma das chances</h1></header>
 <main>
-<div class="card"><h2>36 casas, 11 somas</h2><p class="muted" style="margin-top:0">Cada casa é um par (dado azul, dado laranja). Escolha o tipo de evento, depois toque numa casa (ou arraste pela grade, ou use − e +) para escolher a soma. As casas do evento acendem.</p>
-<div id="chm" style="margin:4px 0"></div>
+<div class="card"><h2>Casa, empate e fora</h2><p class="muted" style="margin-top:0">Ajuste as três odds (arrastando ou com − e +). As barras empilhadas somam as chances implícitas; a linha marca 100%, a soma de um mercado justo.</p>
+<div class="sl" id="s1"><b>Casa</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Empate</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Fora</b><input type="range"><span></span></div>
 <div class="fig" id="fig"></div>
-<div class="sl" id="ss"><b>Soma</b><input type="range"><span></span></div>
-<div class="kpi"><div>Casas<b id="k1"></b></div><div>Fração<b id="k2"></b></div><div class="o">Probabilidade<b id="k3"></b></div></div>
+<div class="kpi"><div>Soma<b id="k1"></b></div><div>Overround<b id="k2"></b></div><div>Volta ao apostador<b id="k3"></b></div><div class="o">Odds justas<b id="k4"></b></div></div>
 <div id="m"></div></div>
-<div class="card"><h2>Missão</h2><p style="margin:0">Explore as somas.</p></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Encontre a margem.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-let modo=0;
-const CM=chips('chm',['soma igual a','soma maior ou igual a','dois dados iguais'],0,i=>{modo=i;draw();});
-const SS=SL('ss',2,12,1,4,()=>draw(),v=>v);
-const c0=70,r0=40,cs=36;
-toque('fig',(x,y)=>{const j=Math.floor((x-c0)/cs),i=Math.floor((y-r0)/cs);if(i<0||i>5||j<0||j>5)return;SS.set(i+j+2);draw();});
-const no=(i,j)=>modo==0?i+j+2==SS.get():modo==1?i+j+2>=SS.get():i==j;
-const casas=()=>{let k=0;for(let i=0;i<6;i++)for(let j=0;j<6;j++)if(no(i,j))k++;return k;};
-const mdc=(a,b)=>b?mdc(b,a%b):a;const fr=k=>k==0?'0':(k/mdc(k,36))+'/'+(36/mdc(k,36));
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v));
+const VM='#B91C1C';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const S=[SL('s1',1.1,10,0.05,2,()=>draw(),v=>vir(v)),SL('s2',1.1,10,0.05,3,()=>draw(),v=>vir(v)),SL('s3',1.1,10,0.05,4,()=>draw(),v=>vir(v))];
+const od=()=>S.map(s=>s.get()),sm=()=>od().reduce((a,o)=>a+1/o,0);const eq=(a,b)=>Math.abs(a-b)<1e-6;
 MIS.def(()=>[
- ['Ache a <b>soma mais provável</b> (modo "soma igual a").',()=>modo==0&&SS.get()==7,'Soma 7: 6 casas, uma diagonal inteira. P = 6/36 = 1/6.',()=>modo!=0?'Escolha o modo "soma igual a".':'A soma '+SS.get()+' tem '+casas()+' casa(s). Procure uma com mais.'],
- ['Ache uma soma com probabilidade <b>1/12</b>.',()=>modo==0&&casas()==3,()=>'Soma '+SS.get()+': 3 casas, 3/36 = 1/12. (A soma '+(14-SS.get())+' também serve.)',()=>modo!=0?'Volte ao modo "soma igual a".':'1/12 = 3/36: você precisa de uma soma com 3 casas. A soma '+SS.get()+' tem '+casas()+'.'],
- ['Monte o evento "<b>soma 10 ou mais</b>".',()=>modo==1&&SS.get()==10,'6 casas: 3 + 2 + 1. P = 6/36 = 1/6, a mesma da soma 7!',()=>modo!=1?'Escolha o modo "soma maior ou igual a".':'Agora o evento é soma ≥ '+SS.get()+'. Ajuste para 10.'],
- ['Qual a chance de os <b>dois dados mostrarem o mesmo número</b>?',()=>modo==2,'A diagonal principal: (1, 1), (2, 2), ..., (6, 6). 6 casas: P = 1/6.',()=>'Escolha o modo "dois dados iguais".']]);
-function draw(){let g=RC(0,0,340,270,'#F8FAFC','rx="10"');
- for(let j=0;j<6;j++)g+=DADO(c0+j*cs+8,r0-30,20,j+1,PEACH,NAVY,ORANGE);
- for(let i=0;i<6;i++)g+=DADO(c0-28,r0+i*cs+8,20,i+1,AZC,NAVY,BLUE);
- g+=TX(c0+3*cs,r0-36+0,'',{fs:9});
- for(let i=0;i<6;i++)for(let j=0;j<6;j++){const on=no(i,j);g+=RC(c0+j*cs,r0+i*cs,cs,cs,on?ORANGE:'#fff','stroke="'+GRAYL+'"')+TX(c0+j*cs+cs/2,r0+i*cs+cs/2+5,i+j+2,{fs:13,c:on?'#fff':NAVY});}
- g+=TX(c0+6*cs+8,r0+20,'dado',{fs:9,a:'start',c:ORANGE})+TX(c0+6*cs+8,r0+32,'laranja',{fs:9,a:'start',c:ORANGE})+TX(c0+6*cs+8,r0+3*cs+20,'←',{fs:12,a:'start',c:BLUE});
- g+=TX(c0+6*cs+8,r0+3*cs+34,'dado azul',{fs:9,a:'start',c:BLUE});
- $('fig').innerHTML=SVG(340,270,g);
- const k=casas();$('k1').textContent=k+' de 36';$('k2').textContent=fr(k);$('k3').textContent=pct(k/36*100,1);MIS.ver('m');}
+ ['Monte o jogo da quarta: <b>1,85</b>, <b>3,40</b> e <b>4,20</b>.',()=>eq(S[0].get(),1.85)&&eq(S[1].get(),3.4)&&eq(S[2].get(),4.2),'Soma de 107,3%: a casa embutiu 7,3% a mais. Volta ao apostador: 93,2%.',()=>'Agora: '+od().map(o=>vir(o)).join(' / ')+'.'],
+ ['Deixe a soma bem perto de <b>100%</b> (entre 99,5% e 100,5%): um mercado justo.',()=>Math.abs(sm()-1)<=0.005,()=>'Soma '+pct(100*sm(),1)+'. Nenhuma casa oferece isso: ela não teria lucro nenhum.',()=>'Soma agora: '+pct(100*sm(),1)+'. '+(sm()>1?'Aumente alguma odd.':'Diminua alguma odd.')],
+ ['Agora leve a soma para <b>abaixo de 99,5%</b>. O que acontece?',()=>sm()<0.995,()=>'Soma '+pct(100*sm(),1)+': apostando R$ 100 dividido na proporção das chances, você receberia '+R$(100/sm())+' em qualquer resultado. Lucro garantido, e por isso a casa nunca faz isso.',()=>'Soma agora: '+pct(100*sm(),1)+'.']]);
+function draw(){const o=od(),s=sm();let g=RC(0,0,340,130,'#F8FAFC','rx="10"');const esc=290/130;let x=20;const cores=[BLUE,AZC,LIGHT],nm=['casa','empate','fora'];
+ o.forEach((v,i)=>{const w=100/v*esc;g+=RC(x,40,w,34,cores[i],'stroke="#fff" stroke-width="1.5"');if(w>40)g+=TX(x+w/2,61,nm[i]+' '+pct(100/v,1),{fs:8.5,c:i==0?'#fff':NAVY});x+=w;});
+ const xc=20+100*esc;g+=LN(xc,28,xc,86,NAVY,2)+TX(xc,22,'100%',{fs:10});
+ if(x>xc)g+=RC(xc,78,x-xc,6,ORANGE)+TX(Math.min((xc+x)/2,300),100,'sobra '+pct(100*(s-1),1),{fs:10,c:ORANGE});else g+=RC(x,78,xc-x,6,GREEN)+TX((xc+x)/2,100,'falta '+pct(100*(1-s),1),{fs:10,c:GREEN});
+ g+=TX(170,122,'soma = '+pct(100*s,1),{fs:11});
+ $('fig').innerHTML=SVG(340,130,g);$('k1').textContent=pct(100*s,1);$('k2').textContent=(s>=1?'':'−')+pct(Math.abs(100*(s-1)),1);$('k3').textContent=pct(100/s,1);$('k4').textContent=o.map(v=>vir(v*s)).join(' / ');MIS.ver('m');}
 draw();
 })();
 </script>

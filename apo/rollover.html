@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O preço do presente · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O preço do presente</h1></header>
+<main>
+<div class="card"><h2>Bônus × custo do rollover</h2><p class="muted" style="margin-top:0">Ajuste o bônus, o rollover (quantas vezes o bônus precisa ser apostado) e a margem das apostas (arrastando ou com − e +). Depois simule 1 000 jogadores tentando liberar o bônus.</p>
+<div class="sl" id="sb"><b>Bônus (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Rollover (×)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Margem das apostas (%)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="b1">Simular 1 000 jogadores</button></div>
+<div class="kpi"><div>Volume exigido<b id="k1"></b></div><div>Custo esperado<b id="k2"></b></div><div>Saldo esperado<b id="k3"></b></div><div class="o">Liberaram o bônus<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Quanto custa o presente?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v));
+const VM='#B91C1C';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const SB=SL('sb',50,500,10,100,()=>{sim=null;draw();},v=>R$(v,0)),SR=SL('sr',1,40,1,10,()=>{sim=null;draw();},v=>v+'×'),SM=SL('sm',1,30,0.1,5,()=>{sim=null;draw();},v=>vir(v,1)+'%');
+let sim=null;const cus=()=>SB.get()*SR.get()*SM.get()/100;
+$('b1').onclick=()=>{const B=SB.get(),V=B*SR.get(),m=SM.get()/100,od=3,q=(1-m)/od,st=B/10;let ok=0,soma=0;
+ for(let j=0;j<1000;j++){let s=B,v=0;while(v<V-1e-9&&s>1e-9){const a=Math.min(s,st,V-v);s-=a;v+=a;if(Math.random()<q)s+=a*od;}if(v>=V-1e-9&&s>0){ok++;soma+=s;}}
+ sim={ok,med:ok?soma/ok:0};draw();};
+MIS.def(()=>[
+ ['Monte o bônus da FortunaBet: <b>R$ 200</b>, rollover de <b>30×</b>, margem de <b>14,3%</b> (múltiplas de 3).',()=>SB.get()==200&&SR.get()==30&&Math.abs(SM.get()-14.3)<0.01,()=>'R$ 6.000 em apostas, custo esperado '+R$(cus(),0)+': mais de 4 vezes o bônus.'+(sim?' Na simulação, só '+sim.ok+' de 1 000 jogadores liberaram o bônus.':' Simule os 1 000 jogadores para ver quantos conseguem.'),()=>'Bônus 200, rollover 30, margem 14,3.'],
+ ['Com margem de 14,3%, qual o <b>maior rollover</b> em que o bônus ainda compensa (custo menor que o bônus)?',()=>Math.abs(SM.get()-14.3)<0.01&&SR.get()==6,()=>'6×: custo '+R$(cus(),0)+' para um bônus de '+R$(SB.get(),0)+'. Com 7×, o custo já passa do bônus.',()=>{if(Math.abs(SM.get()-14.3)>=0.01)return 'Ponha a margem em 14,3%.';return cus()<SB.get()?'Com '+SR.get()+'×, ainda compensa. Aumente e veja até onde vai.':'Com '+SR.get()+'×, o custo ('+R$(cus(),0)+') passa do bônus. Diminua.';}],
+ ['Com rollover de <b>30×</b>, que margem deixaria o bônus <b>justo</b> (custo quase igual ao bônus)?',()=>SR.get()==30&&Math.abs(SM.get()-3.3)<0.15,()=>'Margem de '+vir(SM.get(),1)+'%: custo de '+R$(cus(),0)+'. A casa trabalha com 14,3% nessas múltiplas, mais de 4 vezes isso.',()=>SR.get()!=30?'Ponha o rollover em 30×.':'Custo agora: '+R$(cus(),0)+' para um bônus de '+R$(SB.get(),0)+'. Mude a margem.']]);
+function draw(){const B=SB.get(),c=cus();let g=RC(0,0,340,150,'#F8FAFC','rx="10"');const mx=Math.max(B,c)*1.15,W=v=>210*v/mx;
+ g+=TX(84,38,'bônus',{fs:10,a:'end'})+RC(90,24,W(B),22,BLUE)+TX(94+W(B),40,R$(B,0),{fs:10,a:'start'});
+ g+=TX(84,78,'custo esperado',{fs:10,a:'end'})+RC(90,64,W(c),22,ORANGE)+TX(94+W(c),80,R$(c,0),{fs:10,a:'start',c:ORANGE});
+ g+=TX(170,116,c<B?'em média, sobram '+R$(B-c,0)+' (raro nas casas)':'em média, o jogador perde '+R$(c-B,0)+' além do bônus',{fs:11,c:c<B?GREEN:VM});
+ if(sim)g+=TX(170,138,'simulação: '+sim.ok+' de 1 000 liberaram o bônus'+(sim.ok?', com '+R$(sim.med,0)+' em média':''),{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,150,g);$('k1').textContent=R$(B*SR.get(),0);$('k2').textContent=R$(c,0);$('k3').textContent=(B-c<0?'−':'+')+R$(Math.abs(B-c),0);$('k4').textContent=sim?sim.ok+' de 1 000':'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
