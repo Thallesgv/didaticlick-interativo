@@ -9,10 +9,15 @@
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A máquina de mover pontos</h1></header>
 <main>
-<div class="card"><h2>Matriz vezes ponto</h2><p class="muted" style="margin-top:0">Escolha a primeira transformação e, se quiser, uma segunda, feita depois. O 7 cinza é o original; o laranja é o resultado. Embaixo aparece a matriz que faz as duas de uma vez: o produto.</p>
+<div class="card"><h2>Matriz vezes ponto</h2><p class="muted" style="margin-top:0">Escolha a primeira transformação (ou monte a sua) e, se quiser, uma segunda, feita depois. O 7 cinza é o original; o laranja é o resultado. Embaixo aparece a matriz que faz as duas de uma vez: o produto.</p>
 <div style="font-size:13px;color:#6B7280;margin-top:4px">Primeiro:</div><div id="ch1" style="margin:2px 0;display:flex;flex-wrap:wrap;gap:4px"></div>
 <div style="font-size:13px;color:#6B7280;margin-top:4px">Depois:</div><div id="ch2" style="margin:2px 0 6px;display:flex;flex-wrap:wrap;gap:4px"></div>
 <div class="fig" id="fig"></div>
+<p class="muted" style="margin:6px 0 2px">Monte a sua própria matriz [a b ; c d] e escolha "minha matriz" em Primeiro:</p>
+<div class="sl" id="ma"><b>a</b><input type="range"><span></span></div>
+<div class="sl" id="mb"><b>b</b><input type="range"><span></span></div>
+<div class="sl" id="mc"><b>c</b><input type="range"><span></span></div>
+<div class="sl" id="md"><b>d</b><input type="range"><span></span></div>
 <div class="kpi"><div>Matriz final<b id="km"></b></div><div>Ponto (1, 2) vai para<b id="kp"></b></div><div class="o">Equivale a<b id="ke"></b></div></div>
 <div id="m"></div></div>
 <div class="card"><h2>Missão</h2><p style="margin:0">Mova o 7.</p></div>
@@ -21,11 +26,13 @@
 <script>
 (()=>{
 const TR=[['nada',[1,0,0,1]],['girar 90°',[0,-1,1,0]],['girar 180°',[-1,0,0,-1]],['espelhar |',[-1,0,0,1]],['espelhar —',[1,0,0,-1]],['ampliar 2×',[2,0,0,2]]];
-let t1=0,t2=0;const C1=chips('ch1',TR.map(t=>t[0]),0,i=>{t1=i;draw();}),C2=chips('ch2',TR.map(t=>t[0]),0,i=>{t2=i;draw();});
+const MS=['ma','mb','mc','md'].map((id,i)=>SL(id,-2,2,0.5,[1,0,0,1][i],()=>{TR[6][1]=MS.map(o=>o.get());draw();},v=>fmt(v)));
+TR.push(['minha matriz',[1,0,0,1]]);
+let t1=0,t2=0;const C1=chips('ch1',TR.map(t=>t[0]),0,i=>{t1=i;draw();}),C2=chips('ch2',TR.slice(0,6).map(t=>t[0]),0,i=>{t2=i;draw();});
 const mul=(A,B)=>[A[0]*B[0]+A[1]*B[2],A[0]*B[1]+A[1]*B[3],A[2]*B[0]+A[3]*B[2],A[2]*B[1]+A[3]*B[3]];
 const M=()=>mul(TR[t2][1],TR[t1][1]),igual=(A,B)=>A.every((v,i)=>v==B[i]);
-const nome=A=>{const t=TR.find(t=>igual(t[1],A));return t?(t[0]=='nada'?'identidade':t[0]):igual(A,[0,1,-1,0])?'girar 90° no outro sentido':igual(A,[0,1,1,0])||igual(A,[0,-1,-1,0])?'espelhar numa diagonal':'outra';};
-const ms=A=>'['+A[0]+' '+A[1]+' ; '+A[2]+' '+A[3]+']';
+const nome=A=>{const t=TR.slice(0,6).find(t=>igual(t[1],A));return t?(t[0]=='nada'?'identidade':t[0]):igual(A,[0,1,-1,0])?'girar 90° no outro sentido':igual(A,[0,1,1,0])||igual(A,[0,-1,-1,0])?'espelhar numa diagonal':'outra';};
+const ms=A=>'['+A.map(v=>fmt(v)).slice(0,2).join(' ')+' ; '+A.map(v=>fmt(v)).slice(2).join(' ')+']';
 const SETE=[[-1,2],[1,2],[0,-2]];
 MIS.def(()=>[
  ['Faça o 7 <b>girar 180°</b> (só a primeira, depois "nada").',()=>t1==2&&t2==0,'[−1 0 ; 0 −1]: cada ponto (x, y) vai para (−x, −y). Foi assim que o retrato escondido ficou de pé.',()=>'Primeiro: girar 180°. Depois: nada.'],
@@ -39,7 +46,7 @@ function draw(){if(t1==1&&t2==3)MIS._viu=true;const A=M(),s=22,cx=170,cy=120;let
  const sete=(T,c,w)=>{const q=SETE.map(p=>P(p,T));return PL(q,c,w);};
  g+=sete([1,0,0,1],'#C7CDD6',6)+sete(A,ORANGE,6);const q=P([1,2],A);g+=CIR(q[0],q[1],5,NAVY);
  $('fig').innerHTML=SVG(340,240,g);
- $('km').textContent=ms(A);$('kp').textContent='('+(A[0]+2*A[1])+', '+(A[2]+2*A[3])+')';$('ke').textContent=nome(A);MIS.ver('m');}
+ $('km').textContent=ms(A);$('kp').textContent='('+fmt(A[0]+2*A[1])+', '+fmt(A[2]+2*A[3])+')';$('ke').textContent=nome(A);MIS.ver('m');}
 draw();
 })();
 </script>
