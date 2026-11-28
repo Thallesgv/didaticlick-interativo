@@ -164,7 +164,27 @@ const LIV={'apo1':{T:["Experimento e resultados possíveis", "Frequência absolu
  const m=P([5,7,10,14.3]);const c=Math.round(b*r*m)/100;return{q:`Bônus de <b>R$ ${b}</b>, rollover <b>${r}×</b>, apostas com margem de <b>${fmt(m)}%</b>. Qual o custo esperado para liberá-lo? Duas casas.`,a:c,tol:0.6,exp:`${fmt(b*r)} × ${fmt(m)}% ≈ R$ ${fmt(c)}. ${c<b?'Menor que o bônus: compensaria, em média.':'Maior que o bônus: não compensa.'}`};},
 6:()=>{const t=R(0,1);
  if(t==0){const o=P([1.5,1.7,1.85,2,2.5,3,4]);return{q:`Com odd média <b>${fmt(o)}</b>, que taxa de acerto (em %) empata? Uma casa.`,a:Math.round(1000/o)/10,tol:0.06,exp:`1 ÷ ${fmt(o)} ≈ ${fmt(Math.round(1000/o)/10)}%.`};}
- const a=P([50,55,58,60,62]),o=P([1.6,1.7,1.8,1.9]);const v=a*o;return{q:`Quem acerta <b>${a}%</b> das apostas a odd média <b>${fmt(o)}</b> recebe, em média, quanto de cada R$ 100? Duas casas.`,a:Math.round(v*100)/100,tol:0.011,exp:`${fmt(a/100)} × ${fmt(o)} × 100 = R$ ${fmt(Math.round(v*100)/100)}. ${v<100?'Prejuízo.':'Lucro, se a taxa se mantiver.'}`};}}}};
+ const a=P([50,55,58,60,62]),o=P([1.6,1.7,1.8,1.9]);const v=a*o;return{q:`Quem acerta <b>${a}%</b> das apostas a odd média <b>${fmt(o)}</b> recebe, em média, quanto de cada R$ 100? Duas casas.`,a:Math.round(v*100)/100,tol:0.011,exp:`${fmt(a/100)} × ${fmt(o)} × 100 = R$ ${fmt(Math.round(v*100)/100)}. ${v<100?'Prejuízo.':'Lucro, se a taxa se mantiver.'}`};}}},'apo7':{T:["Números pseudoaleatórios", "RTP: o retorno ao jogador", "Volatilidade", "O aviãozinho", "Caixas de recompensa", "Margem de erro: o RTP confere?", "Benford: os ganhadores inventados"],G:{1:()=>{const t=R(0,1);
+ if(t==0){const m=P([8,10,16,32]),a=R(2,9),c=R(1,9),x=R(0,m-1);return{q:`No gerador <b>(${a}x + ${c}) mod ${m}</b>, qual o número seguinte a <b>${x}</b>?`,a:(a*x+c)%m,exp:`${a} × ${x} + ${c} = ${a*x+c}; o resto da divisão por ${m} é ${(a*x+c)%m}.`};}
+ const v=R(20,200),m=P([7,8,10,12,16]);return{q:`Quanto é <b>${v} mod ${m}</b>?`,a:v%m,exp:`${v} = ${Math.floor(v/m)} × ${m} + ${v%m}.`};},
+2:()=>{const t=R(0,1);const k=R(1,6),p=P([10,20,50,100,200]),N=P([10,20]);
+ if(t==0)return{q:`Uma máquina tem 3 rolos de <b>${N}</b> posições, e um símbolo aparece <b>${k}</b> vez(es) em cada rolo. Quantas combinações dão a trinca desse símbolo?`,a:k**3,exp:`${k}³ = ${k**3}.`};
+ const v=Math.round(k**3*p/N**3*10000)/100;return{q:`Rolos de ${N} posições; a trinca de um símbolo (${k} por rolo) paga <b>${p}×</b>. Quanto essa trinca contribui para o RTP, em %? Duas casas.`,a:v,tol:0.011,exp:`${k**3} × ${p} ÷ ${fmt(N**3)} = ${fmt(v)}%.`};},
+3:()=>{const t=R(0,1);
+ if(t==0){const N=P([1000,2000,8000,10000]),n=P([500,1000,2000]);const v=Math.round(100*Math.pow(1-1/N,n));return{q:`Um jogo paga em 1 de <b>${fmt(N)}</b> combinações. Qual a chance (em %) de não ganhar nada em <b>${fmt(n)}</b> giros? Arredonde ao inteiro.`,a:v,tol:1.01,exp:`(1 − 1/${fmt(N)})<sup>${fmt(n)}</sup> ≈ ${v}%.`};}
+ const n=P([500,1000,2000,5000]),r=P([90,94,95,96,97]),v=P([1,2,5]);return{q:`Num jogo de RTP <b>${r}%</b>, quanto se espera perder em <b>${fmt(n)}</b> giros de R$ ${v}?`,a:n*v*(100-r)/100,exp:`${fmt(n*v)} × ${100-r}% = R$ ${fmt(n*v*(100-r)/100)}.`};},
+4:()=>{const t=R(0,1);
+ if(t==0){const k=P([0.88,0.95,0.97,0.99]),x=P([1.5,2,3,4,5,10]);const v=Math.round(1000*k/x)/10;return{q:`No aviãozinho, a chance de chegar a x é <b>${fmt(k)} ÷ x</b>. Qual a chance (em %) de chegar a <b>${fmt(x)}×</b>? Uma casa.`,a:v,tol:0.06,exp:`${fmt(k)} ÷ ${fmt(x)} ≈ ${fmt(v)}%.`};}
+ const x=P([1.5,2,3,4]),f=P([30,40,44,46,48]);const v=Math.round(x*f*10)/10;return{q:`Em muitas rodadas, o avião chegou a <b>${fmt(x)}×</b> em <b>${f}%</b> delas. Qual o RTP estimado, em %? Uma casa.`,a:v,tol:0.06,exp:`${fmt(x)} × ${f}% = ${fmt(v)}%.`};},
+5:()=>{const t=R(0,1);const p=P([0.5,1,2,4,5]);
+ if(t==0){const pr=P([2,5,10]);return{q:`Cada pacote custa <b>R$ ${pr}</b> e tem <b>${fmt(p)}%</b> de chance de lendário. Quanto custa, em média, um lendário?`,a:pr*100/p,exp:`${pr} ÷ ${fmt(p/100)} = R$ ${fmt(pr*100/p)}.`};}
+ const n=P([10,20,50,100]);const v=Math.round(1000*(1-Math.pow(1-p/100,n)))/10;return{q:`Com chance de <b>${fmt(p)}%</b> por pacote, qual a chance (em %) de pelo menos um lendário em <b>${n}</b> pacotes? Uma casa.`,a:v,tol:0.11,exp:`1 − ${fmt(1-p/100)}<sup>${n}</sup> ≈ ${fmt(v)}%.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const s=P([2,5,10,13.74]),n=P([100,400,2500,10000,40000]);const v=Math.round(196*s/Math.sqrt(n))/100;return{q:`Cada giro tem desvio-padrão <b>${fmt(s)}</b>. Qual a margem de 95% (1,96 × σ ÷ √n) da média de <b>${fmt(n)}</b> giros? Duas casas.`,a:v,tol:0.011,exp:`1,96 × ${fmt(s)} ÷ ${fmt(Math.sqrt(n))} ≈ ${fmt(v)}.`};}
+ const k=P([2,3,4,5,10]);return{q:`Para reduzir a margem de erro a 1/${k} do que é, por quanto é preciso multiplicar o número de giros?`,a:k*k,exp:`A margem cai com √n: √(${k*k}) = ${k}.`};},
+7:()=>{const t=R(0,1);
+ if(t==0){const d=R(1,9);const v=Math.round(1000*Math.log10(1+1/d))/10;return{q:`Pela lei de Benford, qual a chance (em %) de o primeiro dígito ser <b>${d}</b>? Uma casa.`,a:v,tol:0.06,exp:`log(1 + 1/${d}) ≈ ${fmt(v)}%.`};}
+ const n=P([500,1000,2000]),d=R(1,9);const v=Math.round(n*Math.log10(1+1/d));return{q:`Em <b>${fmt(n)}</b> valores que seguem Benford, quantos devem começar com <b>${d}</b>? Arredonde ao inteiro.`,a:v,tol:1.01,exp:`${fmt(n)} × log(1 + 1/${d}) ≈ ${v}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='apo1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

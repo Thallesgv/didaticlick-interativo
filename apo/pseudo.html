@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O gerador de bolso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O gerador de bolso</h1></header>
+<main>
+<div class="card"><h2>próximo = (a × atual + c) mod m</h2><p class="muted" style="margin-top:0">Escolha a, c, m e a semente (arrastando ou com − e +). Os pontos do círculo são os valores de 0 a m − 1; as linhas seguem a ordem em que o gerador os visita, até repetir.</p>
+<div class="sl" id="sa"><b>a (multiplicador)</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>c (soma)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>m (módulo)</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Semente</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Período<b id="k1"></b></div><div>Valores diferentes<b id="k2"></b></div><div class="o">Primeiros números<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte um bom gerador.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v),0);
+const VM='#B91C1C',OURO='#E0A800';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const SA=SL('sa',1,40,1,3,()=>draw(),v=>v),SC=SL('sc',0,40,1,1,()=>draw(),v=>v),SM=SL('sm',2,64,1,8,()=>draw(),v=>v),SS=SL('ss',0,63,1,0,()=>draw(),v=>v);
+function seq(){const a=SA.get(),c=SC.get(),m=SM.get();let x=SS.get()%m;const vis=new Map(),L=[];while(!vis.has(x)){vis.set(x,L.length);L.push(x);x=(a*x+c)%m;}return{L,ini:vis.get(x),per:L.length-vis.get(x)};}
+MIS.def(()=>[
+ ['Reproduza o gerador da figura: <b>a = 5</b>, <b>c = 3</b>, <b>m = 16</b>, semente <b>7</b>.',()=>SA.get()==5&&SC.get()==3&&SM.get()==16&&SS.get()==7,'Período 16: o gerador visita os 16 valores e volta ao 7.',()=>'Agora: a = '+SA.get()+', c = '+SC.get()+', m = '+SM.get()+', semente '+SS.get()+'.'],
+ ['Ache um gerador <b>ruim</b>, com m de pelo menos 8, em que <b>todos</b> os números do ciclo sejam pares ou todos ímpares.',()=>{const s=seq(),C=s.L.slice(s.ini);return SM.get()>=8&&C.length>=2&&C.every(v=>v%2==C[0]%2);},()=>{const s=seq();return 'Ciclo: '+s.L.slice(s.ini).join(', ')+'. Num jogo, metade dos resultados nunca sairia. (Dica do livro: a = 5, c = 2, m = 16.)';},()=>{const s=seq(),C=s.L.slice(s.ini);return 'Ciclo atual: '+C.slice(0,12).join(', ')+(C.length>12?'...':'')+'.';}],
+ ['Monte um gerador com <b>m = 32</b> e <b>período completo</b> (32).',()=>SM.get()==32&&seq().per==32,()=>'a = '+SA.get()+', c = '+SC.get()+': passa pelos 32 valores. Com m potência de 2, c ímpar e a − 1 múltiplo de 4 sempre funcionam.',()=>SM.get()!=32?'Ponha m = 32.':'Período agora: '+seq().per+'. Tente c ímpar e a − 1 múltiplo de 4.']]);
+function draw(){const m=SM.get(),s=seq();let g=RC(0,0,340,220,'#F8FAFC','rx="10"');const cx=170,cy=110,r=92,P=k=>[cx+r*Math.sin(2*Math.PI*k/m),cy-r*Math.cos(2*Math.PI*k/m)];
+ for(let i=0;i<s.L.length;i++){const a=P(s.L[i]),b=P(i+1<s.L.length?s.L[i+1]:s.L[s.ini]);g+=LN(a[0],a[1],b[0],b[1],i<s.ini?GRAYL:i==s.ini?ORANGE:AZC,i==s.ini?2:1.2);}
+ const usa=new Set(s.L);for(let k=0;k<m;k++){const[x,y]=P(k),rr=m>40?4:m>24?6:9;g+=CIR(x,y,rr,k==SS.get()%m?ORANGE:usa.has(k)?'#fff':'#E5E9F2','stroke="'+(usa.has(k)?BLUE:GRAYL)+'" stroke-width="1.2"');if(m<=32)g+=TX(x,y+3,k,{fs:m>24?6:8,c:k==SS.get()%m?'#fff':NAVY});}
+ g+=TX(cx,cy+4,'período '+s.per,{fs:13,c:ORANGE});
+ $('fig').innerHTML=SVG(340,220,g);$('k1').textContent=s.per;$('k2').textContent=usa.size+' de '+m;$('k3').textContent=s.L.slice(0,8).join(', ')+'...';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

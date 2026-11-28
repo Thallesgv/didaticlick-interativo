@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O teste do RTP · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O teste do RTP</h1></header>
+<main>
+<div class="card"><h2>Azar ou fraude?</h2><p class="muted" style="margin-top:0">Escolha o jogo, quantos giros ou rodadas observar e o RTP que o jogo tem de verdade (arrastando ou com − e +). Cada medição é um ponto; a faixa laranja é onde um jogo honesto cai em 95% das vezes.</p>
+<div id="chj" style="margin:4px 0"></div>
+<div class="sl" id="sn"><b>Giros ou rodadas observados</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>RTP real do jogo (%)</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Medir</button><button class="alt" id="b5">Medir 20 vezes</button><button class="alt" id="b0">Limpar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>RTP declarado<b id="k1"></b></div><div>Margem de 95%<b id="k2"></b></div><div>Última medição<b id="k3"></b></div><div class="o">Fora da faixa<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Use a margem de erro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v),0);
+const VM='#B91C1C',OURO='#E0A800';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+let jg=0,pts=[];chips('chj',['Fortuna Frutas','Voo da Fortuna (2×)'],0,i=>{jg=i;SR.set(i?97:96);pts=[];draw();});
+const SN=SL('sn',2,7,0.05,3,()=>draw(),v=>fmt(Math.round(Math.pow(10,v)))),SR=SL('sr',80,100,0.5,96,()=>{pts=[];draw();},v=>vir(v,1)+'%');
+const n=()=>Math.round(Math.pow(10,SN.get())),dec=()=>jg?97:96;
+const marg=(N)=>jg?1.96*2*Math.sqrt(0.485*0.515/N)*100:1.96*13.744/Math.sqrt(N)*100;
+const medir=()=>{const N=n(),r=SR.get();let v;if(jg){const p=r/200;v=200*(p+gauss()*Math.sqrt(p*(1-p)/N));}else v=r+gauss()*13.744*100/Math.sqrt(N)*(r/96);pts.push([SN.get(),v]);};
+$('b1').onclick=()=>{medir();draw();};$('b5').onclick=()=>{for(let i=0;i<20;i++)medir();draw();};$('b0').onclick=()=>{pts=[];draw();};
+const fora=()=>pts.filter(([e,v])=>Math.abs(v-dec())>marg(Math.pow(10,e))).length;
+MIS.def(()=>[
+ ['No Fortuna Frutas <b>honesto</b> (RTP real 96%), faça pelo menos <b>20 medições</b> de 10 000 giros.',()=>jg==0&&Math.abs(SR.get()-96)<1e-6&&pts.filter(p=>Math.abs(p[0]-4)<0.03).length>=20,()=>fora()+' de '+pts.length+' medições caíram fora da faixa, mesmo com o jogo honesto. Em 95%, cerca de 1 em 20 cai fora por acaso: por isso uma medição só não condena ninguém.',()=>jg!=0?'Escolha o Fortuna Frutas.':Math.abs(SR.get()-96)>=1e-6?'Volte o RTP real para 96%.':Math.abs(SN.get()-4)>=0.03?'Ponha 10 000 giros.':'Medições de 10 000 giros: '+pts.filter(p=>Math.abs(p[0]-4)<0.03).length+' de 20.'],
+ ['No Fortuna Frutas, ache quantos giros deixam a margem entre <b>± 2,5 e ± 3 pontos</b>.',()=>jg==0&&marg(n())<=3&&marg(n())>=2.5,()=>fmt(n())+' giros: margem de ± '+vir(marg(n()),1)+' pontos. Quase um milhão de giros para conferir um caça-níquel jogando: por isso ele se confere pelo código.',()=>jg!=0?'Escolha o Fortuna Frutas.':'Com '+fmt(n())+' giros, a margem é ± '+vir(marg(n()),1)+' pontos.'],
+ ['Pegue o aviãozinho: Voo da Fortuna com RTP real de <b>88%</b>, pelo menos <b>50 000 rodadas</b>, e meça.',()=>jg==1&&Math.abs(SR.get()-88)<1e-6&&pts.some(p=>p[0]>=4.69),()=>{const v=pts[pts.length-1][1];return 'Medido: '+pct(v,1)+'; faixa de um jogo honesto: 97% ± '+vir(marg(n()),1)+'. Está a uns '+fmt(Math.round((97-v)/(marg(n())/1.96)))+' desvios-padrão: não é azar.';},()=>jg!=1?'Escolha o Voo da Fortuna.':Math.abs(SR.get()-88)>=1e-6?'Ponha o RTP real em 88%.':'Aumente as rodadas para pelo menos 50 000 e meça.']]);
+function draw(){let g=RC(0,0,340,200,'#F8FAFC','rx="10"');const D=dec(),lo=D-40,hi=D+40,X=e=>30+300*(e-2)/5,Y=v=>180-165*(Math.max(lo,Math.min(hi,v))-lo)/(hi-lo);
+ let up=[],dn=[];for(let e=2;e<=7.001;e+=0.1){const m=marg(Math.pow(10,e));up.push([X(e),Y(D+m)]);dn.push([X(e),Y(D-m)]);}
+ g+='<polygon points="'+up.concat(dn.reverse()).map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="#FDE6CF"/>';
+ g+=LN(30,Y(D),330,Y(D),NAVY,1.2)+TX(26,Y(D)+3,D+'%',{fs:8,a:'end'});for(let e=2;e<=7;e++)g+=TX(X(e),196,e==2?'100':e==3?'1 mil':e==4?'10 mil':e==5?'100 mil':e==6?'1 mi':'10 mi',{fs:7.5,c:GRAY,w:500});
+ g+=LN(X(SN.get()),15,X(SN.get()),180,GRAYL,1,'3 2');
+ pts.forEach(([e,v])=>{const f=Math.abs(v-D)>marg(Math.pow(10,e));g+=CIR(X(e),Y(v),3.5,f?VM:BLUE);});
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=D+'%';$('k2').textContent='± '+vir(marg(n()),1)+' pt';$('k3').textContent=pts.length?pct(pts[pts.length-1][1],1):'–';$('k4').textContent=pts.length?fora()+' de '+pts.length:'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
