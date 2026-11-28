@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O calendário da perda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O calendário da perda</h1></header>
+<main>
+<div class="card"><h2>Quantos dias de trabalho?</h2><p class="muted" style="margin-top:0">Ajuste quanto a pessoa ganha por hora, a perda e quantas horas trabalha por dia (arrastando ou com − e +). Cada quadradinho é um dia de trabalho só para pagar a perda.</p>
+<div class="sl" id="sg"><b>Ganho por hora (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Perda (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Horas de trabalho por dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Horas de trabalho<b id="k1"></b></div><div>Dias de trabalho<b id="k2"></b></div><div class="o">Meses (22 dias)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Transforme dinheiro em tempo de vida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const VM='#B91C1C',OURO='#E0A800';
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const curto=v=>{const a=Math.abs(v);return a>=1e6?vir(v/1e6,1)+' mi':a>=1e4?fmt(Math.round(v/1000))+' mil':fmt(Math.round(v));};
+const SG=SL('sg',5,150,1,25,()=>draw(),v=>R$(v,0)),SP=SL('sp',100,30000,100,2000,()=>draw(),v=>R$(v,0)),SD=SL('sd',2,12,1,6,()=>draw(),v=>v+' h');
+const hr=()=>SP.get()/SG.get(),dias=()=>hr()/SD.get();
+MIS.def(()=>[
+ ['Monte o caso de Rafael: <b>R$ 18</b> por hora, perda de <b>R$ 8 000</b>, <b>8 horas</b> por dia.',()=>SG.get()==18&&SP.get()==8000&&SD.get()==8,()=>'São '+fmt(Math.round(hr()))+' horas: cerca de '+Math.round(dias())+' dias de entregas, quase três meses de dias úteis.',()=>'Agora: '+R$(SG.get(),0)+' por hora, perda de '+R$(SP.get(),0)+', '+SD.get()+' h por dia.'],
+ ['Ainda com R$ 18 por hora e 8 horas por dia, ache a perda que custa <b>um mês inteiro</b> de trabalho (22 dias).',()=>SG.get()==18&&SD.get()==8&&Math.abs(dias()-22)<0.6,()=>'Perder '+R$(SP.get(),0)+' é trabalhar um mês inteiro de graça. A conta inversa: 22 × 8 × 18 = R$ 3 168.',()=>SG.get()!=18||SD.get()!=8?'Volte para R$ 18 por hora e 8 h por dia.':'Agora: '+vir(dias(),1)+' dias. '+(dias()>22?'Diminua':'Aumente')+' a perda.'],
+ ['Volte à perda de <b>R$ 8 000</b> e veja o que muda para quem ganha <b>R$ 60 ou mais</b> por hora.',()=>SP.get()==8000&&SG.get()>=60,()=>'A '+R$(SG.get(),0)+' por hora, são '+fmt(Math.round(hr()))+' horas. A perda é a mesma; o peso dela é que depende de quem perde. Por isso quem ganha pouco é quem mais sofre.',()=>SP.get()!=8000?'Ponha a perda em R$ 8 000.':'Ganho agora: '+R$(SG.get(),0)+' por hora.']]);
+function draw(){const d=dias(),cap=Math.ceil(d),cols=22,lado=14,gap=1;let esc=1;while(cap/esc>cols*10)esc*=5;const q=Math.ceil(cap/esc),lin=Math.ceil(q/cols)||1,H=Math.max(110,lin*(lado+gap)+60);let g=RC(0,0,340,H,'#F8FAFC','rx="10"');
+ for(let i=0;i<q;i++){const c=i%cols,l=Math.floor(i/cols),x=10+c*(lado+gap),y=14+l*(lado+gap);const f=Math.min(1,(d/esc)-i);g+=RC(x,y,lado,lado,'#E5E9F2','rx="2"')+RC(x,y,lado*Math.max(0,f),lado,ORANGE,'rx="2"');}
+ g+=TX(170,H-26,'cada quadradinho = '+(esc==1?'1 dia':esc+' dias')+' de '+SD.get()+' h de trabalho',{fs:9,c:GRAY,w:400});
+ g+=TX(170,H-10,fmt(Math.round(hr()))+' horas ≈ '+fmt(Math.round(d))+' dias ≈ '+vir(d/22,1)+' meses de dias úteis',{fs:10.5,c:NAVY});
+ $('fig').innerHTML=SVG(340,H,g);$('k1').textContent=fmt(Math.round(hr()));$('k2').textContent=vir(d,1);$('k3').textContent=vir(d/22,1);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A casa sempre ganha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A casa sempre ganha</h1></header>
+<main>
+<div class="card"><h2>Jogadores × casa</h2><p class="muted" style="margin-top:0">Escolha quantos jogadores, quantas apostas cada um faz, o valor e a margem da casa (arrastando ou com − e +). As barras mostram o resultado de cada jogador (verde: saiu no lucro). Cada mudança sorteia uma nova semana.</p>
+<div class="sl" id="sj"><b>Jogadores</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Apostas por jogador</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Valor de cada aposta (R$)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Margem da casa (%)</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Sortear outra semana</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>No lucro (sorteio)<b id="k1"></b></div><div>No lucro (teoria)<b id="k2"></b></div><div>Lucro da casa<b id="k3"></b></div><div class="o">Chance de a casa perder<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Veja por que a casa não se preocupa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const VM='#B91C1C',OURO='#E0A800';
+const gauss=()=>{let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const Phi=z=>{const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2),p=d*t*(0.3193815+t*(-0.3565638+t*(1.781478+t*(-1.821256+t*1.330274))));return z>0?1-p:p;};
+const curto=v=>{const a=Math.abs(v);return a>=1e6?vir(v/1e6,1)+' mi':a>=1e4?fmt(Math.round(v/1000))+' mil':fmt(Math.round(v));};
+const SJ=SL('sj',1,2000,1,50,()=>sorteia(),v=>fmt(v)),SN=SL('sn',1,2000,1,50,()=>sorteia(),v=>fmt(v)),SA=SL('sa',1,100,1,10,()=>sorteia(),v=>R$(v,0)),SM=SL('sm',0.5,25,0.5,10,()=>sorteia(),v=>vir(v,1)+'%');
+let RES=[],casa=0;
+const mu=()=>-SM.get()/100*SA.get()*SN.get(),sd=()=>SA.get()*Math.sqrt(SN.get()),pT=()=>1-Phi(-mu()/sd()),pC=()=>Phi(mu()*Math.sqrt(SJ.get())/sd());
+function sorteia(){RES=[];casa=0;for(let i=0;i<SJ.get();i++){const r=mu()+sd()*gauss();RES.push(r);casa-=r;}draw();}
+$('b1').onclick=sorteia;
+MIS.def(()=>[
+ ['Deixe só <b>10 jogadores</b> ou menos, com 5% de margem, e sorteie algumas semanas. A casa sempre ganha?',()=>SJ.get()<=10&&SM.get()==5,()=>'Com '+SJ.get()+' jogadores, a chance de a casa perder na semana é de '+pct(100*pC(),1)+'. Com poucos jogadores, a casa ainda pode ter prejuízo.',()=>SM.get()!=5?'Ponha a margem em 5%.':'Jogadores agora: '+fmt(SJ.get())+'.'],
+ ['Agora o parecer: <b>1 000 jogadores</b> ou mais, <b>200 apostas</b> de <b>R$ 10</b> cada, margem de <b>5%</b>.',()=>SJ.get()>=1000&&SN.get()==200&&SA.get()==10&&SM.get()==5,()=>'Lucro da casa nesta semana: '+R$(casa,0)+' (esperado: '+R$(-mu()*SJ.get(),0)+'). '+pct(100*pT(),0)+' dos jogadores saem no lucro, mas a chance de a casa perder é praticamente zero.',()=>'Agora: '+fmt(SJ.get())+' jogadores, '+fmt(SN.get())+' apostas de '+R$(SA.get(),0)+', margem '+vir(SM.get(),1)+'%.'],
+ ['Com 5% de margem, ache quantas apostas fazem só <b>5% ou menos</b> dos jogadores estarem no lucro (pela teoria).',()=>SM.get()==5&&pT()<=0.05,()=>'Com '+fmt(SN.get())+' apostas, só '+pct(100*pT(),1)+' saem no lucro. Quanto mais se joga, mais o resultado se aproxima da perda média.',()=>SM.get()!=5?'Ponha a margem em 5%.':'Agora: '+pct(100*pT(),1)+' no lucro com '+fmt(SN.get())+' apostas. Aumente as apostas por jogador.']]);
+function draw(){const m=mu(),s=sd(),lo=Math.min(m-3.5*s,-s*0.5),hi=Math.max(m+3.5*s,s*0.5),K=30,w=(hi-lo)/K,H=new Array(K).fill(0);
+ RES.forEach(r=>{const k=Math.min(K-1,Math.max(0,Math.floor((r-lo)/w)));H[k]++;});const mx=Math.max(1,...H),X=v=>20+300*(v-lo)/(hi-lo);let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ H.forEach((h,k)=>{const x0=lo+k*w,hh=140*h/mx;g+=RC(X(x0)+0.5,166-hh,300/K-1,hh,x0+w/2>0?GREEN:AZC,'rx="1"');});
+ g+=LN(X(0),24,X(0),168,NAVY,1.4)+TX(X(0),18,'R$ 0',{fs:9,c:NAVY});
+ g+=LN(X(m),30,X(m),168,ORANGE,1.4,'4 3')+TX(Math.min(300,Math.max(40,X(m))),182,'média '+(m<0?'−':'')+'R$ '+curto(Math.abs(m)),{fs:9,c:ORANGE});
+ g+=TX(170,196,'resultado de cada jogador (de '+(lo<0?'−':'')+'R$ '+curto(Math.abs(lo))+' a R$ '+curto(hi)+')',{fs:8.5,c:GRAY,w:400});
+ const no=RES.filter(r=>r>0).length;
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=RES.length?pct(100*no/RES.length,1):'–';$('k2').textContent=pct(100*pT(),1);$('k3').textContent=(casa<0?'−':'')+R$(Math.abs(casa),0);$('k4').textContent=pC()<1e-4?'≈ 0%':pct(100*pC(),2);MIS.ver('m');}
+sorteia();
+})();
+</script>
+</body>
+</html>
