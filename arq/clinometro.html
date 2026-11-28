@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O clinômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O clinômetro</h1></header>
+<main>
+<div class="card"><h2>Seno, cosseno e tangente</h2><p class="muted" style="margin-top:0">Mude o ângulo θ e o tamanho da trena (a hipotenusa). Os lados mudam, mas as <b>razões</b> só dependem do ângulo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ângulo θ</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Trena (hipotenusa)</b><input type="range"><span></span></div>
+<div class="kpi"><div>sen θ<b id="ks"></b></div><div>cos θ<b id="kc"></b></div><div class="o">tg θ<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o ângulo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AN=SL('sa',5,80,1,40,()=>draw(),v=>v+'°');
+const HP=SL('sh',2,8,0.01,5,()=>draw(),v=>r2(v)+' m');
+let base28=null;
+MIS.def(()=>[
+ ['Refaça a medida de Tomás: ângulo de <b>28°</b> e trena de <b>4,26 m</b>. Qual a altura do barranco?',()=>AN.get()==28&&Math.abs(HP.get()-4.26)<0.006,'Oposto = 4,26 × sen 28° ≈ 2,00 m; adjacente = 4,26 × cos 28° ≈ 3,76 m.',()=>'Ângulo 28° e trena 4,26 m.'],
+ ['Agora deixe o ângulo em 28° e aumente a trena para <b>8 m</b>. As razões mudaram?',()=>AN.get()==28&&HP.get()>=7.99,'Os lados quase dobraram, mas sen, cos e tg continuam 0,469, 0,883 e 0,532: triângulos semelhantes.',()=>'Mantenha 28° e leve a trena ao máximo.'],
+ ['Ache o ângulo em que o <b>seno é igual ao cosseno</b>.',()=>AN.get()==45,'Em 45°, os dois catetos são iguais: sen = cos ≈ 0,707 e tg = 1 (inclinação de 100%).',()=>'Compare sen e cos enquanto muda o ângulo.'],
+ ['Tomás viu o alto da barragem com tg θ ≈ <b>0,6</b>. Ache esse ângulo.',()=>AN.get()==31,'tg 31° ≈ 0,601. A 40 m da barragem: altura ≈ 40 × 0,601 ≈ 24 m.',()=>'Procure o ângulo com tg perto de 0,600.']]);
+function draw(){const a=AN.get()*RAD,h=HP.get(),s=Math.sin(a),c=Math.cos(a);let g=RC(0,0,340,200,'#F8FAFC','rx="10"');
+ const k=36,x0=24,y0=184,X=x0+h*c*k,Y=y0-h*s*k;
+ g+=PG([[x0,y0],[X,y0],[X,Y]],AREIA,'stroke="'+TERRA+'" stroke-width="2"')+RC(X-9,y0-9,9,9,'none','stroke="'+NAVY+'"');
+ g+=`<path d="M ${x0+30} ${y0} A 30 30 0 0 0 ${x0+30*c} ${y0-30*s}" fill="none" stroke="${ORANGE}" stroke-width="2"/>`+TX(x0+40,y0-8,AN.get()+'°',{fs:10,c:ORANGE,a:'start'});
+ g+=TX((x0+X)/2,y0+13,'adjacente '+r2(h*c)+' m',{fs:9})+TX(Math.min(X+5,250),Math.max((y0+Y)/2,20),'oposto '+r2(h*s)+' m',{fs:9,a:'start'})+TX((x0+X)/2-12,(y0+Y)/2-6,'trena '+r2(h)+' m',{fs:9,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(340,200,g);$('ks').textContent=fmt(Math.round(s*1000)/1000);$('kc').textContent=fmt(Math.round(c*1000)/1000);$('kt').textContent=fmt(Math.round(Math.tan(a)*1000)/1000);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

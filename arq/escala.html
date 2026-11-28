@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa do sítio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O mapa do sítio</h1></header>
+<main>
+<div class="card"><h2>Do papel ao chão</h2><p class="muted" style="margin-top:0">Escolha a escala do mapa. O sambaqui tem 40 m de comprimento e o contêiner da obra fica a 120 m da ponta dele. Estique a <b>régua laranja</b> e veja quantos metros ela mede no terreno.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Régua no papel</b><input type="range"><span></span></div>
+<div class="kpi"><div>Escala<b id="ke"></b></div><div>No papel<b id="kp"></b></div><div class="o">No terreno<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça com a régua.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ES=[500,1000,2000,5000];let ei=1;
+const C=chips('ch',ES.map(n=>'1 : '+fmt(n)),1,i=>{ei=i;draw();});
+const RG=SL('sr',0,13,0.1,1,()=>draw(),v=>r1(v)+' cm');
+MIS.def(()=>[
+ ['Na escala <b>1 : 1.000</b>, estique a régua do começo ao fim do sambaqui. Quantos metros ele tem?',()=>ES[ei]==1000&&Math.abs(RG.get()-4)<0.05,'4 cm × 1.000 = 4.000 cm = 40 m. Exatamente o comprimento medido por Tomás.',()=>ES[ei]!=1000?'Escolha a escala 1 : 1.000.':'A régua está com '+r1(RG.get())+' cm. Faça ela terminar na ponta direita do sambaqui.'],
+ ['Troque para <b>1 : 500</b> e meça o sambaqui de novo. A medida no papel mudou. E a do terreno?',()=>ES[ei]==500&&Math.abs(RG.get()-8)<0.05,'8 cm × 500 = 4.000 cm = 40 m. No mapa maior o desenho dobra, mas o morro continua com 40 m.',()=>ES[ei]!=500?'Escolha 1 : 500.':'Estique até a ponta do sambaqui.'],
+ ['Na escala <b>1 : 2.000</b>, estique a régua até o <b>contêiner</b> (120 m). Quantos centímetros no papel?',()=>ES[ei]==2000&&Math.abs(RG.get()-6)<0.05,'12.000 cm ÷ 2.000 = 6 cm.',()=>ES[ei]!=2000?'Escolha 1 : 2.000.':'Agora a régua marca '+r1(RG.get()*20)+' m no terreno. Precisa marcar 120 m.'],
+ ['No mapa <b>1 : 5.000</b>, quanto mede no papel o caminho até o contêiner?',()=>ES[ei]==5000&&Math.abs(RG.get()-2.4)<0.05,'12.000 ÷ 5.000 = 2,4 cm. Quanto maior o N da escala, menor o desenho.',()=>ES[ei]!=5000?'Escolha 1 : 5.000.':'Faça a régua marcar 120 m no terreno.']]);
+function draw(){const N=ES[ei],pxcm=25,x0=18,y0=110,k=pxcm*100/N;let g=RC(0,0,340,200,PAPEL,'rx="10"');
+ for(let c=0;c<=13;c++)g+=LN(x0+c*pxcm,0,x0+c*pxcm,200,'#F1E4CC',1);
+ g+=PL([[0,175],[80,168],[170,182],[260,170],[340,178]],AGUA_E,12)+TX(300,196,'Ribeirão Fundo',{fs:9,c:AGUA_E});
+ const L=40*k,Wd=30*k;g+=ELI(x0+L/2,y0,L/2,Wd/2,AREIA,'stroke="'+TERRA+'" stroke-width="1.5"');
+ if(L>40)g+=TX(x0+L/2,y0+4,'sambaqui',{fs:Math.min(11,L/6),c:TERRA_E});
+ const xc=x0+120*k;if(xc<335){g+=RC(xc-6,y0-14,14,10,NAVY)+TX(Math.min(xc,300),y0-20,'contêiner',{fs:9});}else g+=TX(330,y0-20,'contêiner fora do papel →',{fs:9,a:'end',c:GRAY});
+ const r=RG.get();g+=RC(x0,y0+34,r*pxcm,8,ORANGE,'rx="3"');for(let c=0;c<=Math.floor(r+1e-9);c++)g+=LN(x0+c*pxcm,y0+30,x0+c*pxcm,y0+46,ORANGE,1.2);
+ g+=TX(x0+r*pxcm/2,y0+60,r1(r)+' cm',{fs:10,c:ORANGE});
+ g+=TX(330,18,'1 : '+fmt(N),{fs:12,a:'end'});
+ $('fig').innerHTML=SVG(340,200,g);$('ke').textContent='1 : '+fmt(N);$('kp').textContent=r1(r)+' cm';$('kt').textContent=fmt(Math.round(r*N/100*10)/10)+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

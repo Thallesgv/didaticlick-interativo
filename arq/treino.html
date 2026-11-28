@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'arq1':{T:["Escala: do mapa ao terreno", "Curvas de nível", "Inclinação: rampa e porcentagem", "Seno, cosseno e tangente", "A altura pela sombra: Tales", "O drone e o mapa 3D"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const N=P([200,500,1000,2000,5000]),c=P([2,3,4,5,6,7,8,9]);return{q:`Num mapa <b>1 : ${fmt(N)}</b>, uma distância mede <b>${c} cm</b>. Quantos metros ela tem no terreno?`,a:c*N/100,exp:`${c} cm × ${fmt(N)} = ${fmt(c*N)} cm = ${fmt(c*N/100)} m.`};}
+ if(t==1){const N=P([500,1000,2000,2500,5000]),m=P([20,40,50,100,150,200,250]);return{q:`O terreno tem <b>${m} m</b>. Quantos centímetros isso dá num mapa <b>1 : ${fmt(N)}</b>?`,a:m*100/N,tol:0.01,exp:`${m} m = ${fmt(m*100)} cm; ${fmt(m*100)} ÷ ${fmt(N)} = ${fmt(Math.round(m*100/N*100)/100)} cm.`};}
+ const c=P([2,4,5,8]),N=P([500,1000,2000,5000]);return{q:`Num mapa, <b>${c} cm</b> representam <b>${fmt(c*N/100)} m</b>. A escala é 1 : quanto?`,a:N,exp:`${fmt(c*N/100)} m = ${fmt(c*N)} cm; ${fmt(c*N)} ÷ ${c} = ${fmt(N)}.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const top=P([301,302,303,304]),rep=P([305,306,307]);return{q:`O topo de um sítio está na cota <b>${top}</b> e a represa vai até a cota <b>${rep}</b>. Quantos metros de água ficam sobre o topo?`,a:rep-top,exp:`${rep} − ${top} = ${rep-top} m.`};}
+ if(t==1){const c=P([300,301,302]),e=P([0.5,1,2]),d=P([4,5,8,10]),x=P([1,2,3]);const v=c+e*x/d;return{q:`O ponto P está a <b>${x} m</b> da curva ${c}, rumo à curva ${fmt(c+e)}, que fica a <b>${d} m</b> dela. Estime a cota de P.`,a:Math.round(v*1000)/1000,tol:0.01,exp:`Sobe ${fmt(e)} m em ${d} m; em ${x} m sobe ${fmt(Math.round(e*x/d*1000)/1000)} m: ${fmt(Math.round(v*1000)/1000)}.`};}
+ return P([{q:'Curvas de nível muito juntas indicam terreno:',opts:['íngreme','plano'],a:'íngreme',exp:'Sobe muito em pouco espaço.'},{q:'Duas curvas de nível podem se cruzar?',opts:['sim','não'],a:'não',exp:'Um ponto não tem duas alturas.'},{q:'Curvas fechadas subindo para o centro indicam:',opts:['um morro','um rio'],a:'um morro',exp:'Cada fatia é menor que a de baixo.'}]);},
+3:()=>{const t=R(0,2);
+ if(t==0){const d=P([10,20,25,30,40,50]),i=P([5,8,10,12,20]);return{q:`Uma rampa sobe <b>${fmt(d*i/100)} m</b> em <b>${d} m</b> de distância horizontal. Qual a inclinação, em %?`,a:i,exp:`${fmt(d*i/100)} ÷ ${d} = ${fmt(i/100)} = ${i}%.`};}
+ if(t==1){const i=P([5,8,10,12,15,20]),d=P([10,20,30,40,50]);return{q:`Uma rampa de <b>${i}%</b> avança <b>${d} m</b> na horizontal. Quanto ela sobe, em metros?`,a:i*d/100,exp:`${fmt(i/100)} × ${d} = ${fmt(i*d/100)} m.`};}
+ const i=P([5,10,15,20,25,50]),h=P([0.5,1,1.5,2,3]);return{q:`Uma rampa de <b>${i}%</b> precisa vencer <b>${fmt(h)} m</b> de desnível. Qual a distância horizontal, em metros?`,a:Math.round(h/(i/100)*100)/100,tol:0.01,exp:`${fmt(h)} ÷ ${fmt(i/100)} = ${fmt(Math.round(h/(i/100)*100)/100)} m.`};},
+4:()=>{const TB={10:[0.174,0.985,0.176],20:[0.342,0.940,0.364],25:[0.423,0.906,0.466],28:[0.469,0.883,0.532],30:[0.5,0.866,0.577],35:[0.574,0.819,0.7],45:[0.707,0.707,1],60:[0.866,0.5,1.732]};
+ const a=P([10,20,25,28,30,35,45,60]),[s,c,tg]=TB[a],t=R(0,2);
+ if(t==0){const hip=P([4,5,8,10,12]);return{q:`Uma rampa de <b>${a}°</b> tem <b>${hip} m</b> de comprimento inclinado. Que altura ela vence? (sen ${a}° = ${fmt(s)})`,a:Math.round(hip*s*100)/100,tol:0.02,exp:`${hip} × ${fmt(s)} = ${fmt(Math.round(hip*s*100)/100)} m.`};}
+ if(t==1){const d=P([10,20,30,40,50]);return{q:`A <b>${d} m</b> de uma torre, o ângulo de elevação até o topo é <b>${a}°</b>. Qual a altura (acima dos olhos)? (tg ${a}° = ${fmt(tg)})`,a:Math.round(d*tg*100)/100,tol:0.05,exp:`${d} × ${fmt(tg)} = ${fmt(Math.round(d*tg*100)/100)} m.`};}
+ const hip=P([4,5,8,10]);return{q:`Uma rampa de <b>${a}°</b> tem <b>${hip} m</b> de comprimento inclinado. Quanto ela avança na horizontal? (cos ${a}° = ${fmt(c)})`,a:Math.round(hip*c*100)/100,tol:0.02,exp:`${hip} × ${fmt(c)} = ${fmt(Math.round(hip*c*100)/100)} m.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const hb=P([1,1.5,2]),sb=P([1,1.5,2,2.5,3,4]),so=P([6,9,12,15,18,24,30,36]);const h=Math.round(so*hb/sb*100)/100;return{q:`Uma baliza de <b>${fmt(hb)} m</b> faz sombra de <b>${fmt(sb)} m</b>. No mesmo instante, uma torre faz sombra de <b>${so} m</b>. Qual a altura da torre?`,a:h,tol:0.02,exp:`${so} × ${fmt(hb)} ÷ ${fmt(sb)} = ${fmt(h)} m.`};}
+ if(t==1){const o=P([1.4,1.5,1.6]),d=P([1,1.5,2,2.5]),D=P([10,12,15,20,25]);const h=Math.round(o*D/d*100)/100;return{q:`Com os olhos a <b>${fmt(o)} m</b> do chão, você vê o topo de uma árvore num espelho a <b>${fmt(d)} m</b>. O espelho está a <b>${D} m</b> da árvore. Qual a altura dela?`,a:h,tol:0.02,exp:`${fmt(o)} × ${D} ÷ ${fmt(d)} = ${fmt(h)} m.`};}
+ const mb=P([100,115,120]),s=P([20,25,30,32]);return{q:`No momento em que a sombra é igual à altura, a sombra de uma pirâmide aparece <b>${s} m</b> além da base, cuja metade mede <b>${mb} m</b>. Qual a altura?`,a:mb+s,exp:`Meia base + sombra visível: ${mb} + ${s} = ${mb+s} m.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const H=P([10,20,30,40,50,60,80]);return{q:`A câmera do drone tem tg α = 0,75. Qual a largura da faixa no chão a <b>${H} m</b> de altura?`,a:1.5*H,exp:`2 × ${H} × 0,75 = ${fmt(1.5*H)} m.`};}
+ if(t==1){const L=P([30,40,60,80,120]),px=P([4000,5000,6000]);return{q:`Uma foto de <b>${fmt(px)} pixels</b> cobre <b>${L} m</b> de chão. Qual o tamanho de cada pixel, em cm?`,a:Math.round(L*100/px*1000)/1000,tol:0.01,exp:`${fmt(L*100)} cm ÷ ${fmt(px)} = ${fmt(Math.round(L*100/px*1000)/1000)} cm.`};}
+ const F=P([30,40,45,60]),o=P([60,70,75,80]);return{q:`A foto cobre <b>${F} m</b> na direção do voo e a sobreposição é de <b>${o}%</b>. Quanto o drone avança entre duas fotos, em metros?`,a:F*(100-o)/100,exp:`${100-o}% de ${F} = ${fmt(F*(100-o)/100)} m.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='arq1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>
