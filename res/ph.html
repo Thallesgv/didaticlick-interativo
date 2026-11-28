@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua do pH · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A régua do pH</h1></header>
+<main>
+<div class="card"><h2>Cada passo vale 10 vezes</h2><p class="muted" style="margin-top:0">Mude o pH e o volume de água. A cor imita o papel indicador; [H⁺] = 10⁻ᵖᴴ mol/L. Para água ácida, o contador calcula a cal (74 g/mol) que neutraliza os H⁺: Ca(OH)₂ + 2 H⁺ → Ca²⁺ + 2 H₂O.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>pH</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Volume de água</b><input type="range"><span></span></div>
+<div class="kpi"><div>[H⁺]<b id="k1"></b></div><div class="o">Mais ácido que pH 7<b id="k2"></b></div><div>Cal para neutralizar<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o pH.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PH=SL('sp',0,14,0.5,7,draw,v=>fmt(v)),V=SL('sv',10,1000,10,100,draw,v=>fmt(v)+' L');
+const COR=['#D9342B','#E8532B','#F2762B','#F7962C','#F9B92F','#E3CF33','#B7D33A','#6CC04A','#3EAD6A','#2E9F8F','#3B8BC0','#3D6FC0','#4B55B5','#5B42A6','#5B2F8F'];
+const cient=x=>{const e=Math.floor(Math.log10(x)+1e-9);const a=x/10**e;return (Math.abs(a-1)<1e-9?'':fmt(Math.round(a*100)/100)+' × ')+'10'+SUP(e);};
+const cal=()=>PH.get()<7?V.get()*10**(-PH.get())/2*74:0;
+MIS.def(()=>[
+ ['Coloque a água da goteira: <b>pH 4</b>. Quantas vezes ela é mais ácida que a água pura?',()=>PH.get()==4,'1.000 vezes: 10⁻⁴ ÷ 10⁻⁷ = 10³. Três passos de 10.',()=>'pH '+fmt(PH.get())+': '+(PH.get()<7?fmt(Math.round(10**(7-PH.get())))+' vezes mais ácida.':'não é ácida.')],
+ ['A meta começa em pH 6. Ache o pH que é <b>100 vezes</b> mais ácido que 6.',()=>PH.get()==4,'pH 4 de novo: dois passos de 10 abaixo de 6. A goteira está 100 vezes longe da meta.',()=>'pH '+fmt(PH.get())+'.'],
+ ['Calcule a cal para um dia inteiro da goteira: <b>720 L</b> com <b>pH 4</b>.',()=>PH.get()==4&&V.get()==720,'Cerca de 2,7 g de cal: 0,072 mol de H⁺ ÷ 2 × 74 g. Com pH 3 seriam 26,6 g.',()=>'Agora: '+fmt(V.get())+' L com pH '+fmt(PH.get())+'.']]);
+function draw(){const p=PH.get();let g='';const x0=20,w=300/15;
+ for(let k=0;k<15;k++)g+=RC(x0+k*w,170,w,22,COR[k])+TX(x0+k*w+w/2,185,k,{fs:10,c:'#fff'});
+ g+=RC(x0+6*w,167,4*w,28,'none','stroke="#0E2354" stroke-width="2"');const xp=x0+p*w+w/2*(p<14?1:0);g+=PG([[xp,164],[xp-7,152],[xp+7,152]],NAVY);
+ const c=COR[Math.min(14,Math.round(p))];g+=RC(110,20,120,120,'#fff','stroke="#0E2354" stroke-width="2"')+RC(112,50,116,88,c,'opacity=".75"');
+ g+=TX(170,40,'pH '+fmt(p),{fs:16});g+=TX(60,90,p<7?'ácido':p>7?'básico':'neutro',{fs:13,c:p<7?VERM:p>7?BLUE:GREEN});
+ $('fig').innerHTML=SVG(340,200,g);$('k1').textContent=cient(10**(-p))+' mol/L';$('k2').textContent=p<7?fmt(Math.round(10**(7-p)))+' vezes':'não é ácida';
+ $('k3').textContent=p<7?(cal()>=1000?r2(cal()/1000)+' kg':r2(cal())+' g'):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

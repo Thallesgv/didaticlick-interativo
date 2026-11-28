@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A goteira · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A goteira</h1></header>
+<main>
+<div class="card"><h2>Balde, cronômetro e vazão</h2><p class="muted" style="margin-top:0">Mude a vazão da goteira e o tamanho do balde. O balde enche no tempo certo (o cronômetro corre 60 vezes mais rápido) e os contadores convertem a vazão para hora e dia.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Vazão da goteira</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Balde</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Tempo para encher<b id="k1"></b></div><div>Por hora<b id="k2"></b></div><div>Por dia<b id="k3"></b></div><div>Para quantas pessoas (4 L/dia)<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a vazão.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function BALDE(x,y,w,h,f,cor){const t=0.12;return `<polygon points="${x},${y} ${x+w},${y} ${x+w*(1-t)},${y+h} ${x+w*t},${y+h}" fill="#fff" stroke="#0E2354" stroke-width="2"/>`+
+ (f>0?`<polygon points="${x+w*t*f},${y+h*(1-f)} ${x+w-w*t*f},${y+h*(1-f)} ${x+w*(1-t)},${y+h} ${x+w*t},${y+h}" fill="${cor||AGUA}"/>`:'');}
+const V=SL('sv',0.05,2,0.01,0.3,()=>{t0=performance.now();draw();},v=>fmt(r2(v))+' L/min'),B=SL('sb',5,20,1,10,()=>{t0=performance.now();draw();},v=>v+' L');
+let t0=performance.now();const tE=()=>B.get()/V.get();
+MIS.def(()=>[
+ ['Confira a medida do Seu Ari: balde de <b>10 L</b> cheio em <b>20 minutos</b>. Qual é a vazão?',()=>B.get()==10&&Math.abs(V.get()-0.5)<1e-6,'0,5 L/min: 30 L por hora, 720 L por dia. Dá para 180 pessoas beberem 4 L.',()=>'Agora o balde de '+B.get()+' L enche em '+r1(tE())+' min.'],
+ ['Ache a <b>menor vazão</b> que ainda dá os <b>132 L por dia</b> dos 33.',()=>Math.abs(V.get()-0.1)<1e-6,'0,1 L/min dá 144 L por dia. Com 0,09 L/min seriam só 129,6 L.',()=>'Agora: '+fmt(Math.round(V.get()*1440))+' L por dia.'],
+ ['Ache a vazão que enche um balde de <b>20 L</b> em <b>10 minutos</b>.',()=>B.get()==20&&Math.abs(V.get()-2)<1e-6,'2 L/min: vazão = 20 ÷ 10. Uma goteira dessas daria 2.880 L por dia.',()=>'Agora o balde de '+B.get()+' L enche em '+r1(tE())+' min.']]);
+function cena(){const el=$('cena');if(!el)return;const tm=((performance.now()-t0)/1000)%(tE()+1.5);const f=Math.min(1,tm/tE());let g='';
+ g+=RC(20,6,160,14,ROCHA,'stroke="#6B4E34"');for(let k=0;k<4;k++){const yy=24+((tm*80+k*30)%(140-24-30*f));g+=`<ellipse cx="100" cy="${yy}" rx="3" ry="5" fill="#4A90D9"/>`;}
+ g+=BALDE(55,140-60,90,60,f);g+=TX(100,158,B.get()+' L',{fs:11});
+ const ang=(Math.min(tm,tE())/60)*360;g+=`<circle cx="260" cy="90" r="44" fill="#fff" stroke="#0E2354" stroke-width="2"/>`+LN(260,90,260+36*Math.sin(ang*RAD),90-36*Math.cos(ang*RAD),ORANGE,3);
+ g+=TX(260,160,r1(Math.min(tm,tE()))+' min',{fs:13,c:ORANGE});el.innerHTML=g;}
+function anima(){cena();requestAnimationFrame(anima);}
+function draw(){$('fig').innerHTML=SVG(340,172,'<g id="cena"></g>');cena();const v=V.get();
+ $('k1').textContent=r1(tE())+' min';$('k2').textContent=r1(v*60)+' L';$('k3').textContent=fmt(Math.round(v*1440))+' L';$('k4').textContent=Math.floor(v*1440/4);MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>

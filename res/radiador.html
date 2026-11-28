@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A dose do radiador · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A dose do radiador</h1></header>
+<main>
+<div class="card"><h2>Dose por quilo de corpo</h2><p class="muted" style="margin-top:0">Etilenoglicol: acima de 0,1 mL por kg já há risco; cerca de 1,4 mL por kg é a dose letal. Escolha a massa da pessoa, quanto fluido ela bebeu e se o fluido estava puro ou misturado meio a meio com água.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sm"><b>Massa da pessoa</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Fluido bebido</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Etilenoglicol<b id="k1"></b></div><div class="o">Dose<b id="k2"></b></div><div>Situação<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Avalie a dose.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let pi=0;const PR=[0.5,1];chips('ch',['fluido meio a meio','fluido puro'],0,i=>{pi=i;draw();});
+const M=SL('sm',10,100,1,70,draw,v=>v+' kg'),F=SL('sf',0,300,1,10,draw,v=>v+' mL');const eg=()=>F.get()*PR[pi],dose=()=>eg()/M.get();
+MIS.def(()=>[
+ ['Avalie o <b>Tonho</b>: 70 kg, uns <b>40 mL</b> de fluido meio a meio.',()=>M.get()==70&&F.get()==40&&pi==0,'20 mL de etilenoglicol: 0,29 mL/kg, quase três vezes o limite de risco. Precisa de médico.',()=>'Dose agora: '+fmt(r2(dose()))+' mL/kg.'],
+ ['Os mesmos 40 mL, numa <b>criança de 20 kg</b>. Quanto mais perto da dose letal?',()=>M.get()==20&&F.get()==40&&pi==0,'1 mL/kg: dez vezes o risco, perto da dose letal de 1,4. A mesma quantidade pesa mais num corpo menor.',()=>'Dose agora: '+fmt(r2(dose()))+' mL/kg.'],
+ ['Para 70 kg e fluido meio a meio, ache quantos mL chegam à <b>dose letal</b> (1,4 mL/kg).',()=>M.get()==70&&pi==0&&F.get()==196,'196 mL, um copo: 98 mL de etilenoglicol.',()=>'Dose agora: '+fmt(r2(dose()))+' mL/kg.']]);
+function draw(){const d=dose();let g='';const X=v=>30+Math.min(v,2)/2*290;
+ g+=RC(30,40,290,30,'#EEF2F7','rx="6"')+RC(30,40,Math.max(0,X(d)-30),30,d>=1.4?VERM:d>0.1?ORANGE:GREEN,'rx="6"');
+ g+=LN(X(0.1),30,X(0.1),80,ORANGE,2)+TX(X(0.1),96,'risco 0,1',{fs:10,c:ORANGE})+LN(X(1.4),30,X(1.4),80,VERM,2)+TX(X(1.4),96,'letal 1,4',{fs:10,c:VERM});
+ g+=TX(175,22,fmt(r2(d))+' mL por kg'+(d>2?' (fora da escala)':''),{fs:13});
+ const nc=Math.min(10,Math.ceil(F.get()/200*10)/10);g+=RC(40,120,50,70,'#fff','stroke="#0E2354" stroke-width="1.5"')+RC(42,120+70*(1-Math.min(1,F.get()/200)),46,70*Math.min(1,F.get()/200),'#A7E0A1');
+ g+=TX(65,206,'copo de 200 mL',{fs:9,c:GRAY,w:500});
+ for(let i=0;i<Math.min(100,M.get())/10;i++)g+=`<circle cx="${140+i*18}" cy="160" r="7" fill="${NAVY}"/>`;g+=TX(220,190,M.get()+' kg (cada bolinha = 10 kg)',{fs:10,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,214,g);$('k1').textContent=fmt(r1(eg()))+' mL';$('k2').textContent=fmt(r2(d))+' mL/kg';$('k3').textContent=d>=1.4?'dose letal':d>0.1?'acima do risco':'abaixo do risco';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

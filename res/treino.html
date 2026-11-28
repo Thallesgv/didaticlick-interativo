@@ -92,7 +92,30 @@ const LIV={'res1':{T:["A mina em escala", "A rampa: inclinação em %", "Coorden
 6:()=>{const t=R(0,2);
  if(t==0){const n=P([2,4,6,10,20]);return{q:`Na vela, 2 NaClO₃ → 2 NaCl + 3 O₂. Quantos mols de O₂ saem de <b>${n} mol</b> de clorato?`,a:n*1.5,exp:`${n} × 3 ÷ 2 = ${fmt(n*1.5)} mol.`};}
  if(t==1){const k=P([1,2,3,5]);return{q:`<b>${fmt(213*k)} g</b> de clorato liberam quantos gramas de oxigênio? (213 g → 96 g)`,a:96*k,exp:`${k} × 96 = ${96*k} g.`};}
- const p=P([1,5,10,20,33]);return{q:`Cada quilo de vela dá oxigênio para 6,5 horas de uma pessoa. Quantos quilos mantêm <b>${p} pessoa(s)</b> por 24 horas? (uma casa decimal)`,a:Math.round(p*24/6.5*10)/10,tol:0.11,exp:`${p} × 24 ÷ 6,5 ≈ ${r1(p*24/6.5)} kg.`};}}}};
+ const p=P([1,5,10,20,33]);return{q:`Cada quilo de vela dá oxigênio para 6,5 horas de uma pessoa. Quantos quilos mantêm <b>${p} pessoa(s)</b> por 24 horas? (uma casa decimal)`,a:Math.round(p*24/6.5*10)/10,tol:0.11,exp:`${p} × 24 ÷ 6,5 ≈ ${r1(p*24/6.5)} kg.`};}}},'res4':{T:["A água de cada dia", "Miligramas por litro", "A escala do pH", "Diluir e clorar", "O veneno do radiador", "O filtro em camadas"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const v=P([5,8,10,12,20]),m=P([2,4,5,10,20]);return{q:`Um balde de <b>${v} L</b> enche em <b>${m} min</b>. Qual é a vazão, em L/min?`,a:v/m,tol:0.001,exp:`${v} ÷ ${m} = ${fmt(Math.round(v/m*1000)/1000)} L/min.`};}
+ if(t==1){const q=P([0.1,0.2,0.25,0.5,1,1.5]);return{q:`Quantos litros por <b>dia</b> dá uma vazão de <b>${fmt(q)} L/min</b>?`,a:q*1440,tol:0.01,exp:`${fmt(q)} × 60 × 24 = ${fmt(q*1440)} L.`};}
+ const n=P([10,20,33,50]),l=P([2,3,4,6]),c=P([200,400,600,1000]);return{q:`Uma caixa tem <b>${c} L</b>. <b>${n}</b> pessoas bebem <b>${l} L</b> por dia cada. Quantos dias a caixa dura? (uma casa decimal)`,a:Math.round(c/(n*l)*10)/10,tol:0.11,exp:`${n} × ${l} = ${n*l} L/dia; ${c} ÷ ${n*l} ≈ ${r1(c/(n*l))} dias.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const m=P([6,10,12,30,45]),v=P([2,3,4,5,10]);return{q:`<b>${m} mg</b> de cobre dissolvidos em <b>${v} L</b>. Qual a concentração, em mg/L?`,a:m/v,tol:0.01,exp:`${m} ÷ ${v} = ${fmt(Math.round(m/v*100)/100)} mg/L.`};}
+ if(t==1){const c=P([2,3,8,20]),v=P([0.25,0.5,4,10]);return{q:`Quantos mg há em <b>${fmt(v)} L</b> de uma água com <b>${c} mg/L</b>?`,a:c*v,tol:0.001,exp:`m = C · V = ${c} × ${fmt(v)} = ${fmt(c*v)} mg.`};}
+ const g=P([0.5,1.2,2,2.5,4]);return{q:`Converta <b>${fmt(g)} g/L</b> para mg/L.`,a:g*1000,exp:`${fmt(g)} × 1.000 = ${fmt(g*1000)} mg/L.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=R(1,6),b=a+R(1,4);return{q:`Quantas vezes a água de pH <b>${a}</b> é mais ácida que a de pH <b>${b}</b>?`,a:10**(b-a),exp:`10^(${b} − ${a}) = ${fmt(10**(b-a))}.`};}
+ if(t==1){const p=R(1,6),v=P([10,100,1000]);return{q:`Quantos mols de H⁺ há em <b>${v} L</b> de água com pH <b>${p}</b>?`,a:v*10**(-p),tol:1e-9,exp:`${v} × 10⁻${p} = ${fmt(v*10**(-p))} mol.`};}
+ const p=P([3,4,5]),v=P([100,720,1000]);return{q:`Quantos gramas de cal, Ca(OH)₂ (74 g/mol), neutralizam <b>${v} L</b> de água com pH <b>${p}</b>? (duas casas decimais)`,a:Math.round(v*10**(-p)/2*74*100)/100,tol:0.011,exp:`H⁺: ${v} × 10⁻${p} mol; ÷ 2 × 74 ≈ ${r2(v*10**(-p)/2*74)} g.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const c1=P([100,200,500,1000]),v1=P([10,20,50]),v2=P([500,1000,2000]);return{q:`<b>${v1} mL</b> de uma solução de <b>${c1} mg/L</b> são diluídos até <b>${v2} mL</b>. Qual a nova concentração, em mg/L?`,a:c1*v1/v2,tol:0.001,exp:`C₂ = ${c1} × ${v1} ÷ ${v2} = ${fmt(c1*v1/v2)} mg/L.`};}
+ if(t==1){const c2=P([1,2,3,4]),v2=P([10,50,100,132,200]);return{q:`Quantos <b>mL</b> de água sanitária a 20.000 mg/L dão <b>${c2} mg/L</b> em <b>${v2} L</b> de água?`,a:c2*v2/20,tol:0.001,exp:`V₁ = ${c2} × ${v2} ÷ 20.000 L = ${fmt(c2*v2/20)} mL.`};}
+ const k=P([2,4,5,10]);return{q:`Uma solução é diluída até um volume <b>${k} vezes</b> maior. A concentração fica dividida por quanto?`,a:k,exp:`C₂ = C₁ ÷ ${k}: inversamente proporcional ao volume.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const m=P([20,30,50,60,70,80]);return{q:`Qual é a dose letal aproximada de etilenoglicol (1,4 mL/kg) para uma pessoa de <b>${m} kg</b>, em mL?`,a:1.4*m,tol:0.01,exp:`1,4 × ${m} = ${fmt(Math.round(14*m)/10)} mL.`};}
+ if(t==1){const f=P([10,20,40,60,100]),m=P([20,40,70]);return{q:`Uma pessoa de <b>${m} kg</b> bebeu <b>${f} mL</b> de fluido de radiador meio a meio. Qual a dose de etilenoglicol, em mL/kg? (duas casas decimais)`,a:Math.round(f/2/m*100)/100,tol:0.011,exp:`${f} ÷ 2 = ${fmt(f/2)} mL; ÷ ${m} ≈ ${r2(f/2/m)} mL/kg.`};}
+ const m=P([15,20,30,50,70]);return{q:`Quantos mL de fluido meio a meio já atingem a dose de risco (0,1 mL/kg) para <b>${m} kg</b>?`,a:0.2*m,tol:0.01,exp:`Etilenoglicol: 0,1 × ${m} = ${fmt(m/10)} mL; mistura: o dobro, ${fmt(m/5)} mL.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const tx=P([0.2,0.25,0.3,0.4]),a=P([0.02,0.05,0.1,0.5]);return{q:`Um filtro de <b>${fmt(a)} m²</b> com taxa <b>${fmt(tx)} m³/m²/h</b> dá quantos litros por dia?`,a:Math.round(tx*a*24000*100)/100,tol:0.01,exp:`${fmt(tx)} × ${fmt(a)} × 24 × 1.000 = ${fmt(Math.round(tx*a*24000*100)/100)} L.`};}
+ if(t==1){const p=P([50,80,90]),n=P([2,3]);const f=(1-p/100)**n;return{q:`Cada camada retira <b>${p}%</b> de uma impureza. Que porcentagem passa por <b>${n}</b> camadas? (até três casas decimais)`,a:Math.round(f*100*1000)/1000,tol:0.0011,exp:`${fmt(1-p/100)}^${n} = ${fmt(Math.round(f*100000)/100000)} = ${fmt(Math.round(f*100*1000)/1000)}%.`};}
+ const g=P([10,20,50,100]),s=P([500,1000,1500,3000]);return{q:`Quantos m² de superfície há em <b>${g} g</b> de carvão ativado com <b>${fmt(s)} m²</b> por grama?`,a:g*s,exp:`${g} × ${fmt(s)} = ${fmt(g*s)} m².`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='res1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
