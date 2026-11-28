@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Que algarismo é esse? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Que algarismo é esse?</h1></header>
+<main>
+<div class="card"><h2>A menor distância</h2><p class="muted" style="margin-top:0">À esquerda, o algarismo borrado depois do limiar L (claro = tinta). À direita, o modelo escolhido. Os quadrados laranja são os pixels diferentes: a distância. O placar mostra a distância até cada modelo.</p>
+<div id="chm" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Limiar L</b><input type="range"><span></span></div>
+<div class="kpi"><div>Até o 0<b id="k0"></b></div><div>Até o 3<b id="k3"></b></div><div>Até o 8<b id="k8"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia o algarismo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DIG=[[98, 150, 150, 138, 101], [134, 103, 75, 101, 174], [117, 120, 91, 90, 160], [89, 75, 138, 139, 127], [96, 117, 84, 135, 167], [158, 94, 76, 125, 134], [113, 136, 121, 177, 84]];const MOD={"0":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"3":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"8":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]]};
+const cz=v=>{v=Math.max(0,Math.min(255,Math.round(v)));return `rgb(${v},${v},${v})`;};
+const GRADE=(M,x0,y0,s,o)=>{o=o||{};let g='';M.forEach((r,i)=>r.forEach((v,j)=>{const x=x0+j*s,y=y0+i*s;
+ g+=RC(x,y,s,s,o.cor?o.cor(v,i,j):cz(v),'stroke="#9AA3AF" stroke-width=".6"');
+ if(o.marca&&o.marca(i,j))g+=RC(x+1.5,y+1.5,s-3,s-3,'none','stroke="'+ORANGE+'" stroke-width="2.4"');
+ if(o.num)g+=TX(x+s/2,y+s/2+4,o.txt?o.txt(v):Math.round(v),{fs:o.fs||10,c:(o.esc?o.esc(v):v<140)?'#fff':NAVY,w:500});}));return g;};
+const NM=['0','3','8'];let mo=0;const vistos={};
+const CM=chips('chm',NM.map(n=>'modelo '+n),0,i=>{mo=i;draw();});
+const SLm=SL('sl',60,200,1,100,()=>draw(),v=>v);
+const B=()=>DIG.map(r=>r.map(v=>v>=SLm.get()?1:0)),dist=m=>{const b=B();let n=0;for(let i=0;i<7;i++)for(let j=0;j<5;j++)if(b[i][j]!=MOD[m][i][j])n++;return n;};
+MIS.def(()=>[
+ ['Ponha o limiar em <b>128</b> e olhe os <b>três modelos</b>, um de cada vez.',()=>SLm.get()==128&&vistos['0']&&vistos['3']&&vistos['8'],'Distâncias: 8 até o 0, 2 até o 3 e 5 até o 8.',()=>SLm.get()!=128?'Leve o limiar a 128.':'Faltam: '+NM.filter(m=>!vistos[m]).map(m=>'modelo '+m).join(', ')+'.'],
+ ['Com L = 128, escolha o modelo de <b>menor distância</b>. Que ano é a data?',()=>SLm.get()==128&&NM[mo]=='3','Modelo 3, com só 2 pixels diferentes em 35: a data é 1893, três anos depois da morte de Van Gogh.',()=>SLm.get()!=128?'Volte o limiar a 128.':'O modelo '+NM[mo]+' tem distância '+dist(NM[mo])+'. Há um mais perto.'],
+ ['Desconfie da conta: mude o limiar para <b>150</b>. O 3 continua ganhando?',()=>SLm.get()==150,'Sim: 9, 7 e 10. O 3 ainda é o mais perto, com margem menor. E o 0, a leitura da defesa, nunca é o melhor.',()=>'Leve o limiar a 150.']]);
+function draw(){if(SLm.get()==128)vistos[NM[mo]]=true;const s=26,b=B(),m=MOD[NM[mo]];let g=RC(0,0,340,7*s+40,'#fff','rx="10"');
+ const cor=v=>v?'#F2F4F7':'#2B2F36';
+ g+=GRADE(b,24,10,s,{cor})+TX(24+2.5*s,7*s+28,'o algarismo',{fs:10,c:NAVY});
+ g+=GRADE(m,186,10,s,{cor,marca:(i,j)=>b[i][j]!=m[i][j]})+TX(186+2.5*s,7*s+28,'modelo '+NM[mo]+': '+dist(NM[mo])+' diferentes',{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(340,7*s+40,g);
+ const ds=NM.map(dist),mn=Math.min(...ds);NM.forEach((n,i)=>{$('k'+n).textContent=ds[i]+(ds[i]==mn?' ★':'');});MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

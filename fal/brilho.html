@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brilho, contraste e limiar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Brilho, contraste e limiar</h1></header>
+<main>
+<div class="card"><h2>f(v) = a · v + b</h2><p class="muted" style="margin-top:0">A mesma conta é aplicada aos 35 pixels do algarismo. Resultados abaixo de 0 viram 0; acima de 255, viram 255 (os quadrados com borda laranja perderam informação). Depois, ligue o limiar: cada pixel vira 1 (tinta) ou 0 (fundo).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>a (contraste)</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>b (brilho)</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button class="alt" id="bl">Ligar o limiar</button></div>
+<div class="sl" id="sl"><b>Limiar L</b><input type="range"><span></span></div>
+<div class="kpi"><div>Menor e maior<b id="km"></b></div><div>Pixels cortados<b id="kc"></b></div><div class="o">Diferença até o modelo 3<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o algarismo aparecer.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DIG=[[98, 150, 150, 138, 101], [134, 103, 75, 101, 174], [117, 120, 91, 90, 160], [89, 75, 138, 139, 127], [96, 117, 84, 135, 167], [158, 94, 76, 125, 134], [113, 136, 121, 177, 84]];const MOD={"0":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"3":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [0, 0, 0, 0, 1], [0, 0, 1, 1, 0], [0, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]],"8":[[0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0], [1, 0, 0, 0, 1], [1, 0, 0, 0, 1], [0, 1, 1, 1, 0]]};
+const cz=v=>{v=Math.max(0,Math.min(255,Math.round(v)));return `rgb(${v},${v},${v})`;};
+const GRADE=(M,x0,y0,s,o)=>{o=o||{};let g='';M.forEach((r,i)=>r.forEach((v,j)=>{const x=x0+j*s,y=y0+i*s;
+ g+=RC(x,y,s,s,o.cor?o.cor(v,i,j):cz(v),'stroke="#9AA3AF" stroke-width=".6"');
+ if(o.marca&&o.marca(i,j))g+=RC(x+1.5,y+1.5,s-3,s-3,'none','stroke="'+ORANGE+'" stroke-width="2.4"');
+ if(o.num)g+=TX(x+s/2,y+s/2+4,o.txt?o.txt(v):Math.round(v),{fs:o.fs||10,c:(o.esc?o.esc(v):v<140)?'#fff':NAVY,w:500});}));return g;};
+const SA=SL('sa',0.5,3,0.1,1,()=>draw(),v=>fmt(v)),SB=SL('sb',-250,150,2.5,0,()=>draw(),v=>fmt(v)),SLm=SL('sl',0,255,1,128,()=>draw(),v=>v);let lim=false;
+$('bl').onclick=()=>{lim=!lim;$('bl').textContent=lim?'Desligar o limiar':'Ligar o limiar';$('bl').className=lim?'':'alt';draw();};
+const f=v=>SA.get()*v+SB.get(),cl=v=>Math.max(0,Math.min(255,v));
+const T=()=>DIG.map(r=>r.map(v=>cl(f(v)))),B=()=>T().map(r=>r.map(v=>v>=SLm.get()?1:0));
+const d3=()=>{let n=0;const b=B();for(let i=0;i<7;i++)for(let j=0;j<5;j++)if(b[i][j]!=MOD['3'][i][j])n++;return n;};
+const cortados=()=>DIG.flat().filter(v=>f(v)<-1e-9||f(v)>255+1e-9).length;
+const estica=()=>Math.abs(f(75))<1e-6&&Math.abs(f(177)-255)<1e-6;
+MIS.def(()=>[
+ ['<b>Estique o contraste</b>: escolha a e b para que o 75 vire 0 e o 177 vire 255.',()=>estica(),'a = 2,5 e b = −187,5: f(v) = 2,5 · (v − 75). A escala inteira é usada e nenhum pixel foi cortado.',()=>'Agora f(75) = '+r1(f(75))+' e f(177) = '+r1(f(177))+'. Ajuste a primeiro (255 ÷ 102) e depois b.'],
+ ['Com o contraste esticado, <b>ligue o limiar</b> e ache um L em que o algarismo fique a no máximo 2 pixels do modelo 3.',()=>estica()&&lim&&d3()<=2,()=>'Lá está o 3, com só '+d3()+' pixels fora do lugar. Repare que o L certo, depois de esticar, fica perto de 133 (o 128 de antes, esticado).',()=>!estica()?'Volte ao contraste esticado (a = 2,5 e b = −187,5).':!lim?'Aperte "Ligar o limiar".':'Faltam acertar '+d3()+' pixels. Mexa no L.'],
+ ['Agora exagere: desligue o limiar e ponha <b>a = 1</b> e <b>b = 100</b>. O que acontece com os pixels claros?',()=>!lim&&Math.abs(SA.get()-1)<1e-9&&Math.abs(SB.get()-100)<1e-9,()=>'Tudo acima de 155 vira 255: '+cortados()+' pixels cortados. A diferença entre eles se perdeu e nenhuma conta traz de volta.',()=>lim?'Desligue o limiar.':'Ponha a = 1 e b = 100.']]);
+function draw(){const s=34,x0=(340-5*s)/2,y0=10;let g=RC(0,0,340,7*s+20,'#fff','rx="10"');const t=T(),b=B();
+ if(lim)g+=GRADE(b,x0,y0,s,{num:true,cor:v=>v?'#F2F4F7':'#2B2F36',esc:v=>v==0,fs:12});
+ else g+=GRADE(t,x0,y0,s,{num:true,fs:10,marca:(i,j)=>{const v=f(DIG[i][j]);return v<0||v>255;}});
+ $('fig').innerHTML=SVG(340,7*s+20,g);const fl=t.flat();
+ $('km').textContent=r1(Math.min(...fl))+' e '+r1(Math.max(...fl));$('kc').textContent=cortados();$('k3').textContent=lim?d3()+' pixels':'ligue o limiar';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
