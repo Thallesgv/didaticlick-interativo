@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua da mão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A régua da mão</h1></header>
+<main>
+<div class="card"><h2>Tamanho ÷ distância</h2><p class="muted" style="margin-top:0">Mude o tamanho do objeto e a distância até o olho (arrastando ou com − e +). A página calcula o ângulo pela regra do 57 e pela conta exata, e mostra esse ângulo no céu do lado sul, ao lado do Cruzeiro.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Tamanho do objeto</b><input type="range"><span></span></div><div class="sl" id="sd"><b>Distância do olho</b><input type="range"><span></span></div><div class="kpi"><div>Regra do 57<b id="k1"></b></div><div>Conta exata<b id="k2"></b></div><div class="o">Em punhos do Téo<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça ângulos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EST={Acrux:[12.443,-63.10,0.8],Gacrux:[12.52,-57.11,1.6],Mimosa:[12.795,-59.69,1.3],Delta:[12.252,-58.75,2.8],Rigil:[14.66,-60.83,0],Hadar:[14.063,-60.37,0.6]};
+const LST=(hora,n)=>(((14.62+(hora-19)*1.00274+(n-198)*0.06571)%24)+24)%24;
+function AA(ra,de,lat,lst){const ha=(lst-ra)*15*RAD,la=lat*RAD,d=de*RAD;const alt=Math.asin(Math.sin(la)*Math.sin(d)+Math.cos(la)*Math.cos(d)*Math.cos(ha));
+ const az=Math.atan2(-Math.sin(ha),Math.tan(d)*Math.cos(la)-Math.sin(la)*Math.cos(ha));return[alt*DEG,((az*DEG)%360+360)%360];}
+const SEP=(a1,z1,a2,z2)=>{const p=a1*RAD,q=a2*RAD;return Math.acos(clamp(Math.sin(p)*Math.sin(q)+Math.cos(p)*Math.cos(q)*Math.cos((z1-z2)*RAD),-1,1))*DEG;};
+const ESTR=(x,y,m)=>CIR(x,y,Math.max(1.6,(3.2-m)*1.3+1.4),'#FFF4D6');
+const hh=h=>{h=((h%24)+24)%24;const m=Math.round(h*60);return Math.floor(m/60)%24+'h'+String(m%60).padStart(2,'0');};
+const latS=v=>Math.abs(v)<0.05?'0°':(r1(Math.abs(v))+'° '+(v>0?'N':'S'));
+const ST=SL('st',0.5,40,0.1,5,()=>draw(),v=>fmt(v)+' cm'),SD=SL('sd',20,90,1,45,()=>draw(),v=>v+' cm');
+const ap=()=>57.3*ST.get()/SD.get(),ex=()=>2*Math.atan(ST.get()/2/SD.get())*DEG;
+MIS.def(()=>[
+ ['Calibre o punho do Téo: <b>10,5 cm</b> a <b>60 cm</b> do olho.',()=>ST.get()==10.5&&SD.get()==60,'57,3 × 10,5 ÷ 60 ≈ 10,0°: o punho dele vale 10°.',()=>'Agora: '+fmt(ST.get())+' cm a '+SD.get()+' cm.'],
+ ['Cubra o braço maior do Cruzeiro: um ângulo <b>entre 5,9° e 6,1°</b>, a <b>60 cm</b>.',()=>SD.get()==60&&ap()>=5.9&&ap()<=6.1,()=>'Com '+fmt(ST.get())+' cm a 60 cm: '+r1(ap())+'°. Uns três dedos e meio.',()=>SD.get()!=60?'Volte a distância para 60 cm.':'O ângulo está em '+r1(ap())+'°.'],
+ ['Monte <b>1 radiano</b>: tamanho igual à distância.',()=>Math.abs(ST.get()-SD.get())<0.05,()=>'Pela regra, 57,3°. Mas a conta exata dá '+r1(ex())+'°: para ângulos grandes, a regra do 57 erra, porque o objeto reto não é um arco.',()=>'Tamanho '+fmt(ST.get())+' cm e distância '+SD.get()+' cm: ainda diferentes.']]);
+function draw(){const t=ST.get(),D=SD.get(),a=ex();let g=RC(0,0,340,330,'#F8FAFC','rx="10"');
+ const ex0=20,ey0=70,kx=280/90,hy=Math.min(60,t*1.5);const xo=ex0+D*kx;
+ g+=CIR(ex0,ey0,8,'#fff','stroke="'+NAVY+'" stroke-width="2"')+CIR(ex0+2,ey0,3,NAVY)+LN(ex0,ey0,xo,ey0-hy/2,OURO,1.5,'4 3')+LN(ex0,ey0,xo,ey0+hy/2,OURO,1.5,'4 3')+LN(xo,ey0-hy/2,xo,ey0+hy/2,ORANGE,5);
+ g+=TX((ex0+xo)/2,ey0+hy/2+20,D+' cm',{fs:10,c:NAVY})+TX(Math.min(xo+6,300),ey0+4,fmt(t)+' cm',{fs:10,a:xo>270?'end':'start',c:ORANGE});
+ const y0=320,k=4.2,X=az=>170+(az-200)*k;g+=RC(10,140,320,180,NOITE,'rx="8"');
+ for(const n in EST){const [al,az]=AA(EST[n][0],EST[n][1],-10.667,LST(19,198));if(al>0&&X(az)>14&&X(az)<326)g+=ESTR(X(az)*1,y0-al*k,EST[n][2]);}
+ const [ga,gz]=AA(EST.Gacrux[0],EST.Gacrux[1],-10.667,LST(19,198)),[aa,az]=AA(EST.Acrux[0],EST.Acrux[1],-10.667,LST(19,198));g+=LN(X(gz),y0-ga*k,X(az),y0-aa*k,'#5A6E9A',1);
+ const top=Math.max(146,y0-a*k);g+=LN(40,y0,40,top,ORANGE,4)+TX(48,Math.max(top+10,156),r1(a)+'°',{fs:11,a:'start',c:ORANGE})+(a*k>170?TX(48,170,'passa do quadro',{fs:9,a:'start',c:AZC}):'');
+ g+=RC(10,y0,320,10,'#2B2A20')+TX(170,316,'S',{fs:9,c:AZC});
+ $('fig').innerHTML=SVG(340,330,g);
+ $('k1').textContent=r1(ap())+'°';$('k2').textContent=r1(a)+'°';$('k3').textContent=fmt(Math.round(ap()/10*10)/10);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Três medidas juntas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Três medidas juntas</h1></header>
+<main>
+<div class="card"><h2>Média ponderada com pesos 1 ÷ margem²</h2><p class="muted" style="margin-top:0">Mude a altura de Alfa do Centauro no meridiano, as margens e o valor do polo (arrastando ou com − e +), e escolha se o Sol entra na conta. As barras mostram cada medida e o resultado combinado.</p>
+<div id="chs" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Altura de Alfa do Centauro</b><input type="range"><span></span></div><div class="sl" id="sm"><b>Margem de Alfa do Centauro</b><input type="range"><span></span></div><div class="sl" id="sp"><b>Polo (balestilha)</b><input type="range"><span></span></div><div class="sl" id="sq"><b>Margem do polo</b><input type="range"><span></span></div><div class="kpi"><div>Alfa do Centauro dá<b id="k1"></b></div><div>Pesos (polo, Alfa, Sol)<b id="k2"></b></div><div class="o">Resultado<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Junte as medidas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let sol=0;const CS=chips('chs',['Sem o Sol','Com o Sol (10,4 ± 0,5)'],0,i=>{sol=i;draw();});
+const SH=SL('sh',35,45,0.1,41,()=>draw(),v=>fmt(v)+'°'),SM=SL('sm',0.1,1.5,0.1,0.6,()=>draw(),v=>'± '+fmt(v)+'°'),SP=SL('sp',9,12,0.1,10.5,()=>draw(),v=>fmt(v)+'° S'),SQ=SL('sq',0.2,2,0.1,1,()=>draw(),v=>'± '+fmt(v)+'°');
+const vA=()=>SH.get()-29.17;
+const comb=()=>{const it=[[SP.get(),SQ.get()],[vA(),SM.get()]];if(sol)it.push([10.4,0.5]);let sw=0,sx=0;for(const [v,m] of it){const w=1/(m*m);sw+=w;sx+=w*v;}return[sx/sw,1/Math.sqrt(sw)];};
+let viu=false;
+MIS.def(()=>[
+ ['Refaça a conta do Téo: Alfa do Centauro a <b>39,8°</b>, margem <b>± 0,3°</b>; polo <b>10,5° ± 1°</b>; sem o Sol.',()=>Math.abs(SH.get()-39.8)<0.05&&Math.abs(SM.get()-0.3)<0.05&&Math.abs(SP.get()-10.5)<0.05&&Math.abs(SQ.get()-1)<0.05&&!sol,()=>'Resultado: '+r1(comb()[0])+'° S ± '+r1(comb()[1])+'°. O polo quase não pesa: 1 contra 11.',()=>{const f=[];if(Math.abs(SH.get()-39.8)>=0.05)f.push('a altura de Alfa');if(Math.abs(SM.get()-0.3)>=0.05)f.push('a margem de Alfa');if(Math.abs(SP.get()-10.5)>=0.05||Math.abs(SQ.get()-1)>=0.05)f.push('o polo');if(sol)f.push('tirar o Sol');return 'Falta ajustar: '+f.join(', ')+'.';}],
+ ['Agora inclua o <b>Sol</b> e compare.',()=>sol==1,()=>'Com o Sol: '+r2(comb()[0])+'° ± '+r2(comb()[1])+'°. A margem encolhe, mas o Sol pode trazer o erro sistemático da data.',()=>'Toque em "Com o Sol".'],
+ ['Faça a medida do <b>polo pesar mais</b> que a de Alfa do Centauro.',()=>SQ.get()<SM.get(),'Margem menor, peso maior: agora o resultado fica perto do valor do polo.',()=>'Margens: polo ± '+fmt(SQ.get())+'°, Alfa ± '+fmt(SM.get())+'°.']]);
+function draw(){const [c,mc]=comb();let g=RC(0,0,340,230,'#F8FAFC','rx="10"');
+ const X=v=>20+(v-8.5)/4*300;g+=LN(20,200,320,200,NAVY,1);for(let v=9;v<=12;v++)g+=LN(X(v),196,X(v),204,NAVY,1)+TX(X(v),218,v+'° S',{fs:10,c:NAVY});
+ const it=[['Polo',SP.get(),SQ.get(),BLUE,''],['Alfa do Centauro',vA(),SM.get(),VERDE,''],['Sol (dia 2)',10.4,0.5,'#D9A21B',sol?'':'4 3'],['Resultado',c,mc,ORANGE,'']];
+ it.forEach(([n,v,m,col,ds],i)=>{const y=30+i*42;g+=TX(20,y-8,n+': '+r1(v)+' ± '+r1(m),{fs:10,a:'start',c:col})+LN(X(clamp(v-m,8.5,12.5)),y+4,X(clamp(v+m,8.5,12.5)),y+4,col,8,ds)+CIR(X(clamp(v,8.5,12.5)),y+4,5,'#fff','stroke="'+col+'" stroke-width="2"');});
+ $('fig').innerHTML=SVG(340,230,g);
+ const p=[1/SQ.get()**2,1/SM.get()**2];$('k1').textContent=latS(-vA());$('k2').textContent=r1(p[0])+' · '+r1(p[1])+(sol?' · 4':'');$('k3').textContent=r1(c)+'° S ± '+r1(mc)+'°';MIS.ver('m');}
+const latS=v=>r1(Math.abs(v))+'° '+(v>0?'N':'S');
+draw();
+})();
+</script>
+</body>
+</html>

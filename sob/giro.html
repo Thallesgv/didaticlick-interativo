@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O céu gira · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O céu gira</h1></header>
+<main>
+<div class="card"><h2>O céu do lado sul</h2><p class="muted" style="margin-top:0">Mude a hora, o dia do ano e a latitude de quem olha (arrastando ou com − e +). O Cruzeiro e os Ponteiros giram em volta do polo; a linha pontilhada é o caminho da estrela do pé em 24 horas.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Hora</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Dia do ano</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Latitude</b><input type="range"><span></span></div><div class="kpi"><div>Giro desde as 19h<b id="k1"></b></div><div>Altura de Acrux<b id="k2"></b></div><div class="o">O Cruzeiro<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o céu girar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EST={Acrux:[12.443,-63.10,0.8],Gacrux:[12.52,-57.11,1.6],Mimosa:[12.795,-59.69,1.3],Delta:[12.252,-58.75,2.8],Rigil:[14.66,-60.83,0],Hadar:[14.063,-60.37,0.6]};
+const LST=(hora,n)=>(((14.62+(hora-19)*1.00274+(n-198)*0.06571)%24)+24)%24;
+function AA(ra,de,lat,lst){const ha=(lst-ra)*15*RAD,la=lat*RAD,d=de*RAD;const alt=Math.asin(Math.sin(la)*Math.sin(d)+Math.cos(la)*Math.cos(d)*Math.cos(ha));
+ const az=Math.atan2(-Math.sin(ha),Math.tan(d)*Math.cos(la)-Math.sin(la)*Math.cos(ha));return[alt*DEG,((az*DEG)%360+360)%360];}
+const SEP=(a1,z1,a2,z2)=>{const p=a1*RAD,q=a2*RAD;return Math.acos(clamp(Math.sin(p)*Math.sin(q)+Math.cos(p)*Math.cos(q)*Math.cos((z1-z2)*RAD),-1,1))*DEG;};
+const ESTR=(x,y,m)=>CIR(x,y,Math.max(1.6,(3.2-m)*1.3+1.4),'#FFF4D6');
+const hh=h=>{h=((h%24)+24)%24;const m=Math.round(h*60);return Math.floor(m/60)%24+'h'+String(m%60).padStart(2,'0');};
+const latS=v=>Math.abs(v)<0.05?'0°':(r1(Math.abs(v))+'° '+(v>0?'N':'S'));
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};
+const SH=SL('sh',18,30,0.25,19,()=>draw(),hh),SN=SL('sn',1,365,1,198,()=>draw(),data),SLA=SL('sl',-60,20,0.1,-10.7,()=>draw(),latS);
+const circ=()=>-SLA.get()>26.9,nunca=()=>SLA.get()>26.9;
+MIS.def(()=>[
+ ['Faça o céu girar <b>45°</b> a partir das 19h (no mesmo dia).',()=>Math.abs((SH.get()-19)*15.04-45)<2,'3 horas × 15° = 45°. O Cruzeiro deitou mais e desceu.',()=>'Giro atual: '+Math.round((SH.get()-19)*15.04)+'°.'],
+ ['No Jalapão (latitude 10,7° S), faça a estrela do pé do Cruzeiro <b>se pôr</b>.',()=>Math.abs(SLA.get()+10.7)<0.05&&AA(EST.Acrux[0],EST.Acrux[1],SLA.get(),LST(SH.get(),SN.get()))[0]<0,'Acrux abaixo do horizonte: a 10,7° S, o Cruzeiro se põe todas as noites.',()=>Math.abs(SLA.get()+10.7)>=0.05?'Volte a latitude para 10,7° S.':'Acrux ainda está a '+r1(AA(EST.Acrux[0],EST.Acrux[1],SLA.get(),LST(SH.get(),SN.get()))[0])+'°. Avance a hora.'],
+ ['Ache uma latitude em que o Cruzeiro <b>nunca se põe</b>.',()=>circ(),()=>'A '+latS(SLA.get())+', o polo fica a '+r1(-SLA.get())+'°, mais que os 26,9° entre Acrux e o polo: circumpolar.',()=>'Agora o polo está a '+r1(Math.max(0,-SLA.get()))+'° de altura. A estrela do pé está a 26,9° dele.']]);
+function draw(){const la=SLA.get(),lst=LST(SH.get(),SN.get());let g=RC(0,0,340,280,NOITE,'rx="10"');
+ const k=4,Y0=250,X=(al,az)=>170+(az-180)*Math.cos(al*RAD)*k;
+ if(la<0){const yp=Y0+la*k;g+=CIR(170,yp,4,ORANGE)+TX(178,yp+4,'polo',{fs:9,a:'start',c:ORANGE});}
+ let tr=[];for(let t=0;t<=24;t+=0.25){const [al,az]=AA(EST.Acrux[0],EST.Acrux[1],la,LST(SH.get()+t,SN.get()));if(al>-2&&Math.abs(az-180)<60)tr.push([X(al,az),Y0-al*k]);else if(tr.length>1){g+=PL(tr,'#5A6E9A',1,'2 3');tr=[];}else tr=[];}
+ if(tr.length>1)g+=PL(tr,'#5A6E9A',1,'2 3');
+ const pos={};for(const n in EST){const [al,az]=AA(EST[n][0],EST[n][1],la,lst);pos[n]=[X(al,az),Y0-al*k,al,az];}
+ const L=(a,b)=>pos[a][2]>0&&pos[b][2]>0?LN(pos[a][0],pos[a][1],pos[b][0],pos[b][1],'#5A6E9A',1):'';g+=L('Gacrux','Acrux')+L('Mimosa','Delta');
+ for(const n in EST){const p=pos[n];if(p[2]>0&&p[0]>5&&p[0]<335&&p[1]>5)g+=ESTR(p[0],p[1],EST[n][2]);}
+ g+=RC(0,Y0,340,30,'#2B2A20','rx="0"')+TX(170,Y0+20,'S',{fs:11,c:AZC})+TX(30,Y0+20,'SE',{fs:10,c:AZC})+TX(310,Y0+20,'SO',{fs:10,c:AZC})+TX(330,20,hh(SH.get())+' · '+data(SN.get()),{fs:11,a:'end',c:AZC});
+ $('fig').innerHTML=SVG(340,280,g);
+ const aA=AA(EST.Acrux[0],EST.Acrux[1],la,lst)[0];
+ $('k1').textContent=Math.round((SH.get()-19)*15.04)+'°';$('k2').textContent=r1(aA)+'°';$('k3').textContent=circ()?'nunca se põe':nunca()?'nunca aparece':(aA>0?'acima do horizonte':'abaixo do horizonte');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

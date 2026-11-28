@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O polo e a latitude · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O polo e a latitude</h1></header>
+<main>
+<div class="card"><h2>Altura do polo = latitude</h2><p class="muted" style="margin-top:0">Mude a latitude de quem observa e o ano (arrastando ou com − e +). À esquerda, a Terra; à direita, o céu de quem está lá, do horizonte norte ao sul, com os dois polos celestes, a Estrela Polar e o círculo de Acrux.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Latitude</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Ano (precessão)</b><input type="range"><span></span></div><div class="kpi"><div>Polo visível<b id="k1"></b></div><div>Estrela Polar<b id="k2"></b></div><div class="o">Acrux até o polo<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude de lugar na Terra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const latS=v=>Math.abs(v)<0.05?'0°':(r1(Math.abs(v))+'° '+(v>0?'N':'S'));
+const SLA=SL('sl',-90,90,0.1,20,()=>draw(),latS),SA=SL('sa',-2974,4026,2,2026,()=>draw(),v=>v<0?(-v)+' a.C.':String(v));
+const dA=()=>26.9+(2026-SA.get())*0.00553,pol=()=>SLA.get()+0.74;
+MIS.def(()=>[
+ ['Leve o observador para a latitude do Téo pelas estrelas: <b>10,5° S</b>.',()=>Math.abs(SLA.get()+10.5)<0.05,'O polo sul celeste fica a 10,5° do horizonte, e a Estrela Polar, uns 10° abaixo do chão.',()=>'Agora: '+latS(SLA.get())+'.'],
+ ['Vindo do norte, ache a <b>primeira latitude em que a Estrela Polar some</b>.',()=>Math.abs(SLA.get()+0.8)<0.05,'A 0,8° S, a Polar fica 0,06° abaixo do horizonte: ela está a 0,74° do polo norte celeste. Na prática, por causa da névoa, ela some antes, ainda no hemisfério norte.',()=>pol()>0?'A Polar ainda aparece, a '+r1(pol())+'° de altura. Desça mais.':'Ela já sumiu: suba um pouco a latitude para achar o limite.'],
+ ['Volte ao ano de <b>1500</b>, o da carta de Mestre João. Qual era a distância de Acrux ao polo?',()=>Math.abs(SA.get()-1500)<=10,()=>'≈ '+r1(dA())+'°: quase 30°. Hoje são 26,9°.',()=>'Ano atual no simulador: '+SA.get()+'.']]);
+function draw(){const f=SLA.get();let g=RC(0,0,340,260,'#F8FAFC','rx="10"');
+ const cx=80,cy=120,R=60,a=f*RAD,ox=cx+R*Math.cos(a),oy=cy-R*Math.sin(a);
+ g+=CIR(cx,cy,R,'#E8F0FB','stroke="'+NAVY+'" stroke-width="1.5"')+LN(cx,cy-R-25,cx,cy+R+25,NAVY,1.5,'5 3')+TX(cx,cy-R-30,'N',{fs:10,c:NAVY})+TX(cx,cy+R+38,'S',{fs:10,c:NAVY})+LN(cx-R,cy,cx+R,cy,GRAY,1);
+ const tx=-Math.sin(a),ty=-Math.cos(a);g+=LN(cx,cy,ox,oy,ORANGE,1.5)+LN(ox-tx*40,oy-ty*40,ox+tx*40,oy+ty*40,VERDE,3)+CIR(ox,oy,5,MAD);
+ g+=TX(cx,236,'a Terra (latitude '+latS(f)+')',{fs:10,c:NAVY});
+ const X0=190,Y0=200,W=140,kk=W/90,P=(alt,lado)=>[X0+W/2+(lado<0?-1:1)*(1-alt/90)*W/2*Math.cos(alt*RAD)/Math.max(0.0001,Math.cos(alt*RAD)),Y0-Math.sin(alt*RAD)*W/2];
+ g+=`<path d="M${X0},${Y0} A${W/2},${W/2} 0 0,1 ${X0+W},${Y0}" fill="${CEU}"/>`+LN(X0-6,Y0,X0+W+6,Y0,VERDE,3)+TX(X0-4,Y0+16,'N',{fs:10,c:NAVY})+TX(X0+W+4,Y0+16,'S',{fs:10,c:NAVY});
+ const pt=(alt,lado)=>{const t=(lado<0?180-alt:alt)*RAD;return[X0+W/2+W/2*Math.cos(t),Y0-W/2*Math.sin(t)];};
+ const pn=pt(f,-1),ps=pt(-f,1);
+ if(f>=0){g+=LN(X0+W/2,Y0,pn[0],pn[1],NAVY,1.5,'4 3')+CIR(pn[0],pn[1],5,ORANGE)+TX(pn[0]-6,pn[1]-8,'polo norte',{fs:9,a:'end',c:ORANGE});}
+ if(f<=0){g+=LN(X0+W/2,Y0,ps[0],ps[1],NAVY,1.5,'4 3')+CIR(ps[0],ps[1],5,ORANGE)+TX(ps[0]+4,ps[1]-10,'polo sul',{fs:9,a:'end',c:ORANGE});}
+ if(pol()>0){const q=pt(pol(),-1);g+=CIR(q[0]+3,q[1]-3,3.5,'#E0A800')+TX(q[0]+8,q[1]-4,'Polar',{fs:9,a:'start',c:'#B8860B'});}
+ if(f<0){const d=dA(),hi=-f+d,lo=-f-d;for(const [al,t] of [[hi,'Acrux (máx.)'],[lo,'Acrux (mín.)']]){if(al>0&&al<=90){const q=pt(al,1);g+=CIR(q[0],q[1],3.5,'#8C9BC0')+TX(q[0]-6,q[1]+3,t,{fs:8,a:'end',c:GRAY,w:500});}}}
+ g+=TX(X0+W/2,236,'o céu de quem está lá',{fs:10,c:NAVY});
+ $('fig').innerHTML=SVG(340,260,g);
+ $('k1').textContent=Math.abs(f)<0.05?'os dois no horizonte':(f<0?'polo sul a ':'polo norte a ')+r1(Math.abs(f))+'°';$('k2').textContent=pol()>0?'a '+r1(pol())+'° de altura':'não aparece';$('k3').textContent=r1(dA())+'°'+(f<0&&-f>dA()?' · circumpolar':'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
