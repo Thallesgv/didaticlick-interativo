@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mais ou menos quanto? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Mais ou menos quanto?</h1></header>
+<main>
+<div class="card"><h2>Contar mais, errar menos</h2><p class="muted" style="margin-top:0">Escolha quantos átomos de carbono-14 a máquina conta. A incerteza é de cerca de √N, ou 1 ÷ √N em proporção, e vira anos pela vida média (8.267 anos). Em cima, a data do chão B com sua faixa; embaixo, as três amostras.</p>
+<div id="cc" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Átomos contados</b><input type="range"><span></span></div>
+<div class="kpi"><div>Incerteza da contagem<b id="ki"></b></div><div class="o">Margem da data<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a contagem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MV=5730,VM=MV/Math.LN2,fr=t=>Math.pow(0.5,t/MV),idade=f=>MV*Math.log10(f)/Math.log10(0.5);
+const mil=v=>fmt(Math.round(v));
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let cf=0;chips('cc',['68% (± 1 margem)','95% (± 2 margens)'],0,i=>{cf=i;draw();});
+const NK=SL('sn',1,100,1,5,()=>draw(),v=>v+' mil');
+const sg=()=>VM/Math.sqrt(NK.get()*1000),mg=()=>sg()*(cf?2:1);
+const AM=[['chão B',4250],['chão D',4550],['base',5300]];
+const sep=()=>AM[0][1]+mg()<AM[1][1]-mg();
+MIS.def(()=>[
+ ['Com <b>68%</b> de confiança, conte átomos suficientes para a margem ficar em <b>± 50 anos ou menos</b>.',()=>cf==0&&mg()<=50,'Com cerca de 28 mil átomos: 8.267 ÷ √28.000 ≈ 49 anos. Para ±50, é preciso √N ≥ 165.',()=>cf!=0?'Escolha 68%.':'Margem agora: ± '+Math.round(mg())+' anos.'],
+ ['Com <b>10 mil</b> átomos contados, qual a margem com <b>95%</b> de confiança?',()=>cf==1&&NK.get()==10,'√10.000 = 100, erro de 1% → ±83 anos; com 95%, o dobro: ±165 anos.',()=>NK.get()!=10?'Ponha 10 mil átomos.':'Escolha 95%.'],
+ ['Com <b>95%</b>, ache a menor contagem em que as faixas do <b>chão B</b> e do <b>chão D</b> deixam de se encostar.',()=>cf==1&&sep()&&NK.get()==13,'13 mil átomos: margem ±145, faixas 4.105–4.395 e 4.405–4.695. Com 12 mil, ainda se encostam. Separar as datas confirma a ordem das camadas.',()=>cf!=1?'Escolha 95%.':sep()?'Já estão separadas. Tente uma contagem menor.':'Ainda se encostam: conte mais átomos.'],
+ ['O laboratório contou cerca de <b>40 mil</b> átomos do chão B. Que margem ele escreveu no relatório (68%)?',()=>cf==0&&NK.get()==40,'√40.000 = 200, erro de 0,5% → 8.267 × 0,005 ≈ 41 anos: 4.250 ± 40 AP.',()=>NK.get()!=40?'Ponha 40 mil átomos.':'Escolha 68%.']]);
+function draw(){const s=mg(),n=NK.get()*1000;let g=RC(0,0,340,290,'#F8FAFC','rx="10"');
+ const mu=4250,x0=20,W=300,X=t=>x0+(t-(mu-500))/1000*W,yb=120,Hh=90;
+ const gs=sg(),gau=t=>Math.exp(-0.5*Math.pow((t-mu)/gs,2));
+ const band=[[X(mu-s),yb]];for(let t=mu-s;t<=mu+s;t+=2)band.push([X(t),yb-gau(t)*Hh]);band.push([X(mu+s),yb]);
+ g+=PG(band,'#FBB57A');const cur=[];for(let t=mu-500;t<=mu+500;t+=2)cur.push([X(t),yb-gau(t)*Hh]);g+=PL(cur,ORANGE,2.5);
+ g+=LN(x0,yb,x0+W,yb,NAVY,1.5);for(let t=3800;t<=4700;t+=100)g+=LN(X(t),yb-3,X(t),yb+3,NAVY,1)+(t%200==0?TX(X(t),yb+15,fmt(t),{fs:8,c:GRAY,w:500}):'');
+ g+=TX(170,22,'chão B: 4.250 ± '+Math.round(s)+' AP ('+(cf?'95%':'68%')+')',{fs:12,c:NAVY});
+ const y1=150,X2=t=>320-(t-4000)/1500*300;g+=LN(20,270,320,270,NAVY,1.5);
+ for(let t=4000;t<=5500;t+=500)g+=LN(X2(t),267,X2(t),273,NAVY,1)+TX(X2(t),284,fmt(t),{fs:8,c:GRAY,w:500});
+ AM.forEach((a,i)=>{const y=y1+12+i*36;g+=RC(X2(a[1]+s),y-6,X2(a[1]-s)-X2(a[1]+s),12,i<2&&!sep()?'#FECACA':'#FBB57A','rx="3"')+CIR(X2(a[1]),y,4,ORANGE)+TX(X2(a[1]),y-10,a[0],{fs:9,c:NAVY});});
+ $('fig').innerHTML=SVG(340,290,g);$('ki').textContent='√'+fmt(n)+' ≈ '+fmt(Math.round(Math.sqrt(n)))+' ('+(100/Math.sqrt(n)).toFixed(2).replace('.',',')+'%)';
+ $('km').textContent='± '+Math.round(s)+' anos';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

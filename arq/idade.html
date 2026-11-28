@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O relógio do carvão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O relógio do carvão</h1></header>
+<main>
+<div class="card"><h2>Da fração à idade</h2><p class="muted" style="margin-top:0">Escolha a amostra: a linha azul é a fração de carbono-14 medida pelo laboratório. Arraste a idade (no controle ou com o dedo no gráfico) até o ponto da curva encontrar a linha azul. A parede ao lado mostra de onde veio o carvão.</p>
+<div id="ca" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Idade (anos AP)</b><input type="range"><span></span></div>
+<div class="kpi"><div>f na idade escolhida<b id="kf"></b></div><div class="o">f medida<b id="km"></b></div></div>
+<div class="kpi"><div>Pela fórmula: 5.730 × log f ÷ log 0,5<b id="kc" style="font-size:15px"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha a amostra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MV=5730,VM=MV/Math.LN2,fr=t=>Math.pow(0.5,t/MV),idade=f=>MV*Math.log10(f)/Math.log10(0.5);
+const mil=v=>fmt(Math.round(v));
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const AMO=[['Base',0.5267,195,'base do morro'],['Chão B',0.5980,18,'chão 1 (cabana)'],['Chão D',0.5767,60,'chão 2'],['Mistério',0.30,212,'terra amarela, abaixo do morro']];let am=0;
+chips('ca',AMO.map(a=>a[0]),0,i=>{am=i;draw();});
+const TT=SL('st',0,12000,10,3000,()=>draw(),v=>mil(v)+' AP');
+const x0=36,y0=230,W=210,Hh=200,X=t=>x0+t/12000*W,Y=v=>y0-v*Hh;
+toque('fig',(x)=>{if(x>x0+W+10)return;TT.set(Math.max(0,Math.min(12000,Math.round((x-x0)/W*1200)*10)));draw();});
+const certo=()=>Math.abs(TT.get()-idade(AMO[am][1]))<=10;
+const dica=()=>{const f=fr(TT.get()),m=AMO[am][1];return 'Na idade '+mil(TT.get())+', f = '+f.toFixed(4).replace('.',',')+'. '+(f>m?'Ainda acima da medida: aumente a idade.':'Abaixo da medida: diminua a idade.');};
+MIS.def(()=>[
+ ['Escolha a <b>Base</b> e ache a idade do começo do morro.',()=>am==0&&certo(),'Cerca de 5.300 AP (3351 a.C.): o começo da construção.',()=>am!=0?'Toque em "Base".':dica()],
+ ['Agora o <b>Chão B</b>, o último chão do morro.',()=>am==1&&certo(),'4.250 AP: o fim da construção. 5.300 − 4.250 = 1.050 anos, como previa a hipótese de 2 mm/ano do Livro 3.',()=>am!=1?'Toque em "Chão B".':dica()],
+ ['Agora o <b>Chão D</b>. A hipótese do Livro 3 dizia que ele teria entre 4.650 e 4.450 AP. Confere?',()=>am==2&&certo(),'Cerca de 4.550 AP: bem no meio do intervalo previsto. Régua e átomo concordam.',()=>am!=2?'Toque em "Chão D".':dica()],
+ ['A amostra <b>Mistério</b> veio da terra amarela, abaixo da base. Que idade ela tem?',()=>am==3&&certo(),'Cerca de 9.950 AP: quase 4.650 anos antes do morro. O chão já existia quando os construtores chegaram.',()=>am!=3?'Toque em "Mistério".':dica()]]);
+function draw(){const t=TT.get(),a=AMO[am],m=a[1],v=fr(t);let g=RC(0,0,340,270,'#F8FAFC','rx="10"');
+ for(let k=0;k<=12;k+=3)g+=LN(X(k*1000),y0,X(k*1000),y0-Hh,'#EEF1F6',1)+TX(X(k*1000),y0+15,k?k+' mil':'0',{fs:9,c:GRAY,w:500});
+ [0,0.25,0.5,0.75,1].forEach(q=>g+=LN(x0,Y(q),x0+W,Y(q),'#EEF1F6',1)+TX(x0-5,Y(q)+3,fmt(q),{fs:9,a:'end',c:GRAY,w:500}));
+ g+=LN(x0,y0,x0+W,y0,NAVY,1.5)+LN(x0,y0,x0,y0-Hh,NAVY,1.5)+TX(x0+W/2,y0+32,'idade (anos AP)',{fs:10,c:NAVY});
+ const pts=[];for(let tt=0;tt<=12000;tt+=150)pts.push([X(tt),Y(fr(tt))]);g+=PL(pts,ORANGE,3);
+ g+=LN(x0,Y(m),x0+W,Y(m),BLUE,2)+TX(x0+W,Y(m)-5,'medida '+m.toFixed(4).replace('.',','),{fs:9,a:'end',c:BLUE});
+ g+=LN(X(t),y0,X(t),Y(v),GRAY,1,'3 3');const ok=certo();g+=CIR(X(t),Y(v),7,ok?'#15803D':ORANGE,'stroke="#fff" stroke-width="2"');
+ // parede da trincheira
+ const px=268,pw=56,K=1.0,top=20;const CAM=[[0,10,'#6E5A3C'],[10,25,'#4A3222'],[25,45,'#FBF4EA'],[45,50,'#E8D9A8'],[50,70,'#4A3222'],[70,200,'#D9D4CB'],[200,225,'#E9C46A']];
+ CAM.forEach(c=>g+=RC(px,top+c[0]*K,pw,(c[1]-c[0])*K,c[2],'stroke="#7E4E2E" stroke-width=".5"'));
+ g+=TX(px+pw/2,top-6,'parede',{fs:9,c:NAVY});g+=CIR(px+pw/2,top+a[2]*K,6,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=TX(px+pw/2,top+238,a[3].split(',')[0],{fs:8,c:NAVY,w:600});
+ $('fig').innerHTML=SVG(340,270,g);$('kf').textContent=v.toFixed(4).replace('.',',');$('km').textContent=m.toFixed(4).replace('.',',');
+ $('kc').textContent=mil(idade(m))+' AP'+(ok?' ✔':'');$('kc').style.visibility=ok?'visible':'hidden';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
