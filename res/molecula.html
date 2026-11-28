@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte a molécula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Monte a molécula</h1></header>
+<main>
+<div class="card"><h2>Átomos, contagem e massa</h2><p class="muted" style="margin-top:0">Escolha uma molécula. Cada bolinha é um átomo; as cores são os elementos. A tabela conta os átomos e soma as massas (H = 1, Li = 7, C = 12, N = 14, O = 16, Na = 23, Cl = 35,5, Ca = 40).</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="tb"></div>
+<div class="kpi"><div>Átomos<b id="k1"></b></div><div class="o">Massa da molécula<b id="k2"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha uma molécula.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MA={H:1,Li:7,C:12,N:14,O:16,Na:23,Cl:35.5,Ca:40};
+const CORA={O:'#E03B33',C:'#3F3F46',H:'#F3F4F6',N:'#5B7FD6',Li:'#B57EDC',Na:'#8E6BC4',Cl:'#3DAA5C',Ca:'#9CA3AF'};
+const massa=f=>Object.entries(f).reduce((s,[e,n])=>s+MA[e]*n,0);
+const ATOMO=(x,y,e,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${CORA[e]}" stroke="#0E2354" stroke-width="1.2"/>`+TX(x,y+r*0.35,e,{fs:Math.max(8,r*0.8),c:e=='H'?'#0E2354':'#fff'});
+const ML=[['O₂',{O:2}],['N₂',{N:2}],['H₂O',{H:2,O:1}],['CO₂',{C:1,O:2}],['CH₄',{C:1,H:4}],['C₃H₈',{C:3,H:8}],['C₆H₁₂O₆',{C:6,H:12,O:6}],['LiOH',{Li:1,O:1,H:1}],['Ca(OH)₂',{Ca:1,O:2,H:2}],['NaClO₃',{Na:1,Cl:1,O:3}]];
+let mi=0;chips('ch',ML.map(m=>m[0]),0,i=>{mi=i;draw();});
+MIS.def(()=>[
+ ['Ache a molécula de <b>3 átomos</b> cuja massa é <b>44 u</b>: o gás que ameaça os 33.',()=>mi==3,'CO₂: 12 + 2 × 16 = 44 u. Um carbono e dois oxigênios.',()=>ML[mi][0]+' tem '+Object.values(ML[mi][1]).reduce((a,b)=>a+b)+' átomos e '+fmt(massa(ML[mi][1]))+' u.'],
+ ['Qual é a massa da <b>glicose</b>, o açúcar que o corpo queima?',()=>mi==6,'C₆H₁₂O₆: 72 + 12 + 96 = 180 u, com 24 átomos.',()=>'Procure a fórmula com C, H e O.'],
+ ['Dos dois pós que limpam o ar, escolha o que tem a molécula de <b>74 u</b>.',()=>mi==8,'Ca(OH)₂, a cal: 40 + 2 × 17 = 74 u. O LiOH tem só 24 u: por isso naves e palomas preferem o lítio.',()=>'Os pós são o LiOH e o Ca(OH)₂.']]);
+function draw(){const f=ML[mi][1];const at=[];Object.entries(f).forEach(([e,n])=>{for(let i=0;i<n;i++)at.push(e);});
+ const pes=at.filter(e=>e!='H'),hs=at.filter(e=>e=='H');let g='';const cx=170,cy=110;
+ const n=pes.length,duas=n>5,m=duas?Math.ceil(n/2):n,sp=Math.min(48,250/Math.max(1,m-1||1));
+ const pos=pes.map((e,i)=>duas?(i<m?[cx+(i-(m-1)/2)*sp,cy-26]:[cx+((n-1-i)-(m-1)/2)*sp,cy+26]):[cx+(i-(n-1)/2)*sp,cy]);
+ let hosts=pes.map((e,i)=>e=='C'?i:-1).filter(i=>i>=0);if(!hosts.length)hosts=pes.map((e,i)=>e=='O'?i:-1).filter(i=>i>=0);if(!hosts.length)hosts=[0];
+ const slots=[];if(duas){hosts.forEach(h=>{const o=h<m?-90:90;slots.push([h,o-40],[h,o+40]);});}
+ else if(n==1&&pes[0]=='O'){slots.push([0,140],[0,40]);}
+ else{[-90,90].forEach(a=>hosts.forEach(h=>slots.push([h,a])));slots.push([hosts[0],180],[hosts[hosts.length-1],0]);}
+ const hostOf=[];const ph=hs.map((e,i)=>{const [h,ang]=slots[i%slots.length];hostOf.push(h);const b=pos[h];return [b[0]+30*Math.cos(ang*RAD),b[1]+30*Math.sin(ang*RAD)];});
+ for(let i=1;i<pos.length;i++)g+=LN(pos[i-1][0],pos[i-1][1],pos[i][0],pos[i][1],NAVY,3);
+ if(duas&&n>2)g+=LN(pos[0][0],pos[0][1],pos[n-1][0],pos[n-1][1],NAVY,3);
+ ph.forEach((p,i)=>{const b=pos[hostOf[i]];g+=LN(b[0],b[1],p[0],p[1],NAVY,2.5);});
+ ph.forEach(p=>g+=ATOMO(p[0],p[1],'H',10));pos.forEach((p,i)=>g+=ATOMO(p[0],p[1],pes[i],pes[i]=='Ca'||pes[i]=='Na'?19:16));
+ g+=TX(cx,200,ML[mi][0],{fs:20});$('fig').innerHTML=SVG(340,215,g);
+ const lin=Object.entries(f).map(([e,n])=>`<tr><td>${e}</td><td>${n}</td><td>${fmt(MA[e])}</td><td>${fmt(n*MA[e])}</td></tr>`).join('');
+ $('tb').innerHTML=`<table style="width:100%;border-collapse:collapse;font-size:14px;text-align:center"><tr style="background:#0E2354;color:#fff"><td>elemento</td><td>átomos</td><td>massa (u)</td><td>soma</td></tr>${lin}</table>`;
+ $('k1').textContent=at.length;$('k2').textContent=fmt(massa(f))+' u';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

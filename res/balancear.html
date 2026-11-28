@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança dos átomos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A balança dos átomos</h1></header>
+<main>
+<div class="card"><h2>Mude os coeficientes</h2><p class="muted" style="margin-top:0">Escolha uma equação e use os botões − e + na frente de cada molécula. As barras contam os átomos de cada elemento antes e depois da seta. A balança só fica reta quando tudo bate.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div id="eq" style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font-weight:700;font-size:17px;margin:8px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Balanceie.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MA={H:1,Li:7,C:12,N:14,O:16,Na:23,Cl:35.5,Ca:40};
+const CORA={O:'#E03B33',C:'#3F3F46',H:'#F3F4F6',N:'#5B7FD6',Li:'#B57EDC',Na:'#8E6BC4',Cl:'#3DAA5C',Ca:'#9CA3AF'};
+const massa=f=>Object.entries(f).reduce((s,[e,n])=>s+MA[e]*n,0);
+const ATOMO=(x,y,e,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${CORA[e]}" stroke="#0E2354" stroke-width="1.2"/>`+TX(x,y+r*0.35,e,{fs:Math.max(8,r*0.8),c:e=='H'?'#0E2354':'#fff'});
+const EQ=[['água',[['H₂',{H:2}],['O₂',{O:2}]],[['H₂O',{H:2,O:1}]]],
+ ['metano',[['CH₄',{C:1,H:4}],['O₂',{O:2}]],[['CO₂',{C:1,O:2}],['H₂O',{H:2,O:1}]]],
+ ['propano',[['C₃H₈',{C:3,H:8}],['O₂',{O:2}]],[['CO₂',{C:1,O:2}],['H₂O',{H:2,O:1}]]],
+ ['glicose',[['C₆H₁₂O₆',{C:6,H:12,O:6}],['O₂',{O:2}]],[['CO₂',{C:1,O:2}],['H₂O',{H:2,O:1}]]],
+ ['lavador',[['LiOH',{Li:1,O:1,H:1}],['CO₂',{C:1,O:2}]],[['Li₂CO₃',{Li:2,C:1,O:3}],['H₂O',{H:2,O:1}]]],
+ ['vela',[['NaClO₃',{Na:1,Cl:1,O:3}]],[['NaCl',{Na:1,Cl:1}],['O₂',{O:2}]]]];
+let ei=0,co=[];const feitas=new Set();
+chips('ch',EQ.map(e=>e[0]),0,i=>{ei=i;reset();});
+function reset(){co=EQ[ei][1].concat(EQ[ei][2]).map(()=>1);monta();draw();}
+const conta=(lado,off)=>{const t={};lado.forEach((m,i)=>Object.entries(m[1]).forEach(([e,n])=>t[e]=(t[e]||0)+n*co[off+i]));return t;};
+const ok=()=>{const a=conta(EQ[ei][1],0),b=conta(EQ[ei][2],EQ[ei][1].length);return Object.keys({...a,...b}).every(e=>a[e]==b[e]);};
+function monta(){const E=EQ[ei],L=E[1].concat(E[2]);let h='';L.forEach((m,i)=>{if(i==E[1].length)h+='<span style="font-size:22px">→</span>';else if(i)h+='<span>+</span>';
+ h+=`<span style="display:inline-flex;align-items:center;gap:3px;background:#F3F6FB;border-radius:8px;padding:3px 6px"><button class="alt" data-k="${i}" data-d="-1" style="padding:2px 8px">−</button><b id="c${i}" style="color:#F7821F;min-width:18px;text-align:center"></b><button class="alt" data-k="${i}" data-d="1" style="padding:2px 8px">+</button> ${m[0]}</span>`;});
+ $('eq').innerHTML=h;$('eq').querySelectorAll('button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;co[k]=clamp(co[k]+ +b.dataset.d,1,9);draw();});}
+MIS.def(()=>[
+ ['Balanceie a formação da <b>água</b>: H₂ + O₂ → H₂O.',()=>feitas.has(0),'2 H₂ + O₂ → 2 H₂O: 4 H e 2 O dos dois lados.',()=>'Escolha "água" e mexa nos coeficientes.'],
+ ['Balanceie a queima do <b>metano</b> e a do <b>propano</b>.',()=>feitas.has(1)&&feitas.has(2),'CH₄ + 2 O₂ → CO₂ + 2 H₂O e C₃H₈ + 5 O₂ → 3 CO₂ + 4 H₂O.',()=>(feitas.has(1)?'Metano feito. ':'')+(feitas.has(2)?'Propano feito.':'Falta '+(feitas.has(1)?'o propano.':'o metano.'))],
+ ['Balanceie a <b>glicose</b>, a respiração das células.',()=>feitas.has(3),'C₆H₁₂O₆ + 6 O₂ → 6 CO₂ + 6 H₂O. Cada O₂ vira um CO₂: quociente respiratório 1.',()=>'Comece pelo carbono: 6 C antes, quantos CO₂ depois?'],
+ ['Balanceie o <b>lavador</b> e a <b>vela</b>, as duas reações da paloma.',()=>feitas.has(4)&&feitas.has(5),'2 LiOH + CO₂ → Li₂CO₃ + H₂O e 2 NaClO₃ → 2 NaCl + 3 O₂.',()=>'Faltam '+[4,5].filter(k=>!feitas.has(k)).map(k=>EQ[k][0]).join(' e ')+'.']]);
+function draw(){const E=EQ[ei],nL=E[1].length;co.forEach((c,i)=>$('c'+i).textContent=c);
+ const a=conta(E[1],0),b=conta(E[2],nL),els=Object.keys({...a,...b});
+ const mA=E[1].reduce((s,m,i)=>s+massa(m[1])*co[i],0),mB=E[2].reduce((s,m,i)=>s+massa(m[1])*co[nL+i],0);const bal=ok();if(bal)feitas.add(ei);
+ const mx=Math.max(...els.map(e=>Math.max(a[e]||0,b[e]||0)));let g='';const k=90/mx;
+ els.forEach((e,j)=>{const y=20+j*26;g+=ATOMO(18,y+8,e,10);g+=RC(150-(a[e]||0)*k,y,(a[e]||0)*k,16,CORA[e]=='#F3F4F6'?'#CBD5E1':CORA[e])+TX(146-(a[e]||0)*k,y+12,a[e]||0,{fs:11,a:'end'});
+  g+=RC(190,y,(b[e]||0)*k,16,CORA[e]=='#F3F4F6'?'#CBD5E1':CORA[e])+TX(194+(b[e]||0)*k,y+12,b[e]||0,{fs:11,a:'start'})+(a[e]==b[e]?TX(170,y+12,'=',{fs:13,c:GREEN}):TX(170,y+12,'≠',{fs:13,c:VERM}));});
+ const yb=40+els.length*26,ang=bal?0:clamp((mB-mA)/Math.max(mA,mB)*25,-14,14);
+ g+=`<g transform="rotate(${ang.toFixed(1)} 170 ${yb})">`+LN(60,yb,280,yb,NAVY,4)+RC(40,yb-22,60,20,PEACH,'rx="4"')+TX(70,yb-8,fmt(mA)+' u',{fs:10})+RC(240,yb-22,60,20,PEACH,'rx="4"')+TX(270,yb-8,fmt(mB)+' u',{fs:10})+'</g>';
+ g+=PG([[170,yb],[158,yb+24],[182,yb+24]],NAVY)+TX(170,yb+44,bal?'Balanceada! A massa se conserva.':'Ainda não: conte os átomos.',{fs:12,c:bal?GREEN:VERM});
+ $('fig').innerHTML=SVG(340,yb+56,g);MIS.ver('m');}
+reset();
+})();
+</script>
+</body>
+</html>

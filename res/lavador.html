@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O lavador de ar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O lavador de ar</h1></header>
+<main>
+<div class="card"><h2>Quantos quilos de pó por dia?</h2><p class="muted" style="margin-top:0">A paloma começa a descer o pó no <b>18º dia</b>. Escolha o pó e a conta (teoria ou prática) e quantos quilos descem por dia. A reta cinza é o gás carbônico sem lavador; a preta, com ele.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sk"><b>Pó por dia</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><div class="fig" id="gr"></div>
+<div class="kpi"><div>CO₂ capturado<b id="k1"></b></div><div>CO₂ que sobra por dia<b id="k2"></b></div><div class="o">Limite de 0,5%<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o pó.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PO=[['LiOH · teoria',44/48],['LiOH · prática',0.5],['Ca(OH)₂ · teoria',44/74],['Ca(OH)₂ · prática',44/74*0.54]];let pi=1;chips('ch',PO.map(p=>p[0]),1,i=>{pi=i;draw();});
+const K=SL('sk',0,60,0.1,10,draw,v=>fmt(r1(v))+' kg');
+const cap=()=>K.get()*PO[pi][1]*1000/44*24/1000,liq=()=>9.6-cap(),c=t=>t<=18?0.04+0.024*t:Math.max(0,0.04+0.024*18+liq()*100/40000*(t-18));
+const lim=()=>{if(c(60)<0.5&&liq()<=0)return Infinity;for(let t=0;t<=200;t+=0.01)if(c(t)>=0.5)return t;return Infinity;};
+const perto=v=>Math.abs(K.get()-v)<0.051;
+MIS.def(()=>[
+ ['Com o LiOH na <b>prática</b>, ache quantos quilos por dia deixam a reta do gás carbônico <b>deitada</b>.',()=>pi==1&&perto(35.2),'35,2 kg por dia: 17,6 kg de CO₂ presos. O gás carbônico para em 0,47%, logo abaixo do limite.',()=>pi!=1?'Escolha "LiOH · prática".':'Sobram '+r2(liq())+' m³ de CO₂ por dia.'],
+ ['Agora faça a mesma conta na <b>teoria</b>. Quanto LiOH seria preciso se tudo reagisse?',()=>pi==0&&perto(19.2),'19,2 kg: a conta da equação. Na prática, o rendimento de 54% quase dobra a encomenda.',()=>pi!=0?'Escolha "LiOH · teoria".':'Sobram '+r2(liq())+' m³ de CO₂ por dia.'],
+ ['Compare com a <b>cal</b>, na prática: quantos quilos por dia para deitar a reta?',()=>pi==3&&perto(54.8),'54,8 kg de cal contra 35,2 kg de LiOH. Na paloma, cada quilo é viagem: o lítio, mais leve, ganha.',()=>pi!=3?'Escolha "Ca(OH)₂ · prática".':'Sobram '+r2(liq())+' m³ de CO₂ por dia.']]);
+function draw(){let g='';const n=Math.min(60,Math.round(K.get()));for(let i=0;i<n;i++){const x=14+(i%20)*16,y=12+Math.floor(i/20)*18;g+=RC(x,y,13,14,pi<2?'#B57EDC':'#D1D5DB','rx="3" stroke="#0E2354" stroke-width=".5"');}
+ g+=TX(170,74,fmt(r1(K.get()))+' kg de '+PO[pi][0].split(' ·')[0]+' por dia (cada saquinho = 1 kg)',{fs:11});$('fig').innerHTML=SVG(340,84,g);
+ const L=lim();$('gr').innerHTML=PLOT({xmin:0,xmax:60,ymin:0,ymax:1,dx:10,dy:0.2,xl:'dias',yl:'% de gás carbônico',fy:v=>fmt(Math.round(v*10)/10)},(X,Y)=>{const pts=[...Array(121).keys()].map(k=>[k/2,c(k/2)]);
+  return linha([[0,0.5],[60,0.5]],X,Y,VERM,1.5,'6 4')+linha([[0,0.04],[60,0.04+0.024*60]],X,Y,GRAY,1.5,'3 3')+LN(X(18),Y(0),X(18),Y(1),BLUE,1.2,'4 3')+linha(pts,X,Y,'#111',3)+(L<=60?ponto(L,0.5,X,Y,VERM):'');});
+ $('k1').textContent=r2(cap())+' m³/dia';$('k2').textContent=r2(liq())+' m³';$('k3').textContent=L==Infinity?'não chega':'dia '+r1(L);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
