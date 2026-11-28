@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A curva das bombas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A curva das bombas</h1></header>
+<main>
+<div class="card"><h2>Ler a curva ao contrário</h2><p class="muted" style="margin-top:0">A curva azul é a fração F de carbono-14 do ar (hemisfério norte, valores aproximados). Mova a linha laranja do <b>F medido</b> no óleo e veja em que anos ela corta a curva.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sf"><b>F medido</b><input type="range"><span></span></div>
+<div class="kpi"><div>Cortes na curva<b id="kn"></b></div><div>Anos possíveis<b id="ka"></b></div><div class="o">Pode ser de 1889?<b id="k1"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Date o óleo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C=[[1880,0.985],[1900,0.985],[1940,0.99],[1950,1],[1954,1],[1956,1.04],[1958,1.12],[1960,1.21],[1962,1.4],[1963,1.75],[1964,1.9],[1965,1.8],[1966,1.7],[1968,1.58],[1970,1.53],[1975,1.38],[1980,1.27],[1985,1.2],[1990,1.15],[1995,1.11],[2000,1.08],[2005,1.06],[2010,1.04],[2015,1.02],[2020,1.01]];
+const SF=SL('sf',0.97,1.95,0.01,1.1,()=>draw(),v=>vg(v));
+const ox=34,W=290,oy=210,H=180,X=a=>ox+(a-1880)/145*W,Y=f=>oy-(f-0.95)/1.0*H;
+toque('fig',(x,y)=>{SF.set(Math.max(0.97,Math.min(1.95,Math.round((0.95+(oy-y)/H*1.0)*100)/100)));draw();});
+const cortes=f=>{const r=[];for(let i=0;i<C.length-1;i++){const [a1,f1]=C[i],[a2,f2]=C[i+1];if(f1==f2){if(Math.abs(f-f1)<0.005&&!r.length)r.push(a1+'–'+a2);continue;}if((f-f1)*(f-f2)<=0&&!(f==f2&&i<C.length-2)){r.push(Math.round(a1+(f-f1)/(f2-f1)*(a2-a1)));}}return r;};
+MIS.def(()=>[
+ ['O laboratório mediu <b>F = 1,25</b>. Em que anos as sementes cresceram?',()=>perto(SF.get(),1.25,0.001),'Dois cortes: perto de 1960 (na subida) e perto de 1981 (na descida). Nenhum é 1889.',()=>'F está em '+vg(SF.get())+'.'],
+ ['Que F daria um óleo de <b>1889</b>, de antes das bombas?',()=>SF.get()<1,'F um pouco abaixo de 1 (cerca de 0,98): o carbono-14 natural, que decai devagar. Qualquer F acima de 1 já denuncia óleo do século XX.',()=>'Com F = '+vg(SF.get())+', a linha corta a curva em '+(cortes(SF.get()).join(' e ')||'nenhum ano')+'. Desça.'],
+ ['Ache o <b>maior F</b> que a linha ainda consegue cortar.',()=>perto(SF.get(),1.9,0.001),'F ≈ 1,9 em 1964: o pico, com um corte só. Acima disso, nenhum ano bate.',()=>SF.get()>1.9?'Nenhum corte: desça um pouco.':'Ainda há dois cortes. Suba.']]);
+function perto(a,b,t){return Math.abs(a-b)<=t;}
+function draw(){const f=SF.get(),cs=cortes(f);let g=RC(0,0,340,240,'#fff','rx="10"');
+ for(let v=1;v<=1.9;v+=0.25){g+=LN(ox,Y(v),ox+W,Y(v),GRAYL,.6)+TX(ox-4,Y(v)+3,vg(Math.round(v*100)/100),{fs:8,c:GRAY,a:'end'});}
+ g+=RC(X(1853),Y(1.95),X(1890)-X(1853),H,'#FBE3A0','opacity=".5"')+TX(X(1871),Y(1.95)+12,'Van Gogh',{fs:8,c:ORANGE});
+ g+=PL(C.map(([a,v])=>[X(a),Y(v)]),'#2F55B8',2.5)+LN(ox,Y(f),ox+W,Y(f),ORANGE,2,'5 3');
+ cs.forEach(c=>{if(typeof c=='number')g+=CIR(X(c),Y(f),5,ORANGE,'stroke="#fff" stroke-width="2"')+LN(X(c),Y(f),X(c),oy,ORANGE,1,'2 2')+TX(X(c),Y(f)-9,c,{fs:9,c:ORANGE});});
+ g+=LN(ox,oy,ox+W,oy,NAVY,1);for(let a=1880;a<=2020;a+=20)g+=TX(X(a),oy+13,a,{fs:8,c:GRAY});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('kn').textContent=cs.length;$('ka').textContent=cs.join(' ou ')||'nenhum';$('k1').textContent=f<1?'sim':'não';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

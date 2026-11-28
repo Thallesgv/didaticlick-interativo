@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Caça ao anacronismo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Caça ao anacronismo</h1></header>
+<main>
+<div class="card"><h2>As seis amostras</h2><p class="muted" style="margin-top:0">Toque nas amostras para incluí-las na análise. Cada uma diz "o quadro é deste ano ou depois". A janela de datas é o que sobra entre o mínimo das amostras e a morte de Van Gogh.</p>
+<div id="fig" style="display:block;width:100%;margin:8px 0"></div>
+<div class="kpi"><div>Amostras na análise<b id="kn"></b></div><div>Ano mínimo<b id="km"></b></div><div class="o">Janela até 1890<b id="kj"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache o contraexemplo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AM=[['S1','céu','cobalto + chumbo',1802,'#2F55B8'],['S2','oliveiras','esmeralda + cromo',1814,'#2FA36B'],['S3','sol','amarelo de cromo',1810,'#F2B705'],['S4','sombras','azul da prússia',1704,'#1D3557'],['S5','cipreste','viridiana',1838,'#2E7F6E'],['S6','horizonte','cromo + titânio',1916,'#C62828']];
+const on=new Set();const min=()=>Math.max(...[...on].map(i=>AM[i][3]),-Infinity);
+MIS.def(()=>[
+ ['Inclua as amostras <b>S1 a S5</b> (sem a S6). Que janela de datas sobra?',()=>on.size==5&&!on.has(5),'Ano mínimo 1838 (viridiana): janela [1838, 1890]. Compatível com 1889, mas compatível não é prova.',()=>'Amostras incluídas: '+([...on].map(i=>AM[i][0]).sort().join(', ')||'nenhuma')+'.'],
+ ['Agora inclua também a <b>S6</b>.',()=>on.size==6,'O mínimo pula para 1916 e a janela até 1890 fica vazia: uma amostra só basta para derrubar "todo o quadro é de 1889".',()=>'Inclua a S6.'],
+ ['Descubra qual amostra, <b>sozinha</b>, já derruba a janela até 1890.',()=>on.size==1&&on.has(5),'A S6 é o contraexemplo: sozinha, ela já exige 1916 ou depois. As outras cinco, sozinhas ou juntas, nunca conseguiriam isso.',()=>'Deixe só uma amostra incluída e teste.']]);
+function draw(){let h='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+ AM.forEach((a,i)=>{const s=on.has(i);h+=`<button data-i="${i}" class="${s?'':'alt'}" style="text-align:left;padding:8px 10px;border-radius:12px;font-size:13px"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${a[4]};margin-right:6px;border:1px solid #0E2354"></span><b>${a[0]}</b> · ${a[1]}<br><small>${a[2]} · desde ${a[3]==1810?'início dos 1800':a[3]}</small></button>`;});
+ const m=min(),ok=on.size&&m<=1890;
+ const ox=20,W=300,X=a=>ox+(a-1700)/260*W;let g=RC(0,0,340,90,'#fff','rx="10"')+LN(ox,50,ox+W,50,NAVY,1.2);
+ for(let t=1700;t<=1950;t+=50)g+=TX(X(t),70,t,{fs:8,c:GRAY});
+ [...on].forEach(i=>g+=CIR(X(AM[i][3]),50,5,AM[i][4],'stroke="#fff" stroke-width="1.5"'));
+ if(on.size){if(ok)g+=LN(X(m),35,X(1890),35,GREEN,8);else g+=TX(X(1903),32,'janela vazia',{fs:11,c:'#C62828'});g+=LN(X(1890),20,X(1890),56,ORANGE,1.5,'3 3')+TX(X(1890),16,'1890',{fs:8,c:ORANGE});}
+ $('fig').innerHTML=h+'</div><div style="margin-top:8px">'+SVG(340,90,g)+'</div>';
+ document.querySelectorAll('#fig button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;on.has(i)?on.delete(i):on.add(i);draw();});
+ $('kn').textContent=on.size;$('km').textContent=on.size?(m==1810?'início dos 1800':m):'—';$('kj').textContent=!on.size?'—':ok?'['+(m==1810?'1810':m)+', 1890]':'vazia';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
