@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O leque dos saldos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O leque dos saldos</h1></header>
+<main>
+<div class="card"><h2>Cada linha é um jogador</h2><p class="muted" style="margin-top:0">Todos apostam R$ 10 no vermelho, rodada após rodada. Escolha quantos jogadores e quantas rodadas (arrastando as barras ou com − e +) e aperte <b>Jogar</b>.</p>
+<div class="sl" id="sj"><b>Jogadores</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Rodadas</b><input type="range"><span></span></div>
+<div class="row"><button id="bj">Jogar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>No lucro<b id="k1"></b></div><div>Saldo médio<b id="k2"></b></div><div>Esperado<b id="k3"></b></div><div class="o">Desvio padrão<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Jogue e compare.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const R$2=v=>'R$ '+(Math.round(v*100)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const SJ=SL('sj',1,200,1,50,null,v=>v);const SR=SL('sr',10,10000,10,100,null,v=>fmt(v));
+let RUN=null;
+function jogar(){const J=SJ.get(),N=SR.get(),st=Math.max(1,Math.floor(N/120)),L=[];let luc=0,soma=0;
+ for(let j=0;j<J;j++){let s=0;const pts=[0];for(let n=1;n<=N;n++){s+=Math.random()<18/37?10:-10;if(n%st==0||n==N)pts.push(s);}L.push(pts);if(s>0)luc++;soma+=s;}
+ RUN={J,N,L,luc,med:soma/J};draw();}
+$('bj').onclick=jogar;
+const fr=()=>RUN?RUN.luc/RUN.J:0;
+MIS.def(()=>[
+ ['Com <b>100 rodadas</b> e pelo menos 50 jogadores, veja <b>mais de um terço</b> no lucro.',()=>RUN&&RUN.N==100&&RUN.J>=50&&fr()>1/3,()=>pct(fr()*100,0)+' no lucro. Com 100 rodadas, o acaso (desvio de R$ 100) ainda é maior que a perda esperada (R$ 27).',()=>!RUN?'Aperte Jogar.':RUN.N!=100?'Use exatamente 100 rodadas.':RUN.J<50?'Use pelo menos 50 jogadores.':'Desta vez foram '+pct(fr()*100,0)+'. Jogue de novo: em média dá uns 39%.'],
+ ['Com <b>1 000 rodadas</b> e pelo menos 50 jogadores, chegue a <b>menos de 25%</b> no lucro.',()=>RUN&&RUN.N==1000&&RUN.J>=50&&fr()<0.25,()=>'Só '+pct(fr()*100,0)+' no lucro. O esperado (−R$ 270) já se compara ao desvio (R$ 316).',()=>!RUN?'Aperte Jogar.':RUN.N!=1000?'Use exatamente 1 000 rodadas.':RUN.J<50?'Use pelo menos 50 jogadores.':'Foram '+pct(fr()*100,0)+'. Jogue de novo: em média, uns 20%.'],
+ ['Agora <b>10 000 rodadas</b>, com pelo menos 50 jogadores.',()=>RUN&&RUN.N==10000&&RUN.J>=50,()=>RUN.luc+' de '+RUN.J+' no lucro. O esperado (−R$ 2.703) é quase três desvios abaixo de zero: o leque inteiro desce.',()=>!RUN?'Aperte Jogar.':'Leve as rodadas a 10 000 e os jogadores a 50 ou mais.']]);
+function draw(){let g=RC(0,0,340,240,'#F8FAFC','rx="10"');const x0=46,y0=210,gw=284,gh=196;
+ if(!RUN){g+=TX(170,120,'Aperte Jogar',{fs:13,c:GRAY});$('fig').innerHTML=SVG(340,240,g);$('k1').textContent='–';$('k2').textContent='–';$('k3').textContent='–';$('k4').textContent='–';MIS.ver('m');return;}
+ const N=RUN.N,e=-N*10/37,sd=10*Math.sqrt(N);let lo=Math.min(e-3*sd,...RUN.L.map(p=>Math.min(...p))),hi=Math.max(sd*2.2,...RUN.L.map(p=>Math.max(...p)));
+ const Y=v=>y0-gh*(v-lo)/(hi-lo),X=i=>x0+gw*i;
+ g+=LN(x0,Y(0),x0+gw,Y(0),NAVY,1.2)+TX(x0-4,Y(0)+3,'R$ 0',{fs:8,a:'end'});
+ for(const p of RUN.L){const n=p.length-1;g+=PL(p.map((v,i)=>[X(i/n),Y(v)]),p[n]>0?BLUE:AZC,1);}
+ g+=LN(X(0),Y(0),X(1),Y(e),ORANGE,2.5)+TX(X(1)-2,Y(e)-6,'esperado',{fs:9,a:'end',c:ORANGE});
+ g+=TX(x0-4,Y(lo)+3,R0(lo).replace('R$ -','−R$ '),{fs:8,a:'end',c:GRAY,w:500})+TX(x0+gw,y0+14,fmt(N)+' rodadas',{fs:8,a:'end',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=RUN.luc+' de '+RUN.J;$('k2').textContent=R0(RUN.med).replace('R$ -','−R$ ');$('k3').textContent='−'+R0(-e);$('k4').textContent=R0(sd);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

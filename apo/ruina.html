@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A caminhada até a borda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A caminhada até a borda</h1></header>
+<main>
+<div class="card"><h2>Meta ou zero?</h2><p class="muted" style="margin-top:0">Cada caminhada começa com algumas fichas e aposta uma por vez, até chegar à <b>meta</b> ou ao <b>zero</b>. Ajuste as barras (arrastando ou com − e +), escolha o jogo e solte as caminhadas.</p>
+<div id="chg" style="margin:4px 0"></div>
+<div class="sl" id="si"><b>Fichas no começo</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Meta (fichas)</b><input type="range"><span></span></div>
+<div class="row"><button id="w1">1 caminhada</button><button id="w10">10</button><button id="w100">100</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Caminhadas<b id="k1"></b></div><div>Chegaram à meta<b id="k2"></b></div><div class="o">Fórmula<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Caminhe até a borda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const R$2=v=>'R$ '+(Math.round(v*100)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+let jg=0,W=0,CH=0,ult=null;const pg=()=>jg==0?0.5:18/37;
+chips('chg',['moeda justa','vermelho na roleta'],0,i=>{jg=i;W=0;CH=0;ult=null;draw();});
+const SI=SL('si',1,39,1,10,v=>{if(v>=SM.get())SM.set(v+1);W=0;CH=0;ult=null;draw();},v=>v+' (R$ '+v*10+')');
+const SM=SL('sm',2,40,1,20,v=>{if(v<=SI.get())SI.set(v-1);W=0;CH=0;ult=null;draw();},v=>v+' (R$ '+v*10+')');
+function anda(){const N=SM.get();let x=SI.get();const pts=[x];while(x>0&&x<N){x+=Math.random()<pg()?1:-1;if(pts.length<4000)pts.push(x);}W++;if(x==N)CH++;ult=pts;}
+function solta(n){for(let i=0;i<n;i++)anda();draw();}
+$('w1').onclick=()=>solta(1);$('w10').onclick=()=>solta(10);$('w100').onclick=()=>solta(100);
+const form=(i,N)=>{if(jg==0)return i/N;const r=(1-pg())/pg();return (1-Math.pow(r,i))/(1-Math.pow(r,N));};
+MIS.def(()=>[
+ ['<b>Moeda justa</b>, 10 fichas, meta de 20: solte pelo menos 100 caminhadas.',()=>jg==0&&SI.get()==10&&SM.get()==20&&W>=100,()=>pct(CH/W*100,0)+' chegaram à meta. A fórmula diz 10 ÷ 20 = 50%.',()=>jg!=0?'Escolha a moeda justa.':SI.get()!=10||SM.get()!=20?'Ajuste para 10 fichas e meta 20.':'Faltam '+(100-W)+' caminhadas.'],
+ ['Agora o <b>vermelho na roleta</b>, com os mesmos 10 e 20: a chance de Rafael. Pelo menos 100 caminhadas.',()=>jg==1&&SI.get()==10&&SM.get()==20&&W>=100,()=>pct(CH/W*100,0)+' chegaram. A fórmula: 36,8%. O zero tirou 13 pontos da chance.',()=>jg!=1?'Escolha "vermelho na roleta".':SI.get()!=10||SM.get()!=20?'Ajuste para 10 fichas e meta 20.':'Faltam '+(100-W)+' caminhadas.'],
+ ['Na roleta, com 10 fichas, qual a <b>menor meta</b> que deixa a chance (fórmula) <b>abaixo de 20%</b>?',()=>jg==1&&SI.get()==10&&form(10,SM.get())<0.2&&form(10,SM.get()-1)>=0.2,'Meta de 29 fichas (R$ 290): chance de 19,6%. Num jogo justo, com meta 29, seria 34%.',()=>jg!=1?'Escolha "vermelho na roleta".':SI.get()!=10?'Comece com 10 fichas.':'Com meta '+SM.get()+', a fórmula dá '+pct(form(10,SM.get())*100,1)+'. '+(form(10,SM.get())>=0.2?'Aumente a meta.':'Dá para chegar abaixo de 20% com uma meta menor?')]]);
+function draw(){const N=SM.get(),i0=SI.get();let g=RC(0,0,340,200,'#F8FAFC','rx="10"');const x0=34,y0=180,gw=296,gh=160,Y=v=>y0-gh*v/N;
+ g+=RC(x0,Y(N)-2,gw,4,GREEN)+TX(x0-4,Y(N)+3,'meta',{fs:8,a:'end',c:GREEN})+RC(x0,y0-2,gw,4,VERM)+TX(x0-4,y0+3,'zero',{fs:8,a:'end',c:VERM});
+ g+=LN(x0,Y(i0),x0+gw,Y(i0),GRAYL,1,'4 3')+TX(x0-4,Y(i0)+3,'início',{fs:8,a:'end',c:GRAY,w:500});
+ if(ult){const n=ult.length-1;g+=PL(ult.map((v,i)=>[x0+gw*i/Math.max(1,n),Y(v)]),ult[n]==N?BLUE:ORANGE,1.6);g+=TX(330,16,'última: '+(ult[n]==N?'chegou à meta':'zerou')+' em '+n+' apostas',{fs:9,a:'end',c:ult[n]==N?BLUE:ORANGE});}
+ $('fig').innerHTML=SVG(340,200,g);
+ $('k1').textContent=W;$('k2').textContent=W?pct(CH/W*100,1):'–';$('k3').textContent=pct(form(i0,N)*100,1);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
