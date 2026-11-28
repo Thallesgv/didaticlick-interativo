@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pulmão no cronômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O pulmão no cronômetro</h1></header>
+<main>
+<div class="card"><h2>Respiração, minuto, dia</h2><p class="muted" style="margin-top:0">O pulmão enche e esvazia no ritmo escolhido. O corpo fica com cerca de 4% do ar que respira (entra com 21% de oxigênio e sai com uns 17%).</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Respirações por minuto</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Ar em cada respiração (L)</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">O₂ por pessoa por minuto<b id="k1"></b></div><div>Grupo, por hora<b id="k2"></b></div><div>Grupo, por dia<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a respiração.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=SL('sr',6,40,1,16,draw),V=SL('sv',0.3,1.5,0.05,0.5,draw,v=>fmt(r2(v))+' L'),N=SL('sp',1,33,1,1,draw);
+const PR=[[12,0.5],[24,0.75]];chips('ch',['Repouso','Trabalho pesado'],-1,i=>{R.set(PR[i][0]);V.set(PR[i][1]);draw();});
+const pm=()=>R.get()*V.get()*0.04;
+MIS.def(()=>[
+ ['Coloque o repouso do livro: <b>12 respirações</b> de <b>0,5 L</b>, 1 pessoa. Quanto oxigênio o corpo gasta por minuto?',()=>R.get()==12&&Math.abs(V.get()-0.5)<1e-6&&N.get()==1,'12 × 0,5 = 6 L de ar; 6 × 0,04 = 0,24 L de oxigênio por minuto, uns 0,25 L.',()=>'Agora: '+R.get()+' × '+fmt(r2(V.get()))+' L, com '+N.get()+' pessoa(s).'],
+ ['Mantenha o repouso e coloque as <b>33 pessoas</b>. Quantos m³ de oxigênio por dia?',()=>R.get()==12&&Math.abs(V.get()-0.5)<1e-6&&N.get()==33,'0,24 × 60 × 24 × 33 ≈ 11.400 L ≈ 11,4 m³ por dia. Com 0,25 L/min, o livro arredonda para 12 m³.',()=>'Agora são '+N.get()+' pessoas.'],
+ ['Ache uma respiração que gaste <b>três vezes</b> o oxigênio do repouso: 0,72 L por minuto por pessoa.',()=>Math.abs(R.get()*V.get()-18)<0.01,()=>R.get()+' × '+fmt(r2(V.get()))+' = 18 L de ar por minuto: o triplo dos 6 L do repouso. É o que acontece quando todos trabalham pesado.',()=>'Agora: '+fmt(r2(pm()))+' L de oxigênio por minuto, por pessoa.']]);
+let t0=performance.now();
+function pulmao(f){const sx=1+0.25*f*V.get()/1.5*2;return `<g transform="translate(110 120) scale(${sx.toFixed(3)} ${(1+0.12*f).toFixed(3)})"><path d="M-8 -70 L-8 -40 M8 -70 L8 -40" stroke="${NAVY}" stroke-width="7"/><path d="M-10 -40 C-60 -50 -75 0 -70 50 C-66 75 -25 75 -12 55 Z" fill="#F4A6A0" stroke="${NAVY}" stroke-width="2"/><path d="M10 -40 C60 -50 75 0 70 50 C66 75 25 75 12 55 Z" fill="#F4A6A0" stroke="${NAVY}" stroke-width="2"/></g>`;}
+function anima(){const f=(1-Math.cos((performance.now()-t0)/60000*R.get()*2*Math.PI))/2;const el=$('pl');if(el)el.innerHTML=pulmao(f);requestAnimationFrame(anima);}
+function draw(){const m=pm(),n=N.get();let g='<g id="pl">'+pulmao(0)+'</g>';
+ g+=TX(270,40,'ar por minuto',{fs:10,c:GRAY,w:500})+TX(270,60,fmt(r2(R.get()*V.get()))+' L',{fs:16})+TX(270,96,'fica no corpo (4%)',{fs:10,c:GRAY,w:500})+TX(270,116,fmt(r2(m))+' L de O₂',{fs:16,c:ORANGE});
+ const k=Math.min(33,n);for(let i=0;i<k;i++)g+=`<circle cx="${210+(i%11)*11}" cy="${150+Math.floor(i/11)*12}" r="4" fill="${NAVY}"/>`;g+=TX(270,200,n+(n>1?' pessoas':' pessoa'),{fs:11});
+ $('fig').innerHTML=SVG(340,232,g);$('k1').textContent=fmt(r2(m))+' L';$('k2').textContent=fmt(Math.round(m*60*n))+' L';$('k3').textContent=fmt(r1(m*1440*n/1000))+' m³';MIS.ver('m');}
+draw();anima();
+})();
+</script>
+</body>
+</html>

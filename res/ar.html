@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Uma caixa de ar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Uma caixa de ar</h1></header>
+<main>
+<div class="card"><h2>Dez mil bolinhas de ar</h2><p class="muted" style="margin-top:0">Cada bolinha é 1 parte em 10.000 do ar do refúgio. Azul: nitrogênio. Laranja: oxigênio. Roxa: argônio. Preta: gás carbônico. Avance os dias com 33 pessoas respirando e veja o ar mudar.</p>
+<div class="fig"><canvas id="cv" width="600" height="600" style="width:300px;height:300px;border:1.5px solid #0E2354;border-radius:6px;background:#fff"></canvas></div>
+<label style="display:block;margin:6px 0"><input type="checkbox" id="dest"> Destacar o gás carbônico</label>
+<div class="sl" id="sd"><b>Dia no refúgio</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Oxigênio<b id="k1"></b></div><div>Gás carbônico<b id="k2"></b></div><div>Bolinhas de CO₂<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Avance os dias.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=SL('sd',0,60,1,0,draw,v=>v==0?'dia 0':'dia '+v);const ck=$('dest');ck.onchange=draw;
+let s=7;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;const ord=[...Array(10000).keys()];for(let i=9999;i>0;i--){const j=Math.floor(rnd()*(i+1));[ord[i],ord[j]]=[ord[j],ord[i]];}
+const o2=d=>AR.o20-0.03*d,co2=d=>AR.co20+0.024*d;
+MIS.def(()=>[
+ ['No <b>dia 0</b>, ligue "destacar o gás carbônico" e ache as bolinhas pretas. Quantas são?',()=>D.get()==0&&ck.checked,'São 4 em 10.000: 0,04% é 400 ppm. Quase nada, e mesmo assim é o gás que vai mandar no relógio.',()=>ck.checked?'Volte para o dia 0.':'Marque a caixinha "destacar".'],
+ ['Avance até o <b>primeiro dia</b> em que o gás carbônico passa de <b>0,5%</b> (50 bolinhas).',()=>D.get()==20,'Dia 20: 0,52%. O limite de 0,5% é cruzado durante o dia 19 (19,2 dias, como no livro).',()=>'No dia '+D.get()+' são '+Math.round(co2(D.get())*100)+' bolinhas pretas.'],
+ ['Ache o dia em que o oxigênio cai para <b>19,5%</b> (1.950 bolinhas laranja).',()=>D.get()==50,'Dia 50. O gás carbônico já tinha passado do limite 30 dias antes.',()=>'No dia '+D.get()+' são '+fmt(Math.round(o2(D.get())*100))+' bolinhas laranja.']]);
+const cv=$('cv'),cx=cv.getContext('2d');
+function draw(){const d=D.get(),nc=Math.round(co2(d)*100),no=Math.round(o2(d)*100),na=93,dst=ck.checked;
+ cx.clearRect(0,0,600,600);const cor=new Array(10000);
+ for(let k=0;k<10000;k++){const i=ord[k];cor[i]=k<nc?3:k<nc+na?2:k>=10000-no?1:0;}
+ const C=dst?['#DCE7F7','#FCE3CC','#E9DDF5','#111']:[BLUE,ORANGE,'#8B5CF6','#111'];
+ for(let i=0;i<10000;i++){const x=(i%100)*6+3,y=Math.floor(i/100)*6+3;cx.fillStyle=C[cor[i]];cx.beginPath();cx.arc(x,y,cor[i]==3&&dst?5:2.4,0,6.3);cx.fill();}
+ $('k1').textContent=r2(o2(d)).replace('.',',')+'%';$('k2').textContent=String(Math.round(co2(d)*1000)/1000).replace('.',',')+'%';$('k3').textContent=nc;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A reta que sobe · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A reta que sobe</h1></header>
+<main>
+<div class="card"><h2>c(t) = 0,04 + (CO₂ produzido ÷ volume) · t</h2><p class="muted" style="margin-top:0">Cada m³ de oxigênio consumido vira cerca de 0,8 m³ de gás carbônico (quociente respiratório). A reta preta sobe até o limite de 0,5%. A linha tracejada marca o 17º dia, quando a sonda chegou.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sv"><b>Volume de ar (m³)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">Chega a 0,5% no dia<b id="k1"></b></div><div>No 17º dia<b id="k2"></b></div><div>CO₂ produzido<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a reta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const V=SL('sv',10000,80000,1000,40000,draw,v=>fmt(v)+' m³'),N=SL('sn',1,50,1,33,draw);let at=0;chips('ch',['Repouso (×1)','Trabalho leve (×2)','Trabalho pesado (×3)'],0,i=>{at=i;draw();});
+const cons=()=>N.get()*AR.o2pp*(at+1);// m³ de O2 por dia
+const livro=()=>V.get()==40000&&N.get()==33&&at==0;
+const taxa=()=>100*cons()*AR.qr/V.get(),c=t=>AR.co20+taxa()*t,fim=()=>(AR.co2lim-AR.co20)/taxa();
+MIS.def(()=>[
+ ['Monte a situação do livro (40.000 m³, 33 pessoas, repouso). Em que dia o gás carbônico chega a 0,5%?',livro,'Dia 19,2: c(t) = 0,04 + 0,024t; 0,46 ÷ 0,024 ≈ 19,2. Bem antes dos 50 dias do oxigênio.',()=>'Confira: 40.000 m³, 33 pessoas, repouso.'],
+ ['Mude só as pessoas: qual é o <b>maior grupo</b> que ainda chegaria ao 17º dia abaixo de 0,5%?',()=>V.get()==40000&&at==0&&N.get()==37,'37 pessoas: c(17) ≈ 0,496%. Com 38, passaria de 0,5% antes do 17º dia.',()=>'Com '+N.get()+' pessoas, no 17º dia o CO₂ está em '+fmt(Math.round(c(17)*1000)/1000)+'%.'],
+ ['Volte para 33 pessoas e coloque todos em <b>trabalho pesado</b>. Em quantos dias o limite chega?',()=>V.get()==40000&&N.get()==33&&at==2,'6,4 dias: três vezes mais depressa. Por isso Seu Ari manda todos descansarem.',()=>'Mantenha 40.000 m³ e 33 pessoas.']]);
+function draw(){const f=fim();$('fig').innerHTML=PLOT({xmin:0,xmax:40,ymin:0,ymax:1.2,dx:5,dy:0.2,xl:'dias',yl:'% de gás carbônico',fy:v=>fmt(Math.round(v*10)/10)},(X,Y)=>{
+ let g=linha([[0,AR.co2lim],[40,AR.co2lim]],X,Y,VERM,1.5,'6 4')+LN(X(17),Y(0),X(17),Y(1.2),BLUE,1.2,'4 3')+TX(X(17)+4,Y(1.12),'17º dia',{fs:10,c:BLUE,a:'start'});
+ g+=linha([[0,AR.co20],[40,c(40)]],X,Y,'#111',3)+ponto(17,c(17),X,Y,BLUE);
+ if(f<=40)g+=ponto(f,AR.co2lim,X,Y,VERM)+TX(X(f)+(f>30?-6:6),Y(AR.co2lim)+(f>30?-10:18),'dia '+r1(f),{fs:11,c:VERM,a:f>30?'end':'start'});
+ return g;});
+ $('k1').textContent=r1(f);$('k2').textContent=fmt(Math.round(c(17)*1000)/1000)+'%';$('k3').textContent=fmt(r1(cons()*AR.qr))+' m³/dia';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A corrida dos limites · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A corrida dos limites</h1></header>
+<main>
+<div class="card"><h2>Qual limite chega primeiro?</h2><p class="muted" style="margin-top:0">O ar dura até o <b>primeiro</b> limite: 19,5% de oxigênio ou 0,5% de gás carbônico. A "limpeza" tira CO₂ do ar todo dia (é o que os produtos químicos do próximo livro vão fazer).</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sv"><b>Volume de ar (m³)</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Limpeza de CO₂ (m³ por dia)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div><div class="fig" id="lt"></div>
+<div class="kpi"><div>Oxigênio chega a 19,5%<b id="k1"></b></div><div>CO₂ chega a 0,5%<b id="k2"></b></div><div class="o">O ar dura<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ajuste a corrida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const V=SL('sv',10000,80000,1000,40000,draw,v=>fmt(v)+' m³'),N=SL('sn',1,50,1,33,draw);let at=0;chips('ch',['Repouso (×1)','Trabalho leve (×2)','Trabalho pesado (×3)'],0,i=>{at=i;draw();});
+const cons=()=>N.get()*AR.o2pp*(at+1);// m³ de O2 por dia
+const livro=()=>V.get()==40000&&N.get()==33&&at==0;
+const Rm=SL('sr',0,15,0.1,0,draw,v=>fmt(r1(v))+' m³');
+const tO=()=>1.5/(100*cons()/V.get()),liq=()=>cons()*AR.qr-Rm.get(),tC=()=>liq()<=0?Infinity:(AR.co2lim-AR.co20)/(100*liq()/V.get());
+const c=t=>Math.max(0,AR.co20+100*liq()/V.get()*t),p=t=>21-100*cons()/V.get()*t,dura=()=>Math.min(tO(),tC());
+MIS.def(()=>[
+ ['Monte a situação do livro (40.000 m³, 33 pessoas, repouso, sem limpeza). Qual limite chega primeiro?',()=>livro()&&Rm.get()==0,'O gás carbônico, no dia 19,2. O oxigênio ainda aguentaria até o dia 50.',()=>'Confira: 40.000 m³, 33 pessoas, repouso, limpeza 0.'],
+ ['Sem limpeza, com 33 pessoas em repouso, ache o <b>menor volume</b> de ar que faria o ar durar pelo menos <b>30 dias</b>.',()=>V.get()==63000&&N.get()==33&&at==0&&Rm.get()==0,'63.000 m³: o CO₂ chega a 0,5% no dia 30,2 (com 62.000 m³ seria no dia 29,7).',()=>'Agora o ar dura '+r1(dura())+' dias.'],
+ ['Volte aos 40.000 m³ e ache a limpeza de CO₂ que faz os <b>dois limites chegarem juntos</b>, perto do dia 50.',()=>livro()&&Math.abs(Rm.get()-5.9)<0.05,'5,9 m³ por dia: sobram 3,7 m³ de CO₂ por dia e o gás carbônico só chega a 0,5% no dia 50. Tirando mais, quem manda passa a ser o oxigênio.',()=>'Oxigênio: dia '+r1(tO())+'. CO₂: '+(tC()==Infinity?'nunca':'dia '+r1(tC()))+'.']]);
+function draw(){const a=tO(),b=tC(),d=dura();
+ $('fig').innerHTML=PLOT({xmin:0,xmax:60,ymin:0,ymax:120,dx:10,dy:20,xl:'dias',yl:'% do caminho até o limite',fy:v=>v+'%'},(X,Y)=>{
+  let g=linha([[0,100],[60,100]],X,Y,VERM,1.5,'6 4')+LN(X(17),Y(0),X(17),Y(120),BLUE,1.2,'4 3');
+  const pts=f=>[...Array(61).keys()].map(t=>[t,f(t)]);
+  g+=linha(pts(t=>(21-p(t))/1.5*100),X,Y,ORANGE,3)+linha(pts(t=>(c(t)-AR.co20)/(AR.co2lim-AR.co20)*100),X,Y,'#111',3);
+  return g;});
+ const W=300,x0=20,k=W/60,Xd=t=>x0+Math.min(t,60)*k;let g=RC(x0,24,W,16,'#EEF2F7','rx="4"')+RC(x0,24,Math.min(d,60)*k,16,GREEN,'rx="4"');
+ g+=LN(Xd(17),18,Xd(17),46,BLUE,2)+TX(Xd(17),58,'17º dia',{fs:9,c:BLUE});
+ if(a<=60)g+=`<circle cx="${Xd(a)}" cy="32" r="6" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;if(b<=60)g+=`<circle cx="${Xd(b)}" cy="32" r="6" fill="#111" stroke="#fff" stroke-width="2"/>`;
+ g+=TX(x0,14,'O ar dura '+(d>60?'mais de 60 dias':r1(d)+' dias')+' · laranja: O₂ · preto: CO₂',{fs:10,a:'start'});
+ $('lt').innerHTML=SVG(340,64,g);$('k1').textContent='dia '+r1(a);$('k2').textContent=b==Infinity?'nunca':'dia '+r1(b);$('k3').textContent=r1(d)+' dias';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

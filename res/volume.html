@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto ar cabe? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Quanto ar cabe?</h1></header>
+<main>
+<div class="card"><h2>O refúgio e as galerias</h2><p class="muted" style="margin-top:0">Mude as medidas do refúgio e o comprimento das galerias abertas (seção de 5 m × 4 m). A faixa laranja de cada bloco é a parte do ar que é oxigênio: 21%.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Refúgio: comprimento (m)</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Refúgio: largura (m)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Refúgio: altura (m)</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Galerias abertas: comprimento (m)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Refúgio<b id="k1"></b></div><div>Galerias<b id="k2"></b></div><div>Ar total<b id="k3"></b></div><div>Oxigênio (21%)<b id="k4"></b></div><div>Refúgios nas galerias<b id="k5"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude as medidas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C=SL('sc',1,12,1,4,draw,v=>v+' m'),L=SL('sl',1,10,1,4,draw,v=>v+' m'),A=SL('sa',1,6,1,3,draw,v=>v+' m'),G=SL('sg',0,3000,100,500,draw,v=>fmt(v)+' m');
+const vr=()=>C.get()*L.get()*A.get(),vg=()=>G.get()*20;
+MIS.def(()=>[
+ ['Monte o refúgio da Mina Esperança: <b>120 m³</b>. (O de verdade tem 6 m × 5 m × 4 m, mas outras medidas também dão 120.)',()=>vr()==120,()=>C.get()+' × '+L.get()+' × '+A.get()+' = 120 m³ = 120.000 litros de ar, com 25,2 m³ de oxigênio.',()=>'Agora o refúgio tem '+vr()+' m³.'],
+ ['Coloque <b>2.000 m</b> de galerias abertas. Quantos refúgios de 120 m³ caberiam nelas?',()=>G.get()==2000&&vr()==120,'40.000 m³: cerca de 333 refúgios. Quase todo o ar dos 33 está nas galerias, não no refúgio.',()=>vr()!=120?'Mantenha o refúgio com 120 m³.':'Agora são '+fmt(G.get())+' m de galeria.'],
+ ['Com o refúgio de 120 m³, ache o comprimento de galeria que dá cerca de <b>20.000 m³</b> de ar no total.',()=>G.get()==1000&&vr()==120,'1.000 m de galeria: 20.000 + 120 = 20.120 m³. Metade do ar do livro: o oxigênio duraria metade do tempo.',()=>'Total agora: '+fmt(vr()+vg())+' m³.']]);
+function bloco(iso,c,l,a,cor){const p=(x,y,z)=>iso(x,y,z);let g='';const f=(q)=>q.map(v=>p(...v));
+ const tp=[[0,0,a],[c,0,a],[c,l,a],[0,l,a]],fr=[[c,0,0],[c,l,0],[c,l,a],[c,0,a]],fl=[[0,0,0],[c,0,0],[c,0,a],[0,0,a]];
+ const h=a*0.21,fr2=[[c,0,0],[c,l,0],[c,l,h],[c,0,h]],fl2=[[0,0,0],[c,0,0],[c,0,h],[0,0,h]];
+ g+=POLY(f(fl),'#EAF4FB','stroke="#0E2354"')+POLY(f(fr),'#DCEBF7','stroke="#0E2354"')+POLY(f(fl2),ORANGE,'opacity=".85"')+POLY(f(fr2),'#E0701A','opacity=".85"')+POLY(f(tp),'#F4F9FD','stroke="#0E2354"');return g;}
+function draw(){let g='';const sc=Math.min(16,120/((C.get()+L.get())*0.87),110/(A.get()+(C.get()+L.get())*0.5));const iso=ISO(14,40+A.get()*sc+L.get()*0.5*sc,sc);g+=TX(70,18,'REFÚGIO',{fs:10,c:ORANGE})+bloco(iso,C.get(),L.get(),A.get());
+ g+=TX(70,206,C.get()+' × '+L.get()+' × '+A.get()+' = '+fmt(vr())+' m³',{fs:11});
+ // galeria: barra de 0 a 3.000 m, desenhada fora de escala com o refúgio
+ const k=G.get()/3000*150;const iso2=ISO(180,150,1);
+ if(G.get()>0)g+=bloco((x,y,z)=>iso2(x,y,z),k,16,22);
+ g+=TX(255,18,'GALERIAS',{fs:10,c:ORANGE})+TX(255,206,fmt(G.get())+' m × 20 m² = '+fmt(vg())+' m³',{fs:11})+TX(255,222,'(desenho em outra escala)',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,232,g);const T=vr()+vg();
+ $('k1').textContent=fmt(vr())+' m³';$('k2').textContent=fmt(vg())+' m³';$('k3').textContent=fmt(T)+' m³';$('k4').textContent=fmt(Math.round(T*0.21))+' m³';$('k5').textContent=vr()?fmt(Math.round(vg()/vr())):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
