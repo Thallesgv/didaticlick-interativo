@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pontos de Pick · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Pontos de Pick</h1></header>
+<main>
+<div class="card"><h2>Teorema de Pick: área contando pontos</h2><p class="muted" style="margin-top:0">Mova o vértice da direita (C) e o vértice de cima (E) pelos nós da malha (arraste ou use − e +). Nós dentro do polígono ficam azuis, nós na borda ficam laranja. A área pelo Teorema de Pick, A = I + B ÷ 2 − 1, é conferida com a conta exata. Cada quadradinho é 1 cm² do mapa 1 : 2 000, ou 400 m² no chão.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="cx"><b>C: coluna</b><input type="range"><span></span></div><div class="sl" id="cy"><b>C: linha</b><input type="range"><span></span></div><div class="sl" id="ex"><b>E: coluna</b><input type="range"><span></span></div><div class="sl" id="ey"><b>E: linha</b><input type="range"><span></span></div><div class="kpi"><div>Nós dentro (I) e na borda (B)<b id="k1"></b></div><div>Pick: I + B ÷ 2 − 1<b id="k2"></b></div><div class="o">Área no chão<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CX=SL('cx',4,9,1,4,()=>draw(),v=>v),CY=SL('cy',0,3,1,1,()=>draw(),v=>v),EX=SL('ex',1,6,1,4,()=>draw(),v=>v),EY=SL('ey',4,6,1,5,()=>draw(),v=>v);
+const pol=()=>[[1,2],[3,1],[CX.get(),CY.get()],[5,4],[EX.get(),EY.get()],[2,4]];
+function borda(P,x,y){for(let i=0;i<P.length;i++){const [x1,y1]=P[i],[x2,y2]=P[(i+1)%P.length];if((x2-x1)*(y-y1)-(y2-y1)*(x-x1)==0&&x>=Math.min(x1,x2)&&x<=Math.max(x1,x2)&&y>=Math.min(y1,y2)&&y<=Math.max(y1,y2))return true;}return false;}
+function dentro(P,x,y){let c=false;for(let i=0;i<P.length;i++){const [x1,y1]=P[i],[x2,y2]=P[(i+1)%P.length];if((y1>y)!=(y2>y)&&x<x1+(y-y1)*(x2-x1)/(y2-y1))c=!c;}return c;}
+function conta(){const P=pol();let I=0,B=0;for(let x=0;x<=10;x++)for(let y=0;y<=7;y++){if(borda(P,x,y))B++;else if(dentro(P,x,y))I++;}
+ let s=0;for(let i=0;i<P.length;i++){const [x1,y1]=P[i],[x2,y2]=P[(i+1)%P.length];s+=x1*y2-x2*y1;}return{I,B,A:Math.abs(s)/2};}
+const pk=()=>{const c=conta();return c.I+c.B/2-1;};
+MIS.def(()=>[
+ ['Refaça o polígono da Joana: <b>C no nó (6, 2)</b> e <b>E no nó (3, 5)</b>.',()=>CX.get()==6&&CY.get()==2&&EX.get()==3&&EY.get()==5,()=>'I = 10, B = 6: A = 10 + 3 − 1 = 12 cm², ou 4 800 m², como na contagem de quadradinhos.',()=>'C está em ('+CX.get()+', '+CY.get()+') e E em ('+EX.get()+', '+EY.get()+').'],
+ ['A Sílvia achou trincas novas: aumente a mancha para <b>14 cm²</b> (5 600 m²).',()=>pk()==14,()=>{const c=conta();return 'I = '+c.I+', B = '+c.B+': '+c.I+' + '+fmt(c.B/2)+' − 1 = 14 cm².';},()=>'Agora: '+fmt(pk())+' cm².'],
+ ['Ache uma forma <b>diferente</b> da da Joana com os mesmos <b>12 cm²</b>.',()=>pk()==12&&!(CX.get()==6&&CY.get()==2&&EX.get()==3&&EY.get()==5),()=>{const c=conta();return 'I = '+c.I+', B = '+c.B+': formas diferentes, mesma área.';},()=>'Agora: '+fmt(pk())+' cm².']]);
+function draw(){const q=30,x0=20,y0=225,X=x=>x0+x*q,Y=y=>y0-y*q,P=pol(),c=conta();
+ let g=RC(0,0,340,240,'#fff','rx="10"');
+ for(let x=0;x<=10;x++)g+=LN(X(x),Y(0),X(x),Y(7),'#E5E7EB',1);for(let y=0;y<=7;y++)g+=LN(X(0),Y(y),X(10),Y(y),'#E5E7EB',1);
+ g+='<polygon points="'+P.map(p=>X(p[0])+','+Y(p[1])).join(' ')+'" fill="#FCE3DE" stroke="'+VERM+'" stroke-width="2"/>';
+ for(let x=0;x<=10;x++)for(let y=0;y<=7;y++){if(borda(P,x,y))g+=CIR(X(x),Y(y),5,ORANGE,'stroke="#fff" stroke-width="1.5"');else if(dentro(P,x,y))g+=CIR(X(x),Y(y),5,BLUE,'stroke="#fff" stroke-width="1.5"');}
+ g+=TX(X(CX.get())+8,Y(CY.get())+14,'C',{fs:12,a:'start'})+TX(X(EX.get()),Y(EY.get())-8,'E',{fs:12});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent='I = '+c.I+' · B = '+c.B;$('k2').textContent=fmt(pk())+' cm²';$('k3').textContent=fmt(pk()*400)+' m²';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
