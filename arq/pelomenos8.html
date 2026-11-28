@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pelo menos um · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Pelo menos um</h1></header>
+<main>
+<div class="card"><h2>1 − (1 − p)<sup>n</sup></h2><p class="muted" style="margin-top:0">Escolha a chance de cada buraco e quantos buracos sortear (pelo controle ou arrastando o ponto no gráfico). Depois repita a busca 100 vezes para ver se a conta acerta.</p>
+<div id="cp" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Buracos sorteados</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button id="rep">Repetir a busca 100 vezes</button></div>
+<div class="kpi"><div>P(errar todos)<b id="ke"></b></div><div class="o">P(achar)<b id="ka"></b></div><div>Na prática<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude os buracos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),pc=v=>f1(v*100)+'%';
+const EST='#D9CBB0',EST_E='#8C7A5B',MOR='#B5774A',RED='#B91C1C';
+const PS=[1/6,1/15],NOMES=['morro de 10 m: 1/6','núcleo de 4 m: 1/15'];let ip=0,sims=0,ok=0,simN=null,simP=null;
+chips('cp',NOMES,0,i=>{ip=i;sims=ok=0;draw();});
+const Sn=SL('sn',1,60,1,3,()=>{sims=ok=0;draw();},v=>v);const n=()=>Sn.get(),p=()=>PS[ip],Pa=()=>1-Math.pow(1-p(),n());
+const X0=40,W=280,Y0=200,H=150,X=k=>X0+(k-1)/59*W,Y=v=>Y0-v*H;
+toque('fig',(x)=>{Sn.set(Math.min(60,Math.max(1,Math.round((x-X0)/W*59+1))));sims=ok=0;draw();});
+$('rep').onclick=()=>{for(let s=0;s<100;s++){let a=false;for(let i=0;i<n();i++)if(Math.random()<p()){a=true;break;}sims++;if(a)ok++;}simN=n();simP=ip;draw();};
+MIS.def(()=>[
+ ['Com o morro de 10 m (1/6), qual a chance de achar com <b>6 buracos</b>?',()=>ip==0&&n()==6,'Cerca de 66,5%, e não 100%: (5/6)⁶ ≈ 33,5% de chance de errar todos.',()=>ip!=0?'Escolha o morro de 10 m.':'Buracos agora: '+n()+'. Ponha 6.'],
+ ['Ache o <b>menor número</b> de buracos que passa de <b>95%</b> (morro de 10 m).',()=>ip==0&&n()==17,'17 buracos: 95,5%. Com 16, seriam 94,6%.',()=>ip!=0?'Escolha o morro de 10 m.':Pa()<0.95?'Com '+n()+' buracos: '+pc(Pa())+'. Ainda abaixo de 95%.':'Com '+n()+' já passa, mas há um número menor que também passa.'],
+ ['Agora o <b>núcleo de 4 m</b> (1/15): qual o menor número que passa de 95%?',()=>ip==1&&n()==44,'44 buracos: quase o dobro do tempo que a equipe tinha. Por isso ela mudou de estratégia.',()=>ip!=1?'Escolha o núcleo de 4 m.':Pa()<0.95?'Com '+n()+' buracos: '+pc(Pa())+'. Ainda abaixo de 95%.':'Com '+n()+' já passa, mas há um número menor que também passa.'],
+ ['Repita a busca <b>100 vezes</b> e compare com a conta.',()=>sims>=100,()=>'Em '+sims+' buscas, achou em '+ok+' ('+pc(ok/sims)+'). A conta dizia '+pc(Pa())+'.',()=>'Aperte Repetir a busca 100 vezes.']]);
+function draw(){let g=RC(0,0,340,240,'#F8FAFC','rx="10"');
+ g+=LN(X0,Y0,X0+W,Y0,NAVY,1)+LN(X0,Y0,X0,Y0-H,NAVY,1);[0,0.25,0.5,0.75,1].forEach(v=>g+=LN(X0,Y(v),X0+W,Y(v),'#E5EAF1',1)+TX(X0-4,Y(v)+3,Math.round(v*100)+'%',{fs:8,a:'end',c:GRAY,w:500}));
+ [1,10,20,30,40,50,60].forEach(k=>g+=TX(X(k),Y0+14,k,{fs:8,c:GRAY,w:500}));
+ g+=LN(X0,Y(0.95),X0+W,Y(0.95),RED,1,'4 3')+TX(X0+W,Y(0.95)-4,'95%',{fs:9,a:'end',c:RED});
+ const pts=[];for(let k=1;k<=60;k++)pts.push([X(k),Y(1-Math.pow(1-p(),k))]);g+=PL(pts,ORANGE,2.5);
+ g+=LN(X(n()),Y0,X(n()),Y(Pa()),NAVY,1,'3 3')+CIR(X(n()),Y(Pa()),7,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=TX(X0+W/2,Y0+30,'número de buracos n',{fs:9,c:NAVY});
+ $('fig').innerHTML=SVG(340,240,g);$('ke').textContent=pc(1-Pa());$('ka').textContent=pc(Pa());$('kp').textContent=sims?ok+' de '+sims:'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

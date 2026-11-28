@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chuva de buracos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Chuva de buracos</h1></header>
+<main>
+<div class="card"><h2>Pontos ao acaso</h2><p class="muted" style="margin-top:0">Lance buracos ao acaso (ou toque na figura para escolher o lugar). Na estrada, mude o comprimento do morro; no alvo redondo, a fração de pontos dentro do círculo estima π.</p>
+<div id="cm" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Comprimento do morro</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button id="l1">Lançar 1</button><button class="alt" id="l10">Lançar 10</button><button class="alt" id="l100">Lançar 100</button><button class="alt" id="lp">Limpar</button></div>
+<div class="kpi"><div>Pontos<b id="kn"></b></div><div class="o">Dentro<b id="kd"></b></div><div id="kx0">Probabilidade<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Lance pontos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),pc=v=>f1(v*100)+'%';
+const EST='#D9CBB0',EST_E='#8C7A5B',MOR='#B5774A',RED='#B91C1C';
+let mo=0,pts=[];chips('cm',['Estrada','Alvo redondo'],0,i=>{mo=i;pts=[];draw();});
+const SLm=SL('sl',2,30,1,10,()=>{pts=[];draw();},v=>v+' m');const L=()=>SLm.get(),M0=25;
+const dentro=p=>mo==0?(p[0]>=M0&&p[0]<M0+L()):((p[0]-1)**2+(p[1]-1)**2<=1);
+const lanca=()=>pts.push(mo==0?[Math.random()*60,Math.random()*8]:[Math.random()*2,Math.random()*2]);
+$('l1').onclick=()=>{lanca();draw();};$('l10').onclick=()=>{for(let i=0;i<10;i++)lanca();draw();};$('l100').onclick=()=>{for(let i=0;i<100;i++)lanca();draw();};$('lp').onclick=()=>{pts=[];draw();};
+toque('fig',(x,y,novo)=>{if(!novo)return;if(mo==0){const u=(x-20)/5,v=(130-y)/5;if(u>=0&&u<=60&&v>=0&&v<=8)pts.push([u,v]);}else{const u=(x-90)/80,v=(190-y)/80;if(u>=0&&u<=2&&v>=0&&v<=2)pts.push([u,v]);}draw();});
+const nd=()=>pts.filter(dentro).length,pi=()=>pts.length?4*nd()/pts.length:0;
+MIS.def(()=>[
+ ['Na estrada, lance buracos até <b>um cair no morro</b>.',()=>mo==0&&nd()>=1,()=>'Acertou! Com o morro de '+L()+' m, a chance de cada buraco é '+L()+' ÷ 60.',()=>mo!=0?'Escolha a Estrada.':'Pontos: '+pts.length+', nenhum no morro ainda.'],
+ ['Lance <b>100 pontos</b> na estrada, com o morro de <b>10 m</b>.',()=>mo==0&&L()==10&&pts.length>=100,()=>'Caíram '+nd()+' de '+pts.length+' ('+pc(nd()/pts.length)+'). A probabilidade é 10 ÷ 60 ≈ 16,7%.',()=>mo!=0?'Escolha a Estrada.':L()!=10?'Morro agora: '+L()+' m. Ponha 10 m.':'Pontos: '+pts.length+' de 100.'],
+ ['Mude o morro para ter chance de <b>1/4</b>.',()=>mo==0&&L()==15,'15 ÷ 60 = 1/4: um morro de 15 m ocupa um quarto da estrada.',()=>mo!=0?'Escolha a Estrada.':'Chance agora: '+L()+' ÷ 60 = '+pc(L()/60)+'. Precisa de 25%.'],
+ ['No <b>alvo redondo</b>, lance pelo menos <b>300 pontos</b> e use a fração dentro do círculo para estimar <b>π</b> (erro menor que 0,15).',()=>mo==1&&pts.length>=300&&Math.abs(pi()-Math.PI)<0.15,()=>'π ≈ 4 × '+nd()+' ÷ '+pts.length+' = '+f2(pi())+'. A área do círculo (π) dividida pela do quadrado (4) é a chance de cair dentro.',()=>mo!=1?'Escolha o Alvo redondo.':pts.length<300?'Pontos: '+pts.length+' de 300.':'Estimativa '+f2(pi())+'. Lance mais pontos.']]);
+function draw(){let g=RC(0,0,340,230,'#F8FAFC','rx="10"');
+ if(mo==0){g+=RC(20,90,300,40,EST,'stroke="'+EST_E+'"')+RC(20+M0*5,90,L()*5,40,MOR);g+=TX(170,80,'morro: '+L()+' m de 60 m',{fs:10,c:'#7E4E2E'})+TX(170,150,'estrada: 60 m × 8 m',{fs:10,c:GRAY,w:500});
+  pts.forEach(p=>g+=CIR(20+p[0]*5,130-p[1]*5,2.6,dentro(p)?GREEN:NAVY));}
+ else{g+=RC(90,30,160,160,'#EEF1F6','stroke="'+NAVY+'"')+CIR(170,110,80,'#FDE9D8','stroke="'+ORANGE+'" stroke-width="1.5"');
+  pts.forEach(p=>g+=CIR(90+p[0]*80,190-p[1]*80,2.2,dentro(p)?ORANGE:NAVY));g+=TX(170,212,'quadrado de lado 2, círculo de raio 1',{fs:10,c:GRAY,w:500});}
+ $('fig').innerHTML=SVG(340,230,g);$('kn').textContent=pts.length;$('kd').textContent=nd()+(pts.length?' ('+pc(nd()/pts.length)+')':'');
+ $('kx0').innerHTML=mo==0?'Probabilidade<b>'+pc(L()/60)+'</b>':'Estimativa de π<b>'+(pts.length?f2(pi()):'—')+'</b>';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

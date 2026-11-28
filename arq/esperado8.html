@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Em ordem ou sorteando? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Em ordem ou sorteando?</h1></header>
+<main>
+<div class="card"><h2>Quantos buracos, em média?</h2><p class="muted" style="margin-top:0">Escolha o sítio e a estratégia e faça muitas buscas. Cada busca gasta um número de buracos até achar; o gráfico mostra quantas vezes cada número aconteceu e a linha laranja marca a média. Toque no gráfico para fazer mais uma busca.</p>
+<div id="cs" style="margin-bottom:4px"></div><div id="ce" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin:6px 0"><button id="b1">1 busca</button><button class="alt" id="b100">100 buscas</button><button class="alt" id="lp">Limpar</button></div>
+<div class="kpi"><div>Buscas<b id="kn"></b></div><div class="o">Média de buracos<b id="km"></b></div><div>Valor esperado<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça buscas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),pc=v=>f1(v*100)+'%';
+const EST='#D9CBB0',EST_E='#8C7A5B',MOR='#B5774A',RED='#B91C1C';
+let si=0,es=0,res=[];const NP=[6,15];
+chips('cs',['Morro de 10 m (6 trechos)','Núcleo de 4 m (15 posições)'],0,i=>{si=i;res=[];draw();});
+chips('ce',['Em ordem','Sorteando'],0,i=>{es=i;res=[];draw();});
+const busca=()=>{const N=NP[si],m=Math.floor(Math.random()*N);if(es==0)return m+1;let k=0;while(true){k++;if(Math.floor(Math.random()*N)==m)return k;}};
+$('b1').onclick=()=>{res.push(busca());draw();};$('b100').onclick=()=>{for(let i=0;i<100;i++)res.push(busca());draw();};$('lp').onclick=()=>{res=[];draw();};
+toque('fig',(x,y,novo)=>{if(novo){res.push(busca());draw();}});
+const med=()=>res.reduce((s,v)=>s+v,0)/res.length,EV=()=>es==0?(NP[si]+1)/2:NP[si];
+const st=(a,b,c)=>si==a&&es==b&&res.length>=100;
+MIS.def(()=>[
+ ['Morro de 10 m, <b>em ordem</b>: faça <b>100 buscas</b>.',()=>st(0,0),()=>'Média de '+f2(med())+' buracos, perto do valor esperado 3,5. E nunca passa de 6.',()=>si!=0?'Escolha o morro de 10 m.':es!=0?'Escolha Em ordem.':'Buscas: '+res.length+' de 100.'],
+ ['Agora <b>sorteando</b> (morro de 10 m): 100 buscas.',()=>st(0,1),()=>'Média de '+f2(med())+', perto de 6 = 1 ÷ (1/6). Algumas buscas gastaram muito mais: o maior foi '+Math.max(...res)+'.',()=>si!=0?'Escolha o morro de 10 m.':es!=1?'Escolha Sorteando.':'Buscas: '+res.length+' de 100.'],
+ ['<b>Núcleo de 4 m</b>, em ordem: 100 buscas.',()=>st(1,0),()=>'Média de '+f2(med())+', perto de 8 = (1 + ... + 15) ÷ 15.',()=>si!=1?'Escolha o núcleo de 4 m.':es!=0?'Escolha Em ordem.':'Buscas: '+res.length+' de 100.'],
+ ['Núcleo de 4 m, <b>sorteando</b>: 100 buscas. Quanto custa sortear?',()=>st(1,1),()=>'Média de '+f2(med())+', perto de 15: quase o dobro de cavar em ordem.',()=>si!=1?'Escolha o núcleo de 4 m.':es!=1?'Escolha Sorteando.':'Buscas: '+res.length+' de 100.']]);
+function draw(){let g=RC(0,0,340,230,'#F8FAFC','rx="10"');const MX=es==0?NP[si]:Math.max(30,...res.length?res:[0]),X0=30,W=290,Y0=190,c={};
+ res.forEach(v=>{const b=Math.min(v,MX);c[b]=(c[b]||0)+1;});const top=Math.max(5,...Object.values(c)),bw=W/MX;
+ for(let k=1;k<=MX;k++){const h=(c[k]||0)/top*150;g+=RC(X0+(k-1)*bw+1,Y0-h,Math.max(1,bw-2),h,BLUE,'rx="1"');if(MX<=15||k%5==0||k==1)g+=TX(X0+(k-0.5)*bw,Y0+13,k,{fs:8,c:GRAY,w:500});}
+ g+=LN(X0,Y0,X0+W,Y0,NAVY,1);
+ if(res.length){const m=med();g+=LN(X0+(m-0.5)*bw,Y0,X0+(m-0.5)*bw,26,ORANGE,2)+TX(X0+(m-0.5)*bw,20,'média '+f2(m),{fs:10,c:ORANGE});}
+ g+=TX(X0+W/2,Y0+30,'buracos gastos até achar',{fs:9,c:NAVY});
+ $('fig').innerHTML=SVG(340,230,g);$('kn').textContent=res.length;$('km').textContent=res.length?f2(med()):'—';$('ke').textContent=fmt(EV());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

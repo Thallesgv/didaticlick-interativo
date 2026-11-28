@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A grade · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A grade</h1></header>
+<main>
+<div class="card"><h2>Buracos em intervalos</h2><p class="muted" style="margin-top:0">Os buracos ficam a cada <b>d</b> metros ao longo da estrada. Mude o intervalo e o tamanho do sítio, e arraste o sítio (marrom) para os lados: veja quando ele escapa entre dois buracos.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Intervalo d</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Sítio</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Posição do sítio</b><input type="range"><span></span></div>
+<div class="kpi"><div>Buracos<b id="kb"></b></div><div class="o">P(achar) = L ÷ d<b id="kp"></b></div><div>Agora<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a grade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),pc=v=>f1(v*100)+'%';
+const EST='#D9CBB0',EST_E='#8C7A5B',MOR='#B5774A',RED='#B91C1C';
+const Sd=SL('sd',2,15,1,10,()=>draw(),v=>v+' m'),Sl=SL('sl',1,12,1,10,()=>draw(),v=>v+' m'),Sp=SL('sp',0,59,0.5,22,()=>draw(),v=>f1(v)+' m');
+const d=()=>Sd.get(),L=()=>Sl.get(),pos=()=>Math.min(Sp.get(),60-L()),K=5,X0=20;let fugiu=false;
+const bur=()=>{const b=[];for(let x=d()/2;x<60;x+=d())b.push(x);return b;},hit=()=>bur().filter(x=>x>=pos()&&x<pos()+L()).length>0,P_=()=>Math.min(1,L()/d());
+toque('fig',(x)=>{Sp.set(Math.min(60-L(),Math.max(0,Math.round(((x-X0)/K-L()/2)*2)/2)));draw();});
+MIS.def(()=>[
+ ['Com buracos a cada <b>10 m</b> e o morro de <b>10 m</b>, arraste o morro: ele escapa algum dia?',()=>d()==10&&L()==10&&hit(),()=>'Nunca escapa: com L = d, algum buraco sempre cai dentro. Chance de 100% com só 6 buracos.',()=>d()!=10?'Intervalo agora: '+d()+' m. Ponha 10.':'Sítio agora: '+L()+' m. Ponha 10.'],
+ ['Agora o <b>núcleo de 4 m</b>, com buracos a cada 10 m. Arraste até ele <b>escapar</b> entre dois buracos.',()=>d()==10&&L()==4&&!hit(),'Escapou: entre dois buracos há 10 m, e o núcleo só tem 4. A chance de achar é 4 ÷ 10 = 40%.',()=>d()!=10?'Intervalo agora: '+d()+' m. Ponha 10.':L()!=4?'Sítio agora: '+L()+' m. Ponha 4.':'Um buraco ainda cai no núcleo. Arraste-o para o meio de dois buracos.'],
+ ['<b>Garanta</b> o núcleo de 4 m, com o maior intervalo possível.',()=>L()==4&&d()==4,'Intervalo de 4 m: 15 buracos em 60 m. Certeza, mas 15 horas de máquina.',()=>L()!=4?'Sítio agora: '+L()+' m. Ponha 4.':d()<4?'Com '+d()+' m também garante, mas gasta mais buracos. Há um intervalo maior.':'Com '+d()+' m, a chance é '+pc(P_())+'.'],
+ ['Com o núcleo de 4 m, ache o intervalo que dá chance de <b>80%</b>.',()=>L()==4&&d()==5,'4 ÷ 5 = 80%, com 12 buracos.',()=>L()!=4?'Sítio agora: '+L()+' m. Ponha 4.':'Chance agora: 4 ÷ '+d()+' = '+pc(P_())+'.']]);
+function draw(){let g=RC(0,0,340,170,'#F8FAFC','rx="10"');const p=pos();
+ g+=RC(X0,50,300,50,EST,'stroke="'+EST_E+'"')+RC(X0+p*K,50,L()*K,50,MOR);
+ bur().forEach(x=>{const h=x>=p&&x<p+L();g+=CIR(X0+x*K,75,6,h?GREEN:NAVY,'stroke="#fff" stroke-width="1.5"');});
+ for(let x=0;x<=60;x+=10)g+=LN(X0+x*K,100,X0+x*K,106,NAVY,1)+TX(X0+x*K,118,x,{fs:8,c:GRAY,w:500});
+ g+=TX(170,36,hit()?'achou: um buraco caiu no sítio':'o sítio escapou entre dois buracos',{fs:11,c:hit()?GREEN:RED});
+ g+=TX(170,148,'estrada de 60 m · arraste o sítio',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,170,g);$('kb').textContent=bur().length;$('kp').textContent=pc(P_());$('ka').textContent=hit()?'achou':'escapou';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

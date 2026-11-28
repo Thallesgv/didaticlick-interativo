@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A árvore das pistas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A árvore das pistas</h1></header>
+<main>
+<div class="card"><h2>600 casos imaginários</h2><p class="muted" style="margin-top:0">Escolha quantos dos 600 casos estão no sítio (ou doentes) e com que frequência a pista aparece em cada galho. A árvore se refaz e mostra a chance de ser o sítio, sabendo que a pista apareceu.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>No sítio (de 600)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Pista, se for o sítio</b><input type="range"><span></span></div>
+<div class="sl" id="sb"><b>Pista, se não for</b><input type="range"><span></span></div>
+<div class="kpi"><div>Antes da pista<b id="k0"></b></div><div class="o">P(sítio | pista)<b id="k1"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a árvore.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),pc=v=>f1(v*100)+'%';
+const EST='#D9CBB0',EST_E='#8C7A5B',MOR='#B5774A',RED='#B91C1C';
+const Ss=SL('ss',0,600,1,300,()=>draw(),v=>v),Sa=SL('sa',0,100,5,50,()=>draw(),v=>v+'%'),Sb=SL('sb',0,100,5,50,()=>draw(),v=>v+'%');
+const s=()=>Ss.get(),a=()=>Sa.get()/100,b=()=>Sb.get()/100,v1=()=>s()*a(),v2=()=>(600-s())*b(),post=()=>v1()+v2()>0?v1()/(v1()+v2()):0;
+const q=v=>fmt(Math.round(v*10)/10);
+MIS.def(()=>[
+ ['Monte a árvore das <b>conchas</b>: 100 no sítio, pista em <b>90%</b> no sítio e <b>40%</b> no aterro.',()=>s()==100&&Sa.get()==90&&Sb.get()==40,'90 ÷ (90 + 200) ≈ 31%. As conchas quase dobraram a chance, mas não deram certeza.',()=>s()!=100?'No sítio agora: '+s()+'. Ponha 100.':Sa.get()!=90?'Pista no sítio: '+Sa.get()+'%. Ponha 90%.':'Pista fora: '+Sb.get()+'%. Ponha 40%.'],
+ ['Troque pela pista do <b>carvão em camadas</b>: 80% no sítio, só <b>5%</b> no aterro (100 no sítio).',()=>s()==100&&Sa.get()==80&&Sb.get()==5,'80 ÷ (80 + 25) ≈ 76%: uma pista que quase não aparece fora do sítio vale muito mais.',()=>s()!=100?'No sítio agora: '+s()+'. Ponha 100.':Sa.get()!=80?'Pista no sítio: '+Sa.get()+'%. Ponha 80%.':'Pista fora: '+Sb.get()+'%. Ponha 5%.'],
+ ['Faça uma <b>pista inútil</b>: com ela, a chance não muda (as duas porcentagens iguais, maiores que zero).',()=>Sa.get()==Sb.get()&&Sa.get()>0&&s()>0&&s()<600,()=>'Pista igual nos dois galhos: P(sítio | pista) = '+pc(post())+', igual a antes. Uma pista que aparece igual em toda parte não informa nada.',()=>'Pista no sítio '+Sa.get()+'% e fora '+Sb.get()+'%. Deixe as duas iguais (e o sítio entre 1 e 599).'],
+ ['Use a árvore para o <b>exame médico</b>: 6 doentes em 600 (1%), positivo em <b>90%</b> dos doentes e em <b>10%</b> dos saudáveis.',()=>s()==6&&Sa.get()==90&&Sb.get()==10,'5,4 ÷ (5,4 + 59,4) ≈ 8,3%. Numa doença rara, a maioria dos positivos é falso positivo.',()=>s()!=6?'Doentes agora: '+s()+'. Ponha 6.':Sa.get()!=90?'Positivo nos doentes: '+Sa.get()+'%. Ponha 90%.':'Positivo nos saudáveis: '+Sb.get()+'%. Ponha 10%.']]);
+function no(x,y,t1,t2,c){return RC(x-46,y-17,92,34,'#fff','stroke="'+c+'" stroke-width="1.5" rx="6"')+TX(x,y-1,t1,{fs:11,c})+TX(x,y+12,t2,{fs:8,c:GRAY,w:500});}
+function draw(){let g=RC(0,0,340,250,'#F8FAFC','rx="10"');
+ const L=(x1,y1,x2,y2)=>LN(x1,y1,x2,y2,'#C7CDD8',1.5);
+ g+=L(68,125,112,65)+L(68,125,112,185)+L(204,65,236,35)+L(204,65,236,95)+L(204,185,236,155)+L(204,185,236,215);
+ g+=no(48,125,'600','casos',NAVY)+no(158,65,q(s()),'no sítio','#7E4E2E')+no(158,185,q(600-s()),'fora','#8C7A5B');
+ g+=no(284,35,q(v1()),'com pista',GREEN)+no(284,95,q(s()-v1()),'sem pista',GRAY)+no(284,155,q(v2()),'com pista',ORANGE)+no(284,215,q(600-s()-v2()),'sem pista',GRAY);
+ $('fig').innerHTML=SVG(340,250,g);$('k0').textContent=pc(s()/600);$('k1').textContent=v1()+v2()>0?q(v1())+' ÷ '+q(v1()+v2())+' = '+pc(post()):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

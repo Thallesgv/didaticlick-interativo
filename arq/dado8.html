@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os seis trechos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Os seis trechos</h1></header>
+<main>
+<div class="card"><h2>Cavar ao acaso</h2><p class="muted" style="margin-top:0">Em cada tentativa, o morro se esconde num trecho sorteado. Toque num trecho para cavar nele, ou use os botões para cavar ao acaso muitas vezes. O gráfico mostra a frequência dos acertos chegando perto de 1/6.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="margin:6px 0"><button id="c1">Cavar 1 vez</button><button class="alt" id="c10">10 vezes</button><button class="alt" id="c100">100 vezes</button><button class="alt" id="lp">Limpar</button></div>
+<div class="kpi"><div>Tentativas<b id="kt"></b></div><div class="o">Acertos<b id="ka"></b></div><div>Frequência<b id="kf"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Cave.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),pc=v=>f1(v*100)+'%';
+const EST='#D9CBB0',EST_E='#8C7A5B',MOR='#B5774A',RED='#B91C1C';
+let t=0,a=0,hist=[],ult=null;
+const cava=k=>{const m=Math.floor(Math.random()*6);if(k===undefined)k=Math.floor(Math.random()*6);t++;if(k==m)a++;ult=[k,m];hist.push(a/t);};
+$('c1').onclick=()=>{cava();draw();};$('c10').onclick=()=>{for(let i=0;i<10;i++)cava();draw();};$('c100').onclick=()=>{for(let i=0;i<100;i++)cava();draw();};$('lp').onclick=()=>{t=a=0;hist=[];ult=null;draw();};
+toque('fig',(x,y,novo)=>{if(!novo||y>70)return;const k=Math.floor((x-20)/50);if(k>=0&&k<6){cava(k);draw();}});
+MIS.def(()=>[
+ ['Cave até <b>acertar</b> o trecho do morro uma vez.',()=>a>=1,()=>'Acertou em '+t+' tentativa'+(t>1?'s':'')+'. Cada tentativa tinha chance de 1/6.',()=>'Tentativas: '+t+', acertos: 0. Continue cavando.'],
+ ['Chegue a <b>60 tentativas</b>. Quantos acertos você esperava?',()=>t>=60,()=>'Esperava uns 10 (60 ÷ 6). Você teve '+a+'. Com poucas tentativas, a frequência ainda balança muito.',()=>'Tentativas: '+t+' de 60.'],
+ ['Chegue a <b>600 tentativas</b>.',()=>t>=600,()=>'Frequência de '+f2(a/t)+', perto de 1/6 ≈ 0,17. Com muitas tentativas, a frequência se aproxima da probabilidade.',()=>'Tentativas: '+t+' de 600.'],
+ ['Continue até a frequência ficar a menos de <b>0,01</b> de 1/6, com pelo menos 600 tentativas.',()=>t>=600&&Math.abs(a/t-1/6)<0.01,()=>'Frequência '+f2(a/t)+' depois de '+t+' tentativas. É a lei dos grandes números: o acaso, repetido muitas vezes, fica previsível.',()=>t<600?'Faça pelo menos 600 tentativas.':'Diferença agora: '+fmt((Math.round(Math.abs(a/t-1/6)*1000)/1000).toFixed(3))+'. Continue cavando.']]);
+function draw(){let g=RC(0,0,340,250,'#F8FAFC','rx="10"');
+ for(let k=0;k<6;k++){const x=20+k*50,c=ult&&ult[1]==k?MOR:EST;g+=RC(x,14,46,46,c,'stroke="'+EST_E+'" stroke-width="1" rx="3"')+TX(x+23,76,'trecho '+(k+1),{fs:9,c:GRAY,w:500});
+  if(ult&&ult[0]==k)g+=CIR(x+23,37,8,ult[0]==ult[1]?GREEN:NAVY,'stroke="#fff" stroke-width="2"');}
+ const X0=40,W=280,Y0=226,H=120,Y=v=>Y0-v/0.5*H;
+ g+=LN(X0,Y0,X0+W,Y0,NAVY,1)+LN(X0,Y0,X0,Y0-H,NAVY,1);[0,0.25,0.5].forEach(v=>g+=TX(X0-4,Y(v)+3,fmt(v),{fs:8,a:'end',c:GRAY,w:500}));
+ g+=LN(X0,Y(1/6),X0+W,Y(1/6),ORANGE,1.5,'5 4')+TX(X0+W,Y(1/6)-4,'1/6',{fs:10,a:'end',c:ORANGE});
+ if(hist.length>1){const n=hist.length,st=Math.max(1,Math.floor(n/300));const pts=[];for(let i=0;i<n;i+=st)pts.push([X0+i/(n-1)*W,Y(Math.min(0.5,hist[i]))]);pts.push([X0+W,Y(Math.min(0.5,hist[n-1]))]);g+=PL(pts,BLUE,2);}
+ g+=TX(X0+W/2,Y0+16,'tentativas (0 a '+t+')',{fs:9,c:GRAY,w:500})+TX(X0,Y0-H-6,'frequência dos acertos',{fs:9,a:'start',c:NAVY});
+ $('fig').innerHTML=SVG(340,250,g);$('kt').textContent=t;$('ka').textContent=a;$('kf').textContent=t?f2(a/t):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
