@@ -160,7 +160,31 @@ const LIV={'geo1':{T:["Inclinação: ângulo e porcentagem", "A tangente da enco
 7:()=>{const t=R(0,2);
  if(t==0){const n=R(1,40);return{q:`Quantos kN seguram <b>${n}</b> tirantes de 250 kN?`,a:n*250,exp:`${n} × 250 = ${fmt(n*250)} kN.`};}
  if(t==1){const R0=R(100,180)*100,T=14000;const n=Math.max(0,Math.ceil((1.5*T-R0)/250));return{q:`Sem tirantes, o pacote segura <b>${fmt(R0)} kN</b> e empurra 14 000 kN. Quantos tirantes de 250 kN, no mínimo, para FS ≥ 1,5?`,a:n,exp:`Meta 21 000 kN; faltam ${fmt(21000-R0)} kN; ÷ 250 ≈ ${fmt((21000-R0)/250)} → ${n}.`};}
- return P([{q:'Os drenos ajudam porque:',opts:['baixam a água','pesam mais','aumentam a inclinação'],a:'baixam a água',exp:'Menos poropressão.'},{q:'Grama e canaletas diminuem:',opts:['a infiltração','a coesão','o peso'],a:'a infiltração',exp:'A água escorre.'},{q:'Os tirantes entram no FS:',opts:['somando no que segura','tirando do que empurra'],a:'somando no que segura',exp:'n × 250 kN.'}]);}}}};
+ return P([{q:'Os drenos ajudam porque:',opts:['baixam a água','pesam mais','aumentam a inclinação'],a:'baixam a água',exp:'Menos poropressão.'},{q:'Grama e canaletas diminuem:',opts:['a infiltração','a coesão','o peso'],a:'a infiltração',exp:'A água escorre.'},{q:'Os tirantes entram no FS:',opts:['somando no que segura','tirando do que empurra'],a:'somando no que segura',exp:'n × 250 kN.'}]);}}},'geo7':{T:["Tempo de retorno", "Ao menos uma vez em n anos", "Alarme falso e alarme perdido", "A árvore de probabilidades", "O custo de errar para cada lado", "Níveis de alerta e a sirene"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const n=P([20,25,40,50,60,100]),k=P([1,2,4,5,10].filter(x=>n%x==0));return{q:`Uma chuva foi igualada ou passada em <b>${k}</b> dos <b>${n}</b> anos da série. Qual o tempo de retorno, em anos?`,a:n/k,exp:`T = ${n} ÷ ${k} = ${fmt(n/k)} anos.`};}
+ if(t==1){const T=P([2,4,5,10,20,25,50,100]);return{q:`Uma chuva tem tempo de retorno de <b>${T} anos</b>. Qual a chance de ela cair num ano, em %?`,a:100/T,exp:`P = 1 ÷ ${T} = ${fmt(100/T)}%.`};}
+ const p=P([1,2,4,5,10,20,25,50]);return{q:`Uma chuva tem <b>${p}%</b> de chance por ano. Qual o tempo de retorno, em anos?`,a:100/p,exp:`T = 1 ÷ ${fmt(p/100)} = ${fmt(100/p)} anos.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const T=P([2,4,5,10,20,25,50]),n=R(2,40),v=Math.round((1-Math.pow(1-1/T,n))*1000)/10;return{q:`Chuva de <b>${T} anos</b>: qual a chance de ela cair ao menos uma vez em <b>${n} anos</b>? (em %, uma casa)`,a:v,tol:0.11,exp:`1 − (1 − 1/${T})^${n} = 1 − ${fmt(Math.round(Math.pow(1-1/T,n)*1000)/1000)} ≈ ${fmt(v)}%.`};}
+ if(t==1){const T=P([2,4,5,10,20,25]),v=Math.round(Math.pow(1/T,2)*10000)/100;return{q:`Qual a chance de a chuva de <b>${T} anos</b> cair em dois anos seguidos? (em %, duas casas)`,a:v,tol:0.006,exp:`(1/${T})² = ${fmt(v)}%.`};}
+ const n=R(2,6);return{q:`Qual a chance de sair <b>cara</b> ao menos uma vez em <b>${n}</b> lançamentos de uma moeda? (em %, uma casa)`,a:Math.round((1-Math.pow(0.5,n))*1000)/10,tol:0.11,exp:`1 − 0,5^${n} = ${fmt(Math.round((1-Math.pow(0.5,n))*1000)/10)}%.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const a=R(3,20),p=R(0,5);return{q:`Um alarme pegou <b>${a}</b> escorregamentos e perdeu <b>${p}</b>. Qual a taxa de acerto, em %? (inteiro)`,a:Math.round(a/(a+p)*100),tol:1,exp:`${a} ÷ ${a+p} ≈ ${Math.round(a/(a+p)*100)}%.`};}
+ if(t==1){const a=R(3,20),f=R(1,20);return{q:`Houve <b>${a}</b> acertos e <b>${f}</b> alarmes falsos. Que fração dos alarmes foi falsa, em %? (inteiro)`,a:Math.round(f/(a+f)*100),tol:1,exp:`${f} ÷ ${a+f} ≈ ${Math.round(f/(a+f)*100)}%.`};}
+ const tocou=R(0,1),desceu=R(0,1),cx=['silêncio certo','alarme perdido','alarme falso','acerto'][tocou*2+desceu];
+ return{q:`O alarme <b>${tocou?'tocou':'não tocou'}</b> e o morro <b>${desceu?'desceu':'não desceu'}</b>. Em que caixa cai?`,opts:['acerto','alarme falso','alarme perdido','silêncio certo'],a:cx,exp:`Tocou? ${tocou?'sim':'não'}. Desceu? ${desceu?'sim':'não'}.`};},
+4:()=>{const a=R(1,9)/10,f=R(1,9)/10,r=R(0,5)/10,t=R(0,1),v=Math.round((a*f+(1-a)*r)*1000)/1000;
+ if(t==0)return{q:`Chuva forte com chance <b>${fmt(a)}</b>; desce com chuva forte <b>${fmt(f)}</b>; desce com chuva fraca <b>${fmt(r)}</b>. Qual P(desce)? (três casas)`,a:v,tol:0.0011,exp:`${fmt(a)} × ${fmt(f)} + ${fmt(Math.round((1-a)*10)/10)} × ${fmt(r)} = ${fmt(v)}.`};
+ const x=Math.round(a*f*1000)/1000;return{q:`Chuva forte com chance <b>${fmt(a)}</b> e desce com chuva forte <b>${fmt(f)}</b>. Qual a probabilidade de chuva forte <b>e</b> o morro descer? (três casas)`,a:x,tol:0.0011,exp:`${fmt(a)} × ${fmt(f)} = ${fmt(x)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const C=R(2,40)*10,L=R(5,50)*100;return{q:`A saída custa <b>R$ ${C} mil</b> e evitaria uma perda de <b>R$ ${fmt(L)} mil</b>. A partir de que chance (em %) sair compensa? (uma casa)`,a:Math.round(C/L*1000)/10,tol:0.11,exp:`C ÷ L = ${C} ÷ ${fmt(L)} ≈ ${fmt(Math.round(C/L*1000)/10)}%.`};}
+ if(t==1){const p=R(1,90),L=R(5,50)*100;return{q:`Chance de <b>${p}%</b> de o morro descer; perda de <b>R$ ${fmt(L)} mil</b>. Qual o custo esperado de não sair, em R$ mil?`,a:p*L/100,exp:`${p}% × ${fmt(L)} = ${fmt(p*L/100)} mil.`};}
+ const p=R(1,20),C=R(2,30)*10,L=R(5,30)*100;return{q:`p = <b>${p}%</b>, C = <b>R$ ${C} mil</b>, L = <b>R$ ${fmt(L)} mil</b>. Pela regra custo-perda (sem contar vidas):`,opts:['sair','ficar','empate'],a:p*L/100>C?'sair':p*L/100<C?'ficar':'empate',exp:`p·L = ${fmt(p*L/100)} contra C = ${C}.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const d=R(1,6),h=P([3,4,6,8,12,24]);return{q:`A trinca abriu <b>${d} mm</b> em <b>${h} horas</b>. Qual a velocidade, em mm por dia?`,a:d*24/h,exp:`${d} × 24 ÷ ${h} = ${fmt(d*24/h)} mm/dia.`};}
+ const c1=R(0,60),c24=R(20,140),c96=R(40,200),tr=P([1,1.5,2,3,5,8]);const n=(c1>=30)+(c24>=70)+(c96>=110),ac=tr>2;
+ const lv=n==3||(n==2&&ac)?3:(n==2||(n==1&&ac)?2:(n==1?1:0)),NOM=['Observação','Atenção','Alerta','Alerta máximo'];
+ return{q:`Chuva: <b>${c1}</b> mm em 1 h, <b>${c24}</b> em 24 h, <b>${c96}</b> em 96 h; trinca a <b>${fmt(tr)} mm/dia</b>. Qual o nível? (limiares 30/70/110; trinca acelerando: mais de 2 mm/dia)`,opts:NOM,a:NOM[lv],exp:`${n} limiar(es) passado(s); trinca ${ac?'acelerando':'normal'}: ${NOM[lv]}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='geo1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A árvore · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A árvore</h1></header>
+<main>
+<div class="card"><h2>A árvore do dia 9</h2><p class="muted" style="margin-top:0">Mude a chance de chuva forte e as chances de o morro descer com chuva forte e com chuva fraca (arraste ou use − e +). Cada galho fica tão grosso quanto a sua probabilidade; as pontas vermelhas são os caminhos em que o morro desce.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="pc"><b>Chance de chuva forte</b><input type="range"><span></span></div><div class="sl" id="pf"><b>Desce, se a chuva for forte</b><input type="range"><span></span></div><div class="sl" id="pr"><b>Desce, se a chuva for fraca</b><input type="range"><span></span></div><div class="kpi"><div>Forte e desce<b id="k1"></b></div><div>Fraca e desce<b id="k2"></b></div><div class="o">P(desce)<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+"%";
+const PC=SL('pc',0,100,5,50,()=>draw(),v=>v+'%'),PF=SL('pf',0,100,5,40,()=>draw(),v=>v+'%'),PR=SL('pr',0,100,5,20,()=>draw(),v=>v+'%');
+const pd=()=>PC.get()/100*PF.get()/100+(1-PC.get()/100)*PR.get()/100;
+MIS.def(()=>[
+ ['Monte a árvore do prefeito: chuva forte <b>80%</b>; desce com forte <b>60%</b>; desce com fraca <b>10%</b>.',()=>PC.get()==80&&PF.get()==60&&PR.get()==10,'0,48 + 0,02 = 0,50: meia a meia.',()=>'Agora: '+PC.get()+'%, '+PF.get()+'% e '+PR.get()+'%.'],
+ ['E se os drenos estivessem prontos? Chuva forte <b>80%</b>, mas desce com forte só <b>10%</b> (e 10% com fraca).',()=>PC.get()==80&&PF.get()==10&&PR.get()==10,'P(desce) = 0,10: os drenos dividiriam o risco por cinco.',()=>'Agora: '+PC.get()+'%, '+PF.get()+'% e '+PR.get()+'%.'],
+ ['Com <b>60%</b> e <b>10%</b> nos galhos de baixo, ache a chance de chuva forte que deixa <b>P(desce) = 30%</b>.',()=>PF.get()==60&&PR.get()==10&&Math.abs(pd()-0.3)<1e-9,'40%: 0,6 × 0,4 + 0,1 × 0,6 = 0,24 + 0,06 = 0,30.',()=>PF.get()!=60||PR.get()!=10?'Ponha 60% e 10% nos galhos de baixo.':'P(desce) agora: '+pc(pd())+'.']]);
+function draw(){const W=340,H=230,a=PC.get()/100,f=PF.get()/100,r=PR.get()/100;let g=RC(0,0,W,H,'#fff','rx="10"');
+ const R=[24,115],N1=[120,60],N2=[120,170],F=[[215,25,a*f,'desce'],[215,90,a*(1-f),'fica'],[215,140,(1-a)*r,'desce'],[215,205,(1-a)*(1-r),'fica']];
+ const w=p=>1+p*14;
+ g+=LN(R[0],R[1],N1[0],N1[1],ORANGE,w(a))+LN(R[0],R[1],N2[0],N2[1],ORANGE,w(1-a));
+ g+=TX(66,76,fmt(a),{fs:10,c:ORANGE})+TX(66,162,fmt(Math.round((1-a)*100)/100),{fs:10,c:ORANGE});
+ [[N1,F[0],f],[N1,F[1],1-f],[N2,F[2],r],[N2,F[3],1-r]].forEach(([n,fo,p])=>{g+=LN(n[0],n[1],fo[0],fo[1],NAVY,w(p))+TX((n[0]+fo[0])/2,(n[1]+fo[1])/2-6,fmt(Math.round(p*100)/100),{fs:9,c:NAVY});});
+ g+=CIR(R[0],R[1],7,NAVY)+TX(R[0],R[1]+20,'dia 9',{fs:9,c:NAVY})+CIR(N1[0],N1[1],6,ORANGE)+TX(N1[0],N1[1]-12,'forte',{fs:9,c:ORANGE})+CIR(N2[0],N2[1],6,ORANGE)+TX(N2[0],N2[1]+20,'fraca',{fs:9,c:ORANGE});
+ for(const fo of F){const c=fo[3]=='desce'?VERM:VERDE;g+=CIR(fo[0],fo[1],6,c)+TX(fo[0]+10,fo[1]+4,fo[3]+': '+fmt(Math.round(fo[2]*1000)/1000),{fs:10,a:'start',c});}
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=fmt(Math.round(a*f*1000)/1000);$('k2').textContent=fmt(Math.round((1-a)*r*1000)/1000);$('k3').textContent=pc(pd());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
