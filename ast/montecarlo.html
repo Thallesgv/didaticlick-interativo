@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monte Carlo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Monte Carlo</h1></header>
+<main>
+<div class="card"><h2>Sortear para calcular</h2><p class="muted" style="margin-top:0">No modo π, cada sorteio é um ponto no quadrado: a fração que cai no quarto de círculo é π ÷ 4. No modo Teimoso, cada sorteio é um clone com uma órbita um pouco diferente, sorteada com os erros do dia 10: conte quantos batem na Terra.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="s1">Sortear 100</button><button id="s2">Sortear 1.000</button><button id="s3">Sortear 10.000</button><button class="alt" id="s0">Limpar</button></div>
+<div class="kpi"><div>Sorteios n<b id="kn"></b></div><div>Acertos k<b id="kk"></b></div><div class="o">Estimativa<b id="ke"></b></div><div>Erro (√k ÷ n)<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Sorteie.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const erf=x=>{const s=x<0?-1:1;x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y;};
+const PHI=z=>0.5*(1+erf(z/Math.SQRT2));
+const GAUSS=()=>{let u=0,v=0;while(u===0)u=Math.random();while(v===0)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const PCT=v=>v>=0.1?r1(v*100)+'%':v>=0.0001?r2(v*100)+'%':(v>0?'menos de 0,01%':'0%');
+let modo=0,N=[0,0],K=[0,0],PT=[[],[]];const RE=15630,SX=3e5,SY=2e4,CX=4000,CY=1000;
+chips('ch',['Estimar π','Clones do Teimoso'],0,i=>{modo=i;draw();});
+function sorteia(n){for(let i=0;i<n;i++){let ok,p;if(modo==0){const a=Math.random(),b=Math.random();ok=a*a+b*b<=1;p=[a,b,ok];}else{const x=-CX+SX*GAUSS(),y=-CY+SY*GAUSS();ok=x*x+y*y<=RE*RE;p=[x,y,ok];}
+ N[modo]++;if(ok)K[modo]++;if(PT[modo].length<4000||ok)PT[modo].push(p);if(PT[modo].length>6000)PT[modo].splice(0,1000);}draw();}
+$('s1').onclick=()=>sorteia(100);$('s2').onclick=()=>sorteia(1000);$('s3').onclick=()=>sorteia(10000);$('s0').onclick=()=>{N[modo]=0;K[modo]=0;PT[modo]=[];draw();};
+const est=()=>N[modo]?(modo==0?4*K[0]/N[0]:K[1]/N[1]):NaN,erro=()=>N[modo]?(modo==0?4:1)*Math.sqrt(Math.max(K[modo],1))/N[modo]:NaN;
+MIS.def(()=>[
+ ['No modo π, faça pelo menos <b>100 sorteios</b>. Quanto deu a estimativa?',()=>N[0]>=100,()=>'Com '+fmt(N[0])+' pontos: π ≈ '+r2(4*K[0]/N[0])+'. Ainda grosseira.','Sorteie pontos no modo π.'],
+ ['Chegue a uma estimativa de π com erro menor que <b>0,02</b>, com pelo menos 5.000 pontos.',()=>N[0]>=5000&&Math.abs(4*K[0]/N[0]-Math.PI)<0.02,()=>'Com '+fmt(N[0])+' pontos: π ≈ '+(Math.round(4*K[0]/N[0]*1000)/1000).toString().replace('.',',')+'. Para ganhar uma casa decimal, são precisos uns 100 vezes mais pontos.',()=>N[0]<5000?'Agora: '+fmt(N[0])+' pontos.':'Ainda não: π ≈ '+r2(4*K[0]/N[0])+'. Sorteie mais.'],
+ ['Troque para os <b>clones do Teimoso</b> e sorteie <b>1.000</b>. Quantos batem?',()=>N[1]>=1000,()=>K[1]+' de '+fmt(N[1])+': '+PCT(K[1]/N[1])+'. Com tão poucos acertos, a estimativa ainda balança muito.','Escolha os clones e sorteie.'],
+ ['Continue até ter pelo menos <b>20.000 clones</b>. A chance fica perto de 1,9%?',()=>N[1]>=20000,()=>'Estimativa: '+PCT(K[1]/N[1])+' ± '+PCT(Math.sqrt(K[1])/N[1])+'. A conta exata do livro dá 1,9%.',()=>'Agora: '+fmt(N[1])+' clones.']]);
+function draw(){const W=340,H=240;let g;
+ if(modo==0){g=RC(0,0,W,H,'#F8FAFC','rx="10"');const s=200,x0=70,y0=20;g+=RC(x0,y0,s,s,'#fff','stroke="'+NAVY+'"')+`<path d="M${x0} ${y0} L${x0} ${y0+s} A${s} ${s} 0 0 0 ${x0+s} ${y0}" fill="none"/>`+`<path d="M${x0} ${y0+s} L${x0} ${y0} A${s} ${s} 0 0 1 ${x0+s} ${y0+s} Z" fill="#FDE9D8" stroke="${NAVY}"/>`;
+  PT[0].slice(-3000).forEach(([a,b,ok])=>g+=`<circle cx="${x0+a*s}" cy="${y0+s-b*s}" r="1.3" fill="${ok?ORANGE:NAVY}"/>`);}
+ else{g=RC(0,0,W,H,CEU,'rx="10"');const k=150/(2.2*SX),cx=170,cy=120,k2=k*6;
+  PT[1].slice(-4000).forEach(([x,y,ok])=>{if(Math.abs(x*k)<168&&Math.abs(y*k2)<116)g+=`<circle cx="${cx+x*k}" cy="${cy-y*k2}" r="${ok?2.4:1}" fill="${ok?ORANGE:'#CBD5E1'}"/>`;});
+  g+=`<ellipse cx="${cx}" cy="${cy}" rx="${RE*k}" ry="${RE*k2}" fill="${TERRA}" fill-opacity=".7" stroke="#fff"/>`+TX(170,16,'plano-alvo no dia 10 (altura ampliada 6 vezes)',{fs:9.5,c:'#BFD0FF'});}
+ $('fig').innerHTML=SVG(W,H,g);$('kn').textContent=fmt(N[modo]);$('kk').textContent=fmt(K[modo]);
+ $('ke').textContent=N[modo]?(modo==0?'π ≈ '+(Math.round(est()*1000)/1000).toString().replace('.',','):PCT(est())):'—';$('kr').textContent=N[modo]?(modo==0?'± '+r2(erro()):'± '+PCT(erro())):'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
