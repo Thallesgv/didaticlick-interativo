@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A calculadora de impacto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A calculadora de impacto</h1></header>
+<main>
+<div class="card"><h2>E = ½ · m · v²</h2><p class="muted" style="margin-top:0">Escolha o diâmetro, a densidade e a velocidade de chegada de uma rocha (considerada uma esfera). A barra mostra a energia numa régua logarítmica, ao lado de eventos de verdade.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Diâmetro</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Densidade</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Velocidade</b><input type="range"><span></span></div>
+<div class="kpi"><div>Massa<b id="km"></b></div><div>Energia<b id="ke"></b></div><div class="o">Em megatons<b id="kt"></b></div><div>Bombas de Hiroshima<b id="kh"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a rocha.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MT=4.184e15,L10=Math.log10;
+const fl=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const MTX=v=>v>=100?fmt(Math.round(v))+' Mt':v>=1?r1(v)+' Mt':v>=0.001?fmt(Math.round(v*1000))+' kt':fmt(Math.round(v*1e6))+' t';
+const LOGBAR=(x0,x1,lo,hi)=>v=>x0+(L10(v)-lo)/(hi-lo)*(x1-x0);
+const D=SL('sd',L10(1),L10(10000),0.001,L10(100),draw,v=>{const d=Math.round(Math.pow(10,v));return d>=1000?r2(d/1000)+' km':d+' m';}),R=SL('sr',1000,8000,10,2000,draw,v=>fmt(v)+' kg/m³'),V=SL('sv',11,72,0.1,12.3,draw,v=>r1(v)+' km/s');
+const diam=()=>Math.round(Math.pow(10,D.get())),m=()=>4/3*Math.PI*Math.pow(diam()/2,3)*R.get(),E=()=>0.5*m()*Math.pow(V.get()*1000,2),Mt=()=>E()/MT;
+let v0=null;
+const EV=[['Hiroshima',0.015],['Chelyabinsk',0.5],['Tunguska',12],['Tsar Bomba',50],['Chicxulub',1e8]];
+MIS.def(()=>[
+ ['Monte o <b>Teimoso</b>: 300 m, 2.000 kg/m³ e 12,3 km/s.',()=>diam()==300&&R.get()==2000&&Math.abs(V.get()-12.3)<0.05,()=>'Energia de '+SCI(E(),3)+' J ≈ '+MTX(Mt())+': '+fmt(Math.round(Mt()/0.015))+' bombas de Hiroshima.',()=>'Agora: '+diam()+' m, '+fmt(R.get())+' kg/m³ e '+r1(V.get())+' km/s.'],
+ ['Monte a rocha de <b>Chelyabinsk</b>: uns 20 m, densidade de 3.000 kg/m³ e 19 km/s. Quanto deu?',()=>diam()==20&&R.get()==3000&&Math.abs(V.get()-19)<0.05,()=>'Cerca de '+MTX(Mt())+'. Ela explodiu no ar, a uns 30 km de altura.',()=>'Agora: '+diam()+' m, '+fmt(R.get())+' kg/m³ e '+r1(V.get())+' km/s.'],
+ ['Volte ao Teimoso (300 m e 2.000 kg/m³) e <b>dobre a velocidade</b> para 24,6 km/s. Quantas vezes a energia aumenta?',()=>diam()==300&&R.get()==2000&&Math.abs(V.get()-24.6)<0.05,()=>MTX(Mt())+': 4 vezes mais. A velocidade entra ao quadrado.',()=>'Agora: '+diam()+' m, '+fmt(R.get())+' kg/m³ e '+r1(V.get())+' km/s.'],
+ ['Com 12,3 km/s e 2.000 kg/m³, ache o diâmetro que daria a energia da <b>Tsar Bomba</b> (entre 45 e 55 Mt).',()=>Math.abs(V.get()-12.3)<0.05&&R.get()==2000&&Mt()>=45&&Mt()<=55,()=>'Uns '+diam()+' m. Uma rocha do tamanho de um quarteirão já iguala a maior bomba da história.',()=>'Agora: '+MTX(Mt())+'.']]);
+function draw(){const W=340,H=170;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const X=LOGBAR(20,320,-4,9);
+ g+=LN(20,110,320,110,NAVY,1.2);for(let k=-3;k<=9;k+=3)g+=LN(X(Math.pow(10,k)),106,X(Math.pow(10,k)),114,NAVY,1)+TX(X(Math.pow(10,k)),128,k<0?'10'+SUP(k)+' Mt':k==0?'1 Mt':'10'+SUP(k)+' Mt',{fs:8.5,c:GRAY});
+ EV.forEach(([n,v],i)=>{g+=`<circle cx="${X(v)}" cy="110" r="3.5" fill="${NAVY}"/>`+TX(X(v)+(i==1?4:i==3?-4:0),i%2?146:96,n,{fs:8.5,a:i==1?'end':i==3?'start':'middle'});});
+ const x=Math.max(20,Math.min(320,X(Mt())));g+=RC(20,62,x-20,12,ORANGE,'rx="4"')+TX(Math.min(x,250),54,'esta rocha: '+MTX(Mt()),{fs:11,c:ORANGE,a:'middle'});
+ $('fig').innerHTML=SVG(W,H,g);$('km').textContent=SCI(m(),3)+' kg';$('ke').textContent=SCI(E(),3)+' J';$('kt').textContent=MTX(Mt());$('kh').textContent=fmt(Math.round(Mt()/0.015));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

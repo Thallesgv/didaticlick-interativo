@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O sismógrafo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O sismógrafo</h1></header>
+<main>
+<div class="card"><h2>Magnitude e energia</h2><p class="muted" style="margin-top:0">Escolha a magnitude M de um terremoto. A energia sai de log E = 1,5·M + 4,8. O sismógrafo desenha um tremor com altura proporcional ao logaritmo da energia: é por isso que um grau a mais parece pouco no papel e é tanto na realidade.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Magnitude M</b><input type="range"><span></span></div>
+<div class="kpi"><div>log E<b id="kl"></b></div><div class="o">Energia<b id="ke"></b></div><div>Em bombas de Hiroshima<b id="kh"></b></div><div>× um terremoto de magnitude 5<b id="k5"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a magnitude.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MT=4.184e15,L10=Math.log10;
+const fl=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const MTX=v=>v>=100?fmt(Math.round(v))+' Mt':v>=1?r1(v)+' Mt':v>=0.001?fmt(Math.round(v*1000))+' kt':fmt(Math.round(v*1e6))+' t';
+const LOGBAR=(x0,x1,lo,hi)=>v=>x0+(L10(v)-lo)/(hi-lo)*(x1-x0);
+const M=SL('sm',2,9.5,0.05,5,draw,v=>fl(v));let vis=new Set();
+const lE=()=>1.5*M.get()+4.8,E=()=>Math.pow(10,lE());
+MIS.def(()=>[
+ ['Ache a magnitude com a energia de <b>uma bomba de Hiroshima</b> (6,3 × 10¹³ J).',()=>Math.abs(E()/6.3e13-1)<0.1,()=>'M = '+fl(M.get())+'. Um terremoto moderado já tem a energia de uma bomba atômica.',()=>'Agora: '+r2(E()/6.3e13)+' Hiroshimas.'],
+ ['Compare: passe por <b>M = 5</b> e depois por <b>M = 7</b>. Quantas vezes mais energia?',()=>{if(Math.abs(M.get()-5)<0.01)vis.add(5);return vis.has(5)&&Math.abs(M.get()-7)<0.01;},()=>'10^(1,5 × 2) = 1.000 vezes. No sismógrafo, a altura só aumentou um pouco.',()=>vis.has(5)?'Agora vá a M = 7.':'Primeiro ponha M = 5.'],
+ ['Ache o "terremoto" do <b>Teimoso</b>: energia sísmica de 2,1 × 10¹⁴ J (entre 1,8 e 2,4 × 10¹⁴).',()=>E()>=1.8e14&&E()<=2.4e14,()=>'M ≈ '+fl(M.get())+'. Só 1 em 10.000 da energia do impacto vira tremor.',()=>'Agora: '+SCI(E(),3)+' J.'],
+ ['Vá ao maior terremoto já medido: <b>Chile, 1960, M = 9,5</b>. Quantas vezes o Teimoso sísmico?',()=>Math.abs(M.get()-9.5)<0.01,()=>SCI(E(),3)+' J: umas '+fmt(Math.round(E()/2.1e14/1000)*1000)+' vezes a energia sísmica do Teimoso.',()=>'Agora M = '+fl(M.get())+'.']]);
+function draw(){const W=340,H=190;let g=RC(0,0,W,H,'#FFFDF5','rx="10"');for(let y=20;y<=170;y+=15)g+=LN(10,y,330,y,'#EFE7D2',1);
+ const A=Math.max(2,(lE()-7)/(19-7)*75);let pts=[];for(let i=0;i<=300;i++){const x=20+i,t=i/300;const env=t<0.25?0:Math.exp(-(t-0.25)*5)*Math.min(1,(t-0.25)*12);pts.push(x+','+(95-A*env*Math.sin(i*0.9)*(0.6+0.4*Math.sin(i*0.13))));}
+ g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="${NAVY}" stroke-width="1.2"/>`+TX(320,182,'M = '+fl(M.get()),{fs:12,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(W,H,g);$('kl').textContent=fl(lE());$('ke').textContent=SCI(E(),3)+' J';$('kh').textContent=E()/6.3e13>=10?fmt(Math.round(E()/6.3e13)):r2(E()/6.3e13);
+ const r5=Math.pow(10,1.5*(M.get()-5));$('k5').textContent=r5>=100?fmt(Math.round(r5)):r2(r5);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

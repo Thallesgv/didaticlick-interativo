@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O círculo do estrago · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O círculo do estrago</h1></header>
+<main>
+<div class="card"><h2>R ≈ 25 × (E ÷ 12)^(1/3)</h2><p class="muted" style="margin-top:0">Escolha a energia. O círculo mostra até onde a onda de choque derruba árvores e casas, calibrado com Tunguska. O mapa mostra o ponto previsto e cidades (fictícias) da região, com a distância de cada uma.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Energia (Mt)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Raio<b id="kr"></b></div><div>Área<b id="ka"></b></div><div>Cidades dentro<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a energia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MT=4.184e15,L10=Math.log10;
+const fl=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const MTX=v=>v>=100?fmt(Math.round(v))+' Mt':v>=1?r1(v)+' Mt':v>=0.001?fmt(Math.round(v*1000))+' kt':fmt(Math.round(v*1e6))+' t';
+const LOGBAR=(x0,x1,lo,hi)=>v=>x0+(L10(v)-lo)/(hi-lo)*(x1-x0);
+const S=SL('se',-2,4,0.002,Math.log10(12),draw,v=>MTX(Math.pow(10,v)));const E=()=>Math.pow(10,S.get()),R=()=>25*Math.cbrt(E()/12);
+const CID=[['Pedra Alta',40,0.5],['Vila Seca',70,2.4],['Rio Claro do Sul',110,4.0],['Campo Largo',150,1.3],['Serra Nova',200,5.5]];
+const dentro=()=>CID.filter(c=>c[1]<=R()).map(c=>c[0]);
+MIS.def(()=>[
+ ['Reproduza <b>Tunguska</b>: 12 Mt. Qual o raio?',()=>Math.abs(E()-12)/12<0.02,()=>'Raio de '+r1(R())+' km, área de '+fmt(Math.round(Math.PI*R()*R()))+' km². Nenhuma cidade da região seria atingida.','Ponha 12 Mt.'],
+ ['Ponha a energia do <b>Teimoso</b>: 510 Mt. Quais cidades ficam dentro?',()=>Math.abs(E()-510)/510<0.02,()=>'Raio de '+fmt(Math.round(R()))+' km: '+dentro().join(' e ')+'. A energia é 42 vezes a de Tunguska, mas o raio só '+r1(R()/25)+' vezes.',()=>'Agora: '+MTX(E())+'.'],
+ ['Ache a energia mínima para o círculo alcançar <b>Rio Claro do Sul</b>, a 110 km.',()=>R()>=110&&R()<=112,()=>MTX(E())+': (110 ÷ 25)³ × 12 ≈ 1.020 Mt, o dobro do Teimoso, para só 26% mais de raio.',()=>'Agora o raio é '+r1(R())+' km.'],
+ ['Volte a uma bomba de <b>Hiroshima</b>: 0,015 Mt (15 kt). Qual o raio pela fórmula?',()=>Math.abs(E()-0.015)/0.015<0.03,()=>'Uns '+r1(R())+' km. A fórmula de cubo funciona de uma bombinha a um asteroide: só muda a escala.',()=>'Agora: '+MTX(E())+'.']]);
+function draw(){const W=340,H=250;let g=RC(0,0,W,H,'#E8F1E0','rx="10"');const cx=150,cy=130,k=110/220;
+ let rio=[];for(let i=0;i<=68;i++)rio.push((i*5)+','+(26+6*Math.sin(i/3)));g+=`<polyline points="${rio.join(' ')}" fill="none" stroke="#6B8FE0" stroke-width="3"/>`;
+ g+=`<circle cx="${cx}" cy="${cy}" r="${R()*k}" fill="${ORANGE}" fill-opacity=".2" stroke="${ORANGE}" stroke-width="2"/>`+`<circle cx="${cx}" cy="${cy}" r="3.5" fill="${VERM}"/>`;
+ CID.forEach(([n,d,a])=>{const x=cx+d*k*Math.cos(a),y=cy-d*k*Math.sin(a);const ok=d<=R();g+=RC(x-4,y-4,8,8,ok?VERM:NAVY)+TX(x+(Math.cos(a)>=0?7:-7),y+3,n+' ('+d+' km)',{fs:8,a:Math.cos(a)>=0?'start':'end',c:ok?VERM:NAVY});});
+ g+=LN(240,236,240+100*k,236,NAVY,2)+TX(240+50*k,230,'100 km',{fs:8});
+ $('fig').innerHTML=SVG(W,H,g);$('kr').textContent=R()>=10?fmt(Math.round(R()))+' km':r1(R())+' km';$('ka').textContent=fmt(Math.round(Math.PI*R()*R()))+' km²';$('kc').textContent=dentro().length?dentro().length:'nenhuma';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

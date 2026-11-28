@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O relógio dos impactos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O relógio dos impactos</h1></header>
+<main>
+<div class="card"><h2>Grandes são raros</h2><p class="muted" style="margin-top:0">Escolha o tamanho da rocha. O gráfico, com os dois eixos em escala logarítmica, dá o intervalo médio entre impactos (valores aproximados, ligando os pontos da tabela do livro). Daí sai a chance por ano e a chance em um período.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Diâmetro da rocha</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Período</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Intervalo médio<b id="ki"></b></div><div>Chance por ano<b id="ka"></b></div><div>Chance de pelo menos um no período<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o tamanho e o período.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MT=4.184e15,L10=Math.log10;
+const fl=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const MTX=v=>v>=100?fmt(Math.round(v))+' Mt':v>=1?r1(v)+' Mt':v>=0.001?fmt(Math.round(v*1000))+' kt':fmt(Math.round(v*1e6))+' t';
+const LOGBAR=(x0,x1,lo,hi)=>v=>x0+(L10(v)-lo)/(hi-lo)*(x1-x0);
+const PT=[[20,50],[50,1000],[300,1e5],[1000,5e5],[10000,1e8]];
+const S=SL('sd',L10(20),L10(10000),0.002,L10(300),draw,v=>{const d=Math.round(Math.pow(10,v));return d>=1000?r1(d/1000)+' km':d+' m';}),Pp=SL('sp',0,3,0.001,L10(80),draw,v=>fmt(Math.round(Math.pow(10,v)))+' anos');
+const D=()=>Math.pow(10,S.get()),per=()=>Math.round(Math.pow(10,Pp.get()));
+function intv(){const ld=S.get();let i=0;while(i<3&&ld>L10(PT[i+1][0]))i++;const [a,b]=[PT[i],PT[i+1]];const f=(ld-L10(a[0]))/(L10(b[0])-L10(a[0]));return Math.pow(10,L10(a[1])+f*(L10(b[1])-L10(a[1])));}
+const pano=()=>1/intv(),pper=()=>1-Math.pow(1-pano(),per());
+const fT=v=>v>=1e6?r1(v/1e6)+' milhões de anos':fmt(Math.round(v))+' anos';
+const pc=v=>v>=0.01?r1(v*100)+'%':v>=1e-5?(Math.round(v*1e5)/1000).toString().replace('.',',')+'%':SCI(v*100,2)+'%';
+MIS.def(()=>[
+ ['Ache o intervalo médio para uma rocha como o <b>Teimoso</b> (300 m).',()=>Math.abs(D()-300)<=3,()=>'Uma vez a cada uns '+fT(intv())+'. Chance por ano: '+pc(pano())+'.',()=>'Agora: '+Math.round(D())+' m.'],
+ ['Com <b>20 m</b> (Chelyabinsk), qual a chance de pelo menos um em <b>10 anos</b>?',()=>Math.abs(D()-20)<=0.5&&per()==10,()=>pc(pper())+': quase 1 em 5. A conta é 1 − 0,98¹⁰.',()=>'Agora: '+Math.round(D())+' m e '+per()+' anos.'],
+ ['Ache o tamanho de rocha que cai, em média, <b>uma vez por milênio</b> (intervalo entre 950 e 1.050 anos).',()=>intv()>=950&&intv()<=1050,()=>'Uns '+Math.round(D())+' m: o tamanho de Tunguska.',()=>'Agora: um a cada '+fT(intv())+'.'],
+ ['Rochas de <b>1 km</b> numa vida de <b>80 anos</b>: qual a chance?',()=>Math.abs(D()-1000)<=10&&per()==80,()=>pc(pper())+'. Pequena, mas é por isso que os astrônomos querem achar todas.',()=>'Agora: '+Math.round(D())+' m e '+per()+' anos.']]);
+function draw(){const W=340,H=210;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const x0=50,y0=180,w=270,h=160,X=ld=>x0+(ld-L10(20))/(L10(10000)-L10(20))*w,Y=lt=>y0-(lt-1)/(8-1)*h;
+ g+=LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-h,NAVY,1);[[20,'20 m'],[100,'100 m'],[1000,'1 km'],[10000,'10 km']].forEach(([d,t])=>g+=TX(X(L10(d)),y0+12,t,{fs:8.5}));
+ [[1,'10 anos'],[3,'mil'],[5,'100 mil'],[8,'100 mi']].forEach(([k,t])=>g+=TX(x0-4,Y(k)+3,t,{fs:8,a:'end'}));
+ g+=`<polyline points="${PT.map(([d,t])=>X(L10(d))+','+Y(L10(t))).join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="2"/>`;
+ PT.forEach(([d,t])=>g+=`<circle cx="${X(L10(d))}" cy="${Y(L10(t))}" r="3" fill="${NAVY}"/>`);
+ const x=X(S.get()),y=Y(L10(intv()));g+=LN(x,y0,x,y,ORANGE,1,'3 3')+LN(x0,y,x,y,ORANGE,1,'3 3')+`<circle cx="${x}" cy="${y}" r="6" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
+ $('fig').innerHTML=SVG(W,H,g);$('ki').textContent=fT(intv());$('ka').textContent=pc(pano());$('kp').textContent=pc(pper());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

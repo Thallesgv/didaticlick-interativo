@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O gráfico das crateras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O gráfico das crateras</h1></header>
+<main>
+<div class="card"><h2>D ≈ 1,2 × (E ÷ 10)^0,3</h2><p class="muted" style="margin-top:0">Escolha a energia do impacto. O ponto anda sobre a reta no gráfico com os dois eixos em escala logarítmica, e a cratera aparece de cima, ao lado de uma cidade de 10 km para comparar.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Energia (Mt)</b><input type="range"><span></span></div>
+<div class="kpi"><div>log E<b id="kl"></b></div><div class="o">Diâmetro da cratera<b id="kd"></b></div><div>log D<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a energia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MT=4.184e15,L10=Math.log10;
+const fl=v=>(Math.round(v*100)/100).toString().replace('.',',');
+const MTX=v=>v>=100?fmt(Math.round(v))+' Mt':v>=1?r1(v)+' Mt':v>=0.001?fmt(Math.round(v*1000))+' kt':fmt(Math.round(v*1e6))+' t';
+const LOGBAR=(x0,x1,lo,hi)=>v=>x0+(L10(v)-lo)/(hi-lo)*(x1-x0);
+const S=SL('se',-1,9,0.005,1,draw,v=>MTX(Math.pow(10,v)));const E=()=>Math.pow(10,S.get()),D=()=>1.2*Math.pow(E()/10,0.3);
+const fD=v=>v>=10?fmt(Math.round(v))+' km':v>=1?r1(v)+' km':fmt(Math.round(v*1000))+' m';
+MIS.def(()=>[
+ ['Reproduza a <b>Meteor Crater</b>, do Arizona: 10 Mt.',()=>Math.abs(S.get()-1)<0.005,()=>'Cratera de '+fD(D())+'. O ponto de partida da reta.','Ponha a energia em 10 Mt.'],
+ ['Ponha a energia do <b>Teimoso</b>: 510 Mt.',()=>Math.abs(E()-510)/510<0.02,()=>'Cratera de uns '+fD(D())+'. A energia ficou 51 vezes maior, mas a cratera só '+r1(D()/1.2)+' vezes.',()=>'Agora: '+MTX(E())+'.'],
+ ['Ache a energia que dá uma cratera de <b>12 km</b> (entre 11,7 e 12,3 km).',()=>D()>=11.7&&D()<=12.3,()=>MTX(E())+'. Para 10 vezes o diâmetro, foram precisos uns 2.000 vezes mais energia: 10^(1/0,3).',()=>'Agora: '+fD(D())+'.'],
+ ['Vá a <b>Chicxulub</b> (10⁸ Mt). A reta prevê quanto? A cratera real tem 180 km.',()=>Math.abs(S.get()-8)<0.01,()=>'A reta dá '+fD(D())+'; a real tem 180 km. Uma lei simples, atravessando 7 ordens de grandeza, erra uns 20%.',()=>'Agora: '+MTX(E())+'.']]);
+function draw(){const W=340,H=230;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');const x0=40,y0=200,w=170,h=170,X=le=>x0+(le+1)/10*w,Y=ld=>y0-(ld+1)/4*h;
+ g+=LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-h,NAVY,1);[[0,'1'],[3,'10³'],[6,'10⁶'],[9,'10⁹']].forEach(([k,t])=>g+=TX(X(k),y0+12,t,{fs:8.5}));[[-1,'0,1'],[0,'1'],[1,'10'],[2,'100'],[3,'1.000']].forEach(([k,t])=>g+=TX(x0-4,Y(k)+3,t,{fs:8.5,a:'end'}));
+ g+=TX(x0+w,y0+24,'E (Mt)',{fs:9,a:'end'})+TX(x0,y0-h-6,'D (km)',{fs:9,a:'start'});
+ const f=le=>Math.log10(1.2)+0.3*(le-1);g+=LN(X(-1),Y(f(-1)),X(9),Y(f(9)),ORANGE,2);
+ [[1,1.2,'Meteor'],[8,180,'Chicxulub']].forEach(([le,d,n])=>g+=`<circle cx="${X(le)}" cy="${Y(Math.log10(d))}" r="3.5" fill="${NAVY}"/>`+TX(X(le)+(le>5?-6:5),Y(Math.log10(d))+(le>5?-2:12),n,{fs:8,a:le>5?'end':'start'}));
+ g+=`<circle cx="${X(S.get())}" cy="${Y(Math.log10(D()))}" r="6" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;
+ const cx=275,cy=110,top=Math.max(12,D()*1.15),k=55/top;g+=RC(220,40,110,140,'#E8F1E0','rx="8"');
+ g+=RC(cx-5*k,cy-5*k,10*k,10*k,'#CBD5E1','opacity=".9"')+`<circle cx="${cx}" cy="${cy}" r="${Math.max(1,D()/2*k)}" fill="#7C6A55" stroke="#4B3F31" stroke-width="1.5"/>`;
+ g+=TX(275,172,'quadrado: cidade de 10 km',{fs:7.5,c:GRAY})+TX(275,54,fD(D()),{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(W,H,g);$('kl').textContent=fl(S.get());$('kd').textContent=fD(D());$('kg').textContent=fl(Math.log10(D()));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
