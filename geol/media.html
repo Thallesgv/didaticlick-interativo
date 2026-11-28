@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Média contra mediana · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Média contra mediana</h1></header>
+<main>
+<div class="card"><h2>Os 12 furos na régua</h2><p class="muted" style="margin-top:0">Mude a umidade dos furos F11 (o do grotão), F3 e F8 (arraste ou use − e +). Os outros nove ficam como o Davi mediu. Laranja: a média. Azul: a mediana.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="f11"><b>F11 (grotão)</b><input type="range"><span></span></div><div class="sl" id="f3"><b>F3</b><input type="range"><span></span></div><div class="sl" id="f8"><b>F8</b><input type="range"><span></span></div><div class="kpi"><div>Média<b id="k1"></b></div><div>Mediana<b id="k2"></b></div><div class="o">Amplitude<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const F11=SL('f11',15,60,1,22,()=>draw(),v=>v+'%'),F3=SL('f3',15,45,1,22,()=>draw(),v=>v+'%'),F8=SL('f8',15,45,1,25,()=>draw(),v=>v+'%');
+const D=()=>[21,23,F3.get(),24,22,20,23,F8.get(),22,21,F11.get(),22],med=()=>D().reduce((a,b)=>a+b,0)/12,mdn=()=>{const s=[...D()].sort((a,b)=>a-b);return (s[5]+s[6])/2;};
+MIS.def(()=>[
+ ['Reproduza os dados do Davi: F11 = <b>36%</b>, F3 = <b>22%</b>, F8 = <b>25%</b>.',()=>F11.get()==36&&F3.get()==22&&F8.get()==25,'Média 23,4%, mediana 22%: o F11 puxou a média e não mexeu na mediana.',()=>F11.get()!=36?'O F11 deu 36%.':F3.get()!=22?'O F3 deu 22%.':'O F8 deu 25%.'],
+ ['Com F3 = 22% e F8 = 25%, ache o valor do F11 que puxa a média para <b>25%</b>.',()=>F3.get()==22&&F8.get()==25&&Math.abs(med()-25)<0.01,'F11 = 55%: um único furo encharcado subiria a média do setor inteiro em quase 3 pontos. A mediana continua 22%.',()=>F3.get()!=22||F8.get()!=25?'Deixe F3 em 22% e F8 em 25%.':'Média agora: '+r2(med())+'%.'],
+ ['Faça a <b>média e a mediana ficarem iguais</b>.',()=>Math.abs(med()-mdn())<0.01,()=>'As duas em '+r2(med())+'%: os dados ficaram equilibrados em volta do meio, sem valor atípico puxando.',()=>'Média '+r2(med())+'% e mediana '+r2(mdn())+'%.']]);
+function draw(){const x0=20,w=300,X=u=>x0+(u-15)/45*w,y0=170;let g=RC(0,0,340,240,'#fff','rx="10"')+LN(x0,y0,x0+w,y0,NAVY,1.5);
+ for(let u=15;u<=60;u+=5)g+=LN(X(u),y0-4,X(u),y0+4,NAVY,1)+TX(X(u),y0+18,u+'%',{fs:9});
+ const c={};D().forEach((u,i)=>{const k=c[u]||0;c[u]=k+1;const nm=['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12'][i];const esp=i==10||i==2||i==7;
+  g+=CIR(X(u),y0-10-k*13,6,i==10?VERM:esp?ORANGE:TERRA_E,'stroke="#fff" stroke-width="1.5"');if(esp)g+=TX(X(u),y0-10-k*13-10,nm,{fs:8,c:i==10?VERM:ORANGE});});
+ g+=LN(X(med()),40,X(med()),y0-2,ORANGE,2.5)+TX(Math.min(X(med())+4,250),36,'média '+r1(med())+'%',{fs:10,a:'start',c:ORANGE});
+ g+=LN(X(mdn()),56,X(mdn()),y0-2,BLUE,2.5,'5 3')+TX(Math.max(X(mdn())-4,85),52,'mediana '+r1(mdn())+'%',{fs:10,a:'end',c:BLUE});
+ $('fig').innerHTML=SVG(340,240,g);
+ const s=D();$('k1').textContent=r2(med())+'%';$('k2').textContent=r1(mdn())+'%';$('k3').textContent=(Math.max(...s)-Math.min(...s))+' pontos';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

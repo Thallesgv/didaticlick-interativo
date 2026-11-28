@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Furos no setor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Furos no setor</h1></header>
+<main>
+<div class="card"><h2>A malha de furos de trado</h2><p class="muted" style="margin-top:0">Mude o número de colunas e de linhas da malha (arraste ou use − e +). Os furos se espalham pelo setor A (60 m de largura e 16 m de altura no mapa). O grotão, em azul, é onde a água se junta. Com 12 furos, a margem de erro da média é de uns ±2 pontos.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Colunas</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Linhas</b><input type="range"><span></span></div><div class="kpi"><div>Furos<b id="k1"></b></div><div>Área de cada furo<b id="k2"></b></div><div class="o">Margem de erro<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SC=SL('sc',1,8,1,2,()=>draw(),v=>v),SLi=SL('sl',1,6,1,2,()=>draw(),v=>v);
+const n=()=>SC.get()*SLi.get(),erro=()=>2*Math.sqrt(12/n()),xs=()=>Array.from({length:SC.get()},(_,i)=>(i+0.5)*60/SC.get()),noGrotao=()=>xs().filter(x=>x>=43&&x<=51).length*SLi.get();
+MIS.def(()=>[
+ ['Monte a malha do Davi: <b>4 colunas e 3 linhas</b>.',()=>SC.get()==4&&SLi.get()==3,'12 furos, 15 m entre as colunas, 80 m² para cada furo. Mas repare: nenhum caiu no grotão. Por isso o Davi deslocou o F11.',()=>'Agora: '+SC.get()+' colunas e '+SLi.get()+' linhas.'],
+ ['Ache uma malha regular com <b>pelo menos um furo dentro do grotão</b>.',()=>noGrotao()>0,()=>'Com '+SC.get()+' colunas, uma delas passa pelo grotão. Outra saída é a do Davi: estratificar e pôr um furo lá de propósito.',()=>'Nenhuma coluna passa entre 43 m e 51 m, onde fica o grotão.'],
+ ['Divida a margem de erro por 2: chegue a <b>±1 ponto</b> ou menos.',()=>erro()<=1.0001,()=>n()+' furos: 4 vezes os 12 do Davi. Metade do erro custa 4 vezes mais trabalho.',()=>'Com '+n()+' furos, o erro é ±'+r2(erro())+'.']]);
+function draw(){const k=5.2,x0=14,y0=30,W=60*k,H=16*k*2;
+ let g=RC(0,0,340,240,'#fff','rx="10"')+RC(x0,y0,W,H,PAPEL,'stroke="'+NAVY+'"');
+ g+=PG([[x0+43*k,y0],[x0+47*k,y0+H*0.9],[x0+51*k,y0]],AGUA_C,'stroke="'+AGUA+'"')+TX(x0+47*k,y0+H+14,'grotão',{fs:10,c:AGUA});
+ xs().forEach(x=>{for(let j=0;j<SLi.get();j++){const y=y0+(j+0.5)*H/SLi.get(),dentro=x>=43&&x<=51;g+=CIR(x0+x*k,y,5,dentro?VERM:TERRA_E);}});
+ g+=TX(x0+W/2,y0-10,'Setor A visto de cima · 60 m',{fs:11});
+ g+=TX(x0,y0+H+16,'erro ±'+r2(erro())+' pontos',{fs:11,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=n()+(noGrotao()?' ('+noGrotao()+' no grotão)':'');$('k2').textContent=r1(960/n())+' m²';$('k3').textContent='±'+r2(erro());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

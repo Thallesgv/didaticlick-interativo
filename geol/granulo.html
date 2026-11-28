@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Curva granulométrica · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Curva granulométrica</h1></header>
+<main>
+<div class="card"><h2>A curva e a régua dos diâmetros</h2><p class="muted" style="margin-top:0">Mude a porcentagem que passa em cada peneira e a régua dos diâmetros: 0 = comum, 1 = logarítmica (arraste ou use − e +). A curva sobe da esquerda para a direita; a linha laranja marca o D50.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="a1"><b>Passa em 4,8 mm</b><input type="range"><span></span></div><div class="sl" id="a2"><b>Passa em 2,0 mm</b><input type="range"><span></span></div><div class="sl" id="a3"><b>Passa em 0,42 mm</b><input type="range"><span></span></div><div class="sl" id="a4"><b>Passa em 0,075 mm</b><input type="range"><span></span></div><div class="sl" id="a5"><b>Argila (< 0,002 mm)</b><input type="range"><span></span></div><div class="sl" id="rg"><b>Régua (0 comum, 1 log)</b><input type="range"><span></span></div><div class="kpi"><div>Areia<b id="k1"></b></div><div>Argila<b id="k2"></b></div><div class="o">D50<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const DI=[4.8,2.0,0.42,0.075,0.002],S=[];[100,90,70,50,20].forEach((v,i)=>S.push(SL('a'+(i+1),0,100,1,v,()=>draw(),x=>x+'%')));const RG=SL('rg',0,1,1,1,()=>draw(),v=>v?'logarítmica':'comum');
+const pts=()=>{const p=S.map(s=>s.get());for(let i=1;i<5;i++)p[i]=Math.min(p[i],p[i-1]);return [[0.0005,0],[0.002,p[4]],[0.075,p[3]],[0.42,p[2]],[2.0,p[1]],[4.8,p[0]],[9.5,100]];};
+function d50(){const q=pts();for(let i=1;i<q.length;i++){const [d0,p0]=q[i-1],[d1,p1]=q[i];if(p0<50&&p1>=50){const t=(50-p0)/(p1-p0);return Math.pow(10,Math.log10(d0)+t*(Math.log10(d1)-Math.log10(d0)));}}return q[1][1]>=50?0.002:9.5;}
+MIS.def(()=>[
+ ['Monte o saco de 3 m: passa <b>96, 88, 69 e 38%</b>, com <b>28%</b> de argila.',()=>[96,88,69,38,28].every((v,i)=>S[i].get()==v),'D50 ≈ 0,15 mm, na areia fina.',()=>{const i=[96,88,69,38,28].findIndex((v,i)=>S[i].get()!=v);return 'O controle "'+['4,8 mm','2,0 mm','0,42 mm','0,075 mm','argila'][i]+'" está com '+S[i].get()+'%.';}],
+ ['Com o saco de 3 m montado, troque para a <b>régua comum</b>.',()=>[96,88,69,38,28].every((v,i)=>S[i].get()==v)&&RG.get()==0,'Na régua comum, argila, silte e areia fina se espremem num risco à esquerda: por isso a régua log.',()=>RG.get()!=0?'Leve a régua para 0 (comum).':'Volte o saco de 3 m.'],
+ ['Faça um solo com <b>D50 maior que 1 mm</b>.',()=>d50()>1,()=>'D50 ≈ '+r2(d50())+' mm: um solo de areia grossa e pedregulho.',()=>'D50 agora: '+r2(d50())+' mm. Diminua o que passa nas peneiras de 2,0 e 0,42 mm.']]);
+function draw(){const q=pts(),log=RG.get()==1,x0=40,y0=200,w=280,h=170;
+ const X=d=>log?x0+(Math.log10(d)+3.3)/(Math.log10(10)+3.3)*w:x0+d/10*w,Y=p=>y0-p/100*h;
+ let g=RC(0,0,340,240,'#fff','rx="10"')+LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-h,NAVY,1);
+ for(const p of [25,50,75,100])g+=LN(x0,Y(p),x0+w,Y(p),'#E5E7EB',1)+TX(x0-4,Y(p)+3,p,{fs:9,a:'end'});
+ for(const d of (log?[0.001,0.01,0.1,1,10]:[0,2,4,6,8,10]))g+=TX(X(Math.max(d,0.0005)),y0+14,String(d).replace('.',','),{fs:9});
+ g+=TX(x0+w/2,y0+30,'diâmetro (mm) · régua '+(log?'logarítmica':'comum'),{fs:10});
+ g+=PL(q.map(([d,p])=>[X(d),Y(p)]),TERRA_E,2.5);q.slice(1,6).forEach(([d,p])=>g+=CIR(X(d),Y(p),4,TERRA_E));
+ const D=d50();g+=LN(x0,Y(50),X(D),Y(50),ORANGE,1.5,'4 3')+LN(X(D),Y(50),X(D),y0,ORANGE,1.5,'4 3')+TX(X(D)+4,y0-6,'D50',{fs:10,a:'start',c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=Math.max(0,q[4][1]-q[2][1])+'%';$('k2').textContent=q[1][1]+'%';$('k3').textContent=(D<0.01?'< 0,01':r2(D))+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
