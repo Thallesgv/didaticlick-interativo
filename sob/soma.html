@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Somar desvios · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Somar desvios</h1></header>
+<main>
+<div class="card"><h2>Soma de vetores: some as componentes</h2><p class="muted" style="margin-top:0">Mude a distância e o rumo de cada trecho (arrastando ou com − e +). As setas azuis são os trechos; a tracejada escura, a resultante; a laranja, o que falta até o resgate.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="d1"><b>Trecho 1: distância</b><input type="range"><span></span></div><div class="sl" id="r1"><b>Trecho 1: rumo</b><input type="range"><span></span></div><div class="sl" id="d2"><b>Trecho 2: distância</b><input type="range"><span></span></div><div class="sl" id="r2"><b>Trecho 2: rumo</b><input type="range"><span></span></div><div class="sl" id="d3"><b>Trecho 3: distância</b><input type="range"><span></span></div><div class="sl" id="r3"><b>Trecho 3: rumo</b><input type="range"><span></span></div><div class="kpi"><div>Andado (soma das distâncias)<b id="k1"></b></div><div>Resultante<b id="k2"></b></div><div class="o">Falta até o resgate<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Some os trechos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const AR=(x1,y1,x2,y2,c,w,dash)=>{const a=Math.atan2(y2-y1,x2-x1),h=7+(w||2)*1.5,L=Math.hypot(x2-x1,y2-y1);if(L<1)return '';return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||2,dash)+PG([[x2,y2],[x2-h*Math.cos(a-0.42),y2-h*Math.sin(a-0.42)],[x2-h*Math.cos(a+0.42),y2-h*Math.sin(a+0.42)]].map(p=>p.map(v=>v.toFixed(1))),c);};
+const rumoDe=(n,e)=>(Math.atan2(e,n)*DEG+360)%360;
+const ig=(a,b)=>Math.abs(a-b)<1e-6;
+const gr=v=>fmt(Math.round(v))+'°';
+const km=v=>fmt(Math.round(v*10)/10).replace('-','−')+' km';
+const fk=v=>fmt(v)+' km',fr=v=>v+'°',DES={n:16.7,e:21.8};
+const D=[SL('d1',0,30,0.5,8,()=>draw(),fk),SL('d2',0,30,0.5,4,()=>draw(),fk),SL('d3',0,30,0.5,6,()=>draw(),fk)],Rr=[SL('r1',0,359,1,53,()=>draw(),fr),SL('r2',0,359,1,0,()=>draw(),fr),SL('r3',0,359,1,90,()=>draw(),fr)];
+function pts(){let n=0,e=0;const p=[[0,0]];for(let i=0;i<3;i++){n+=D[i].get()*Math.cos(Rr[i].get()*RAD);e+=D[i].get()*Math.sin(Rr[i].get()*RAD);p.push([e,n]);}return p;}
+const res=()=>{const p=pts()[3];return{e:p[0],n:p[1],d:Math.hypot(p[0],p[1]),r:rumoDe(p[1],p[0])};};
+const falta=()=>{const s=res(),n=DES.n-s.n,e=DES.e-s.e;return{n,e,d:Math.hypot(n,e),r:rumoDe(n,e)};};
+MIS.def(()=>[
+ ['Monte os trechos do Téo: <b>8 km a 53°</b>, <b>4 km a 0°</b> e <b>6 km a 90°</b>.',()=>D[0].get()==8&&Rr[0].get()==53&&D[1].get()==4&&Rr[1].get()==0&&D[2].get()==6&&Rr[2].get()==90,'Resultante: 8,8 km norte e 12,4 km leste (15,2 km). Falta 12,2 km no rumo 50°.',()=>'Confira as três distâncias e os três rumos.'],
+ ['Mude os trechos até a resultante cair <b>no resgate</b> (menos de 0,5 km dele).',()=>falta().d<0.5,()=>'Chegou: resultante de '+km(res().d)+' no rumo '+gr(res().r)+', andando '+km(D.reduce((s,x)=>s+x.get(),0))+'.',()=>'Ainda falta '+km(falta().d)+' no rumo '+gr(falta().r)+'. Dica: use esse rumo e essa distância num trecho.'],
+ ['Ache três trechos, todos com distância maior que zero, que <b>voltam ao ponto de partida</b> (resultante menor que 0,3 km).',()=>D.every(x=>x.get()>0)&&res().d<0.3,'Um triângulo fechado: as três setas somam zero. Andou bastante e não saiu do lugar.',()=>'Resultante agora: '+km(res().d)+'. Dica: três trechos iguais com rumos separados de 120°.']]);
+function draw(){const W=340,H=290,p=pts(),all=p.concat([[DES.e,DES.n]]);
+ let x0=Math.min(...all.map(q=>q[0]))-2,x1=Math.max(...all.map(q=>q[0]))+2,y0=Math.min(...all.map(q=>q[1]))-2,y1=Math.max(...all.map(q=>q[1]))+2;
+ const k=Math.min(300/(x1-x0),250/(y1-y0)),ox=20+(300-(x1-x0)*k)/2-x0*k,oy=270-(250-(y1-y0)*k)/2+y0*k,X=e=>ox+e*k,Y=n=>oy-n*k;
+ let g=RC(0,0,W,H,AREIA,'rx="10"');const st=k>14?1:k>5?5:10;
+ for(let e=Math.ceil(x0/st)*st;e<=x1;e+=st)g+=LN(X(e),10,X(e),280,AREIA_E,1);for(let n=Math.ceil(y0/st)*st;n<=y1;n+=st)g+=LN(10,Y(n),330,Y(n),AREIA_E,1);
+ g+=TX(326,282,'grade de '+st+' km',{fs:8,a:'end',c:MAD});
+ const f=falta(),s=res();g+=AR(X(s.e),Y(s.n),X(DES.e),Y(DES.n),ORANGE,2.5,'6 4')+AR(X(0),Y(0),X(s.e),Y(s.n),NAVY,2,'3 3');
+ for(let i=0;i<3;i++)g+=AR(X(p[i][0]),Y(p[i][1]),X(p[i+1][0]),Y(p[i+1][1]),BLUE,3)+(D[i].get()>0?TX((X(p[i][0])+X(p[i+1][0]))/2+8,(Y(p[i][1])+Y(p[i+1][1]))/2-6,i+1,{fs:11,c:BLUE,w:700}):'');
+ const tx=X(DES.e),ty=Y(DES.n);g+=CIR(X(0),Y(0),5,MAD,'stroke="#fff" stroke-width="1.5"')+`<path d="M${tx},${ty} L${tx},${ty-22} L${tx+12},${ty-17} L${tx},${ty-12}" fill="${ORANGE}" stroke="${NAVY}" stroke-width="1.5"/>`+TX(tx,ty+13,'resgate',{fs:9,c:NAVY});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=km(D.reduce((t,x)=>t+x.get(),0));$('k2').textContent=km(s.d)+' · '+gr(s.r);$('k3').textContent=km(f.d)+' · '+gr(f.r);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

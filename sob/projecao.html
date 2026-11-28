@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A parte que conta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A parte que conta</h1></header>
+<main>
+<div class="card"><h2>Avanço útil = d × cos θ</h2><p class="muted" style="margin-top:0">Mude a distância e o rumo do trecho e o rumo do destino (arrastando ou com − e +). A linha laranja aponta para o destino; o segmento verde (ou vermelho, se afasta) é a projeção do trecho nela.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância do trecho</b><input type="range"><span></span></div><div class="sl" id="st"><b>Rumo do trecho</b><input type="range"><span></span></div><div class="sl" id="sr"><b>Rumo do destino</b><input type="range"><span></span></div><div class="kpi"><div>Ângulo θ<b id="k1"></b></div><div>Avanço útil<b id="k2"></b></div><div class="o">Desvio para o lado<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça o avanço.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const AR=(x1,y1,x2,y2,c,w,dash)=>{const a=Math.atan2(y2-y1,x2-x1),h=7+(w||2)*1.5,L=Math.hypot(x2-x1,y2-y1);if(L<1)return '';return LN(x1,y1,x2-Math.cos(a)*h*0.6,y2-Math.sin(a)*h*0.6,c,w||2,dash)+PG([[x2,y2],[x2-h*Math.cos(a-0.42),y2-h*Math.sin(a-0.42)],[x2-h*Math.cos(a+0.42),y2-h*Math.sin(a+0.42)]].map(p=>p.map(v=>v.toFixed(1))),c);};
+const rumoDe=(n,e)=>(Math.atan2(e,n)*DEG+360)%360;
+const ig=(a,b)=>Math.abs(a-b)<1e-6;
+const gr=v=>fmt(Math.round(v))+'°';
+const km=v=>fmt(Math.round(v*10)/10).replace('-','−')+' km';
+const SD=SL('sd',0,20,0.5,4,()=>draw(),v=>fmt(v)+' km'),ST=SL('st',0,359,1,0,()=>draw(),v=>v+'°'),SR=SL('sr',0,359,1,53,()=>draw(),v=>v+'°');
+const th=()=>{let x=ST.get()-SR.get();return((x+540)%360)-180;},av=()=>SD.get()*Math.cos(th()*RAD),la=()=>SD.get()*Math.sin(th()*RAD);
+MIS.def(()=>[
+ ['Calcule o avanço do trecho do rio: <b>4 km no rumo 0°</b>, com o destino no rumo <b>53°</b>.',()=>ig(SD.get(),4)&&ST.get()==0&&SR.get()==53,'4 × cos 53° ≈ 2,4 km: dos 4 km pela margem, só 2,4 km aproximaram o Téo do resgate.',()=>'Confira a distância e os dois rumos.'],
+ ['Ache um rumo de trecho que <b>não avança nada</b> (com distância maior que zero).',()=>SD.get()>0&&Math.abs(Math.abs(th())-90)<1e-9,()=>'θ = 90°: cos 90° = 0. Andou '+km(SD.get())+' de lado, sem chegar mais perto.',()=>'θ agora: '+Math.round(th())+'°. Avanço: '+km(av())+'.'],
+ ['Faça um trecho que <b>afasta</b> do destino.',()=>av()<-1e-9,()=>'θ = '+Math.abs(Math.round(th()))+'°, mais de 90°: o cosseno é negativo e o avanço é de '+km(av())+'.',()=>'Avanço agora: '+km(av())+'.']]);
+function draw(){const W=340,H=300,cx=170,cy=160,k=120/Math.max(5,SD.get());let g=RC(0,0,W,H,AREIA,'rx="10"');
+ const u=[Math.sin(SR.get()*RAD),-Math.cos(SR.get()*RAD)],v=[Math.sin(ST.get()*RAD),-Math.cos(ST.get()*RAD)];
+ g+=LN(cx-u[0]*140,cy-u[1]*140,cx,cy,ORANGE,1.5,'3 4')+AR(cx,cy,cx+u[0]*125,cy+u[1]*125,ORANGE,2,'8 5')+TX(cx+u[0]*138,cy+u[1]*138+4,'destino',{fs:9,c:ORANGE});
+ g+=AR(316,48,316,22,NAVY,1.5)+TX(316,60,'N',{fs:10,c:NAVY});
+ const a=av(),ex=cx+v[0]*SD.get()*k,ey=cy+v[1]*SD.get()*k,fx=cx+u[0]*a*k,fy=cy+u[1]*a*k;
+ g+=LN(ex,ey,fx,fy,GRAY,1.5,'3 3')+LN(cx,cy,fx,fy,a<0?'#C0392B':VERDE,7);
+ g+=AR(cx,cy,ex,ey,BLUE,3)+CIR(cx,cy,5,MAD,'stroke="#fff" stroke-width="1.5"');
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=Math.abs(Math.round(th()))+'°';$('k2').textContent=km(a);$('k3').textContent=km(Math.abs(la()));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
