@@ -30,15 +30,16 @@ MIS.def(()=>[
  ['Faça o mapa do drone, com curvas de <b>metro em metro</b>. Quantas curvas aparecem?',()=>SE.get()==1,()=>nCurvas()+' curvas, de 929 a 981 m. Por isso só uma a cada cinco tem o número escrito: a curva mestra.',()=>'A equidistância está em '+SE.get()+' m.']]);
 function draw(){const e=SE.get(),zc=SZ.get();
  let g=RC(0,0,340,300,'#fff','rx="10"')+RC(0,0,340,110,CEU,'rx="10"');
- // de lado (exagero 1,5)
- const x0=40,y0=100,kx=2.4,kz=1.5*kx,pts=[[x0,y0]];
- for(let x=0;x<=108;x+=2)pts.push([x0+x*kx,y0-(zDe(x)-928)*kz]);pts.push([x0+108*kx,y0]);
- g+=PG(pts,TERRA,'stroke="'+TERRA_E+'"');
- for(let z=Math.ceil(929/e)*e;z<982;z+=e){const y=y0-(z-928)*kz;g+=LN(x0+xDe(z)*kx,y,x0+108*kx,y,TERRA_E,0.6);}
- const yc=y0-(zc-928)*kz;g+=LN(10,yc,330,yc,ORANGE,2,'6 4')+TX(12,yc-4,zc+' m',{fs:10,a:'start',c:ORANGE});
- g+=TX(x0+108*kx-4,y0-(982-928)*kz-4,'topo 982',{fs:9,a:'end'});
+ // de lado: o mesmo morro do mapa, cortado de oeste para leste (alinhado com o mapa)
+ const cx=210,k=0.85,y0=102,kz=1.55,ZL=[];for(let z=928;z<=982;z+=1)ZL.push(z);
+ const xe=z=>cx-k*(108-xDe(Math.min(z,981.9)))*1.5,xd=z=>cx+k*(108-xDe(Math.min(z,981.9))),Y=z=>y0-(z-928)*kz;
+ const pts=ZL.map(z=>[xe(z),Y(z)]).concat([[cx,Y(982)]]).concat(ZL.slice().reverse().map(z=>[xd(z),Y(z)]));
+ g+=PG(pts,TERRA,'stroke="'+TERRA_E+'"')+LN(20,y0,320,y0,TERRA_E,1);
+ for(let z=Math.ceil(929/e)*e;z<982;z+=e){g+=LN(xe(z),Y(z),xd(z),Y(z),TERRA_E,0.6);}
+ const yc=Y(zc);g+=LN(10,yc,330,yc,ORANGE,2,'6 4')+TX(12,yc-4,zc+' m',{fs:10,a:'start',c:ORANGE});
+ g+=TX(cx,Y(982)-4,'topo 982',{fs:9});
  // de cima
- const cx=210,cy=205,k=0.85;
+ const cy=205;
  g+=RC(20,118,300,175,PAPEL,'rx="6"');
  for(let z=Math.ceil(929/e)*e;z<982;z+=e)g+=PL(curva(cx,cy,k,z),TERRA_E,(z%25==0||(e>=5&&z%10==0))?1.6:0.7);
  g+=PL(curva(cx,cy,k,zc),ORANGE,2.6)+CIR(cx,cy,3,VERM);
