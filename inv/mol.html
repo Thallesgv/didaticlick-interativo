@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança dos mols · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A balança dos mols</h1></header>
+<main>
+<div class="card"><h2>n = m ÷ M</h2><p class="muted" style="margin-top:0">Escolha o gás e a massa (escrita como a × 10ⁿ gramas). A tela calcula os mols, as moléculas e o volume do gás a 20 °C e 1 atm (24 L por mol), e compara com coisas conhecidas.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Massa: a</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Massa: × 10ⁿ g</b><input type="range"><span></span></div>
+<div class="kpi"><div>Massa<b id="km"></b></div><div class="o">Mols<b id="kn"></b></div><div>Moléculas<b id="kN"></b></div><div>Volume a 20 °C<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Pese um gás.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?2:d))/Math.pow(10,d==null?2:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (e>=-2&&e<=5)?fmt(Math.round(v*1000)/1000):fmt(a)+' × 10'+SUP(e);};
+const ACOR={H:'#E5E7EB',C:'#3B3F4A',O:'#E5482B',S:'#F2C230',Ca:'#7FB2E0'},AR={H:9,C:13,O:13,S:16,Ca:17},AM={H:1,C:12,O:16,S:32,Ca:40};
+function ATOMO(x,y,el,k){k=k||1;return CI(x,y,AR[el]*k,ACOR[el],'stroke="#0E2354" stroke-width="1.2"')+TX(x,y+4*k,el,{fs:10*k,c:(el=='O'||el=='C')?'#fff':NAVY});}
+const IDX=n=>n>1?String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''):'';
+const GAS=[['H₂O',18],['CO₂',44],['SO₂',64],['H₂S',34]];let ig=2;const vistos=new Set();
+chips('ch',GAS.map(g=>g[0]),2,i=>{ig=i;draw();});
+const A=SL('sa',1,9.9,0.1,1,()=>draw(),v=>fmt(v)),E=SL('se',0,14,1,1,()=>draw(),v=>'10'+SUP(v)+' g');
+const m=()=>A.get()*Math.pow(10,E.get()),M=()=>GAS[ig][1],n=()=>m()/M(),V=()=>n()*24;
+const perto=(x,y)=>Math.abs(x-y)/y<0.005;
+const MASSA=g=>g>=1e6?CIENT(g/1e6)+' t':g>=1000?SIG(g/1000)+' kg':SIG(g)+' g';
+const VOL=L=>L<1000?SIG(L)+' L':L<1e12?CIENT(L/1000)+' m³':CIENT(L/1e12)+' km³';
+const REF=[[1,'garrafa de 1 L'],[1000,'caixa-d\'água de 1.000 L'],[375000,'sala de 10 × 10 × 3,75 m'],[2.5e6,'piscina olímpica'],[1e12,'1 km³'],[1.5e13,'15 km³']];
+MIS.def(()=>[
+ ['Quantos mols há em <b>1 tonelada</b> de SO₂?',()=>ig==2&&perto(m(),1e6),()=>'1.000.000 ÷ 64 = 15.625 mol, que ocupariam 375 m³ a 20 °C.',()=>ig!=2?'Escolha SO₂.':'Ponha a = 1 e 10⁶ g.'],
+ ['Pese <b>64 g de SO₂</b> e depois <b>18 g de água</b>. O que os dois têm em comum?',()=>vistos.has('2:64')&&vistos.has('0:18'),'Os dois são 1 mol: 6,02 × 10²³ moléculas e, como gás, 24 L cada. Massas diferentes, o mesmo número de moléculas.',()=>(vistos.has('2:64')?'✔ 64 g de SO₂. ':'')+(vistos.has('0:18')?'✔ 18 g de água. ':'')+'Use a × 10ⁿ: 6,4 × 10¹ e 1,8 × 10¹.'],
+ ['Quanto SO₂ puro encheria uma sala de <b>150 m³</b> (10 m × 5 m × 3 m)?',()=>ig==2&&perto(V(),150000),()=>'150.000 L ÷ 24 = 6.250 mol; × 64 = 400.000 g = 400 kg.',()=>ig!=2?'Escolha SO₂.':'Agora o gás ocupa '+VOL(V())+'. Procure 150 m³.'],
+ ['A nuvem do Monte Brasa: <b>40 milhões de toneladas</b> de SO₂ (4 × 10¹³ g).',()=>ig==2&&perto(m(),4e13),()=>'6,25 × 10¹¹ mol, 3,8 × 10³⁵ moléculas e, se fosse puro aqui embaixo, 15 km³ de gás.',()=>ig!=2?'Escolha SO₂.':'Ponha a = 4 e 10¹³ g.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#EAF2FB','rx="10"')+RC(0,200,W,36,'#C9A57A');
+ const v=V(),lv=Math.log10(Math.max(v,1e-3)),r=clamp(8+lv*6.2,4,96);
+ g+=LN(110,200,110,200-2*r-6,GRAY,1)+CI(110,200-r-6,r,['#BFD9F2','#C9CDD6','#F2C230','#E8D17A'][ig],'opacity=".85" stroke="#0E2354"');
+ g+=TX(110,200-2*r-12>14?200-2*r-12:14,GAS[ig][0],{fs:11,c:NAVY});
+ let ref=REF[0];REF.forEach(x=>{if(v>=x[0]*0.3)ref=x;});
+ g+=TX(232,60,'O gás ocupa',{fs:10,c:GRAY,w:500})+TX(232,82,VOL(v),{fs:15,c:ORANGE})+TX(232,112,'parecido com:',{fs:10,c:GRAY,w:500})+TX(232,132,ref[1],{fs:10.5,c:NAVY});
+ g+=TX(232,162,'escala do balão: logarítmica',{fs:8.5,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){vistos.add(ig+':'+Math.round(m()*1000)/1000);$('km').textContent=MASSA(m());$('kn').textContent=CIENT(n());$('kN').textContent=CIENT(n()*6.02e23);$('kv').textContent=VOL(V());quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

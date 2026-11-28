@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O medidor de gases · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O medidor de gases</h1></header>
+<main>
+<div class="card"><h2>ppm e µg/m³</h2><p class="muted" style="margin-top:0">Escolha o gás e a concentração em partes por milhão. A tela converte para microgramas por metro cúbico (µg/m³ = ppm × M × 1.000 ÷ 24,45) e compara, numa escala logarítmica, com a diretriz da OMS para o SO₂ (40 µg/m³, média de 24 h).</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Concentração</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">ppm<b id="kp"></b></div><div>Porcentagem<b id="kc"></b></div><div>µg/m³<b id="ku"></b></div><div>× diretriz do SO₂<b id="kd"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça o ar.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?2:d))/Math.pow(10,d==null?2:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (e>=-2&&e<=5)?fmt(Math.round(v*1000)/1000):fmt(a)+' × 10'+SUP(e);};
+const ACOR={H:'#E5E7EB',C:'#3B3F4A',O:'#E5482B',S:'#F2C230',Ca:'#7FB2E0'},AR={H:9,C:13,O:13,S:16,Ca:17},AM={H:1,C:12,O:16,S:32,Ca:40};
+function ATOMO(x,y,el,k){k=k||1;return CI(x,y,AR[el]*k,ACOR[el],'stroke="#0E2354" stroke-width="1.2"')+TX(x,y+4*k,el,{fs:10*k,c:(el=='O'||el=='C')?'#fff':NAVY});}
+const IDX=n=>n>1?String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''):'';
+const GAS=[['SO₂',64],['CO₂',44],['H₂S',34]];let ig=0;chips('ch',GAS.map(g=>g[0]),0,i=>{ig=i;draw();});
+const S=SL('sp',-3,4,0.005,0,()=>draw(),v=>{const p=Math.pow(10,v);return SIG(p)+' ppm';});
+const ppm=()=>Math.pow(10,S.get()),ug=()=>ppm()*GAS[ig][1]*1000/24.45;
+MIS.def(()=>[
+ ['Na praça, o medidor marcou <b>5 ppm de SO₂</b>. Quantos µg/m³?',()=>ig==0&&Math.abs(ppm()-5)<0.15,()=>'5 × 64 × 1.000 ÷ 24,45 ≈ '+fmt(Math.round(ug()))+' µg/m³: mais de 300 vezes a diretriz.',()=>ig!=0?'Escolha SO₂.':'Leve a concentração até 5 ppm.'],
+ ['Que concentração de SO₂ fica <b>igual à diretriz</b> de 40 µg/m³?',()=>ig==0&&Math.abs(ug()-40)<2,()=>'Cerca de '+SIG(ppm()*1000)+' ppb ('+SIG(ppm())+' ppm): umas 15 moléculas de SO₂ em cada bilhão.',()=>ig!=0?'Escolha SO₂.':'Agora: '+SIG(ug())+' µg/m³.'],
+ ['Coloque o <b>CO₂ do ar</b>: cerca de 425 ppm.',()=>ig==1&&Math.abs(ppm()-425)<12,()=>SIG(ppm())+' ppm = '+fmt(Math.round(ppm())/10000)+'% do ar, ou cerca de '+r2(ug()/1e6)+' g por m³.',()=>ig!=1?'Escolha CO₂.':'Leve até 425 ppm.'],
+ ['Suba até <b>1%</b> do ar. Quantos ppm é isso?',()=>ppm()>=9800,'1% = 10.000 ppm. Para passar de ppm para %, divida por 10.000.',()=>'Suba a concentração até o fim.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const y=150,x0=20,x1=320,lo=-1,hi=7,X=v=>x0+(Math.log10(v)-lo)/(hi-lo)*(x1-x0);
+ for(let e=lo;e<=hi;e++){g+=LN(X(Math.pow(10,e)),y,X(Math.pow(10,e)),y+6,GRAY,1)+(e%2==1||e<0?TX(X(Math.pow(10,e)),y+18,e<0?'0,1':'10'+SUP(e),{fs:8.5,c:GRAY,w:500}):'');}
+ g+=LN(x0,y,x1,y,NAVY,2)+TX(x1,y+32,'µg/m³ (escala logarítmica)',{fs:8.5,c:GRAY,a:'end',w:500});
+ g+=RC(X(40)-1,y-70,2,70,'#B91C1C')+TX(X(40),y-76,'OMS: 40',{fs:9,c:'#B91C1C'});
+ const u=clamp(ug(),0.1,1e7);g+=RC(x0,y-34,X(u)-x0,22,ug()>40?'#E5482B':GREEN,'rx="4"')+TX(Math.min(X(u)+4,280),y-18,SIG(ug()),{fs:10,c:NAVY,a:'start'});
+ const nm=Math.round(ppm()*100)/100;const fr=Math.min(1,ppm()/1e4);g+=RC(20,18,60,60,'#EAF2FB','stroke="#0E2354"')+RC(20,78-60*Math.max(fr,0.002),60,60*Math.max(fr,0.002),ORANGE);
+ g+=TX(90,36,'fração do ar: '+(ppm()>=100?r2(ppm()/1e4)+'%':CIENT(ppm()/1e4,2)+'%'),{fs:10,c:NAVY,a:'start'})+TX(90,56,SIG(ppm())+' em cada milhão de moléculas',{fs:9.5,c:GRAY,a:'start',w:500});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kp').textContent=SIG(ppm());$('kc').textContent=ppm()>=100?r2(ppm()/1e4)+'%':CIENT(ppm()/1e4,2)+'%';$('ku').textContent=SIG(ug());$('kd').textContent=ig==0?SIG(ug()/40)+' ×':'(só para o SO₂)';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

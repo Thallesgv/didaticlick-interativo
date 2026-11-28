@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A névoa no planeta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A névoa no planeta</h1></header>
+<main>
+<div class="card"><h2>Uma volta e uma meia-vida</h2><p class="muted" style="margin-top:0">Avance os <b>dias</b>: a névoa anda a cerca de 1.800 km por dia ao redor da Terra (como a do Pinatubo, que deu a volta em uns 22 dias). Depois avance os <b>meses</b>: a massa cai pela metade a cada meia-vida.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Dias depois da explosão</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Meses depois</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Meia-vida</b><input type="range"><span></span></div>
+<div class="kpi"><div>Volta completa<b id="kv"></b></div><div class="o">Massa no ar<b id="km"></b></div><div>Por m² da Terra<b id="kg"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Espalhe a névoa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?2:d))/Math.pow(10,d==null?2:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (e>=-2&&e<=5)?fmt(Math.round(v*1000)/1000):fmt(a)+' × 10'+SUP(e);};
+const ACOR={H:'#E5E7EB',C:'#3B3F4A',O:'#E5482B',S:'#F2C230',Ca:'#7FB2E0'},AR={H:9,C:13,O:13,S:16,Ca:17},AM={H:1,C:12,O:16,S:32,Ca:40};
+function ATOMO(x,y,el,k){k=k||1;return CI(x,y,AR[el]*k,ACOR[el],'stroke="#0E2354" stroke-width="1.2"')+TX(x,y+4*k,el,{fs:10*k,c:(el=='O'||el=='C')?'#fff':NAVY});}
+const IDX=n=>n>1?String(n).split('').map(c=>'₀₁₂₃₄₅₆₇₈₉'[+c]).join(''):'';
+const VUL=[['Monte Brasa (82 Mt)',82],['Pinatubo (41 Mt)',41]];let iv=0;chips('ch',VUL.map(v=>v[0]),0,i=>{iv=i;draw();});
+const D=SL('sd',0,30,1,5,()=>draw(),v=>v+' dias'),Mm=SL('sm',0,60,1,0,()=>draw(),v=>v+' meses'),Hh=SL('sh',4,16,1,8,()=>draw(),v=>v+' meses');
+const vol=()=>Math.min(1,D.get()/22),mass=()=>VUL[iv][1]*Math.pow(0.5,Mm.get()/Hh.get()),gm2=()=>vol()>=1?mass()*1e12/5.1e14:mass()*1e12/(5.1e14*0.25*Math.max(vol(),0.02)*4);
+MIS.def(()=>[
+ ['Avance os dias até a névoa do Monte Brasa dar a <b>volta completa</b> na Terra.',()=>iv==0&&vol()>=1&&D.get()<=23,()=>'Em '+D.get()+' dias: 40.000 km ÷ 1.818 km/dia ≈ 22 dias. Espalhada pela Terra inteira: '+r2(gm2())+' g/m².',()=>vol()>=1?'Já passou. Volte para o primeiro dia em que a volta fecha.':'Faltam '+fmt(Math.round(40000*(1-vol())))+' km.'],
+ ['Troque para a névoa do <b>Pinatubo</b> (cerca de 41 Mt). Quantos g/m²?',()=>iv==1&&vol()>=1&&Mm.get()==0,()=>r2(gm2())+' g/m²: metade da do Monte Brasa. O Pinatubo esfriou o planeta em cerca de 0,5 °C.',()=>iv!=1?'Escolha o Pinatubo.':'Deixe a névoa dar a volta, com 0 meses.'],
+ ['Volte ao Monte Brasa: quanto resta depois de <b>2 anos</b> (meia-vida de 8 meses)?',()=>iv==0&&Mm.get()==24&&Hh.get()==8,'24 ÷ 8 = 3 meias-vidas: 82 ÷ 8 = 10,25 milhões de toneladas.',()=>iv!=0?'Escolha o Monte Brasa.':'Meia-vida 8 meses e 24 meses.'],
+ ['Quando a névoa do Monte Brasa encolhe até o tamanho da do <b>Pinatubo</b> recém-formada (41 Mt)?',()=>iv==0&&Hh.get()==8&&Mm.get()==8,'Em 8 meses: exatamente uma meia-vida. Por isso a névoa do Monte Brasa esfria o planeta por mais tempo.',()=>iv!=0?'Escolha o Monte Brasa.':'Agora restam '+r1(mass())+' Mt. Procure 41.']]);
+function quadro(){const W=340,H_=236;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');const mx=10,my=14,mw=320,mh=110;
+ g+=RC(mx,my,mw,mh,'#7FB2E0','rx="6"');[[40,30,50,30],[120,20,40,60],[200,24,70,40],[260,70,30,26]].forEach(([x,y,w,h])=>g+=RC(mx+x,my+y,w,h,'#C9A57A','rx="12"'));
+ const xi=mx+mw*0.62,yi=my+mh*0.62,L=vol()*mw,a=clamp(mass()/82,0.05,1);
+ const f=(x0,w)=>RC(x0,yi-14-8*vol(),w,28+16*vol(),'#F2C230',`opacity="${0.25+0.55*a}"`);
+ if(L<=xi-mx)g+=f(xi-L,L);else{g+=f(mx,xi-mx);g+=f(mx+mw-(L-(xi-mx)),L-(xi-mx));}
+ g+=CI(xi,yi,4,'#E5482B','stroke="#fff"')+TX(xi,yi+18,'ilha',{fs:8.5,c:'#fff'});
+ const gx=40,gy=210,gw=280,gh=66,X=t=>gx+t/60*gw,Y=m=>gy-m/82*gh;let pts='';for(let t=0;t<=60;t++)pts+=X(t)+','+Y(VUL[iv][1]*Math.pow(0.5,t/Hh.get()))+' ';
+ g+=LN(gx,gy,gx+gw,gy,NAVY,1.2)+LN(gx,gy,gx,gy-gh,NAVY,1.2)+`<polyline points="${pts}" fill="none" stroke="${ORANGE}" stroke-width="2"/>`+CI(X(Mm.get()),Y(mass()),5,ORANGE,'stroke="#fff" stroke-width="2"');
+ g+=TX(gx-4,gy-gh+4,'82',{fs:8,c:GRAY,a:'end',w:500})+TX(gx+gw,gy+12,'60 meses',{fs:8,c:GRAY,a:'end',w:500})+TX(gx+4,gy-gh-4,'Mt de névoa',{fs:8.5,c:NAVY,a:'start'});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){$('kv').textContent=vol()>=1?'sim':r1(vol()*100)+'% da volta';$('km').textContent=r2(mass())+' Mt';$('kg').textContent=vol()>=1?r2(gm2())+' g':'espalhando…';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
