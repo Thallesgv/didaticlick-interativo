@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O leque do erro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O leque do erro</h1></header>
+<main>
+<div class="card"><h2>Um grau lá em cima, metros lá embaixo</h2><p class="muted" style="margin-top:0">A broca mira no centro do refúgio, que tem 10 m de largura. Escolha o erro de ângulo e o comprimento do furo e veja o leque de caminhos possíveis. <b>A largura do desenho está esticada 10 vezes</b> para o leque aparecer.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Erro de ângulo (graus)</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Comprimento do furo L (m)</b><input type="range"><span></span></div>
+<div class="row"><label style="font-size:14px"><input type="checkbox" id="cor"> medir e corrigir o furo a cada 50 m</label></div>
+<div class="kpi"><div class="o">Erro lateral no fundo<b id="k1"></b></div><div>Acerta o refúgio?<b id="k2"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o erro.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const Er=SL('se',0,3,0.1,1,draw,v=>fmt(v)+'°'),Lf=SL('sl',100,800,10,760,draw,v=>v+' m');$('cor').onchange=draw;
+const lat=()=>($('cor').checked?Math.min(50,Lf.get()):Lf.get())*tg(Er.get());
+MIS.def(()=>[
+ ['Com o furo de <b>760 m</b>, ache o <b>maior erro</b> (de 0,1 em 0,1 grau) que ainda acerta o refúgio, sem correção.',()=>!$('cor').checked&&Lf.get()==760&&Er.get()==0.3,'0,3°: erro de 4 m. Com 0,4° já seriam 5,3 m e o furo passaria do lado. Menos de meio grau!',()=>'Erro lateral agora: '+r1(lat())+' m. Precisa ser até 5 m, com o maior ângulo possível.'],
+ ['Volte para <b>1°</b> de erro no furo de 760 m e ligue a <b>correção a cada 50 m</b>. Acerta?',()=>$('cor').checked&&Lf.get()==760&&Er.get()==1,'Acerta: o erro nunca passa de 50 × tg 1° ≈ 0,9 m, porque é corrigido antes de crescer.',()=>'Deixe 1°, 760 m e a caixinha marcada.'],
+ ['Sem correção e com 1° de erro, ache o <b>furo mais comprido</b> (de 10 em 10 m) que ainda acerta o refúgio.',()=>!$('cor').checked&&Er.get()==1&&Lf.get()==280,'280 m: 280 × 0,0175 ≈ 4,9 m. A 290 m já seriam 5,1 m. Furos rasos perdoam; furos fundos, não.',()=>'Erro lateral: '+r1(lat())+' m.']]);
+function draw(){const L=Lf.get(),e=lat(),ok=e<=5;let g='';const top=20,k=230/800,cx=170,X=m=>cx+m*10*k;
+ g+=RC(20,top,300,L*k+20,ROCHA)+LN(20,top,320,top,ROCHA_E,2);
+ const w=L*tg(Er.get());
+ if($('cor').checked){let pts=[[cx,top]];for(let s=50;s<=L;s+=50){const d=50*tg(Er.get());pts.push([X(d),top+s*k],[cx,top+s*k]);}
+  g+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${VERM}" stroke-width="2"/>`;}
+ else g+=PG([[cx,top],[X(-w),top+L*k],[X(w),top+L*k]],'#FDE2C6')+LN(cx,top,X(w),top+L*k,VERM,2.5);
+ g+=LN(cx,top,cx,top+L*k,NAVY,1.5,'4 3')+REFUGIO(cx,top+L*k+4,10*10*k,8);
+ g+=LN(X(-5),top+L*k+14,X(5),top+L*k+14,NAVY,1)+TX(cx,top+L*k+26,'refúgio: 10 m',{fs:9});
+ g+=TX(330,top+L*k,'erro: '+r1(e)+' m',{fs:11,a:'end',c:ok?GREEN:VERM});
+ $('fig').innerHTML=SVG(340,290,g);$('k1').textContent=r1(e)+' m';$('k2').textContent=ok?'sim':'não, passa do lado';$('k2').style.color=ok?'#15803D':'#D9342B';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

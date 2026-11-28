@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa da mina · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O mapa da mina</h1></header>
+<main>
+<div class="card"><h2>A folha de 20 cm</h2><p class="muted" style="margin-top:0">A folha tem <b>20 cm de altura</b>. Escolha a escala e veja o corte da Mina Esperança (do morro, 100 m acima da boca, até o refúgio, 700 m abaixo) crescer ou encolher. O que não cabe fica cortado.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div class="o">700 m no desenho<b id="k1"></b></div><div>1 cm do desenho vale<b id="k2"></b></div><div>Refúgio (10 m) no desenho<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha uma escala.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ES=[1000,2000,5000,10000,20000];let ei=3;
+const C=chips('ch',ES.map(e=>'1 : '+fmt(e)),3,i=>{ei=i;draw();});
+const cmDe=m=>m*100/ES[ei];
+MIS.def(()=>[
+ ['Escolha a escala <b>mais detalhada</b> (maior desenho) em que a mina inteira, <b>800 m</b> de altura, ainda cabe na folha de 20 cm.',()=>ES[ei]==5000,'1 : 5.000: 800 m viram 16 cm. Em 1 : 2.000 seriam 40 cm, o dobro da folha.',()=>cmDe(800)>20?'Não cabe: o desenho teria '+r1(cmDe(800))+' cm. Escolha uma escala com número maior.':'Cabe ('+r1(cmDe(800))+' cm), mas dá para escolher uma escala mais detalhada.'],
+ ['Escolha a escala em que os <b>700 m</b> de profundidade ocupam exatamente <b>7 cm</b>.',()=>ES[ei]==10000,'1 : 10.000: 1 cm vale 100 m, então 700 m são 7 cm. É a escala do mapa sobre o capô.',()=>'Agora 700 m ocupam '+r2(cmDe(700))+' cm.'],
+ ['Escolha a escala em que o <b>refúgio</b>, de 10 m, aparece com <b>1 cm</b>. A mina cabe na folha?',()=>ES[ei]==1000,'1 : 1.000: o refúgio tem 1 cm, mas a mina precisaria de 80 cm de papel. Para ver detalhes, só um pedaço da mina.',()=>'O refúgio tem '+r2(cmDe(10)*10)+' mm. Precisa ser 10 mm.']]);
+function draw(){const px=15,top=16,H=300;const sc=ES[ei];const Y=m=>top+(100-m)*100/sc*px;// m = altura em metros (100 = topo do morro, 0 = boca, -700 = refúgio)
+ let g=`<defs><clipPath id="cp"><rect x="40" y="${top}" width="200" height="${H}"/></clipPath></defs>`+RC(40,top,200,H,'#fff','stroke="#0E2354" stroke-width="1.5"');
+ let d=RC(40,Y(0),200,Math.max(0,Y(-800)-Y(0)),ROCHA)+RC(40,top,200,Math.max(0,Y(0)-top),CEU);
+ d+=`<path d="M40 ${Y(0)} L90 ${Y(0)} Q130 ${Y(100)} 170 ${Y(60)} L240 ${Y(20)} L240 ${Y(0)}Z" fill="#D8BC93"/>`;
+ let pts=[],x=110;for(let v=0;v<=7;v++){pts.push([x,Y(-100*v)]);x=v%2?110:200;}
+ d+=`<polyline points="${pts.map(p=>p[0]+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${ROCHA_E}" stroke-width="${Math.max(1.5,Math.min(6,40/sc*100))}"/>`;
+ const rw=Math.max(3,10*100/sc*px),rh=Math.max(2,4*100/sc*px);d+=REFUGIO(pts[7][0],Y(-700)-rh/2,rw,rh);
+ d+=LN(40,Y(0),240,Y(0),ROCHA_E,2);
+ g+=`<g clip-path="url(#cp)">${d}</g>`;
+ for(let k=0;k<=20;k++)g+=LN(30,top+k*15,k%5?35:38,top+k*15,NAVY,1)+(k%5?'':TX(26,top+k*15+3,k+' cm',{fs:8,a:'end',c:GRAY}));
+ const alt=cmDe(800);g+=alt>20?TX(140,top+H+16,'não cabe: faltam '+r1(alt-20)+' cm de papel',{fs:11,c:VERM}):TX(140,top+H+16,'a mina inteira ocupa '+r1(alt)+' cm',{fs:11,c:GREEN});
+ g+=TX(300,40,'1 : '+fmt(sc),{fs:15,c:ORANGE})+TX(300,60,'1 cm = '+fmt(sc/100)+' m',{fs:10});
+ $('fig').innerHTML=SVG(340,340,g);$('k1').textContent=r2(cmDe(700))+' cm';$('k2').textContent=fmt(sc/100)+' m';$('k3').textContent=r2(cmDe(10)*10)+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

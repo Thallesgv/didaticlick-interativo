@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A rampa da mina · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A rampa da mina</h1></header>
+<main>
+<div class="card"><h2>Inclinação, ângulo e comprimento</h2><p class="muted" style="margin-top:0">Mude a inclinação da rampa. O triângulo mostra 100 m na horizontal e o desnível correspondente. Embaixo, quanto de rampa é preciso para chegar ao refúgio, 700 m abaixo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="si"><b>Inclinação da rampa (%)</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Ângulo com o chão<b id="k1"></b></div><div>Horizontal até 700 m<b id="k2"></b></div><div>Comprimento da rampa<b id="k3"></b></div><div>Voltas de 1 km<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova a inclinação.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const I=SL('si',2,100,1,10,draw,v=>v+'%');
+const ang=()=>atg(I.get()/100),hor=()=>700/(I.get()/100);
+MIS.def(()=>[
+ ['Deixe a rampa com ângulo de <b>45°</b>. Qual é a inclinação?',()=>I.get()==100,'100%: desce 1 m a cada 1 m. Repare que 100% não é vertical: é 45°.',()=>'O ângulo agora é '+r1(ang())+'°.'],
+ ['Volte para a rampa da Mina Esperança, de <b>10%</b>. Quantos quilômetros de horizontal até o refúgio?',()=>I.get()==10,'7.000 m na horizontal e cerca de 7.035 m de rampa: o ângulo é só 5,7°.',()=>'Agora são '+fmt(Math.round(hor()))+' m na horizontal.'],
+ ['Ache a inclinação que <b>corta pela metade</b> a horizontal da rampa de 10%. O ângulo também dobra?',()=>I.get()==20,()=>'20%: 3.500 m. O ângulo vai de 5,7° para '+r1(ang())+'°, quase o dobro, mas não exatamente: a tangente não é proporcional ao ângulo.',()=>'Horizontal: '+fmt(Math.round(hor()))+' m. Queremos 3.500 m.'],
+ ['Ache a inclinação cujo ângulo fica mais perto de <b>10°</b>.',()=>I.get()==18,'18%: tg⁻¹(0,18) ≈ 10,2°. (17% dá 9,6°.)',()=>'O ângulo agora é '+r1(ang())+'°.']]);
+function draw(){const i=I.get()/100;let g='';const W=260,x0=40,y0=30;const k=W/100;let dx=100*k,dy=100*i*k;if(dy>160){dx*=160/dy;dy=160;}
+ g+=PG([[x0,y0],[x0+dx,y0],[x0+dx,y0+dy]],PEACH,'stroke="#0E2354" stroke-width="1.5"')+LN(x0,y0,x0+dx,y0+dy,ORANGE,5);
+ g+=ARCO(x0,y0,34,0,-ang(),LIGHT)+TX(x0+44,y0+14,'θ = '+r1(ang())+'°',{fs:11,a:'start'});
+ g+=TX(x0+dx/2,y0-8,'100 m',{fs:10})+TX(x0+dx+6,y0+dy/2+4,fmt(Math.round(i*100))+' m',{fs:10,a:'start'});
+ // espiral vista de lado: voltas de 1 km
+ const vol=700/(1000*i);const yb=226,ys=y0+176;g+=RC(0,ys-6,340,62,ROCHA,'rx="6"');
+ const n=Math.min(40,Math.ceil(vol));let pts=[];for(let v=0;v<=n;v++){const f=Math.min(v,vol)/vol;pts.push([v%2?300:40,ys+f*48]);}
+ g+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${ROCHA_E}" stroke-width="2"/>`+REFUGIO(pts[pts.length-1][0],ys+50,14,6);
+ g+=TX(170,ys-12,'vista de lado: '+(vol<=40?r1(vol):'mais de 40')+' voltas de 1 km até o refúgio',{fs:10});
+ $('fig').innerHTML=SVG(340,262,g);$('k1').textContent=r1(ang())+'°';$('k2').textContent=fmt(Math.round(hor()))+' m';$('k3').textContent=fmt(Math.round(Math.hypot(hor(),700)))+' m';$('k4').textContent=r1(vol);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
