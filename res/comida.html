@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O cardápio da paloma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O cardápio da paloma</h1></header>
+<main>
+<div class="card"><h2>kcal por grama, por dia e por paloma</h2><p class="muted" style="margin-top:0">A ração tem uma fração de gordura (9 kcal/g) e o resto de carboidrato e proteína (4 kcal/g): cada grama dá 4 + 5·f kcal. A ração ocupa 0,5 kg por litro (medido pela equipe), e cada paloma leva 11,8 L.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sg"><b>Gordura na ração</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>kcal por pessoa por dia</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Pessoas</b><input type="range"><span></span></div>
+<div class="kpi"><div>kcal por grama<b id="k1"></b></div><div>Ração do dia<b id="k2"></b></div><div>Volume<b id="k3"></b></div><div class="o">Viagens<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte o cardápio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EL=(cx,cy,rx,ry,f,extra)=>`<ellipse cx="${cx}" cy="${cy}" rx="${Math.max(0.1,rx)}" ry="${Math.max(0.1,ry)}" fill="${f}" ${extra||''}/>`;
+const AZP='#3B7DD8',AZC='#BFD7F5',LIOH='#B57EDC',PILHA='#4B5563',AREIA='#A16207';
+function TUBO(x,y,w,h,cor){const e=h*0.18;return RC(x,y,w,h,cor)+LN(x,y,x+w,y,NAVY,1.4)+LN(x,y+h,x+w,y+h,NAVY,1.4)+EL(x+w,y+h/2,e,h/2,'#fff','stroke="#0E2354" stroke-width="1.4"')+EL(x,y+h/2,e,h/2,cor,'stroke="#0E2354" stroke-width="1.4"');}
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);
+const G=SL('sg',0,100,1,0,draw,v=>v+'%'),K=SL('sk',1200,3000,100,2000,draw,v=>fmt(v)+' kcal'),N=SL('sn',1,33,1,33,draw);
+const kg=()=>4+5*G.get()/100,massa=()=>N.get()*K.get()/kg()/1000,vol=()=>massa()/0.5,via=()=>Math.ceil(vol()/11.8-1e-9);
+MIS.def(()=>[
+ ['Monte o caso do livro: ração com <b>20% de gordura</b> e <b>1.800 kcal</b> para cada um dos <b>33</b>. Quantas viagens?',()=>G.get()==20&&K.get()==1800&&N.get()==33,'59.400 kcal ÷ 5 kcal/g = 11,9 kg = 23,8 L: 3 viagens, e a terceira vai quase vazia.',()=>'Agora: '+r1(vol())+' L, '+via()+' viagem(ns).'],
+ ['Com 1.800 kcal para os 33, ache a <b>menor</b> porcentagem de gordura que leva tudo em <b>2 viagens</b>.',()=>G.get()==21&&K.get()==1800&&N.get()==33,'21%: 5,05 kcal/g e 23,5 L, que cabem em duas palomas de 11,8 L. Com 20% faltam 0,2 L. Se o corpo deles aguenta mais gordura, quem decide é a médica.',()=>'Agora: '+r1(vol())+' L, '+via()+' viagem(ns).'],
+ ['Volte aos 20% e dê <b>2.600 kcal</b> a cada um dos 33.',()=>G.get()==20&&K.get()==2600&&N.get()==33,'85.800 kcal: 17,2 kg e 34,3 L. Ainda 3 viagens, mas agora a terceira vai quase cheia.',()=>'Agora: '+r1(vol())+' L, '+via()+' viagem(ns).']]);
+function draw(){const f=G.get()/100,v=vol(),n=via();let g='';const x0=30,k=30;
+ g+=TX(x0,18,'cada grama de ração',{fs:10,a:'start',c:GRAY,w:500})+RC(x0,26,9*k,22,'#F3F4F6')+RC(x0,26,4*k,22,AZP)+RC(x0+4*k,26,5*f*k,22,ORANGE);
+ for(let q=0;q<=9;q++)g+=LN(x0+q*k,48,x0+q*k,53,NAVY,1)+TX(x0+q*k,64,q,{fs:9,c:GRAY,w:500});
+ g+=TX(x0+(4+5*f)*k+(f>0.85?-4:4),41,fmt(Math.round(kg()*100)/100)+' kcal',{fs:11,a:f>0.85?'end':'start',c:f>0.85?'#fff':NAVY});
+ const mostra=Math.min(n,6);for(let i=0;i<mostra;i++){const fr=Math.min(1,v/11.8-i),y=84+i*30;g+=RC(30,y,200,20,'#fff')+RC(30,y,200*fr,20,'#F6C48E')+LN(30,y,230,y,NAVY,1.2)+LN(30,y+20,230,y+20,NAVY,1.2)+EL(230,y+10,4,10,'#fff','stroke="#0E2354" stroke-width="1.2"')+EL(30,y+10,4,10,fr>0?'#F6C48E':'#fff','stroke="#0E2354" stroke-width="1.2"');
+  g+=TX(242,y+14,'viagem '+(i+1)+(fr<1?': '+Math.round(fr*100)+'%':''),{fs:10,a:'start'});}
+ if(n>6)g+=TX(150,84+6*30+12,'+ '+(n-6)+' viagens',{fs:11,c:VERM});
+ $('fig').innerHTML=SVG(340,84+Math.min(n,6)*30+(n>6?22:6),g);$('k1').textContent=fmt(Math.round(kg()*100)/100);$('k2').textContent=r1(massa())+' kg';$('k3').textContent=r1(v)+' L';$('k4').textContent=n;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Abra o tubo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Abra o tubo</h1></header>
+<main>
+<div class="card"><h2>Do cilindro ao retângulo</h2><p class="muted" style="margin-top:0">Arraste o controle "desenrolar": o tubo se abre num retângulo de 2πr por h e as tampas viram dois círculos de raio r. No modo "volume fixo em 1 L", a altura se ajusta sozinha para o tubo guardar sempre 1.000 cm³.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="su"><b>Desenrolar</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Raio</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Altura</b><input type="range"><span></span></div>
+<div class="kpi"><div>Área lateral<b id="k1"></b></div><div>Cada tampa<b id="k2"></b></div><div class="o">Área total<b id="k3"></b></div><div>Volume<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desenrole o tubo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EL=(cx,cy,rx,ry,f,extra)=>`<ellipse cx="${cx}" cy="${cy}" rx="${Math.max(0.1,rx)}" ry="${Math.max(0.1,ry)}" fill="${f}" ${extra||''}/>`;
+const AZP='#3B7DD8',AZC='#BFD7F5',LIOH='#B57EDC',PILHA='#4B5563',AREIA='#A16207';
+function TUBO(x,y,w,h,cor){const e=h*0.18;return RC(x,y,w,h,cor)+LN(x,y,x+w,y,NAVY,1.4)+LN(x,y+h,x+w,y+h,NAVY,1.4)+EL(x+w,y+h/2,e,h/2,'#fff','stroke="#0E2354" stroke-width="1.4"')+EL(x,y+h/2,e,h/2,cor,'stroke="#0E2354" stroke-width="1.4"');}
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);
+let modo=0;chips('ch',['altura livre','volume fixo em 1 L'],0,i=>{modo=i;$('sh').querySelector('input').disabled=!!i;draw();});
+const U=SL('su',0,1,0.05,0,draw,v=>Math.round(v*100)+'%'),R=SL('sr',1,10,0.1,3,draw,v=>r1(v)+' cm'),H=SL('sh',5,150,1,20,draw,v=>v+' cm');
+const h=()=>modo?1000/(Math.PI*R.get()**2):H.get(),lat=()=>2*Math.PI*R.get()*h(),tam=()=>Math.PI*R.get()**2,tot=()=>lat()+2*tam();
+MIS.def(()=>[
+ ['Desenrole o tubo <b>até o fim</b>. Em que figuras ele se transforma?',()=>perto(U.get(),1),'Um retângulo de 2πr por h (a superfície lateral) e dois círculos de raio r (as tampas).',()=>'Desenrolado: '+Math.round(U.get()*100)+'%.'],
+ ['Monte o tubo da paloma, <b>r = 5,5 cm</b>, e ache a área de um adesivo de <b>1 m</b> de altura em volta dele.',()=>modo==0&&perto(R.get(),5.5)&&H.get()==100,'≈ 3.456 cm²: 34,6 cm de volta × 100 cm. Com a volta arredondada para 34,6 cm, o livro dá 3.460 cm².',()=>'Área lateral agora: '+fmt(Math.round(lat()))+' cm².'],
+ ['Troque para <b>volume fixo em 1 L</b> e ache o raio que gasta <b>menos material</b> (a menor área total).',()=>modo==1&&perto(R.get(),5.4),'r = 5,4 cm e h ≈ 10,9 cm: cerca de 553,6 cm². A altura fica quase igual ao diâmetro. Tubos finos e compridos, ou largos e baixos, gastam mais.',()=>'Área total agora: '+r1(tot())+' cm².']]);
+function draw(){const r=R.get(),hh=h(),t=U.get();let g='';
+ const s=Math.min(5,300/(2*Math.PI*r),200/(hh+4*r)),w=(2*r+(2*Math.PI-2)*r*t)*s,x=170-w/2,yT=14+2*r*s,hs=hh*s,rx=r*s,ry=r*s*(0.3+0.7*t);
+ g+=EL(170,yT-t*r*s,rx,ry,'#9CC2F0','stroke="#0E2354" stroke-width="1.2"')+RC(x,yT,w,hs,AZC,'stroke="#0E2354" stroke-width="1.2"');
+ for(let k=1;k<6;k++){const xx=170-(w/2)*Math.cos(k*Math.PI/6);g+=LN(xx,yT,xx,yT+hs,'#7FA8D8',1,'3 3').replace('/>',` opacity="${(1-t).toFixed(2)}"/>`);}
+ g+=EL(170,yT+hs+t*r*s,rx,ry,'#9CC2F0','stroke="#0E2354" stroke-width="1.2"');
+ if(t>0.95){g+=TX(170,yT+hs/2+4,'lateral: '+fmt(Math.round(lat()))+' cm²',{fs:11});g+=TX(170,yT+hs+2*r*s+16,'2πr = '+r1(2*Math.PI*r)+' cm',{fs:10,c:ORANGE});
+  g+=TX(Math.min(334,170+w/2+6),yT+hs/2+4,'h = '+r1(hh),{fs:10,a:Math.min(334,170+w/2+6)>=334?'end':'start',c:ORANGE});}
+ $('fig').innerHTML=SVG(340,Math.max(120,yT+hs+2*r*s+24),g);
+ $('k1').textContent=fmt(Math.round(lat()))+' cm²';$('k2').textContent=r1(tam())+' cm²';$('k3').textContent=r1(tot())+' cm²';$('k4').textContent=fmt(Math.round(tam()*hh))+' cm³';
+ $('sh').querySelector('span').textContent=r1(hh)+' cm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
