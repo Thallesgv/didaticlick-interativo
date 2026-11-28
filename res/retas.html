@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A corrida dos planos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A corrida dos planos</h1></header>
+<main>
+<div class="card"><h2>Três funções afins</h2><p class="muted" style="margin-top:0">Cada plano faz d(t) = v · (t − t₀) metros de furo largo, contando os dias desde o desabamento. Escolha um plano e mude a velocidade e o dia de começo. O furo tem 761,6 m.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="sl" id="sv"><b>Velocidade</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Dia de começo</b><input type="range"><span></span></div>
+<div class="fig" id="gr"></div><div class="fig" id="fx"></div>
+<div class="kpi"><div>Plano A chega<b id="kA"></b></div><div>Plano B chega<b id="kB"></b></div><div>Plano C chega<b id="kC"></b></div><div class="o">Primeiro<b id="k1"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte os planos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ROXO='#8B5CF6',AZP='#3B7DD8',CINZA='#9CA3AF',FURO=761.6;const CORES={A:ROXO,B:AZP,C:ORANGE};
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);
+const PL={A:{v:20,t0:30},B:{v:20,t0:30},C:{v:20,t0:30}};let cur='A';
+const V=SL('sv',5,50,0.5,20,v=>{PL[cur].v=v;draw();},v=>fmt(v)+' m/dia'),T0=SL('st',20,60,1,30,v=>{PL[cur].t0=v;draw();},v=>'dia '+v);
+chips('ch',['Plano A','Plano B','Plano C'],0,i=>{cur='ABC'[i];V.set(PL[cur].v);T0.set(PL[cur].t0);draw();});
+const cheg=k=>PL[k].t0+FURO/PL[k].v,livro=()=>PL.A.v==12&&PL.A.t0==25&&PL.B.v==22&&PL.B.t0==31&&PL.C.v==30&&PL.C.t0==45;
+MIS.def(()=>[
+ ['Monte os três planos do livro: <b>A</b> 12 m/dia desde o dia 25, <b>B</b> 22 m/dia desde o dia 31, <b>C</b> 30 m/dia desde o dia 45. Quem chega primeiro?',livro,'B no dia 65,6, C no 70,4 e A só no 88,5. O mais rápido começa tarde demais, e o primeiro a começar é lento demais.',()=>'Agora chega primeiro o Plano '+prim()+'.'],
+ ['Mantendo o B do livro, ache a <b>menor</b> velocidade que faz o <b>C</b> chegar antes do B.',()=>PL.B.v==22&&PL.B.t0==31&&PL.C.t0==45&&PL.C.v==37,'37 m/dia: o C chega no dia 65,58, um tantinho antes do B (65,62). Com 36,5 m/dia, chegaria no 65,87.',()=>'C chega no dia '+r2(cheg('C'))+'; B no '+r2(cheg('B'))+'.'],
+ ['Volte o C para 30 m/dia. Até que <b>dia</b> o B pode atrasar o começo e ainda chegar antes do C?',()=>PL.C.v==30&&PL.C.t0==45&&PL.B.v==22&&PL.B.t0==35,'Dia 35: o B chega no 69,6, antes do C (70,4). Começando no dia 36, chegaria no 70,6 e perderia.',()=>'B começa no dia '+PL.B.t0+' e chega no '+d1(cheg('B'))+'.']]);
+function prim(){return['A','B','C'].sort((a,b)=>cheg(a)-cheg(b))[0];}
+function draw(){$('gr').innerHTML=PLOT({xmin:20,xmax:120,ymin:0,ymax:800,dx:20,dy:100,xl:'dia',yl:'furo largo pronto (m)'},(X,Y)=>{let g=linha([[20,FURO],[120,FURO]],X,Y,VERM,1.5,'6 4');
+  for(const k of 'ABC'){const t1=cheg(k);g+=linha([[PL[k].t0,0],[t1,FURO]],X,Y,CORES[k],k==cur?4:2.5)+ponto(Math.min(t1,119),Math.min(FURO,PL[k].v*(Math.min(t1,119)-PL[k].t0)),X,Y,CORES[k]);}return g;});
+ const ord=['A','B','C'].sort((a,b)=>cheg(a)-cheg(b));let g='';ord.forEach((k,i)=>{g+=RC(10+i*110,8,100,30,CORES[k],'rx="6"')+TX(60+i*110,28,(i+1)+'º: '+k+' · dia '+d1(cheg(k)),{fs:11,c:'#fff'});});
+ $('fx').innerHTML=SVG(340,46,g);for(const k of 'ABC')$('k'+k).textContent='dia '+d1(cheg(k));$('k1').textContent='Plano '+ord[0];MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

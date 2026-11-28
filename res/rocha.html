@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A rocha do furo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A rocha do furo</h1></header>
+<main>
+<div class="card"><h2>Volume, massa e entulho</h2><p class="muted" style="margin-top:0">O furo é um cilindro de 761,6 m: V = 598,2 · d² (d em metros). Granito a 2,7 t/m³; quebrado, ocupa 75% a mais (empolamento). A cápsula, tracejada, tem 54 cm.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Diâmetro do furo</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Rocha retirada<b id="k1"></b></div><div>Massa<b id="k2"></b></div><div>Entulho<b id="k3"></b></div><div>Caçambas de 10 m³<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o furo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ROXO='#8B5CF6',AZP='#3B7DD8',CINZA='#9CA3AF',FURO=761.6;const CORES={A:ROXO,B:AZP,C:ORANGE};
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);
+const D=SL('sd',10,120,1,40,draw,v=>v+' cm');const V=()=>598.2*(D.get()/100)**2;
+MIS.def(()=>[
+ ['Ache o volume de rocha do furo final do Plano B, de <b>71 cm</b>.',()=>D.get()==71,'301,5 m³: 814 toneladas de granito e 528 m³ de entulho, 53 caçambas.',()=>'Agora: '+d1(V())+' m³.'],
+ ['O furo da 1ª etapa tem <b>30 cm</b>. Dobre o diâmetro para <b>60 cm</b>: o volume dobra?',()=>D.get()==60,'215,4 m³ contra 53,8 m³: 4 vezes mais. O volume cresce com o quadrado do diâmetro.',()=>'Agora: '+d1(V())+' m³.'],
+ ['Ache o <b>menor</b> furo que deixa <b>5 cm</b> de folga em volta da cápsula de 54 cm.',()=>D.get()==64,'64 cm: 245 m³, uns 56 m³ a menos que o de 71 cm. Mas 5 cm de folga num furo inclinado de 761 m é pouco.',()=>'Folga agora: '+d1((D.get()-54)/2)+' cm de cada lado.']]);
+function draw(){const d=D.get(),v=V(),ent=v*1.75,cac=Math.ceil(ent/10-1e-9);let g='';const s=1.1,cx=80,cy=96;
+ g+=RC(8,10,144,172,ROCHA,'rx="4"')+`<circle cx="${cx}" cy="${cy}" r="${d/2*s}" fill="#F6EEDF" stroke="${NAVY}" stroke-width="1.5"/>`;
+ g+=`<circle cx="${cx}" cy="${cy}" r="${27*s}" fill="none" stroke="${d<54?VERM:ORANGE}" stroke-width="2" stroke-dasharray="5 3"/>`;
+ g+=TX(cx,cy+4,d<54?'não passa':'cápsula',{fs:10,c:d<54?VERM:ORANGE})+TX(cx,198,'seção: '+d+' cm',{fs:10,c:GRAY,w:500});
+ const hP=Math.min(150,12*Math.cbrt(ent)),bP=hP*1.8;g+=PG([[250-bP/2,182],[250+bP/2,182],[250,182-hP]],'#C9A27A','stroke="#6B4E34" stroke-width="1"')+TX(250,198,fmt(Math.round(ent))+' m³ de entulho',{fs:10,c:GRAY,w:500});
+ for(let i=0;i<Math.min(cac,60);i++)g+=RC(166+(i%20)*8.3,212+Math.floor(i/20)*9,6.5,6,'#F6C48E','stroke="#B45309" stroke-width=".5"');
+ g+=TX(334,250,cac+' caçambas',{fs:10,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(340,256,g);$('k1').textContent=d1(v)+' m³';$('k2').textContent=fmt(Math.round(v*2.7))+' t';$('k3').textContent=fmt(Math.round(ent))+' m³';$('k4').textContent=cac;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

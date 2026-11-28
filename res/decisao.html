@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O dia do resgate · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O dia do resgate</h1></header>
+<main>
+<div class="card"><h2>O menor prazo e as tarefas depois do furo</h2><p class="muted" style="margin-top:0">Chegadas do livro: A no dia 88,5, B no 65,2, C no 70,4. Desligue um plano para simular uma quebra. Depois que o primeiro furo chega, vêm a inspeção, os tubos de aço (4 m por hora) e a montagem do guincho.</p>
+<div id="tg" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="si"><b>Inspeção</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Tubos de aço</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Guincho</b><input type="range"><span></span></div>
+<div class="kpi"><div>Furo pronto<b id="k1"></b></div><div>Tarefas<b id="k2"></b></div><div class="o">Cápsula desce<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Decida o dia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ROXO='#8B5CF6',AZP='#3B7DD8',CINZA='#9CA3AF',FURO=761.6;const CORES={A:ROXO,B:AZP,C:ORANGE};
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const d1=v=>fmt(Math.round(v*10)/10);
+const CH={A:88.5,B:65.2,C:70.4},ON={A:true,B:true,C:true};
+function botoes(){$('tg').innerHTML='ABC'.split('').map(k=>`<button data-k="${k}" class="${ON[k]?'':'alt'}" style="padding:5px 11px;font-size:13px;margin:2px">Plano ${k}: ${ON[k]?'ligado':'quebrou'}</button>`).join('');
+ $('tg').querySelectorAll('button').forEach(b=>b.onclick=()=>{ON[b.dataset.k]=!ON[b.dataset.k];botoes();draw();});}
+const I=SL('si',0,3,0.5,2,draw,v=>fmt(v)+' dia(s)'),TU=SL('st',0,300,1,200,draw,v=>v+' m ('+fmt(Math.round(v/4*10)/10)+' h)'),G=SL('sg',0,4,0.5,3,draw,v=>fmt(v)+' dia(s)');
+const lig=()=>'ABC'.split('').filter(k=>ON[k]),venc=()=>lig().sort((a,b)=>CH[a]-CH[b])[0],tarefas=()=>I.get()+TU.get()/4/24+G.get(),cap=()=>venc()?CH[venc()]+tarefas():null;
+const todos=()=>ON.A&&ON.B&&ON.C;
+MIS.def(()=>[
+ ['Com os três planos ligados, ponha as tarefas da Mina Esperança: inspeção de <b>1 dia</b>, <b>56 m</b> de tubos e guincho de <b>2 dias</b>.',()=>todos()&&I.get()==1&&TU.get()==56&&G.get()==2,'Dia 68,8: o B chega no 65,2, e as tarefas somam 3,6 dias (1 + 0,6 + 2).',()=>cap()?'Cápsula no dia '+d1(cap())+'.':'Nenhum plano ligado.'],
+ ['O <b>Plano B quebrou</b> sem conserto. Desligue-o e veja o novo dia da cápsula.',()=>!ON.B&&ON.A&&ON.C&&I.get()==1&&TU.get()==56&&G.get()==2,'Dia 74,0: o C assume, só 5,2 dias depois. É para isso que serve manter o C trabalhando.',()=>cap()?'Cápsula no dia '+d1(cap())+'.':'Nenhum plano ligado.'],
+ ['Religue o B. Com inspeção de 1 dia e guincho de 2, quantos metros de tubo cabem para a cápsula descer <b>até o dia 69</b>?',()=>ON.B&&I.get()==1&&G.get()==2&&TU.get()==76,'76 m (76,8 m na conta exata): 19 horas de tubos. Os 56 m do livro cabem com umas 5 horas de folga.',()=>cap()?'Cápsula no dia '+r2(cap())+'.':'Nenhum plano ligado.']]);
+function draw(){const x0=56,k=3.6,X=t=>x0+(t-25)*k;let g='';const w=venc();
+ 'ABC'.split('').forEach((p,i)=>{const t0={A:25,B:31,C:45}[p],y=16+i*30;g+=TX(x0-6,y+14,'Plano '+p,{fs:10,a:'end'});
+  g+=RC(X(t0),y,(CH[p]-t0)*k,18,ON[p]?CORES[p]:'#E5E7EB','rx="3"'+(p==w?' stroke="#0E2354" stroke-width="2"':''));if(!ON[p])g+=TX(X(t0)+6,y+13,'quebrou',{fs:10,a:'start',c:VERM});
+  else g+=TX(Math.min(334,X(CH[p])+4),y+13,d1(CH[p]),{fs:9,a:X(CH[p])+4>310?'end':'start',c:CORES[p]});});
+ if(w){const y=112;let t=CH[w];[[I.get(),CINZA,'inspeção'],[TU.get()/96,NAVY,'tubos'],[G.get(),VERM,'guincho']].forEach(([d,c,n])=>{g+=RC(X(t),y,d*k,18,c);t+=d;});
+  g+=TX(X(CH[w])-4,y+13,'depois do '+w+':',{fs:10,a:'end'})+`<circle cx="${X(t)}" cy="${y+9}" r="7" fill="${ORANGE}" stroke="#fff" stroke-width="2"/>`;g+=TX(X(t),y+36,'cápsula: dia '+d1(t),{fs:12,c:ORANGE});}
+ else g+=TX(170,130,'Nenhum plano funcionando: os 33 ficariam presos.',{fs:12,c:VERM});
+ for(let t=30;t<=100;t+=10)g+=LN(X(t),158,X(t),163,GRAY,1)+TX(X(t),176,t,{fs:9,c:GRAY,w:500});g+=LN(X(25),160,X(101),160,GRAY,1)+TX(X(101),190,'dia',{fs:9,a:'end',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,196,g);const c=cap();$('k1').textContent=w?'dia '+d1(CH[w])+' ('+w+')':'—';$('k2').textContent=d1(tarefas())+' dias';$('k3').textContent=c?'dia '+d1(c):'—';MIS.ver('m');}
+botoes();draw();
+})();
+</script>
+</body>
+</html>
