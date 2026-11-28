@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balestilha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A balestilha</h1></header>
+<main>
+<div class="card"><h2>tg(ângulo ÷ 2) = (travessa ÷ 2) ÷ d</h2><p class="muted" style="margin-top:0">Escolha o alvo, o tamanho da travessa e deslize a travessa pela vara de 80 cm (arrastando ou com − e +). Quando as pontas da travessa encostam no horizonte e no astro, o ângulo está medido.</p>
+<div id="cha" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância da travessa ao olho</b><input type="range"><span></span></div><div class="sl" id="st"><b>Tamanho da travessa</b><input type="range"><span></span></div><div class="kpi"><div>Ângulo da balestilha<b id="k1"></b></div><div>Ângulo do alvo<b id="k2"></b></div><div class="o">Diferença<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça com a balestilha.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ALV=[['Polo sul',10.5],['Braço do Cruzeiro',6.0],['Alfa do Centauro',39.8],['Livre',null]];let ia=0;
+const CA=chips('cha',ALV.map(a=>a[0]),0,i=>{ia=i;draw();});
+const SD=SL('sd',5,80,0.2,30,()=>draw(),v=>fmt(v)+' cm'),ST=SL('st',2,30,1,10,()=>draw(),v=>v+' cm');
+const ang=()=>2*Math.atan(ST.get()/2/SD.get())*DEG,alvo=()=>ALV[ia][1],ok=i=>ia==i&&Math.abs(ang()-ALV[i][1])<=0.15;
+MIS.def(()=>[
+ ['Meça o <b>polo sul</b> (10,5°) com a travessa de <b>10 cm</b>.',()=>ok(0)&&ST.get()==10,()=>'A travessa ficou a '+fmt(SD.get())+' cm: 5 ÷ tg 5,25° ≈ 54,4 cm.',()=>ia!=0?'Escolha o alvo Polo sul.':ST.get()!=10?'Use a travessa de 10 cm.':'A balestilha mede '+r2(ang())+'°.'],
+ ['Meça o <b>braço do Cruzeiro</b> (6°). Dica: a vara só tem 80 cm.',()=>ok(1),()=>'Com travessa de '+ST.get()+' cm, a '+fmt(SD.get())+' cm. Com 10 cm, a travessa teria de ficar a 95 cm, fora da vara: ângulos pequenos pedem travessa pequena.',()=>ia!=1?'Escolha o alvo Braço do Cruzeiro.':'A balestilha mede '+r2(ang())+'°.'+(ST.get()>=10&&SD.get()>=79?' A vara acabou: troque a travessa.':'')],
+ ['Meça <b>Alfa do Centauro</b> (39,8°) com a travessa de <b>10 cm</b>.',()=>ok(2)&&ST.get()==10,()=>'A travessa ficou a '+fmt(SD.get())+' cm do olho: perto, porque o ângulo é grande. Repare como a escala fica espremida.',()=>ia!=2?'Escolha o alvo Alfa do Centauro.':ST.get()!=10?'Use a travessa de 10 cm.':'A balestilha mede '+r2(ang())+'°.']]);
+function draw(){const d=SD.get(),t=ST.get(),a=ang();let g=RC(0,0,340,250,NOITE,'rx="10"');
+ const ex=20,ey=180,kx=3.6,xv=ex+d*kx,half=Math.min(150,Math.tan(a/2*RAD)*d*kx);
+ g+=RC(0,ey+4,340,66,'#2B2A20')+LN(ex,ey,ex+80*kx,ey,MAD,6);
+ for(const [gr,dd] of [[10,57.2],[20,28.4],[30,18.7],[40,13.7]]){const x=ex+dd*kx;g+=LN(x,ey-4,x,ey+4,'#fff',1)+TX(x,ey+18,gr+'°',{fs:9,c:AZC,w:500});}
+ g+=LN(xv,ey,xv,ey-2*half,ORANGE,5);
+ g+=LN(ex,ey,xv,ey,OURO,1.2,'4 3')+LN(ex,ey,xv,ey-2*half,OURO,1.2,'4 3');
+ const ta=alvo();if(ta!==null){const yt=ey-Math.tan(ta*RAD)*(xv-ex);g+=CIR(Math.min(330,xv+0),Math.max(12,yt),5,'#FFF4D6')+TX(Math.min(326,xv+10),Math.max(16,yt+4),ALV[ia][0],{fs:10,a:xv>230?'end':'start',c:'#FFF4D6',w:500});}
+ g+=CIR(ex,ey,7,'#fff')+CIR(ex+2,ey,3,NAVY)+TX(xv,ey+36,'d = '+fmt(d)+' cm',{fs:10,c:ORANGE});
+ $('fig').innerHTML=SVG(340,250,g);
+ $('k1').textContent=r2(a)+'°';$('k2').textContent=ta===null?'—':fmt(ta)+'°';$('k3').textContent=ta===null?'—':r2(Math.abs(a-ta))+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
