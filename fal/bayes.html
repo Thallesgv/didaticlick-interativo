@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A balança das provas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A balança das provas</h1></header>
+<main>
+<div class="card"><h2>A balança das provas</h2><p class="muted" style="margin-top:0">Comece com uma chance e dê a cada prova a sua força (RV): mais que 1 empurra para "falso", menos que 1 para "verdadeiro", 1 não muda nada. Cada barra é a chance depois da prova, numa escala em que cada linha vale 10 vezes a outra.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Chance inicial de falso</b><input type="range"><span></span></div>
+<div id="sls"></div>
+<div class="kpi"><div>Chance final<b id="kc"></b></div><div class="o">Probabilidade de falso<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Some as provas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROSA='#F4B4B4',VERDE_C2='#B7DEC3';
+const mi=v=>'R$ '+vg(Math.round(v*100)/100)+' mi';
+const NM=['pinceladas','trama','titânio','retrato embaixo','data 1893','procedência'],EQ=[2,1.5,40,3,20,10];
+const LV=[0.05,0.1,0.2,0.25,0.5,1,1.5,2,3,5,10,20,40,100];
+$('sls').innerHTML=NM.map((n,i)=>`<div class="sl" id="sr${i}"><b>${n}</b><input type="range"><span></span></div>`).join('');
+const S0=SL('s0',1,99,1,75,()=>draw(),v=>v+'%');const SR=NM.map((n,i)=>SL('sr'+i,0,LV.length-1,1,LV.indexOf(1),()=>draw(),v=>'RV '+vg(LV[v])));
+const rv=()=>SR.map(s=>LV[s.get()]);
+function passos(){let o=S0.get()/(100-S0.get());const r=[o];rv().forEach(x=>{o*=x;r.push(o);});return r;}
+const pr=o=>o/(1+o)*100,pct=p=>p>99.99?vg(Math.round(p*10000)/10000)+'%':p>99?vg(Math.round(p*100)/100)+'%':p<0.01?'<0,01%':vg(Math.round(p*10)/10)+'%';
+const ch=o=>o>=1?fmt(Math.round(o))+' : 1':'1 : '+fmt(Math.round(1/o));
+MIS.def(()=>[
+ ['Reproduza a conta da equipe: chance inicial <b>75%</b> e as RVs 2; 1,5; 40; 3; 20; 10.',()=>S0.get()==75&&rv().every((x,i)=>x==EQ[i]),'216.000 contra 1: 99,9995%. Cada prova multiplica a chance.',()=>'Diferentes ainda: '+NM.filter((n,i)=>rv()[i]!=EQ[i]).join(', ')+(S0.get()!=75?', chance inicial':'')+'.'],
+ ['Seja um <b>cético</b>: comece com só <b>1%</b> e mantenha as RVs da equipe.',()=>S0.get()==1&&rv().every((x,i)=>x==EQ[i]),'≈ 727 contra 1: 99,86%. Provas fortes vencem até quem começa desconfiado do lado contrário.',()=>'Chance inicial em 1% e as RVs da equipe.'],
+ ['Com chance inicial 75%, deixe <b>só uma prova</b> valendo (as outras em RV 1) e passe de <b>99%</b>.',()=>S0.get()==75&&rv().filter(x=>x!=1).length==1&&pr(passos()[6])>99,()=>'Só '+NM[rv().findIndex(x=>x!=1)]+' já leva a '+pct(pr(passos()[6]))+'.',()=>'Agora '+rv().filter(x=>x!=1).length+' provas diferentes de 1; probabilidade '+pct(pr(passos()[6]))+'.'],
+ ['Invente provas <b>a favor do quadro</b> (RV menor que 1) até a chance de falso, começando em 75%, cair abaixo de <b>50%</b>.',()=>S0.get()==75&&pr(passos()[6])<50,'Uma prova com RV 0,1 divide a chance por 10. É assim que um bom documento, uma tinta da época ou uma assinatura verdadeira defenderiam o quadro.',()=>'Probabilidade agora: '+pct(pr(passos()[6]))+'.']]);
+function draw(){const p=passos(),W=340,x0=40,bw=(W-x0-6)/7,y0=150,ky=17;let s=RC(0,0,W,230,'#fff','rx="10"');
+ for(let e=-3;e<=7;e++){const y=y0-e*ky;if(y<8||y>214)continue;s+=LN(x0,y,W-6,y,e==0?NAVY:GRAYL,e==0?1.4:.6,e?'3 3':null)+TX(x0-4,y+4,e>=0?['1','10','100','1 mil','10 mil','100 mil','1 mi','10 mi'][e]:'1/'+['10','100','1 mil'][-e-1],{fs:8,a:'end',c:GRAY,w:500});}
+ s+=TX(x0+2,14,'falso ↑',{fs:9,c:VERM,a:'start'})+TX(x0+2,224,'verdadeiro ↓',{fs:9,c:GREEN,a:'start'});
+ p.forEach((o,i)=>{const L=Math.max(-3.9,Math.min(8.3,Math.log10(o))),h=L*ky,x=x0+i*bw+4;s+=RC(x,h>=0?y0-h:y0,bw-8,Math.abs(h),i==0?GRAY:h>=0?ORANGE:GREEN,'rx="2"');
+  s+=TX(x+(bw-8)/2,y0+(h>=0?14:-6),i?['pinc.','trama','titânio','retrato','data','proc.'][i-1]:'antes',{fs:8,c:NAVY,w:500});});
+ $('fig').innerHTML=SVG(W,230,s);const f=p[6];$('kc').textContent=ch(f);$('kp').textContent=pct(pr(f));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As contas do leilão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>As contas do leilão</h1></header>
+<main>
+<div class="card"><h2>As contas do leilão</h2><p class="muted" style="margin-top:0">O comprador paga o martelo mais a comissão dele; o vendedor recebe o martelo menos a comissão dele; a casa fica com as duas. O que sobra se divide entre Raul (2/3), Ana e Pedro (1/6 cada). Embaixo, o prêmio anual do seguro.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sm"><b>Martelo (milhões)</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Comissão do comprador</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Comissão do vendedor</b><input type="range"><span></span></div>
+<div class="sl" id="sval"><b>Valor segurado (milhões)</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Taxa do prêmio (ao ano)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Comprador paga<b id="kc"></b></div><div>Casa fica<b id="kh"></b></div><div>Raul recebe<b id="kr"></b></div><div class="o">Prêmio por ano<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça as contas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROSA='#F4B4B4',VERDE_C2='#B7DEC3';
+const mi=v=>'R$ '+vg(Math.round(v*100)/100)+' mi';
+const SM=SL('sm',0,300,0.5,150,()=>draw(),v=>vg(v)),SC=SL('sc',0,30,1,20,()=>draw(),v=>v+'%'),SV=SL('sv',0,20,1,10,()=>draw(),v=>v+'%');
+const SVAL=SL('sval',10,400,10,250,()=>draw(),v=>v),ST=SL('st',0.1,2,0.1,1,()=>draw(),v=>vg(v)+'%');
+const c=()=>{const M=SM.get(),cp=M*(1+SC.get()/100),vd=M*(1-SV.get()/100);return{M,cp,vd,casa:cp-vd,raul:vd*2/3,ana:vd/6,pr:SVAL.get()*ST.get()/100};};
+MIS.def(()=>[
+ ['Com as comissões de 20% e 10%, mova o martelo até o comprador pagar <b>R$ 250 milhões</b>.',()=>SC.get()==20&&SV.get()==10&&Math.abs(c().cp-250)<=0.6,()=>'Martelo de '+vg(SM.get())+' milhões: 1,2 vezes isso dá cerca de 250. Raul leva '+mi(c().raul)+'.',()=>(SC.get()!=20||SV.get()!=10)?'Volte as comissões para 20% e 10%.':'O comprador paga '+mi(c().cp)+'. '+(c().cp<250?'Aumente':'Diminua')+' o martelo.'],
+ ['Com valor segurado de R$ 250 milhões, ache a taxa que dá um prêmio de <b>R$ 1,5 milhão por ano</b>.',()=>SVAL.get()==250&&Math.abs(c().pr-1.5)<0.01,'0,6% de 250 = 1,5. É a taxa da apólice de Oliveiras ao entardecer.',()=>SVAL.get()!=250?'Ponha o valor segurado em 250.':'Prêmio agora: '+mi(c().pr)+'.'],
+ ['Mantenha o martelo da missão 1 e zere a <b>comissão do vendedor</b>. Quanto Raul passaria a receber?',()=>SV.get()==0&&Math.abs(SM.get()*1.2-250)<=0.6,()=>'Raul receberia '+mi(c().raul)+' em vez de 125: os 10% do vendedor saem também do bolso dele.',()=>SV.get()?'Leve a comissão do vendedor a 0%.':'Volte o martelo para cerca de 208,5.'],
+ ['Invente: ache comissões em que a casa fica com <b>exatamente 25%</b> do martelo.',()=>SC.get()+SV.get()==25,()=>'Comprador '+SC.get()+'% + vendedor '+SV.get()+'% = 25%. A casa ganha a soma das duas, qualquer que seja o martelo.',()=>'Agora a casa fica com '+(SC.get()+SV.get())+'% do martelo.']]);
+function draw(){const k=c(),W=320,x0=10,tot=Math.max(k.cp,1);let s=RC(0,0,340,200,'#fff','rx="10"');
+ const P=[['casa (comprador)',k.cp-k.M,GRAY],['casa (vendedor)',k.M-k.vd,'#9CA3AF'],['Raul',k.raul,ORANGE],['Ana',k.ana,LIGHT],['Pedro',k.ana,PEACH]];let x=x0;
+ s+=TX(x0,22,'o que o comprador paga: '+mi(k.cp),{fs:11,a:'start'});
+ P.forEach(([n,v,co],i)=>{const w=W*v/tot;if(w>0.5){s+=RC(x,34,w,46,co,'stroke="#fff" stroke-width="1.5"');if(w>34)s+=TX(x+w/2,62,vg(Math.round(v*10)/10),{fs:10,c:i<3?'#fff':NAVY});}x+=w;});
+ x=x0;P.forEach(([n,v,co],i)=>{s+=RC(x0+(i%3)*108,96+Math.floor(i/3)*18,10,10,co)+TX(x0+(i%3)*108+14,105+Math.floor(i/3)*18,n,{fs:9,c:NAVY,a:'start',w:500});});
+ s+=LN(x0,140,x0+W,140,GRAYL,1)+TX(x0,160,'seguro: '+vg(ST.get())+'% de '+SVAL.get()+' milhões por ano',{fs:10,a:'start',w:500,c:GRAY});
+ const anos=10,pw=W/anos;for(let a=0;a<anos;a++){const h=Math.min(26,k.pr*8);s+=RC(x0+a*pw+4,192-h,pw-8,h,COBALTO,'rx="2"');}
+ s+=TX(x0+W,160,'10 anos: '+mi(k.pr*10),{fs:10,a:'end',c:COBALTO});
+ $('fig').innerHTML=SVG(340,200,s);
+ $('kc').textContent=mi(k.cp);$('kh').textContent=mi(k.casa);$('kr').textContent=mi(k.raul);$('kp').textContent=mi(k.pr);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

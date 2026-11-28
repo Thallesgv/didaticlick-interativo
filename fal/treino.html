@@ -185,7 +185,28 @@ const LIV={'fal1':{T:["Medir sem tocar: escala e fotografia", "Os formatos de te
  const v=P([1840,27500,312,9.75,4600,0.082,73]);return{q:`Qual o primeiro dígito de ${fmt(v)}?`,a:+String(v).replace(/[^1-9]/g,'')[0],exp:`O primeiro algarismo diferente de zero.`};},
 6:()=>{const t=R(0,1);
  if(t==0){const g=[R(1,5),R(1,5),R(1,5),R(1,5),R(1,5),R(1,5)];if(g.reduce((a,b)=>a+b,0)%2)g[0]++;return{q:`Numa rede, os graus são ${g.join(', ')}. Quantas arestas ela tem?`,a:g.reduce((a,b)=>a+b,0)/2,exp:`${g.reduce((a,b)=>a+b,0)} ÷ 2.`};}
- const k=R(2,6);return{q:`Num caminho A — B — C — ... com ${k+1} vértices em fila, qual a distância entre as duas pontas?`,a:k,exp:`${k} arestas.`};}}}};
+ const k=R(2,6);return{q:`Num caminho A — B — C — ... com ${k+1} vértices em fila, qual a distância entre as duas pontas?`,a:k,exp:`${k} arestas.`};}}},'fal8':{T:["A apólice em porcentagens", "Franquia, cobertura e juros", "Probabilidade condicional", "Bayes: somando as provas", "Valor esperado e decisão", "O laudo final"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const p=P([0.2,0.4,0.5,0.6,0.8,1.5]),v=P([50,120,200,250,400]),r=Math.round(p*v)/100;return{q:`Quanto é <b>${fmt(p)}%</b> de R$ ${v} milhões, em milhões?`,a:r,tol:0.006,exp:`${fmt(p/100)} × ${v} = ${fmt(r)}.`};}
+ if(t==1){const M=R(5,40)*5,c=P([10,15,20,25]);return{q:`O martelo bate R$ ${M} milhões e o comprador paga <b>${c}%</b> de comissão. Quanto ele paga, em milhões?`,a:M*(1+c/100),tol:0.01,exp:`${M} × ${fmt(1+c/100)} = ${fmt(M*(1+c/100))}.`};}
+ const a=P([10,20,25,50]),b=P([10,20,25,50]),r=Math.round(((1+a/100)*(1-b/100)-1)*1000)/10;return{q:`Um preço sobe <b>${a}%</b> e depois cai <b>${b}%</b>. Qual a variação total, em %? (Negativo se caiu.)`,a:r,tol:0.06,exp:`${fmt(1+a/100)} × ${fmt(1-b/100)} = ${fmt(Math.round((1+a/100)*(1-b/100)*1000)/1000)}: ${fmt(r)}%.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const v=P([100,250,400]),f=P([1,2,5]),p=R(1,60)*5;const i=Math.max(0,p-v*f/100);return{q:`Apólice de R$ ${v} milhões com franquia de <b>${f}%</b> do valor. Num prejuízo de R$ ${p} milhões, quanto o seguro paga?`,a:Math.min(v,i),tol:0.01,exp:`Franquia ${fmt(v*f/100)}; ${p} − ${fmt(v*f/100)} ${i>0?'= '+fmt(i):'é negativo: nada'}.`};}
+ if(t==1){const c=P([1000,2000,5000]),i=P([5,10,12]),n=R(2,6),m=Math.round(c*Math.pow(1+i/100,n)*100)/100;return{q:`R$ ${fmt(c)} a juros <b>compostos</b> de ${i}% ao ano, por ${n} anos. Quanto vira? (Centavos.)`,a:m,tol:0.02,exp:`${fmt(c)} × ${fmt(1+i/100)}<sup>${n}</sup> ≈ ${fmt(m)}.`};}
+ const c=P([1000,2000,5000]),i=P([5,10,12]),n=R(2,8);return{q:`R$ ${fmt(c)} a juros <b>simples</b> de ${i}% ao ano, por ${n} anos. Quanto vira?`,a:c*(1+i*n/100),tol:0.01,exp:`${fmt(c)} × (1 + ${fmt(i/100)} × ${n}) = ${fmt(c*(1+i*n/100))}.`};},
+3:()=>{const N=P([200,400,500,1000]),pf=P([10,25,50,75]),sf=P([20,40,60]),sv=P([2,5,10]);const f=N*pf/100,v=N-f,a=f*sf/100,b=v*sv/100;
+ const t=R(0,1);if(t==0)return{q:`De ${N} quadros, ${pf}% são falsos. O sinal aparece em ${sf}% dos falsos e em ${sv}% dos verdadeiros. <b>Quantos quadros</b> têm o sinal?`,a:a+b,tol:0.01,exp:`${fmt(a)} + ${fmt(b)} = ${fmt(a+b)}.`};
+ const p=Math.round(a/(a+b)*1000)/10;return{q:`De ${N} quadros, ${pf}% são falsos. O sinal aparece em ${sf}% dos falsos e em ${sv}% dos verdadeiros. Quanto é <b>P(falso | sinal)</b>, em %? (Uma casa.)`,a:p,tol:0.11,exp:`${fmt(a)} ÷ (${fmt(a)} + ${fmt(b)}) ≈ ${fmt(p)}%.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const p=P([50,75,80,90,95]),o=p/(100-p);return{q:`Escreva <b>${p}%</b> como chance contra 1.`,a:o,tol:0.01,exp:`${p} ÷ ${100-p} = ${fmt(Math.round(o*100)/100)}.`};}
+ if(t==1){const o=P([1,2,3,4]),r=P([5,10,20,40]),c=o*r,p=Math.round(c/(1+c)*1000)/10;return{q:`A chance era ${o} contra 1. Chega uma prova com <b>RV ${r}</b>. Qual a nova probabilidade, em %? (Uma casa.)`,a:p,tol:0.11,exp:`${o} × ${r} = ${c}; ${c} ÷ ${c+1} ≈ ${fmt(p)}%.`};}
+ const a=P([30,40,60,80]),b=P([2,4,5,10]);return{q:`Uma prova aparece em ${a}% dos falsos e em ${b}% dos verdadeiros. Qual a sua <b>RV</b>?`,a:a/b,tol:0.01,exp:`${a} ÷ ${b} = ${fmt(a/b)}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const n=P([50,100,200,500]),pr=P([100,500,1000,2000]);return{q:`Uma rifa tem ${n} bilhetes e um prêmio de R$ ${fmt(pr)}. Qual o <b>valor esperado</b> do prêmio para um bilhete?`,a:pr/n,tol:0.01,exp:`${fmt(pr)} ÷ ${n} = ${fmt(pr/n)}.`};}
+ if(t==1){const I=P([100,200,250]),M=P([2,3,5]),C=P([20,30,50]);const e=Math.round((M+C)/(I+C)*1000)/10;return{q:`Continuar custa ${I}·p; suspender custa ${M} + ${C}·(1 − p). Em que chance p (em %) as duas empatam? (Uma casa.)`,a:e,tol:0.11,exp:`${I}p = ${M+C} − ${C}p ⇒ p = ${M+C} ÷ ${I+C} ≈ ${fmt(e)}%.`};}
+ const g=P([6,12,18,30]),c=P([2,3,4]);return{q:`Um jogo custa R$ ${c}. Num dado, saindo 6 você ganha R$ ${g}. Qual o valor esperado do jogo (negativo se perde)?`,a:g/6-c,tol:0.01,exp:`${g} ÷ 6 − ${c} = ${fmt(g/6-c)}.`};},
+6:()=>{const t=R(0,1);
+ if(t==0){const F=P([1.1,1.25,1.4,1.6]),e=P([0.01,0.02,0.05]),r=Math.round(e/F*1000)/10;return{q:`Qual o erro relativo, em %, de uma medida <b>${fmt(F)} ± ${fmt(e)}</b>? (Uma casa.)`,a:r,tol:0.11,exp:`${fmt(e)} ÷ ${fmt(F)} ≈ ${fmt(r)}%.`};}
+ const f=P([1.25,1.3,1.35]),a=Math.round((1960+2*(f-1.21)/0.19)*10)/10;return{q:`Na subida da curva, entre 1960 (F = 1,21) e 1962 (F = 1,40), em que ano F vale <b>${fmt(f)}</b>? (Interpolação linear, uma casa.)`,a:a,tol:0.06,exp:`1960 + 2 × (${fmt(f)} − 1,21) ÷ 0,19 ≈ ${fmt(a)}.`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='fal1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

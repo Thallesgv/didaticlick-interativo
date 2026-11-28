@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suspender ou continuar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Suspender ou continuar</h1></header>
+<main>
+<div class="card"><h2>Suspender ou continuar</h2><p class="muted" style="margin-top:0">A reta vermelha é a perda esperada de continuar o leilão (paga-se a indenização se o quadro for falso). A verde, a de suspender (multa, mais a cobrança de Raul se o quadro for verdadeiro). O ponto mostra a chance escolhida.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Chance de o quadro ser falso</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Indenização + advogados (mi)</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Multa por suspender (mi)</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>O que Raul cobraria (mi)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Continuar<b id="kc"></b></div><div>Suspender<b id="ks"></b></div><div class="o">Empate em<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Decida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROSA='#F4B4B4',VERDE_C2='#B7DEC3';
+const mi=v=>'R$ '+vg(Math.round(v*100)/100)+' mi';
+const SP=SL('sp',0,100,0.1,50,()=>draw(),v=>vg(v)+'%'),SI=SL('si',50,300,5,250,()=>draw(),v=>v),SM=SL('sm',0,20,1,3,()=>draw(),v=>v),SR=SL('sr',0,150,5,30,()=>draw(),v=>v);
+const ec=p=>SI.get()*p,es=p=>SM.get()+SR.get()*(1-p),emp=()=>(SM.get()+SR.get())/(SI.get()+SR.get());
+MIS.def(()=>[
+ ['Com os valores da Horizonte (250, 3 e 30), mova a chance até as duas perdas <b>empatarem</b>.',()=>SI.get()==250&&SM.get()==3&&SR.get()==30&&Math.abs(ec(SP.get()/100)-es(SP.get()/100))<0.4,'p ≈ 11,8%: abaixo disso, continuar sai mais barato em média; acima, suspender.',()=>'Continuar: '+r1(ec(SP.get()/100))+'; suspender: '+r1(es(SP.get()/100))+'.'],
+ ['Ponha a chance que a equipe calculou: <b>mais de 99,9%</b>. Qual a melhor escolha?',()=>SP.get()>=99.9,()=>'Continuar custaria, em média, '+r1(ec(SP.get()/100))+' milhões; suspender, '+r1(es(SP.get()/100))+'. A Horizonte suspende.',()=>'Leve a chance para perto de 100%.'],
+ ['E se Raul pudesse cobrar <b>R$ 100 milhões</b>? Ache o novo empate.',()=>SR.get()==100&&SI.get()==250&&SM.get()==3&&Math.abs(ec(SP.get()/100)-es(SP.get()/100))<0.6,'p ≈ 29,4%. Quanto mais caro errar ao suspender, mais certeza a seguradora exige.',()=>SR.get()!=100?'Mude o que Raul cobraria para 100.':'Continuar: '+r1(ec(SP.get()/100))+'; suspender: '+r1(es(SP.get()/100))+'.']]);
+function draw(){const W=340,x0=36,y0=190,w=290,mx=Math.max(SI.get(),SM.get()+SR.get(),10),ky=160/mx,p=SP.get()/100;let s=RC(0,0,W,215,'#fff','rx="10"');
+ [0,.2,.4,.6,.8,1].forEach(t=>s+=TX(x0+t*w,y0+13,t*100+'%',{fs:8,c:GRAY,w:500}));s+=LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-168,NAVY,1)+TX(x0-4,y0-160,fmt(Math.round(mx)),{fs:8,a:'end',c:GRAY});
+ s+=LN(x0,y0,x0+w,y0-SI.get()*ky,VERM,2.4)+LN(x0,y0-(SM.get()+SR.get())*ky,x0+w,y0-SM.get()*ky,GREEN,2.4);
+ const e=emp();if(e>=0&&e<=1)s+=LN(x0+e*w,y0,x0+e*w,y0-ec(e)*ky,ORANGE,1,'3 3')+CIR(x0+e*w,y0-ec(e)*ky,4,ORANGE);
+ s+=LN(x0+p*w,y0,x0+p*w,y0-168,NAVY,1,'2 3')+CIR(x0+p*w,y0-ec(p)*ky,5,VERM,'stroke="#fff" stroke-width="1.5"')+CIR(x0+p*w,y0-es(p)*ky,5,GREEN,'stroke="#fff" stroke-width="1.5"');
+ s+=TX(x0+w,y0-SI.get()*ky-6,'continuar',{fs:9,c:VERM,a:'end'})+TX(x0+w,y0-SM.get()*ky-8,'suspender',{fs:9,c:GREEN,a:'end'});
+ $('fig').innerHTML=SVG(W,215,s);$('kc').textContent=mi(ec(p));$('ks').textContent=mi(es(p));$('ke').textContent=r1(e*100)+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
