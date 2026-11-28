@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Contando outs · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Contando outs</h1></header>
+<main>
+<div class="card"><h2>Quantas cartas te salvam?</h2><p class="muted" style="margin-top:0">Escolha quantas <b>outs</b> (cartas que completam a sua mão) e quantas cartas ainda vão sair. A chance vem da conta; o botão testa distribuindo cartas de verdade.</p>
+<div class="sl" id="so"><b>Outs</b><input type="range"><span></span></div>
+<div id="chc" style="margin:4px 0"></div>
+<div class="row"><button id="bt">Testar 10 000 vezes</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Cartas não vistas<b id="k1"></b></div><div>Chance pela conta<b id="k2"></b></div><div class="o">No teste<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Confira as contas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NP=['♠','♥','♦','♣'],VL=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const corNP=n=>n==1||n==2?VERM:PRETO;
+function CARTA(x,y,w,h,v,n,on,apag){const c=apag?GRAYL:corNP(n);return RC(x,y,w,h,on?PEACH:(apag?'#F1F3F7':'#fff'),'rx="3" stroke="'+(on?ORANGE:GRAYL)+'" stroke-width="'+(on?2:1)+'"')+TX(x+w/2,y+h*.48,VL[v],{fs:w>22?11:9,c})+TX(x+w/2,y+h*.86,NP[n],{fs:w>22?11:9,c,w:400});}
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const SO=SL('so',1,20,1,4,()=>{TS=null;draw();},v=>v);let nc=1,TS=null;
+chips('chc',['falta 1 carta','faltam 2 cartas'],0,i=>{nc=i+1;TS=null;draw();});
+const conta=()=>{const k=SO.get();return nc==1?k/46:1-C2(47-k,2)/C2(47,2);};
+$('bt').onclick=()=>{const k=SO.get(),N=nc==1?46:47;let ok=0;for(let t=0;t<10000;t++){const a=Math.floor(Math.random()*N);if(nc==1){if(a<k)ok++;}else{let b;do{b=Math.floor(Math.random()*N);}while(b==a);if(a<k||b<k)ok++;}}TS={k,nc,f:ok/10000};draw();};
+MIS.def(()=>[
+ ['Confira a mão de Rafael: <b>9 outs</b>, falta <b>1 carta</b>.',()=>SO.get()==9&&nc==1,'9/46 ≈ 19,6%. O app dizia 50%.',()=>'Ponha 9 outs e "falta 1 carta".'],
+ ['E com <b>duas cartas</b> por vir, as mesmas 9 outs?',()=>SO.get()==9&&nc==2,'1 − C(38, 2) ÷ C(47, 2) ≈ 35,0%. Melhor, mas longe de 50%.',()=>'Ponha 9 outs e "faltam 2 cartas".'],
+ ['Teste uma <b>sequência aberta</b> (8 outs) com uma carta por vir, apertando <b>Testar</b>.',()=>TS&&TS.k==8&&TS.nc==1,()=>'No teste: '+pct(TS.f*100,1)+'. Pela conta: 8/46 ≈ 17,4%.',()=>SO.get()!=8||nc!=1?'Ponha 8 outs e "falta 1 carta".':'Aperte "Testar 10 000 vezes".']]);
+function draw(){const k=SO.get(),N=nc==1?46:47;let g='';const cols=12,cw=24,ch=30;
+ for(let i=0;i<N;i++){const x=8+(i%cols)*27.5,y=6+Math.floor(i/cols)*34;g+=RC(x,y,cw,ch,i<k?ORANGE:'#fff','rx="3" stroke="'+(i<k?ORANGE:GRAYL)+'"');if(i<k)g+=TX(x+cw/2,y+20,'♥',{fs:12,c:'#fff'});}
+ const p=conta();g+=RC(8,146,324,16,GRAYL,'rx="8"')+RC(8,146,324*p,16,ORANGE,'rx="8"')+TX(170,180,'chance: '+pct(p*100,1)+' · o app dizia 50%',{fs:11});
+ const x50=8+324*.5;g+=LN(x50,140,x50,168,NAVY,1.5,'3 3');
+ $('fig').innerHTML=SVG(340,190,g);$('k1').textContent=N;$('k2').textContent=pct(p*100,1);$('k3').textContent=TS&&TS.k==k&&TS.nc==nc?pct(TS.f*100,1):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

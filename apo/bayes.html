@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O alarme de robôs · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O alarme de robôs</h1></header>
+<main>
+<div class="card"><h2>1 000 contas</h2><p class="muted" style="margin-top:0">Cada quadradinho é uma conta. Laranja = robô; azul = pessoa. Os quadradinhos com <b>borda grossa</b> dispararam o alarme. Ajuste as barras (arrastando ou com − e +).</p>
+<div class="sl" id="sp"><b>Robôs (%)</b><input type="range"><span></span></div>
+<div class="sl" id="ss"><b>Acerto com robôs (%)</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Alarme falso em pessoas (%)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Robôs<b id="k1"></b></div><div>Alarmes<b id="k2"></b></div><div>Alarmes certos<b id="k3"></b></div><div class="o">P(robô | alarme)<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Confie no alarme?</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SP=SL('sp',0.5,20,0.5,5,()=>draw(),v=>vg(v)+'%'),SS=SL('ss',50,100,1,80,()=>draw(),v=>v+'%'),SF=SL('sf',0.1,20,0.1,10,()=>draw(),v=>vg(v)+'%');
+const calc=()=>{const p=SP.get()/100,s=SS.get()/100,f=SF.get()/100,a=p*s,b=(1-p)*f;return{p,s,f,a,b,post:a/(a+b)};};
+MIS.def(()=>[
+ ['Ponha os números da FortunaBet: <b>2%</b> de robôs, <b>90%</b> de acerto, <b>5%</b> de alarme falso.',()=>SP.get()==2&&SS.get()==90&&Math.abs(SF.get()-5)<.05,()=>'P(robô | alarme) ≈ '+pct(calc().post*100,1)+': quase 3 em cada 4 alarmes acusam uma pessoa.',()=>'Agora: '+vg(SP.get())+'%, '+SS.get()+'%, '+vg(SF.get())+'%. Ajuste para 2%, 90% e 5%.'],
+ ['Mantendo 2% e 90%, ache o maior alarme falso que deixa <b>mais da metade</b> dos alarmes certos.',()=>SP.get()==2&&SS.get()==90&&calc().post>.5&&SF.get()>=1.75,()=>'Com '+vg(SF.get())+'% de alarmes falsos, '+pct(calc().post*100,1)+' dos alarmes são robôs. O limite é cerca de 1,8%.',()=>SP.get()!=2||SS.get()!=90?'Volte a 2% de robôs e 90% de acerto.':calc().post<=.5?'Ainda menos da metade ('+pct(calc().post*100,1)+'). Diminua o alarme falso.':'Passou da metade. Dá para aumentar um pouco o alarme falso e continuar acima?'],
+ ['Com 5% de alarme falso e 90% de acerto, quantos robôs precisariam existir para metade dos alarmes acertar?',()=>Math.abs(SF.get()-5)<.05&&SS.get()==90&&calc().post>.5&&SP.get()<=6,()=>'Com '+vg(SP.get())+'% de robôs, '+pct(calc().post*100,1)+'. Quanto mais comum o que se procura, mais confiável o alarme.',()=>Math.abs(SF.get()-5)>=.05||SS.get()!=90?'Ponha 5% de alarme falso e 90% de acerto.':'Agora '+pct(calc().post*100,1)+'. Mude a porcentagem de robôs (o menor valor que passa de 50%).']]);
+function draw(){const c=calc();const nr=Math.round(1000*c.p),ar=Math.round(nr*c.s),ap=Math.round((1000-nr)*c.f);let g='';
+ for(let i=0;i<1000;i++){const col=i%40,row=Math.floor(i/40),x=5+col*8.25,y=5+row*8.25;const rob=i<nr,al=rob?i<ar:(i-nr)<ap;
+  g+=RC(x,y,7,7,rob?ORANGE:(al?BLUE:AZC),al?'stroke="'+NAVY+'" stroke-width="1.6"':'');}
+ $('fig').innerHTML=SVG(340,215,g);$('k1').textContent=nr;$('k2').textContent=ar+ap;$('k3').textContent=ar;$('k4').textContent=pct(c.post*100,1);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

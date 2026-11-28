@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A distribuidora de mãos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A distribuidora de mãos</h1></header>
+<main>
+<div class="card"><h2>Distribua e conte</h2><p class="muted" style="margin-top:0">Cada mão tem 5 cartas de um baralho embaralhado. O simulador classifica as mãos e compara com a conta (barra laranja). A última mão aparece em cima.</p>
+<div class="row"><button id="b1">1 000 mãos</button><button id="b2">10 000</button><button id="b3">100 000</button><button class="alt" id="b0">Zerar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Mãos<b id="k1"></b></div><div>Quadras<b id="k2"></b></div><div class="o">Full houses<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Distribua.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NP=['♠','♥','♦','♣'],VL=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const corNP=n=>n==1||n==2?VERM:PRETO;
+function CARTA(x,y,w,h,v,n,on,apag){const c=apag?GRAYL:corNP(n);return RC(x,y,w,h,on?PEACH:(apag?'#F1F3F7':'#fff'),'rx="3" stroke="'+(on?ORANGE:GRAYL)+'" stroke-width="'+(on?2:1)+'"')+TX(x+w/2,y+h*.48,VL[v],{fs:w>22?11:9,c})+TX(x+w/2,y+h*.86,NP[n],{fs:w>22?11:9,c,w:400});}
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const TP=['carta alta','um par','dois pares','trinca','sequência','flush','full house','quadra','straight flush'],TE=[1302540,1098240,123552,54912,10200,5108,3744,624,40];
+let CT=new Array(9).fill(0),N=0,ult=null;
+function mao(){const d=[];while(d.length<5){const c=Math.floor(Math.random()*52);if(!d.includes(c))d.push(c);}return d;}
+function tipo(m){const v=m.map(c=>c%13).sort((a,b)=>a-b),s=m.map(c=>Math.floor(c/13));const fl=s.every(x=>x==s[0]);
+ const cnt={};v.forEach(x=>cnt[x]=(cnt[x]||0)+1);const f=Object.values(cnt).sort((a,b)=>b-a);
+ const un=Object.keys(cnt).length==5;let seq=un&&(v[4]-v[0]==4);if(un&&v.join()=='0,9,10,11,12')seq=true;
+ if(seq&&fl)return 8;if(f[0]==4)return 7;if(f[0]==3&&f[1]==2)return 6;if(fl)return 5;if(seq)return 4;if(f[0]==3)return 3;if(f[0]==2&&f[1]==2)return 2;if(f[0]==2)return 1;return 0;}
+function dist(n){for(let i=0;i<n;i++){const m=mao();CT[tipo(m)]++;ult=m;}N+=n;draw();}
+$('b1').onclick=()=>dist(1000);$('b2').onclick=()=>dist(10000);$('b3').onclick=()=>dist(100000);$('b0').onclick=()=>{CT.fill(0);N=0;ult=null;draw();};
+MIS.def(()=>[
+ ['Distribua pelo menos <b>1 000 mãos</b> e confira o <b>um par</b>.',()=>N>=1000,()=>'Um par: '+pct(CT[1]/N*100,1)+' (conta: 42,3%).',()=>'Aperte "1 000 mãos".'],
+ ['Distribua até aparecer pelo menos <b>uma quadra</b>.',()=>CT[7]>=1,()=>'Quadras: '+CT[7]+' em '+fmt(N)+' mãos. A conta dá 1 em 4 165.',()=>'Nenhuma quadra em '+fmt(N)+' mãos. Distribua mais.'],
+ ['Junte pelo menos <b>200 000 mãos</b> e compare o <b>full house</b> com 0,144%.',()=>N>=200000,()=>'Full house: '+pct(CT[6]/N*100,3)+' (conta: 0,144%). Com muitas mãos, a frequência gruda na conta.',()=>'Agora são '+fmt(N)+' mãos. Leve a 200 000.']]);
+function draw(){let g='';if(ult)ult.forEach((c,j)=>g+=CARTA(95+j*31,4,28,40,c%13,Math.floor(c/13),false));else g+=TX(170,30,'Aperte para distribuir',{fs:12,c:GRAY});
+ if(ult)g+=TX(170,58,TP[tipo(ult)],{fs:10,c:ORANGE});
+ const x0=86,gw=244,y0=68;
+ TP.forEach((t,i)=>{const y=y0+(8-i)*15,r=N?CT[i]/N:0,e=TE[i]/2598960,W=p=>gw*Math.max(0,Math.log10(p*1e6))/6;
+  g+=TX(x0-4,y+9,t,{fs:8.5,a:'end'});if(N&&CT[i])g+=RC(x0,y,W(r),8,BLUE,'rx="2"');g+=RC(x0,y+9,W(e),3,ORANGE);
+  g+=TX(334,y+8,N?pct(r*100,r<.01?3:1):'',{fs:7.5,a:'end',c:GRAY,w:500});});
+ g+=TX(x0,y0+9*15+10,'azul: sorteado · laranja: conta (escala dos expoentes de 10)',{fs:8,a:'start',c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,218,g);$('k1').textContent=fmt(N);$('k2').textContent=fmt(CT[7]);$('k3').textContent=N?fmt(CT[6])+' ('+pct(CT[6]/N*100,3)+')':'0';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
