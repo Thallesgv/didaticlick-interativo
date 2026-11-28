@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A flecha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A flecha</h1></header>
+<main>
+<div class="card"><h2>O raio escondido</h2><p class="muted" style="margin-top:0">No modo <b>Flecha</b>, só um arco da fogueira aparece fora da parede: mude a corda c e a flecha f e veja o círculo escondido. No modo <b>Potência</b>, gire uma reta por um ponto P e compare os produtos dos pedaços.</p>
+<div id="cm" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="pf"><div class="sl" id="sc"><b>Corda visível c</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Flecha f</b><input type="range"><span></span></div></div>
+<div id="pp" style="display:none"><div class="sl" id="sd"><b>Distância de P ao centro</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Giro da reta</b><input type="range"><span></span></div></div>
+<div class="kpi"><div class="o" id="k1t">Raio<b id="k1"></b></div><div id="k2t">Diâmetro<b id="k2"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a flecha.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let modo=0;const RR=2.5;
+chips('cm',['Flecha','Potência'],0,i=>{modo=i;$('pf').style.display=i?'none':'';$('pp').style.display=i?'':'none';draw();});
+const SC=SL('sc',0.4,4,0.1,2,()=>draw(),v=>r1(v)+' m'),SF=SL('sf',0.1,1.5,0.05,0.5,()=>draw(),v=>r2(v)+' m');
+const SD=SL('sd',0,6,0.5,5,()=>draw(),v=>vg(v)+' m'),SA=SL('sa',0,60,1,10,()=>draw(),v=>v+'°');
+const raio=()=>{const c=SC.get(),f=SF.get();return (c*c/4+f*f)/(2*f);};
+const seg=()=>{const d=SD.get(),t=SA.get()*RAD,b=-d*Math.cos(t),cc=d*d-RR*RR,D=b*b-cc;if(D<-1e-9)return null;const s=Math.sqrt(Math.max(0,D));return [-b-s,-b+s];};
+MIS.def(()=>[
+ ['Refaça a fogueira de Tomás: corda <b>1,6 m</b> e flecha <b>0,4 m</b>. Qual o raio?',()=>!modo&&Math.abs(SC.get()-1.6)<0.01&&Math.abs(SF.get()-0.4)<0.01,'r = (0,64 + 0,16) ÷ 0,8 = 1 m. Um arquinho de 1,6 m revelou uma fogueira de 2 m de diâmetro.',()=>'Corda 1,6 m e flecha 0,4 m (use os botões − e +).'],
+ ['Na parede norte, a corda visível é <b>3 m</b>. Que flecha daria um círculo de raio <b>2,5 m</b>, do tamanho da cabana?',()=>!modo&&Math.abs(SC.get()-3)<0.01&&Math.abs(raio()-2.5)<0.01,'Flecha de 0,5 m: (2,25 + 0,25) ÷ 1 = 2,5 m. Pode ser o chão de outra casa.',()=>'Corda 3 m. O raio está em '+r2(raio())+' m.'],
+ ['Modo <b>Potência</b>: com P a <b>5 m</b> do centro, gire a reta até ela só <b>encostar</b> no círculo (tangente).',()=>modo&&SD.get()==5&&SA.get()==30,'A 30°, os dois pontos viram um só: PT² = 25 − 6,25 = 18,75, PT ≈ 4,33 m. Em qualquer outro giro, PA · PB também dá 18,75.',()=>modo?(SD.get()!=5?'Distância 5 m.':'Gire até os dois pontos de corte se juntarem.'):'Troque para o modo Potência.'],
+ ['Leve P para <b>dentro</b> da cabana, a <b>1 m</b> do centro. Gire a reta: quanto dá o produto dos dois pedaços?',()=>modo&&SD.get()==1,'Sempre 6,25 − 1 = 5,25. Por exemplo, na corda horizontal: 1,5 × 3,5 = 5,25.',()=>modo?'Distância 1 m.':'Troque para o modo Potência.']]);
+function draw(){let g=RC(0,0,340,240,'#F8FAFC','rx="10"');
+ if(!modo){const c=SC.get(),f=SF.get(),r=raio(),k=Math.min(60,95/r,150/(2*r)),cx=170,yw=95,cy=yw+(r-f)*k;
+  g+=RC(0,yw,340,145,'#C9A57A')+TX(10,232,'parede de terra (não escavada)',{fs:9,c:TERRA_E,a:'start'});
+  g+=CIR(cx,cy,r*k,'none','stroke="'+TERRA_E+'" stroke-width="1.5" stroke-dasharray="5 4"');
+  const a0=Math.asin(Math.min(1,c/2/r));let pts=[];for(let i=0;i<=30;i++){const t=-Math.PI/2-a0+2*a0*i/30;pts.push([cx+r*k*Math.cos(t),cy+r*k*Math.sin(t)]);}
+  g+=PL(pts,'#8B8F99',9)+LN(cx-c/2*k,yw,cx+c/2*k,yw,ORANGE,3)+LN(cx,yw,cx,yw-f*k,BLUE,2.5)+TX(cx+c/2*k+4,yw-4,'c = '+r1(c),{fs:10,c:ORANGE,a:'start'})+TX(cx-6,yw-f*k/2,'f = '+r2(f),{fs:10,c:BLUE,a:'end'});
+  g+=CIR(cx,cy,3,'#fff')+LN(cx,cy,cx+r*k*Math.cos(-0.6),cy+r*k*Math.sin(-0.6),'#fff',1.2,'3 3');
+  $('k1t').firstChild.textContent='Raio';$('k1').textContent=r2(r)+' m';$('k2t').firstChild.textContent='Diâmetro';$('k2').textContent=r2(2*r)+' m';}
+ else{const k=30,cx=215,cy=120,d=SD.get(),t=SA.get()*RAD,px=cx-d*k,py=cy,s=seg();
+  g+=CIR(cx,cy,RR*k,PAPEL,'stroke="'+TERRA+'" stroke-width="2"')+CIR(cx,cy,3,GRAY)+CIR(px,py,6,NAVY)+TX(px-8,py+4,'P',{fs:11,a:'end'});
+  const ux=Math.cos(t),uy=-Math.sin(t);g+=LN(px-ux*20,py-uy*20,px+ux*300,py+uy*300,'#94A3B8',1.2,'4 3');
+  if(s){const A=[px+ux*s[0]*k,py+uy*s[0]*k],B=[px+ux*s[1]*k,py+uy*s[1]*k];g+=LN(px,py,B[0],B[1],ORANGE,2.5)+CIR(A[0],A[1],5,BLUE)+CIR(B[0],B[1],5,BLUE);
+   $('k1').textContent=(Math.abs(s[1]-s[0])<0.02?'tangente: ':'')+r2(Math.abs(s[0]))+' × '+r2(Math.abs(s[1]))+' = '+r2(Math.abs(s[0]*s[1]));}else $('k1').textContent='não corta';
+  $('k1t').firstChild.textContent='PA × PB';$('k2t').firstChild.textContent='d² − r²';$('k2').textContent=r2(d*d-RR*RR);}
+ $('fig').innerHTML=SVG(340,240,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

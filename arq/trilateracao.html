@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trena e duas estacas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Trena e duas estacas</h1></header>
+<main>
+<div class="card"><h2>Dois círculos, um achado</h2><p class="muted" style="margin-top:0">A estaca E1 está em (0; 0) e a E2 em (10; 0). Ajuste as duas medidas de trena: cada uma vira um círculo, e o achado está onde eles se cruzam. Ligue a estaca E3, em (0; 8), para decidir entre os dois pontos.</p>
+<div id="ce" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s1"><b>Distância até E1</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Distância até E2</b><input type="range"><span></span></div>
+<div class="sl" id="s3" style="display:none"><b>Distância até E3</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Pontos possíveis<b id="kp">—</b></div><div>Achado<b id="ka">—</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ajuste a trena.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let e3=0;chips('ce',['Sem E3','Com E3'],0,i=>{e3=i;$('s3').style.display=i?'':'none';draw();});
+const D1=SL('s1',1,14,0.01,5,()=>draw(),v=>r2(v)+' m'),D2=SL('s2',1,14,0.01,7,()=>draw(),v=>r2(v)+' m'),D3=SL('s3',1,16,0.1,6,()=>draw(),v=>r1(v)+' m');
+const sol=()=>{const a=D1.get(),b=D2.get(),x=(a*a-b*b+100)/20,q=a*a-x*x;if(q<-1e-6)return [];if(Math.abs(q)<=1e-6||q<0.0004)return [[x,0]];return [[x,Math.sqrt(q)],[x,-Math.sqrt(q)]];};
+const certo=()=>{const s=sol();if(!e3||s.length<2)return null;const d3=D3.get(),m=s.map(p=>Math.abs(Math.hypot(p[0],p[1]-8)-d3));return m[0]<0.15&&m[1]>0.5?s[0]:m[1]<0.15&&m[0]>0.5?s[1]:null;};
+MIS.def(()=>[
+ ['Localize a lâmina de machado: <b>6 m</b> de E1 e <b>8 m</b> de E2.',()=>Math.abs(D1.get()-6)<0.005&&Math.abs(D2.get()-8)<0.005,'Os círculos se cruzam em (3,6; 4,8) e (3,6; −4,8). O segundo cai no ribeirão: a lâmina está em (3,6; 4,8).',()=>'E1: 6 m; E2: 8 m.'],
+ ['Faça os círculos <b>não se encontrarem</b>. Quando isso acontece?',()=>sol().length==0,'Quando d₁ + d₂ < 10 (curtos demais) ou quando um círculo fica dentro do outro. Na prática, é sinal de medida errada.',()=>'Diminua as duas medidas.'],
+ ['Faça os círculos se <b>tocarem num ponto só</b>, com E1 a 4 m.',()=>Math.abs(D1.get()-4)<0.005&&sol().length==1,'4 + 6 = 10: os círculos se tocam em (4; 0), sobre a reta E1E2.',()=>'E1 em 4 m. Quanto precisa ser E2?'],
+ ['Uma conta de concha está a <b>5 m</b> de E1 e a <b>8,06 m</b> de E2. Ligue E3: ela mediu <b>5 m</b>. Qual dos dois pontos é o certo?',()=>Math.abs(D1.get()-5)<0.005&&Math.abs(D2.get()-8.06)<0.005&&e3&&Math.abs(D3.get()-5)<0.01&&certo(),'A conta está em (3; 4): de lá, E3 fica a √(9 + 16) = 5 m. O outro ponto, (3; −4), estaria a mais de 12 m.',()=>'E1: 5 m, E2: 8,06 m, Com E3 e E3: 5 m.']]);
+function draw(){const k=12,x0=95,y0=150,X=v=>x0+v*k,Y=v=>y0-v*k;let g=RC(0,0,340,290,'#F8FAFC','rx="10"');
+ g+=RC(0,Y(-2.2),340,290-Y(-2.2),AGUA)+TX(330,282,'Ribeirão Fundo',{fs:9,c:AGUA_E,a:'end'});
+ g+=RC(X(0),Y(8),10*k,8*k,AREIA,'stroke="'+TERRA+'"');
+ g+=CIR(X(0),Y(0),D1.get()*k,'none','stroke="'+BLUE+'" stroke-width="1.8" stroke-dasharray="5 3"')+CIR(X(10),Y(0),D2.get()*k,'none','stroke="'+ORANGE+'" stroke-width="1.8" stroke-dasharray="5 3"');
+ if(e3)g+=CIR(X(0),Y(8),D3.get()*k,'none','stroke="'+GREEN+'" stroke-width="1.8" stroke-dasharray="5 3"');
+ const s=sol(),c=certo();s.forEach(p=>g+=CIR(X(p[0]),Y(p[1]),7,c&&c===p?GREEN:TERRA_E,'stroke="#fff" stroke-width="2"'));
+ [[0,0,'E1'],[10,0,'E2']].concat(e3?[[0,8,'E3']]:[]).forEach(([x,y,n])=>g+=RC(X(x)-5,Y(y)-5,10,10,NAVY)+TX(X(x)-8,Y(y)-8,n,{fs:10,a:'end'}));
+ $('fig').innerHTML=SVG(340,290,g);
+ $('kp').textContent=s.length?s.map(p=>'('+r2(p[0])+'; '+r2(p[1])+')').join(' e '):'nenhum';$('ka').textContent=c?'('+r2(c[0])+'; '+r2(c[1])+')':s.length==1?'('+r2(s[0][0])+'; 0)':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

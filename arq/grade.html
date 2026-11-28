@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A grade do sítio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A grade do sítio</h1></header>
+<main>
+<div class="card"><h2>Cada achado tem um endereço</h2><p class="muted" style="margin-top:0">A grade tem quadrículas de 1 m, a partir da estaca 0 (canto de baixo, à esquerda). <b>Toque no chão</b> para cravar uma estaca (ela encaixa de meio em meio metro); arraste para ajustar. O simulador guarda as duas últimas estacas e mostra o ponto médio entre elas.</p>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Última estaca<b id="ke">—</b></div><div>Quadrícula<b id="kq">—</b></div><div class="o">Ponto médio<b id="km">—</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque na grade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const X0=30,Y0=262,K=29,BUR=[[3.5,5],[4,6.5],[4.5,7],[6,7.5],[4,3.5]];let est=[];
+const LET='ABCDEFGHIJ';
+const quad=p=>p[0]>=10||p[1]>=8?'fora':LET[Math.floor(p[0])]+(Math.floor(p[1])+1);
+const eq=(p,q)=>p&&Math.abs(p[0]-q[0])<1e-6&&Math.abs(p[1]-q[1])<1e-6;
+const ult=()=>est[est.length-1],pen=()=>est[est.length-2];
+toque('fig',(x,y,novo)=>{let p=[Math.round((x-X0)/K*2)/2,Math.round((Y0-y)/K*2)/2];p=[Math.min(10,Math.max(0,p[0])),Math.min(8,Math.max(0,p[1]))];
+ if(novo||!est.length){est.push(p);if(est.length>2)est.shift();}else est[est.length-1]=p;draw();});
+MIS.def(()=>[
+ ['Seu Bené achou um caco na quadrícula <b>C3</b>. Crave uma estaca <b>dentro</b> dela.',()=>ult()&&quad(ult())=='C3'&&ult()[0]>2&&ult()[1]>2,'A quadrícula C3 vai de x = 2 a 3 e de y = 2 a 3. O caco do livro estava em (2,4; 2,7).',()=>'Coluna C (x de 2 a 3), linha 3 (y de 2 a 3).'],
+ ['Crave uma estaca exatamente no buraco <b>H4 = (6; 7,5)</b>.',()=>eq(ult(),[6,7.5]),'6 m a leste e 7,5 m ao norte da estaca 0. Primeiro o x, depois o y.',()=>ult()?'Sua estaca está em ('+vg(ult()[0])+'; '+vg(ult()[1])+').':'Toque na grade.'],
+ ['O centro da cabana, (6; 5), é o ponto médio entre H1 = (3,5; 5) e um buraco escondido. Crave uma estaca em <b>H1</b> e outra no buraco escondido.',()=>{const a=ult(),b=pen();return a&&b&&((eq(a,[3.5,5])&&eq(b,[8.5,5]))||(eq(b,[3.5,5])&&eq(a,[8.5,5])));},'O buraco escondido está em (8,5; 5): de H1 até o centro são 2,5 m para o leste; do centro até ele, mais 2,5 m.',()=>'Uma estaca em (3,5; 5) e a outra onde o ponto médio dê (6; 5).'],
+ ['Crave duas estacas, a mais de 4 m uma da outra, cujo ponto médio seja <b>(4; 4)</b>.',()=>{const a=ult(),b=pen();return a&&b&&Math.abs((a[0]+b[0])/2-4)<1e-6&&Math.abs((a[1]+b[1])/2-4)<1e-6&&Math.hypot(a[0]-b[0],a[1]-b[1])>4;},'Qualquer par simétrico em relação a (4; 4) serve: por exemplo, (2; 2) e (6; 6). Há infinitos pares com o mesmo ponto médio.',()=>'O ponto médio está em '+(pen()?'('+vg((ult()[0]+pen()[0])/2)+'; '+vg((ult()[1]+pen()[1])/2)+')':'—')+'.']]);
+function draw(){let g=RC(0,0,340,290,'#F8FAFC','rx="10"')+RC(X0,Y0-8*K,10*K,8*K,AREIA,'stroke="'+TERRA+'"');
+ for(let i=0;i<=10;i++)g+=LN(X0+i*K,Y0,X0+i*K,Y0-8*K,'#fff',1)+(i<10?TX(X0+i*K+K/2,Y0+22,LET[i],{fs:9,c:GRAY}):'')+TX(X0+i*K,Y0+11,i,{fs:8,c:NAVY});
+ for(let j=0;j<=8;j++)g+=LN(X0,Y0-j*K,X0+10*K,Y0-j*K,'#fff',1)+(j<8?TX(X0-16,Y0-j*K-K/2+3,j+1,{fs:9,c:GRAY}):'')+TX(X0-5,Y0-j*K+3,j,{fs:8,c:NAVY,a:'end'});
+ BUR.forEach((b,i)=>g+=CIR(X0+b[0]*K,Y0-b[1]*K,5,TERRA_E)+TX(X0+b[0]*K-7,Y0-b[1]*K-5,'H'+(i+1),{fs:8,c:TERRA_E,a:'end'}));
+ g+=CIR(X0,Y0,5,ORANGE);
+ if(est.length==2){const a=est[0],b=est[1],m=[(a[0]+b[0])/2,(a[1]+b[1])/2];g+=LN(X0+a[0]*K,Y0-a[1]*K,X0+b[0]*K,Y0-b[1]*K,BLUE,2,'5 3')+CIR(X0+m[0]*K,Y0-m[1]*K,5,'#fff','stroke="'+BLUE+'" stroke-width="2"');$('km').textContent='('+vg(m[0])+'; '+vg(m[1])+')';}else $('km').textContent='—';
+ est.forEach((p,i)=>g+=RC(X0+p[0]*K-5,Y0-p[1]*K-5,10,10,i==est.length-1?ORANGE:NAVY,'rx="2"'));
+ if(est.length){const p=ult();const q=quad(p);if(q!='fora'&&p[0]<10&&p[1]<8)g+=RC(X0+Math.floor(p[0])*K,Y0-(Math.floor(p[1])+1)*K,K,K,'none','stroke="'+ORANGE+'" stroke-width="2.5"');$('ke').textContent='('+vg(p[0])+'; '+vg(p[1])+')';$('kq').textContent=q;}
+ $('fig').innerHTML=SVG(340,290,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
