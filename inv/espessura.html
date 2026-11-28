@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vidro ou cristal? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Vidro ou cristal?</h1></header>
+<main>
+<div class="card"><h2>t ≈ L² ÷ κ</h2><p class="muted" style="margin-top:0">Escolha onde a lava esfria ou mude a espessura L da camada. O tempo de resfriamento cresce com o <b>quadrado</b> de L (κ ≈ 10⁻⁶ m²/s). O tempo decide a rocha.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sl"><b>Espessura L</b><input type="range"><span></span></div>
+<div class="kpi"><div>Espessura<b id="kl"></b></div><div class="o">Tempo de resfriamento<b id="kt"></b></div><div>Rocha<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a espessura.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const TEMPO=s=>s<120?r1(s)+' s':s<7200?r1(s/60)+' min':s<172800?r1(s/3600)+' h':s<3.15e7*2?fmt(Math.round(s/86400))+' dias':s<3.15e10?fmt(Math.round(s/3.15e7))+' anos':CIENT(s/3.15e7,1)+' anos';
+function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+function corT(T){const u=clamp((T-600)/650,0,1);const r=Math.round(90+165*Math.min(1,u*1.6)),g=Math.round(30+200*Math.max(0,u-0.35)),b=Math.round(20+40*Math.max(0,u-0.8));return `rgb(${r},${g},${b})`;}
+const LUG=[['Gota no mar',-2],['Borda do derrame',-1],['Derrame fino',0],['Derrame grosso',1],['Soleira',2],['Câmara de magma',3]];
+const C=chips('ch',LUG.map(l=>l[0]),2,i=>{S.set(LUG[i][1]);draw();});
+const S=SL('sl',-3,3,0.01,0,()=>draw(),v=>{const L=Math.pow(10,v);return L<0.01?r1(L*1000)+' mm':L<1?SIG(L*100)+' cm':L<1000?SIG(L)+' m':r1(L/1000)+' km';});
+const L=()=>Math.pow(10,S.get()),t=()=>L()*L()/1e-6;
+const rocha=()=>t()<3600?['obsidiana (vidro)','#1F2229']:t()<3.15e7*3?['basalto: cristais pequenos','#4A4E5A']:t()<3.15e10?['cristais médios','#6B6E78']:['granito: cristais grandes','#C9A9A0'];
+MIS.def(()=>[
+ ['Faça <b>obsidiana</b>: a camada tem que esfriar em menos de uma hora.',()=>t()<3600,()=>'Com '+$('kl').textContent+', t ≈ '+TEMPO(t())+'. Rápido demais para cristalizar.',()=>'Agora leva '+TEMPO(t())+'.'],
+ ['Faça <b>granito</b>: cristais grandes, resfriamento de dezenas de milhares de anos.',()=>t()>=3.15e11,()=>'Com '+$('kl').textContent+', t ≈ '+TEMPO(t())+'. Só uma câmara de magma enterrada esfria tão devagar.',()=>'Agora leva '+TEMPO(t())+'.'],
+ ['Deixe L em <b>1 m</b> e depois <b>dobre</b> para 2 m. O tempo fica quantas vezes maior?',()=>Math.abs(L()-2)<0.02,'De cerca de 12 dias para cerca de 46 dias: 2² = 4 vezes. Dobrar a espessura quadruplica o tempo.',()=>'Leve L até 2 m.'],
+ ['Um derrame de <b>3 m</b>, como o que ainda brilhava por dentro: quantos dias para esfriar?',()=>Math.abs(L()-3)<0.04,()=>'t ≈ 9 ÷ 10⁻⁶ = 9 × 10⁶ s ≈ '+fmt(Math.round(t()/86400))+' dias. Mais de três meses.',()=>'Leve L até 3 m.']]);
+let t0=performance.now();
+function quadro(){const u=((performance.now()-t0)/3000)%1;let g=RC(0,0,340,210,'#F8FAFC','rx="10"');
+ const e=clamp((S.get()+3)/6,0,1),hpx=12+e*120,y0=150-hpx/2;
+ g+=RC(20,y0,200,hpx,corT(1150),'rx="3"');const f=u*hpx/2;g+=RC(20,y0,200,f,'#3A3E48')+RC(20,y0+hpx-f,200,f,'#3A3E48');
+ g+=TX(120,y0-6,'a crosta fria avança de fora para dentro',{fs:9,c:GRAY,w:500});
+ g+=LN(232,y0,232,y0+hpx,NAVY,1.5)+TX(238,y0+hpx/2+4,$('kl').textContent,{fs:10,c:NAVY,a:'start'});
+ const [nm,c]=rocha();g+=CI(295,60,32,c,'stroke="#fff" stroke-width="3"');
+ if(t()>=3600){const R=rng(3),k=t()<3.15e7*3?16:t()<3.15e10?8:4;for(let i=0;i<k*2;i++){const a=R()*6.28,r=R()*24;g+=RC(295+r*Math.cos(a)-60/k,60+r*Math.sin(a)-60/k,120/k,120/k*0.7,['#9FB7D9','#E8C07A','#D9A3A0','#E3E3E3'][i%4],'opacity=".85"');}}
+ g+=TX(295,108,nm.split(':')[0],{fs:9.5,c:NAVY});
+ $('fig').innerHTML=SVG(340,210,g);}
+function draw(){const L_=L();$('kl').textContent=L_<0.01?r1(L_*1000)+' mm':L_<1?SIG(L_*100)+' cm':L_<1000?SIG(L_)+' m':r1(L_/1000)+' km';$('kt').textContent=TEMPO(t());$('kr').textContent=rocha()[0];MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>

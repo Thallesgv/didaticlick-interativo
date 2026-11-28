@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lava na encosta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Lava na encosta</h1></header>
+<main>
+<div class="card"><h2>A lava desce a encosta</h2><p class="muted" style="margin-top:0">Escolha quanta <b>sílica</b> a lava tem e a <b>temperatura</b> com que ela sai. O relógio acelera: cada segundo na tela é uma hora. A lava perde cerca de 20 °C por quilômetro e para quando fica fria demais para escorrer. O mar fica a 5,4 km.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Sílica (SiO₂)</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Temperatura na boca</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Termopar a</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Viscosidade<b id="kv"></b></div><div>Velocidade<b id="ks"></b></div><div>Alcance máximo<b id="ka"></b></div><div>No termopar<b id="kt"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a lava.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const TEMPO=s=>s<120?r1(s)+' s':s<7200?r1(s/60)+' min':s<172800?r1(s/3600)+' h':s<3.15e7*2?fmt(Math.round(s/86400))+' dias':s<3.15e10?fmt(Math.round(s/3.15e7))+' anos':CIENT(s/3.15e7,1)+' anos';
+function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+function corT(T){const u=clamp((T-600)/650,0,1);const r=Math.round(90+165*Math.min(1,u*1.6)),g=Math.round(30+200*Math.max(0,u-0.35)),b=Math.round(20+40*Math.max(0,u-0.8));return `rgb(${r},${g},${b})`;}
+let t0=performance.now();const reset=()=>{t0=performance.now();draw();};
+const S=SL('ss',47,72,1,50,reset,v=>v+'%');
+const Tb=SL('st',700,1250,10,1150,reset,v=>fmt(v)+' °C');
+const Pr=SL('sp',0,8,0.5,2,()=>draw(),v=>r1(v)+' km');
+const logEta=()=>2+0.25*(S.get()-50)+0.008*(1150-Tb.get());
+const vms=()=>0.5*Math.pow(10,2-logEta()),vkmh=()=>vms()*3.6;
+const Tsol=()=>1000-13*(S.get()-50),alc=()=>Math.max(0,(Tb.get()-Tsol())/20);
+const Td=d=>Tb.get()-20*d;
+const VEL=()=>{const v=vms()*3600;return v>=1000?r1(v/1000)+' km/h':v>=1?SIG(v)+' m/h':v*100>=0.1?SIG(v*100)+' cm/h':'menos de 1 mm por hora';};
+let basalto=null;
+MIS.def(()=>[
+ ['Faça uma lava de <b>basalto</b> (até 50% de sílica) alcançar o <b>mar</b>, a 5,4 km.',()=>S.get()<=50&&alc()>=5.4,()=>'Ela alcança '+r1(alc())+' km e anda a '+r1(vkmh())+' km/h: chega ao mar em cerca de '+r1(5.4/vkmh())+' h. Lava quente e pobre em sílica escorre longe.',()=>S.get()>50?'Diminua a sílica.':'Alcance atual: '+r1(alc())+' km. Aumente a temperatura.'],
+ ['Agora faça uma lava que quase não sai do lugar: <b>menos de 1 metro por hora</b>.',()=>vms()*3600<1,()=>'Viscosidade de '+CIENT(Math.pow(10,logEta()),0)+' Pa·s: '+VEL()+'. Muita sílica e pouca temperatura deixam a lava "grossa" como massa.',()=>'Agora ela anda '+SIG(vms()*3600)+' m por hora.'],
+ ['Basalto com 50% de sílica a <b>1.150 °C</b>: leve o termopar a <b>6 km</b> da boca. Qual a temperatura?',()=>S.get()==50&&Tb.get()==1150&&Pr.get()==6,'T(6) = 1.150 − 20 × 6 = 1.030 °C. A função afim do módulo.',()=>'Sílica 50%, 1.150 °C e termopar em 6 km.'],
+ ['Faça uma lava <b>andesítica</b>: 60% de sílica a 1.000 °C. Quantas vezes ela é mais viscosa que o basalto da missão anterior?',()=>S.get()==60&&Tb.get()==1000,'Viscosidade ≈ 10^5,7 contra 10² Pa·s: cerca de 5.000 vezes mais "grossa". Cada 4% de sílica a mais multiplica por 10.',()=>'Sílica 60% e 1.000 °C.']]);
+function quadro(){const th=(performance.now()-t0)/1000;let g=RC(0,0,340,220,'#EEF4FB','rx="10"');
+ const X=d=>20+d/8*300,Y=d=>40+d/8*130;
+ g+=PG([[0,220],[0,Y(0)-6],[X(0),Y(0)-6],[X(5.4),Y(5.4)],[X(5.4),220]],'#7A6A5A')+PG([[X(5.4),Y(5.4)],[340,Y(5.4)],[340,220],[X(5.4),220]],MAR);
+ g+=TX(330,Y(5.4)+18,'mar',{fs:10,c:'#fff',a:'end'})+PG([[0,Y(0)-6],[X(0)-12,Y(0)-26],[X(0)+8,Y(0)-26],[X(0)+16,Y(0)-6]],ROCHA);
+ const fr=Math.min(alc(),5.4,vkmh()*th);
+ for(let i=0;i<40;i++){const a=fr*i/40,b=fr*(i+1)/40;if(b<=0)break;g+=LN(X(a),Y(a)-3,X(b),Y(b)-3,corT(Td((a+b)/2)),7);}
+ if(fr>0)g+=CI(X(fr),Y(fr)-3,4,corT(Td(fr)));
+ if(alc()>=5.4&&vkmh()*th>=5.4)for(let k=0;k<4;k++)g+=CI(X(5.4)+8+k*9,Y(5.4)-10-((th*20+k*7)%18),5,'#fff','opacity=".7"');
+ for(let d=0;d<=8;d+=2)g+=TX(X(d),Y(d)+18,d+' km',{fs:8.5,c:'#fff',w:500});
+ const pd=Pr.get();g+=LN(X(pd),Y(pd)-30,X(pd),Y(pd)-4,NAVY,2)+RC(X(pd)-26,Y(pd)-48,52,18,NAVY,'rx="4"')+TX(X(pd),Y(pd)-35,(fr>=pd?fmt(Td(pd)):'--')+' °C',{fs:9.5,c:'#fff'});
+ g+=TX(330,20,'relógio: '+r1(th)+' h',{fs:10,c:NAVY,a:'end'});
+ $('fig').innerHTML=SVG(340,220,g);}
+function draw(){$('kv').textContent=CIENT(Math.pow(10,logEta()),0)+' Pa·s';$('ks').textContent=VEL();$('ka').textContent=r1(alc())+' km';$('kt').textContent=fmt(Td(Pr.get()))+' °C';MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>
