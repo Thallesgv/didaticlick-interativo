@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As alturas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>As alturas</h1></header>
+<main>
+<div class="card"><h2>Média × mediana</h2><p class="muted" style="margin-top:0">Toque numa árvore para escolhê-la e mude a altura dela; mude também a largura das faixas do histograma, a altura de uma árvore gigante extra e um fator que multiplica todas as alturas (arrastando ou com − e +).</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button class="alt" id="br">Voltar aos dados do Téo</button></div><div class="sl" id="sa"><b>Árvore escolhida</b><input type="range"><span></span></div><div class="sl" id="sh"><b>Altura dela</b><input type="range"><span></span></div><div class="sl" id="sg"><b>Árvore gigante extra</b><input type="range"><span></span></div><div class="sl" id="sf"><b>Multiplicar todas por</b><input type="range"><span></span></div><div class="sl" id="sw"><b>Faixa do histograma</b><input type="range"><span></span></div><div class="kpi"><div>Média<b id="k1"></b></div><div>Mediana<b id="k2"></b></div><div class="o">Média − mediana<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos dados.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;const sdev=a=>a.length<2?0:Math.sqrt(a.reduce((s,x)=>s+(x-mean(a))**2,0)/(a.length-1));
+const med=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const ARV=(x,y,r,c)=>LN(x,y,x,y+r*0.9,'#8A5A2B',Math.max(1,r*0.35))+CIR(x,y,r,c||'#5E8C4A');
+const TEO=[1.6,2.0,2.2,2.4,2.6,2.8,3.0,3.0,3.2,3.4,3.5,3.6,3.8,4.0,4.2,4.5,4.8,5.2,6.0,8.2];let A=[...TEO];
+const SA=SL('sa',1,20,1,20,()=>{SH.set(A[SA.get()-1]);draw();},v=>'nº '+v),SH=SL('sh',0.5,40,0.1,8.2,v=>{A[SA.get()-1]=v;draw();},v=>fmt(v)+' m'),SG=SL('sg',0,60,0.5,0,()=>draw(),v=>v?fmt(v)+' m':'nenhuma'),SF=SL('sf',0.5,10,0.1,1,()=>draw(),v=>fmt(v)+'×'),SW=SL('sw',0.5,5,0.5,1,()=>draw(),v=>fmt(v)+' m');
+$('br').onclick=()=>{A=[...TEO];SG.set(0);SF.set(1);SH.set(A[SA.get()-1]);draw();};
+toque('fig',(x,y)=>{if(y>140)return;const i=clamp(Math.floor((x-20)/15),0,19);SA.set(i+1);SH.set(A[i]);draw();});
+const dados=()=>{const d=A.map(h=>h*SF.get());if(SG.get()>0)d.push(SG.get());return d;};
+const teo=()=>SG.get()==0&&SF.get()==1&&A.every((h,i)=>Math.abs(h-TEO[i])<1e-9);
+MIS.def(()=>[
+ ['Comece pelos dados do Téo e leia a média e a mediana.',()=>teo(),'Média 3,7 m e mediana 3,45 m: a árvore de 8,2 m puxa a média para cima.',()=>'Toque em "Voltar aos dados do Téo".'],
+ ['Faça a média passar da mediana em <b>mais de 1 metro</b>.',()=>mean(dados())-med(dados())>1,()=>'Diferença de '+r2(mean(dados())-med(dados()))+' m. Um ou dois valores extremos bastam: a mediana quase não se mexe.',()=>'Diferença agora: '+r2(mean(dados())-med(dados()))+' m.'],
+ ['Monte uma "floresta": média <b>acima de 25 m</b>.',()=>mean(dados())>25,()=>'Média de '+r1(mean(dados()))+' m: o dossel de uma floresta amazônica. O histograma do Téo inteiro caberia debaixo dele.',()=>'Média agora: '+r1(mean(dados()))+' m.']]);
+function draw(){const d=dados(),mx=Math.max(10,...d)*1.05;let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ const Y=h=>130-h/mx*112;g+=LN(16,130,326,130,'#8A5A2B',2);
+ A.forEach((h,i)=>{const x=27+i*15,hh=h*SF.get();g+=LN(x,130,x,Y(hh),'#8A5A2B',2)+CIR(x,Y(hh),5.5,i==SA.get()-1?ORANGE:'#5E8C4A');});
+ if(SG.get()>0)g+=LN(322,130,322,Y(SG.get()),'#8A5A2B',3)+CIR(322,Y(SG.get()),7,'#2F7A4B');
+ g+=LN(16,Y(mean(d)),330,Y(mean(d)),ORANGE,1.5,'5 4')+LN(16,Y(med(d)),330,Y(med(d)),BLUE,1.5,'2 3');
+ g+=TX(330,Y(mean(d))-4,'média',{fs:9,a:'end',c:ORANGE})+TX(16,Y(med(d))+12,'mediana',{fs:9,a:'start',c:BLUE});
+ const w=SW.get(),top=Math.ceil(Math.max(...d)/w)*w,nb=Math.max(1,Math.round(top/w)),cont=new Array(nb).fill(0);d.forEach(v=>{cont[Math.min(nb-1,Math.floor(v/w))]++;});
+ const cm=Math.max(...cont),bw=300/nb;g+=LN(20,286,320,286,NAVY,1);
+ cont.forEach((c,i)=>{const hh=c/cm*120;g+=RC(20+i*bw+1,286-hh,Math.max(1,bw-2),hh,'#5E8C4A');if(c&&bw>9)g+=TX(20+(i+0.5)*bw,282-hh,c,{fs:9,c:'#2F7A4B'});});
+ g+=TX(20,298,'0',{fs:8,a:'start'})+TX(320,298,fmt(Math.round(top*10)/10)+' m',{fs:8,a:'end'});
+ $('fig').innerHTML=SVG(340,300,g);
+ $('k1').textContent=r2(mean(d))+' m';$('k2').textContent=r2(med(d))+' m';$('k3').textContent=r2(mean(d)-med(d))+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

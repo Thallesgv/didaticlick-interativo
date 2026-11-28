@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A chave do bioma · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A chave do bioma</h1></header>
+<main>
+<div class="card"><h2>Perguntas de sim ou não</h2><p class="muted" style="margin-top:0">Escolha um lugar nos botões ou mude à vontade a cobertura das copas, o capim no chão, os meses de alagamento, a latitude e a longitude (arrastando ou com − e +). O caminho laranja mostra a chave sendo seguida.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button class="alt" data-p="Téo">Téo</button><button class="alt" data-p="Amazônia">Amazônia</button><button class="alt" data-p="Caatinga">Caatinga</button><button class="alt" data-p="Pantanal">Pantanal</button><button class="alt" data-p="Pampa">Pampa</button><button class="alt" data-p="Mata Atlântica">Mata Atlântica</button></div><div class="sl" id="sc"><b>Cobertura das copas</b><input type="range"><span></span></div><div class="sl" id="sg"><b>Capim cobrindo o chão</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Meses alagado por ano</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Latitude</b><input type="range"><span></span></div><div class="sl" id="so"><b>Longitude</b><input type="range"><span></span></div><div class="kpi"><div>Bioma<b id="k1"></b></div><div>Paisagem<b id="k2"></b></div><div class="o">Perguntas usadas<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Siga a chave.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SC=SL('sc',0,100,1,18,()=>draw(),v=>v+'%'),SG=SL('sg',0,100,1,85,()=>draw(),v=>v+'%'),SA=SL('sa',0,8,1,0,()=>draw(),v=>v),SLA=SL('sl',-34,5,0.1,-10.7,()=>draw(),v=>fmt(Math.abs(v))+'° '+(v<0?'S':'N')),SO=SL('so',-74,-35,0.1,-46.5,()=>draw(),v=>fmt(Math.abs(v))+'° O');
+const PRE={'Téo':[18,85,0,-10.7,-46.5],'Amazônia':[90,5,0,-3.1,-60],'Caatinga':[12,15,0,-9.4,-40.5],'Pantanal':[25,80,5,-18.5,-57],'Pampa':[2,95,0,-30.5,-55],'Mata Atlântica':[85,5,0,-23,-45.5]};
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{const v=PRE[b.dataset.p];SC.set(v[0]);SG.set(v[1]);SA.set(v[2]);SLA.set(v[3]);SO.set(v[4]);draw();});
+function segue(){const c=SC.get();if(c>70)return{n:1,b:(SO.get()<-44&&SLA.get()>-16)?'Amazônia':'Mata Atlântica',p:'floresta'};
+ if(SG.get()<50)return{n:2,b:'Caatinga',p:'arbustos e cactos'};if(SA.get()>=3)return{n:3,b:'Pantanal',p:'planície alagável'};
+ if(c<5&&SLA.get()<-28)return{n:4,b:'Pampa',p:'campos do sul'};return{n:4,b:'Cerrado',p:c<5?'campo':c<20?'cerrado ralo':c<50?'cerrado típico':c<70?'cerrado denso':'cerradão'};}
+MIS.def(()=>[
+ ['Siga a chave com os dados do Téo.',()=>{const s=segue();return s.b=='Cerrado'&&s.p=='cerrado ralo'&&SC.get()==18&&Math.abs(SLA.get()+10.7)<0.01;},'Não, sim, não, não: Cerrado. E 18% de cobertura: cerrado ralo.',()=>'Toque no botão "Téo".'],
+ ['Mude os controles até a chave chegar à <b>Caatinga</b>.',()=>segue().b=='Caatinga',()=>'Capim em '+SG.get()+'%: na seca, chão nu entre arbustos. A pergunta 2 separa Cerrado e Caatinga.',()=>'Agora: '+segue().b+'.'],
+ ['Volte ao Cerrado e ache a <b>cobertura exata</b> em que o cerrado ralo vira cerrado típico.',()=>segue().b=='Cerrado'&&SC.get()==20,'20%: um ponto a menos e a paisagem muda de nome. Na natureza, a passagem é gradual.',()=>'Agora: '+segue().p+' com '+SC.get()+'%.']]);
+function draw(){const s=segue();let g=RC(0,0,340,270,'#F8FAFC','rx="10"');
+ const Q=['1. Copas > 70%?','2. Capim contínuo?','3. Alagado 3+ meses?','4. Campo ao sul de 28° S?'],R=['Floresta','Caatinga','Pantanal','Pampa'];
+ Q.forEach((q,i)=>{const y=14+i*48,on=i<s.n,fim=(i==s.n-1&&s.b!='Cerrado');
+  g+=RC(10,y,170,30,on?'#FFF1E4':'#fff','rx="6" stroke="'+(on?ORANGE:'#C9D3E6')+'" stroke-width="1.6"')+TX(95,y+19,q,{fs:10,c:on?'#7A3B00':GRAY});
+  g+=LN(180,y+15,214,y+15,fim?ORANGE:'#C9D3E6',fim?3:1.2)+RC(214,y+2,118,26,fim?ORANGE:'#E7F1E4','rx="13"')+TX(273,y+19,R[i],{fs:10,c:fim?'#fff':'#2F7A4B'});
+  if(i<3)g+=LN(95,y+30,95,y+48,(on&&!fim)?ORANGE:'#C9D3E6',(on&&!fim)?3:1.2);});
+ const cer=s.b=='Cerrado';g+=LN(95,188,95,206,cer?ORANGE:'#C9D3E6',cer?3:1.2)+RC(10,206,170,30,cer?ORANGE:'#fff','rx="6" stroke="'+ORANGE+'"')+TX(95,225,'Cerrado',{fs:11,c:cer?'#fff':ORANGE});
+ g+=TX(170,258,'Resultado: '+s.b+' · '+s.p,{fs:11,c:NAVY});
+ $('fig').innerHTML=SVG(340,270,g);
+ $('k1').textContent=s.b;$('k2').textContent=s.p;$('k3').textContent=s.n;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
