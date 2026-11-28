@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plano de voo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Plano de voo</h1></header>
+<main>
+<div class="card"><h2>A foto do drone</h2><p class="muted" style="margin-top:0">A câmera de Tomás tem tg α = 0,75 e fotos de 4.000 × 3.000 pixels. Mude a altura de voo e a sobreposição: veja a faixa da foto sobre o sambaqui (40 m × 30 m), o tamanho do pixel e as fotos de uma linha de 90 m.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Altura de voo</b><input type="range"><span></span></div>
+<div class="sl" id="so"><b>Sobreposição entre fotos</b><input type="range"><span></span></div>
+<div class="kpi"><div>Faixa no chão<b id="kf"></b></div><div class="o">1 pixel no chão<b id="kp"></b></div><div>Avanço · fotos<b id="kn"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a altura.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const HV=SL('sh',5,100,1,60,()=>draw(),v=>v+' m');
+const SB=SL('so',50,90,5,60,()=>draw(),v=>v+'%');
+const larg=()=>1.5*HV.get(),alt=()=>1.125*HV.get(),px=()=>larg()*100/4000,passo=()=>alt()*(100-SB.get())/100,nf=()=>Math.ceil(90/passo()-1e-9)+1;
+MIS.def(()=>[
+ ['Ache a <b>menor altura</b> (em metros inteiros) em que o sambaqui inteiro cabe numa foto só.',()=>HV.get()==27,'A 27 m, a faixa tem 40,5 m × 30,4 m: o morro de 40 m × 30 m cabe por pouco. A 26 m, a ponta ficaria de fora.',()=>larg()<40||alt()<30?'O sambaqui ainda não cabe: suba.':'Cabe! Mas dá para descer mais um pouco?'],
+ ['Volte ao voo de Tomás: pixels de <b>1,5 cm</b> no chão.',()=>HV.get()==40,'A 40 m, a faixa tem 60 m e cada um dos 4.000 pixels cobre 1,5 cm.',()=>'O pixel está com '+r2(px())+' cm.'],
+ ['A Dra. Nádia quer ver uma concha de 3 cm com <b>10 pixels</b> (pixel de 0,3 cm). A que altura voar?',()=>HV.get()==8,'A 8 m, a faixa tem 12 m e o pixel tem 0,3 cm. Mais detalhe, mas cada foto cobre muito menos chão.',()=>'O pixel está com '+r2(px())+' cm. Precisa de 0,3 cm.'],
+ ['A <b>40 m</b> de altura e <b>80%</b> de sobreposição, quantas fotos tem uma linha de 90 m?',()=>HV.get()==40&&SB.get()==80,'A foto cobre 45 m na direção do voo; avançando 20% (9 m), são 10 avanços e 11 fotos.',()=>'Altura 40 m e sobreposição 80%.']]);
+function draw(){let g=RC(0,0,340,200,'#E6EFDA','rx="10"');const k=1.6,cx=170,cy=100;
+ for(let i=-10;i<=10;i++)g+=LN(cx+i*10*k,0,cx+i*10*k,200,'#D4E2C3',1)+LN(0,cy+i*10*k,340,cy+i*10*k,'#D4E2C3',1);
+ g+=ELI(cx,cy,20*k,15*k,AREIA,'stroke="'+TERRA+'" stroke-width="1.5"');
+ const w=larg()*k,h=alt()*k,cabe=larg()>=40&&alt()>=30;g+=RC(cx-w/2,cy-h/2,w,h,cabe?'rgba(36,87,214,.15)':'rgba(247,130,31,.15)','stroke="'+(cabe?BLUE:ORANGE)+'" stroke-width="2"');
+ const p=passo()*k;if(p<160)g+=RC(cx-w/2,cy-h/2-p,w,h,'none','stroke="'+NAVY+'" stroke-width="1" stroke-dasharray="4 3"');
+ g+=TX(330,192,'quadradinhos de 10 m',{fs:8,c:GRAY,a:'end',w:500});
+ $('fig').innerHTML=SVG(340,200,g);$('kf').textContent=r1(larg())+' × '+r1(alt())+' m';$('kp').textContent=r2(px())+' cm';$('kn').textContent=r1(passo())+' m · '+nf();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

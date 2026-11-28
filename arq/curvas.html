@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Represa sobe · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Represa sobe</h1></header>
+<main>
+<div class="card"><h2>Curvas de nível e a represa</h2><p class="muted" style="margin-top:0">O sambaqui tem base na cota 300 e topo na 302, com curvas de 0,5 em 0,5 m. Suba o nível da água e veja as curvas sumirem. <b>Toque no mapa</b> para ler a altura de um ponto.</p>
+<div class="fig" id="fig"></div>
+<div class="fig" id="per"></div>
+<div class="sl" id="sn"><b>Nível da água (cota)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Ponto tocado<b id="kc">—</b></div><div class="o">Água sobre o topo<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Toque no mapa.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CX=170,CY=100,A=120,B=90;let toq=null;
+const NV=SL('sn',296,306,0.5,298,()=>draw(),v=>r1(v)+' m');
+const cota=(x,y)=>{const u=Math.hypot((x-CX)/A,(y-CY)/B);return u>=1?300:302-2*u;};
+toque('fig',(x,y)=>{toq=[x,y];draw();});
+MIS.def(()=>[
+ ['Toque no <b>topo</b> do sambaqui. Qual é a cota mais alta?',()=>toq&&cota(...toq)>=301.9,'Topo na cota 302: dois metros acima da várzea.',()=>'Toque bem no centro das curvas.'],
+ ['Suba a água até a cota final da represa, <b>305</b>. Quanta água fica sobre o topo?',()=>NV.get()==305,'305 − 302 = 3 m de água sobre o topo e 5 m sobre a base. O sítio inteiro fica submerso.',()=>'Ajuste o nível para 305.'],
+ ['Deixe a água num nível em que só uma <b>ilhazinha</b> do topo fique de fora.',()=>NV.get()>=301.5&&NV.get()<302,'Com a água em '+r1(NV.get())+' m, só o pedaço acima dessa curva aparece. Cada curva é a margem de um nível de água.',()=>'Suba até ficar quase no topo, mas sem cobrir.'],
+ ['Os lados de cima e de baixo do mapa são mais íngremes que os da esquerda e direita (as curvas estão mais juntas). Abaixe a água para 298 e toque num ponto do <b>lado mais íngreme</b>, entre as curvas 300 e 301.',()=>NV.get()<=300&&toq&&(()=>{const c=cota(...toq),dx=Math.abs(toq[0]-CX)/A,dy=Math.abs(toq[1]-CY)/B;return c>300&&c<301&&dy>dx;})(),'Pela largura, o morro sobe 2 m em 15 m (13%); pelo comprimento, 2 m em 20 m (10%). Curvas mais juntas, terreno mais íngreme.',()=>NV.get()>300?'Primeiro abaixe a água.':'Toque perto da borda de cima ou de baixo, entre as duas curvas de fora.']]);
+function draw(){const n=NV.get();let g=RC(0,0,340,200,PAPEL,'rx="10"');
+ const cores=['#D2B47C','#EBD5A6','#F3E3BF','#F8EDD6'];
+ [300,300.5,301,301.5].forEach((c,i)=>{const f=1-(c-300)/2;g+=ELI(CX,CY,A*f,B*f,c<n?AGUA:cores[i],'stroke="'+(c<n?AGUA_E:TERRA)+'" stroke-width="1.2"')+TX(CX,CY-B*f+12,r1(c),{fs:9,c:c<n?AGUA_E:TERRA_E});});
+ if(n>=302)g+=RC(0,0,340,200,AGUA,'opacity=".55" rx="10"');
+ g+=CIR(CX,CY,3,ORANGE)+TX(CX,CY+14,'302',{fs:9,c:ORANGE});
+ if(toq){g+=CIR(toq[0],toq[1],6,NAVY,'stroke="#fff" stroke-width="2"');$('kc').textContent=r2(cota(...toq))+' m';}
+ $('fig').innerHTML=SVG(340,200,g);
+ let h=RC(0,0,340,130,'#F8FAFC','rx="10"');const X=m=>20+(m+24)/48*300,Y=c=>115-(c-299)/8*100;
+ h+=RC(20,Y(Math.max(n,299)),300,Y(299)-Y(Math.max(n,299)),AGUA);
+ h+=PG([[X(-24),Y(300)],[X(-20),Y(300)],[X(0),Y(302)],[X(20),Y(300)],[X(24),Y(300)],[X(24),Y(299)],[X(-24),Y(299)]],AREIA,'stroke="'+TERRA+'"');
+ for(let c=299;c<=307;c++)h+=TX(16,Y(c)+3,c,{fs:8,c:GRAY,a:'end',w:500});
+ h+=LN(20,Y(305),320,Y(305),AGUA_E,1,'4 3')+TX(320,Y(305)-3,'cota final 305',{fs:8,c:AGUA_E,a:'end'})+TX(170,128,'perfil pelo comprimento (altura exagerada)',{fs:8,c:GRAY,w:500});
+ $('per').innerHTML=SVG(340,130,h);$('ka').textContent=n>302?r1(n-302)+' m':'o topo está fora';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
