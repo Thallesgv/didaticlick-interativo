@@ -28,7 +28,7 @@ const ds=()=>BUR.map(b=>Math.hypot(b[0]-CX.get(),b[1]-CY.get()));
 const sobre=()=>ds().filter(d=>Math.abs(d-R.get())<0.05).length;
 const dc=()=>Math.hypot(CACO[0]-CX.get(),CACO[1]-CY.get());
 MIS.def(()=>[
- ['Ponha o centro na estaca do Seu Bené, <b>(5,5; 5)</b>, com raio <b>2 m</b>. Quantos buracos ficam sobre a linha?',()=>CX.get()==5.5&&CY.get()==5&&Math.abs(R.get()-2)<0.01,'Só H1 fica sobre a linha (2,00 m). Os outros estão a 2,12 m, 2,24 m e 2,55 m: a estaca não é o centro.',()=>'Centro (5,5; 5) e raio 2.'],
+ ['Ponha o centro na estaca do Seu Bené, <b>(5,5; 5)</b>, com raio <b>2 m</b>. Quantos buracos ficam sobre a linha?',()=>CX.get()==5.5&&CY.get()==5&&Math.abs(R.get()-2)<0.01,'Só P1 fica sobre a linha (2,00 m). Os outros estão a 2,12 m, 2,24 m e 2,55 m: a estaca não é o centro.',()=>'Centro (5,5; 5) e raio 2.'],
  ['Ache um centro e um raio que deixem os <b>cinco</b> buracos sobre a linha.',()=>sobre()==5,'Centro (6; 5) e raio 2,5 m. No Módulo 3, as mediatrizes acham esse centro sem tentativa.',()=>'Agora '+sobre()+' de 5 buracos estão sobre a linha. Olhe a tabela de distâncias.'],
  ['Com o centro certo, o caco está dentro da casa. Diminua o raio até o caco ficar <b>fora</b>.',()=>CX.get()==6&&CY.get()==5&&R.get()<dc()-0.01,'O caco está a √4,24 ≈ 2,06 m do centro: com raio menor que isso, ele fica fora.',()=>CX.get()!=6||CY.get()!=5?'Centro em (6; 5).':'O caco está a '+r2(dc())+' m do centro.'],
  ['Uma cerca circular de barbante tem <b>10 m</b>. Ajuste o raio para o comprimento 2πr ficar o mais perto possível de 10 m.',()=>Math.abs(R.get()-1.6)<0.01,'2 × 3,14 × 1,6 ≈ 10,05 m. Raio = comprimento ÷ (2π) = 10 ÷ 6,28 ≈ 1,59 m.',()=>'O comprimento está em '+r2(2*Math.PI*R.get())+' m.']]);
@@ -36,7 +36,7 @@ function draw(){const k=34,x0=-20,y0=300,c=[CX.get(),CY.get()],r=R.get();let g=R
  const X=v=>x0+v*k,Y=v=>y0-v*k*1;
  for(let i=1;i<=10;i++)g+=LN(X(i),0,X(i),240,'#EEF1F6',1);for(let j=2;j<=9;j++)g+=LN(0,Y(j),340,Y(j),'#EEF1F6',1);
  g+=CIR(X(c[0]),Y(c[1]),r*k,'rgba(247,130,31,.08)','stroke="'+ORANGE+'" stroke-width="2"')+CIR(X(c[0]),Y(c[1]),4,NAVY)+TX(X(c[0]),Y(c[1])+15,'('+vg(c[0])+'; '+vg(c[1])+')',{fs:9});
- const d=ds();BUR.forEach((b,i)=>{const on=Math.abs(d[i]-r)<0.05;g+=LN(X(c[0]),Y(c[1]),X(b[0]),Y(b[1]),'#CBD5E1',1,'3 3')+CIR(X(b[0]),Y(b[1]),6,on?GREEN:TERRA_E,'stroke="#fff" stroke-width="1.5"')+TX(X(b[0])-9,Y(b[1])+4,'H'+(i+1),{fs:9,c:TERRA_E,a:'end'});});
+ const d=ds();BUR.forEach((b,i)=>{const on=Math.abs(d[i]-r)<0.05;g+=LN(X(c[0]),Y(c[1]),X(b[0]),Y(b[1]),'#CBD5M1',1,'3 3')+CIR(X(b[0]),Y(b[1]),6,on?GREEN:TERRA_E,'stroke="#fff" stroke-width="1.5"')+TX(X(b[0])-9,Y(b[1])+4,'P'+(i+1),{fs:9,c:TERRA_E,a:'end'});});
  g+=RC(X(CACO[0])-5,Y(CACO[1])-5,10,10,ORANGE,'rx="2"');
  $('fig').innerHTML=SVG(340,240,g);
  $('tb').innerHTML=d.map((v,i)=>'<span style="display:inline-block;margin:2px 8px 2px 0">H'+(i+1)+': <b>'+r2(v)+' m</b> '+(Math.abs(v-r)<0.05?'✔ sobre':v<r?'dentro':'fora')+'</span>').join('');
