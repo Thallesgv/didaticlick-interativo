@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mexendo no triângulo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Mexendo no triângulo</h1></header>
+<main>
+<div class="card"><h2>Quatro movimentos</h2><p class="muted" style="margin-top:0">O triângulo cheio é o original. Escolha o movimento e ajuste o controle: a cópia (laranja) muda de lugar. A missão mostra, tracejado, onde a cópia tem de cair.</p>
+<div id="cm" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b id="la">Distância</b><input type="range"><span></span></div>
+<div class="kpi"><div>Regra<b id="kr" style="font-size:15px"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o movimento.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let mv=0;const NOMES=['Translação','Reflexão','Meia-volta','Deslize'];chips('cm',NOMES,0,i=>{mv=i;$('la').textContent=['Distância','Espelho em x =','Centro em x =','Distância'][i];draw();});
+const A=SL('sa',-6,6,0.5,1,()=>draw(),v=>vg(v));
+const TRI=[[0,0],[2,0],[0,2]];
+const ap=(p)=>{const a=A.get();return mv==0?[p[0]+a,p[1]]:mv==1?[2*a-p[0],p[1]]:mv==2?[2*a-p[0],-p[1]]:[p[0]+a,-p[1]];};
+const ALVO=[[[4,0],[6,0],[4,2]],[[5,0],[3,0],[5,2]],[[5,0],[3,0],[5,-2]],[[3,0],[5,0],[3,-2]]];
+const bate=k=>TRI.map(ap).every((p,i)=>Math.abs(p[0]-ALVO[k][i][0])<1e-9&&Math.abs(p[1]-ALVO[k][i][1])<1e-9);
+MIS.def(()=>[
+ ['Com uma <b>translação</b>, leve o triângulo até o tracejado.',()=>mv==0&&bate(0),'Translação de 4: (x; y) → (x + 4; y).',()=>mv!=0?'Escolha Translação.':'A cópia está '+vg(A.get())+' à direita. Falta '+vg(4-A.get())+'.'],
+ ['Com uma <b>reflexão</b>, ponha a cópia no tracejado. Onde fica o espelho?',()=>mv==1&&bate(1),'Espelho em x = 2,5: (x; y) → (5 − x; y). O espelho fica no meio do caminho entre os dois.',()=>mv!=1?'Escolha Reflexão.':'Mova o espelho (a linha azul).'],
+ ['Com uma <b>meia-volta</b>, ponha a cópia no tracejado, de cabeça para baixo.',()=>mv==2&&bate(2),'Centro em (2,5; 0): (x; y) → (5 − x; −y). Compare com a reflexão: a mesma posição na horizontal, mas virada para baixo.',()=>mv!=2?'Escolha Meia-volta.':'Mova o centro (o ponto azul).'],
+ ['Com uma <b>reflexão com deslize</b>, ponha a cópia no tracejado.',()=>mv==3&&bate(3),'Espelhar no eixo e deslizar 3: (x; y) → (x + 3; −y). É o movimento do friso p11g.',()=>mv!=3?'Escolha Deslize.':'Deslize agora: '+vg(A.get())+'.']]);
+function draw(){const K=24,X0=150,Y0=150,X=v=>X0+v*K,Y=v=>Y0-v*K;let g=RC(0,0,340,280,'#F8FAFC','rx="10"');
+ for(let i=-6;i<=7;i++)g+=LN(X(i),20,X(i),270,'#EEF1F6',1);for(let j=-5;j<=5;j++)g+=LN(10,Y(j),330,Y(j),'#EEF1F6',1);
+ g+=LN(10,Y0,330,Y0,NAVY,1.2)+LN(X0,20,X0,270,NAVY,1.2);for(let i=-4;i<=6;i+=2)g+=TX(X(i),Y0+14,i,{fs:9,c:GRAY,w:500});
+ const alvo=ALVO[Math.max(0,Math.min(3,mv))];g+=PG(alvo.map(p=>[X(p[0]),Y(p[1])]),'none','stroke="#0E2354" stroke-width="2" stroke-dasharray="5 4"');
+ g+=PG(TRI.map(p=>[X(p[0]),Y(p[1])]),CER,'stroke="#7E4E2E" stroke-width="1"');
+ const a=A.get();if(mv==1)g+=LN(X(a),20,X(a),270,BLUE,2,'6 4');if(mv==2)g+=CIR(X(a),Y0,6,BLUE);if(mv==3)g+=LN(10,Y0,330,Y0,BLUE,2.5,'6 4');
+ g+=PG(TRI.map(ap).map(p=>[X(p[0]),Y(p[1])]),'#FBB57A','stroke="#F7821F" stroke-width="2"');
+ $('fig').innerHTML=SVG(340,280,g);$('kr').textContent=['(x; y) → (x + a; y)','(x; y) → (2a − x; y)','(x; y) → (2a − x; −y)','(x; y) → (x + a; −y)'][mv].replace(/a/g,vg(a)).replace('2'+vg(a),'2 · '+vg(a));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

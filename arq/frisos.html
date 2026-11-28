@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os sete frisos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Os sete frisos</h1></header>
+<main>
+<div class="card"><h2>Ligue as simetrias</h2><p class="muted" style="margin-top:0">Toque nas simetrias para ligar ou desligar. O simulador monta a faixa com o mesmo triângulo, diz qual dos sete frisos ela é e quais simetrias ela ganhou "de brinde".</p>
+<div id="sim" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Friso<b id="kf"></b></div><div class="o">Simetrias que a faixa tem<b id="ks" style="font-size:14px"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ligue as simetrias.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const raio=y=>y<=9?14-8/81*(y-9)*(y-9):y<=17?14-3.5/64*(y-9)*(y-9):10.5+(y-17)*0.5;
+const MOT=[[0.08,0.08],[0.92,0.08],[0.08,0.92]];
+const S={H:false,V:false,R:false,G:false},NS={H:'Reflexão horizontal',V:'Reflexões verticais',R:'Meia-volta',G:'Deslize'};
+function bot(){$('sim').innerHTML=Object.keys(S).map(k=>`<button data-k="${k}" class="${S[k]?'':'alt'}" style="padding:6px 10px;font-size:13px">${S[k]?'✔ ':''}${NS[k]}</button>`).join('');document.querySelectorAll('#sim button').forEach(b=>b.onclick=()=>{S[b.dataset.k]=!S[b.dataset.k];bot();draw();});}
+const TIPOS={p1:[1,[[1,1,0]]],p11g:[2,[[1,1,0],[1,-1,1]]],p1m1:[2,[[1,1,0],[-1,1,2]]],p2:[2,[[1,1,0],[-1,-1,2]]],p2mg:[4,[[1,1,0],[-1,1,2],[1,-1,2],[-1,-1,4]]],p11m:[1,[[1,1,0],[1,-1,0]]],p2mm:[2,[[1,1,0],[1,-1,0],[-1,1,2],[-1,-1,2]]]};
+const TEM={p1:'só translação',p11g:'deslize',p1m1:'verticais',p2:'meias-voltas',p2mg:'verticais, deslize, meias-voltas',p11m:'horizontal (e deslize)',p2mm:'horizontal, verticais, meias-voltas'};
+const tipo=()=>S.H&&(S.V||S.R)?'p2mm':S.H?'p11m':S.V&&(S.G||S.R)?'p2mg':S.G&&S.R?'p2mg':S.V?'p1m1':S.G?'p11g':S.R?'p2':'p1';
+MIS.def(()=>[
+ ['Monte o friso do vaso: triângulos em <b>meia-volta</b>, sem reflexões.',()=>tipo()=='p2'&&!S.H&&!S.V&&!S.G,'p2: o triângulo de cima, girado de 180°, vira o de baixo. É a faixa do vaso do Sambaqui do Bené.',()=>'Agora: '+tipo()+'. Ligue só a meia-volta.'],
+ ['Monte o friso que tem <b>todas as reflexões</b>: o p2mm.',()=>tipo()=='p2mm','Horizontal e verticais juntas: as meias-voltas vêm de brinde, porque os espelhos são perpendiculares.',()=>'Agora: '+tipo()+'.'],
+ ['Monte um friso só com <b>reflexão com deslize</b>.',()=>tipo()=='p11g','p11g: cada triângulo é o anterior espelhado no eixo e deslizado. Como pegadas na areia.',()=>'Agora: '+tipo()+'. Desligue o resto.'],
+ ['Ligue <b>só a reflexão horizontal e o deslize</b>. Que friso aparece? Por quê?',()=>S.H&&S.G&&!S.V&&!S.R,'Dá p11m: com a reflexão horizontal, qualquer translação já é um deslize. O deslize não acrescenta nada: são só sete frisos.',()=>'Ligue Reflexão horizontal e Deslize, e só eles.']]);
+function draw(){const t=tipo(),[cel,ops]=TIPOS[t];let g=RC(0,0,340,180,'#F8FAFC','rx="10"');
+ const w=22,h=30,yc=90,x0=10;g+=RC(0,yc-h-8,340,2*h+16,'#FFF7EC');
+ for(let k=0;k*cel*w<330;k++)ops.forEach(o=>{const pts=MOT.map(m=>[x0+k*cel*w+(o[0]*m[0]+o[2])*w,yc-o[1]*m[1]*h]);if(Math.max(...pts.map(p=>p[0]))<=332)g+=PG(pts,t=='p2'?'#F7821F':'#C8693A');});
+ g+=LN(0,yc,340,yc,'#9AA3B2',1,'4 3');g+=TX(170,170,'o mesmo triângulo, repetido pelas simetrias',{fs:10,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,180,g);$('kf').textContent=t;$('ks').textContent=TEM[t];MIS.ver('m');}
+bot();draw();
+})();
+</script>
+</body>
+</html>

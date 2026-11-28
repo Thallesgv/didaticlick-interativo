@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Girar e fatiar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Girar e fatiar</h1></header>
+<main>
+<div class="card"><h2>Volume por fatias</h2><p class="muted" style="margin-top:0">Escolha o sólido e o número de fatias. Cada fatia é um cilindro com o raio do meio dela; a soma dos volumes se aproxima do volume de verdade.</p>
+<div id="cs" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Fatias</b><input type="range"><span></span></div>
+<div class="kpi"><div>Soma das fatias<b id="ks"></b></div><div class="o">Volume certo<b id="kv"></b></div></div>
+<div class="kpi"><div>Diferença<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o número de fatias.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const raio=y=>y<=9?14-8/81*(y-9)*(y-9):y<=17?14-3.5/64*(y-9)*(y-9):10.5+(y-17)*0.5;
+const MOT=[[0.08,0.08],[0.92,0.08],[0.08,0.92]];
+let so=0;chips('cs',['Cilindro','Cone','Vaso'],0,i=>{so=i;draw();});
+const NF=SL('sn',1,40,1,4,()=>draw(),v=>v);
+const RR=[y=>12,y=>12*(1-y/20),raio];const EX=[Math.PI*144*20,Math.PI*144*20/3,9153.7];
+const soma=()=>{const n=NF.get(),h=20/n;let s=0;for(let i=0;i<n;i++){const r=RR[so]((i+0.5)*h);s+=Math.PI*r*r*h;}return s;};
+const err=()=>Math.abs(soma()-EX[so])/EX[so]*100;
+MIS.def(()=>[
+ ['Escolha o <b>cilindro</b> com <b>1 fatia</b>. A soma já dá o volume certo?',()=>so==0&&NF.get()==1,'Sim: o cilindro tem o mesmo raio em toda altura, então uma fatia é ele inteiro. π · 12² · 20 ≈ 9.048 cm³.',()=>so!=0?'Escolha o cilindro.':'Ponha 1 fatia.'],
+ ['Escolha o <b>cone</b> e use pelo menos <b>30 fatias</b>. Compare com o cilindro.',()=>so==1&&NF.get()>=30,'O cone chega perto de 3.016 cm³: um terço do cilindro de mesma base e altura.',()=>so!=1?'Escolha o cone.':'Fatias: '+NF.get()+'. Use 30 ou mais.'],
+ ['Escolha o <b>vaso</b> com <b>4 fatias</b> de 5 cm.',()=>so==2&&NF.get()==4,'Cerca de 9.105 cm³, como no exemplo do livro: só 0,5% abaixo do volume certo.',()=>so!=2?'Escolha o vaso.':'Fatias: '+NF.get()+'. Ponha 4.'],
+ ['No <b>vaso</b>, ache um número de fatias com erro <b>menor que 0,1%</b>.',()=>so==2&&err()<0.1,'Com fatias finas, a soma praticamente não muda: o volume do vaso é cerca de 9.154 cm³, uns 9,2 litros por fora.',()=>so!=2?'Escolha o vaso.':'Erro agora: '+fmt(r2(err()))+'%.']]);
+function draw(){const n=NF.get(),h=20/n,K=11,cx=170,Y0=270;let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ for(let i=0;i<n;i++){const r=RR[so]((i+0.5)*h);g+=RC(cx-r*K,Y0-(i+1)*h*K,2*r*K,h*K,'#F2D2B6','stroke="#C8693A" stroke-width="1"');}
+ const pr=[],pl=[];for(let y=0;y<=20;y+=0.25){pr.push([cx+RR[so](y)*K,Y0-y*K]);pl.push([cx-RR[so](y)*K,Y0-y*K]);}
+ g+=PL(pr,NAVY,2)+PL(pl,NAVY,2)+LN(cx,Y0+8,cx,Y0-20*K-12,GRAY,1,'4 3')+TX(cx,Y0-20*K-16,'eixo',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,300,g);$('ks').textContent=fmt(Math.round(soma()))+' cm³';$('kv').textContent=fmt(Math.round(EX[so]))+' cm³';$('ke').textContent=fmt(r2(err()))+'%';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

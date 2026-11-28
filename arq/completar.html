@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Completando o friso · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Completando o friso</h1></header>
+<main>
+<div class="card"><h2>A volta tem que fechar</h2><p class="muted" style="margin-top:0">O anel é a faixa do vaso vista de cima, com contorno de 79,4 cm. Escolha quantas repetições ela tem: com o número certo, cada repetição mede o mesmo que nos cacos (6,6 cm). Depois, gire o segundo grupo de cacos até o lugar dele.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Repetições na volta</b><input type="range"><span></span></div>
+<div class="sl" id="sg"><b>Giro do 2º grupo de cacos</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button class="alt" id="rec">Reconstruir o que falta</button></div>
+<div class="kpi"><div>Cada repetição<b id="kp"></b></div><div class="o">Giro que deixa igual<b id="ka"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o número de repetições.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NN=SL('sn',6,18,1,9,()=>draw(),v=>v),GG=SL('sg',0,330,30,0,()=>draw(),v=>v+'°');let rec=false;
+$('rec').onclick=()=>{rec=!rec;$('rec').textContent=rec?'Esconder a reconstrução':'Reconstruir o que falta';draw();};
+const per=()=>79.4/NN.get();
+MIS.def(()=>[
+ ['Ache o número de repetições em que cada uma mede cerca de <b>6,6 cm</b>, como nos cacos.',()=>NN.get()==12,'12 repetições: 79,4 ÷ 12 ≈ 6,6 cm. Cada uma ocupa 30° da volta.',()=>'Com '+NN.get()+', cada repetição mede '+fmt(r2(per()))+' cm.'],
+ ['O 1º grupo de cacos tem 3 repetições, a partir da 1ª. O 2º grupo, de 2 repetições, começa na <b>6ª</b>. Gire o 2º grupo até o lugar dele.',()=>NN.get()==12&&GG.get()==150,'5 repetições depois da 1ª: 5 × 30° = 150°.',()=>NN.get()!=12?'Volte para 12 repetições.':'Giro agora: '+GG.get()+'°.'],
+ ['Toque em <b>Reconstruir o que falta</b>. Quantas repetições foram deduzidas pela simetria?',()=>NN.get()==12&&GG.get()==150&&rec,'Faltavam 7 das 12 (58%). Tracejado, como nas reconstruções de verdade: quem olha sabe o que foi achado e o que foi deduzido.',()=>!rec?'Toque no botão Reconstruir.':'Mantenha 12 repetições e o giro de 150°.'],
+ ['E se o oleiro tivesse feito repetições de cerca de <b>10 cm</b>? Ache quantas caberiam na volta.',()=>NN.get()==8,'8 repetições de 9,9 cm. Qualquer inteiro fecha a volta; o que muda é o tamanho de cada repetição. Por isso o tamanho medido no caco decide.',()=>'Com '+NN.get()+', cada uma mede '+fmt(r2(per()))+' cm.']]);
+function draw(){const n=NN.get(),cx=170,cy=150,R1=130,R2=95;let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ g+=CIR(cx,cy,R1,'none','stroke="#D1D5DB" stroke-width="1.5"')+CIR(cx,cy,R2,'none','stroke="#D1D5DB" stroke-width="1.5"');
+ const g1=[0,1,2],g2off=Math.round(GG.get()/(360/n)),g2=[0,1].map(i=>i+GG.get()/(360/n));
+ const seg=(i,cheio,cor)=>{const a0=(-90+i*360/n)*Math.PI/180,a1=(-90+(i+1)*360/n)*Math.PI/180,P=(r,a)=>[cx+r*Math.cos(a),cy+r*Math.sin(a)];
+  const t1=[P(R1,a0),P(R1,a1),P(R2,a0)],t2=[P(R2,a1),P(R2,a0),P(R1,a1)];
+  return cheio?PG(t1,cor[0])+PG(t2,cor[1]):PG(t1,'none','stroke="'+cor[0]+'" stroke-width="1.2" stroke-dasharray="4 3"')+PG(t2,'none','stroke="'+cor[1]+'" stroke-width="1.2" stroke-dasharray="4 3"');};
+ const ocup=new Set();g1.forEach(i=>{g+=seg(i,true,['#C8693A','#F7821F']);ocup.add(i);});
+ g2.forEach(i=>{g+=seg(i,true,['#8C5A2E','#E59B4E']);ocup.add(Math.round(i)%n);});
+ if(rec)for(let i=0;i<n;i++)if(!ocup.has(i))g+=seg(i,false,['#C8693A','#F7821F']);
+ g+=TX(cx,cy-4,'boca',{fs:12,c:NAVY})+TX(cx,cy+12,'vista de cima',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,300,g);$('kp').textContent=fmt(r2(per()))+' cm';$('ka').textContent=fmt(r1(360/n))+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
