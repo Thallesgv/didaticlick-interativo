@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As seções · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>As seções</h1></header>
+<main>
+<div class="card"><h2>Volume fatia por fatia</h2><p class="muted" style="margin-top:0">Mude a área de cada uma das sete seções transversais, a cada 10 m (arraste ou use − e +). Cada faixa é um “trapézio de volume”: a média das duas seções vezes 10 m. O volume total é a soma.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s0"><b>Seção a 0 m</b><input type="range"><span></span></div><div class="sl" id="s1"><b>Seção a 10 m</b><input type="range"><span></span></div><div class="sl" id="s2"><b>Seção a 20 m</b><input type="range"><span></span></div><div class="sl" id="s3"><b>Seção a 30 m</b><input type="range"><span></span></div><div class="sl" id="s4"><b>Seção a 40 m</b><input type="range"><span></span></div><div class="sl" id="s5"><b>Seção a 50 m</b><input type="range"><span></span></div><div class="sl" id="s6"><b>Seção a 60 m</b><input type="range"><span></span></div><div class="kpi"><div>Volume (trapézios)<b id="k1"></b></div><div>Média simples × 60<b id="k2"></b></div><div class="o">Diferença<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const S=[0,1,2,3,4,5,6].map(i=>SL('s'+i,0,200,2,40,()=>draw(),v=>v+' m²'));
+const g_=()=>S.map(s=>s.get()),Vt=()=>{const a=g_();let v=0;for(let i=0;i<6;i++)v+=(a[i]+a[i+1])/2*10;return v;},Vm=()=>g_().reduce((x,y)=>x+y,0)/7*60;
+const DR=[136,102,70,44,24,12,0];
+MIS.def(()=>[
+ ['Ponha as seções do drone: <b>136, 102, 70, 44, 24, 12 e 0 m²</b>.',()=>g_().every((v,i)=>v==DR[i]),'3 200 m³. A média simples daria 3 326: as pontas contam pela metade.',()=>'Volume agora: '+fmt(Vt())+' m³.'],
+ ['Faça <b>3 000 m³</b> com <b>todas as seções iguais</b>.',()=>g_().every(v=>v==g_()[0])&&Vt()==3000,'50 m² em todas: um prisma de 50 m² × 60 m. Com seções iguais, as duas contas dão o mesmo.',()=>'Volume: '+fmt(Vt())+' m³.'],
+ ['Volte às seções do drone, mas com a do topo medida errado: <b>160</b> em vez de 136.',()=>g_().every((v,i)=>i==0?v==160:v==DR[i]),'3 320 m³: um erro de 24 m² na seção do topo vira 120 m³ a mais (meia fatia × 24 × 10).',()=>'Seção do topo: '+S[0].get()+' m².']]);
+function draw(){const W=340,H=210,gx=40,gy=180,gw=280,gh=150,X=x=>gx+x/60*gw,Y=s=>gy-s/200*gh,a=g_();let g=RC(0,0,W,H,'#fff','rx="10"');
+ for(const s of [0,50,100,150,200])g+=LN(gx,Y(s),gx+gw,Y(s),'#EEF0F4',1)+TX(gx-4,Y(s)+3,s,{fs:8,a:'end',c:GRAY});
+ for(let i=0;i<6;i++)g+=PG([[X(i*10),Y(0)],[X(i*10),Y(a[i])],[X(i*10+10),Y(a[i+1])],[X(i*10+10),Y(0)]],i%2?'#EBCBA6':TERRA,'stroke="'+TERRA_E+'"')+TX(X(i*10+5),gy-6,fmt((a[i]+a[i+1])*5),{fs:8,c:TERRA_E});
+ a.forEach((s,i)=>{g+=CIR(X(i*10),Y(s),4,NAVY)+TX(X(i*10),gy+14,i*10+' m',{fs:8,c:GRAY});});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=fmt(Vt())+' m³';$('k2').textContent=fmt(Math.round(Vm()))+' m³';$('k3').textContent=fmt(Math.round(Vm()-Vt()))+' m³';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

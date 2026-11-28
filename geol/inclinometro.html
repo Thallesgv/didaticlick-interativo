@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O inclinômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O inclinômetro</h1></header>
+<main>
+<div class="card"><h2>O tubo que sente o solo andar</h2><p class="muted" style="margin-top:0">Mude a profundidade da superfície de ruptura, a inclinação do trecho que a atravessa, o comprimento de cada trecho do tubo e os dias desde a última leitura (arraste ou use − e +). O tubo entorta (exagerado na tela) só no trecho da ruptura; acima dele, o solo anda junto.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="p"><b>Profundidade da ruptura</b><input type="range"><span></span></div><div class="sl" id="a"><b>Inclinação do trecho</b><input type="range"><span></span></div><div class="sl" id="l"><b>Comprimento do trecho</b><input type="range"><span></span></div><div class="sl" id="d"><b>Dias desde a leitura</b><input type="range"><span></span></div><div class="kpi"><div>Deslocamento<b id="k1"></b></div><div>Velocidade<b id="k2"></b></div><div class="o">Alerta (> 2 mm/dia)<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EQ=(a,b)=>Math.abs(a-b)<1e-6;
+const PP=SL('p',1,19,1,10,()=>draw(),v=>v+' m'),AA=SL('a',0,3,0.1,0.2,()=>draw(),v=>vg(Math.round(v*10)/10)+'°'),LL=SL('l',0.5,2,0.5,1,()=>draw(),v=>vg(v)+' m'),DD=SL('d',1,30,1,3,()=>draw(),v=>v+(v==1?' dia':' dias'));
+const dm=()=>LL.get()*1000*Math.sin(AA.get()*RAD),ve=()=>dm()/DD.get();
+MIS.def(()=>[
+ ['A leitura do Davi: ruptura a <b>6 m</b>, trecho de <b>1 m</b> inclinado <b>0,6°</b>, <b>7 dias</b>.',()=>PP.get()==6&&EQ(AA.get(),0.6)&&EQ(LL.get(),1)&&DD.get()==7,'10,5 mm em 7 dias: 1,5 mm/dia, abaixo do alerta.',()=>'Agora: '+PP.get()+' m, '+vg(Math.round(AA.get()*10)/10)+'°, '+vg(LL.get())+' m, '+DD.get()+' dias.'],
+ ['Com trecho de 1 m e 7 dias, ache a <b>menor inclinação</b> que acende o alerta (mais de 2 mm/dia).',()=>EQ(LL.get(),1)&&DD.get()==7&&ve()>2&&(1000*Math.sin((AA.get()-0.1)*RAD))/7<=2,()=>vg(Math.round(AA.get()*10)/10)+'°: '+r1(dm())+' mm em 7 dias = '+r1(ve())+' mm/dia.',()=>LL.get()!=1||DD.get()!=7?'Ponha trecho de 1 m e 7 dias.':'Agora: '+r1(ve())+' mm/dia.'],
+ ['Ponha a ruptura <b>a 15 m</b>. O deslocamento muda?',()=>PP.get()==15,'Não: o deslocamento depende só do trecho que entortou. Mas a 15 m o volume que pode descer seria muito maior.',()=>'A ruptura está a '+PP.get()+' m.']]);
+function draw(){const W=340,H=250,x0=110,top=20,k=11,p=PP.get(),off=Math.min(60,dm()*2.2);let g=RC(0,0,W,H,'#fff','rx="10"');
+ g+=RC(40,top,150,p*k,TERRA)+RC(40,top+p*k,150,(20-p)*k,'#C9CED8')+LN(40,top+p*k,190,top+p*k,VERM,1.5,'4 3')+TX(194,top+p*k+4,'ruptura a '+p+' m',{fs:9,a:'start',c:VERM});
+ const tl=LL.get()*k;g+=PL([[x0+off,top],[x0+off,top+p*k-tl],[x0,top+p*k],[x0,top+20*k]],NAVY,4)+PL([[x0,top],[x0,top+20*k]],'#9DB3D9',1,'3 3');
+ for(const m of [0,5,10,15,20])g+=TX(36,top+m*k+3,m+' m',{fs:8,a:'end',c:GRAY});
+ if(off>2)g+=LN(x0+off+6,top+20,x0+off+26,top+20,ORANGE,2)+PG([[x0+off+26,top+16],[x0+off+33,top+20],[x0+off+26,top+24]],ORANGE,'');
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=r1(dm())+' mm';$('k2').textContent=r2(ve())+' mm/dia';$('k3').textContent=ve()>2?'sim':'não';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

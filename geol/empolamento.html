@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O empolamento · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O empolamento</h1></header>
+<main>
+<div class="card"><h2>A terra que incha</h2><p class="muted" style="margin-top:0">Mude o volume no lugar, o fator de empolamento e a densidade do solo no morro (arraste ou use − e +). O cubo da esquerda é a terra no morro; o da direita, a mesma terra solta. A massa não muda.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="v"><b>Volume no lugar</b><input type="range"><span></span></div><div class="sl" id="f"><b>Fator de empolamento</b><input type="range"><span></span></div><div class="sl" id="d"><b>Densidade no morro</b><input type="range"><span></span></div><div class="kpi"><div>Volume solto<b id="k1"></b></div><div>Massa<b id="k2"></b></div><div class="o">Densidade solta<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const EQ=(a,b)=>Math.abs(a-b)<1e-6;
+const VV=SL('v',100,5000,100,1000,()=>draw(),v=>fmt(v)+' m³'),FF=SL('f',1,1.6,0.01,1.1,()=>draw(),v=>fmt(Math.round(v*100)/100)),DD=SL('d',1.4,2.2,0.1,1.6,()=>draw(),v=>fmt(Math.round(v*10)/10)+' t/m³');
+const Vs=()=>VV.get()*FF.get(),M=()=>VV.get()*DD.get();
+MIS.def(()=>[
+ ['A terra do Morro do Cruzeiro: <b>3 200 m³</b> com fator <b>1,25</b>.',()=>VV.get()==3200&&EQ(FF.get(),1.25),'4 000 m³ soltos: 800 m³ de ar a mais.',()=>'Agora: '+fmt(VV.get())+' m³ com fator '+fmt(Math.round(FF.get()*100)/100)+'.'],
+ ['E se fosse <b>rocha de gnaisse detonada</b>, com fator <b>1,5</b>? (3 200 m³)',()=>VV.get()==3200&&EQ(FF.get(),1.5),'4 800 m³: a rocha quebrada deixa vãos maiores que a terra.',()=>'Volume solto: '+fmt(Math.round(Vs()))+' m³.'],
+ ['Calcule a massa que desceu: <b>3 200 m³</b> com <b>1,8 t/m³</b>.',()=>VV.get()==3200&&EQ(DD.get(),1.8),'5 760 toneladas: soltar a terra não muda a massa.',()=>'Massa agora: '+fmt(Math.round(M()))+' t.']]);
+function cubo(x,y,s,cor){const d=s*0.4;return PG([[x,y-s],[x+s,y-s],[x+s+d,y-s-d],[x+d,y-s-d]],'#F7E3C9','stroke="'+NAVY+'"')+PG([[x+s,y],[x+s+d,y-d],[x+s+d,y-s-d],[x+s,y-s]],'#D9A877','stroke="'+NAVY+'"')+RC(x,y-s,s,s,cor,'stroke="'+NAVY+'"');}
+function draw(){const W=340,H=220,mx=5000*1.6,s1=150*Math.cbrt(VV.get()/mx),s2=150*Math.cbrt(Vs()/mx);let g=RC(0,0,W,H,'#fff','rx="10"');
+ g+=cubo(20,190,s1,'#E8B98A')+cubo(180,190,s2,'#F2D0A8');for(let k=0;k<Math.round((FF.get()-1)*30);k++){const a=(k*37)%97/97,b=(k*61)%89/89;g+=CIR(180+a*s2,190-b*s2,1.8,'#fff');}
+ g+=TX(20+s1/2,208,'no morro',{fs:9,c:NAVY})+TX(180+s2/2,208,'solta',{fs:9,c:NAVY})+TX(170,20,fmt(Math.round(M()))+' t nos dois',{fs:11,c:VERDE});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=fmt(Math.round(Vs()))+' m³';$('k2').textContent=fmt(Math.round(M()))+' t';$('k3').textContent=fmt(Math.round(DD.get()/FF.get()*100)/100)+' t/m³';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

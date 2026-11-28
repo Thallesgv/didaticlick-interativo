@@ -184,7 +184,30 @@ const LIV={'geo1':{T:["Inclinação: ângulo e porcentagem", "A tangente da enco
  if(t==0){const d=R(1,6),h=P([3,4,6,8,12,24]);return{q:`A trinca abriu <b>${d} mm</b> em <b>${h} horas</b>. Qual a velocidade, em mm por dia?`,a:d*24/h,exp:`${d} × 24 ÷ ${h} = ${fmt(d*24/h)} mm/dia.`};}
  const c1=R(0,60),c24=R(20,140),c96=R(40,200),tr=P([1,1.5,2,3,5,8]);const n=(c1>=30)+(c24>=70)+(c96>=110),ac=tr>2;
  const lv=n==3||(n==2&&ac)?3:(n==2||(n==1&&ac)?2:(n==1?1:0)),NOM=['Observação','Atenção','Alerta','Alerta máximo'];
- return{q:`Chuva: <b>${c1}</b> mm em 1 h, <b>${c24}</b> em 24 h, <b>${c96}</b> em 96 h; trinca a <b>${fmt(tr)} mm/dia</b>. Qual o nível? (limiares 30/70/110; trinca acelerando: mais de 2 mm/dia)`,opts:NOM,a:NOM[lv],exp:`${n} limiar(es) passado(s); trinca ${ac?'acelerando':'normal'}: ${NOM[lv]}.`};}}}};
+ return{q:`Chuva: <b>${c1}</b> mm em 1 h, <b>${c24}</b> em 24 h, <b>${c96}</b> em 96 h; trinca a <b>${fmt(tr)} mm/dia</b>. Qual o nível? (limiares 30/70/110; trinca acelerando: mais de 2 mm/dia)`,opts:NOM,a:NOM[lv],exp:`${n} limiar(es) passado(s); trinca ${ac?'acelerando':'normal'}: ${NOM[lv]}.`};}}},'geo8':{T:["A área da cicatriz", "O prisma e a profundidade média", "Seções e Cavalieri", "Empolamento", "O leque e o alcance", "A conta da limpeza", "Sensores"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const B=R(10,80),b=R(4,B),h=R(1,10)*5;return{q:`Trapézio de bases <b>${B} m</b> e <b>${b} m</b> e altura <b>${h} m</b>. Qual a área, em m²?`,a:(B+b)/2*h,exp:`(${B} + ${b}) ÷ 2 × ${h} = ${fmt((B+b)/2*h)} m².`};}
+ if(t==1){const L=[R(40,70)];for(let i=0;i<3;i++)L.push(Math.max(4,L[i]-R(0,12)));const a=10*((L[0]+L[1])/2+(L[1]+L[2])/2+(L[2]+L[3])/2);return{q:`Larguras a cada 10 m: <b>${L.join(', ')} m</b>. Qual a área pela regra dos trapézios?`,a,exp:`10 × [${L[0]}/2 + ${L[1]} + ${L[2]} + ${L[3]}/2] = ${fmt(a)} m².`};}
+ const A=R(5,40)*100;return{q:`No mapa 1:2 000 (1 cm² = 400 m²), quantos cm² ocupa uma mancha de <b>${fmt(A)} m²</b>?`,a:A/400,exp:`${fmt(A)} ÷ 400 = ${fmt(A/400)} cm².`};},
+2:()=>{const t=R(0,1);
+ if(t==0){const c=R(2,12),l=R(1,6),h=R(1,4);return{q:`Uma caixa de <b>${c} m × ${l} m × ${h} m</b>. Qual o volume, em m³?`,a:c*l*h,exp:`${c} × ${l} × ${h} = ${c*l*h} m³.`};}
+ const A=R(10,40)*100,h=R(5,30)/10,V=Math.round(A*h);return{q:`Uma cicatriz de <b>${fmt(A)} m²</b> com volume de <b>${fmt(V)} m³</b>. Qual a profundidade média, em m? (uma casa)`,a:Math.round(V/A*10)/10,tol:0.06,exp:`${fmt(V)} ÷ ${fmt(A)} ≈ ${fmt(Math.round(V/A*10)/10)} m.`};},
+3:()=>{const t=R(0,1);
+ if(t==0){const a=R(10,150),b=R(0,a),d=P([5,10,20]);return{q:`Seções de <b>${a} m²</b> e <b>${b} m²</b>, a <b>${d} m</b> uma da outra. Qual o volume entre elas, em m³?`,a:(a+b)/2*d,exp:`(${a} + ${b}) ÷ 2 × ${d} = ${fmt((a+b)/2*d)} m³.`};}
+ const s=R(10,80),L=R(2,10)*10;return{q:`Um sólido de <b>${L} m</b> tem todas as seções com <b>${s} m²</b>. Qual o volume?`,a:s*L,exp:`Cavalieri: é como um prisma: ${s} × ${L} = ${fmt(s*L)} m³.`};},
+4:()=>{const t=R(0,2),V=R(5,50)*100;
+ if(t==0){const f=P([1.1,1.12,1.2,1.25,1.3,1.4,1.5]);return{q:`<b>${fmt(V)} m³</b> no lugar, fator de empolamento <b>${fmt(f)}</b>. Volume solto?`,a:Math.round(V*f),tol:1,exp:`${fmt(V)} × ${fmt(f)} = ${fmt(Math.round(V*f))} m³.`};}
+ if(t==1){const d=P([1.6,1.7,1.8,1.9,2]);return{q:`Qual a massa, em toneladas, de <b>${fmt(V)} m³</b> com densidade <b>${fmt(d)} t/m³</b>?`,a:Math.round(V*d),tol:1,exp:`${fmt(V)} × ${fmt(d)} = ${fmt(Math.round(V*d))} t.`};}
+ const d=1.8,f=P([1.2,1.25,1.5]);return{q:`Solo de <b>1,8 t/m³</b> com fator <b>${fmt(f)}</b>. Qual a densidade solta, em t/m³? (duas casas)`,a:Math.round(d/f*100)/100,tol:0.006,exp:`1,8 ÷ ${fmt(f)} ≈ ${fmt(Math.round(d/f*100)/100)} t/m³.`};},
+5:()=>{const t=R(0,1);
+ if(t==0){const r=R(5,40),h=R(10,50)/10,fr=P([1,0.5,0.25]),v=Math.round(fr*Math.PI*r*r*h/3);return{q:`${fr==1?'Um cone':fr==0.5?'Meio cone':'Um quarto de cone'} de raio <b>${r} m</b> e altura <b>${fmt(h)} m</b>. Volume, em m³? (inteiro; π ≈ 3,14)`,a:v,tol:Math.max(2,v*0.005),exp:`${fr==1?'':fmt(fr)+' × '}⅓ × π × ${r}² × ${fmt(h)} ≈ ${fmt(v)} m³.`};}
+ const H=R(10,80),L=R(Math.ceil(H*1.5),H*4);return{q:`A terra caiu <b>${H} m</b> e correu <b>${L} m</b> na horizontal. Qual o H ÷ L? (três casas)`,a:Math.round(H/L*1000)/1000,tol:0.0011,exp:`${H} ÷ ${L} ≈ ${fmt(Math.round(H/L*1000)/1000)}.`};},
+6:()=>{const t=R(0,1),V=R(5,50)*100,c=P([8,10,12,14,16]);
+ if(t==0)return{q:`Quantas viagens de caçamba de <b>${c} m³</b> para <b>${fmt(V)} m³</b> de terra solta?`,a:Math.ceil(V/c),exp:`${fmt(V)} ÷ ${c} = ${fmt(Math.round(V/c*100)/100)} → ${Math.ceil(V/c)} (para cima).`};
+ const v=R(50,400),n=R(2,8),m=P([30,40,45,60]);const vo=Math.ceil(v/n),h=vo*m/60;return{q:`<b>${v}</b> viagens, <b>${n}</b> caminhões, <b>${m} min</b> por volta, turno de 10 h. Quantos dias?`,a:Math.ceil(h/10-1e-9),exp:`${v} ÷ ${n} → ${vo} voltas; × ${m} min = ${fmt(Math.round(h*10)/10)} h → ${Math.ceil(h/10-1e-9)} dias.`};},
+7:()=>{const t=R(0,2);
+ if(t==0){const a=P([0.2,0.3,0.4,0.5,0.6,0.8,1]),S={0.2:0.0035,0.3:0.0052,0.4:0.007,0.5:0.0087,0.6:0.0105,0.8:0.014,1:0.0175};return{q:`Um trecho de 1 m do inclinômetro inclinou <b>${fmt(a)}°</b> (sen ≈ ${fmt(S[a])}). Quantos mm deslocou? (uma casa)`,a:Math.round(S[a]*10000)/10,tol:0.11,exp:`1 000 × ${fmt(S[a])} = ${fmt(Math.round(S[a]*10000)/10)} mm.`};}
+ if(t==1){const m=P([5,10,15,20,30,60]);return{q:`Leituras a cada <b>${m} min</b>: quantas por dia?`,a:1440/m,exp:`24 × 60 ÷ ${m} = ${1440/m}.`};}
+ const mm=R(1,12)/10;return{q:`A trinca abre <b>${fmt(mm)} mm por hora</b>. Quantos mm por dia? (uma casa)`,a:Math.round(mm*24*10)/10,tol:0.06,exp:`${fmt(mm)} × 24 = ${fmt(Math.round(mm*240)/10)} mm/dia${mm*24>2?': aciona o alerta.':'.'}`};}}}};
 const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='geo1';const {T,G}=LIV[l];
 let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
 function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');

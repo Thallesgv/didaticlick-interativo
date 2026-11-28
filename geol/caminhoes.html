@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os caminhões · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Os caminhões</h1></header>
+<main>
+<div class="card"><h2>A conta da limpeza</h2><p class="muted" style="margin-top:0">Mude o volume de terra solta, o tamanho da caçamba, o número de caminhões e o tempo de cada volta (arraste ou use − e +). O turno é de 10 horas por dia. Cada quadradinho é uma viagem; as cores mostram o dia em que ela acontece.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="v"><b>Terra solta</b><input type="range"><span></span></div><div class="sl" id="c"><b>Caçamba</b><input type="range"><span></span></div><div class="sl" id="n"><b>Caminhões</b><input type="range"><span></span></div><div class="sl" id="t"><b>Tempo de uma volta</b><input type="range"><span></span></div><div class="kpi"><div>Viagens<b id="k1"></b></div><div>Voltas por caminhão<b id="k2"></b></div><div class="o">Dias de 10 h<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VV=SL('v',100,5000,10,2000,()=>draw(),v=>fmt(v)+' m³'),CC=SL('c',6,20,1,10,()=>draw(),v=>v+' m³'),NN=SL('n',1,10,1,2,()=>draw(),v=>v),TT=SL('t',20,120,5,60,()=>draw(),v=>v+' min');
+const vi=()=>Math.ceil(VV.get()/CC.get()-1e-9),vo=()=>Math.ceil(vi()/NN.get()),hr=()=>vo()*TT.get()/60,di=()=>Math.ceil(hr()/10-1e-9);
+MIS.def(()=>[
+ ['Toda a terra: <b>4 000 m³</b>, caçamba de <b>12</b>, <b>5</b> caminhões, <b>45 min</b> por volta.',()=>VV.get()==4000&&CC.get()==12&&NN.get()==5&&TT.get()==45,'334 viagens, 67 voltas, ≈ 50 h: 6 dias.',()=>'Agora: '+fmt(VV.get())+' m³, '+CC.get()+' m³, '+NN.get()+' caminhões, '+TT.get()+' min.'],
+ ['Libere a Rua da Bica (<b>1 320 m³</b>, 45 min) em <b>até 2 dias</b>, agora com caçambas menores, de <b>10 m³</b>, usando o <b>menor</b> número de caminhões.',()=>VV.get()==1320&&CC.get()==10&&TT.get()==45&&di()<=2&&NN.get()==6,'6 caminhões: 132 viagens, 22 voltas, 16,5 h. Com 5, seriam 27 voltas e 20,25 h: passa do segundo dia.',()=>VV.get()!=1320||CC.get()!=10||TT.get()!=45?'Ponha 1 320 m³, caçamba 10 e 45 min.':(di()>2?'Com '+NN.get()+' caminhões: '+di()+' dias.':'Dá em '+di()+' dias. Dá com menos caminhões?')],
+ ['E com caçambas de <b>16 m³</b>? (4 000 m³, 5 caminhões, 45 min)',()=>VV.get()==4000&&CC.get()==16&&NN.get()==5&&TT.get()==45,'250 viagens, 50 voltas, 37,5 h: 4 dias, dois a menos.',()=>'Caçamba agora: '+CC.get()+' m³.']]);
+function draw(){const W=340,H=200,n=vi(),cols=30,sz=Math.max(3,Math.min(10,Math.floor(Math.sqrt(300*170/Math.max(n,1)))-1));let g=RC(0,0,W,H,'#fff','rx="10"');
+ const cor=['#F78D33','#2457D6','#4E9A63','#E0A92A','#9C6B3F','#7D776E'];const per=Math.ceil(NN.get()*Math.floor(600/TT.get()));const pc=Math.max(1,Math.floor(300/(sz+1)));
+ for(let i=0;i<Math.min(n,2000);i++){const x=20+(i%pc)*(sz+1),y=20+Math.floor(i/pc)*(sz+1);if(y>180)break;g+=RC(x,y,sz,sz,cor[Math.min(5,Math.floor(i/Math.max(per,1)))%6]);}
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=fmt(n);$('k2').textContent=fmt(vo())+' ('+fmt(Math.round(hr()*10)/10)+' h)';$('k3').textContent=di();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
