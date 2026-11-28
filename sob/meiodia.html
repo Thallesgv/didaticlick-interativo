@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O dia de uma sombra · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O dia de uma sombra</h1></header>
+<main>
+<div class="card"><h2>Do nascer ao pôr</h2><p class="muted" style="margin-top:0">Arraste a hora (ou use − e +). Em cima, a estaca vista de cima e o caminho da ponta da sombra; embaixo, o comprimento da sombra em cada hora. O relógio está no horário de Brasília, como o do Téo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Hora (Brasília)</b><input type="range"><span></span></div><div class="kpi"><div>Sombra<b id="k1"></b></div><div>Altura do Sol<b id="k2"></b></div><div class="o">Marcas de 80 cm<b id="k3"></b></div></div>
+<div class="row" style="margin-top:8px"><button id="bm">Marcar 80 cm</button><button class="alt" id="bl">Apagar marcas</button></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a hora.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SH=SL('sh',480,1020,1,600,()=>draw(),v=>hm(v));let marcas=[];
+const sl=t=>{const s=teo(t);return 100/Math.tan(s.alt*RAD);};
+$('bm').onclick=()=>{const t=SH.get(),s=sl(t);if(Math.abs(s-80)<=1.5){if(!marcas.some(m=>Math.abs(m-t)<30))marcas.push(t);marcas.sort((a,b)=>a-b);}else{$('aviso').textContent='Agora a sombra tem '+Math.round(s)+' cm. Ache a hora em que ela tem 80 cm (de 79 a 81 cm) para marcar.';}draw();};
+$('bl').onclick=()=>{marcas=[];draw();};
+toque('fig',(x,y)=>{if(y<170)return;SH.set(clamp(Math.round(480+(x-30)/290*540),480,1020));draw();});
+const media=()=>marcas.length>=2?(marcas[0]+marcas[marcas.length-1])/2:null;
+MIS.def(()=>[
+ ['Ache a hora da <b>sombra mais curta</b> (o meio-dia solar).',()=>Math.abs(SH.get()-732)<=4,()=>hm(SH.get())+': sombra de '+Math.round(sl(SH.get()))+' cm. O meio-dia solar é às 12h12, não às 12h00.',()=>'Agora: '+Math.round(sl(SH.get()))+' cm às '+hm(SH.get())+'. Olhe o fundo da curva: a sombra mal muda perto dele, então use os botões − e +.'],
+ ['Marque as <b>duas horas</b> em que a sombra mede 80 cm: uma de manhã e outra à tarde.',()=>marcas.length>=2&&marcas[0]<732&&marcas[marcas.length-1]>732,()=>'Marcas às '+marcas.map(hm).join(' e ')+'.',()=>marcas.length==0?'Nenhuma marca ainda. Procure a hora da manhã em que a sombra tem 80 cm e aperte Marcar.':marcas[0]<732?'Já tem a da manhã ('+hm(marcas[0])+'). Falta a da tarde.':'Já tem a da tarde. Falta a da manhã.'],
+ ['Com as duas marcas, a <b>hora do meio</b> deve dar o meio-dia solar.',()=>media()!==null&&Math.abs(media()-732)<=2,()=>'('+hm(marcas[0])+' + '+hm(marcas[marcas.length-1])+') ÷ 2 = '+hm(media())+'. É o meio-dia solar, achado longe do meio-dia, onde a sombra muda depressa.',()=>media()===null?'Faça a missão anterior primeiro.':'A média deu '+hm(media())+'. Confira as marcas: as duas precisam ser de 80 cm.']]);
+function draw(){const t=SH.get(),s=teo(t),L=100/Math.tan(s.alt*RAD);let g=RC(0,0,340,320,'#F8FAFC','rx="10"')+RC(10,8,320,150,AREIA,'rx="8"');
+ const cx=170,cy=24,k=0.5;const tip=tt=>{const q=teo(tt),l=Math.min(320,100/Math.tan(q.alt*RAD)),a=(q.az+180)*RAD;return[cx+l*k*Math.sin(a),cy-l*k*Math.cos(a)];};
+ for(let tt=480;tt<=1020;tt+=30){const p=tip(tt);if(p[1]<156&&p[0]>12&&p[0]<328)g+=CIR(p[0],p[1],2.5,AREIA_E);}
+ for(const m of marcas){const p=tip(m);g+=CIR(p[0],p[1],5,ORANGE);}
+ const p=tip(t);g+=LN(cx,cy,Math.max(12,Math.min(328,p[0])),Math.min(156,p[1]),ORANGE,4)+CIR(cx,cy,5,MAD)+TX(cx+10,cy+4,'N ↑',{fs:10,a:'start'});
+ const gx=30,gy=300,gw=290,gh=120,ms=300;g+=LN(gx,gy,gx+gw,gy,GRAY,1)+LN(gx,gy,gx,gy-gh,GRAY,1);
+ for(const v of [100,200,300])g+=LN(gx,gy-gh*v/ms,gx+gw,gy-gh*v/ms,GRAYL,1)+TX(gx-3,gy-gh*v/ms+3,v,{fs:8,a:'end',c:GRAY,w:500});
+ for(let h=8;h<=17;h+=1)g+=TX(gx+gw*(h*60-480)/540,gy+12,h+'h',{fs:8,c:GRAY,w:500});
+ let pts=[];for(let tt=480;tt<=t;tt+=4)pts.push([gx+gw*(tt-480)/540,gy-gh*Math.min(ms,sl(tt))/ms]);if(pts.length>1)g+=PL(pts,BLUE,2);
+ g+=LN(gx,gy-gh*80/ms,gx+gw,gy-gh*80/ms,ORANGE,1,'4 3')+TX(gx+gw,gy-gh*80/ms-3,'80 cm',{fs:8,a:'end',c:ORANGE});
+ g+=CIR(gx+gw*(t-480)/540,gy-gh*Math.min(ms,L)/ms,4,ORANGE);
+ $('fig').innerHTML=SVG(340,320,g);
+ $('k1').textContent=Math.round(L)+' cm';$('k2').textContent=r1(s.alt)+'°';$('k3').textContent=marcas.length?marcas.map(hm).join(' · '):'nenhuma';MIS.ver('m');}
+$('m').insertAdjacentHTML('beforebegin','<p class="muted" id="aviso" style="margin:6px 0 0"></p>');
+draw();
+})();
+</script>
+</body>
+</html>

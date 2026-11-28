@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O círculo indiano · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O círculo indiano</h1></header>
+<main>
+<div class="card"><h2>Dois toques e uma bissetriz</h2><p class="muted" style="margin-top:0">Mude o raio do círculo arrastando no chão (ou com − e +). A página mostra onde a ponta da sombra entra e sai do círculo, a bissetriz e a hora do meio.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sr"><b>Raio do círculo</b><input type="range"><span></span></div><div class="kpi"><div>Toque da manhã<b id="k1"></b></div><div>Toque da tarde<b id="k2"></b></div><div class="o">Hora do meio<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o raio.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SR=SL('sr',40,160,1,120,()=>draw(),v=>v+' cm');let usou=new Set();
+const sl=t=>100/Math.tan(teo(t).alt*RAD);
+const cx=170,cy=100,k=0.6;
+toque('fig',(x,y)=>{SR.set(clamp(Math.round(Math.hypot(x-cx,y-cy)/k),40,160));draw();});
+function toques(r){let a=null,b=null;for(let t=420;t<732;t+=0.25)if(sl(t)>=r&&sl(t+0.25)<r){a=t;break;}for(let t=732;t<1080;t+=0.25)if(sl(t)<r&&sl(t+0.25)>=r){b=t;break;}return[a,b];}
+MIS.def(()=>[
+ ['Refaça o círculo do Téo: raio de <b>80 cm</b>.',()=>SR.get()==80,'Toques às 10h44 e 13h40; a bissetriz aponta para o sul e a hora do meio é 12h12.',()=>'O raio está em '+SR.get()+' cm.'],
+ ['Use <b>outro raio, maior que 90 cm</b>, e veja se a linha e a hora do meio mudam.',()=>SR.get()>90,()=>{const[a,b]=toques(SR.get());return 'Toques às '+hm(a)+' e '+hm(b)+': a hora do meio continua '+hm((a+b)/2)+' e a bissetriz continua no sul. A linha não depende do raio.';},()=>'O raio está em '+SR.get()+' cm. Passe de 90.'],
+ ['Agora um raio <b>menor que a sombra do meio-dia</b>. O que acontece?',()=>SR.get()<63,'A ponta da sombra nunca entra no círculo: a menor sombra do dia tem 63 cm. Sem toques, não há método.',()=>'O raio está em '+SR.get()+' cm, e a menor sombra do dia tem 63 cm.']]);
+function draw(){const r=SR.get();let g=RC(0,0,340,260,AREIA,'rx="10"');
+ for(let t=480;t<=1000;t+=20){const q=teo(t),l=sl(t);if(l>170)continue;const a=(q.az+180)*RAD;g+=CIR(cx+l*k*Math.sin(a),cy-l*k*Math.cos(a),2,AREIA_E);}
+ g+=CIR(cx,cy,r*k,'none','stroke="'+BLUE+'" stroke-width="2"');
+ const[ta,tb]=toques(r);
+ if(ta!==null&&tb!==null){const P2=[ta,tb].map(t=>{const q=teo(t),a=(q.az+180)*RAD;return[cx+r*k*Math.sin(a),cy-r*k*Math.cos(a)];});
+  g+=LN(cx,cy,P2[0][0],P2[0][1],ORANGE,3)+LN(cx,cy,P2[1][0],P2[1][1],ORANGE,3)+LN(P2[0][0],P2[0][1],P2[1][0],P2[1][1],NAVY,1,'4 3');
+  const mx=(P2[0][0]+P2[1][0])/2,my=(P2[0][1]+P2[1][1])/2,d=Math.hypot(mx-cx,my-cy)||1;g+=LN(cx-(mx-cx)/d*90,cy-(my-cy)/d*90,cx+(mx-cx)/d*150,cy+(my-cy)/d*150,NAVY,2.5);
+  g+=CIR(P2[0][0],P2[0][1],6,ORANGE)+CIR(P2[1][0],P2[1][1],6,ORANGE)+TX(P2[0][0]-8,P2[0][1]+18,'M',{fs:12,a:'end',c:ORANGE})+TX(P2[1][0]+8,P2[1][1]+18,'T',{fs:12,a:'start',c:ORANGE});
+  g+=TX(cx+6,Math.min(252,cy+150*(my-cy)/d)-4,'S',{fs:12,a:'start'})+TX(cx+6,cy-80,'N',{fs:12,a:'start'});}
+ g+=CIR(cx,cy,5,MAD);
+ $('fig').innerHTML=SVG(340,260,g);
+ $('k1').textContent=ta!==null?hm(ta):'não toca';$('k2').textContent=tb!==null?hm(tb):'não toca';$('k3').textContent=ta!==null&&tb!==null?hm((ta+tb)/2):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

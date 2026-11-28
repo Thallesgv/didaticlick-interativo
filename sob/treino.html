@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'sob1':{T:["A estaca e a sombra", "O meio-dia: a sombra mais curta", "A linha norte-sul", "Semelhança: a altura da árvore", "Sombra para o sul: o que isso prova?", "Ângulos e a rosa dos ventos"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const a=R(15,80);return{q:`Com o Sol a <b>${a}°</b> de altura, quanto mede o ângulo entre a estaca e o raio de Sol, lá em cima?`,a:90-a,exp:`180° − 90° − ${a}° = ${90-a}°.`};}
+ if(t==1){const r=R(30,250)/100,e=P([0.5,1.5,2,2.5,3]);return{q:`Neste momento, a razão sombra ÷ estaca é <b>${fmt(r)}</b>. Qual a sombra de uma vara de <b>${fmt(e)} m</b>? (em metros, duas casas)`,a:Math.round(r*e*100)/100,tol:0.011,exp:`${fmt(e)} × ${fmt(r)} = ${fmt(Math.round(r*e*100)/100)} m.`};}
+ const s=R(40,200),e=P([50,80,100,120,150]);return{q:`Uma estaca de <b>${e} cm</b> faz sombra de <b>${s} cm</b>. Qual a razão sombra ÷ estaca? (duas casas)`,a:Math.round(s/e*100)/100,tol:0.011,exp:`${s} ÷ ${e} ≈ ${fmt(Math.round(s/e*100)/100)}.`};},
+2:()=>{const t=R(0,2);const H=m=>Math.floor(m/60)+'h'+String(m%60).padStart(2,'0');
+ if(t==0){const md=R(700,770),d=R(60,200);return{q:`Sombras iguais às <b>${H(md-d)}</b> e às <b>${H(md+d)}</b>. Quantos minutos depois das 12h00 é o meio-dia solar? (pode ser negativo)`,a:md-720,exp:`Média: ${H(md)}, ou seja, ${md-720} min em relação às 12h00.`};}
+ if(t==1){const m=R(4,40);return{q:`Em <b>${m} minutos</b>, quantos graus a Terra gira?`,a:m/4,tol:0.001,exp:`360° ÷ 1 440 min = 0,25° por minuto: ${m} × 0,25 = ${fmt(m/4)}°.`};}
+ const md=R(700,770),d=R(60,200);return{q:`O meio-dia solar é às <b>${H(md)}</b>. A sombra de <b>${H(md-d)}</b> tem a mesma medida que a de que horas? Responda em minutos depois da meia-noite.`,a:md+d,exp:`${d} min antes ↔ ${d} min depois: ${H(md+d)} = ${md+d} min.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const b=R(0,1)?180:0,d=R(15,70);const a1=(b+d+360)%360,a2=(b-d+360)%360;return{q:`As duas sombras iguais apontaram para os rumos <b>${a1}°</b> e <b>${a2}°</b>. Qual o rumo da bissetriz (a sombra do meio-dia)?`,a:b,exp:`A bissetriz fica no meio: ${b}°.`};}
+ if(t==1){const a=R(20,160);return{q:`Qual a medida de cada metade de um ângulo de <b>${a}°</b> dividido pela bissetriz?`,a:a/2,tol:0.001,exp:`${a} ÷ 2 = ${fmt(a/2)}°.`};}
+ return P([{q:'Os toques M e T estão no mesmo círculo em volta da estaca. O triângulo estaca-M-T é:',opts:['isósceles','retângulo sempre','equilátero sempre'],a:'isósceles',exp:'Dois lados são raios.'},{q:'O raio do círculo precisa ser:',opts:['maior que a sombra do meio-dia','menor que a sombra do meio-dia','igual à estaca'],a:'maior que a sombra do meio-dia',exp:'Senão a sombra nunca toca o círculo.'},{q:'De frente para o nascente, o norte fica:',opts:['à esquerda','à direita','atrás'],a:'à esquerda',exp:'Leste à frente, norte à esquerda.'}]);},
+4:()=>{const t=R(0,2);
+ if(t==0){const se=P([0.5,0.8,1.25,1.5,2]),h=R(4,40);return{q:`Uma estaca de 1 m faz sombra de <b>${fmt(se)} m</b>. No mesmo instante, uma árvore faz sombra de <b>${fmt(h*se)} m</b>. Qual a altura da árvore, em metros?`,a:h,exp:`${fmt(h*se)} ÷ ${fmt(se)} = ${h} m.`};}
+ if(t==1){const n=R(20,90),p=P([0.6,0.7,0.75,0.8]);return{q:`Quantos metros têm <b>${n} passos</b> de <b>${fmt(p*100)} cm</b>? (uma casa)`,a:Math.round(n*p*10)/10,tol:0.06,exp:`${n} × ${fmt(p)} = ${fmt(Math.round(n*p*10)/10)} m.`};}
+ const se=P([0.5,1,1.5,2]),h=R(3,30);return{q:`Uma estaca de 1 m faz sombra de <b>${fmt(se)} m</b>. Qual a sombra de um poste de <b>${h} m</b>, em metros?`,a:h*se,tol:0.001,exp:`${h} × ${fmt(se)} = ${fmt(h*se)} m.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const d=P([{n:'21 de junho',v:23.4},{n:'21 de dezembro',v:-23.4},{n:'o equinócio de março',v:0}]),la=P([-30,-20,-10,0,10,20,30].filter(x=>Math.abs(x-d.v)>2));const s=d.v>la?'sul':'norte';return{q:`Em <b>${d.n}</b>, o Sol a pino está a ${fmt(d.v)}°. Para onde aponta a sombra do meio-dia de quem está a <b>${Math.abs(la)}° ${la>=0?'N':'S'}</b>?`,opts:['norte','sul'],a:s,exp:`O Sol a pino está ${d.v>la?'ao norte':'ao sul'} do observador; a sombra vai para o lado oposto: ${s}.`};}
+ if(t==1){const s=P([[10,0.17],[20,0.34],[30,0.5],[40,0.64]]);const sg=P([1,-1]);return{q:`Que porcentagem da superfície da Terra fica ao sul do paralelo de <b>${s[0]}° ${sg>0?'N':'S'}</b>? (sen ${s[0]}° ≈ ${fmt(s[1])}; arredonde ao inteiro)`,a:Math.round((1+sg*s[1])/2*100),tol:0.6,exp:`(1 ${sg>0?'+':'−'} ${fmt(s[1])}) ÷ 2 ≈ ${Math.round((1+sg*s[1])/2*100)}%.`};}
+ return P([{q:'A recíproca de "se A, então B" é:',opts:['se B, então A','se não B, então não A','se não A, então B'],a:'se B, então A',exp:'Troca as partes; não é garantida.'},{q:'Qual é sempre equivalente a "se A, então B"?',opts:['a contrapositiva','a recíproca','nenhuma'],a:'a contrapositiva',exp:'Se não B, então não A.'},{q:'Em julho, sombra do meio-dia para o sul prova que a pessoa está:',opts:['ao sul de ≈ 21,5° N','no hemisfério sul','no Brasil'],a:'ao sul de ≈ 21,5° N',exp:'Só isso: o Sol está ao norte dela.'}]);},
+6:()=>{const t=R(0,2);
+ if(t==0){const a=R(0,359);return{q:`Qual o rumo contrário (de volta) de <b>${a}°</b>?`,a:(a+180)%360,exp:`${a} ${a<180?'+':'−'} 180 = ${(a+180)%360}°.`};}
+ if(t==1){const a=R(0,359),b=R(0,359);let d=Math.abs(a-b);if(d>180)d=360-d;return{q:`Qual o ângulo entre os rumos <b>${a}°</b> e <b>${b}°</b>?`,a:d,exp:`Diferença ${Math.abs(a-b)}°${Math.abs(a-b)>180?'; passa de 180°, então 360° − '+Math.abs(a-b)+'° = '+d+'°':''}.`};}
+ const N=[['N',0],['NE',45],['E',90],['SE',135],['S',180],['SO',225],['O',270],['NO',315],['ENE',67.5],['SSO',202.5]];const p=P(N);return{q:`Qual o rumo, em graus, da direção <b>${p[0]}</b>?`,a:p[1],tol:0.001,exp:`${p[0]} = ${fmt(p[1])}°.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='sob1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>
