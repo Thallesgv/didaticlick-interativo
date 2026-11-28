@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A corrente de elos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A corrente de elos</h1></header>
+<main>
+<div class="card"><h2>O "e" multiplica</h2><p class="muted" style="margin-top:0">Cada viagem precisa de quatro elos: cabo, guincho, rodas e interfone. Mude a chance de falha de cada um numa viagem e o número de viagens. Quanto maior a chance de falha, mais fino e mais vermelho o elo. O gráfico mostra a chance de nenhum problema em todas as viagens.</p>
+<div class="fig" id="fig"></div><div class="fig" id="gr"></div>
+<div class="sl" id="s0"><b>Falha do cabo</b><input type="range"><span></span></div>
+<div class="sl" id="s1"><b>Falha do guincho</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Falha das rodas</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Falha do interfone</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Viagens</b><input type="range"><span></span></div>
+<div class="kpi"><div>Uma viagem sem problema<b id="k1"></b></div><div class="o">Todas as viagens<b id="k2"></b></div><div>Pelo menos um problema<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a corrente.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',VD='#15803D';
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const pc1=v=>fmt(Math.round(v*1000)/10)+'%';const pc2=v=>fmt(Math.round(v*10000)/100)+'%';
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+let SEED=11;const rnd=()=>(SEED=(SEED*16807)%2147483647)/2147483647;
+const BASE3=0.9999*0.999*0.998;
+function GENTE(x,y,s,c){return `<circle cx="${x}" cy="${y-s*0.78}" r="${s*0.16}" fill="${c}"/>`+RC(x-s*0.15,y-s*0.6,s*0.3,s*0.4,c,'rx="2"')+LN(x-s*0.07,y-s*0.22,x-s*0.1,y,c,Math.max(1.5,s*0.08))+LN(x+s*0.07,y-s*0.22,x+s*0.1,y,c,Math.max(1.5,s*0.08));}
+const sh=v=>fmt(Math.round(v*100)/100)+'%';
+const F=[SL('s0',0,0.1,0.01,0.05,draw,sh),SL('s1',0,1,0.05,0.5,draw,sh),SL('s2',0,1,0.05,0.5,draw,sh),SL('s3',0,2,0.01,1,draw,sh)],N=SL('sn',1,100,1,20,draw);
+const NOM=['cabo','guincho','rodas','interfone'];const viag=()=>F.reduce((a,s)=>a*(1-s.get()/100),1),tudo=()=>Math.pow(viag(),N.get());
+const valdir=()=>perto(F[0].get(),0.01,1e-4)&&perto(F[1].get(),0.1,1e-4)&&perto(F[2].get(),0.2,1e-4);
+MIS.def(()=>[
+ ['Ponha os valores do Seu Valdir: falhas de <b>0,01%</b> (cabo), <b>0,1%</b> (guincho), <b>0,2%</b> (rodas) e <b>0,5%</b> (interfone), em <b>39</b> viagens.',()=>valdir()&&perto(F[3].get(),0.5,1e-4)&&N.get()==39,'72,9%: cada viagem tem 99,2% de chance, mas 39 delas seguidas caem para uns 73%. Pelo menos um problema: 27%.',()=>'Todas as viagens agora: '+pc1(tudo())+'.'],
+ ['Mantendo os outros elos, ache a <b>maior</b> falha do interfone que ainda dá pelo menos <b>85%</b> em 39 viagens.',()=>valdir()&&N.get()==39&&perto(F[3].get(),0.1,1e-4),'0,10%: 85,2%. Com 0,11%, a chance cai para 84,9%. Um interfone cinco vezes melhor sobe a corrente de 73% para 85%.',()=>'Agora: '+pc1(tudo())+'.'],
+ ['Volte o interfone para <b>0,5%</b>. Em quantas viagens a chance de tudo dar certo fica <b>abaixo de 50%</b> pela primeira vez?',()=>valdir()&&perto(F[3].get(),0.5,1e-4)&&N.get()==86,'86 viagens: 49,8%. Com 85, ainda 50,2%. Peças de 99% viram uma moeda depois de umas 85 repetições.',()=>'Agora: '+pc1(tudo())+' em '+N.get()+' viagens.']]);
+function draw(){let g='';const x0=20,w=74;
+ F.forEach((s,i)=>{const f=s.get()/[0.1,1,1,2][i],cx=x0+i*80+w/2,c=f<0.34?VD:f<0.67?ORANGE:VERM,sw=Math.max(2,12*(1-f)+2);
+  g+=`<ellipse cx="${cx}" cy="50" rx="${w/2-4}" ry="22" fill="none" stroke="${c}" stroke-width="${sw.toFixed(1)}"/>`+TX(cx,96,NOM[i],{fs:11})+TX(cx,112,pc2(1-s.get()/100),{fs:11,c:c});});
+ const n=N.get(),pv=viag();g+=TX(170,140,'uma viagem: '+pc2(pv)+'   ·   '+n+' viagens: '+pc1(tudo()),{fs:12,c:NAVY});
+ for(let i=0;i<n;i++){const c=i%25,r=Math.floor(i/25),a=Math.pow(pv,i+1);g+=RC(20+c*12,152+r*12,10,10,a>0.9?VD:a>0.5?ORANGE:VERM,'rx="2"');}
+ $('fig').innerHTML=SVG(340,152+Math.ceil(n/25)*12+6,g);
+ $('gr').innerHTML=PLOT({xmin:0,xmax:100,ymin:0,ymax:1,dx:10,dy:0.25,xl:'viagens',yl:'chance de nenhum problema',fy:v=>Math.round(v*100)+'%'},(X,Y)=>{const pts=[];for(let k=0;k<=100;k++)pts.push([k,Math.pow(pv,k)]);
+  return linha([[0,0.5],[100,0.5]],X,Y,GRAY,1.2,'5 4')+linha(pts,X,Y,ORANGE,3)+ponto(n,tudo(),X,Y,NAVY);});
+ $('k1').textContent=pc2(pv);$('k2').textContent=pc1(tudo());$('k3').textContent=pc1(1-tudo());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

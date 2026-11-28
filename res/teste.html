@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O teste da cápsula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O teste da cápsula</h1></header>
+<main>
+<div class="card"><h2>Frequência relativa e regra de três</h2><p class="muted" style="margin-top:0">Cada quadrado é uma descida de teste com o saco de areia: verde se passou, vermelho se travou. Mude a chance real de travar e o número de descidas. Cada descida com subida leva 35 min. Aperte <b>Sortear de novo</b> para repetir os testes.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Chance real de travar</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Descidas de teste</b><input type="range"><span></span></div>
+<div class="row"><button class="alt" id="bt">Sortear de novo</button></div>
+<div class="kpi"><div>Travadas<b id="k1"></b></div><div class="o">Frequência relativa<b id="k2"></b></div><div>Se nenhuma travar<b id="k3"></b></div><div>Tempo de teste<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste a cápsula.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',VD='#15803D';
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const pc1=v=>fmt(Math.round(v*1000)/10)+'%';const pc2=v=>fmt(Math.round(v*10000)/100)+'%';
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+let SEED=11;const rnd=()=>(SEED=(SEED*16807)%2147483647)/2147483647;
+const BASE3=0.9999*0.999*0.998;
+function GENTE(x,y,s,c){return `<circle cx="${x}" cy="${y-s*0.78}" r="${s*0.16}" fill="${c}"/>`+RC(x-s*0.15,y-s*0.6,s*0.3,s*0.4,c,'rx="2"')+LN(x-s*0.07,y-s*0.22,x-s*0.1,y,c,Math.max(1.5,s*0.08))+LN(x+s*0.07,y-s*0.22,x+s*0.1,y,c,Math.max(1.5,s*0.08));}
+const PR=SL('sp',0,20,0.5,5,draw,v=>fmt(v)+'%'),N=SL('sn',10,400,10,100,draw);let sem=11;
+$('bt').onclick=()=>{sem=Math.floor(Math.random()*1e6)+1;draw();};
+MIS.def(()=>[
+ ['Com chance real de <b>10%</b>, faça os <b>40</b> testes de antes do ajuste. Quantas travaram?',()=>PR.get()==10&&N.get()==40,'Em média, 4 em 40. Mas cada sorteio dá um número diferente: aperte Sortear de novo e veja 2, 4, 6... Os 40 testes levam 1.400 min, quase um dia.',()=>'Agora: chance '+fmt(PR.get())+'%, '+N.get()+' descidas.'],
+ ['Cada teste leva 35 min. Ache o <b>maior</b> número de descidas (de 10 em 10) que cabe em <b>2 dias</b>.',()=>N.get()==80,'80 descidas: 2.800 min, ou 46 h 40 min. Com 90, seriam 3.150 min, mais de 2 dias. Se nenhuma travar, a chance fica abaixo de 3 ÷ 80 ≈ 3,75%.',()=>'Agora: '+hm(N.get()*35)+' de teste.'],
+ ['Pela regra de três, quantas descidas <b>sem nenhuma falha</b> são precisas para garantir chance de até <b>1%</b>?',()=>N.get()==300,'300 descidas: 3 ÷ 300 = 1%. São 10.500 min, mais de 7 dias de teste. Garantir uma chance pequena custa muito tempo.',()=>'Agora: 3 ÷ '+N.get()+' = '+pc2(3/N.get())+'.']]);
+function draw(){const n=N.get(),p=PR.get()/100;SEED=sem;let f=0,g='';const cols=20,q=14,gap=2,x0=10,y0=10;
+ for(let i=0;i<n;i++){const ruim=rnd()<p;if(ruim)f++;const c=i%cols,r=Math.floor(i/cols);g+=RC(x0+c*(q+gap),y0+r*(q+gap),q,q,ruim?VERM:VD,'rx="3"');}
+ const H=Math.max(60,y0+Math.ceil(n/cols)*(q+gap)+8);$('fig').innerHTML=SVG(340,H,g);
+ $('k1').textContent=f+' de '+n;$('k2').textContent=pc1(f/n);$('k3').textContent='abaixo de '+pc2(3/n);$('k4').textContent=hm(n*35);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

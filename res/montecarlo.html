@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mil resgates · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>Mil resgates</h1></header>
+<main>
+<div class="card"><h2>O método de Monte Carlo</h2><p class="muted" style="margin-top:0">Cada resgate tem 35 ciclos de 40 min. Em cada ciclo, um sorteio decide se há parada curta (+20 min) ou longa (+120 min). Escolha as chances e um limite de horas e simule resgates. O histograma junta os resultados por hora; em verde, os que cabem no limite.</p>
+<div class="fig" id="gr"></div>
+<div class="sl" id="s1"><b>Chance de parada curta</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Chance de parada longa</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Limite</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">+1</button><button id="b10">+10</button><button id="b100">+100</button><button id="b1000">+1.000</button><button class="alt" id="b0">Limpar</button></div>
+<div class="kpi"><div>Resgates simulados<b id="k1"></b></div><div>Média<b id="k2"></b></div><div class="o">Dentro do limite<b id="k3"></b></div><div>Conta exata<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Simule o resgate.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',VD='#15803D';
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const pc1=v=>fmt(Math.round(v*1000)/10)+'%';const pc2=v=>fmt(Math.round(v*10000)/100)+'%';
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+let SEED=11;const rnd=()=>(SEED=(SEED*16807)%2147483647)/2147483647;
+const BASE3=0.9999*0.999*0.998;
+function GENTE(x,y,s,c){return `<circle cx="${x}" cy="${y-s*0.78}" r="${s*0.16}" fill="${c}"/>`+RC(x-s*0.15,y-s*0.6,s*0.3,s*0.4,c,'rx="2"')+LN(x-s*0.07,y-s*0.22,x-s*0.1,y,c,Math.max(1.5,s*0.08))+LN(x+s*0.07,y-s*0.22,x+s*0.1,y,c,Math.max(1.5,s*0.08));}
+const PC=SL('s1',0,30,1,10,()=>{xs=[];draw();},v=>v+'%'),PL=SL('s2',0,10,0.5,2,()=>{xs=[];draw();},v=>fmt(v)+'%'),LM=SL('sl',20,34,0.5,24,draw,v=>fmt(v)+' h');let xs=[];
+function um(){const pc=PC.get()/100,pl=PL.get()/100;let t=1400;for(let i=0;i<35;i++){const u=Math.random();t+=u<pl?120:u<pl+pc?20:0;}return t;}
+function exata(L){const pc=PC.get()/100,pl=PL.get()/100;let d=new Float64Array(211);d[0]=1;
+ for(let i=0;i<35;i++){const n=new Float64Array(211);for(let k=0;k<211;k++){if(!d[k])continue;n[k]+=d[k]*(1-pc-pl);if(k+1<211)n[k+1]+=d[k]*pc;if(k+6<211)n[k+6]+=d[k]*pl;}d=n;}
+ const lim=Math.floor((L*60-1400)/20+1e-9);let s=0;for(let k=0;k<=Math.min(210,lim);k++)s+=d[k];return lim<0?0:s;}
+[1,10,100,1000].forEach(n=>$('b'+n).onclick=()=>{for(let i=0;i<n;i++)xs.push(um());draw();});$('b0').onclick=()=>{xs=[];draw();};
+const dentro=()=>xs.length?xs.filter(t=>t<=LM.get()*60+1e-9).length/xs.length:0;
+MIS.def(()=>[
+ ['Com os números do Seu Valdir (<b>10%</b> e <b>2%</b>), simule pelo menos <b>1.000</b> resgates. Que fração cabe em 24 h?',()=>PC.get()==10&&PL.get()==2&&xs.length>=1000,'A média fica perto de 25,9 h, e uns 14% cabem em 24 h (a conta exata dá 14,4%). Simule mais e veja a frequência chegar perto da conta.',()=>'Resgates simulados: '+fmt(xs.length)+'.'],
+ ['Agora tire as paradas longas (<b>0%</b>) e simule de novo pelo menos <b>1.000</b> resgates.',()=>PC.get()==10&&PL.get()==0&&xs.length>=1000,'A média cai para perto de 24,5 h (35 × 42 min), e uns 31% cabem em 24 h. A parada longa, mesmo rara, era a vilã.',()=>'Resgates simulados: '+fmt(xs.length)+'.'],
+ ['Volte para 10% e 2%. Ache o <b>menor</b> limite de horas que pega pelo menos <b>90%</b> dos resgates, na conta exata.',()=>PC.get()==10&&PL.get()==2&&perto(LM.get(),28.5,1e-6),'28,5 h: 91,3% dos resgates terminam antes. Com 28 h, só 88,4%. É um prazo honesto para anunciar às famílias.',()=>'Conta exata agora: '+pc1(exata(LM.get()))+'.']]);
+function draw(){const L=LM.get(),c={};let mx=1;xs.forEach(t=>{let b=Math.ceil(t/60-1e-9)-1;b=Math.max(23,Math.min(36,b));c[b]=(c[b]||0)+1;mx=Math.max(mx,c[b]);});
+ const ym=mx<=50?Math.max(10,Math.ceil(mx/10)*10):Math.ceil(mx/50)*50;
+ $('gr').innerHTML=PLOT({xmin:23,xmax:37,ymin:0,ymax:ym,dx:1,dy:ym/5,xl:'duração do resgate (h)',yl:'resgates',fx:v=>v%2?'':v},(X,Y)=>{let g='';
+  for(let b=23;b<37;b++){const n=c[b]||0;if(n)g+=RC(X(b)+1,Y(n),X(b+1)-X(b)-2,Y(0)-Y(n),b+1<=L?VD:ORANGE);}
+  g+=LN(X(Math.min(37,L)),Y(0),X(Math.min(37,L)),Y(ym),NAVY,2,'5 4');
+  if(xs.length){const m=xs.reduce((a,b)=>a+b,0)/xs.length/60;g+=LN(X(m),Y(0),X(m),Y(ym),VERM,1.5,'3 3');}return g;});
+ $('k1').textContent=fmt(xs.length);$('k2').textContent=xs.length?r2(xs.reduce((a,b)=>a+b,0)/xs.length/60)+' h':'—';
+ $('k3').textContent=xs.length?pc1(dentro()):'—';$('k4').textContent=pc1(exata(L));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

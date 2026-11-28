@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O plano B · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O plano B</h1></header>
+<main>
+<div class="card"><h2>Rádios em paralelo</h2><p class="muted" style="margin-top:0">O cabo, o guincho e as rodas ficam como no Seu Valdir (99,99%, 99,9% e 99,8%). Mude a chance de falha de cada rádio e quantos rádios independentes vão na cápsula: basta um funcionar. A cada instante, uma viagem é sorteada e os rádios acendem ou apagam (o sorteio exagera a chance 10 vezes, para dar para ver).</p>
+<div class="fig" id="fig"></div><div class="fig" id="gr"></div>
+<div class="sl" id="sf"><b>Falha de um rádio</b><input type="range"><span></span></div>
+<div id="ch" style="margin:6px 0"></div>
+<div class="kpi"><div>Sem comunicação<b id="k1"></b></div><div>Uma viagem sem problema<b id="k2"></b></div><div class="o">39 viagens<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ponha um plano B.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',VD='#15803D';
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const pc1=v=>fmt(Math.round(v*1000)/10)+'%';const pc2=v=>fmt(Math.round(v*10000)/100)+'%';
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+let SEED=11;const rnd=()=>(SEED=(SEED*16807)%2147483647)/2147483647;
+const BASE3=0.9999*0.999*0.998;
+function GENTE(x,y,s,c){return `<circle cx="${x}" cy="${y-s*0.78}" r="${s*0.16}" fill="${c}"/>`+RC(x-s*0.15,y-s*0.6,s*0.3,s*0.4,c,'rx="2"')+LN(x-s*0.07,y-s*0.22,x-s*0.1,y,c,Math.max(1.5,s*0.08))+LN(x+s*0.07,y-s*0.22,x+s*0.1,y,c,Math.max(1.5,s*0.08));}
+const FA=SL('sf',0,10,0.1,2,draw,v=>fmt(v)+'%');let K=1;chips('ch',['1 rádio','2 rádios','3 rádios','4 rádios'],0,i=>{K=i+1;draw();});
+const semc=()=>Math.pow(FA.get()/100,K),viag=()=>BASE3*(1-semc()),t39=()=>Math.pow(viag(),39);let est=[];
+MIS.def(()=>[
+ ['Ponha <b>um</b> rádio com falha de <b>0,5%</b>. Qual a chance de as 39 viagens darem certo?',()=>K==1&&perto(FA.get(),0.5,1e-4),'72,9%: o rádio sozinho é o elo mais fraco da corrente.',()=>'Agora: '+pc1(t39())+'.'],
+ ['Agora ponha <b>dois</b> rádios de 0,5%.',()=>K==2&&perto(FA.get(),0.5,1e-4),'88,5%: os dois falham juntos só 0,0025% das vezes. Agora quem pesa são as rodas e o guincho.',()=>'Agora: '+pc1(t39())+'.'],
+ ['Rádios baratos falham <b>5%</b>. Ache o <b>menor</b> número deles que deixa as 39 viagens com pelo menos <b>88%</b>.',()=>K==3&&perto(FA.get(),5,1e-4),'3 rádios baratos: 88,2%. Com 2, só 80,4%. Três cópias ruins valem quase o mesmo que duas boas.',()=>'Agora: '+pc1(t39())+' com '+K+(K>1?' rádios':' rádio')+'.']]);
+function cena(){const el=$('cn');if(!el)return;let g='';const x0=40,x1=240,ys=[];for(let i=0;i<K;i++)ys.push(60+(i-(K-1)/2)*34);
+ g+=LN(10,60,x0,60,NAVY,2.5)+LN(x1,60,300,60,NAVY,2.5)+LN(x0,ys[0],x0,ys[K-1],NAVY,2.5)+LN(x1,ys[0],x1,ys[K-1],NAVY,2.5);let algum=false;
+ ys.forEach((y,i)=>{const ok=est[i];if(ok)algum=true;g+=LN(x0,y,100,y,NAVY,2.5)+LN(180,y,x1,y,NAVY,2.5)+RC(100,y-12,80,24,ok?PEACH:'#E5E7EB','rx="6" stroke="#0E2354" stroke-width="1.5"')+TX(140,y+4,ok?'rádio '+(i+1)+' ok':'falhou',{fs:10,c:ok?NAVY:VERM});});
+ g+=`<circle cx="315" cy="60" r="12" fill="${algum?'#22C55E':VERM}" stroke="#0E2354" stroke-width="1.5"/>`+TX(315,92,algum?'fala':'mudo',{fs:10,c:algum?VD:VERM});el.innerHTML=g;}
+function sorteia(){const f=Math.min(1,FA.get()/100*10);est=[];for(let i=0;i<K;i++)est.push(Math.random()>=f);cena();}
+setInterval(sorteia,700);
+function draw(){$('fig').innerHTML=SVG(340,130,'<g id="cn"></g>');sorteia();
+ $('gr').innerHTML=PLOT({xmin:0,xmax:40,ymin:0.5,ymax:1,dx:5,dy:0.1,xl:'viagens',yl:'chance de nenhum problema',fy:v=>Math.round(v*100)+'%'},(X,Y)=>{const a=[],b=[];
+  for(let k=0;k<=40;k++){a.push([k,Math.pow(BASE3*0.995,k)]);b.push([k,Math.pow(viag(),k)]);}return linha(a,X,Y,GRAY,1.5,'5 4')+linha(b,X,Y,ORANGE,3)+ponto(39,t39(),X,Y,NAVY);});
+ const sc=semc();$('k1').textContent=sc==0?'nunca':sc<0.001?'1 viagem em '+fmt(Math.round(1/sc)):pc2(sc);$('k2').textContent=pc2(viag());$('k3').textContent=pc1(t39());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
