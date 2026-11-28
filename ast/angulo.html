@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O tamanho angular · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O tamanho angular</h1></header>
+<main>
+<div class="card"><h2>Quanto do céu ele ocupa?</h2><p class="muted" style="margin-top:0">Escolha o objeto e mude a distância. O ângulo θ entre as bordas do objeto, vistas do olho, é o <b>tamanho angular</b>. No desenho, os ângulos aparecem ampliados 40 vezes; o cone tracejado mostra o tamanho da Lua no céu (0,52°), também ampliado.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Distância até o olho</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Tamanho angular<b id="kg"></b></div><div>Em radianos (D ÷ d)<b id="kr"></b></div><div>Em minutos / segundos<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a distância.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const OBJ=[{n:'Moeda de 1 real',D:0.027,u:'m',lo:Math.log10(0.5),hi:1,v:Math.log10(1.2),tam:'27 mm'},
+ {n:'A Lua',D:3474,u:'km',lo:Math.log10(340000),hi:Math.log10(440000),v:Math.log10(384400),tam:'3.474 km'},
+ {n:'O Teimoso',D:0.3,u:'km',lo:3,hi:8,v:Math.log10(4.5e7),tam:'300 m'}];
+let o=0;const usado=new Set([0]);
+const dist=()=>Math.pow(10,S.get());
+const mostra=v=>{const d=Math.pow(10,v);return OBJ[o].u=='m'?(d<1?fmt(Math.round(d*100))+' cm':r2(d)+' m'):(d>=1e6?MI(d):fmt(Math.round(d/100)*100)+' km');};
+const S=SL('sd',OBJ[0].lo,OBJ[0].hi,0.002,OBJ[0].v,draw,mostra);
+chips('ch',OBJ.map(x=>x.n),0,i=>{o=i;usado.add(i);const e=$('sd').querySelector('input');e.min=OBJ[i].lo;e.max=OBJ[i].hi;S.set(OBJ[i].v);draw();});
+const th=()=>2*Math.atan(OBJ[o].D/2/dist()),gr=()=>th()*180/Math.PI;
+MIS.def(()=>[
+ ['Com a <b>moeda de 1 real</b>, encontre a distância em que ela tem o <b>mesmo tamanho angular da Lua</b>: entre 0,50° e 0,54°.',()=>o==0&&gr()>=0.5&&gr()<=0.54,
+  ()=>'Isso! A '+mostra(S.get())+' do olho, a moeda tapa a Lua certinho: d = 27 mm ÷ 0,00904 ≈ 3 m.',()=>o!=0?'Escolha a moeda.':'Agora a moeda tem '+r2(gr())+'°. Afaste para diminuir o ângulo.'],
+ ['Ainda com a moeda, faça ela cobrir <b>1°</b> (o seu mindinho de braço esticado): entre 0,97° e 1,03°.',()=>o==0&&gr()>=0.97&&gr()<=1.03,
+  ()=>'1° com a moeda a '+mostra(S.get())+'. Pela conta: d = 0,027 ÷ 0,01745 ≈ 1,55 m.',()=>o!=0?'Volte para a moeda.':'Agora: '+r2(gr())+'°.'],
+ ['Escolha <b>a Lua</b> e coloque-a no <b>perigeu</b>, a distância em que ela parece maior: tamanho angular de pelo menos <b>33′</b>.',()=>o==1&&gr()*60>=33,
+  ()=>'Superlua! Com '+r1(gr()*60)+'′, a Lua está a '+mostra(S.get())+'. No apogeu (406.700 km) ela tem só 29′.',()=>o!=1?'Escolha a Lua.':'Agora a Lua tem '+r1(gr()*60)+'′. Aproxime.'],
+ ['Escolha <b>o Teimoso</b> (300 m). Até que distância ele precisa chegar para ter tamanho angular de <b>1″</b>, o menor detalhe que o telescópio separa?',()=>o==2&&gr()*3600>=1,
+  ()=>'A '+mostra(S.get())+' o Teimoso teria '+r2(gr()*3600)+'″. Ele precisaria estar uns 6 vezes mais perto que a Lua para deixar de ser um ponto.',()=>o!=2?'Escolha o Teimoso.':'Agora: '+SCI(gr()*3600)+'″. Aproxime muito: use o fim da régua.']]);
+function draw(){const ex=40,ox=26,oy=118,X=262;let g=RC(0,0,340,236,'#F8FAFC','rx="10"');
+ const ref=0.52*ex*Math.PI/180/2;
+ g+=LN(ox,oy,X+40,oy-Math.tan(ref)*(X+40-ox),'#94A3B8',1,'4 3')+LN(ox,oy,X+40,oy+Math.tan(ref)*(X+40-ox),'#94A3B8',1,'4 3');
+ const a=Math.min(th()*ex,1.0)/2,h=Math.tan(a)*(X-ox);
+ g+=PG([[ox,oy],[X,oy-h],[X,oy+h]],'#FDE9D8','opacity=".7"')+LN(ox,oy,X,oy-h,NAVY,1.6)+LN(ox,oy,X,oy+h,NAVY,1.6);
+ const r=Math.max(h,1.5);
+ if(o==0)g+=`<circle cx="${X}" cy="${oy}" r="${r}" fill="#E8B04B" stroke="#B7862A" stroke-width="2"/>`+(r>14?TX(X,oy+4,'1',{fs:Math.min(r,26),c:'#8A6420'}):'');
+ else if(o==1)g+=`<circle cx="${X}" cy="${oy}" r="${r}" fill="#E5E7EB" stroke="#9CA3AF" stroke-width="1.5"/><circle cx="${X-r*0.3}" cy="${oy-r*0.2}" r="${r*0.18}" fill="#C9CDD4"/><circle cx="${X+r*0.3}" cy="${oy+r*0.3}" r="${r*0.25}" fill="#C9CDD4"/>`;
+ else g+=r>3?ROCHA_SVG(X,oy,r,5):`<circle cx="${X}" cy="${oy}" r="2" fill="${ROCHA_E}"/>`+TX(X,oy-10,'um ponto',{fs:10,c:GRAY});
+ const ra=Math.max(Math.min(a,0.6),0.02);g+=`<path d="M${ox+40*Math.cos(ra)} ${oy-40*Math.sin(ra)} A40 40 0 0 1 ${ox+40*Math.cos(ra)} ${oy+40*Math.sin(ra)}" stroke="${ORANGE}" stroke-width="2.5" fill="none"/>`;
+ g+=TX(ox+54,oy+4,'θ',{fs:14,c:ORANGE})+`<ellipse cx="${ox}" cy="${oy}" rx="11" ry="7" fill="#fff" stroke="${NAVY}" stroke-width="1.6"/><circle cx="${ox+3}" cy="${oy}" r="3.5" fill="${NAVY}"/>`;
+ g+=LN(ox,212,X,212,NAVY,1.4)+TX((ox+X)/2,228,'d = '+mostra(S.get()),{fs:11})+TX(X,22,OBJ[o].n+' · D = '+OBJ[o].tam,{fs:10.5,a:'end'})+TX(330,oy-70,'Lua no céu',{fs:9,c:GRAY,a:'end'});
+ $('fig').innerHTML=SVG(340,236,g);
+ const gg=gr();$('kg').textContent=gg>=0.1?r2(gg)+'°':SCI(gg)+'°';$('kr').textContent=SCI(th(),3)+' rad';$('km').textContent=gg*60>=1?r1(gg*60)+'′':SCI(gg*3600)+'″';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O eco do radar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O eco do radar</h1></header>
+<main>
+<div class="card"><h2>Dispare e espere o eco</h2><p class="muted" style="margin-top:0">A antena manda um pulso de rádio, que viaja à velocidade da luz (c ≈ 300.000 km/s), bate no alvo e volta. O relógio mostra o tempo de verdade da viagem (a animação é acelerada). A distância é <b>d = c × t ÷ 2</b>.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="vai">Disparar pulso</button></div>
+<div class="kpi"><div class="o">Tempo de ida e volta<b id="kt">—</b></div><div>Distância (c × t ÷ 2)<b id="kd">—</b></div></div>
+<div id="adiv" style="display:none;margin-top:8px"><p style="margin:4px 0">Qual a distância do alvo misterioso, em km?</p><div class="row"><input type="text" id="pal" inputmode="decimal" placeholder="ex.: 12000000" style="font-size:15px;padding:7px;border:2px solid #D7DEEA;border-radius:10px;width:170px"><button class="alt" id="conf">Conferir</button></div><div id="fb"></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Dispare o pulso.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const c=299792.458;let mist=Math.round((2+Math.random()*80)*1e6/1000)*1000;
+const AL=[['A Lua',384400],['O Teimoso',4.5e7],['Marte (perto)',5.6e7],['Alvo misterioso',0]];
+let a=0,t0=null,fase=0,med=null;const feito=new Set();
+chips('ch',AL.map(x=>x[0]),0,i=>{a=i;fase=0;med=null;$('adiv').style.display=i==3?'':'none';$('kt').textContent='—';$('kd').textContent='—';draw(0);});
+const dist=()=>a==3?mist:AL[a][1],T=()=>2*dist()/c;
+$('vai').onclick=()=>{fase=1;t0=performance.now();med=null;anim();};
+function anim(){const f=Math.min((performance.now()-t0)/3000,1);draw(f);$('kt').textContent=tempo(f*T());if(f<1)requestAnimationFrame(anim);else{fase=2;med=T();feito.add(a);$('kt').textContent=tempo(med);$('kd').textContent=a==3?'calcule!':NUM(c*med/2,0)+' km';MIS.ver('m');}}
+function tempo(s){return s<60?r2(s)+' s':Math.floor(s/60)+' min '+r1(s%60)+' s ('+fmt(Math.round(s))+' s)';}
+let acertou=false;
+$('conf').onclick=()=>{const v=+$('pal').value.replace(/\./g,'').replace(',','.');if(!med){$('fb').innerHTML='<div class="msg info">Dispare o pulso primeiro.</div>';return;}
+ const ok=Math.abs(v-mist)/mist<0.02;if(ok)acertou=true;$('fb').innerHTML=`<div class="msg ${ok?'ok':'bad'}">${ok?'Certo! '+NUM(mist,0)+' km.':'Ainda não. Use d = 300.000 × t ÷ 2, com t em segundos.'}</div>`;MIS.ver('m');};
+MIS.def(()=>[
+ ['Escolha <b>a Lua</b> e dispare. Quanto tempo leva o eco?',()=>feito.has(0),'Cerca de 2,56 s: 300.000 × 2,56 ÷ 2 ≈ 384.000 km.','Escolha a Lua e aperte Disparar.'],
+ ['Agora dispare para <b>o Teimoso</b>. O eco leva os 5 minutos do livro?',()=>feito.has(1),'300 s: 300.000 × 300 ÷ 2 = 45.000.000 km.','Escolha o Teimoso e dispare.'],
+ ['Dispare para <b>Marte</b>, na maior aproximação. Quantos minutos até o eco?',()=>feito.has(2),'Cerca de 373 s, mais de 6 minutos. Uma conversa com um robô em Marte tem esse atraso.','Escolha Marte e dispare.'],
+ ['<b>Alvo misterioso</b>: dispare, anote o tempo e calcule a distância (erro de até 2%).',()=>acertou,()=>'Isso! O alvo estava a '+NUM(mist,0)+' km.','Escolha o alvo misterioso, dispare e escreva a distância.']]);
+function draw(f){let g=RC(0,0,340,200,CEU,'rx="10"')+ESTRELAS(4,4,332,192,40,5);
+ g+=`<circle cx="-30" cy="100" r="62" fill="${TERRA}"/><path d="M32 100 l12 -16 a20 20 0 0 1 0 32 z" fill="#fff"/>`;
+ const X=300;g+=a==0?`<circle cx="${X}" cy="100" r="16" fill="#E5E7EB"/>`:a==2?`<circle cx="${X}" cy="100" r="14" fill="${VERM}"/>`:a==3?`<circle cx="${X}" cy="100" r="9" fill="#9CA3AF"/>`+TX(X,78,'?',{fs:14,c:'#fff'}):ROCHA_SVG(X,100,11,3);
+ if(fase==1){const ida=f<0.5,x=ida?44+(X-60)*f*2:X-16-(X-60)*(f-0.5)*2;g+=`<path d="M${x} 80 a24 24 0 0 ${ida?1:0} 0 40" stroke="${ida?AMA:ORANGE}" stroke-width="3" fill="none"/>`+TX(170,30,ida?'ida…':'volta (eco)…',{fs:11,c:ida?AMA:'#FDBA74'});}
+ if(fase==2)g+=TX(170,30,'eco recebido!',{fs:12,c:'#86EFAC'});
+ g+=TX(170,188,AL[a][0]+(a==3?'':' · '+NUM(AL[a][1],0)+' km'),{fs:10.5,c:'#fff'});
+ $('fig').innerHTML=SVG(340,200,g);}
+draw(0);MIS.ver('m');
+})();
+</script>
+</body>
+</html>

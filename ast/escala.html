@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O Sistema Solar no pátio · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O Sistema Solar no pátio</h1></header>
+<main>
+<div class="card"><h2>Do tamanho de uma bola</h2><p class="muted" style="margin-top:0">Escolha o diâmetro do Sol de papel. Tudo o mais fica na mesma escala: o tamanho dos planetas e as distâncias. A faixa mostra um pátio de 100 m.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Diâmetro do Sol de papel</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">1 cm do modelo vale<b id="ke"></b></div><div>A Terra fica a<b id="kt"></b></div><div>Tamanho da Terra<b id="kd"></b></div><div>Netuno fica a<b id="kn"></b></div><div>Proxima Centauri<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o tamanho do Sol.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SOL=1392000,UA=1.496e8;
+const PL=[['Mercúrio',0.39,4879,'#A8A29E'],['Vênus',0.72,12104,'#E6C27A'],['Terra',1,12742,TERRA],['Marte',1.52,6779,VERM],['Júpiter',5.2,139820,'#D9A066'],['Saturno',9.5,116460,'#E8CF8F'],['Urano',19.2,50724,'#9CD3E0'],['Netuno',30.1,49244,'#4466CC']];
+const S=SL('ss',5,100,1,20,draw,v=>v+' cm');
+const esc=()=>SOL/S.get();               // km por cm do modelo
+const m=km=>km/esc()/100;                 // km reais → metros no modelo
+const mm=km=>km/esc()*10;                 // km reais → mm no modelo
+const L=v=>v>=1000?fmt(Math.round(v/1000))+' km':v>=1?r1(v)+' m':fmt(Math.round(v*100))+' cm';
+MIS.def(()=>[
+ ['Faça o Sol do tamanho de uma <b>bola de futebol (20 cm)</b>. A que distância fica a Terra?',()=>S.get()==20,()=>'Com o Sol de 20 cm, a Terra é um grãozinho de '+r2(mm(12742))+' mm a '+L(m(UA))+' da bola.','Ajuste o Sol para 20 cm.'],
+ ['Agora caiba a <b>órbita da Terra</b> no pátio: a Terra entre <b>95 m e 105 m</b> do Sol.',()=>m(UA)>=95&&m(UA)<=105,()=>'Sol de '+S.get()+' cm e a Terra a '+L(m(UA))+'. Repare que Marte já não cabe no pátio.',()=>'A Terra está a '+L(m(UA))+'.'],
+ ['Faça a Terra virar um grão de <b>1 mm</b> (entre 0,9 e 1,1 mm). Onde fica o Sol? E Netuno?',()=>mm(12742)>=0.9&&mm(12742)<=1.1,()=>'Com Sol de '+S.get()+' cm, a Terra tem '+r2(mm(12742))+' mm e Netuno fica a '+L(m(30.1*UA))+'.',()=>'A Terra tem '+r2(mm(12742))+' mm.'],
+ ['Deixe <b>Marte</b> exatamente no fim do pátio: entre <b>98 e 100 m</b> do Sol.',()=>m(1.52*UA)>=98&&m(1.52*UA)<=100,()=>'Sol de '+S.get()+' cm. E a estrela mais próxima ficaria a '+L(m(4.0e13))+'!',()=>'Marte está a '+L(m(1.52*UA))+'.']]);
+function draw(){let g=RC(0,0,340,230,CEU,'rx="10"')+ESTRELAS(4,4,332,222,40,3);
+ const x0=24,x1=320,k=(x1-x0)/100,y=120; g+=RC(x0,y-2,x1-x0,4,'#3B5BA8')+TX(x0,y+44,'0 m',{fs:9,c:'#BFD0FF'})+TX(x1,y+44,'100 m',{fs:9,c:'#BFD0FF'});
+ for(let i=0;i<=10;i++)g+=LN(x0+i*10*k,y+30,x0+i*10*k,y+36,'#BFD0FF',1);
+ const rs=Math.min(18,3+S.get()/6);g+=`<circle cx="${x0}" cy="${y}" r="${rs}" fill="${AMA}"/>`;
+ let fora=[];PL.forEach((p,i)=>{const d=m(p[1]*UA);if(d<=100){const x=x0+d*k;g+=`<circle cx="${x}" cy="${y}" r="${clamp(mm(p[2])*1.5,2,9)}" fill="${p[3]}"/>`+TX(x,i%2?y+22:y-14,p[0],{fs:9,c:'#fff'});}else fora.push(p[0]+' ('+L(d)+')');});
+ const dt=m(UA+4.5e7);if(dt<=100)g+=`<circle cx="${x0+dt*k}" cy="${y-30}" r="3" fill="${ORANGE}"/>`+TX(x0+dt*k,y-38,'Teimoso',{fs:9,c:ORANGE});
+ g+=TX(170,24,'Sol de '+S.get()+' cm · pátio de 100 m',{fs:11,c:'#fff'});
+ if(fora.length)g+=TX(330,206,'fora do pátio → '+fora.slice(0,3).join(', ')+(fora.length>3?'…':''),{fs:9,c:'#FDBA74',a:'end'});
+ $('fig').innerHTML=SVG(340,230,g);
+ $('ke').textContent=NUM(esc(),0)+' km';$('kt').textContent=L(m(UA));$('kd').textContent=r2(mm(12742))+' mm';$('kn').textContent=L(m(30.1*UA));$('kp').textContent=L(m(4.0e13));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pratique · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Pratique</h1></header>
+<main>
+
+<div class="card"><h2 id="mt">Exercícios sorteados</h2><p class="muted" style="margin-top:0">Cada vez que você aperta <b>Outro exercício</b>, um problema novo é sorteado. Responda, confira e veja a explicação.</p>
+<div id="mods" style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 10px"></div>
+<div id="q" style="font-size:17px;line-height:1.5;margin:8px 0"></div>
+<div id="resp"></div>
+<div class="msg info" id="fb" style="display:none"></div>
+<div class="row" style="margin-top:10px"><button id="conf">Conferir</button><button class="alt" id="novo">Outro exercício</button></div>
+<p class="muted" id="placar" style="margin-top:10px"></p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const LIV={'ast1':{T:["Ângulos no céu", "Paralaxe", "UA e ano-luz", "Notação científica", "A velocidade da luz", "O ponto que se move"],G:{1:()=>{const t=R(0,2);
+ if(t==0){const g=P([2,3,5,0.5,1.5,4]);return{q:`Quantos minutos de arco há em <b>${fmt(g)}°</b>?`,a:g*60,exp:`${fmt(g)} × 60 = ${fmt(g*60)}′.`};}
+ if(t==1){const [D,d,n]=P([[30,600,'um prédio de 30 m a 600 m'],[2,100,'uma pessoa de 2 m a 100 m'],[10,1000,'uma árvore de 10 m a 1 km'],[3474,384400,'a Lua (3.474 km a 384.400 km)']]);const r=D/d;return{q:`Qual o tamanho angular, em graus, de <b>${n}</b>? (θ ≈ D ÷ d × 57,3; até 2 casas)`,a:Math.round(r*57.3*100)/100,tol:0.02,exp:`${fmt(D)} ÷ ${fmt(d)} = ${fmt(Math.round(r*10000)/10000)} rad; × 57,3 ≈ ${fmt(Math.round(r*57.3*100)/100)}°.`};}
+ const th=P([0.01,0.02,0.05,0.005]),d=P([100,200,500,1000]);return{q:`Um objeto a <b>${d} m</b> tem tamanho angular de <b>${fmt(th)} rad</b>. Qual o tamanho real, em metros?`,a:th*d,tol:0.01,exp:`D = θ × d = ${fmt(th)} × ${d} = ${fmt(th*d)} m.`};},
+2:()=>{const t=R(0,2);
+ if(t==0){const b=P([20,50,100,200]),p=P([0.01,0.02,0.05,0.1]);return{q:`Base de <b>${b} m</b> e ângulo de paralaxe de <b>${fmt(p)} rad</b>. Qual a distância, em metros?`,a:b/p,exp:`d ≈ b ÷ p = ${b} ÷ ${fmt(p)} = ${fmt(b/p)} m.`};}
+ if(t==1){const s=P([20.6,41.2,103.1,206.3]);return{q:`Converta <b>${fmt(s)}″</b> para radianos. Responda em décimos de milésimo (× 10⁻⁴).`,a:Math.round(s/206265*1e5)/10,tol:0.06,exp:`${fmt(s)} ÷ 206.265 ≈ ${fmt(Math.round(s/206265*1e5)/10)} × 10⁻⁴ rad.`};}
+ const b=P([3000,4500,6000,9000]),p=P([1e-4,2e-4,5e-5]);return{q:`Dois observatórios a <b>${fmt(b)} km</b> medem paralaxe de <b>${SCI(p)} rad</b>. Qual a distância, em milhões de km?`,a:b/p/1e6,tol:0.05,exp:`${fmt(b)} ÷ ${SCI(p)} = ${SCI(b/p)} km = ${fmt(b/p/1e6)} milhões de km.`};},
+3:()=>{const t=R(0,2);
+ if(t==0){const u=P([0.3,0.39,0.72,1.52,5.2,9.5]);return{q:`Quantos milhões de km há em <b>${fmt(u)} UA</b>? (1 UA = 150 milhões de km)`,a:Math.round(u*150*10)/10,tol:0.1,exp:`${fmt(u)} × 150 = ${fmt(Math.round(u*150*10)/10)} milhões de km.`};}
+ if(t==1){const km=P([45,75,15,300,750]);return{q:`Um asteroide está a <b>${km} milhões de km</b>. Quantas UA? (até 2 casas)`,a:Math.round(km/150*100)/100,tol:0.011,exp:`${km} ÷ 150 = ${fmt(Math.round(km/150*100)/100)} UA.`};}
+ const s=P([20,10,40,50]);return{q:`Num modelo com o Sol de <b>${s} cm</b>, a que distância (em metros) ficaria a Terra? (Sol: 1.392.000 km; Terra–Sol: 150.000.000 km; arredonde para 1 casa)`,a:Math.round(150000000/(1392000/s)/100*10)/10,tol:0.15,exp:`1 cm = ${fmt(Math.round(1392000/s))} km; 150.000.000 ÷ ${fmt(Math.round(1392000/s))} ≈ ${fmt(Math.round(150000000/(1392000/s)))} cm ≈ ${fmt(Math.round(150000000/(1392000/s)/100*10)/10)} m.`};},
+4:()=>{const t=R(0,2);
+ if(t==0){const a=R(11,99),e=R(4,12);const v=String(a)+'0'.repeat(e-1);return{q:`Escreva <b>${fmt(Number(v))}</b> como a × 10ⁿ. Quanto vale n?`,a:e,exp:`${String(a)[0]},${String(a)[1]} × 10${SUP(e)}.`};}
+ if(t==1){const a=R(2,9),b=R(2,9),m=R(2,9),n=R(-5,8);const c=a*b;return{q:`Calcule (${a} × 10${SUP(m)}) × (${b} × 10${SUP(n)}) em notação científica. Qual o expoente?`,a:m+n+(c>=10?1:0),exp:`${a} × ${b} = ${c}; ${m} + (${n}) = ${m+n}${c>=10?'; ajuste: '+fmt(c/10)+' × 10'+SUP(m+n+1):''}.`};}
+ const a=P([6,8,9]),b=P([2,3]),m=R(3,9),n=R(-5,4);return{q:`Calcule (${a} × 10${SUP(m)}) ÷ (${b} × 10${SUP(n)}). Qual o expoente do resultado?`,a:m-n,exp:`${a} ÷ ${b} = ${fmt(a/b)}; ${m} − (${n}) = ${m-n}.`};},
+5:()=>{const t=R(0,2);
+ if(t==0){const d=P([600000,1500000,3000000,9000000,45000000]);return{q:`Quantos segundos a luz (300.000 km/s) leva para percorrer <b>${fmt(d)} km</b>?`,a:d/300000,exp:`${fmt(d)} ÷ 300.000 = ${fmt(d/300000)} s.`};}
+ if(t==1){const s=P([2.56,20,100,300,600]);return{q:`O eco do radar chega <b>${fmt(s)} s</b> depois do disparo. Qual a distância, em km?`,a:300000*s/2,exp:`d = c × t ÷ 2 = 300.000 × ${fmt(s)} ÷ 2 = ${fmt(300000*s/2)} km.`};}
+ const d=P([1.2e7,3e7,4.5e7,9e7]);return{q:`Um asteroide está a <b>${SCI(d)} km</b>. Em quantos segundos chega o eco do radar?`,a:2*d/300000,exp:`t = 2d ÷ c = ${SCI(2*d)} ÷ 300.000 = ${fmt(2*d/300000)} s.`};},
+6:()=>{const t=R(0,2);
+ if(t==0){const s=P([20.6,41.25,82.5,103.1]);return{q:`Um asteroide a <b>45 milhões de km</b> anda <b>${fmt(s)}″</b> de lado. Quantos km ele percorreu? (arredonde para o km)`,a:Math.round(4.5e7*s/206265),tol:2,exp:`${fmt(s)} ÷ 206.265 ≈ ${SCI(s/206265)} rad; × 4,5 × 10⁷ ≈ ${fmt(Math.round(4.5e7*s/206265))} km.`};}
+ if(t==1){const k=P([3000,6000,9000,12000]),m=P([10,20,30]);return{q:`Um asteroide anda <b>${fmt(k)} km</b> de lado em <b>${m} minutos</b>. Qual a velocidade, em km/s?`,a:k/(m*60),tol:0.01,exp:`${fmt(k)} ÷ ${m*60} s = ${fmt(Math.round(k/(m*60)*100)/100)} km/s.`};}
+ const v=P([2.5,5,7.5,10,15]);return{q:`Converta <b>${fmt(v)} km/s</b> para km/h.`,a:v*3600,exp:`${fmt(v)} × 3.600 = ${fmt(v*3600)} km/h.`};}}}};
+const qs=new URLSearchParams(location.search);let l=qs.get('l');if(!LIV[l])l='ast1';const {T,G}=LIV[l];
+let m=+(qs.get('m'))||1;if(!G[m])m=1;let cur,ok=0,tot=0,feito=false,esc=null;
+function mods(){$('mods').innerHTML=T.map((t,i)=>`<button class="${i+1==m?'':'alt'}" style="padding:4px 10px;font-size:13px" title="${t}" data-m="${i+1}">${i+1}</button>`).join('');
+ document.querySelectorAll('#mods button').forEach(b=>b.onclick=()=>{m=+b.dataset.m;history.replaceState(null,'','?l='+l+'&m='+m);mods();novo();});}
+function novo(){cur=G[m]();feito=false;esc=null;$('mt').textContent='Módulo '+m+' · '+T[m-1];$('q').innerHTML=cur.q;$('fb').style.display='none';
+ $('resp').innerHTML=cur.opts?cur.opts.map(o=>`<button class="alt opt" style="margin:3px">${o}</button>`).join(''):'<input type="text" inputmode="decimal" id="r" placeholder="sua resposta" style="font-size:16px;padding:8px;border:2px solid #D7DEEA;border-radius:10px;width:100%;box-sizing:border-box">';
+ if(cur.opts)document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{esc=b.textContent;document.querySelectorAll('.opt').forEach(x=>x.className='alt opt');b.className='opt';});
+ else $('r').onkeydown=e=>{if(e.key=='Enter')conf();};}
+function conf(){if(feito)return;let v=cur.opts?esc:($('r').value.trim());if(v===null||v==='')return;
+ const certo=cur.opts?v==cur.a:Math.abs(+v.replace(',','.').replace('−','-')-cur.a)<=(cur.tol||0.001);
+ feito=true;tot++;if(certo)ok++;$('fb').style.display='block';$('fb').className='msg '+(certo?'ok':'bad');$('fb').innerHTML=(certo?'<b>Certo!</b> ':'<b>Ainda não.</b> A resposta é <b>'+(typeof cur.a=='number'?fmt(cur.a):cur.a)+'</b>. ')+cur.exp;
+ $('placar').textContent=`Acertos nesta visita: ${ok} de ${tot}`;}
+$('conf').onclick=conf;$('novo').onclick=novo;mods();novo();
+})();
+</script>
+</body>
+</html>
