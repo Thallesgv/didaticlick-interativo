@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tales no cerrado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Tales no cerrado</h1></header>
+<main>
+<div class="card"><h2>Mesmo Sol, mesma forma</h2><p class="muted" style="margin-top:0">Escolha a hora e a altura da árvore (arrastando ou com − e +). À esquerda, a estaca de 1 m; à direita, a árvore. As duas sombras estão na mesma razão.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sh"><b>Hora (Brasília)</b><input type="range"><span></span></div><div class="sl" id="sv"><b>Altura da árvore</b><input type="range"><span></span></div><div class="kpi"><div>Sombra da estaca<b id="k1"></b></div><div>Sombra da árvore<b id="k2"></b></div><div class="o">Altura do Sol<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça árvores.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SH=SL('sh',420,1020,5,900,()=>draw(),v=>hm(v)),SV=SL('sv',5,60,0.5,12,()=>draw(),v=>fmt(v)+' m');
+const alt=()=>teo(SH.get()).alt,r=()=>1/Math.tan(alt()*RAD);
+toque('fig',(x,y)=>{if(x<120)return;SV.set(clamp(Math.round((200-y)/2.6*2)/2,5,60));draw();});
+MIS.def(()=>[
+ ['Reproduza a palmeira do Téo: às <b>15h00</b>, uma árvore de <b>20 m</b> (sombra perto de 25,5 m).',()=>SH.get()==900&&Math.abs(SV.get()-20)<=0.5,()=>'Sombra de '+r1(SV.get()*r())+' m. Com o passo de 75 cm, são uns '+Math.round(SV.get()*r()/0.75)+' passos.',()=>SH.get()!=900?'Leve a hora para 15h00.':'A árvore está com '+fmt(SV.get())+' m. Procure a altura que dá sombra de uns 25,5 m.'],
+ ['Encontre a <b>hora de Tales</b>: a sombra da estaca igual à estaca (de 95 a 105 cm).',()=>r()>=0.95&&r()<=1.05,()=>'Às '+hm(SH.get())+', o Sol está a '+r1(alt())+'°: toda sombra fica do tamanho do objeto.',()=>'A sombra da estaca tem '+Math.round(r()*100)+' cm. '+(r()>1.05?'Aproxime do meio-dia.':'Afaste do meio-dia (mais cedo ou mais tarde).')],
+ ['Meça o paredão: às <b>10h00</b>, a sombra dele tinha <b>49 m</b>. Ajuste a altura até a sombra dar 49 m (de 48 a 50).',()=>SH.get()==600&&SV.get()*r()>=48&&SV.get()*r()<=50,()=>'Paredão de '+fmt(SV.get())+' m: 49 ÷ 1,02 ≈ 48 m.',()=>SH.get()!=600?'Leve a hora para 10h00.':'A sombra está com '+r1(SV.get()*r())+' m.']]);
+function draw(){const a=alt(),q=r(),v=SV.get();let g=RC(0,0,340,240,CEU,'rx="10"')+RC(0,200,340,40,AREIA,'');
+ g+=RC(8,96,104,104,'#fff','rx="6" opacity="0.6"');const e=60;g+=LN(20,200,20,200-e,MAD,5)+LN(20,200,Math.min(110,20+e*q),200,ORANGE,4)+TX(26,200-e/2,'1 m',{fs:10,a:'start'})+TX(60,216,Math.round(q*100)+' cm',{fs:10,c:ORANGE});
+ const k=2.6,x0=140,h=v*k,sp=v*q*k;g+=LN(x0,200,Math.min(336,x0+sp),200,ORANGE,6)+LN(x0,200,x0,200-h,MAD,7);
+ for(let i=-3;i<=3;i++)g+=LN(x0,200-h,x0+22*Math.sin(i*0.45),200-h-12*Math.cos(i*0.45)+6,VERDE,4);
+ g+=LN(x0,200-h,Math.min(336,x0+sp),200,OURO,1.5,'5 4')+TX(x0-6,200-h/2,fmt(v)+' m',{fs:11,a:'end'})+TX(Math.min(300,x0+sp/2),222,r1(v*q)+' m'+(x0+sp>336?' →':''),{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=Math.round(q*100)+' cm';$('k2').textContent=r1(v*q)+' m';$('k3').textContent=r1(a)+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A estaca e o Sol · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>A estaca e o Sol</h1></header>
+<main>
+<div class="card"><h2>O triângulo da sombra</h2><p class="muted" style="margin-top:0">Arraste o Sol no céu com o dedo (ou use − e + na barra) e mude o tamanho da estaca. Veja a sombra, a razão sombra ÷ estaca e os ângulos do triângulo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Altura do Sol</b><input type="range"><span></span></div><div class="sl" id="se"><b>Estaca</b><input type="range"><span></span></div><div class="kpi"><div>Sombra<b id="k1"></b></div><div>Sombra ÷ estaca<b id="k2"></b></div><div class="o">Ângulo no topo<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova o Sol.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SA=SL('sa',5,90,1,58,()=>draw(),v=>v+'°'),SE=SL('se',0.5,1.5,0.1,1,()=>draw(),v=>fmt(v)+' m');
+const X0=250,Y0=200,K=110;
+toque('fig',(x,y)=>{const a=Math.atan2(Y0-y,Math.max(1,x-X0))*DEG;SA.set(clamp(Math.round(a),5,90));draw();});
+const som=()=>SE.get()/Math.tan(SA.get()*RAD);
+MIS.def(()=>[
+ ['Deixe a sombra <b>do tamanho da estaca</b>.',()=>Math.abs(som()-SE.get())<0.02,'Sol a 45°: os dois catetos ficam iguais e a razão é 1.',()=>'Agora a razão é '+r2(som()/SE.get())+'. '+(som()>SE.get()?'A sombra está comprida: suba o Sol.':'A sombra está curta: desça o Sol.')],
+ ['Reproduza a sombra do Téo ao meio-dia: estaca de <b>1 m</b> e sombra entre <b>61 e 65 cm</b>.',()=>Math.abs(SE.get()-1)<0.01&&som()>=0.61&&som()<=0.65,'Sol a 58°: sombra de uns 63 cm, razão 0,63. É o que o Téo mediu.',()=>Math.abs(SE.get()-1)>0.01?'Primeiro deixe a estaca com 1 m.':'A sombra está com '+Math.round(som()*100)+' cm. '+(som()>0.65?'Suba o Sol.':'Desça o Sol.')],
+ ['Descubra em que altura do Sol a sombra fica <b>o dobro da estaca</b> (razão entre 1,95 e 2,05).',()=>{const r=som()/SE.get();return r>=1.95&&r<=2.05;},()=>'Sol a '+SA.get()+'°: bem mais baixo que 45°/2. A sombra não é proporcional ao ângulo!',()=>'Razão atual: '+r2(som()/SE.get())+'. '+(som()/SE.get()<1.95?'Desça o Sol.':'Suba um pouco o Sol.')]]);
+function draw(){const a=SA.get(),e=SE.get(),s=som();let g=RC(0,0,340,240,CEU,'rx="10"')+RC(0,Y0,340,40,AREIA,'');
+ const hp=e*K,sp=s*K,xt=X0-sp;
+ g+=LN(Math.max(xt,-50),Y0,X0,Y0,ORANGE,5);
+ const sx=X0+120*Math.cos(a*RAD),sy=Y0-hp-120*Math.sin(a*RAD);
+ g+=LN(xt,Y0,X0+(hp+120*Math.sin(a*RAD))/Math.tan(a*RAD)*0+120*Math.cos(a*RAD),sy,OURO,1.5,'5 4');
+ g+=CIR(sx,sy,13,OURO)+LN(X0,Y0,X0,Y0-hp,MAD,6)+RC(X0-9,Y0-9,9,9,'none','stroke="'+NAVY+'" stroke-width="1"');
+ if(xt>8)g+=TX(xt+22,Y0-6,a+'°',{fs:11,c:ORANGE});
+ g+=TX(X0+8,Y0-hp/2,fmt(e)+' m',{fs:11,a:'start'});
+ g+=TX(Math.max(30,(Math.max(xt,0)+X0)/2),Y0+20,(xt<0?'sombra (sai da tela): ':'sombra: ')+Math.round(s*100)+' cm',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=Math.round(s*100)+' cm';$('k2').textContent=r2(s/e);$('k3').textContent=(90-a)+'°';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

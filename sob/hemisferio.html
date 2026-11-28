@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Onde a sombra aponta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Onde a sombra aponta</h1></header>
+<main>
+<div class="card"><h2>O Sol do meio-dia</h2><p class="muted" style="margin-top:0">Escolha o dia do ano e a latitude de quem observa (arrastando ou com − e +). Em cima, o planeta com a faixa do Sol a pino; embaixo, a estaca ao meio-dia, com o norte à esquerda.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Dia do ano</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Latitude</b><input type="range"><span></span></div><div class="kpi"><div>Sol a pino em<b id="k1"></b></div><div>Sol do meio-dia<b id="k2"></b></div><div class="o">Sombra aponta para<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o dia e a latitude.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],DM=[31,28,31,30,31,30,31,31,30,31,30,31];
+const data=n=>{let m=0;while(n>DM[m]){n-=DM[m];m++;}return n+' '+MES[m];};
+const SD=SL('sd',1,365,1,196,()=>draw(),data),SLa=SL('sl',-60,60,1,-11,()=>draw(),v=>v==0?'0° (Equador)':Math.abs(v)+'° '+(v>0?'N':'S'));
+const dec=()=>23.44*Math.sin(2*Math.PI*(SD.get()-80)/365);
+const lat_=v=>(v>=0?r1(v)+'° N':r1(-v)+'° S');
+toque('fig',(x,y)=>{if(y>120)return;SLa.set(clamp(Math.round(60-(y-10)/100*120),-60,60));draw();});
+MIS.def(()=>[
+ ['Faça a sombra apontar para o <b>sul</b> com o observador no <b>hemisfério norte</b>.',()=>SLa.get()>0&&dec()-SLa.get()>0.6,()=>'Em '+data(SD.get())+', o Sol a pino está em '+lat_(dec())+', ao norte de '+SLa.get()+'° N. A sombra vai para o sul mesmo no hemisfério norte.',()=>SLa.get()<=0?'Leve a latitude para o hemisfério norte (N).':'O Sol a pino está em '+lat_(dec())+'. O observador precisa ficar ao sul dele: diminua a latitude ou mude o dia para o meio do ano.'],
+ ['Faça a sombra <b>sumir</b>: o Sol exatamente a pino ao meio-dia.',()=>Math.abs(SLa.get()-dec())<0.6,()=>'Latitude '+lat_(SLa.get())+' em '+data(SD.get())+': o Sol passa no zênite e a estaca não faz sombra.',()=>'Diferença entre o observador e o Sol a pino: '+r1(Math.abs(SLa.get()-dec()))+'°. Mova a latitude até a faixa laranja.'],
+ ['Faça a sombra apontar para o <b>norte</b> num lugar do Brasil (entre 33° S e 5° N).',()=>SLa.get()>=-33&&SLa.get()<=5&&SLa.get()-dec()>0.6,()=>'Em '+data(SD.get())+', o Sol a pino está ao sul de '+lat_(SLa.get())+': a sombra aponta para o norte. Acontece no verão em boa parte do Brasil.',()=>SLa.get()<-33||SLa.get()>5?'Escolha uma latitude do Brasil.':'O Sol a pino está em '+lat_(dec())+', ao norte do observador. Mude o dia para perto de dezembro.']]);
+function draw(){const d=dec(),la=SLa.get();let g=RC(0,0,340,300,'#F8FAFC','rx="10"');
+ const Y=v=>10+(60-v)/120*100;g+=RC(10,10,320,100,'#E8F0FB','rx="6"');
+ for(const[v,t]of[[23.44,'Câncer'],[0,'Equador'],[-23.44,'Capricórnio']])g+=LN(10,Y(v),330,Y(v),GRAY,1,v?'3 3':'')+TX(14,Y(v)-2,t,{fs:8,a:'start',c:GRAY,w:500});
+ g+=LN(10,Y(d),330,Y(d),ORANGE,3)+TX(326,Y(d)-3,'Sol a pino',{fs:8,a:'end',c:ORANGE});g+=CIR(170,Y(la),6,BLUE)+TX(180,Y(la)+4,'observador',{fs:8,a:'start',c:BLUE});
+ const alt=90-Math.abs(la-d),norte=d>la;const x0=170,y0=270,h=60;g+=RC(10,y0,320,22,AREIA,'');
+ g+=TX(20,y0+16,'← N',{fs:11,a:'start'})+TX(320,y0+16,'S →',{fs:11,a:'end'});
+ const sx=x0+(norte?-1:1)*110*Math.cos(alt*RAD),sy=y0-h-110*Math.sin(alt*RAD);
+ if(alt>0.6){const s=Math.min(150,h/Math.tan(alt*RAD));g+=LN(x0,y0,x0+(norte?1:-1)*s,y0,ORANGE,6);}
+ g+=CIR(sx,Math.max(130,sy),12,OURO)+LN(x0,y0,x0,y0-h,MAD,6);
+ $('fig').innerHTML=SVG(340,300,g);
+ $('k1').textContent=lat_(d);$('k2').textContent=r1(alt)+'° de altura, '+(Math.abs(la-d)<0.6?'no zênite':norte?'ao norte':'ao sul');$('k3').textContent=Math.abs(la-d)<0.6?'nenhum lado':norte?'sul':'norte';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
