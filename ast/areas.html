@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Áreas iguais · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Áreas iguais</h1></header>
+<main>
+<div class="card"><h2>A 2ª lei de Kepler</h2><p class="muted" style="margin-top:0">A órbita está dividida em <b>12 fatias</b> varridas em tempos iguais (cada uma, 1/12 do período). Perto do Sol, a fatia é curta e larga; longe, comprida e fina. A área é sempre a mesma. Aperte play e veja a rocha acelerar e frear.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="row"><button id="pl">Pausar</button></div>
+<div class="sl" id="se"><b>Excentricidade e</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Área da fatia do periélio<b id="k1"></b></div><div>Área da fatia do afélio<b id="k2"></b></div><div>v no periélio ÷ v no afélio<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a excentricidade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const KP=(a,e,M)=>{let E=M;for(let i=0;i<40;i++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));const nu=2*Math.atan2(Math.sqrt(1+e)*Math.sin(E/2),Math.sqrt(1-e)*Math.cos(E/2)),r=a*(1-e*Math.cos(E));return [r*Math.cos(nu),r*Math.sin(nu),r,nu];};
+const Ee=SL('se',0,0.9,0.005,0.5,draw,v=>(Math.round(v*1000)/1000).toString().replace('.',','));
+chips('ch',['Teimoso (e = 0,175)','Terra (e = 0,017)','Cometa (e = 0,9)'],-1,i=>{Ee.set([0.175,0.017,0.9][i]);draw();});
+let M=0,rodando=true,t0=performance.now(),quadro=0;
+$('pl').onclick=()=>{rodando=!rodando;$('pl').textContent=rodando?'Pausar':'Continuar';if(rodando){t0=performance.now();loop();}};
+const e=()=>Ee.get(),raz=()=>(1+e())/(1-e());
+function area(m1,m2){let s=0,p=KP(1,e(),m1);for(let i=1;i<=60;i++){const q=KP(1,e(),m1+(m2-m1)*i/60);s+=(p[0]*q[1]-q[0]*p[1])/2;p=q;}return s;}
+MIS.def(()=>[
+ ['Coloque a <b>excentricidade do Teimoso</b> (entre 0,17 e 0,18) e compare as duas fatias marcadas. São iguais?',()=>e()>=0.17&&e()<=0.18,()=>'Iguais! Cada fatia tem 1/12 da área da elipse. E no periélio o Teimoso anda '+r2(raz())+' vezes mais rápido que no afélio (1,14 ÷ 0,80).',()=>'Agora e = '+r2(e())+'.'],
+ ['Faça a rocha andar <b>3 vezes mais rápido</b> no periélio que no afélio (razão entre 2,95 e 3,05).',()=>raz()>=2.95&&raz()<=3.05,()=>'e = '+r2(e())+'. (1 + e) ÷ (1 − e) = 3 dá e = 0,5: o afélio fica 3 vezes mais longe que o periélio.',()=>'Agora a razão é '+r2(raz())+'.'],
+ ['Deixe a órbita quase circular (e ≤ 0,02). O que acontece com as fatias e com a velocidade?',()=>e()<=0.02,()=>'As 12 fatias ficam iguaizinhas, como fatias de pizza, e a velocidade quase não muda: é a órbita da Terra.','Diminua a excentricidade.'],
+ ['Faça um <b>cometa</b>: velocidade no periélio pelo menos <b>10 vezes</b> maior que no afélio.',()=>raz()>=10,()=>'Razão de '+r1(raz())+' com e = '+r2(e())+'. O cometa passa voando perto do Sol e se arrasta por anos lá longe.',()=>'Agora a razão é '+r2(raz())+'. Aumente e.']]);
+function draw(){const W=340,H=240,E_=e(),B_=Math.sqrt(1-E_*E_);const k=Math.min(150,105/B_),ox=W/2,oy=H/2,Sx=ox+E_*k;
+ const P=(x,y)=>[Sx+x*k,oy-y*k];let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,232,40,17);
+ for(let s=0;s<12;s++){const m1=Math.PI+s*Math.PI/6,m2=m1+Math.PI/6;let pts=[P(0,0)];for(let i=0;i<=24;i++){const q=KP(1,E_,m1+(m2-m1)*i/24);pts.push(P(q[0],q[1]));}
+  const cor=s==5?ORANGE:s==11?'#6B8FE0':(s%2?'#2A3F75':'#22345F');
+  g+=`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="${s==5?ORANGE:s==11?'#6B8FE0':cor}" fill-opacity="${s==5||s==11?0.75:0.9}" stroke="#4B5E92" stroke-width="0.6"/>`;}
+ let pts=[];for(let i=0;i<=160;i++){const t=i/160*2*Math.PI;pts.push((ox+k*Math.cos(t))+','+(oy-B_*k*Math.sin(t)));}
+ g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="#fff" stroke-width="1.2"/>`;
+ g+=`<circle cx="${Sx}" cy="${oy}" r="7" fill="${AMA}"/>`;
+ const q=KP(1,E_,M),[X,Y]=P(q[0],q[1]);g+=ROCHA_SVG(X,Y,7,3);
+ g+=TX(W-8,18,'laranja: fatia do periélio',{fs:9,c:'#FDBA74',a:'end'})+TX(W-8,32,'azul: fatia do afélio',{fs:9,c:'#BFD0FF',a:'end'});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=r2(area(-Math.PI/6,0)/(Math.PI*B_)*100)+'% da elipse';$('k2').textContent=r2(area(Math.PI-Math.PI/6,Math.PI)/(Math.PI*B_)*100)+'% da elipse';
+ $('kv').textContent=r2(raz())+' vezes';if(!quadro)MIS.ver('m');}
+function loop(){if(!rodando)return;const now=performance.now();M+=(now-t0)/1000*2*Math.PI/8;t0=now;M%=2*Math.PI;quadro=1;draw();quadro=0;requestAnimationFrame(loop);}
+draw();loop();
+})();
+</script>
+</body>
+</html>

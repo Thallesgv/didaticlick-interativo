@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Encontro marcado · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Encontro marcado</h1></header>
+<main>
+<div class="card"><h2>Oito meses até o cruzamento</h2><p class="muted" style="margin-top:0">A Terra (azul) e o Teimoso (laranja) correm nas suas órbitas, em escala. Avance o calendário. Embaixo, o gráfico mostra a distância entre os dois. O atraso faz de conta que o Teimoso chega alguns minutos depois do previsto.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Meses depois da descoberta</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Atraso do Teimoso</b><input type="range"><span></span></div>
+<div class="kpi"><div class="o">Distância hoje<b id="kd"></b></div><div>Em km<b id="kk"></b></div><div>Menor distância no encontro<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Avance o calendário.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const KP=(a,e,M)=>{let E=M;for(let i=0;i<40;i++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));const nu=2*Math.atan2(Math.sqrt(1+e)*Math.sin(E/2),Math.sqrt(1-e)*Math.cos(E/2)),r=a*(1-e*Math.cos(E));return [r*Math.cos(nu),r*Math.sin(nu),r,nu];};
+const QP=0.8,QA=1.14,AT=(QP+QA)/2,ET=(QA-QP)/(QA+QP),TT=Math.pow(AT,1.5),UA=1.496e8,RT=6371;
+const NUC=-Math.acos((AT*(1-ET*ET)-1)/ET),TENC=8/12;
+const Mnu=nu=>{const E=2*Math.atan2(Math.sqrt(1-ET)*Math.sin(nu/2),Math.sqrt(1+ET)*Math.cos(nu/2));return E-ET*Math.sin(E);};
+const M0=Mnu(NUC)-2*Math.PI/TT*TENC;
+const S=SL('st',0,8,0.01,0,draw,v=>r2(v)+' meses');
+const D=SL('sa',0,20,0.5,0,draw,v=>r1(v)+' min');
+const atr=()=>D.get()/60/24/365.25;
+function pos(t,at){const q=KP(AT,ET,M0+2*Math.PI/TT*(t-(at===undefined?atr():at))),ph=NUC-2*Math.PI*(TENC-t);return [[Math.cos(ph),Math.sin(ph)],[q[0],q[1]]];}
+const dist=(t,at)=>{const [e,r]=pos(t,at);return Math.hypot(e[0]-r[0],e[1]-r[1]);};
+function minimo(m){const at=m===undefined?atr():m/60/24/365.25;let lo=TENC-3/365,hi=TENC+3/365;for(let i=0;i<120;i++){const m1=lo+(hi-lo)/3,m2=hi-(hi-lo)/3;if(dist(m1,at)<dist(m2,at))hi=m2;else lo=m1;}return dist((lo+hi)/2,at)*UA;}
+const CUR=[];for(let i=0;i<=160;i++)CUR.push(dist(i/160*8/12));const tmax=CUR.indexOf(Math.max(...CUR))/160*8;
+const t=()=>S.get()/12,mes=()=>S.get();
+MIS.def(()=>[
+ ['Ache o mês em que a Terra e o Teimoso ficam <b>mais longe</b> um do outro.',()=>Math.abs(mes()-tmax)<=0.15,()=>'Perto de '+r1(mes())+' meses: '+r2(dist(t()))+' UA, uns '+fmt(Math.round(dist(t())*150))+' milhões de km. Depois disso, a distância só diminui.','Olhe o gráfico e procure o pico.'],
+ ['Avance até a distância voltar a ser a do dia da descoberta: <b>0,32 UA</b> (entre 0,31 e 0,33), já na volta.',()=>mes()>3&&Math.abs(dist(t())-0.32)<=0.01,()=>'Com '+r1(mes())+' meses, ele está tão perto quanto no dia em que foi descoberto, mas agora chegando.',()=>'Agora: '+r2(dist(t()))+' UA.'],
+ ['Vá ao <b>dia do encontro</b> (8 meses), sem atraso. Qual a menor distância?',()=>mes()>=7.98&&D.get()==0,()=>'Menor distância: '+fmt(Math.round(minimo()))+' km, menos que o raio da Terra (6.371 km). Sem desvio, é colisão.','Leve o calendário até o fim e deixe o atraso em zero.'],
+ ['Qual o <b>menor atraso</b> que faz o Teimoso passar sem bater (menor distância maior que 6.371 km)?',()=>minimo()>RT&&minimo(D.get()-0.5)<=RT,()=>'Com '+r1(D.get())+' minutos de atraso, ele passa a '+fmt(Math.round(minimo()))+' km do centro da Terra. Foi por isso que o Seu Dito ficou quieto: meio planeta de diferença em poucos minutos. (Sem contar a gravidade da Terra, que puxa a rocha para perto.)',()=>'Com '+r1(D.get())+' min, a menor distância é '+fmt(Math.round(minimo()))+' km.']]);
+function draw(){const W=340,H=330;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,200,40,29);
+ const k=82,ox=170,oy=104,Pt=(x,y)=>[ox+x*k,oy-y*k];
+ g+=`<circle cx="${ox}" cy="${oy}" r="${k}" fill="none" stroke="#6B8FE0" stroke-width="1.2"/>`;
+ let pp=[];for(let i=0;i<=120;i++){const q=KP(AT,ET,i/120*2*Math.PI);pp.push(Pt(q[0],q[1]).join(','));}g+=`<polyline points="${pp.join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="1.4" stroke-dasharray="4 3"/>`;
+ g+=`<circle cx="${ox}" cy="${oy}" r="7" fill="${AMA}"/>`;
+ const [e,r]=pos(t()),E=Pt(...e),R=Pt(...r);g+=LN(E[0],E[1],R[0],R[1],'#fff',1,'2 3');
+ g+=`<circle cx="${E[0]}" cy="${E[1]}" r="6" fill="${TERRA}" stroke="#fff"/>`+ROCHA_SVG(R[0],R[1],5,4)+TX(E[0]+(e[0]>0?10:-10),E[1]-8,'Terra',{fs:9.5,c:'#BFD0FF',a:e[0]>0?'start':'end'})+TX(R[0]+(e[0]>0?-10:10),R[1]+4,'Teimoso',{fs:9.5,c:'#FDBA74',a:e[0]>0?'end':'start'});
+ const c=Pt(Math.cos(NUC),Math.sin(NUC));g+=`<circle cx="${c[0]}" cy="${c[1]}" r="9" fill="none" stroke="#fff" stroke-dasharray="2 2"/>`;
+ const gx=40,gy=310,gw=280,gh=80;g+=RC(10,214,320,110,'#F8FAFC','rx="8"')+LN(gx,gy,gx+gw,gy,NAVY,1)+LN(gx,gy,gx,gy-gh,NAVY,1);
+ for(let i=0;i<=8;i++)g+=TX(gx+i/8*gw,gy+11,String(i),{fs:8,c:GRAY});g+=TX(gx-4,gy-gh+4,'0,6',{fs:8,c:GRAY,a:'end'})+TX(gx-4,gy,'0',{fs:8,c:GRAY,a:'end'})+TX(gx+gw,gy-gh-2,'distância (UA) × mês',{fs:8.5,a:'end'});
+ g+=`<polyline points="${CUR.map((d,i)=>(gx+i/160*gw)+','+(gy-d/0.6*gh)).join(' ')}" fill="none" stroke="${ORANGE}" stroke-width="2"/>`;
+ g+=`<circle cx="${gx+mes()/8*gw}" cy="${gy-dist(t())/0.6*gh}" r="5" fill="${NAVY}" stroke="#fff" stroke-width="1.5"/>`;
+ $('fig').innerHTML=SVG(W,H,g);const d=dist(t());$('kd').textContent=r2(d)+' UA';$('kk').textContent=d*UA>=1e6?MI(d*UA):fmt(Math.round(d*UA))+' km';$('km').textContent=fmt(Math.round(minimo()))+' km';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

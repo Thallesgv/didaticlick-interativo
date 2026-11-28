@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O canhão de Newton · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O canhão de Newton</h1></header>
+<main>
+<div class="card"><h2>Cair em volta da Terra</h2><p class="muted" style="margin-top:0">O canhão está no alto de uma montanha imaginária de <b>400 km</b> (a altura da Estação Espacial), sem ar para frear a bala. Escolha a velocidade e dispare. A bala só sente a gravidade da Terra.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Velocidade do disparo</b><input type="range"><span></span></div>
+<div class="row"><button id="vai">Disparar</button><button class="alt" id="limpa">Limpar</button></div>
+<div class="kpi"><div class="o">Resultado<b id="kr">—</b></div><div>Ponto mais longe do centro<b id="kq">—</b></div><div>Tempo de voo<b id="kt">—</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha a velocidade e dispare.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const GM=398600,RT=6371,r0=RT+400,vc=Math.sqrt(GM/r0),ve=Math.sqrt(2*GM/r0);
+const V=SL('sv',4,12,0.01,7,()=>{},v=>r2(v)+' km/s');
+let tiros=[],ult=null,anim=null;
+function voa(v){let x=0,y=r0,vx=v,vy=0,t=0,dt=4,pts=[[x,y]],rmax=r0,ang=0,tipo='',prev=0,tot=0;
+ for(let i=0;i<60000;i++){const r=Math.hypot(x,y),a=-GM/(r*r*r);vx+=a*x*dt;vy+=a*y*dt;x+=vx*dt;y+=vy*dt;t+=dt;const rr=Math.hypot(x,y);rmax=Math.max(rmax,rr);
+  const th=Math.atan2(x,y);let d=th-prev;if(d<-Math.PI)d+=2*Math.PI;if(d>Math.PI)d-=2*Math.PI;tot+=d;prev=th;if(i%3==0)pts.push([x,y]);
+  if(rr<RT){tipo='caiu';ang=tot*180/Math.PI;break;}
+  if(rr>12*RT){tipo='escapou';break;}
+  if(tot>=2*Math.PI){tipo=Math.abs(rmax-r0)/r0<0.01?'círculo':'elipse';break;}}
+ return {v,pts,rmax,t,tipo,ang};}
+$('vai').onclick=()=>{ult=voa(V.get());tiros.push(ult);if(tiros.length>5)tiros.shift();let n=0;cancelAnimationFrame(anim);
+ const go=()=>{n=Math.min(n+Math.ceil(ult.pts.length/90),ult.pts.length);draw(n);if(n<ult.pts.length)anim=requestAnimationFrame(go);else fim();};go();};
+$('limpa').onclick=()=>{tiros=[];ult=null;draw();};
+function fim(){const u=ult;$('kr').textContent=u.tipo=='caiu'?'caiu a '+fmt(Math.round(u.ang))+'° do canhão':u.tipo;$('kq').textContent=u.tipo=='escapou'?'foi embora':fmt(Math.round(u.rmax/100)*100)+' km ('+r1(u.rmax/RT)+' raios)';
+ const h=u.t/3600;$('kt').textContent=u.tipo=='escapou'?'para sempre':h>=1?r1(h)+' h':fmt(Math.round(u.t/60))+' min';MIS.ver('m');}
+const fez=f=>tiros.some(f);
+MIS.def(()=>[
+ ['Faça a bala cair do <b>outro lado da Terra</b>: entre 150° e 210° de distância do canhão.',()=>fez(u=>u.tipo=='caiu'&&u.ang>=150&&u.ang<=210),()=>'Caiu do outro lado! Bem perto da velocidade de órbita, ela já quase não cai.','Dispare e veja onde ela cai. Mais rápido, mais longe.'],
+ ['Ponha a bala em <b>órbita circular</b>: ela volta ao canhão sem subir nem descer mais de 1%.',()=>fez(u=>u.tipo=='círculo'),()=>'Órbita circular a '+r2(vc)+' km/s: a velocidade da Estação Espacial, uma volta a cada '+fmt(Math.round(2*Math.PI*r0/vc/60))+' minutos.','Procure uma velocidade perto de 7,7 km/s.'],
+ ['Faça uma <b>elipse</b> que se afaste mais de <b>3 raios da Terra</b> do centro.',()=>fez(u=>u.tipo=='elipse'&&u.rmax>3*RT),()=>'Uma elipse com o centro da Terra num foco. O canhão fica no perigeu, o ponto mais próximo.','Dispare mais rápido que a órbita circular.'],
+ ['Ache a <b>velocidade de escape</b>: a menor que faz a bala ir embora para sempre (até 0,1 km/s acima dela).',()=>fez(u=>u.tipo=='escapou'&&u.v<=ve+0.1),()=>'Escape com '+r2(ve)+' km/s = √2 × '+r2(vc)+' km/s. Abaixo disso a bala sempre volta.','Dispare cada vez mais rápido, perto de 11 km/s, e depois vá diminuindo.']]);
+function draw(n){const W=340,H=260;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(4,4,332,252,45,23);
+ const lim=Math.max(1.25*r0,...tiros.map(u=>Math.min(u.rmax,5*RT)));const k=118/lim,ox=W/2,oy=H/2+6;
+ g+=`<circle cx="${ox}" cy="${oy}" r="${RT*k}" fill="${TERRA}"/>`;
+ tiros.forEach((u,i)=>{const m=(u===ult&&n!==undefined)?n:u.pts.length;const pp=u.pts.slice(0,m).map(p=>(ox+p[0]*k)+','+(oy-p[1]*k)).join(' ');
+  const cor=u.tipo=='caiu'?'#94A3B8':u.tipo=='círculo'?ORANGE:u.tipo=='elipse'?'#BFD0FF':'#F472B6';g+=`<polyline points="${pp}" fill="none" stroke="${cor}" stroke-width="${u===ult?2.4:1.4}"/>`;
+  if(u===ult&&m>0){const p=u.pts[m-1];g+=`<circle cx="${ox+p[0]*k}" cy="${oy-p[1]*k}" r="4" fill="#fff"/>`;}});
+ const tx=ox,ty=oy-r0*k;g+=PG([[tx-7,oy-RT*k+2],[tx,ty],[tx+7,oy-RT*k+2]],'#7C6A55')+RC(tx-1,ty-4,10,4,'#334155');
+ g+=TX(10,18,'cinza: caiu · laranja: círculo · azul: elipse · rosa: escapou',{fs:8.5,c:'#BFD0FF',a:'start'});
+ $('fig').innerHTML=SVG(W,H,g);}
+draw();MIS.ver('m');
+})();
+</script>
+</body>
+</html>
