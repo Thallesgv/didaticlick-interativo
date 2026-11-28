@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O relógio do resgate · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>O relógio do resgate</h1></header>
+<main>
+<div class="card"><h2>O ciclo esperado</h2><p class="muted" style="margin-top:0">Um ciclo sem parada leva 40 min. Mude a chance e a duração das paradas curtas e longas. As barras têm a altura da chance de cada resultado; o triângulo vermelho é o ponto de equilíbrio, o valor esperado. O relógio multiplica por 35 ciclos.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="s1"><b>Chance de parada curta</b><input type="range"><span></span></div>
+<div class="sl" id="s2"><b>Duração da parada curta</b><input type="range"><span></span></div>
+<div class="sl" id="s3"><b>Chance de parada longa</b><input type="range"><span></span></div>
+<div class="sl" id="s4"><b>Duração da parada longa</b><input type="range"><span></span></div>
+<div class="kpi"><div>Atraso esperado<b id="k1"></b></div><div>Ciclo esperado<b id="k2"></b></div><div class="o">Resgate (35 ciclos)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Preveja o resgate.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',VD='#15803D';
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const pc1=v=>fmt(Math.round(v*1000)/10)+'%';const pc2=v=>fmt(Math.round(v*10000)/100)+'%';
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+let SEED=11;const rnd=()=>(SEED=(SEED*16807)%2147483647)/2147483647;
+const BASE3=0.9999*0.999*0.998;
+function GENTE(x,y,s,c){return `<circle cx="${x}" cy="${y-s*0.78}" r="${s*0.16}" fill="${c}"/>`+RC(x-s*0.15,y-s*0.6,s*0.3,s*0.4,c,'rx="2"')+LN(x-s*0.07,y-s*0.22,x-s*0.1,y,c,Math.max(1.5,s*0.08))+LN(x+s*0.07,y-s*0.22,x+s*0.1,y,c,Math.max(1.5,s*0.08));}
+const PC=SL('s1',0,30,1,20,draw,v=>v+'%'),DC=SL('s2',0,60,5,10,draw,v=>v+' min'),PL=SL('s3',0,10,0.5,5,draw,v=>fmt(v)+'%'),DL=SL('s4',0,240,10,60,draw,v=>v+' min');
+const atr=()=>PC.get()/100*DC.get()+PL.get()/100*DL.get(),tot=()=>35*(40+atr());
+MIS.def(()=>[
+ ['Ponha os números do Seu Valdir: parada curta de <b>20 min</b> com <b>10%</b> e longa de <b>120 min</b> com <b>2%</b>.',()=>PC.get()==10&&DC.get()==20&&PL.get()==2&&DL.get()==120,'4,4 min de atraso esperado: ciclo de 44,4 min e resgate de 25 h 54 min.',()=>'Atraso agora: '+r2(atr())+' min.'],
+ ['Sem paradas longas (<b>0%</b>) e com paradas curtas de <b>20 min</b>, ache a <b>maior</b> chance de parada curta que deixa o resgate esperado em até <b>24 h</b>.',()=>PL.get()==0&&DC.get()==20&&PC.get()==5,'5%: ciclo de 41 min e resgate de 23 h 55 min. Com 6%, passa para 24 h 02 min.',()=>'Resgate agora: '+hm(tot())+'.'],
+ ['Volte aos números do Seu Valdir (10%, 20 min, 2%). Quanto a parada longa precisa durar para o atraso esperado ser <b>6 min</b>?',()=>PC.get()==10&&DC.get()==20&&PL.get()==2&&DL.get()==200,'200 min: 0,1 × 20 + 0,02 × 200 = 2 + 4 = 6 min. Uma parada rara, mas longa, pesa mais que as curtas frequentes.',()=>'Atraso agora: '+r2(atr())+' min.']]);
+function draw(){let g='';const x0=20,W=300,X=m=>x0+m/300*W,y0=150,Hh=110;
+ g+=LN(x0,y0,x0+W,y0,NAVY,2);for(let m=0;m<=300;m+=50)g+=LN(X(m),y0,X(m),y0+5,NAVY,1.5)+TX(X(m),y0+18,m,{fs:9,c:GRAY,w:500});g+=TX(x0+W,y0+32,'duração do ciclo (min)',{fs:10,a:'end'});
+ const pc=PC.get()/100,pl=PL.get()/100,res=[[40,1-pc-pl],[40+DC.get(),pc],[40+DL.get(),pl]];
+ res.forEach(([m,p],i)=>{const h=Math.max(p>0?2:0,p*Hh);g+=RC(X(m)-8,y0-h,16,h,[AZP,ORANGE,VERM][i],'opacity=".85"')+(p>0?TX(X(m),y0-h-5,Math.round(p*1000)/10+'%',{fs:10,c:[AZP,ORANGE,VERM][i]}):'');});
+ const e=40+atr();g+=PG([[X(e),y0+1],[X(e)-9,y0+15],[X(e)+9,y0+15]],VERM)+LN(X(e),y0,X(e),y0-Hh-10,VERM,1.2,'4 3')+TX(X(e)+6,24,'E = '+r1(e)+' min',{fs:11,a:'start',c:VERM});
+ const t=tot(),hx=20,hw=300;g+=RC(hx,190,hw,16,'#F3F4F6','rx="8"')+RC(hx,190,Math.min(hw,t/(30*60)*hw),16,t<=1440?VD:ORANGE,'rx="8"')+LN(hx+hw*24/30,186,hx+hw*24/30,210,NAVY,2)+TX(hx+hw*24/30,222,'24 h',{fs:9})+TX(hx+hw,222,'30 h',{fs:9,a:'end',c:GRAY})+TX(hx,222,'0',{fs:9,a:'start',c:GRAY});
+ $('fig').innerHTML=SVG(340,228,g);$('k1').textContent=r2(atr())+' min';$('k2').textContent=r2(e)+' min';$('k3').textContent=hm(t);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

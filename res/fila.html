@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A fila da cápsula · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A fila da cápsula</h1></header>
+<main>
+<div class="card"><h2>O princípio multiplicativo</h2><p class="muted" style="margin-top:0">Mude o número de voluntários e de lugares a preencher na frente da fila. Para o 1º lugar há uma escolha por voluntário; para o 2º, uma a menos; e assim por diante. Aperte <b>Sortear uma ordem</b> para ver uma das possibilidades.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Voluntários</b><input type="range"><span></span></div>
+<div class="sl" id="sk"><b>Lugares</b><input type="range"><span></span></div>
+<div class="row"><button class="alt" id="bt">Sortear uma ordem</button></div>
+<div class="kpi"><div class="o">Ordens possíveis<b id="k1"></b></div><div>Grupos (sem ordem)<b id="k2"></b></div><div>Chance de uma ordem<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a fila.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZP='#3B7DD8',VD='#15803D';
+const perto=(a,b,t)=>Math.abs(a-b)<(t||1e-6);const pc1=v=>fmt(Math.round(v*1000)/10)+'%';const pc2=v=>fmt(Math.round(v*10000)/100)+'%';
+const hm=m=>Math.floor(m/60)+' h '+String(Math.round(m%60)).padStart(2,'0')+' min';
+let SEED=11;const rnd=()=>(SEED=(SEED*16807)%2147483647)/2147483647;
+const BASE3=0.9999*0.999*0.998;
+function GENTE(x,y,s,c){return `<circle cx="${x}" cy="${y-s*0.78}" r="${s*0.16}" fill="${c}"/>`+RC(x-s*0.15,y-s*0.6,s*0.3,s*0.4,c,'rx="2"')+LN(x-s*0.07,y-s*0.22,x-s*0.1,y,c,Math.max(1.5,s*0.08))+LN(x+s*0.07,y-s*0.22,x+s*0.1,y,c,Math.max(1.5,s*0.08));}
+const V=SL('sv',2,12,1,5,()=>{ordem=null;draw();}),KL=SL('sk',1,6,1,2,()=>{ordem=null;draw();});let ordem=null;
+const kk=()=>Math.min(KL.get(),V.get()),arr=()=>{let r=1;for(let i=0;i<kk();i++)r*=V.get()-i;return r;},fat=n=>n<=1?1:n*fat(n-1);
+$('bt').onclick=()=>{const a=[...Array(V.get()).keys()];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}ordem=a.slice(0,kk());draw();};
+MIS.def(()=>[
+ ['Seis voluntários para os <b>4</b> primeiros lugares. De quantas maneiras, em ordem?',()=>V.get()==6&&KL.get()==4,'360 = 6 × 5 × 4 × 3. Sem ordem, 360 ÷ 4! = 15 grupos de quatro.',()=>'Agora: '+fmt(arr())+' ordens.'],
+ ['Mantendo 4 lugares, ache o <b>menor</b> número de voluntários que passa de <b>1.000</b> ordens.',()=>V.get()==8&&KL.get()==4,'8 voluntários: 8 × 7 × 6 × 5 = 1.680. Com 7, eram 840.',()=>'Agora: '+fmt(arr())+' ordens.'],
+ ['Com <b>10</b> voluntários, quantos lugares dão exatamente <b>5.040</b> ordens?',()=>V.get()==10&&KL.get()==4,'4 lugares: 10 × 9 × 8 × 7 = 5.040, que também é 7!. Cada lugar a mais multiplica por um número menor.',()=>'Agora: '+fmt(arr())+' ordens.']]);
+function draw(){const v=V.get(),k=kk();let g='';const sp=Math.min(28,300/v),x0=170-(v-1)*sp/2;
+ for(let i=0;i<v;i++){const usado=ordem&&ordem.includes(i);g+=GENTE(x0+i*sp,58,30,usado?'#CBD5E1':(i<6?AZP:GRAY))+TX(x0+i*sp,72,i+1,{fs:9,c:GRAY});}
+ const sw=Math.min(50,300/k),s0=170-(k-1)*sw/2;let conta=[];
+ for(let j=0;j<k;j++){const x=s0+j*sw;g+=RC(x-sw/2+3,100,sw-6,62,'#F3F6FB','rx="8" stroke="#D7DEEA"')+TX(x,116,(j+1)+'º',{fs:10,c:GRAY});
+  if(ordem)g+=GENTE(x,156,30,ORANGE)+TX(x+12,128,ordem[j]+1,{fs:9,c:ORANGE,a:'start'});else g+=TX(x,145,v-j,{fs:16,c:ORANGE});conta.push(v-j);}
+ g+=TX(170,186,conta.join(' × ')+' = '+fmt(arr()),{fs:13,c:NAVY});$('fig').innerHTML=SVG(340,196,g);
+ $('k1').textContent=fmt(arr());$('k2').textContent=fmt(arr()/fat(k));$('k3').textContent='1 em '+fmt(arr());MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
