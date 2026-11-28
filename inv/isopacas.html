@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O mapa de isópacas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O mapa de isópacas</h1></header>
+<main>
+<div class="card"><h2>e(r) = e₀ · (1/2)^(r/m)</h2><p class="muted" style="margin-top:0">A cinza é mais grossa perto da cratera e cai pela metade a cada <b>m</b> quilômetros. <b>Toque no mapa</b> (ou use a régua de distância) para medir a espessura. Escolha um anel para somar o volume.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Espessura na cratera e₀</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Cai pela metade a cada m</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Distância r</b><input type="range"><span></span></div>
+<div id="ch" style="margin:6px 0"></div>
+<div class="kpi"><div class="o">Espessura em r<b id="ke"></b></div><div>Área do anel<b id="ka"></b></div><div>Espessura média<b id="kmd"></b></div><div>Volume do anel<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Meça a cinza.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const KM3=v=>SIG(v)+' km³';
+function nuvemSVG(x,y,w,h,c){let g='';[[-0.35,0,0.3],[-0.1,-0.12,0.36],[0.18,-0.05,0.32],[0.38,0.05,0.26],[0,0.12,0.3]].forEach(([dx,dy,r])=>g+=CI(x+dx*w,y+dy*h,r*h*1.2,c||'#9AA0AC'));return g;}
+const E0=SL('se',40,300,10,100,()=>draw(),v=>v+' cm');
+const M=SL('sm',10,60,1,20,()=>draw(),v=>v+' km');
+const Rr=SL('sr',0,300,1,45,()=>draw(),v=>v+' km');
+const AN=[[0,30],[30,60],[60,90],[90,120]];let an=-1;
+const Ch=chips('ch',['sem anel','anel 0–30 km','anel 30–60 km','anel 60–90 km','anel 90–120 km'],0,i=>{an=i-1;draw();});
+const e=r=>E0.get()*Math.pow(0.5,r/M.get());
+const pad=()=>E0.get()==160&&M.get()==30;
+const area=()=>an<0?0:Math.PI*(AN[an][1]**2-AN[an][0]**2),med=()=>an<0?0:(e(AN[an][0])+e(AN[an][1]))/2/100,vol=()=>area()*med()/1000;
+MIS.def(()=>[
+ ['Ponha o modelo do Monte Brasa: <b>160 cm</b> na cratera, metade a cada <b>30 km</b>. Meça em <b>Porto Morena</b>, a 10 km.',()=>pad()&&Rr.get()==10,()=>'e ≈ 160 × (1/2)^(1/3) ≈ '+r1(e(10))+' cm. A régua do Seu Zeca marcou 1,27 m.',()=>!pad()?'Ponha e₀ = 160 cm e m = 30 km.':'Leve a distância até 10 km.'],
+ ['E no continente, a <b>300 km</b>?',()=>pad()&&Rr.get()==300,()=>'300 ÷ 30 = 10 metades: 160 ÷ 1.024 ≈ '+r2(e(300))+' cm. Menos de 2 mm, mas sobre uma área enorme.',()=>!pad()?'Volte a 160 cm e 30 km.':'Leve a distância até 300 km.'],
+ ['Some o anel de <b>30 a 60 km</b>: área × espessura média.',()=>pad()&&an==1,()=>'A ≈ '+fmt(Math.round(area()))+' km², média ≈ '+r2(med())+' m: V ≈ '+r1(vol())+' km³. Mais fino que o primeiro anel, mas maior em volume.',()=>!pad()?'Volte a 160 cm e 30 km.':'Escolha "anel 30–60 km".'],
+ ['Se a cinza caísse pela metade a cada <b>15 km</b>, quanto teria em Porto Morena?',()=>E0.get()==160&&M.get()==15&&Rr.get()==10,()=>'160 × (1/2)^(10/15) ≈ '+r1(e(10))+' cm: uns 27 cm a menos. O valor de m muda tudo longe da cratera.',()=>'Ponha e₀ = 160 cm, m = 15 km e r = 10 km.']]);
+const W=340,Hh=236,cx=120,cy=118,sc=105/120;
+function quadro(){let g=RC(0,0,W,Hh,MAR,'rx="10"');
+ for(let r=120;r>0;r-=10){const t=clamp(e(r-5)/E0.get(),0,1);const c=Math.round(215-150*t);g+=CI(cx,cy,r*sc,`rgb(${c},${c+4},${c+12})`);}
+ [30,60,90].forEach(r=>g+=CI(cx,cy,r*sc,'none','stroke="#fff" stroke-width="1"')+TX(cx+r*sc*0.7+2,cy-r*sc*0.7,r1(e(r))+' cm',{fs:8.5,c:NAVY,a:'start'}));
+ if(an>=0)g+=CI(cx,cy,AN[an][1]*sc,'none','stroke="#F7821F" stroke-width="3"')+(AN[an][0]>0?CI(cx,cy,AN[an][0]*sc,'none','stroke="#F7821F" stroke-width="3"'):'');
+ g+=CI(cx,cy,4,LAVA)+CI(cx-10*sc,cy+2,3,'#fff','stroke="#0E2354"')+TX(cx-10*sc-4,cy+16,'Porto Morena',{fs:8,c:'#fff',a:'end',w:500});
+ const r=Rr.get();if(r<=120){g+=LN(cx,cy,cx+r*sc,cy,ORANGE,2)+CI(cx+r*sc,cy,5,ORANGE,'stroke="#fff" stroke-width="2"');}
+ else g+=LN(cx,cy,W-108,cy,ORANGE,2,'4 3')+TX(W-110,cy-6,'→ '+r+' km',{fs:9,c:ORANGE,a:'end'});
+ const x0=W-100;let lin='';const pts=[];for(let i=0;i<=60;i++){const rr=i*5;pts.push([x0+rr/300*90,40+150*(1-e(rr)/300)]);}
+ g+=RC(x0-6,20,100,186,'#fff','rx="6" opacity=".9"')+TX(x0+45,34,'espessura × r',{fs:8.5,c:NAVY});
+ g+=`<polyline points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${NAVY}" stroke-width="2"/>`;
+ g+=LN(x0,190,x0+90,190,GRAY,1)+LN(x0,40,x0,190,GRAY,1)+TX(x0+90,202,'300 km',{fs:8,c:GRAY,a:'end',w:500})+CI(x0+r/300*90,40+150*(1-e(r)/300),4,ORANGE);
+ $('fig').innerHTML=SVG(W,Hh,g);}
+toque('fig',(x,y)=>{const r=Math.round(Math.hypot(x-cx,y-cy)/sc);if(x<W-108){Rr.set(Math.min(120,r));draw();}});
+function draw(){$('ke').textContent=SIG(e(Rr.get()))+' cm';if(an<0){['ka','kmd','kv'].forEach(i=>$(i).textContent='escolha um anel');}else{$('ka').textContent=fmt(Math.round(area()))+' km²';$('kmd').textContent=r2(med())+' m';$('kv').textContent=r1(vol())+' km³';}quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

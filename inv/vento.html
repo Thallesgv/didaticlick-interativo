@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A nuvem no mapa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A nuvem no mapa</h1></header>
+<main>
+<div class="card"><h2>Uma elipse que anda e cresce</h2><p class="muted" style="margin-top:0">O centro da nuvem anda <b>v · t</b> na direção do vento; os semieixos crescem: <b>a = 20 + 4t</b> e <b>b = 10 + 2t</b> (km). O aeroporto de Vila Costeira fica 300 km a oeste. Ele está dentro se x²/a² + y²/b² ≤ 1.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Tempo t</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Velocidade do vento v</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Desvio do vento θ</b><input type="range"><span></span></div>
+<div class="kpi"><div>Centro (oeste, sul)<b id="kc"></b></div><div>Semieixos<b id="ke"></b></div><div>Área<b id="ka"></b></div><div class="o">Aeroporto: x²/a² + y²/b²<b id="kq"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mova a nuvem.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const KM3=v=>SIG(v)+' km³';
+function nuvemSVG(x,y,w,h,c){let g='';[[-0.35,0,0.3],[-0.1,-0.12,0.36],[0.18,-0.05,0.32],[0.38,0.05,0.26],[0,0.12,0.3]].forEach(([dx,dy,r])=>g+=CI(x+dx*w,y+dy*h,r*h*1.2,c||'#9AA0AC'));return g;}
+const T=SL('st',0,10,0.05,2,()=>draw(),v=>r2(v)+' h');
+const V=SL('sv',20,80,5,40,()=>draw(),v=>v+' km/h');
+const A=SL('sa',-30,30,5,0,()=>draw(),v=>v+'°');
+const th=()=>A.get()*RAD,cw=()=>V.get()*T.get()*Math.cos(th()),cs=()=>V.get()*T.get()*Math.sin(th()),a=()=>20+4*T.get(),b=()=>10+2*T.get();
+function q(){const dx=300-cw(),dy=0-cs();const x=dx*Math.cos(th())+dy*Math.sin(th()),y=-dx*Math.sin(th())+dy*Math.cos(th());return x*x/a()**2+y*y/b()**2;}
+const den=()=>q()<=1;
+MIS.def(()=>[
+ ['Às 12h40 (<b>t = 6 h</b>), com vento de 40 km/h vindo de leste: a nuvem já cobre o aeroporto?',()=>V.get()==40&&A.get()==0&&Math.abs(T.get()-6)<0.03,()=>'Centro a 240 km, a = 44 km: 60²/44² ≈ '+r2(q())+' > 1. Ainda fora, mas a frente está a 284 km.',()=>'Ponha v = 40 km/h, θ = 0° e t = 6 h.'],
+ ['Encontre o <b>primeiro instante</b> em que a cinza chega ao aeroporto.',()=>V.get()==40&&A.get()==0&&den()&&T.get()<=6.45,()=>'Por volta de t ≈ '+r2(T.get())+' h. A frente está a 40t + 20 + 4t = 44t + 20 km: 44t + 20 = 300 dá t ≈ 6,36 h, umas 13h00.',()=>V.get()!=40||A.get()!=0?'Volte para 40 km/h e θ = 0°.':den()?'Já está dentro. Volte um pouco o tempo para achar o primeiro instante.':'Ainda fora (valor '+r2(q())+'). Avance o tempo.'],
+ ['E se o vento fosse de <b>60 km/h</b>? Quando a cinza chegaria?',()=>V.get()==60&&A.get()==0&&den()&&T.get()<=4.45,()=>'64t + 20 = 300 dá t ≈ 4,4 h: quase duas horas antes.',()=>V.get()!=60||A.get()!=0?'Ponha v = 60 km/h e θ = 0°.':den()?'Já está dentro. Volte um pouco o tempo.':'Ainda fora. Avance o tempo.'],
+ ['O vento desvia <b>20°</b> para o sul. Às <b>6 h</b>, onde está o centro?',()=>V.get()==40&&A.get()==20&&Math.abs(T.get()-6)<0.03,()=>'240 km na direção do vento: '+r1(cw())+' km para oeste (240 · cos 20°) e '+r1(cs())+' km para o sul (240 · sen 20°). A nuvem passa ao sul do aeroporto.',()=>'Ponha v = 40 km/h, θ = 20° e t = 6 h.']]);
+function quadro(){const W=340,H=236,s=300/340,xv=322,cy=96,X=km=>xv-km*s*0.95,Y=km=>cy+km*s*0.95;let g=RC(0,0,W,H,MAR,'rx="10"');
+ g+=PG([[0,0],[X(300)+4,0],[X(300)-6,H],[0,H]],TERRA);
+ g+=CI(X(300),cy,5,BLUE,'stroke="#fff" stroke-width="2"')+TX(X(300)-8,cy-10,'Vila',{fs:9,c:NAVY,a:'end'})+TX(X(300)-8,cy+2,'Costeira',{fs:9,c:NAVY,a:'end'});
+ const ex=X(cw()),ey=Y(cs());g+=`<ellipse cx="${ex}" cy="${ey}" rx="${a()*s*0.95}" ry="${b()*s*0.95}" transform="rotate(${A.get()} ${ex} ${ey})" fill="${den()?'#7C828E':'#A3A8B2'}" opacity=".85" stroke="#fff"/>`;
+ g+=CI(ex,ey,3,NAVY)+LN(xv,cy,ex,ey,NAVY,1,'3 3');
+ g+=CI(xv,cy,7,ROCHA)+CI(xv,cy,3,LAVA)+TX(xv,cy+20,'cratera',{fs:8.5,c:NAVY});
+ g+=LN(W-20,H-20,W-80,H-20,NAVY,2)+PG([[W-80,H-20],[W-72,H-25],[W-72,H-15]],NAVY)+TX(W-50,H-28,'vento',{fs:9,c:NAVY});
+ g+=TX(10,H-10,den()?'cinza no aeroporto!':'aeroporto livre',{fs:11,c:den()?'#B91C1C':GREEN,a:'start'});
+ $('fig').innerHTML=SVG(W,H,g);}
+function draw(){$('kc').textContent=r1(cw())+' km, '+r1(cs())+' km';$('ke').textContent='a = '+r1(a())+', b = '+r1(b());$('ka').textContent=fmt(Math.round(Math.PI*a()*b()))+' km²';$('kq').textContent=r2(q())+(den()?' (dentro)':' (fora)');quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O telhado e a cinza · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O telhado e a cinza</h1></header>
+<main>
+<div class="card"><h2>Carga = densidade × espessura</h2><p class="muted" style="margin-top:0">Escolha a espessura da cinza, se ela está <b>seca</b> (cerca de 1.000 kg/m³) ou <b>molhada</b> (perto de 2.000 kg/m³), o tamanho da casa e a inclinação do telhado. A barra mostra a carga contra o limite de um telhado fraco: <b>150 kg/m²</b> (valor do exercício).</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="se"><b>Espessura da cinza</b><input type="range"><span></span></div>
+<div class="sl" id="sw"><b>Largura da casa</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Comprimento</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Inclinação</b><input type="range"><span></span></div>
+<div class="kpi"><div>Área no chão<b id="kp"></b></div><div>Área de telha<b id="kt"></b></div><div>Carga<b id="kc"></b></div><div class="o">Massa total<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ponha cinza no telhado.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const KM3=v=>SIG(v)+' km³';
+function nuvemSVG(x,y,w,h,c){let g='';[[-0.35,0,0.3],[-0.1,-0.12,0.36],[0.18,-0.05,0.32],[0.38,0.05,0.26],[0,0.12,0.3]].forEach(([dx,dy,r])=>g+=CI(x+dx*w,y+dy*h,r*h*1.2,c||'#9AA0AC'));return g;}
+let mol=0;chips('ch',['Cinza seca','Cinza molhada'],0,i=>{mol=i;draw();});
+const E=SL('se',0,50,0.5,10,()=>draw(),v=>fmt(v)+' cm');
+const Lw=SL('sw',4,12,1,6,()=>draw(),v=>v+' m');
+const Lc=SL('sc',4,12,1,6,()=>draw(),v=>v+' m');
+const I=SL('si',0,45,5,20,()=>draw(),v=>v+'°');
+const den=()=>mol?2000:1000,carga=()=>den()*E.get()/100,proj=()=>Lw.get()*Lc.get(),telha=()=>proj()/Math.cos(I.get()*RAD),massa=()=>carga()*proj();
+const zeca=()=>Lw.get()*Lc.get()==48&&(Lw.get()==8||Lw.get()==6)&&E.get()==40;let viuI=new Set();
+MIS.def(()=>[
+ ['A casa do Seu Zeca: <b>8 m × 6 m</b> com <b>40 cm</b> de cinza <b>seca</b>. Quantas toneladas?',()=>zeca()&&!mol,()=>'48 m² × 0,4 m × 1.000 kg/m³ = '+r1(massa()/1000)+' toneladas.',()=>'Ponha 8 m × 6 m, 40 cm e cinza seca.'],
+ ['Agora vem a chuva: a mesma cinza, <b>molhada</b>.',()=>zeca()&&mol,()=>'Cerca de '+r1(massa()/1000)+' toneladas: o dobro, sem mudar um centímetro. São 800 kg em cada metro quadrado.',()=>!zeca()?'Volte para 8 m × 6 m com 40 cm.':'Escolha "Cinza molhada".'],
+ ['Com cinza molhada, qual a <b>maior espessura</b> que o telhado fraco (150 kg/m²) aguenta?',()=>mol&&E.get()==7.5,'7,5 cm: 2.000 × 0,075 = 150 kg/m². Seca, aguentaria o dobro, 15 cm. Por isso se limpa o telhado antes da chuva.',()=>!mol?'Escolha "Cinza molhada".':carga()>150?'Passou do limite: '+fmt(carga())+' kg/m². Diminua.':'Ainda cabe: '+fmt(carga())+' kg/m². Procure o ponto exato.'],
+ ['Mude a <b>inclinação</b> do telhado de 0° até 45°. A massa de cinza muda?',()=>viuI.has(0)&&viuI.has(45),'Não! A área de telha cresce (projeção ÷ cos θ), mas a cinza cai na vertical: o que conta é a área da sombra no chão. Em telhados bem inclinados, parte da cinza ainda pode escorregar.',()=>'Já viu: '+[...viuI].sort((a,b)=>a-b).join('°, ')+(viuI.size?'°':'nada ainda')+'. Passe por 0° e 45°.']]);
+function quadro(){const W=340,H=236,y0=200,cx=150;let g=RC(0,0,W,H,'#EAF2FB','rx="10"')+RC(0,y0,W,H-y0,'#C9A57A');
+ const w=Lw.get()*12,hp=60,th=I.get()*RAD,hr=Math.tan(th)*w/2,e=E.get()*0.9*(mol?1:1);
+ g+=RC(cx-w/2,y0-hp,w,hp,'#F3E7D3','stroke="#0E2354"')+RC(cx-10,y0-36,20,36,'#B07A4A');
+ const yb=y0-hp;g+=PG([[cx-w/2-8,yb],[cx,yb-hr],[cx+w/2+8,yb]],'#B9381F','stroke="#0E2354"');
+ if(e>0)g+=PG([[cx-w/2-8,yb],[cx,yb-hr],[cx+w/2+8,yb],[cx+w/2+8,yb-e*Math.cos(th)],[cx,yb-hr-e],[cx-w/2-8,yb-e*Math.cos(th)]],mol?'#5B616D':'#A3A8B2','stroke="#6B7280"');
+ for(let i=0;i<9;i++){const x=cx-w/2+i*w/8;g+=LN(x,36,x,50,mol?BLUE:'#9AA0AC',1.2);}
+ g+=LN(cx-w/2-8,y0+14,cx+w/2+8,y0+14,ORANGE,2)+TX(cx,y0+28,'sombra no chão: '+Lw.get()+' m',{fs:9,c:ORANGE});
+ const bx=W-44,bt=40,bh=150,lim=150,mx=600,yl=bt+bh*(1-lim/mx),yc=bt+bh*(1-Math.min(carga(),mx)/mx);
+ g+=RC(bx,bt,22,bh,'#fff','stroke="#0E2354"')+RC(bx,yc,22,bt+bh-yc,carga()>lim?'#B91C1C':GREEN)+LN(bx-6,yl,bx+28,yl,'#B91C1C',2,'4 2')+TX(bx-8,yl+4,'150',{fs:9,c:'#B91C1C',a:'end'});
+ g+=TX(bx+11,bt-8,'kg/m²',{fs:9,c:NAVY})+TX(bx+11,bt+bh+14,fmt(Math.round(carga())),{fs:10,c:carga()>lim?'#B91C1C':GREEN});
+ g+=TX(14,22,carga()>lim?'acima do limite de um telhado fraco':'abaixo do limite',{fs:10,c:carga()>lim?'#B91C1C':GREEN,a:'start'});
+ $('fig').innerHTML=SVG(W,H,g);}
+function draw(){viuI.add(I.get());$('kp').textContent=fmt(proj())+' m²';$('kt').textContent=r1(telha())+' m²';$('kc').textContent=fmt(Math.round(carga()))+' kg/m²';$('km').textContent=massa()>=1000?r1(massa()/1000)+' t':fmt(Math.round(massa()))+' kg';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
