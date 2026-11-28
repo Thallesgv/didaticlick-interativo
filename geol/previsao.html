@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A previsão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A previsão</h1></header>
+<main>
+<div class="card"><h2>Chuva de cada dia e os limiares</h2><p class="muted" style="margin-top:0">Mude a chuva prevista para os dias 10, 11 e 12 e a chuva que caiu no dia 6 (arraste ou use − e +). Os dias 7, 8 e 9 ficam secos. As barras passam a vermelho acima de 70 mm; a linha laranja é a soma dos últimos 4 dias (96 h), comparada com 110 mm.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="d10"><b>Dia 10</b><input type="range"><span></span></div><div class="sl" id="d11"><b>Dia 11</b><input type="range"><span></span></div><div class="sl" id="d12"><b>Dia 12</b><input type="range"><span></span></div><div class="sl" id="d6"><b>Dia 6 (já caiu)</b><input type="range"><span></span></div><div class="kpi"><div>Maior chuva em 24 h<b id="k1"></b></div><div>Maior soma em 96 h<b id="k2"></b></div><div class="o">Total do mês<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const S10=SL('d10',0,150,5,30,()=>draw(),v=>v+' mm'),S11=SL('d11',0,150,5,30,()=>draw(),v=>v+' mm'),S12=SL('d12',0,150,5,30,()=>draw(),v=>v+' mm'),S6=SL('d6',0,100,1,36,()=>draw(),v=>v+' mm');
+const dias=()=>[S6.get(),0,0,0,S10.get(),S11.get(),S12.get()],m24=()=>Math.max(...dias());
+const s96=()=>{const d=dias(),r=[];for(let i=0;i<7;i++){let s=0;for(let j=Math.max(0,i-3);j<=i;j++)s+=d[j];r.push(s);}return r;},m96=()=>Math.max(...s96()),mes=()=>dias().reduce((a,b)=>a+b,0);
+const nenhum=()=>m24()<=70&&m96()<=110&&mes()<=270;
+MIS.def(()=>[
+ ['Lance a previsão do boletim: <b>50, 90 e 40 mm</b> (dia 6 com 36 mm).',()=>S10.get()==50&&S11.get()==90&&S12.get()==40&&S6.get()==36,'Passam os limiares de 24 h (90 > 70) e de 96 h (140 no dia 11, 180 no dia 12). O do mês, não: 216 < 270.',()=>'Os dias 10, 11 e 12 estão com '+S10.get()+', '+S11.get()+' e '+S12.get()+' mm.'],
+ ['Mantendo <b>50</b> no dia 10 e <b>40</b> no dia 12, ache a <b>maior</b> chuva no dia 11 que <b>não passa</b> nenhum limiar.',()=>S10.get()==50&&S12.get()==40&&S11.get()==20&&nenhum(),'20 mm: a soma de 96 h (50 + 20 + 40 = 110) é o limite mais apertado, não a chuva de um dia.',()=>S10.get()!=50||S12.get()!=40?'Deixe 50 mm no dia 10 e 40 mm no dia 12.':nenhum()?'Com '+S11.get()+' mm nada passa. Dá para pôr mais.':'Com '+S11.get()+' mm algum limiar passa.'],
+ ['Dispare o alerta de <b>96 h</b> sem que <b>nenhum dia</b> passe de 70 mm.',()=>m24()<=70&&m96()>110,()=>'Maior dia: '+m24()+' mm; soma de 96 h: '+m96()+' mm. Chuvas moderadas, uma atrás da outra, também derrubam morros.',()=>m24()>70?'Algum dia passou de 70 mm.':'A maior soma de 96 h é '+m96()+' mm.']]);
+function draw(){const d=dias(),s=s96(),x0=36,y0=205,w=290,bw=w/7,Y=v=>y0-Math.min(v,260)/260*180;let g=RC(0,0,340,240,'#fff','rx="10"')+LN(x0,y0,x0+w,y0,NAVY,1);
+ [50,100,150,200,250].forEach(v=>g+=LN(x0,Y(v),x0+w,Y(v),'#E5E7EB',1)+TX(x0-4,Y(v)+3,v,{fs:9,a:'end'}));
+ g+=LN(x0,Y(70),x0+w,Y(70),VERM,1.2,'5 4')+TX(x0+4,Y(70)-4,'70 em 24 h',{fs:9,a:'start',c:VERM})+LN(x0,Y(110),x0+w,Y(110),ORANGE,1.2,'5 4')+TX(x0+4,Y(110)-4,'110 em 96 h',{fs:9,a:'start',c:ORANGE});
+ d.forEach((v,i)=>{const x=x0+i*bw;if(v)g+=RC(x+6,Y(v),bw-12,y0-Y(v),v>70?VERM:(i>=4?'#8FB0EE':BLUE),'rx="2"')+TX(x+bw/2,Y(v)-4,v,{fs:9});g+=TX(x+bw/2,y0+14,'dia '+(6+i),{fs:9,c:GRAY});});
+ g+=PL(s.map((v,i)=>[x0+i*bw+bw/2,Y(v)]),ORANGE,2);s.forEach((v,i)=>g+=CIR(x0+i*bw+bw/2,Y(v),3.5,v>110?VERM:ORANGE));
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=m24()+' mm'+(m24()>70?' ⚠':'');$('k2').textContent=m96()+' mm'+(m96()>110?' ⚠':'');$('k3').textContent=mes()+' mm'+(mes()>270?' ⚠':'');MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

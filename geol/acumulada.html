@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hora a hora · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Hora a hora</h1></header>
+<main>
+<div class="card"><h2>Hietograma e chuva acumulada</h2><p class="muted" style="margin-top:0">Mude a chuva de cada hora da noite, das 18h às 24h (arraste ou use − e +). Em cima, as barras de cada hora; embaixo, a chuva acumulada, que soma as barras uma a uma. A linha vermelha marca o alerta de 30 mm em 1 hora.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="h1"><b>18h às 19h</b><input type="range"><span></span></div><div class="sl" id="h2"><b>19h às 20h</b><input type="range"><span></span></div><div class="sl" id="h3"><b>20h às 21h</b><input type="range"><span></span></div><div class="sl" id="h4"><b>21h às 22h</b><input type="range"><span></span></div><div class="sl" id="h5"><b>22h às 23h</b><input type="range"><span></span></div><div class="sl" id="h6"><b>23h às 24h</b><input type="range"><span></span></div><div class="kpi"><div>Total da noite<b id="k1"></b></div><div>Hora mais forte<b id="k2"></b></div><div class="o">Horas sem chuva<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const H=[1,2,3,4,5,6].map(i=>SL('h'+i,0,40,1,5,()=>draw(),v=>v+' mm'));
+const v=()=>H.map(s=>s.get()),tot=()=>v().reduce((a,b)=>a+b,0),ac=()=>{let s=0;return [0].concat(v().map(x=>s+=x));};
+const parada=()=>{const x=v();for(let i=0;i<5;i++)if(x[i]==0&&x[i+1]==0)return true;return false;};
+MIS.def(()=>[
+ ['Refaça a noite do dia 6: <b>2, 6, 14, 9, 4 e 1 mm</b>.',()=>[2,6,14,9,4,1].every((x,i)=>v()[i]==x),'Acumulado: 0, 2, 8, 22, 31, 35, 36. A subida mais íngreme é a das 20h às 21h.',()=>{const i=[2,6,14,9,4,1].findIndex((x,i)=>v()[i]!=x);return 'A hora '+(18+i)+'h às '+(19+i)+'h está com '+v()[i]+' mm.';}],
+ ['Faça a curva ficar <b>parada por duas horas seguidas</b> e chegar a <b>36 mm</b> no fim.',()=>parada()&&tot()==36,'A curva fica horizontal onde não chove, mas nunca desce.',()=>!parada()?'Ponha 0 mm em duas horas vizinhas.':'O total está em '+tot()+' mm.'],
+ ['Crie uma hora que, sozinha, chegue ao <b>alerta de 30 mm em 1 hora</b>.',()=>Math.max(...v())>=30,()=>'Uma hora de '+Math.max(...v())+' mm: a curva dá um salto quase vertical.',()=>'A hora mais forte tem '+Math.max(...v())+' mm.']]);
+function draw(){const x=v(),A=ac(),x0=36,w=290,bw=w/6;let g=RC(0,0,340,260,'#fff','rx="10"');
+ const yb=110,kb=80/40;g+=LN(x0,yb,x0+w,yb,NAVY,1)+LN(x0,yb-30*kb,x0+w,yb-30*kb,VERM,1.2,'5 4')+TX(x0+w,yb-30*kb-4,'30 mm em 1 h',{fs:9,a:'end',c:VERM});
+ x.forEach((h,i)=>{g+=RC(x0+i*bw+6,yb-h*kb,bw-12,h*kb,h>=30?VERM:BLUE,'rx="2"')+TX(x0+i*bw+bw/2,yb-h*kb-4,h,{fs:10})+TX(x0+i*bw+bw/2,yb+12,(19+i)+'h',{fs:9,c:GRAY});});
+ const ya=245,ka=110/Math.max(40,A[6]);g+=LN(x0,ya,x0+w,ya,NAVY,1)+LN(x0,ya,x0,ya-115,NAVY,1);
+ g+=PL(A.map((a,i)=>[x0+i*bw,ya-a*ka]),ORANGE,2.5);A.forEach((a,i)=>{g+=CIR(x0+i*bw,ya-a*ka,3.5,ORANGE);if(i)g+=TX(x0+i*bw-4,ya-a*ka-6,a,{fs:9,a:'end'});});
+ g+=TX(x0+6,ya-100,'acumulado (mm)',{fs:9,a:'start'});
+ $('fig').innerHTML=SVG(340,260,g);
+ $('k1').textContent=tot()+' mm';$('k2').textContent=Math.max(...x)+' mm';$('k3').textContent=x.filter(h=>h==0).length;MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

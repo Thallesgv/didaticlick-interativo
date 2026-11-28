@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A inclinação da chuva · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A inclinação da chuva</h1></header>
+<main>
+<div class="card"><h2>Taxa média na curva acumulada</h2><p class="muted" style="margin-top:0">Escolha o começo e o fim do intervalo (em horas depois das 18h) e mude a chuva da hora mais forte, das 20h às 21h (arraste ou use − e +). O segmento laranja liga os dois pontos da curva; a inclinação dele é a taxa média.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="t1"><b>Começo</b><input type="range"><span></span></div><div class="sl" id="t2"><b>Fim</b><input type="range"><span></span></div><div class="sl" id="h3"><b>Chuva das 20h às 21h</b><input type="range"><span></span></div><div class="kpi"><div>Chuva no intervalo<b id="k1"></b></div><div>Duração<b id="k2"></b></div><div class="o">Taxa média<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const hr=v=>(18+v)+'h',T1=SL('t1',0,6,1,1,()=>draw(),hr),T2=SL('t2',0,6,1,2,()=>draw(),hr),H3=SL('h3',0,40,1,14,()=>draw(),v=>v+' mm');
+const A=()=>{const x=[2,6,H3.get(),9,4,1];let s=0;return [0].concat(x.map(h=>s+=h));},lo=()=>Math.min(T1.get(),T2.get()),hi=()=>Math.max(T1.get(),T2.get());
+const dA=()=>A()[hi()]-A()[lo()],dt=()=>hi()-lo(),tx=()=>dt()?dA()/dt():NaN;
+MIS.def(()=>[
+ ['Ache a taxa média da <b>noite inteira</b>, das 18h às 24h.',()=>lo()==0&&hi()==6&&H3.get()==14,()=>'36 ÷ 6 = '+r1(tx())+' mm/h. Uma média que esconde a hora de 14 mm.',()=>H3.get()!=14?'Volte a hora mais forte para 14 mm.':'O intervalo está de '+hr(lo())+' a '+hr(hi())+'.'],
+ ['Ache um intervalo de <b>2 horas</b> com taxa de <b>10 mm/h</b>.',()=>dt()==2&&Math.abs(tx()-10)<0.01&&H3.get()==14,()=>'Das '+hr(lo())+' às '+hr(hi())+': 20 mm em 2 h.',()=>H3.get()!=14?'Volte a hora mais forte para 14 mm.':dt()!=2?'O intervalo tem '+dt()+' h.':'Taxa agora: '+r1(tx())+' mm/h.'],
+ ['Faça a hora das 20h às 21h chegar ao <b>alerta de 30 mm/h</b> e meça a taxa dela.',()=>lo()==2&&hi()==3&&tx()>=30,()=>'Taxa de '+r1(tx())+' mm/h: alerta do DRM-RJ. O segmento fica quase em pé.',()=>lo()!=2||hi()!=3?'Escolha o intervalo das 20h às 21h.':'Taxa agora: '+r1(tx())+' mm/h.']]);
+function draw(){const a=A(),x0=36,y0=215,w=290,X=t=>x0+t*w/6,M=Math.max(40,a[6]),Y=v=>y0-v/M*185;let g=RC(0,0,340,240,'#fff','rx="10"');
+ g+=LN(x0,y0,x0+w,y0,NAVY,1)+LN(x0,y0,x0,y0-190,NAVY,1);for(let t=0;t<=6;t++)g+=TX(X(t),y0+14,hr(t),{fs:9,c:GRAY});
+ for(let v=10;v<=M;v+=10)g+=LN(x0,Y(v),x0+w,Y(v),'#E5E7EB',1)+TX(x0-4,Y(v)+3,v,{fs:9,a:'end'});
+ g+=PL(a.map((v,t)=>[X(t),Y(v)]),'#C9CED8',3);
+ if(dt()){g+=LN(X(lo()),Y(a[lo()]),X(hi()),Y(a[lo()]),ORANGE,1,'4 3')+LN(X(hi()),Y(a[lo()]),X(hi()),Y(a[hi()]),ORANGE,1,'4 3');
+  g+=LN(X(lo()),Y(a[lo()]),X(hi()),Y(a[hi()]),tx()>=30?VERM:ORANGE,3);}
+ [lo(),hi()].forEach(t=>g+=CIR(X(t),Y(a[t]),5,NAVY));
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=dA()+' mm';$('k2').textContent=dt()+' h';$('k3').textContent=dt()?r1(tx())+' mm/h':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

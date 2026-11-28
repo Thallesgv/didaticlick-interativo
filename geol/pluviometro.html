@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pluviômetro · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O pluviômetro</h1></header>
+<main>
+<div class="card"><h2>Do balde aos milímetros</h2><p class="muted" style="margin-top:0">Mude o diâmetro da boca do funil, o volume de água no balde e a área do terreno (arraste ou use − e +). O funil cresce ou encolhe, o balde enche e, à direita, a lâmina de água cobre o terreno (com a altura exagerada para aparecer).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Diâmetro da boca</b><input type="range"><span></span></div><div class="sl" id="sv"><b>Água no balde</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Área do terreno</b><input type="range"><span></span></div><div class="kpi"><div>Área da boca<b id="k1"></b></div><div>Chuva<b id="k2"></b></div><div class="o">Água no terreno<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const SD=SL('sd',10,30,1,15,()=>draw(),v=>v+' cm'),SV=SL('sv',0,3000,10,500,()=>draw(),v=>v.toLocaleString('pt-BR')+' mL'),SA=SL('sa',50,1000,50,200,()=>draw(),v=>v+' m²');
+const area=()=>Math.PI*(SD.get()/2)**2,mm=()=>SV.get()/(area()*0.1),lit=()=>mm()*SA.get();
+MIS.def(()=>[
+ ['Refaça o balde da Joana: funil de <b>20 cm</b> e <b>1 130 mL</b> no balde. Quantos mm choveu?',()=>SD.get()==20&&SV.get()==1130,()=>'1 130 ÷ 31,4 ≈ '+r1(mm())+' mm: a noite do dia 6.',()=>SD.get()!=20?'O funil está com '+SD.get()+' cm.':'O balde está com '+SV.get()+' mL.'],
+ ['Com um funil de <b>30 cm</b>, quanto o balde coletaria na <b>mesma chuva de 36 mm</b>?',()=>SD.get()==30&&Math.abs(mm()-36)<0.5,()=>SV.get().toLocaleString('pt-BR')+' mL: mais água, porque a boca é maior, mas os mesmos 36 mm.',()=>SD.get()!=30?'Ponha o funil de 30 cm.':'Agora o balde marca '+r1(mm())+' mm.'],
+ ['Com os 36 mm, quanta água caiu sobre o pacote de <b>600 m²</b> do setor A?',()=>SA.get()==600&&Math.abs(mm()-36)<0.5,()=>fmt(Math.round(lit()/100)*100)+' L, uns '+r1(lit()/1000)+' m³ de água numa noite.',()=>Math.abs(mm()-36)>=0.5?'Primeiro, deixe a chuva em 36 mm.':'A área está com '+SA.get()+' m².']]);
+function draw(){const d=SD.get(),f=Math.min(1,SV.get()/3000),cx=80;let g=RC(0,0,340,240,'#fff','rx="10"');
+ const w=d*4;g+=PG([[cx-w/2,40],[cx+w/2,40],[cx+6,90],[cx-6,90]],'#D1D5DB','stroke="'+NAVY+'"')+LN(cx-w/2,32,cx+w/2,32,ORANGE,2)+TX(cx,26,d+' cm',{fs:10,c:ORANGE});
+ g+=PG([[cx-40,95],[cx+40,95],[cx+34,215],[cx-34,215]],'#fff','stroke="'+NAVY+'" stroke-width="1.5"');
+ const hb=120*f;g+=PG([[cx-34-6*(hb/120),215-hb],[cx+34+6*(hb/120),215-hb],[cx+34,215],[cx-34,215]],AGUA_C,'');
+ g+=TX(cx,232,SV.get().toLocaleString('pt-BR')+' mL',{fs:10,c:AGUA});
+ // terreno
+ const tx=190,ty=170,s=Math.sqrt(SA.get())*3,hm=Math.min(60,mm()*0.8);
+ g+=PG([[tx,ty],[tx+s,ty],[tx+s+s*0.35,ty-s*0.3],[tx+s*0.35,ty-s*0.3]],TERRA,'stroke="'+TERRA_E+'"');
+ g+=RC(tx,ty-hm,s,hm,AGUA_C,'stroke="'+AGUA+'"')+PG([[tx,ty-hm],[tx+s,ty-hm],[tx+s+s*0.35,ty-hm-s*0.3],[tx+s*0.35,ty-hm-s*0.3]],AGUA_C,'stroke="'+AGUA+'"');
+ g+=TX(tx+s/2,ty+16,SA.get()+' m²',{fs:10})+TX(tx+s/2+20,ty-hm-s*0.3-8,r1(mm())+' mm',{fs:11,c:AGUA});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(area())+' cm²';$('k2').textContent=r1(mm())+' mm';$('k3').textContent=fmt(Math.round(lit()))+' L';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
