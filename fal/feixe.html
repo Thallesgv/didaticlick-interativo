@@ -9,41 +9,46 @@
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A chuva de fótons</h1></header>
 <main>
-<div class="card"><h2>Quem atravessa?</h2><p class="muted" style="margin-top:0">Ligue e desligue os materiais na frente do feixe (toque nos botões ou nas camadas do desenho). Cada bolinha representa um grupo de fótons: as laranja chegam ao detector, as cinzas ficam presas. O contador calcula a fração T.</p>
+<div class="card"><h2>Quem atravessa?</h2><p class="muted" style="margin-top:0">Escolha o que fica na frente do feixe: o linho, quantas lâminas de chumbo de 0,05 mm e a lâmina de titânio. Cada bolinha laranja é um grupo de fótons. Veja a chuva diminuir a cada camada: o número em cima de cada trecho diz quantos fótons ainda estão passando. As bolinhas cinzas ficaram presas na camada.</p>
 <div id="chm" style="margin:4px 0;display:flex;flex-wrap:wrap;gap:4px"></div>
 <div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Lâminas de chumbo</b><input type="range"><span></span></div>
 <div class="sl" id="sn"><b>Fótons enviados</b><input type="range"><span></span></div>
-<div class="kpi"><div>Chegaram<b id="kc"></b></div><div>Ficaram presos<b id="kp"></b></div><div class="o">T = sai ÷ entra<b id="kt"></b></div></div>
+<div class="kpi"><div>Chegaram ao detector<b id="kc"></b></div><div>Ficaram presos<b id="kp"></b></div><div class="o">T = sai ÷ entra<b id="kt"></b></div></div>
 <div id="m"></div></div>
-<div class="card"><h2>Missão</h2><p style="margin:0">Meça cada material.</p></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Siga os fótons camada por camada.</p></div>
 </main>
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const MAT=[{n:'Linho',T:0.8,c:'#E9DFC8',on:false},{n:'Lâmina de chumbo 0,05 mm',T:0.71,c:'#D7DBE0',on:false},{n:'Lâmina de titânio',T:0.92,c:'#EEF1F5',on:false}];
-function botoes(){$('chm').innerHTML=MAT.map((m,i)=>`<button data-i="${i}" class="${m.on?'':'alt'}" style="padding:5px 11px;font-size:13px">${m.on?'✔ ':''}${m.n}</button>`).join('');
- document.querySelectorAll('#chm button').forEach(b=>b.onclick=()=>{MAT[+b.dataset.i].on=!MAT[+b.dataset.i].on;botoes();draw();});}
+const ON={linho:false,ti:false};
+function botoes(){$('chm').innerHTML=[['linho','Linho'],['ti','Lâmina de titânio']].map(([k,n])=>`<button data-k="${k}" class="${ON[k]?'':'alt'}" style="padding:5px 11px;font-size:13px">${ON[k]?'✔ ':''}${n}</button>`).join('');
+ document.querySelectorAll('#chm button').forEach(b=>b.onclick=()=>{ON[b.dataset.k]=!ON[b.dataset.k];botoes();draw();});}
 botoes();
-const SN=SL('sn',1000,20000,1000,10000,()=>draw(),v=>fmt(v));
-toque('fig',(x,y)=>{MAT.forEach((m,i)=>{const lx=120+i*40;if(x>lx-6&&x<lx+26){m.on=!m.on;}});botoes();draw();});
-const Tt=()=>MAT.reduce((t,m)=>m.on?t*m.T:t,1);
-const so=(a,b)=>MAT[0].on==a&&MAT[1].on==b&&!MAT[2].on;
+const SP=SL('sp',0,4,1,0,()=>draw(),v=>v),SN=SL('sn',1000,20000,1000,10000,()=>draw(),v=>fmt(v));
+const camadas=()=>{const c=[];if(ON.linho)c.push({n:'linho',T:0.8,c:'#E9DFC8'});for(let i=0;i<SP.get();i++)c.push({n:'Pb',T:0.71,c:'#D7DBE0'});if(ON.ti)c.push({n:'Ti',T:0.92,c:'#EEF1F5'});return c;};
+const Tt=()=>camadas().reduce((t,m)=>t*m.T,1);
+const so=(l,n,t)=>ON.linho==l&&SP.get()==n&&ON.ti==t;const N=()=>SN.get(),ch=()=>Math.round(N()*Tt());
 MIS.def(()=>[
- ['Ligue só o <b>linho</b>. Qual o T?',()=>so(true,false),'T = 0,8: o linho deixa passar 80% dos fótons e absorve 20%.',()=>'Ligue só o linho (desligue os outros).'],
- ['Agora só a <b>lâmina de chumbo</b>. Qual o T?',()=>so(false,true),'T = 0,71: uma lâmina de 0,05 mm já segura 29%. Na radiografia, ela aparece mais clara que o linho.',()=>'Ligue só a lâmina de chumbo.'],
- ['Ligue <b>linho e chumbo juntos</b>. O T do conjunto é a soma, a diferença ou o produto?',()=>so(true,true),'T = 0,8 × 0,71 = 0,568. As frações se multiplicam: o chumbo só age sobre o que o linho deixou passar.',()=>'Ligue o linho e a lâmina de chumbo, sem o titânio.']]);
-function draw(){const N=SN.get(),T=Tt(),c=Math.round(N*T);let g=RC(0,0,340,220,'#fff','rx="10"');
- g+=RC(10,70,40,80,NAVY,'rx="6"')+TX(30,165,'tubo',{fs:9,c:GRAY})+RC(296,40,24,140,'#5B6472','rx="4"')+TX(308,195,'detector',{fs:9,c:GRAY});
- MAT.forEach((m,i)=>{const lx=120+i*40;g+=RC(lx,30,20,160,m.c,'rx="3" stroke="'+NAVY+'" stroke-width="'+(m.on?1.5:.5)+'" opacity="'+(m.on?1:.25)+'"');
-  g+=TX(lx+10,22,['linho','chumbo','titânio'][i],{fs:9,c:m.on?NAVY:'#B0B7C3'});});
- const K=40,ch=Math.round(K*T);let vivos=[];for(let k=0;k<K;k++)vivos.push(k);
- let presos={};let rest=K;MAT.forEach((m,i)=>{if(!m.on)return;const fica=Math.round(rest*m.T);for(let j=fica;j<rest;j++)presos[vivos[j]]=i;rest=fica;});
- for(let k=0;k<K;k++){const y=36+(k%20)*7.5,col=Math.floor(k/20);
-  if(k in presos){const lx=120+presos[k]*40;g+=CIR(lx-6-col*8,y,2.6,'#9AA3AF');}
-  else g+=CIR(260+col*10,y,2.8,ORANGE);}
- g+=LN(52,110,112,110,ORANGE,1.5,'4 3');
- $('fig').innerHTML=SVG(340,220,g);
- $('kc').textContent=fmt(c);$('kp').textContent=fmt(N-c);$('kt').textContent=vg(Math.round(T*1000)/1000)+' ('+vg(Math.round(T*1000)/10)+'%)';MIS.ver('m');}
+ ['Ligue só o <b>linho</b>. Qual o T?',()=>so(true,0,false),'T = 0,8: de cada 10 fótons, 8 atravessam o linho e 2 ficam presos.',()=>'Ligue só o linho, sem lâminas de chumbo nem titânio.'],
+ ['Desligue o linho e ponha <b>1 lâmina de chumbo</b>. Envie <b>10.000 fótons</b>. Quantos chegam ao detector?',()=>so(false,1,false)&&N()==10000,'7.100 chegam: T = 0,71. A lâmina de 0,05 mm segurou 2.900 fótons.',()=>!so(false,1,false)?'Só 1 lâmina de chumbo, sem linho e sem titânio.':'Ajuste os fótons enviados para 10.000.'],
+ ['Agora <b>2 lâminas de chumbo</b>, ainda com 10.000 fótons. Quantos passam a primeira? E a segunda?',()=>so(false,2,false)&&N()==10000,'Passam 7.100 a primeira e 5.041 a segunda: a segunda lâmina só recebe 7.100 e deixa passar 71% deles. T = 0,71 × 0,71 ≈ 0,50.',()=>!so(false,2,false)?'Ponha 2 lâminas de chumbo, sem linho e sem titânio.':'Ajuste os fótons enviados para 10.000.'],
+ ['Ache o <b>menor número de lâminas de chumbo</b> que deixa chegar <b>menos da metade</b> dos fótons (sem linho e sem titânio).',()=>!ON.linho&&!ON.ti&&SP.get()==3,'3 lâminas: com 2 ainda chegam 50,4%; com 3, só 35,8%.',()=>ON.linho||ON.ti?'Desligue o linho e o titânio.':Tt()>=0.5?'Ainda chega '+vg(Math.round(Tt()*1000)/10)+'%. Ponha mais uma lâmina.':'Já chega menos da metade. Será que com uma lâmina a menos também chegaria?'],
+ ['Monte <b>linho + 1 lâmina de chumbo</b> e envie <b>5.000 fótons</b>. Quantos chegam?',()=>so(true,1,false)&&N()==5000,'2.840: o linho deixa 4.000 e a lâmina deixa 71% deles. T = 0,8 × 0,71 = 0,568. As frações se multiplicam.',()=>!so(true,1,false)?'Ligue o linho e ponha 1 lâmina de chumbo, sem titânio.':'Ajuste os fótons enviados para 5.000.']]);
+function draw(){const C=camadas(),n=C.length,T=Tt();let g=RC(0,0,340,250,'#fff','rx="10"');
+ const x0=46,x1=292,y0=56,H=150;
+ g+=RC(8,y0+H/2-35,30,70,NAVY,'rx="6"')+TX(23,y0+H/2+50,'tubo',{fs:9,c:GRAY})+RC(300,y0,22,H,'#5B6472','rx="4"')+TX(311,y0+H+16,'detector',{fs:9,c:GRAY});
+ const lw=10,seg=(x1-x0-n*lw)/(n+1);let cont=N(),xs=x0;
+ for(let s=0;s<=n;s++){const k=Math.max(cont>0?1:0,Math.round(cont/250)),cols=Math.max(1,Math.floor((seg-4)/6)),rows=Math.ceil(k/cols),dy=Math.min(7,(H-8)/Math.max(rows,1)),top=y0+H/2-(rows-1)*dy/2;
+  for(let q=0;q<k;q++){const r=Math.floor(q/cols),c=q%cols;g+=CIR(xs+5+c*6,top+r*dy,2.3,ORANGE);}
+  g+=TX(xs+seg/2,y0-8,fmt(Math.round(cont)),{fs:n>3?7.5:9,c:ORANGE});
+  if(s<n){const L=C[s],lx=xs+seg,fica=cont*L.T,pres=Math.round((cont-fica)/250);
+   g+=RC(lx,y0-2,lw,H+4,L.c,'rx="2" stroke="'+NAVY+'" stroke-width="1"')+TX(lx+lw/2,y0+H+16,L.n,{fs:8,c:NAVY});
+   for(let q=0;q<pres;q++)g+=CIR(lx-3-(q%3)*4,y0+H-3-Math.floor(q/3)*5,1.8,'#9AA3AF');
+   cont=fica;xs=lx+lw;}}
+ g+=TX(170,24,n?'T = '+C.map(c=>vg(c.T)).join(' × ')+(n>1?' ≈ '+vg(Math.round(T*1000)/1000):''):'nada na frente: T = 1',{fs:11,c:NAVY});
+ $('fig').innerHTML=SVG(340,250,g);
+ $('kc').textContent=fmt(ch());$('kp').textContent=fmt(N()-ch());$('kt').textContent=vg(Math.round(T*1000)/1000)+' ('+vg(Math.round(T*1000)/10)+'%)';MIS.ver('m');}
 draw();
 })();
 </script>
