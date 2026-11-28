@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ondas por cima de ondas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Ondas por cima de ondas</h1></header>
+<main>
+<div class="card"><h2>Some duas ondas</h2><p class="muted" style="margin-top:0">Escolha o período e a amplitude de duas ondas. A terceira curva é a soma, ponto a ponto. Embaixo, o <b>espectro</b>: uma barra para cada frequência, com a altura da amplitude.</p>
+<div id="chs" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="t1"><b>Período da onda azul</b><input type="range"><span></span></div>
+<div class="sl" id="a1"><b>Amplitude da azul</b><input type="range"><span></span></div>
+<div class="sl" id="t2"><b>Período da onda verde</b><input type="range"><span></span></div>
+<div class="sl" id="a2"><b>Amplitude da verde</b><input type="range"><span></span></div>
+<div class="kpi"><div>mmc dos períodos<b id="km"></b></div><div>Maior altura da soma<b id="kx"></b></div><div class="o">A soma se repete a cada<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte a soma pedida.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+let sinal=1;chips('chs',['verde normal','verde virada (oposta)'],0,i=>{sinal=i?-1:1;draw();});
+const T1=SL('t1',1,6,1,2,()=>draw(),v=>v+' cm'),A1=SL('a1',0,1.5,0.1,1,()=>draw(),v=>vg(v)),T2=SL('t2',1,6,1,2,()=>draw(),v=>v+' cm'),A2=SL('a2',0,1.5,0.1,1,()=>draw(),v=>vg(v));
+const mdc=(a,b)=>b?mdc(b,a%b):a,mmc=(a,b)=>a*b/mdc(a,b);
+const f=(x)=>A1.get()*Math.sin(2*Math.PI*x/T1.get())+sinal*A2.get()*Math.sin(2*Math.PI*x/T2.get());
+const zero=()=>{for(let i=0;i<=240;i++)if(Math.abs(f(i/20))>1e-9)return false;return true;};
+const per=()=>{if(zero())return 0;const a=A1.get()>0,b=A2.get()>0;if(a&&b)return T1.get()==T2.get()?T1.get():mmc(T1.get(),T2.get());return a?T1.get():T2.get();};
+const ox=20,W=300,kx=W/12,X=x=>ox+x*kx;
+MIS.def(()=>[
+ ['Monte uma soma que se repita a cada <b>6 cm</b>, com duas ondas de períodos diferentes.',()=>T1.get()!=T2.get()&&per()==6,'Períodos 2 e 3 (ou 1 e 6, 2 e 6, 3 e 6...): a soma se repete no mmc, onde as duas ondas recomeçam juntas.',()=>'A soma agora se repete a cada '+(per()||'—')+' cm.'],
+ ['Agora uma soma que se repita a cada <b>12 cm</b>.',()=>per()==12,'mmc(3, 4) = 12 ou mmc(4, 6) = 12: as linhas tracejadas mostram onde tudo recomeça.',()=>'A soma se repete a cada '+(per()||'—')+' cm. Que par de períodos tem mmc 12?'],
+ ['Faça as duas ondas se <b>cancelarem</b>: a soma deve dar zero em todo lugar.',()=>zero()&&A1.get()>0,'Mesmo período, mesma amplitude e a verde virada: cada pico encontra um vale. É o truque dos fones com cancelamento de ruído.',()=>sinal>0?'Vire a onda verde.':T1.get()!=T2.get()?'Use o mesmo período nas duas.':'Ajuste as amplitudes para ficarem iguais.']]);
+function draw(){let g=RC(0,0,340,330,'#fff','rx="10"');const p=per();
+ const linha=(yb,fn,cor,k)=>{const pts=[];for(let i=0;i<=480;i++){const x=i/40;pts.push([X(x),yb-k*fn(x)]);}return LN(ox,yb,ox+W,yb,GRAYL,.6)+PL(pts,cor,2);};
+ g+=linha(40,x=>A1.get()*Math.sin(2*Math.PI*x/T1.get()),COBALTO,16)+linha(100,x=>sinal*A2.get()*Math.sin(2*Math.PI*x/T2.get()),GREEN,16)+linha(175,f,ORANGE,16);
+ g+=TX(ox,14,'azul',{fs:9,c:COBALTO,a:'start'})+TX(ox,76,'verde',{fs:9,c:GREEN,a:'start'})+TX(ox,136,'soma',{fs:9,c:ORANGE,a:'start'});
+ if(p&&p<=12)for(let x=0;x<=12+1e-9;x+=p)g+=LN(X(x),20,X(x),222,ORANGE,1,'4 3');
+ for(let x=0;x<=12;x+=2)g+=TX(X(x),234,x,{fs:8,c:GRAY});g+=TX(ox+W,234,'cm',{fs:8,c:GRAY,a:'end'});
+ // espectro
+ const ey=315,eh=55,fx=fr=>ox+fr/1.1*W;g+=LN(ox,ey,ox+W,ey,NAVY,1);
+ [[1/T1.get(),A1.get(),COBALTO],[1/T2.get(),A2.get(),GREEN]].forEach(([fr,a,c],i)=>{if(a>0)g+=RC(fx(fr)-5+(i&&T1.get()==T2.get()?6:0),ey-a/1.5*eh,8,a/1.5*eh,c);});
+ [0.25,0.5,0.75,1].forEach(v=>g+=TX(fx(v),ey+11,vg(v),{fs:7,c:GRAY}));g+=TX(ox,ey-eh-4,'espectro (frequência, por cm)',{fs:8,c:GRAY,a:'start'});
+ $('fig').innerHTML=SVG(340,330,g);
+ let mx=0;for(let i=0;i<=480;i++)mx=Math.max(mx,Math.abs(f(i/40)));
+ $('km').textContent=mmc(T1.get(),T2.get())+' cm';$('kx').textContent=r2(mx);$('kp').textContent=p?p+' cm':'soma zero';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

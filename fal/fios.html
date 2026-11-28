@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A janela de 1 cm · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A janela de 1 cm</h1></header>
+<main>
+<div class="card"><h2>Conte os fios</h2><p class="muted" style="margin-top:0">Três centímetros do verso da tela, muito ampliados. Arraste a <b>janela laranja</b> de 1 cm × 1 cm (ou use − e +) e veja quantos fios verticais ficam dentro dela. Na trama livre, você escolhe a densidade.</p>
+<div id="cht" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Posição da janela (cm)</b><input type="range"><span></span></div>
+<div class="sl" id="sd"><b>Densidade da trama livre</b><input type="range"><span></span></div>
+<div class="kpi"><div>Fios na janela<b id="kn"></b></div><div>Densidade da trama<b id="kd"></b></div><div class="o">Espaçamento<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Conte como a Lúcia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const perto=(a,b,t)=>Math.abs(a-b)<=t;
+let modo=0;const MIST=[];[16,15,16].forEach((n,j)=>{for(let i=0;i<n;i++)MIST.push(j+(i+0.5)/n);});
+chips('cht',['tela misteriosa','trama livre'],0,i=>{modo=i;draw();});
+const SP=SL('sp',0,2,0.05,0,()=>draw(),v=>vg(v)+' a '+vg(Math.round((v+1)*100)/100));
+const SD=SL('sd',8,25,0.1,12,()=>{modo=1;CH();draw();},v=>vg(v)+' fios/cm');
+function CH(){document.querySelectorAll('#cht button').forEach((b,i)=>b.className=i==modo?'':'alt');}
+const k=100,ox=20,oy=40,H=150;
+const fios=()=>{if(modo==0)return MIST;const d=SD.get(),a=[];for(let x=0.5/d;x<3;x+=1/d)a.push(x);return a;};
+const dentro=()=>{const p=SP.get();return fios().filter(x=>x>=p-1e-9&&x<p+1-1e-9).length;};
+toque('fig',(x)=>{SP.set(Math.max(0,Math.min(2,Math.round(((x-ox)/k-0.5)*20)/20)));draw();});
+MIS.def(()=>[
+ ['Na <b>tela misteriosa</b>, refaça a contagem da Lúcia: ache uma posição da janela com <b>15</b> fios dentro.',()=>modo==0&&dentro()==15,'A janela do meio (de 1 a 2 cm) tem 15 fios; as outras duas, 16. Média: 47 ÷ 3 ≈ 15,7 fios/cm.',()=>modo!=0?'Escolha a tela misteriosa.':'Agora a janela tem '+dentro()+' fios. Arraste para o meio.'],
+ ['Na <b>trama livre</b>, monte uma trama com espaçamento de exatamente <b>0,5 mm</b>.',()=>modo==1&&perto(SD.get(),20,0.001),'10 ÷ 0,5 = 20 fios/cm. Fios mais juntos, tecido mais fechado.',()=>modo!=1?'Escolha a trama livre.':'Espaçamento atual: '+r2(10/SD.get())+' mm. Para 0,5 mm, quantos fios cabem em 10 mm?'],
+ ['Ainda na trama livre, imite o linho das <b>referências de Saint-Rémy</b>: 15,8 fios/cm.',()=>modo==1&&perto(SD.get(),15.8,0.001),'Espaçamento de 10 ÷ 15,8 ≈ 0,63 mm. Quase igual à tela misteriosa (15,7): por isso só a densidade média não basta para comparar.',()=>modo!=1?'Escolha a trama livre.':'A trama está com '+vg(SD.get())+' fios/cm.']]);
+function draw(){CH();const f=fios(),p=SP.get();let g=RC(0,0,340,230,'#fff','rx="10"');
+ g+=RC(ox,oy,3*k,H,LINHO);
+ for(let y=oy+k/26;y<oy+H;y+=k/13)g+=LN(ox,y,ox+3*k,y,'#CBB88F',2.2);
+ const w=Math.max(1.2,0.55*k/(modo?SD.get():16));
+ f.forEach(x=>{const ins=x>=p-1e-9&&x<p+1-1e-9;g+=LN(ox+x*k,oy,ox+x*k,oy+H,ins?'#6B5332':'#A08A62',w);});
+ g+=RC(ox+p*k,oy,k,H,'none','stroke="'+ORANGE+'" stroke-width="3"')+RC(ox+p*k,oy-4,k,4,ORANGE);
+ for(let c=0;c<=3;c++)g+=LN(ox+c*k,oy+H,ox+c*k,oy+H+6,NAVY,1.2)+TX(ox+c*k,oy+H+20,c+' cm',{fs:10,c:GRAY});
+ g+=TX(ox+(p+0.5)*k,oy-10,dentro()+' fios',{fs:12,c:ORANGE});
+ $('fig').innerHTML=SVG(340,230,g);
+ const d=modo?SD.get():47/3;$('kn').textContent=dentro();$('kd').textContent=modo?vg(SD.get())+' fios/cm':'≈ 15,7 fios/cm (média)';$('ke').textContent=r2(10/d)+' mm';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
