@@ -9,9 +9,10 @@
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A chuva de fótons</h1></header>
 <main>
-<div class="card"><h2>Quem atravessa?</h2><p class="muted" style="margin-top:0">Escolha o que fica na frente do feixe: o linho, quantas lâminas de chumbo de 0,05 mm e a lâmina de titânio. Cada bolinha laranja é um grupo de fótons. Veja a chuva diminuir a cada camada: o número em cima de cada trecho diz quantos fótons ainda estão passando. As bolinhas cinzas ficaram presas na camada.</p>
+<div class="card"><h2>Quem atravessa?</h2><p class="muted" style="margin-top:0">Escolha o que fica na frente do feixe: quantas lâminas de linho, quantas lâminas de chumbo de 0,05 mm e a lâmina de titânio. Cada bolinha laranja é um grupo de fótons. Veja a chuva diminuir a cada camada: o número em cima de cada trecho diz quantos fótons ainda estão passando. As bolinhas cinzas ficaram presas na camada.</p>
 <div id="chm" style="margin:4px 0;display:flex;flex-wrap:wrap;gap:4px"></div>
 <div class="fig" id="fig"></div>
+<div class="sl" id="sli"><b>Lâminas de linho</b><input type="range"><span></span></div>
 <div class="sl" id="sp"><b>Lâminas de chumbo</b><input type="range"><span></span></div>
 <div class="sl" id="sn"><b>Fótons enviados</b><input type="range"><span></span></div>
 <div class="kpi"><div>Chegaram ao detector<b id="kc"></b></div><div>Ficaram presos<b id="kp"></b></div><div class="o">T = sai ÷ entra<b id="kt"></b></div></div>
@@ -21,32 +22,34 @@
 <footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
 <script>
 (()=>{
-const ON={linho:false,ti:false};
-function botoes(){$('chm').innerHTML=[['linho','Linho'],['ti','Lâmina de titânio']].map(([k,n])=>`<button data-k="${k}" class="${ON[k]?'':'alt'}" style="padding:5px 11px;font-size:13px">${ON[k]?'✔ ':''}${n}</button>`).join('');
+const ON={ti:false};
+function botoes(){$('chm').innerHTML=[['ti','Lâmina de titânio']].map(([k,n])=>`<button data-k="${k}" class="${ON[k]?'':'alt'}" style="padding:5px 11px;font-size:13px">${ON[k]?'✔ ':''}${n}</button>`).join('');
  document.querySelectorAll('#chm button').forEach(b=>b.onclick=()=>{ON[b.dataset.k]=!ON[b.dataset.k];botoes();draw();});}
 botoes();
-const SP=SL('sp',0,4,1,0,()=>draw(),v=>v),SN=SL('sn',1000,20000,1000,10000,()=>draw(),v=>fmt(v));
-const camadas=()=>{const c=[];if(ON.linho)c.push({n:'linho',T:0.8,c:'#E9DFC8'});for(let i=0;i<SP.get();i++)c.push({n:'Pb',T:0.71,c:'#D7DBE0'});if(ON.ti)c.push({n:'Ti',T:0.92,c:'#EEF1F5'});return c;};
+const SLi=SL('sli',0,4,1,0,()=>draw(),v=>v),SP=SL('sp',0,4,1,0,()=>draw(),v=>v),SN=SL('sn',1000,20000,1000,10000,()=>draw(),v=>fmt(v));
+const camadas=()=>{const c=[];for(let i=0;i<SLi.get();i++)c.push({n:'linho',T:0.8,c:'#E9DFC8'});for(let i=0;i<SP.get();i++)c.push({n:'Pb',T:0.71,c:'#D7DBE0'});if(ON.ti)c.push({n:'Ti',T:0.92,c:'#EEF1F5'});return c;};
 const Tt=()=>camadas().reduce((t,m)=>t*m.T,1);
-const so=(l,n,t)=>ON.linho==l&&SP.get()==n&&ON.ti==t;const N=()=>SN.get(),ch=()=>Math.round(N()*Tt());
+const so=(l,n,t)=>SLi.get()==l&&SP.get()==n&&ON.ti==t;const N=()=>SN.get(),ch=()=>Math.round(N()*Tt());
 MIS.def(()=>[
- ['Ligue só o <b>linho</b>. Qual o T?',()=>so(true,0,false),'T = 0,8: de cada 10 fótons, 8 atravessam o linho e 2 ficam presos.',()=>'Ligue só o linho, sem lâminas de chumbo nem titânio.'],
- ['Desligue o linho e ponha <b>1 lâmina de chumbo</b>. Envie <b>10.000 fótons</b>. Quantos chegam ao detector?',()=>so(false,1,false)&&N()==10000,'7.100 chegam: T = 0,71. A lâmina de 0,05 mm segurou 2.900 fótons.',()=>!so(false,1,false)?'Só 1 lâmina de chumbo, sem linho e sem titânio.':'Ajuste os fótons enviados para 10.000.'],
- ['Agora <b>2 lâminas de chumbo</b>, ainda com 10.000 fótons. Quantos passam a primeira? E a segunda?',()=>so(false,2,false)&&N()==10000,'Passam 7.100 a primeira e 5.041 a segunda: a segunda lâmina só recebe 7.100 e deixa passar 71% deles. T = 0,71 × 0,71 ≈ 0,50.',()=>!so(false,2,false)?'Ponha 2 lâminas de chumbo, sem linho e sem titânio.':'Ajuste os fótons enviados para 10.000.'],
- ['Ache o <b>menor número de lâminas de chumbo</b> que deixa chegar <b>menos da metade</b> dos fótons (sem linho e sem titânio).',()=>!ON.linho&&!ON.ti&&SP.get()==3,'3 lâminas: com 2 ainda chegam 50,4%; com 3, só 35,8%.',()=>ON.linho||ON.ti?'Desligue o linho e o titânio.':Tt()>=0.5?'Ainda chega '+vg(Math.round(Tt()*1000)/10)+'%. Ponha mais uma lâmina.':'Já chega menos da metade. Será que com uma lâmina a menos também chegaria?'],
- ['Monte <b>linho + 1 lâmina de chumbo</b> e envie <b>5.000 fótons</b>. Quantos chegam?',()=>so(true,1,false)&&N()==5000,'2.840: o linho deixa 4.000 e a lâmina deixa 71% deles. T = 0,8 × 0,71 = 0,568. As frações se multiplicam.',()=>!so(true,1,false)?'Ligue o linho e ponha 1 lâmina de chumbo, sem titânio.':'Ajuste os fótons enviados para 5.000.']]);
+ ['Ponha só <b>1 lâmina de linho</b>. Qual o T?',()=>so(1,0,false),'T = 0,8: de cada 10 fótons, 8 atravessam o linho e 2 ficam presos.',()=>'Só 1 lâmina de linho, sem chumbo nem titânio.'],
+ ['Agora <b>2 lâminas de linho</b> e 10.000 fótons. Quantos passam a primeira? E a segunda?',()=>so(2,0,false)&&N()==10000,'8.000 passam a primeira e 6.400 a segunda: T = 0,8 × 0,8 = 0,64. A segunda lâmina tira 20% de 8.000, e não de 10.000.',()=>!so(2,0,false)?'Só 2 lâminas de linho, sem chumbo nem titânio.':'Ajuste os fótons enviados para 10.000.'],
+ ['Tire o linho e ponha <b>1 lâmina de chumbo</b>. Envie <b>10.000 fótons</b>. Quantos chegam ao detector?',()=>so(0,1,false)&&N()==10000,'7.100 chegam: T = 0,71. A lâmina de 0,05 mm segurou 2.900 fótons.',()=>!so(0,1,false)?'Só 1 lâmina de chumbo, sem linho e sem titânio.':'Ajuste os fótons enviados para 10.000.'],
+ ['Agora <b>2 lâminas de chumbo</b>, ainda com 10.000 fótons. Quantos passam a primeira? E a segunda?',()=>so(0,2,false)&&N()==10000,'Passam 7.100 a primeira e 5.041 a segunda: a segunda lâmina só recebe 7.100 e deixa passar 71% deles. T = 0,71 × 0,71 ≈ 0,50.',()=>!so(0,2,false)?'Ponha 2 lâminas de chumbo, sem linho e sem titânio.':'Ajuste os fótons enviados para 10.000.'],
+ ['Ache o <b>menor número de lâminas de chumbo</b> que deixa chegar <b>menos da metade</b> dos fótons (sem linho e sem titânio).',()=>!SLi.get()&&!ON.ti&&SP.get()==3,'3 lâminas: com 2 ainda chegam 50,4%; com 3, só 35,8%.',()=>SLi.get()||ON.ti?'Tire o linho e o titânio.':Tt()>=0.5?'Ainda chega '+vg(Math.round(Tt()*1000)/10)+'%. Ponha mais uma lâmina.':'Já chega menos da metade. Será que com uma lâmina a menos também chegaria?'],
+ ['Monte <b>1 lâmina de linho + 1 lâmina de chumbo</b> e envie <b>5.000 fótons</b>. Quantos chegam?',()=>so(1,1,false)&&N()==5000,'2.840: o linho deixa 4.000 e a lâmina deixa 71% deles. T = 0,8 × 0,71 = 0,568. As frações se multiplicam.',()=>!so(1,1,false)?'Ponha 1 lâmina de linho e 1 de chumbo, sem titânio.':'Ajuste os fótons enviados para 5.000.']]);
 function draw(){const C=camadas(),n=C.length,T=Tt();let g=RC(0,0,340,250,'#fff','rx="10"');
  const x0=46,x1=292,y0=56,H=150;
- g+=RC(8,y0+H/2-35,30,70,NAVY,'rx="6"')+TX(23,y0+H/2+50,'tubo',{fs:9,c:GRAY})+RC(300,y0,22,H,'#5B6472','rx="4"')+TX(311,y0+H+16,'detector',{fs:9,c:GRAY});
+ g+=RC(8,y0+H/2-35,30,70,NAVY,'rx="6"')+TX(23,y0+H/2+50,'tubo',{fs:9,c:GRAY})+RC(300,y0,22,H,'#5B6472','rx="4"')+TX(311,y0+H+30,'detector',{fs:9,c:GRAY});
  const lw=10,seg=(x1-x0-n*lw)/(n+1);let cont=N(),xs=x0;
  for(let s=0;s<=n;s++){const k=Math.max(cont>0?1:0,Math.round(cont/250)),cols=Math.max(1,Math.floor((seg-4)/6)),rows=Math.ceil(k/cols),dy=Math.min(7,(H-8)/Math.max(rows,1)),top=y0+H/2-(rows-1)*dy/2;
   for(let q=0;q<k;q++){const r=Math.floor(q/cols),c=q%cols;g+=CIR(xs+5+c*6,top+r*dy,2.3,ORANGE);}
-  g+=TX(xs+seg/2,y0-8,fmt(Math.round(cont)),{fs:n>3?7.5:9,c:ORANGE});
+  g+=TX(xs+seg/2,y0-8-(n>4&&s%2?10:0),fmt(Math.round(cont)),{fs:n>4?7:n>3?7.5:9,c:ORANGE});
   if(s<n){const L=C[s],lx=xs+seg,fica=cont*L.T,pres=Math.round((cont-fica)/250);
-   g+=RC(lx,y0-2,lw,H+4,L.c,'rx="2" stroke="'+NAVY+'" stroke-width="1"')+TX(lx+lw/2,y0+H+16,L.n,{fs:8,c:NAVY});
+   g+=RC(lx,y0-2,lw,H+4,L.c,'rx="2" stroke="'+NAVY+'" stroke-width="1"')+TX(lx+lw/2,y0+H+16+(n>4&&s%2?10:0),L.n,{fs:n>4?7:8,c:NAVY});
    for(let q=0;q<pres;q++)g+=CIR(lx-3-(q%3)*4,y0+H-3-Math.floor(q/3)*5,1.8,'#9AA3AF');
    cont=fica;xs=lx+lw;}}
- g+=TX(170,24,n?'T = '+C.map(c=>vg(c.T)).join(' × ')+(n>1?' ≈ '+vg(Math.round(T*1000)/1000):''):'nada na frente: T = 1',{fs:11,c:NAVY});
+ const gr=[];C.forEach(c=>{const u=gr[gr.length-1];if(u&&u.T==c.T)u.k++;else gr.push({T:c.T,k:1});});const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+ g+=TX(170,24,n?'T = '+gr.map(u=>vg(u.T)+(u.k>1?SUP[u.k]:'')).join(' × ')+(n>1?' ≈ '+vg(Math.round(T*1000)/1000):''):'nada na frente: T = 1',{fs:11,c:NAVY});
  $('fig').innerHTML=SVG(340,250,g);
  $('kc').textContent=fmt(ch());$('kp').textContent=fmt(N()-ch());$('kt').textContent=vg(Math.round(T*1000)/1000)+' ('+vg(Math.round(T*1000)/10)+'%)';MIS.ver('m');}
 draw();
