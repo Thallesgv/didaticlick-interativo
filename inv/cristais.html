@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cristais crescendo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Cristais crescendo</h1></header>
+<main>
+<div class="card"><h2>Devagar ou depressa?</h2><p class="muted" style="margin-top:0">Escolha a velocidade do resfriamento, em graus por hora. Veja os núcleos aparecerem e crescerem até tudo virar rocha. O quadro mostra 1 cm de rocha; o número de cristais em 1 cm³ e o tamanho deles aparecem embaixo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sv"><b>Velocidade do resfriamento</b><input type="range"><span></span></div>
+<div class="kpi"><div>Cristais em 1 cm³<b id="kn"></b></div><div class="o">Tamanho de cada cristal<b id="ka"></b></div><div>Rocha<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a velocidade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const TEMPO=s=>s<120?r1(s)+' s':s<7200?r1(s/60)+' min':s<172800?r1(s/3600)+' h':s<3.15e7*2?fmt(Math.round(s/86400))+' dias':s<3.15e10?fmt(Math.round(s/3.15e7))+' anos':CIENT(s/3.15e7,1)+' anos';
+function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+function corT(T){const u=clamp((T-600)/650,0,1);const r=Math.round(90+165*Math.min(1,u*1.6)),g=Math.round(30+200*Math.max(0,u-0.35)),b=Math.round(20+40*Math.max(0,u-0.8));return `rgb(${r},${g},${b})`;}
+let t0=performance.now();
+const V=SL('sv',-3,3,0.05,0,()=>{t0=performance.now();draw();},v=>{const r=Math.pow(10,v);return (r<1?fmt(Math.round(r*1000)/1000):SIG(r))+' °C por hora';});
+const vidro=()=>V.get()>2.5,n=()=>Math.pow(10,5.5+1.5*V.get()),amm=()=>10*Math.cbrt(1/n());
+const rocha=()=>vidro()?'obsidiana (vidro)':amm()>=2?'granito (cristais grandes)':amm()>=0.5?'cristais médios':amm()>=0.05?'basalto (cristais pequenos)':'cristais minúsculos';
+MIS.def(()=>[
+ ['Faça uma rocha com cristais de pelo menos <b>3 mm</b>, como um granito.',()=>!vidro()&&amm()>=3,()=>'Cristais de '+r1(amm())+' mm: o resfriamento lento, a '+fmt(Math.round(Math.pow(10,V.get())*1000)/1000)+' °C por hora, deixa nascer poucos núcleos.',()=>'Agora os cristais têm '+SIG(amm())+' mm.'],
+ ['Agora cristais <b>minúsculos</b>, menores que 0,02 mm, mas ainda cristais.',()=>!vidro()&&amm()<0.02,()=>CIENT(n(),1)+' núcleos em cada cm³, e cada cristal com '+SIG(amm()*1000)+' µm.',()=>vidro()?'Rápido demais: virou vidro. Volte um pouco.':'Agora os cristais têm '+SIG(amm())+' mm.'],
+ ['Quantos núcleos dão cristais de <b>1 mm</b>?',()=>!vidro()&&Math.abs(amm()-1)<0.06,()=>'Cerca de '+fmt(Math.round(n()/10)*10)+' núcleos: com 1.000, a aresta é ∛(1 cm³ ÷ 1.000) = 0,1 cm = 1 mm.',()=>'Agora: '+SIG(amm())+' mm.'],
+ ['Resfrie tão depressa que <b>nenhum</b> cristal tenha tempo de nascer.',()=>vidro(),'Obsidiana: os átomos ficaram bagunçados e parados. É vidro.',()=>'Mais rápido!']]);
+function quadro(){const p=clamp((performance.now()-t0)/2500,0,1);let g=RC(0,0,340,240,'#F8FAFC','rx="10"');const x0=60,y0=10,W=220;
+ if(vidro()){g+=RC(x0,y0,W,W,'#1F2229','rx="4"')+`<path d="M${x0+30} ${y0+40} Q ${x0+120} ${y0+10} ${x0+200} ${y0+60}" stroke="#fff" stroke-width="3" opacity=".25" fill="none"/>`+TX(170,y0+W/2,'vidro: sem cristais',{fs:12,c:'#fff'});}
+ else{g+=RC(x0,y0,W,W,p<1?corT(1150-300*p):'#6B6E78','rx="4"');const k=Math.cbrt(n()),m=Math.min(Math.round(k),36),c=W/m,R=rng(7);const cores=['#9FB7D9','#E8C07A','#C6D6A0','#D9A3A0','#B9B2D9','#E3D4B4'];
+  for(let a=0;a<m;a++)for(let b=0;b<m;b++){const tn=R()*0.6,cx=x0+(a+0.5)*c+(R()-0.5)*0.3*c,cy=y0+(b+0.5)*c+(R()-0.5)*0.3*c,ang=R()*3.14;const q=clamp((p-tn)/(1-tn),0,1);if(q<=0)continue;
+   const r=0.62*c*q;let pts=[];for(let j=0;j<6;j++){const t=ang+j*Math.PI/3;pts.push([clamp(cx+r*Math.cos(t),x0,x0+W).toFixed(1),clamp(cy+r*Math.sin(t),y0,y0+W).toFixed(1)]);}
+   g+=PG(pts,cores[(a*7+b*3)%6],m<20?'stroke="#4A4E5A" stroke-width=".6"':'');}
+  if(k>36)g+=RC(x0,y0+W-18,W,18,'rgba(255,255,255,.8)')+TX(170,y0+W-5,'na rocha real há '+fmt(Math.round(k))+' cristais por centímetro',{fs:9,c:NAVY});}
+ g+=LN(x0,y0+W+8,x0+W,y0+W+8,NAVY,1.5)+TX(170,y0+W+20,'1 cm',{fs:9,c:NAVY});
+ $('fig').innerHTML=SVG(340,240,g);}
+function draw(){$('kn').textContent=vidro()?'nenhum':CIENT(n(),1);$('ka').textContent=vidro()?'—':amm()>=0.1?SIG(amm())+' mm':SIG(amm()*1000)+' µm';$('kr').textContent=rocha();MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ladrilhos e colunas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Ladrilhos e colunas</h1></header>
+<main>
+<div class="card"><h2>Quais polígonos cobrem o chão?</h2><p class="muted" style="margin-top:0">Escolha o número de lados n. Os polígonos regulares iguais são encaixados em volta de um vértice: os ângulos precisam somar exatamente 360°. Embaixo, o perímetro de cada peça de área 1.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Número de lados n</b><input type="range"><span></span></div>
+<div class="kpi"><div>Ângulo interno<b id="ka"></b></div><div>Peças no vértice<b id="kq"></b></div><div class="o">Perímetro (área 1)<b id="kp"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o número de lados.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const TEMPO=s=>s<120?r1(s)+' s':s<7200?r1(s/60)+' min':s<172800?r1(s/3600)+' h':s<3.15e7*2?fmt(Math.round(s/86400))+' dias':s<3.15e10?fmt(Math.round(s/3.15e7))+' anos':CIENT(s/3.15e7,1)+' anos';
+function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+function corT(T){const u=clamp((T-600)/650,0,1);const r=Math.round(90+165*Math.min(1,u*1.6)),g=Math.round(30+200*Math.max(0,u-0.35)),b=Math.round(20+40*Math.max(0,u-0.8));return `rgb(${r},${g},${b})`;}
+const vis=new Set();
+const N=SL('sn',3,10,1,5,()=>draw(),v=>v+' lados');
+const ang=n=>(n-2)*180/n,per=n=>2*Math.sqrt(n*Math.tan(Math.PI/n)),cobre=n=>Math.abs(360/ang(n)-Math.round(360/ang(n)))<1e-9;
+MIS.def(()=>[
+ ['Encontre o polígono que cobre o chão com <b>4 peças</b> em cada vértice.',()=>N.get()==4,'Quadrado: 4 × 90° = 360°.',()=>'Com '+N.get()+' lados, o ângulo é '+r1(ang(N.get()))+'°.'],
+ ['Agora o que usa só <b>3 peças</b> em cada vértice.',()=>N.get()==6,'Hexágono: 3 × 120° = 360°. É o padrão das colunas de basalto e dos favos.',()=>'Que ângulo, vezes 3, dá 360°?'],
+ ['Escolha o <b>pentágono</b> e veja o que sobra.',()=>N.get()==5,'3 × 108° = 324°: sobra um buraco de 36°, e um quarto pentágono não cabe. Não cobre o plano.',()=>'n = 5.'],
+ ['Entre os três que cobrem o plano, qual gasta <b>menos perímetro</b>? Passe pelo triângulo e pelo quadrado e termine no vencedor.',()=>vis.has(3)&&vis.has(4)&&N.get()==6,'Triângulo 4,56; quadrado 4; hexágono 3,72. O hexágono divide o chão gastando menos fronteira, e a lava gasta menos rachadura.',()=>'Visite n = 3 e n = 4 e depois volte ao melhor.']]);
+function quadro(){const n=N.get(),a=ang(n),q=Math.floor(360/a+1e-9),cx=110,cy=118,s=58;let g=RC(0,0,340,236,'#F8FAFC','rx="10"');
+ const R=s/(2*Math.sin(Math.PI/n)),ap=R*Math.cos(Math.PI/n);
+ for(let k=0;k<q;k++){const dir=(k*a+a/2)*Math.PI/180,pcx=cx+R*Math.cos(dir),pcy=cy-R*Math.sin(dir);let pts=[];for(let j=0;j<n;j++){const t=dir+Math.PI+j*2*Math.PI/n;pts.push([(pcx+R*Math.cos(t)).toFixed(1),(pcy-R*Math.sin(t)).toFixed(1)]);}
+  g+=PG(pts,['#5B5F6A','#F6D6B8','#C9D6EA','#C6D6A0'][k%4],'stroke="#fff" stroke-width="2" opacity=".95"');}
+ const sobra=360-q*a;if(sobra>0.01){const a0=q*a*Math.PI/180,a1=2*Math.PI;g+=`<path d="M${cx} ${cy} L ${cx+40*Math.cos(a0)} ${cy-40*Math.sin(a0)} A 40 40 0 0 0 ${cx+40} ${cy} Z" fill="#E5482B" opacity=".75"/>`+TX(cx+48*Math.cos((a0+a1)/2),cy-48*Math.sin((a0+a1)/2)+4,'buraco de '+r1(sobra)+'°',{fs:10,c:'#B91C1C',a:'start'});}
+ g+=CI(cx,cy,3,NAVY);
+ // barras de perímetro
+ [3,4,5,6,8,10].forEach((m,i)=>{const y=40+i*28,w=(per(m)-3.4)/1.3*55;g+=TX(250,y+12,m+' lados',{fs:9,c:NAVY,a:'end'})+RC(256,y,Math.max(w,4),16,m==n?ORANGE:cobre(m)?BLUE:'#CBD5E1','rx="3"')+TX(260+Math.max(w,4),y+12,r2(per(m)),{fs:8.5,c:GRAY,a:'start',w:500});});
+ g+=TX(290,24,'perímetro p/ área 1',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(340,236,g);}
+function draw(){const n=N.get();vis.add(n);const a=ang(n);$('ka').textContent=r1(a)+'°';$('kq').textContent=cobre(n)?(360/a)+' (cobre!)':r2(360/a)+' (não cobre)';$('kp').textContent=r2(per(n));quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

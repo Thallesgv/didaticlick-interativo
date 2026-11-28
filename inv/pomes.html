@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boia ou afunda? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Boia ou afunda?</h1></header>
+<main>
+<div class="card"><h2>d = (1 − φ) · 2,4 g/cm³</h2><p class="muted" style="margin-top:0">Mude a <b>porosidade</b> φ da pedra (a fração do volume que é buraco) e escolha a água. A fração submersa é a densidade da pedra dividida pela da água.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sp"><b>Porosidade φ</b><input type="range"><span></span></div>
+<label style="display:block;margin:6px 0"><input type="checkbox" id="enc"> A água entrou nos buracos (pedra encharcada)</label>
+<div class="kpi"><div class="o">Densidade da pedra<b id="kd"></b></div><div>Fração submersa<b id="kf"></b></div><div>Resultado<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude a porosidade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const CIENT=(v,d)=>{if(v<=0)return '0';const e=Math.floor(Math.log10(v)+1e-9);let a=v/Math.pow(10,e);a=Math.round(a*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d);if(a>=10){a=a/10;return fmt(a)+' × 10'+SUP(e+1);}return (a==1?'':fmt(a)+' × ')+'10'+SUP(e);};
+const SIG=v=>{if(v>=100)return fmt(Math.round(v));if(v>=10)return r1(v);if(v>=1)return r2(v);return fmt(Math.round(v*1000)/1000);};
+const TEMPO=s=>s<120?r1(s)+' s':s<7200?r1(s/60)+' min':s<172800?r1(s/3600)+' h':s<3.15e7*2?fmt(Math.round(s/86400))+' dias':s<3.15e10?fmt(Math.round(s/3.15e7))+' anos':CIENT(s/3.15e7,1)+' anos';
+function rng(s){return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646;};}
+function corT(T){const u=clamp((T-600)/650,0,1);const r=Math.round(90+165*Math.min(1,u*1.6)),g=Math.round(30+200*Math.max(0,u-0.35)),b=Math.round(20+40*Math.max(0,u-0.8));return `rgb(${r},${g},${b})`;}
+let mar=0;
+const C=chips('ch',['Água doce (1 g/cm³)','Água do mar (1,025 g/cm³)'],0,i=>{mar=i;draw();});
+const F=SL('sp',0,90,1,30,()=>draw(),v=>v+'%');
+$('enc').onchange=()=>draw();
+const dw=()=>mar?1.025:1,phi=()=>F.get()/100,enc=()=>$('enc').checked;
+const d=()=>(1-phi())*2.4+(enc()?phi()*dw():0),boia=()=>d()<dw();
+MIS.def(()=>[
+ ['Na água doce, faça a pedra <b>boiar no limite</b>: quase toda submersa, mas boiando.',()=>!mar&&!enc()&&boia()&&d()>0.97,()=>'φ = '+F.get()+'%: d = '+r2(d())+' g/cm³, '+Math.round(d()*100)+'% submersa. Abaixo de 58% de buracos, afunda.',()=>boia()?'Ainda boia com folga: diminua os buracos.':'Afunda: precisa de mais buracos.'],
+ ['Faça a <b>pedra do Seu Zeca</b>: 0,6 g/cm³.',()=>!enc()&&Math.abs(d()-0.6)<0.005,'φ = 75%: três quartos de buraco. Ela boia com 60% do volume submerso.',()=>'Agora d = '+r2(d())+' g/cm³.'],
+ ['Com a pedra do Seu Zeca, deixe a água <b>entrar nos buracos</b>. O que acontece?',()=>enc()&&F.get()==75,()=>'Encharcada, ela pesa '+r2(d())+' g/cm³ e afunda. Os tapetes de pedra-pomes acabam afundando quando a água entra nas bolhas.',()=>F.get()!=75?'Volte para 75% de porosidade.':'Marque "A água entrou nos buracos".'],
+ ['Encontre uma porosidade em que a pedra <b>boia no mar</b> mas afundaria na água doce.',()=>mar&&!enc()&&d()>1&&d()<1.025,()=>'φ = '+F.get()+'%: d = '+r2(d())+' g/cm³, entre 1 e 1,025. A água salgada é mais densa e segura um pouco mais.',()=>!mar?'Escolha a água do mar.':enc()?'Desmarque a pedra encharcada.':'Agora d = '+r2(d())+' g/cm³.']]);
+let t0=performance.now();
+function quadro(){const t=(performance.now()-t0)/1000;let g=RC(0,0,340,220,'#F8FAFC','rx="10"');const ya=80,yf=200,x0=30,x1=310;
+ g+=RC(x0,ya,x1-x0,yf-ya,mar?'#9CC8EB':MAR,'opacity=".8"')+LN(x0,ya,x0,40,ROCHA,2)+LN(x1,ya,x1,40,ROCHA,2)+LN(x0,yf,x1,yf,ROCHA,2)+LN(x0,ya,x1,ya,'#3C7CC0',2);
+ const s=70,fs=d()/dw();const yb=boia()?ya-s+fs*s+Math.sin(t*2)*1.5:yf-s;const xb=170-s/2;
+ g+=RC(xb,yb,s,s,enc()?'#A9A49A':'#D8D4CC','rx="6" stroke="#4A4E5A"');const R=rng(5);for(let i=0;i<Math.round(phi()*60);i++)g+=CI(xb+6+R()*(s-12),yb+6+R()*(s-12),2+R()*4,enc()?'#7FA8D0':'#fff','stroke="#9AA0AC" stroke-width=".5"');
+ g+=TX(170,30,boia()?'boia':'afunda',{fs:14,c:boia()?GREEN:'#B91C1C'});
+ if(boia())g+=TX(xb+s+8,ya-4,Math.round(100-fs*100)+'% para fora',{fs:9,c:NAVY,a:'start'})+TX(xb+s+8,ya+14,Math.round(fs*100)+'% submersa',{fs:9,c:NAVY,a:'start'});
+ $('fig').innerHTML=SVG(340,220,g);}
+function draw(){$('kd').textContent=r2(d())+' g/cm³';$('kf').textContent=boia()?Math.round(d()/dw()*100)+'%':'100%';$('kr').textContent=boia()?'boia':'afunda';MIS.ver('m');}
+function loop(){quadro();requestAnimationFrame(loop);}draw();loop();
+})();
+</script>
+</body>
+</html>
