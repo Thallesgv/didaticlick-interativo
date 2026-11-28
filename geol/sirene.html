@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A sirene · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A sirene</h1></header>
+<main>
+<div class="card"><h2>O painel da Defesa Civil</h2><p class="muted" style="margin-top:0">Mude a chuva de 1 h, de 24 h e de 96 h e a velocidade da trinca (arraste ou use − e +). Cada limiar passado acende em vermelho. O nível sobe com o número de limiares, e a trinca acelerando (mais de 2 mm/dia) adianta um nível. No Alerta máximo, a sirene toca.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="c1"><b>Chuva em 1 h</b><input type="range"><span></span></div><div class="sl" id="c24"><b>Chuva em 24 h</b><input type="range"><span></span></div><div class="sl" id="c96"><b>Chuva em 96 h</b><input type="range"><span></span></div><div class="sl" id="tr"><b>Velocidade da trinca</b><input type="range"><span></span></div><div class="kpi"><div>Limiares passados<b id="k1"></b></div><div>Trinca<b id="k2"></b></div><div class="o">Nível<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const C1=SL('c1',0,80,1,10,()=>draw(),v=>v+' mm'),C24=SL('c24',0,200,1,30,()=>draw(),v=>v+' mm'),C96=SL('c96',0,250,1,60,()=>draw(),v=>v+' mm'),TR=SL('tr',0,10,0.5,1,()=>draw(),v=>vg(v)+' mm/dia');
+const nl=()=>(C1.get()>=30)+(C24.get()>=70)+(C96.get()>=110),acel=()=>TR.get()>2;
+const nivel=()=>{const n=nl();if(n==3||(n==2&&acel()))return 3;if(n==2||(n==1&&acel()))return 2;if(n==1)return 1;return 0;};
+const NOMES=['Observação','Atenção','Alerta','Alerta máximo'],CORES=[VERDE,OURO,ORANGE,VERM];
+MIS.def(()=>[
+ ['Refaça as <b>14h do dia 11</b>: 33 mm em 1 h, 109 em 24 h, 122 em 96 h e trinca a 8 mm/dia.',()=>C1.get()==33&&C24.get()==109&&C96.get()==122&&TR.get()==8,'Três limiares e a trinca acelerando: Alerta máximo. A sirene tocou às 14h10.',()=>'Agora: '+C1.get()+' / '+C24.get()+' / '+C96.get()+' mm e '+vg(TR.get())+' mm/dia.'],
+ ['Com 33 mm em 1 h, 109 em 24 h e a trinca a <b>1 mm/dia</b>, ache a <b>menor chuva de 96 h</b> que ainda toca a sirene.',()=>C1.get()==33&&C24.get()==109&&TR.get()==1&&C96.get()==110,'110 mm: sem a trinca acelerar, a sirene precisa dos três limiares.',()=>C1.get()!=33||C24.get()!=109||TR.get()!=1?'Ponha 33 mm, 109 mm e a trinca em 1 mm/dia.':'Com '+C96.get()+' mm em 96 h, o nível é '+NOMES[nivel()]+'.'],
+ ['Faça a sirene tocar com <b>só dois</b> limiares de chuva passados.',()=>nivel()==3&&nl()==2,'Dois limiares e a trinca acima de 2 mm/dia: o sinal da encosta adianta o alarme.',()=>'Agora: '+nl()+' limiar(es) e nível '+NOMES[nivel()]+'.']]);
+function draw(){const W=340,H=230,lv=nivel();let g=RC(0,0,W,H,'#fff','rx="10"');
+ const L=[['1 h',C1.get(),30,80],['24 h',C24.get(),70,200],['96 h',C96.get(),110,250]];
+ L.forEach(([n,v,l,mx],i)=>{const y=24+i*34,x=60,w=150;g+=TX(x-8,y+10,n,{fs:10,a:'end',c:NAVY})+RC(x,y,w,14,'#EEF0F4','rx="4"')+RC(x,y,Math.min(1,v/mx)*w,14,v>=l?VERM:'#9DB3D9','rx="4"')+LN(x+l/mx*w,y-3,x+l/mx*w,y+17,NAVY,1.5)+TX(x+w+6,y+11,v+' mm',{fs:9,a:'start',c:v>=l?VERM:NAVY});});
+ const ty=24+3*34;g+=TX(52,ty+10,'trinca',{fs:10,a:'end',c:NAVY})+RC(60,ty,150,14,'#EEF0F4','rx="4"')+RC(60,ty,TR.get()/10*150,14,acel()?VERM:'#9DB3D9','rx="4"')+LN(60+0.2*150,ty-3,60+0.2*150,ty+17,NAVY,1.5)+TX(216,ty+11,vg(TR.get())+' mm/dia',{fs:9,a:'start',c:acel()?VERM:NAVY});
+ for(let k=0;k<4;k++){const x=14+k*80;g+=RC(x,170,72,40,k<=lv?CORES[k]:'#EEF0F4','rx="8"')+TX(x+36,194,NOMES[k],{fs:9,c:k<=lv?'#fff':GRAY});}
+ const sx=300,sy=60;g+=PG([[sx-14,sy-10],[sx,sy-22],[sx,sy+22],[sx-14,sy+10]],lv==3?VERM:GRAY,'')+RC(sx-24,sy-10,10,20,lv==3?VERM:GRAY);
+ if(lv==3)for(let k=1;k<=3;k++)g+='<path d="M'+(sx+6+k*7)+' '+(sy-8-k*5)+' Q'+(sx+12+k*9)+' '+sy+' '+(sx+6+k*7)+' '+(sy+8+k*5)+'" fill="none" stroke="'+VERM+'" stroke-width="2"/>';
+ g+=TX(sx-6,sy+44,lv==3?'SIRENE!':'quieta',{fs:10,c:lv==3?VERM:GRAY});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent=nl()+' de 3';$('k2').textContent=acel()?'acelerando':'normal';$('k3').textContent=NOMES[lv];MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

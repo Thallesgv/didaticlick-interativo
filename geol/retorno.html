@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O tempo de retorno · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>O tempo de retorno</h1></header>
+<main>
+<div class="card"><h2>50 anos de chuva</h2><p class="muted" style="margin-top:0">Cada barra é a maior chuva de 72 horas de um ano em Pedra Alta. Mude o limiar e quantos anos da série entram na conta, sempre os mais recentes (arraste ou use − e +). As barras que igualam ou passam o limiar ficam laranja; as que ficam fora da série, apagadas.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="lim"><b>Limiar de chuva</b><input type="range"><span></span></div><div class="sl" id="ns"><b>Anos da série</b><input type="range"><span></span></div><div class="kpi"><div>Vezes<b id="k1"></b></div><div>Probabilidade por ano<b id="k2"></b></div><div class="o">Tempo de retorno<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const S=[68, 104, 57, 163, 73, 118, 89, 131, 51, 146, 52, 82, 236, 54, 109, 71, 125, 85, 51, 137, 168, 80, 61, 112, 50, 53, 121, 172, 75, 74, 102, 52, 63, 133, 53, 194, 83, 115, 75, 51, 84, 128, 55, 152, 62, 88, 107, 88, 85, 51];
+const pc=v=>fmt(Math.round(v*1000)/10)+"%";
+const LI=SL('lim',60,240,10,120,()=>draw(),v=>v+' mm'),NS=SL('ns',5,50,1,50,()=>draw(),v=>v+' anos');
+const k=()=>S.slice(50-NS.get()).filter(v=>v>=LI.get()).length;
+MIS.def(()=>[
+ ['Com os <b>50 anos</b>, ache o tempo de retorno da chuva de <b>180 mm</b>.',()=>LI.get()==180&&NS.get()==50,'2 vezes em 50 anos: P = 4%, T = 25 anos.',()=>NS.get()!=50?'Use os 50 anos da série.':'O limiar está em '+LI.get()+' mm.'],
+ ['Com os 50 anos, ache a <b>chuva de 10 anos</b> (T = 10).',()=>NS.get()==50&&k()==5,()=>'Limiar de '+LI.get()+' mm: 5 vezes em 50 anos. A chuva de 10 anos de Pedra Alta é de uns 160 mm.',()=>'Agora T = '+(k()?r1(NS.get()/k())+' anos':'—')+'. Para T = 10, a chuva deve ter sido passada 5 vezes em 50 anos.'],
+ ['Use só os <b>últimos 10 anos</b> e olhe a chuva de <b>180 mm</b>.',()=>NS.get()==10&&LI.get()==180,'Nenhuma vez: com 10 anos, a chuva de 25 anos “some”. Série curta engana.',()=>'Série de '+NS.get()+' anos, limiar de '+LI.get()+' mm.']]);
+function draw(){const W=340,H=230,gx=34,gy=200,gw=296,gh=170,bw=gw/50,Y=v=>gy-v/250*gh,ini=50-NS.get();let g=RC(0,0,W,H,'#fff','rx="10"');
+ for(const v of [0,50,100,150,200,250]){g+=LN(gx,Y(v),gx+gw,Y(v),'#EEF0F4',1)+TX(gx-4,Y(v)+3,v,{fs:8,a:'end',c:GRAY});}
+ S.forEach((v,i)=>{const dentro=i>=ini,c=!dentro?'#E6E8EC':(v>=LI.get()?ORANGE:'#9DB3D9');g+=RC(gx+i*bw+0.5,Y(v),bw-1,gy-Y(v),c);});
+ g+=LN(gx,Y(LI.get()),gx+gw,Y(LI.get()),VERM,1.5,'5 3')+TX(gx+gw,Y(LI.get())-4,LI.get()+' mm',{fs:9,a:'end',c:VERM});
+ for(const a of [1976,1986,1996,2006,2016,2025])g+=TX(gx+(a-1976+0.5)*bw,gy+14,a,{fs:8,c:GRAY});
+ $('fig').innerHTML=SVG(W,H,g);const kk=k();
+ $('k1').textContent=kk+' em '+NS.get();$('k2').textContent=pc(kk/NS.get());$('k3').textContent=kk?r1(NS.get()/kk)+' anos':'nunca visto';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Custo de errar · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Custo de errar</h1></header>
+<main>
+<div class="card"><h2>Sair ou ficar?</h2><p class="muted" style="margin-top:0">Mude a chance de o morro descer, o custo da saída (C) e a perda que a saída evitaria (L), em milhares de reais (arraste ou use − e +). As barras são o custo esperado de cada decisão; a linha tracejada marca o limiar C ÷ L. Vidas não entram na conta: com gente em risco, a Defesa Civil retira.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="p"><b>Chance de descer (p)</b><input type="range"><span></span></div><div class="sl" id="c"><b>Custo da saída (C)</b><input type="range"><span></span></div><div class="sl" id="l"><b>Perda evitada (L)</b><input type="range"><span></span></div><div class="kpi"><div>Sair custa<b id="k1"></b></div><div>Ficar custa, em média<b id="k2"></b></div><div class="o">Limiar C ÷ L<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const pc=v=>fmt(Math.round(v*1000)/10)+"%";
+const PP=SL('p',0,100,1,20,()=>draw(),v=>v+'%'),CC=SL('c',10,2000,10,100,()=>draw(),v=>'R$ '+fmt(v)+' mil'),LL=SL('l',100,5000,100,1000,()=>draw(),v=>'R$ '+fmt(v)+' mil');
+const ef=()=>PP.get()/100*LL.get();
+MIS.def(()=>[
+ ['A conta do dia 9: <b>p = 50%</b>, saída de <b>R$ 60 mil</b>, perda evitada de <b>R$ 2 000 mil</b>.',()=>PP.get()==50&&CC.get()==60&&LL.get()==2000,'Ficar custa R$ 1 000 mil em média; sair, R$ 60 mil. Sair é 16 vezes mais barato.',()=>'Agora: p = '+PP.get()+'%, C = '+CC.get()+', L = '+fmt(LL.get())+'.'],
+ ['Com C = 60 e L = 2 000, ache a <b>menor chance</b> com que sair ainda compensa.',()=>CC.get()==60&&LL.get()==2000&&ef()>=60&&(PP.get()-1)/100*2000<60,'3%: 0,03 × 2 000 = 60. Já basta uma chance pequena.',()=>CC.get()!=60||LL.get()!=2000?'Ponha C = 60 e L = 2 000.':'Com '+PP.get()+'%, ficar custa '+fmt(Math.round(ef()))+' mil.'],
+ ['Se a saída custasse <b>R$ 1 000 mil</b> (L = 2 000), com que chance haveria <b>empate</b>?',()=>CC.get()==1000&&LL.get()==2000&&PP.get()==50,'50%: 0,5 × 2 000 = 1 000. Só uma saída muito cara mudaria a decisão do dia 9.',()=>CC.get()!=1000||LL.get()!=2000?'Ponha C = 1 000 e L = 2 000.':'Com '+PP.get()+'%, ficar custa '+fmt(Math.round(ef()))+' mil.']]);
+function draw(){const W=340,H=230,gx=40,gy=190,gh=160,m=Math.max(CC.get(),ef(),100)*1.1,Y=v=>gy-v/m*gh;let g=RC(0,0,W,H,'#fff','rx="10"');
+ g+=LN(gx,gy,320,gy,NAVY,1);const s=CC.get()<=ef(),e=ef();
+ g+=RC(70,Y(CC.get()),80,gy-Y(CC.get()),VERDE)+TX(110,Y(CC.get())-6,'R$ '+fmt(CC.get())+' mil',{fs:10,c:VERDE})+TX(110,gy+14,'sair',{fs:10,c:VERDE});
+ g+=RC(200,Y(e),80,gy-Y(e),VERM)+TX(240,Y(e)-6,'R$ '+fmt(Math.round(e))+' mil',{fs:10,c:VERM})+TX(240,gy+14,'ficar (média)',{fs:10,c:VERM});
+ g+=TX(170,24,s?(CC.get()==e?'empate':'sair custa menos'):'ficar custa menos (sem contar vidas)',{fs:12,c:s?VERDE:VERM});
+ const ps=CC.get()/LL.get();g+=RC(40,206,280,8,'#EEF0F4','rx="4"')+RC(40,206,Math.min(1,ps)*280,8,'#F6C9A0','rx="4"')+LN(40+Math.min(1,ps)*280,202,40+Math.min(1,ps)*280,218,NAVY,1.5,'3 2')+CIR(40+PP.get()/100*280,210,5,NAVY);
+ $('fig').innerHTML=SVG(W,H,g);
+ $('k1').textContent='R$ '+fmt(CC.get())+' mil';$('k2').textContent='R$ '+fmt(Math.round(e))+' mil';$('k3').textContent=pc(ps);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os alarmes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Os alarmes</h1></header>
+<main>
+<div class="card"><h2>Acertos, falsos e perdidos</h2><p class="muted" style="margin-top:0">Os 24 eventos da tabela do DRM (Região Serrana, 2011–2012). Mude os três limiares (arraste ou use − e +): o alarme toca se qualquer chuva passar do seu limiar. Círculos: houve escorregamento; quadrados: não houve. Verde é acerto, amarelo é alarme falso, vermelho é alarme perdido e cinza é silêncio certo. Contorno grosso: passou do limiar de 1 h.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="l1"><b>Limiar de 1 h</b><input type="range"><span></span></div><div class="sl" id="l24"><b>Limiar de 24 h</b><input type="range"><span></span></div><div class="sl" id="l96"><b>Limiar de 96 h</b><input type="range"><span></span></div><div class="kpi"><div>Acertos<b id="k1"></b></div><div>Perdidos<b id="k2"></b></div><div class="o">Alarmes falsos<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const D=[["C. Paulino", "28/03/12", 45.8, 0, 6.2, 0], ["Araras", "17/12/11", 43.7, 8.2, 121.7, 0], ["B. Rio Branco", "02/01/12", 17.0, 95.7, 163.7, 0], ["Posse/Petrópolis", "15/03/12", 40.5, 0, 8.0, 0], ["Posse/Petrópolis", "05/11/12", 32.7, 4.2, 6.0, 0], ["Pedro do Rio", "12/02/12", 34.5, 7.5, 29.5, 0], ["Pedro do Rio", "07/03/12", 51.2, 6.0, 9.0, 0], ["Independência", "08/06/12", 0.7, 116.7, 125.0, 0], ["Independência", "22/06/12", 45.2, 3.2, 3.7, 0], ["Independência", "27/11/12", 23.0, 67.8, 113.7, 0], ["Centro", "24/11/12", 45.7, 3.2, 11.2, 0], ["Prata", "02/01/12", 6.2, 59.0, 123.0, 0], ["Posse", "12/02/12", 42.6, 5.4, 52.4, 0], ["Banquete", "13/11/12", 10.6, 94.4, 130.8, 0], ["C. Paulino", "13/11/12", 21.6, 86.4, 135.8, 1], ["V. Pedras", "17/12/11", 35.4, 16.4, 75.6, 1], ["Ypu", "29/01/12", 22.4, 58.2, 110.2, 1], ["Morin", "23/03/12", 52.0, 51.0, 74.5, 1], ["F. Santa/Tijuca", "24/12/11", 60.2, 0, 3.2, 1], ["Jardim Meudon", "13/11/12", 12.6, 41.0, 69.4, 1], ["Olaria", "01/01/12", 20.2, 107.0, 114.0, 1], ["Ypu/BR-116", "03/01/12", 0.2, 21.6, 179.4, 1], ["Quitandinha", "26/09/12", 11.25, 159.2, 159.2, 1], ["Comari", "06/04/12", 74.4, 140.2, 145.6, 1]];
+const L1=SL('l1',0,80,1,40,()=>draw(),v=>v+' mm'),L24=SL('l24',0,180,1,100,()=>draw(),v=>v+' mm'),L96=SL('l96',0,200,1,150,()=>draw(),v=>v+' mm');
+const toca=d=>d[2]>=L1.get()||d[3]>=L24.get()||d[4]>=L96.get();
+const cont=()=>{let a=0,p=0,f=0,s=0;for(const d of D){const t=toca(d);if(d[5]){t?a++:p++;}else{t?f++:s++;}}return{a,p,f,s};};
+MIS.def(()=>[
+ ['Ponha os limiares do DRM: <b>30 mm</b> em 1 h, <b>70 mm</b> em 24 h e <b>110 mm</b> em 96 h.',()=>L1.get()==30&&L24.get()==70&&L96.get()==110,'9 acertos, 1 perdido (Jardim Meudon) e 14 falsos: os limiares regionais erram para o lado do alarme.',()=>'Agora: '+L1.get()+' / '+L24.get()+' / '+L96.get()+' mm.'],
+ ['Deixe a tabela com <b>zero alarmes falsos</b>. Quantos escorregamentos ainda são avisados?',()=>cont().f==0,()=>cont().a+' acertos e '+cont().p+' perdidos. Sem nenhum falso, perde-se pelo menos metade.',()=>'Ainda há '+cont().f+' alarmes falsos.'],
+ ['Agora <b>não perca nenhum</b> escorregamento, com <b>no máximo 6</b> alarmes falsos.',()=>cont().p==0&&cont().f<=6,()=>'Conseguiu: '+cont().f+' falsos. O difícil é pegar Jardim Meudon (69,4 mm em 96 h) e F. Santa (60,2 mm em 1 h) sem pegar as outras.',()=>{const c=cont();return c.p?'Ainda há '+c.p+' perdido(s).':'Nenhum perdido, mas '+c.f+' falsos.';}]]);
+function draw(){const W=340,H=250,gx=36,gy=215,gw=290,gh=195,X=v=>gx+v/180*gw,Y=v=>gy-v/200*gh;let g=RC(0,0,W,H,'#fff','rx="10"');
+ for(let v=0;v<=180;v+=30)g+=LN(X(v),gy,X(v),gy-gh,'#EEF0F4',1)+TX(X(v),gy+12,v,{fs:8,c:GRAY});
+ for(let v=0;v<=200;v+=50)g+=LN(gx,Y(v),gx+gw,Y(v),'#EEF0F4',1)+TX(gx-4,Y(v)+3,v,{fs:8,a:'end',c:GRAY});
+ g+=RC(X(Math.min(L24.get(),180)),gy-gh,Math.max(0,gx+gw-X(Math.min(L24.get(),180))),gh,'rgba(247,141,51,0.07)')+RC(gx,gy-gh,gw,Math.max(0,Y(Math.min(L96.get(),200))-(gy-gh)),'rgba(247,141,51,0.07)');
+ g+=LN(X(Math.min(L24.get(),180)),gy,X(Math.min(L24.get(),180)),gy-gh,VERM,1.5,'5 3')+LN(gx,Y(Math.min(L96.get(),200)),gx+gw,Y(Math.min(L96.get(),200)),VERM,1.5,'5 3');
+ for(const d of D){const t=toca(d),c=d[5]?(t?VERDE:VERM):(t?OURO:'#AEB4BF'),x=X(d[3]),y=Y(d[4]),w=d[2]>=L1.get()?2.5:1;
+  g+=d[5]?CIR(x,y,6,c,'stroke="'+NAVY+'" stroke-width="'+w+'"'):RC(x-5.5,y-5.5,11,11,c,'stroke="'+NAVY+'" stroke-width="'+w+'"');}
+ g+=TX(gx+gw/2,gy+26,'chuva em 24 h (mm)',{fs:9,c:NAVY})+TX(gx,gy-gh-6,'96 h (mm)',{fs:9,a:'start',c:NAVY});
+ $('fig').innerHTML=SVG(W,H+12,g);const c=cont();
+ $('k1').textContent=c.a+' de 10';$('k2').textContent=c.p;$('k3').textContent=c.f+' de 14';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
