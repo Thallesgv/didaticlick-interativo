@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fatias da cabana · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Fatias da cabana</h1></header>
+<main>
+<div class="card"><h2>Setores, coroas e baldes</h2><p class="muted" style="margin-top:0">No modo <b>Setor</b>, escolha o ângulo da fatia, o raio e a profundidade da camada: veja a área, o arco, o volume e os baldes de 10 L. No modo <b>Coroa</b>, mude os dois raios do anel escuro da parede.</p>
+<div id="cm" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div id="ps"><div class="sl" id="sa"><b>Ângulo do setor</b><input type="range"><span></span></div>
+<div class="sl" id="sr"><b>Raio</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Profundidade da camada</b><input type="range"><span></span></div></div>
+<div id="pc" style="display:none"><div class="sl" id="si"><b>Raio de dentro</b><input type="range"><span></span></div>
+<div class="sl" id="se"><b>Raio de fora</b><input type="range"><span></span></div></div>
+<div class="kpi"><div class="o">Área<b id="k1"></b></div><div id="k2t">Arco<b id="k2"></b></div><div id="k3t">Baldes · carrinhos<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o ângulo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let modo=0;chips('cm',['Setor','Coroa'],0,i=>{modo=i;$('ps').style.display=i?'none':'';$('pc').style.display=i?'':'none';draw();});
+const SA=SL('sa',5,360,5,45,()=>draw(),v=>v+'°'),SR=SL('sr',0.5,4,0.1,2,()=>draw(),v=>r1(v)+' m'),SH=SL('sh',5,40,5,10,()=>draw(),v=>v+' cm');
+const SI=SL('si',1,3.5,0.1,2,()=>draw(),v=>r1(v)+' m'),SE=SL('se',1.5,4,0.1,3,()=>draw(),v=>r1(v)+' m');
+const area=()=>SA.get()/360*Math.PI*SR.get()**2,vol=()=>area()*SH.get()/100*1000,coroa=()=>Math.PI*(Math.max(SE.get(),SI.get())**2-Math.min(SE.get(),SI.get())**2);
+MIS.def(()=>[
+ ['Escave um <b>quadrante</b> da cabana (raio 2,5 m) até <b>20 cm</b>. Quantos baldes de 10 L?',()=>!modo&&SA.get()==90&&Math.abs(SR.get()-2.5)<0.01&&SH.get()==20,'4,91 m² × 0,2 m ≈ 0,98 m³ ≈ 982 L: 99 baldes, o último meio cheio.',()=>'90°, raio 2,5 m e 20 cm.'],
+ ['Desenhe a <b>porta</b>: um arco de 20° na linha das estacas (raio 2,5 m). Quanto ela mede?',()=>!modo&&SA.get()==20&&Math.abs(SR.get()-2.5)<0.01,'(20 ÷ 360) × 2π × 2,5 ≈ 0,87 m: uma porta de uns 90 cm.',()=>'Ângulo 20° e raio 2,5 m.'],
+ ['Modo <b>Coroa</b>: monte o anel escuro da parede, de <b>2,3 m</b> a <b>2,7 m</b>. Qual a área?',()=>modo&&Math.abs(SI.get()-2.3)<0.01&&Math.abs(SE.get()-2.7)<0.01,'π(2,7² − 2,3²) = π × 2 ≈ 6,28 m². O anel tem só 40 cm de largura, mas dá a volta inteira.',()=>modo?'Raio de dentro 2,3 m e de fora 2,7 m.':'Troque para o modo Coroa.'],
+ ['A cabana inteira (360°, raio 2,5 m, 20 cm): quantos <b>carrinhos de 60 L</b>?',()=>!modo&&SA.get()==360&&Math.abs(SR.get()-2.5)<0.01&&SH.get()==20,'≈ 3,93 m³ = 3.927 L ÷ 60 ≈ 65,4: 66 carrinhos de terra, todos peneirados.',()=>'360°, raio 2,5 m e 20 cm.']]);
+function draw(){let g=RC(0,0,340,220,'#F8FAFC','rx="10"');const cx=120,cy=110;
+ if(!modo){const r=SR.get(),k=85/4,a=SA.get();g+=CIR(cx,cy,r*k,AREIA,'stroke="'+TERRA+'" stroke-width="1.5"');
+  if(a>=360)g+=CIR(cx,cy,r*k,LIGHT,'stroke="'+ORANGE+'" stroke-width="2"');else{const t=a*RAD,x=cx+r*k*Math.cos(-t),y=cy+r*k*Math.sin(-t);g+=`<path d="M ${cx} ${cy} L ${cx+r*k} ${cy} A ${r*k} ${r*k} 0 ${a>180?1:0} 0 ${x} ${y} Z" fill="${LIGHT}" stroke="${ORANGE}" stroke-width="2"/>`;}
+  const n=Math.ceil(vol()/10-1e-9),cols=8,show=Math.min(n,120);for(let i=0;i<show;i++){const bx=238+(i%cols)*11,by=200-Math.floor(i/cols)*12;g+=PG([[bx,by],[bx+9,by],[bx+8,by-9],[bx+1,by-9]],i==n-1&&vol()%10>0.01?'#FCD9B6':ORANGE);}
+  g+=TX(282,16,n+' baldes',{fs:11})+(n>120?TX(282,30,'(desenhados: 120)',{fs:9,c:GRAY}):'');
+  $('k1').textContent=r2(area())+' m²';$('k2t').firstChild.textContent='Arco';$('k2').textContent=r2(a/360*2*Math.PI*r)+' m';$('k3t').firstChild.textContent='Baldes · carrinhos';$('k3').textContent=n+' · '+Math.ceil(vol()/60-1e-9);}
+ else{const ri=Math.min(SI.get(),SE.get()),re=Math.max(SI.get(),SE.get()),k=95/4;g+=CIR(cx,cy,re*k,'#5B3A22')+CIR(cx,cy,ri*k,AREIA)+LN(cx,cy,cx+ri*k,cy,'#fff',1)+LN(cx,cy,cx-re*k*0.7071,cy-re*k*0.7071,'#fff',1)+TX(cx+ri*k/2,cy-4,r1(ri),{fs:9})+TX(cx-re*k*0.35,cy-re*k*0.35-6,r1(re),{fs:9,c:'#fff'});
+  g+=TX(282,100,'π(R² − r²)',{fs:12})+TX(282,120,'= π('+r2(re*re)+' − '+r2(ri*ri)+')',{fs:10});
+  $('k1').textContent=r2(coroa())+' m²';$('k2t').firstChild.textContent='Largura do anel';$('k2').textContent=r2(re-ri)+' m';$('k3t').firstChild.textContent='Circ. de fora';$('k3').textContent=r2(2*Math.PI*re)+' m';}
+ $('fig').innerHTML=SVG(340,220,g);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

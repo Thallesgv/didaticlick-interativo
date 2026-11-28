@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mediatrizes · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Mediatrizes</h1></header>
+<main>
+<div class="card"><h2>O centro pelas cordas</h2><p class="muted" style="margin-top:0">Escolha duas cordas entre os buracos da cabana. A mediatriz de cada corda (tracejada) passa pelo centro, e o cruzamento é o centro. No modo <b>Seus 3 pontos</b>, toque três pontos na grade e veja o círculo que passa por eles.</p>
+<div id="cm" style="margin:6px 0"></div>
+<div id="c1" style="margin:2px 0"></div><div id="c2" style="margin:2px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Centro<b id="kc">—</b></div><div class="o">Raio<b id="kr">—</b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha as cordas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const H={H1:[3.5,5],H2:[4,6.5],H3:[4.5,7],H4:[6,7.5],H5:[4,3.5]};
+const C1=[['H1','H3'],['H1','H2'],['H2','H5'],['H4','H5']],C2=[['H3','H4'],['H1','H5'],['H2','H4'],['H2','H3']];
+let modo=0,a=0,b=0,pts=[];
+chips('cm',['Buracos da cabana','Seus 3 pontos'],0,i=>{modo=i;$('c1').style.display=$('c2').style.display=i?'none':'';draw();});
+chips('c1',C1.map(c=>'Corda 1: '+c.join('')),0,i=>{a=i;draw();});chips('c2',C2.map(c=>'Corda 2: '+c.join('')),0,i=>{b=i;draw();});
+const k=28,x0=10,y0=270,X=v=>x0+v*k,Y=v=>y0-v*k;
+toque('fig',(x,y,novo)=>{if(!modo)return;const p=[Math.round((x-x0)/k*2)/2,Math.round((y0-y)/k*2)/2];if(novo){pts.push(p);if(pts.length>3)pts.shift();}else pts[pts.length-1]=p;draw();});
+function centro(P,Q,S){const ax=P[0],ay=P[1],bx=Q[0],by=Q[1],cx=S[0],cy=S[1],d=2*(ax*(by-cy)+bx*(cy-ay)+cx*(ay-by));if(Math.abs(d)<1e-9)return null;
+ const ux=((ax*ax+ay*ay)*(by-cy)+(bx*bx+by*by)*(cy-ay)+(cx*cx+cy*cy)*(ay-by))/d,uy=((ax*ax+ay*ay)*(cx-bx)+(bx*bx+by*by)*(ax-cx)+(cx*cx+cy*cy)*(bx-ax))/d;return [ux,uy,Math.hypot(ax-ux,ay-uy)];}
+function inter(p1,q1,p2,q2){const m1=[(p1[0]+q1[0])/2,(p1[1]+q1[1])/2],d1=[-(q1[1]-p1[1]),q1[0]-p1[0]],m2=[(p2[0]+q2[0])/2,(p2[1]+q2[1])/2],d2=[-(q2[1]-p2[1]),q2[0]-p2[0]];
+ const den=d1[0]*d2[1]-d1[1]*d2[0];if(Math.abs(den)<1e-9)return null;const t=((m2[0]-m1[0])*d2[1]-(m2[1]-m1[1])*d2[0])/den;return [m1[0]+t*d1[0],m1[1]+t*d1[1]];}
+let C=null;
+MIS.def(()=>[
+ ['Use as cordas do livro: <b>H1H3</b> e <b>H3H4</b>. Onde as mediatrizes se cruzam?',()=>!modo&&a==0&&b==0,'No centro (6; 5), com raio 2,5 m: as contas do Módulo 3.',()=>'Escolha Corda 1: H1H3 e Corda 2: H3H4.'],
+ ['Troque a corda 1 por <b>H2H5</b>. A mediatriz dela ficou horizontal. O centro mudou?',()=>!modo&&a==2,'Não mudou: qualquer par de cordas dá o mesmo centro. H2H5 é vertical, então a mediatriz é a reta y = 5.',()=>'Escolha Corda 1: H2H5.'],
+ ['No modo <b>Seus 3 pontos</b>, toque três pontos que formem um círculo de raio <b>maior que 5 m</b>.',()=>modo&&pts.length==3&&C&&C[2]>5,'Pontos quase alinhados pedem um círculo enorme: o arco fica quase reto.',()=>pts.length<3?'Toque três pontos.':C?'O raio está em '+r2(C[2])+' m.':'Esses três estão alinhados: não há círculo.'],
+ ['Agora toque três pontos <b>exatamente alinhados</b>. O que acontece com as mediatrizes?',()=>modo&&pts.length==3&&!C,'As mediatrizes ficam paralelas e nunca se cruzam: por três pontos alinhados não passa círculo.',()=>'Coloque os três na mesma reta (por exemplo, todos com o mesmo y).']]);
+function medi(p,q,cor){const m=[(p[0]+q[0])/2,(p[1]+q[1])/2],d=[-(q[1]-p[1]),q[0]-p[0]],L=Math.hypot(...d);const u=[d[0]/L*30,d[1]/L*30];
+ return LN(X(p[0]),Y(p[1]),X(q[0]),Y(q[1]),cor,3)+LN(X(m[0]-u[0]),Y(m[1]-u[1]),X(m[0]+u[0]),Y(m[1]+u[1]),cor,1.5,'6 4')+RC(X(m[0])-3,Y(m[1])-3,6,6,cor);}
+function draw(){let g=RC(0,0,340,280,'#F8FAFC','rx="10"');
+ for(let i=0;i<=11;i++)g+=LN(X(i),0,X(i),280,'#EEF1F6',1);for(let j=0;j<=9;j++)g+=LN(0,Y(j),340,Y(j),'#EEF1F6',1);
+ if(!modo){const c1=C1[a].map(n=>H[n]),c2=C2[b].map(n=>H[n]);const I=inter(c1[0],c1[1],c2[0],c2[1]);C=I?[I[0],I[1],Math.hypot(H.H1[0]-I[0],H.H1[1]-I[1])]:null;
+  if(C)g+=CIR(X(C[0]),Y(C[1]),C[2]*k,'none','stroke="'+TERRA_E+'" stroke-dasharray="4 4"');
+  g+=medi(...c1,BLUE)+medi(...c2,ORANGE);
+  Object.entries(H).forEach(([n,p])=>g+=CIR(X(p[0]),Y(p[1]),6,TERRA_E,'stroke="#fff" stroke-width="1.5"')+TX(X(p[0])-9,Y(p[1])+4,n,{fs:9,c:TERRA_E,a:'end'}));}
+ else{C=pts.length==3?centro(...pts):null;
+  if(pts.length>=2)g+=medi(pts[0],pts[1],BLUE);if(pts.length==3)g+=medi(pts[1],pts[2],ORANGE);
+  if(C&&C[2]<40)g+=CIR(X(C[0]),Y(C[1]),C[2]*k,'none','stroke="'+TERRA_E+'" stroke-dasharray="4 4"');
+  pts.forEach(p=>g+=CIR(X(p[0]),Y(p[1]),6,NAVY,'stroke="#fff" stroke-width="1.5"'));}
+ if(C)g+=CIR(X(C[0]),Y(C[1]),7,ORANGE,'stroke="#fff" stroke-width="2"');
+ $('fig').innerHTML=SVG(340,280,g);$('kc').textContent=C?'('+r2(C[0])+'; '+r2(C[1])+')':(modo&&pts.length==3?'não existe':'—');$('kr').textContent=C?r2(C[2])+' m':'—';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
