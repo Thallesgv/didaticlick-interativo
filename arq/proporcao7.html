@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Da amostra ao todo · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>Da amostra ao todo</h1></header>
+<main>
+<div class="card"><h2>Três proporções</h2><p class="muted" style="margin-top:0">Escolha o problema. Nos sacos e no balde, mude a amostra e veja a conta até o total. No lago, marque peixes, pesque de novo (toque no lago ou no botão) e estime quantos há.</p>
+<div id="ct" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div id="pa"><div class="sl" id="sa"><b>Peças nos 20 sacos</b><input type="range"><span></span></div></div>
+<div id="pb"><div class="sl" id="sb"><b>Conchas no balde de 10 L</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Volume da camada</b><input type="range"><span></span></div></div>
+<div id="pc"><div class="sl" id="sm"><b>Peixes marcados</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button id="pesca">Pescar 50 peixes</button></div></div>
+<div class="kpi"><div>Conta<b id="kc"></b></div><div class="o">Estimativa<b id="ke"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o problema.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),mil=v=>fmt(Math.round(v));
+const media=a=>a.reduce((s,v)=>s+v,0)/a.length,dpad=a=>{const m=media(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)*(v-m),0)/a.length);};
+const mediana=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};
+let tb=0,pesc=null,pescas=0,pmin=1e9;
+const vis=()=>{['pa','pb','pc'].forEach((id,i)=>$(id).style.display=i==tb?'':'none');};
+const CT=chips('ct',['Sacos','Balde','Lago'],0,i=>{tb=i;vis();draw();});
+const Sa=SL('sa',60,200,1,100,()=>draw(),v=>v+' peças'),Sb=SL('sb',50,300,1,100,()=>draw(),v=>v+' conchas'),Sv=SL('sv',100,600,1,300,()=>draw(),v=>v+' m³');
+const N=250,Sm=SL('sm',5,100,5,20,()=>{pesc=null;draw();},v=>v+' peixes');
+const pescar=()=>{const M=Sm.get(),idx=[...Array(N).keys()];for(let i=0;i<50;i++){const j=i+Math.floor(Math.random()*(N-i));[idx[i],idx[j]]=[idx[j],idx[i]];}
+ const c=idx.slice(0,50);pesc={M,c,R:c.filter(k=>k<M).length};pescas++;if(M==10)pmin=Math.min(pmin,pesc.R);draw();};
+$('pesca').onclick=pescar;toque('fig',(x,y,novo)=>{if(tb==2&&novo)pescar();});
+const PX=[...Array(N).keys()].map(i=>{const a=i*2.399963,r=Math.sqrt((i+0.5)/N);return [170+r*140*Math.cos(a),110+r*80*Math.sin(a)];});
+const estL=()=>pesc&&pesc.R?pesc.M*50/pesc.R:Infinity;
+MIS.def(()=>[
+ ['<b>Sacos</b>: os 20 sacos sorteados têm <b>126 peças</b>. Estime o acervo de 200 sacos.',()=>Sa.get()==126,'126 ÷ 20 = 6,3 peças por saco; × 200 = 1 260 peças.',()=>'Peças agora: '+Sa.get()+'. Ponha 126 (aba Sacos).'],
+ ['<b>Balde</b>: 150 conchas em 10 L e a camada E com <b>408 m³</b>. Quantas conchas?',()=>Sb.get()==150&&Sv.get()==408,'15 por litro, 15.000 por m³, × 408 ≈ 6,1 milhões de conchas.',()=>Sb.get()!=150?'Conchas no balde: '+Sb.get()+'. Ponha 150 (aba Balde).':'Volume agora: '+Sv.get()+' m³. Ponha 408.'],
+ ['<b>Lago</b>: marque <b>40 peixes</b> e pesque 50 de novo. Quantos peixes há no lago?',()=>pesc&&pesc.M==40,()=>pesc.R?'Voltaram '+pesc.R+' marcados: N ≈ 40 × 50 ÷ '+pesc.R+' ≈ '+mil(estL())+'. O lago tem, de verdade, 250 peixes.':'Nenhum marcado voltou: não dá para estimar. Pesque de novo.',()=>tb!=2?'Vá para a aba Lago.':Sm.get()!=40?'Marcados agora: '+Sm.get()+'. Ponha 40.':'Aperte Pescar (ou toque no lago).'],
+ ['Agora marque só <b>10 peixes</b> e pesque várias vezes. O que acontece quando volta só <b>1 ou nenhum</b> marcado?',()=>pmin<=1,()=>'Com '+pmin+' marcado'+(pmin==1?'':'s')+', a estimativa '+(pmin?'pula para 500':'nem existe')+'. Com poucos recapturados, a estimativa fica instável: é preciso marcar mais.',()=>Sm.get()!=10?'Marcados agora: '+Sm.get()+'. Ponha 10.':'Pescarias com 10 marcados: o menor número de recapturados foi '+(pmin<1e9?pmin:'—')+'. Pesque até voltar 1 ou nenhum.']]);
+function draw(){let g=RC(0,0,340,230,'#F8FAFC','rx="10"');let conta='',e='';
+ if(tb==0){const m=Sa.get()/20;for(let i=0;i<200;i++){const c=i%20,r=Math.floor(i/20);g+=RC(14+c*15.5,14+r*15.5,13,13,i<20?ORANGE:'#E9D9B8','rx="2"');}
+  g+=TX(170,190,'20 sacos contados (laranja) · 180 estimados',{fs:10,c:GRAY,w:500});conta=Sa.get()+' ÷ 20 × 200';e=mil(m*200)+' peças';}
+ if(tb==1){const b=Sb.get(),v=Sv.get(),tot=b/10*1000*v;g+=PG([[40,60],[120,60],[110,180],[50,180]],'#E9D9B8','stroke="#7E4E2E" stroke-width="1.5"');
+  const r=rng0(5);for(let i=0;i<Math.min(b,300);i++)g+=ELI(52+r()*56,70+r()*104,4,2.5,'#FBF4EA','stroke="#A8977A" stroke-width="0.6"');
+  g+=TX(80,200,'balde de 10 L: '+b,{fs:10,c:'#7E4E2E'});const s=Math.sqrt(v/600)*120;g+=RC(170+(120-s)/2,190-s,s,s,'#EBD5A6','stroke="#7E4E2E" stroke-width="1.5"');
+  g+=TX(230,212,'camada: '+v+' m³',{fs:10,c:'#7E4E2E'});conta=b+' ÷ 10 × 1.000 × '+v;e=f1(tot/1e6)+' milhões';}
+ if(tb==2){g+=ELI(170,110,150,90,'#BFD9F2','stroke="#4F8CC0" stroke-width="1.5"');const M=Sm.get(),C=pesc&&pesc.M==M?new Set(pesc.c):new Set();
+  PX.forEach((p,i)=>{const pe=C.has(i);g+=ELI(p[0],p[1],pe?4.5:3.2,pe?2.6:1.8,i<M?ORANGE:'#4F8CC0',pe?'stroke="#0E2354" stroke-width="1.3"':'opacity="0.8"');});
+  g+=TX(170,218,'laranja: marcados · contorno escuro: pescados',{fs:9,c:GRAY,w:500});
+  if(pesc&&pesc.M==M){conta=M+' × 50 ÷ '+pesc.R;e=pesc.R?mil(estL())+' peixes':'sem marcados';}else{conta='pesque para estimar';e='—';}}
+ $('fig').innerHTML=SVG(340,230,g);$('kc').textContent=conta;$('ke').textContent=e;MIS.ver('m');}
+function rng0(a){return()=>{a=(a*16807)%2147483647;return (a-1)/2147483646;};}
+vis();draw();
+})();
+</script>
+</body>
+</html>

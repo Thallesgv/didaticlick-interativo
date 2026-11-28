@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O sorteio dos sacos · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=3"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>O sorteio dos sacos</h1></header>
+<main>
+<div class="card"><h2>Os 200 sacos</h2><p class="muted" style="margin-top:0">Cada quadradinho é um saco (os de baixo da grade são os de cima da pilha). Escolha como pegar a amostra e quantos sacos; a amostra fica laranja. A estimativa é a média da amostra × 200.</p>
+<div id="cm" style="margin-bottom:6px"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Sacos na amostra</b><input type="range"><span></span></div>
+<div class="row" style="margin:6px 0"><button id="sorte">Sortear de novo</button></div>
+<div class="kpi"><div>Estimativa do total<b id="ke"></b></div><div class="o">Erro<b id="kx"></b></div></div>
+<p class="muted" id="hist" style="margin:4px 0"></p>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha a amostra.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const f1=v=>fmt((Math.round(v*10)/10).toFixed(1)),f2=v=>fmt((Math.round(v*100)/100).toFixed(2)),mil=v=>fmt(Math.round(v));
+const media=a=>a.reduce((s,v)=>s+v,0)/a.length,dpad=a=>{const m=media(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)*(v-m),0)/a.length);};
+const mediana=a=>{const s=a.slice().sort((x,y)=>x-y),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;};function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const POP=(()=>{const r=rng(11),g=()=>{let s=0;for(let i=0;i<6;i++)s+=r();return (s-3)*Math.SQRT2;};
+ const aj=(arr,soma)=>{let d=soma-arr.reduce((s,v)=>s+v,0);let i=0;while(d!=0){const k=Math.floor(r()*arr.length);if(d>0&&arr[k]<12){arr[k]++;d--;}else if(d<0&&arr[k]>1){arr[k]--;d++;}if(++i>1e5)break;}return arr;};
+ const a=aj(Array.from({length:180},()=>Math.min(12,Math.max(1,Math.round(6.08+1.5*g())))),1095),b=aj(Array.from({length:20},()=>Math.min(12,Math.max(1,Math.round(8.1+1.5*g())))),162);
+ return a.concat(b);})();
+const REAL=POP.reduce((s,v)=>s+v,0);
+const sorteia=n=>{const idx=[...Array(200).keys()];for(let i=0;i<n;i++){const j=i+Math.floor(Math.random()*(200-i));[idx[i],idx[j]]=[idx[j],idx[i]];}return idx.slice(0,n);};
+let mo=0,am=[],sorts=[],mostra=false;
+chips('cm',['Os de cima da pilha','Os primeiros sacos','Sorteio'],0,i=>{mo=i;novo();});
+const Sn=SL('sn',5,100,5,20,()=>novo(),v=>v+' sacos');const n=()=>Sn.get();
+function novo(reg){am=mo==0?[...Array(n()).keys()].map(i=>199-i):mo==1?[...Array(n()).keys()]:sorteia(n());if(mo==2&&reg)sorts.push(est());draw();}
+$('sorte').onclick=()=>{if(mo!=2){mo=2;document.querySelectorAll('#cm button').forEach((b,k)=>b.className=k==2?'':'alt');}novo(true);};
+const est=()=>media(am.map(i=>POP[i]))*200,err=()=>est()-REAL;
+toque('fig',()=>{mostra=!mostra;draw();});
+MIS.def(()=>[
+ ['Pegue os <b>20 sacos de cima</b> da pilha. Quanto a estimativa erra?',()=>mo==0&&n()==20,()=>'Estimativa '+mil(est())+' contra '+mil(REAL)+' de verdade: '+mil(err())+' peças a mais. Os de cima vieram todos do chão B, perto da fogueira.',()=>mo!=0?'Escolha "Os de cima da pilha".':'Sacos agora: '+n()+'. Ponha 20.'],
+ ['Agora faça um <b>sorteio</b> de <b>20 sacos</b>.',()=>mo==2&&n()==20,()=>'Os 20 sorteados se espalham pelo acervo: estimativa de '+mil(est())+', erro de '+mil(Math.abs(err()))+'.',()=>mo!=2?'Escolha "Sorteio".':'Sacos agora: '+n()+'. Ponha 20.'],
+ ['Com sorteio, consiga uma estimativa com erro <b>menor que 100 peças</b> (sorteie de novo se precisar).',()=>mo==2&&Math.abs(err())<100,()=>'Erro de '+mil(Math.abs(err()))+' peças. Nem todo sorteio acerta tanto, mas nenhum tem o viés dos sacos de cima.',()=>mo!=2?'Escolha "Sorteio".':'Erro agora: '+mil(Math.abs(err()))+'. Sorteie de novo ou aumente a amostra.'],
+ ['Aperte <b>Sortear de novo</b> até ter <b>10 sorteios</b> anotados. As estimativas ficam espalhadas em volta do valor certo?',()=>sorts.length>=10,()=>{const m=media(sorts);return 'Média dos '+sorts.length+' sorteios: '+mil(m)+', perto do total verdadeiro, '+mil(REAL)+'. O sorteio erra para cima e para baixo; o viés erra sempre para o mesmo lado.';},()=>'Sorteios anotados: '+sorts.length+' de 10.']]);
+function draw(){let g=RC(0,0,340,250,'#F8FAFC','rx="10"');const S=new Set(am),s=16;
+ for(let i=0;i<200;i++){const c=i%20,r=Math.floor(i/20),x=10+c*s,y=12+r*s;g+=RC(x,y,s-2,s-2,S.has(i)?ORANGE:'#E9D9B8','rx="2"');if(mostra)g+=TX(x+(s-2)/2,y+11,POP[i],{fs:8,c:S.has(i)?'#fff':'#7E4E2E',w:500});}
+ g+=TX(170,186,mostra?'toque para esconder as peças':'toque na grade para ver as peças de cada saco',{fs:9,c:GRAY,w:500});
+ const X=v=>20+(v-900)/900*300;g+=LN(X(900),220,X(1800),220,NAVY,1);for(let v=900;v<=1800;v+=300)g+=LN(X(v),220,X(v),225,NAVY,1)+TX(X(v),238,mil(v),{fs:8,c:GRAY,w:500});
+ sorts.forEach(v=>g+=CIR(X(Math.min(1800,Math.max(900,v))),212,3.5,BLUE,'opacity="0.6"'));
+ g+=LN(X(REAL),200,X(REAL),224,GREEN,2)+TX(X(REAL),198,'real',{fs:8,c:GREEN});g+=CIR(X(Math.min(1800,Math.max(900,est()))),220,5,ORANGE,'stroke="#fff" stroke-width="1.5"');
+ $('fig').innerHTML=SVG(340,250,g);$('ke').textContent=mil(est())+' peças';$('kx').textContent=(err()>0?'+':'')+mil(err());
+ $('hist').textContent=sorts.length?'Sorteios anotados: '+sorts.length+' (pontos azuis na reta).':'';MIS.ver('m');}
+novo();
+})();
+</script>
+</body>
+</html>
