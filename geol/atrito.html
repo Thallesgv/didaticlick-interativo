@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A prancha · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>A prancha</h1></header>
+<main>
+<div class="card"><h2>Atrito e ângulo de atrito</h2><p class="muted" style="margin-top:0">Mude a inclinação da prancha, o ângulo de atrito entre o bloco e a prancha e a massa do bloco (arraste ou use − e +). A seta laranja é o que empurra; a verde, o atrito máximo. Se o que empurra passa do atrito máximo, o bloco escorrega.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="si"><b>Inclinação da prancha</b><input type="range"><span></span></div><div class="sl" id="sf"><b>Ângulo de atrito (φ)</b><input type="range"><span></span></div><div class="sl" id="sm"><b>Massa do bloco</b><input type="range"><span></span></div><div class="kpi"><div>Empurra<b id="k1"></b></div><div>Atrito máximo<b id="k2"></b></div><div class="o">O bloco<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function AR(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),t=9;return LN(x1,y1,x2,y2,c,w||3)+PG([[x2,y2],[x2-t*Math.cos(a-0.4),y2-t*Math.sin(a-0.4)],[x2-t*Math.cos(a+0.4),y2-t*Math.sin(a+0.4)]],c,'');}
+const SI=SL('si',0,60,1,15,()=>draw(),v=>v+'°'),SF=SL('sf',10,45,1,30,()=>draw(),v=>v+'°'),SM=SL('sm',1,10,1,2,()=>draw(),v=>v+' kg');
+const P=()=>SM.get()*10,T=()=>P()*Math.sin(SI.get()*RAD),Fm=()=>P()*Math.cos(SI.get()*RAD)*Math.tan(SF.get()*RAD),desce=()=>T()>Fm()+1e-9;
+MIS.def(()=>[
+ ['Com <b>φ = 25°</b>, ache a <b>maior inclinação</b> em que o bloco ainda fica parado.',()=>SF.get()==25&&SI.get()==25,'25°: no limite, a inclinação é igual ao ângulo de atrito. É assim que o Davi mediu o φ.',()=>SF.get()!=25?'Ponha o ângulo de atrito em 25°.':desce()?'A '+SI.get()+'°, o bloco escorrega.':'A '+SI.get()+'° ainda segura. Dá para inclinar mais?'],
+ ['O solo encharcado tem <b>φ = 22°</b>. Ponha a prancha na inclinação da camada, <b>30°</b>.',()=>SF.get()==22&&SI.get()==30,'Escorrega: 30° > 22°. Sem coesão, o pacote não ficaria lá.',()=>SF.get()!=22?'O ângulo de atrito está em '+SF.get()+'°.':'A prancha está a '+SI.get()+'°.'],
+ ['No limite (<b>i = φ = 25°</b>), troque a massa para <b>10 kg</b>. O bloco escorrega?',()=>SI.get()==25&&SF.get()==25&&SM.get()==10,'Não: com 10 kg, empurrar e atrito crescem juntos. O limite depende só dos ângulos (tg i = tg φ).',()=>SI.get()!=25||SF.get()!=25?'Deixe a inclinação e o φ em 25°.':'A massa está em '+SM.get()+' kg.']]);
+function draw(){const i=SI.get()*RAD,ox=30,oy=210,L=260;let g=RC(0,0,340,240,'#fff','rx="10"');
+ g+=PG([[ox,oy],[ox+L*Math.cos(i),oy-L*Math.sin(i)],[ox+L*Math.cos(i),oy]],'#EADBC4','stroke="'+NAVY+'"');
+ const d=desce(),s=L*(d?0.35:0.55),u=[Math.cos(i),-Math.sin(i)],nn=[-Math.sin(i),-Math.cos(i)],bx=ox+s*u[0],by=oy+s*u[1],bw=24+SM.get()*3,bh=14+SM.get()*1.5;
+ const q=[[bx-u[0]*bw/2,by-u[1]*bw/2],[bx+u[0]*bw/2,by+u[1]*bw/2]];g+=PG([q[0],q[1],[q[1][0]+nn[0]*bh,q[1][1]+nn[1]*bh],[q[0][0]+nn[0]*bh,q[0][1]+nn[1]*bh]],TERRA_E,'');
+ const cx=bx+nn[0]*bh/2,cy=by+nn[1]*bh/2,k=90/Math.max(T(),Fm(),1),ta=T()*k,fa=Fm()*k;
+ if(ta>3)g+=AR(cx,cy,cx-u[0]*ta,cy-u[1]*ta,ORANGE);if(fa>3)g+=AR(cx+nn[0]*6,cy+nn[1]*6,cx+nn[0]*6+u[0]*fa,cy+nn[1]*6+u[1]*fa,VERDE);
+ g+=TX(170,24,d?'escorrega!':'parado',{fs:14,c:d?VERM:VERDE})+TX(ox+40,oy-6,'i = '+SI.get()+'°',{fs:11,a:'start'});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r1(T())+' N';$('k2').textContent=r1(Fm())+' N';$('k3').textContent=d?'escorrega':'fica';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

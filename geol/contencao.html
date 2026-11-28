@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>As obras · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>As obras</h1></header>
+<main>
+<div class="card"><h2>Drenos, tirantes e grama</h2><p class="muted" style="margin-top:0">Mude a coluna máxima que os drenos deixam (5,4 m = sem drenos), o número de tirantes de 250 kN, quantos milímetros de chuva fazem a água subir 1 m (mais = mais grama e canaletas) e a chuva acumulada (arraste ou use − e +).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Coluna máxima (drenos)</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Tirantes</b><input type="range"><span></span></div><div class="sl" id="sk"><b>Chuva para subir 1 m</b><input type="range"><span></span></div><div class="sl" id="sa"><b>Chuva acumulada</b><input type="range"><span></span></div><div class="kpi"><div>Coluna de água<b id="k1"></b></div><div>Tirantes seguram<b id="k2"></b></div><div class="o">FS<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function FSc(o){const P=o.P??28000,i=(o.i??30)*RAD,phi=(o.phi??25)*RAD,c=o.c??16,A=600,h=Math.max(0,o.h??0),n=o.n??0;
+ const T=P*Math.sin(i),N=P*Math.cos(i),U=7.5*h*A,Ne=Math.max(0,N-U),R=c*A+Ne*Math.tan(phi)+250*n;return{T,N,U,Ne,R,fs:R/T,at:Ne*Math.tan(phi),co:c*A};}
+const corFS=f=>f>=1.5?VERDE:f>=1?OURO:VERM;
+const SD=SL('sd',2,5.4,0.1,5.4,()=>draw(),v=>v>=5.4?'sem drenos':vg(v)+' m'),SN=SL('sn',0,60,1,0,()=>draw(),v=>v),SK=SL('sk',60,120,5,60,()=>draw(),v=>v+' mm'),SA=SL('sa',0,250,5,180,()=>draw(),v=>v+' mm');
+const h=()=>Math.min(SD.get(),5,1.45+SA.get()/SK.get()),F=()=>FSc({h:h(),n:SN.get()}),cfg=()=>SK.get()==60&&SA.get()==180;
+MIS.def(()=>[
+ ['Com os <b>180 mm</b>, ponha só os <b>drenos</b> (coluna máxima de <b>2 m</b>), sem tirantes.',()=>cfg()&&Math.abs(SD.get()-2)<0.01&&SN.get()==0,()=>'FS ≈ '+r2(F().fs)+': melhora muito, mas não chega a 1,5.',()=>!cfg()?'Deixe 60 mm por metro e 180 mm de chuva.':Math.abs(SD.get()-2)>=0.01?'Os drenos estão em '+(SD.get()>=5.4?'"sem drenos"':vg(SD.get())+' m')+'.':'Tire os tirantes.'],
+ ['Com drenos (2 m), ache o <b>menor</b> número de tirantes para <b>FS ≥ 1,5</b>.',()=>cfg()&&Math.abs(SD.get()-2)<0.01&&F().fs>=1.5&&FSc({h:h(),n:SN.get()-1}).fs<1.5,()=>SN.get()+' tirantes: FS ≈ '+r2(F().fs)+'.',()=>!cfg()||Math.abs(SD.get()-2)>=0.01?'Deixe drenos de 2 m, 60 mm por metro e 180 mm.':F().fs<1.5?'FS agora: '+r2(F().fs)+'.':'Atende, mas dá com menos tirantes.'],
+ ['E <b>sem drenos</b>? Ache o menor número de tirantes para FS ≥ 1,5.',()=>cfg()&&SD.get()>=5.4&&F().fs>=1.5&&FSc({h:h(),n:SN.get()-1}).fs<1.5,()=>SN.get()+' tirantes: os drenos economizam uns 20.',()=>!cfg()||SD.get()<5.4?'Tire os drenos (5,4 m) e deixe 60 mm por metro e 180 mm.':F().fs<1.5?'FS agora: '+r2(F().fs)+'.':'Atende, mas dá com menos tirantes.']]);
+function draw(){const f=F(),i=30*RAD,ox=20,oy=225,L=300,u=[Math.cos(i),-Math.sin(i)],nn=[-Math.sin(i),-Math.cos(i)],p=(a,b)=>[ox+u[0]*a+nn[0]*b,oy+u[1]*a+nn[1]*b];
+ let g=RC(0,0,340,240,'#fff','rx="10"')+PG([[ox,oy],[ox+L*u[0],oy+L*u[1]],[ox+L*u[0],oy]],'#C9CED8','stroke="'+NAVY+'"');
+ const s0=50,bw=200,bh=50;g+=PG([p(s0,0),p(s0+bw,0),p(s0+bw,bh),p(s0,bh)],TERRA,'stroke="'+TERRA_E+'" stroke-width="1.5"');
+ const hw=h()/5*bh;g+=PG([p(s0,0),p(s0+bw,0),p(s0+bw,hw),p(s0,hw)],AGUA_C,'');
+ if(SD.get()<5.4){const a=p(s0+10,6),b=p(s0+bw-10,6);g+=LN(a[0],a[1],b[0],b[1],BLUE,2.5,'6 3');}
+ const n=SN.get();for(let k=0;k<Math.min(n,20);k++){const t=s0+10+k*(bw-20)/Math.max(1,Math.min(n,20)-1||1),a=p(t,bh),b=p(t+10,-30);g+=LN(a[0],a[1],b[0],b[1],VERM,1.5);}
+ const gr=(SK.get()-60)/60;for(let k=0;k<Math.round(gr*12);k++){const a=p(s0+8+k*16,bh);g+=LN(a[0],a[1],a[0]-3,a[1]-8,VERDE,2)+LN(a[0],a[1],a[0]+3,a[1]-8,VERDE,2);}
+ g+=TX(250,40,'FS = '+r2(f.fs),{fs:16,c:corFS(f.fs)});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r2(h())+' m';$('k2').textContent=fmt(250*n)+' kN';$('k3').textContent=r2(f.fs);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

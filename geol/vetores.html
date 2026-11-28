@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Soma de forças · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/geol.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática na Geologia</div><h1>Soma de forças</h1></header>
+<main>
+<div class="card"><h2>A regra do paralelogramo</h2><p class="muted" style="margin-top:0">Mude o módulo e o ângulo de cada força (0° = leste, 90° = norte; arraste ou use − e +). As setas azul e verde são as forças; a laranja é a resultante, a diagonal do paralelogramo.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="f1"><b>Força 1</b><input type="range"><span></span></div><div class="sl" id="a1"><b>Ângulo da força 1</b><input type="range"><span></span></div><div class="sl" id="f2"><b>Força 2</b><input type="range"><span></span></div><div class="sl" id="a2"><b>Ângulo da força 2</b><input type="range"><span></span></div><div class="kpi"><div>Resultante<b id="k1"></b></div><div>Ângulo da resultante<b id="k2"></b></div><div class="o">Soma dos módulos<b id="k3"></b></div></div>
+<div id="m"></div></div><div class="card"><h2>Missão</h2><p style="margin:0">Mexa nos controles.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function AR(x1,y1,x2,y2,c,w){const a=Math.atan2(y2-y1,x2-x1),t=9;return LN(x1,y1,x2,y2,c,w||3)+PG([[x2,y2],[x2-t*Math.cos(a-0.4),y2-t*Math.sin(a-0.4)],[x2-t*Math.cos(a+0.4),y2-t*Math.sin(a+0.4)]],c,'');}
+const F1=SL('f1',0,10,0.5,3,()=>draw(),v=>vg(v)+' kN'),A1=SL('a1',0,180,5,0,()=>draw(),v=>v+'°'),F2=SL('f2',0,10,0.5,2,()=>draw(),v=>vg(v)+' kN'),A2=SL('a2',0,180,5,90,()=>draw(),v=>v+'°');
+const comp=()=>{const x=F1.get()*Math.cos(A1.get()*RAD)+F2.get()*Math.cos(A2.get()*RAD),y=F1.get()*Math.sin(A1.get()*RAD)+F2.get()*Math.sin(A2.get()*RAD);return{x,y,r:Math.hypot(x,y),a:Math.atan2(y,x)*DEG};};
+MIS.def(()=>[
+ ['Refaça as cordas do Seu Lauro: <b>3 kN a 0°</b> (leste) e <b>4 kN a 90°</b> (norte).',()=>F1.get()==3&&A1.get()==0&&F2.get()==4&&A2.get()==90,'Resultante de 5 kN a uns 53°: Pitágoras com 3, 4 e 5.',()=>'Força 1: '+vg(F1.get())+' kN a '+A1.get()+'°; força 2: '+vg(F2.get())+' kN a '+A2.get()+'°.'],
+ ['Faça a resultante dar <b>zero</b>, com as duas forças diferentes de zero.',()=>F1.get()>0&&F2.get()>0&&comp().r<0.01,'Forças iguais em sentidos opostos se anulam: é o cabo de guerra empatado.',()=>'Resultante agora: '+r2(comp().r)+' kN.'],
+ ['Duas forças de <b>10 kN</b> com <b>60°</b> entre elas: quanto dá a resultante?',()=>F1.get()==10&&F2.get()==10&&Math.abs(Math.abs(A1.get()-A2.get())-60)<0.1,()=>r1(comp().r)+' kN: menos que 20, porque as forças não estão alinhadas.',()=>F1.get()!=10||F2.get()!=10?'Ponha as duas forças em 10 kN.':'O ângulo entre elas é '+Math.abs(A1.get()-A2.get())+'°.']]);
+function draw(){const k=16,ox=110,oy=190,C=comp(),p1=[ox+F1.get()*k*Math.cos(A1.get()*RAD),oy-F1.get()*k*Math.sin(A1.get()*RAD)],p2=[ox+F2.get()*k*Math.cos(A2.get()*RAD),oy-F2.get()*k*Math.sin(A2.get()*RAD)],pr=[ox+C.x*k,oy-C.y*k];
+ let g=RC(0,0,340,240,'#fff','rx="10"');for(let x=-6;x<=13;x++)g+=LN(ox+x*k,20,ox+x*k,oy+30,'#F0F2F5',1);for(let y=-1;y<=10;y++)g+=LN(0,oy-y*k,340,oy-y*k,'#F0F2F5',1);
+ g+=LN(p1[0],p1[1],pr[0],pr[1],GRAY,1,'4 3')+LN(p2[0],p2[1],pr[0],pr[1],GRAY,1,'4 3');
+ if(F1.get())g+=AR(ox,oy,p1[0],p1[1],BLUE);if(F2.get())g+=AR(ox,oy,p2[0],p2[1],VERDE);if(C.r>0.05)g+=AR(ox,oy,pr[0],pr[1],ORANGE,4);
+ g+=CIR(ox,oy,4,NAVY)+TX(pr[0]+6,pr[1]-6,'R = '+r1(C.r)+' kN',{fs:11,a:'start',c:ORANGE})+TX(330,oy+14,'leste →',{fs:9,a:'end',c:GRAY})+TX(ox,14,'↑ norte',{fs:9,c:GRAY});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=r2(C.r)+' kN';$('k2').textContent=C.r>0.01?r1(C.a)+'°':'—';$('k3').textContent=vg(F1.get()+F2.get())+' kN';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
