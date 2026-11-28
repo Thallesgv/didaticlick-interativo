@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Parcelas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>Parcelas</h1></header>
+<main>
+<div class="card"><h2>Densidade = média ÷ área da parcela</h2><p class="muted" style="margin-top:0">Mude a densidade real de árvores, o número de parcelas e o lado de cada uma (arrastando ou com − e +). Sorteie de novo para ver a estimativa mudar. A área tem 200 m × 120 m.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button id="bs">Sortear de novo</button><button class="alt" id="bm">Modo: parcelas sorteadas</button></div><div class="sl" id="sd"><b>Densidade real</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Número de parcelas</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Lado da parcela</b><input type="range"><span></span></div><div class="kpi"><div>Árvores por parcela (média)<b id="k1"></b></div><div>Estimativa<b id="k2"></b></div><div class="o">Margem<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Estime sem contar tudo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;const sdev=a=>a.length<2?0:Math.sqrt(a.reduce((s,x)=>s+(x-mean(a))**2,0)/(a.length-1));
+const med=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const ARV=(x,y,r,c)=>LN(x,y,x,y+r*0.9,'#8A5A2B',Math.max(1,r*0.35))+CIR(x,y,r,c||'#5E8C4A');
+const SD=SL('sd',100,1500,50,500,()=>{gera();draw();},v=>mil(v)+' /ha'),SN=SL('sn',1,40,1,6,()=>{sorteia();draw();},v=>v),SLD_=SL('sl',4,30,1,10,()=>{sorteia();draw();},v=>v+' m');
+const W=200,H=120;let arv=[],par=[],semente=1,bonito=false;
+function gera(){const r=RNG(77),n=Math.round(SD.get()*W*H/10000);const cs=[];for(let i=0;i<9;i++)cs.push([r()*W,r()*H]);arv=[];
+ for(let i=0;i<n;i++){if(r()<0){const c=cs[Math.floor(r()*cs.length)];const a=r()*6.283,d=Math.abs((r()+r()+r()-1.5))*30;arv.push([(c[0]+d*Math.cos(a)+W)%W,(c[1]+d*Math.sin(a)+H)%H]);}else arv.push([r()*W,r()*H]);}
+ sorteia();}
+function conta(x,y,l){return arv.filter(([a,b])=>a>=x&&a<x+l&&b>=y&&b<y+l).length;}
+function sorteia(){const r=RNG(semente),l=SLD_.get(),n=SN.get();par=[];
+ if(!bonito){for(let i=0;i<n;i++){const x=r()*(W-l),y=r()*(H-l);par.push([x,y,conta(x,y,l)]);}}
+ else{const cand=[];for(let i=0;i<300;i++){const x=r()*(W-l),y=r()*(H-l);cand.push([x,y,conta(x,y,l)]);}cand.sort((a,b)=>b[2]-a[2]);par=cand.slice(0,n);}}
+$('bs').onclick=()=>{semente++;sorteia();draw();};
+$('bm').onclick=()=>{bonito=!bonito;$('bm').textContent=bonito?'Modo: onde é bonito':'Modo: parcelas sorteadas';sorteia();draw();};
+const est=()=>mean(par.map(p=>p[2]))*10000/SLD_.get()**2,marg=()=>2*sdev(par.map(p=>p[2]))/Math.sqrt(par.length)*10000/SLD_.get()**2;
+MIS.def(()=>[
+ ['Refaça a amostra do Téo: <b>6</b> parcelas sorteadas de <b>10 m</b>, numa área de <b>500</b> árvores por hectare.',()=>SN.get()==6&&SLD_.get()==10&&SD.get()==500&&!bonito,()=>'Estimativa de '+mil(est())+' ± '+mil(marg())+' por hectare. Sorteie de novo: cada amostra dá um valor, e a margem diz quanto eles variam.',()=>'Confira: 6 parcelas, 10 m, 500 por hectare, modo sorteado.'],
+ ['Sem mudar a densidade de 500, deixe a margem <b>abaixo de 50</b> árvores por hectare.',()=>SD.get()==500&&!bonito&&par.length>1&&marg()<50,()=>SN.get()+' parcelas de '+SLD_.get()+' m: margem de '+mil(marg())+'. Mais parcelas ou parcelas maiores: as duas coisas aumentam a área amostrada.',()=>'Margem agora: '+mil(marg())+' por hectare.'],
+ ['Troque para o modo <b>onde é bonito</b> e compare a estimativa com a verdade.',()=>bonito&&est()>SD.get()*1.2,()=>'Estimativa de '+mil(est())+' para uma verdade de '+mil(SD.get())+': escolher onde há mais árvores infla o resultado. Por isso se sorteia.',()=>bonito?'Estimativa agora: '+mil(est())+'.':'Toque no botão do modo.']]);
+function draw(){const k=1.6,l=SLD_.get();let g=RC(0,0,340,212,'#E9D9A6','rx="10"');
+ for(const [a,b] of arv)g+=CIR(10+a*k,10+b*k,1.8,'#5E8C4A');
+ for(const [x,y,c] of par)g+=RC(10+x*k,10+y*k,l*k,l*k,'rgba(242,140,40,0.18)','stroke="'+ORANGE+'" stroke-width="1.6"')+TX(10+x*k+l*k/2,10+y*k+l*k/2+4,c,{fs:Math.min(12,6+l*0.4),c:'#7A3B00'});
+ $('fig').innerHTML=SVG(340,212,g);
+ $('k1').textContent=r1(mean(par.map(p=>p[2])));$('k2').textContent=mil(est())+' /ha';$('k3').textContent=par.length>1?'± '+mil(marg())+' /ha':'—';MIS.ver('m');}
+gera();draw();
+})();
+</script>
+</body>
+</html>

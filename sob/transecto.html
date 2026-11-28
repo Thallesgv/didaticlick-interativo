@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O transecto · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/sob.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Sobrevivente</div><h1>O transecto</h1></header>
+<main>
+<div class="card"><h2>Cobertura = sob copa ÷ comprimento</h2><p class="muted" style="margin-top:0">Mude a cobertura real das copas, o comprimento de cada linha e o número de linhas (arrastando ou com − e +). Sorteie novas linhas: os trechos laranja ficam debaixo de copa.</p>
+<div class="fig" id="fig"></div>
+<div class="row" style="flex-wrap:wrap;gap:6px;margin:8px 0"><button id="bs">Sortear novas linhas</button></div><div class="sl" id="sc"><b>Cobertura real</b><input type="range"><span></span></div><div class="sl" id="sl"><b>Comprimento da linha</b><input type="range"><span></span></div><div class="sl" id="sn"><b>Número de linhas</b><input type="range"><span></span></div><div class="kpi"><div>Estimativa<b id="k1"></b></div><div>Margem<b id="k2"></b></div><div class="o">Paisagem (pela estimativa)<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Estique a corda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+function RNG(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const mil=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;const sdev=a=>a.length<2?0:Math.sqrt(a.reduce((s,x)=>s+(x-mean(a))**2,0)/(a.length-1));
+const med=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const ARV=(x,y,r,c)=>LN(x,y,x,y+r*0.9,'#8A5A2B',Math.max(1,r*0.35))+CIR(x,y,r,c||'#5E8C4A');
+const SC=SL('sc',0,90,1,18,()=>{gera();linhas();draw();},v=>v+'%'),SLL=SL('sl',5,90,1,10,()=>{linhas();draw();},v=>v+' m'),SN=SL('sn',1,60,1,10,()=>{linhas();draw();},v=>v);
+const W=100,H=60;let cop=[],lin=[],sem=3,real=0;
+const sob=(x,y)=>cop.some(([a,b,r])=>(x-a)**2+(y-b)**2<=r*r);
+function gera(){const r=RNG(11);cop=[];const alvo=SC.get()/100;let f=0,tent=0;
+ const frac=()=>{let n=0,t=0;for(let x=0.5;x<W;x+=1)for(let y=0.5;y<H;y+=1){t++;if(sob(x,y))n++;}return n/t;};
+ while(f<alvo&&tent<2000){tent++;cop.push([r()*W,r()*H,1.2+r()*2.2]);if(tent%5==0||alvo-f<0.03)f=frac();}
+ while(cop.length&&frac()>alvo+0.004)cop.pop();real=frac()*100;}
+function linhas(){const r=RNG(sem),L=SLL.get();lin=[];for(let i=0;i<SN.get();i++){const x=r()*(W-L),y=1+r()*(H-2);let s=0,seg=[],a=null;
+ for(let t=0;t<=L;t+=0.05){const c=sob(x+t,y);if(c){s+=0.05;if(a===null)a=t;}else if(a!==null){seg.push([a,t]);a=null;}}if(a!==null)seg.push([a,L]);lin.push({x,y,s,seg});}}
+$('bs').onclick=()=>{sem++;linhas();draw();};
+const est=()=>lin.reduce((s,l)=>s+l.s,0)/(lin.length*SLL.get())*100,marg=()=>lin.length<2?NaN:2*sdev(lin.map(l=>l.s/SLL.get()*100))/Math.sqrt(lin.length);
+const classe=c=>c<5?'campo':c<20?'cerrado ralo':c<50?'cerrado típico':c<70?'cerrado denso':'cerradão / mata';
+MIS.def(()=>[
+ ['Refaça o trabalho do Téo: cobertura real de <b>18%</b>, <b>10</b> linhas de <b>10 m</b>.',()=>SC.get()==18&&SLL.get()==10&&SN.get()==10,()=>'Estimativa de '+r1(est())+'% ± '+r1(marg())+': '+classe(est())+'. Sorteie de novo e veja a estimativa variar dentro da margem.',()=>'Confira os três controles.'],
+ ['Com cobertura de 18%, deixe a margem em <b>3 pontos ou menos</b>.',()=>SC.get()==18&&marg()<=3,()=>SN.get()+' linhas de '+SLL.get()+' m: margem de '+r1(marg())+' pontos. Linhas mais longas ou mais linhas: mais corda no chão.',()=>'Margem agora: '+r1(marg())+'.'],
+ ['Transforme a área num <b>cerradão</b> e veja a estimativa acompanhar.',()=>SC.get()>=70&&est()>=70,()=>'Estimativa de '+r1(est())+'%: copas quase se tocando. No cerradão, quase não há sol no chão.',()=>'Cobertura real agora: '+SC.get()+'%.']]);
+function draw(){const k=3.3;let g=RC(0,0,340,212,'#E9D9A6','rx="10"');
+ for(const [a,b,r] of cop)g+=CIR(5+a*k,7+b*k,r*k,'rgba(94,140,74,0.75)');
+ for(const l of lin){g+=LN(5+l.x*k,7+l.y*k,5+(l.x+SLL.get())*k,7+l.y*k,NAVY,1.4);for(const [a,b] of l.seg)g+=LN(5+(l.x+a)*k,7+l.y*k,5+(l.x+b)*k,7+l.y*k,ORANGE,3.2);}
+ $('fig').innerHTML=SVG(340,212,g);
+ $('k1').textContent=r1(est())+'%';$('k2').textContent=isNaN(marg())?'—':'± '+r1(marg());$('k3').textContent=classe(est());MIS.ver('m');}
+gera();linhas();draw();
+})();
+</script>
+</body>
+</html>
