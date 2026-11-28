@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A mira da sonda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/res.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Resgate</div><h1>A mira da sonda</h1></header>
+<main>
+<div class="card"><h2>Incline e gire</h2><p class="muted" style="margin-top:0">A sonda está em S = (60, 80, 0). Incline o mastro (ângulo θ com a vertical) e gire a base (azimute α, a partir do norte). As vistas mostram onde o furo chega a 700 m de profundidade. O refúgio tem 10 m de largura.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>Inclinação θ (graus a partir da vertical)</b><input type="range"><span></span></div>
+<div class="sl" id="sa"><b>Azimute α (graus a partir do norte)</b><input type="range"><span></span></div>
+<div class="kpi"><div>Chegada a 700 m<b id="k1"></b></div><div class="o">Distância ao refúgio<b id="k2"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mire a sonda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const T=SL('st',0,45,0.1,10,draw,v=>fmt(v)+'°'),A=SL('sa',0,359.5,0.5,0,draw,v=>fmt(v)+'°');
+const S=[60,80],R=[240,320],G=[300,260];
+const chega=()=>{const h=700*tg(T.get());return[S[0]+h*Math.sin(A.get()*RAD),S[1]+h*Math.cos(A.get()*RAD)];};
+const dist=p=>Math.hypot(chega()[0]-p[0],chega()[1]-p[1]);
+MIS.def(()=>[
+ ['Mire a sonda para acertar o <b>refúgio</b> (erro menor que 5 m).',()=>dist(R)<5,()=>'Acertou! θ ≈ 23,2° e α ≈ 36,9°, como nas contas do livro. Erro de '+r1(dist(R))+' m.',()=>'A broca chega a '+r1(dist(R))+' m do refúgio. Calcule: tg θ = 300 ÷ 700 e tg α = 180 ÷ 240.'],
+ ['Mantenha o azimute e incline <b>1° a mais</b> (θ ≈ 24,2°). Quanto a chegada anda?',()=>Math.abs(T.get()-24.2)<0.06&&Math.abs(A.get()-37)<0.6,()=>'A chegada andou cerca de '+r1(700*(tg(24.2)-tg(23.2)))+' m para longe: passou do refúgio de 10 m.',()=>'θ = '+fmt(T.get())+'° e α = '+fmt(A.get())+'°.'],
+ ['Mire numa <b>galeria vizinha</b>, em (300, 260, −700). Que ângulo mudou?',()=>dist(G)<5,'O θ é o mesmo (23,2°), porque a distância horizontal também é 300 m; só o azimute muda, para cerca de 53,1°.',()=>'Chegada a '+r1(dist(G))+' m da galeria. Δx = 240, Δy = 180.']]);
+function draw(){const c=chega(),h=700*tg(T.get());let g='';
+ // vista de lado, no plano do furo
+ const k=0.24,sx=24,sy=26;g+=RC(10,sy,150,700*k+14,ROCHA)+LN(10,sy,160,sy,ROCHA_E,2)+TX(85,16,'DE LADO',{fs:10,c:ORANGE});
+ const ex=sx+Math.min(h,560)*k,ey=sy+700*k;g+=LN(sx,sy,sx,ey,NAVY,1,'3 3')+LN(sx,ey,ex,ey,NAVY,1,'3 3')+LN(sx,sy,ex,ey,VERM,3)+ARCO(sx,sy,26,-90,-90+T.get(),LIGHT);
+ const hR=300;g+=REFUGIO(sx+hR*k,ey,10*k*3,6)+TX(sx+hR*k,ey+16,'refúgio',{fs:8});
+ // vista de cima
+ const k2=0.42,ox=190,oy=200,MX=v=>ox+(v-S[0])*k2,MY=v=>oy-(v-S[1])*k2;g+=RC(170,10,160,236,'#F6EEDF','stroke="#C9A27A"')+TX(250,26,'DE CIMA',{fs:10,c:ORANGE});
+ g+=LN(ox,oy,ox,40,NAVY,1)+TX(ox,36,'N',{fs:10});
+ g+=RC(MX(R[0])-5*k2,MY(R[1])-5*k2,10*k2,10*k2,ORANGE,'stroke="#0E2354"')+RC(MX(G[0])-5*k2,MY(G[1])-5*k2,10*k2,10*k2,'#7A4BB5');
+ g+=TX(MX(G[0])+8,MY(G[1])+12,'galeria',{fs:8,a:'start',c:'#7A4BB5'})+TX(MX(R[0])-6,MY(R[1])-8,'refúgio',{fs:8,a:'end'});
+ g+=LN(ox,oy,MX(c[0]),MY(c[1]),VERM,2.5)+`<circle cx="${MX(c[0])}" cy="${MY(c[1])}" r="4" fill="${VERM}"/><circle cx="${ox}" cy="${oy}" r="5" fill="${NAVY}"/>`;
+ g+=TX(ox+8,oy+16,'S',{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,256,g);$('k1').textContent='('+Math.round(c[0])+', '+Math.round(c[1])+', −700)';$('k2').textContent=r1(dist(R))+' m';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
