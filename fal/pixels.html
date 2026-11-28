@@ -29,15 +29,15 @@ const GRADE=(M,x0,y0,s,o)=>{o=o||{};let g='';M.forEach((r,i)=>r.forEach((v,j)=>{
  if(o.num)g+=TX(x+s/2,y+s/2+4,o.txt?o.txt(v):Math.round(v),{fs:o.fs||10,c:(o.esc?o.esc(v):v<140)?'#fff':NAVY,w:500});}));return g;};
 const SZ=SL('sz',1,5,1,1,()=>draw(),v=>v+'×'),SR=SL('sr',5,60,5,20,()=>draw(),v=>v);let sel=null;
 const cel=()=>8+SZ.get()*8;
-toque('fig',(x,y)=>{const s=cel(),x0=(340-5*s)/2,y0=10;const j=Math.floor((x-x0)/s),i=Math.floor((y-y0)/s);if(i>=0&&i<7&&j>=0&&j<5){sel=[i,j];draw();}});
+toque('fig',(x,y)=>{const s=cel(),x0=(340-5*s)/2+8,y0=10;const j=Math.floor((x-x0)/s),i=Math.floor((y-y0)/s);if(i>=0&&i<7&&j>=0&&j<5){sel=[i,j];draw();}});
 const tot=r=>Math.round(92.3*r)*Math.round(73.4*r);const eh=(i,j)=>sel&&sel[0]==i&&sel[1]==j;
 MIS.def(()=>[
  ['Aumente o zoom até ver os números e toque no elemento <b>d<sub>23</sub></b>.',()=>eh(1,2),'d<sub>23</sub> = 75: linha 2, coluna 3. Um ponto escuro, de fundo.',()=>sel?'Você tocou em d'+(sel[0]+1)+(sel[1]+1)+'. Linha 2 é a segunda de cima para baixo; coluna 3 é a do meio.':'Toque num pixel.'],
  ['Toque no pixel <b>mais claro</b> da matriz.',()=>eh(6,3),'d<sub>74</sub> = 177: o maior valor, tinta de chumbo com certeza.',()=>sel?'Esse vale '+DIG[sel[0]][sel[1]]+'. Procure um valor maior.':'Toque num pixel.'],
  ['Ache a <b>menor resolução</b> que passa de <b>10 milhões</b> de pixels na tela inteira.',()=>tot(SR.get())>1e7&&tot(SR.get()-5)<=1e7,'40 pixels por cm: 3.692 × 2.936 ≈ 10,8 milhões. O dobro de 20 por cm dá 4 vezes mais pixels.',()=>tot(SR.get())>1e7?'Passou de 10 milhões. Será que uma resolução menor também passa?':'Ainda são '+fmt(tot(SR.get()))+'. Aumente a resolução.']]);
-function draw(){const s=cel(),x0=(340-5*s)/2,y0=10,H=Math.max(7*s+20,120);let g=RC(0,0,340,H,'#fff','rx="10"');
+function draw(){const s=cel(),x0=(340-5*s)/2+8,y0=10,H=Math.max(7*s+(s>=32?30:20),120);let g=RC(0,0,340,H,'#fff','rx="10"');
  g+=GRADE(DIG,x0,y0,s,{num:s>=32,fs:s>=40?11:9,marca:(i,j)=>eh(i,j)});
- if(s>=32){for(let j=0;j<5;j++)g+=TX(x0+j*s+s/2,y0+7*s+12,'c'+(j+1),{fs:8,c:GRAY});}
+ if(s>=32){for(let j=0;j<5;j++)g+=TX(x0+j*s+s/2,y0+7*s+15,'c'+(j+1),{fs:10,c:GRAY});for(let i=0;i<7;i++)g+=TX(x0-6,y0+i*s+s/2+4,'l'+(i+1),{fs:10,a:'end',c:GRAY});}
  $('fig').innerHTML=SVG(340,H,g);
  if(sel){const v=DIG[sel[0]][sel[1]];$('ke').innerHTML='d<sub>'+(sel[0]+1)+(sel[1]+1)+'</sub>';$('kv').textContent=v;$('kl').textContent=v>=128?'claro: tinta':'escuro: fundo';}else{$('ke').textContent='toque';$('kv').textContent='–';$('kl').textContent='–';}
  const r=SR.get();$('kd').textContent=fmt(Math.round(92.3*r))+' × '+fmt(Math.round(73.4*r));$('kt').textContent=fmt(tot(r));MIS.ver('m');}
