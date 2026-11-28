@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>A rampa · DidatiClick</title>
 <link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
-<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=1"></script>
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/arq.js?v=2"></script>
 </head>
 <body>
 <header><div class="brand">Didati<b>Click</b> · A Matemática na Arqueologia</div><h1>A rampa</h1></header>
@@ -21,10 +21,10 @@
 <script>
 (()=>{
 const HH=SL('sh',0.2,4,0.1,1,()=>draw(),v=>r1(v)+' m');
-const DD=SL('sd',0.5,25,0.02,10,()=>draw(),v=>r2(v)+' m');
+const DD=SL('sd',0.5,12,0.02,8,()=>draw(),v=>r2(v)+' m');
 const inc=()=>HH.get()/DD.get()*100;
 MIS.def(()=>[
- ['Refaça o <b>barranco do corte</b>: 2 m de desnível em 3,76 m na horizontal. Qual a inclinação?',()=>HH.get()==2&&Math.abs(DD.get()-3.76)<0.011,'2 ÷ 3,76 ≈ 0,53 = 53%. Mais da metade da distância vira subida: perigoso.',()=>'Desnível 2 m e distância 3,76 m.'],
+ ['Refaça o <b>barranco do corte</b>: 2 m de desnível em 3,76 m na horizontal. Qual a inclinação?',()=>HH.get()==2&&Math.abs(DD.get()-3.76)<0.011,'2 ÷ 3,76 ≈ 0,53 = 53%. Mais da metade da distância vira subida: perigoso.',()=>'Desnível 2 m e distância 3,76 m (arraste perto e acerte com os botões − e +).'],
  ['Faça a rampa dos carrinhos: vencer <b>0,6 m</b> com inclinação de exatamente <b>10%</b>.',()=>Math.abs(HH.get()-0.6)<0.01&&Math.abs(inc()-10)<0.05,'0,6 ÷ 0,10 = 6 m de distância horizontal.',()=>'Desnível 0,6 m. Que distância dá 10%?'],
  ['Monte uma rampa de <b>100%</b>. Que ângulo ela faz?',()=>Math.abs(inc()-100)<0.5,'Desnível igual à distância: 45°. Ainda não é uma parede!',()=>'Faça desnível e distância iguais.'],
  ['A Dra. Beatriz quer o barranco de <b>2 m</b> com no máximo <b>50%</b>. Ache a menor distância horizontal possível.',()=>HH.get()==2&&Math.abs(DD.get()-4)<0.011,'2 ÷ 0,5 = 4 m. A base precisa recuar 24 cm em relação aos 3,76 m de hoje.',()=>HH.get()!=2?'Desnível 2 m.':'Agora a inclinação está em '+r1(inc())+'%.']]);
