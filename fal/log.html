@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Do T à espessura · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Do T à espessura</h1></header>
+<main>
+<div class="card"><h2>O caminho de volta</h2><p class="muted" style="margin-top:0">O raio X mede T. A perícia quer a espessura de branco de chumbo. Mova o T (ou toque no gráfico) e veja o logaritmo fazer a conta de volta: x = 0,1 · log(T) ÷ log(0,5).</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="st"><b>T medido</b><input type="range"><span></span></div>
+<div class="card" style="background:#F5F7FB;margin:8px 0;padding:10px 12px" id="conta"></div>
+<div class="kpi"><div>Meias camadas<b id="kk"></b></div><div>Espessura x<b id="kx"></b></div><div class="o">Na radiografia<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desfaça a exponencial.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const ST=SL('st',0.02,1,0.005,0.71,()=>draw(),v=>fmt(v));
+const ox=34,W=290,X=t=>ox+t*W,Y=x=>200-x/0.6*170,L=t=>t>=1?0:0.1*Math.log10(t)/Math.log10(0.5);
+toque('fig',(x,y)=>{ST.set(Math.max(0.02,Math.min(1,Math.round((x-ox)/W*200)/200)));draw();});
+const eq=(a,b)=>Math.abs(a-b)<1e-9;
+MIS.def(()=>[
+ ['Na região do chumbo extra, T = <b>0,25</b>. Que espessura é essa?',()=>eq(ST.get(),0.25),'x = 0,2 mm: log(0,25) ÷ log(0,5) = 2 meias camadas.',()=>'Leve o T até 0,25.'],
+ ['No meio do céu, T = <b>0,35</b>. Quanto chumbo a mais?',()=>eq(ST.get(),0.35),'x ≈ 0,15 mm: log(0,35) ÷ log(0,5) ≈ 1,51 meia camada. Três vezes a camada da paisagem: isso não é céu.',()=>'Leve o T até 0,35.'],
+ ['Descubra que T corresponde a <b>exatamente 0,3 mm</b>.',()=>eq(ST.get(),0.125),'T = 0,125 = 0,5³: três meias camadas de 0,1 mm.',()=>{const x=L(ST.get());return 'Agora x ≈ '+vg(Math.round(x*1000)/1000)+' mm. '+(x<0.3?'Diminua o T.':'Aumente o T.');}]]);
+function draw(){const t=ST.get(),x=L(t);let g=RC(0,0,340,240,'#fff','rx="10"');
+ g+=LN(ox,Y(0),ox+W,Y(0),NAVY,1)+LN(ox,Y(0),ox,Y(0.6),NAVY,1);
+ [0,0.1,0.2,0.3,0.4,0.5,0.6].forEach(v=>g+=TX(ox-4,Y(v)+3,vg(v),{fs:8,a:'end',c:GRAY})+LN(ox,Y(v),ox+W,Y(v),GRAYL,.5));
+ [0.125,0.25,0.5,1].forEach(v=>g+=TX(X(v),Y(0)+13,vg(v),{fs:8,c:GRAY}));g+=TX(ox+W,Y(0)+26,'T medido',{fs:8,a:'end',c:GRAY})+TX(ox+4,Y(0.6)-4,'x (mm)',{fs:8,a:'start',c:GRAY});
+ let c=[];for(let i=4;i<=200;i++){const tt=i/200;c.push([X(tt),Y(L(tt))]);}g+=PL(c,VERDE_T,3);
+ g+=LN(X(t),Y(0),X(t),Y(x),ORANGE,1.2,'3 3')+LN(ox,Y(x),X(t),Y(x),ORANGE,1.2,'3 3')+CIR(X(t),Y(x),6,ORANGE,'stroke="#fff" stroke-width="2"');
+ const cinza=Math.round(255*(0.15+0.8*t));g+=RC(250,20,70,40,`rgb(${255-cinza},${255-cinza},${255-cinza})`,'rx="6" stroke="'+NAVY+'"')+TX(285,72,'na radiografia',{fs:8,c:GRAY});
+ $('fig').innerHTML=SVG(340,240,g);
+ const k=x/0.1;$('conta').innerHTML=`<b>Conta:</b> log(${fmt(t)}) ≈ ${vg(Math.round(Math.log10(t)*1000)/1000)}; log(0,5) ≈ −0,301.<br>${vg(Math.round(Math.log10(t)*1000)/1000)} ÷ (−0,301) ≈ <b>${vg(Math.round(k*100)/100)}</b> meias camadas × 0,1 mm = <b>${vg(Math.round(x*1000)/1000)} mm</b>.`;
+ $('kk').textContent=vg(Math.round(k*100)/100);$('kx').textContent=vg(Math.round(x*1000)/1000)+' mm';$('kr').textContent=t<0.3?'muito claro':t<0.6?'claro':t<0.85?'cinza':'escuro';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
