@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A carta que já saiu · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A carta que já saiu</h1></header>
+<main>
+<div class="card"><h2>O baralho que muda</h2><p class="muted" style="margin-top:0">Tire cartas uma a uma (ou 5 de uma vez). O gráfico acompanha a chance de a <b>próxima</b> carta valer 10 (10, J, Q ou K). No modo do app, o baralho é reembaralhado a cada mão de 4 cartas.</p>
+<div id="chm" style="margin:4px 0"></div>
+<div class="row"><button id="b1">Tirar 1</button><button id="b5">Tirar 5</button><button class="alt" id="b0">Embaralhar de novo</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Cartas que restam<b id="k1"></b></div><div>Valor 10 que restam<b id="k2"></b></div><div class="o">Chance da próxima<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Mude o baralho.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NP=['♠','♥','♦','♣'],VL=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const corNP=n=>n==1||n==2?VERM:PRETO;
+function CARTA(x,y,w,h,v,n,on,apag){const c=apag?GRAYL:corNP(n);return RC(x,y,w,h,on?PEACH:(apag?'#F1F3F7':'#fff'),'rx="3" stroke="'+(on?ORANGE:GRAYL)+'" stroke-width="'+(on?2:1)+'"')+TX(x+w/2,y+h*.48,VL[v],{fs:w>22?11:9,c})+TX(x+w/2,y+h*.86,NP[n],{fs:w>22?11:9,c,w:400});}
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+let md=0,D=[],H=[],ult=[],mx=0,mn=1,appT=0;
+chips('chm',['baralho de papel','modo do app'],0,i=>{md=i;novo();});
+function novo(){D=[...Array(52).keys()];for(let i=51;i>0;i--){const j=Math.floor(Math.random()*(i+1));[D[i],D[j]]=[D[j],D[i]];}H=[pr()];ult=[];mx=0;mn=1;appT=0;draw();}
+const dez=()=>D.filter(c=>c%13>=9).length,pr=()=>D.length?dez()/D.length:0;
+function tirar(k){for(let i=0;i<k;i++){if(md==1&&ult.length>=4){D=[...Array(52).keys()];for(let a=51;a>0;a--){const j=Math.floor(Math.random()*(a+1));[D[a],D[j]]=[D[j],D[a]];}ult=[];}
+  if(!D.length)break;ult.push(D.pop());if(ult.length>8)ult.shift();H.push(pr());if(md==1)appT++;if(md==0&&D.length>=10){mx=Math.max(mx,pr());mn=Math.min(mn,pr());}}draw();}
+$('b1').onclick=()=>tirar(1);$('b5').onclick=()=>tirar(5);$('b0').onclick=novo;
+MIS.def(()=>[
+ ['No baralho de papel, faça a chance da próxima passar de <b>40%</b> (com pelo menos 10 cartas restando).',()=>md==0&&mx>.4,()=>'Chegou a '+pct(mx*100,1)+'. Sobraram mais cartas altas: é o momento que o contador de cartas espera.',()=>md!=0?'Escolha "baralho de papel".':'Continue tirando; se não acontecer, embaralhe de novo e tente.'],
+ ['Agora faça a chance cair abaixo de <b>25%</b> (com pelo menos 10 cartas restando).',()=>md==0&&mn<.25,()=>'Caiu a '+pct(mn*100,1)+'. Saíram muitas cartas altas e o que sobrou ficou fraco.',()=>md!=0?'Escolha "baralho de papel".':'Continue tirando ou embaralhe de novo.'],
+ ['No <b>modo do app</b>, tire pelo menos 40 cartas e veja a chance.',()=>md==1&&appT>=40,'A cada mão o baralho volta inteiro: a chance da 1ª carta de cada mão é sempre 16/52 ≈ 30,8%. Não há o que contar.',()=>md!=1?'Escolha "modo do app".':'Tire mais cartas: '+appT+' de 40.']]);
+function draw(){let g='';ult.forEach((c,j)=>g+=CARTA(10+j*40,4,36,50,c%13,Math.floor(c/13),c%13>=9));if(!ult.length)g+=TX(170,32,'Tire uma carta',{fs:12,c:GRAY});
+ const x0=36,y0=200,gw=294,gh=120,Y=v=>y0-gh*v/.6;
+ [0,.2,.4,.6].forEach(v=>{g+=LN(x0,Y(v),x0+gw,Y(v),GRAYL,.6)+TX(x0-4,Y(v)+3,Math.round(v*100)+'%',{fs:8,a:'end',c:GRAY,w:500});});
+ g+=LN(x0,Y(16/52),x0+gw,Y(16/52),ORANGE,1.2,'5 4');
+ const n=Math.max(52,H.length),pts=H.slice(-120).map((v,i,a)=>[x0+gw*i/Math.max(1,a.length-1),Y(v)]);if(pts.length>1)g+=PL(pts,BLUE,2);
+ g+=TX(x0+gw,Y(16/52)-5,'30,8%',{fs:8,a:'end',c:ORANGE});
+ $('fig').innerHTML=SVG(340,212,g);$('k1').textContent=D.length;$('k2').textContent=dez();$('k3').textContent=D.length?pct(pr()*100,1):'–';MIS.ver('m');}
+novo();
+})();
+</script>
+</body>
+</html>

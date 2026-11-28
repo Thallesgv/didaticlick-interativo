@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O baralho na mão · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O baralho na mão</h1></header>
+<main>
+<div class="card"><h2>Monte um evento</h2><p class="muted" style="margin-top:0">Toque nas cartas para escolher (toque de novo para tirar), ou use os atalhos. O simulador conta as cartas e calcula a chance de tirar uma delas.</p>
+<div id="cha" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Cartas escolhidas<b id="k1"></b></div><div>Probabilidade<b id="k2"></b></div><div class="o">Em fração<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Monte os eventos.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const NP=['♠','♥','♦','♣'],VL=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const corNP=n=>n==1||n==2?VERM:PRETO;
+function CARTA(x,y,w,h,v,n,on,apag){const c=apag?GRAYL:corNP(n);return RC(x,y,w,h,on?PEACH:(apag?'#F1F3F7':'#fff'),'rx="3" stroke="'+(on?ORANGE:GRAYL)+'" stroke-width="'+(on?2:1)+'"')+TX(x+w/2,y+h*.48,VL[v],{fs:w>22?11:9,c})+TX(x+w/2,y+h*.86,NP[n],{fs:w>22?11:9,c,w:400});}
+const C2=(n,k)=>{if(k<0||k>n)return 0;let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const SEL=new Set();const id=(v,n)=>n*13+v;
+const AT=[['ases',(v,n)=>v==0],['copas',(v,n)=>n==1],['figuras',(v,n)=>v>=10],['valor 10',(v,n)=>v>=9],['vermelhas',(v,n)=>n==1||n==2],['limpar',()=>false]];
+chips('cha',AT.map(a=>a[0]),-1,i=>{SEL.clear();for(let n=0;n<4;n++)for(let v=0;v<13;v++)if(AT[i][1](v,n))SEL.add(id(v,n));draw();});
+const w=24,h=34,x0=8,y0=8;
+toque('fig',(x,y,ini)=>{if(!ini)return;const v=Math.floor((x-x0)/(w+1.5)),n=Math.floor((y-y0)/(h+4));if(v<0||v>12||n<0||n>3)return;const k=id(v,n);SEL.has(k)?SEL.delete(k):SEL.add(k);draw();});
+const so=f=>{for(let n=0;n<4;n++)for(let v=0;v<13;v++)if(SEL.has(id(v,n))!=!!f(v,n))return false;return true;};
+const gcd=(a,b)=>b?gcd(b,a%b):a;const frac=k=>{if(!k)return '0';const g=gcd(k,52);return (k/g)+'/'+(52/g);};
+MIS.def(()=>[
+ ['Monte um evento com chance <b>1/13</b>.',()=>SEL.size==4,()=>'4 cartas em 52 = 1/13 ≈ 7,7%. Os 4 ases são o exemplo clássico, mas quaisquer 4 cartas servem.',()=>'Agora são '+SEL.size+' cartas. Quantas cartas dão 1/13 de 52?'],
+ ['Monte um evento com chance <b>1/4</b>.',()=>SEL.size==13,()=>'13 cartas: 13/52 = 1/4. Um naipe inteiro, por exemplo.',()=>'Agora são '+SEL.size+' cartas. Um quarto de 52 é quanto?'],
+ ['Escolha exatamente as cartas de <b>valor 10 do blackjack</b> (10, J, Q, K).',()=>so((v,n)=>v>=9),'16 cartas: 16/52 ≈ 30,8%. Junto com os 4 ases, elas formam o blackjack: 128 de 2 652 pares ordenados.',()=>'Escolha os 10, valetes, damas e reis dos 4 naipes, e nada mais. Agora: '+SEL.size+' cartas.']]);
+function draw(){let g='';for(let n=0;n<4;n++)for(let v=0;v<13;v++)g+=CARTA(x0+v*(w+1.5),y0+n*(h+4),w,h,v,n,SEL.has(id(v,n)));
+ $('fig').innerHTML=SVG(340,168,g);const k=SEL.size;$('k1').textContent=k+' de 52';$('k2').textContent=pct(k/52*100,1);$('k3').textContent=frac(k);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

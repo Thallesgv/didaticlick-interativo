@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Embaralhe e conte · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Embaralhe e conte</h1></header>
+<main>
+<div class="card"><h2>Cascatas</h2><p class="muted" style="margin-top:0">O baralho começa em ordem: cada carta tem uma cor, do azul (carta 1) ao laranja (carta 52). Cada embaralhada de cascata corta o baralho em dois e intercala as partes.</p>
+<div class="row"><button id="b1">Uma cascata</button><button class="alt" id="br">Embaralhar ao acaso</button><button class="alt" id="b0">Voltar à ordem</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Cascatas<b id="k1"></b></div><div>Sequências crescentes<b id="k2"></b></div><div class="o">Num baralho ao acaso<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Embaralhe.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+let D=[...Array(52).keys()],K=0,HS=[1],acaso=false,vis20=0,vis7=false;
+function cascata(){const n=52;let c=0;for(let i=0;i<n;i++)if(Math.random()<.5)c++;const a=D.slice(0,c),b=D.slice(c),o=[];while(a.length||b.length){if(Math.random()<a.length/(a.length+b.length))o.push(a.shift());else o.push(b.shift());}D=o;K++;acaso=false;HS.push(seqs());if(!vis20&&seqs()>20)vis20=K;if(K==7)vis7=true;draw();}
+const seqs=()=>{const p=[];D.forEach((v,i)=>p[v]=i);let r=1;for(let v=1;v<52;v++)if(p[v]<p[v-1])r++;return r;};
+$('b1').onclick=cascata;$('br').onclick=()=>{for(let i=51;i>0;i--){const j=Math.floor(Math.random()*(i+1));[D[i],D[j]]=[D[j],D[i]];}acaso=true;draw();};
+$('b0').onclick=()=>{D=[...Array(52).keys()];K=0;HS=[1];acaso=false;vis20=0;draw();};
+const cor=v=>{const t=v/51;return `rgb(${Math.round(36+211*t)},${Math.round(87+43*t)},${Math.round(214-183*t)})`;};
+MIS.def(()=>[
+ ['Faça <b>3 cascatas</b> a partir da ordem e veja as sequências crescentes.',()=>K>=3&&HS.length>3,()=>'Depois de 1, 2 e 3 cascatas: '+HS.slice(1,4).join(', ')+'. No máximo 2, 4 e 8: cada cascata dobra, no máximo.',()=>'Faça '+(3-K)+' cascata(s).'],
+ ['Continue até as sequências passarem de <b>20</b>. Em qual cascata foi?',()=>vis20>0,()=>'Na cascata '+vis20+'. Como 2⁴ = 16, não dá para passar de 20 antes da 5ª.',()=>'Agora: '+seqs()+' sequências. Continue.'],
+ ['Chegue a <b>7 cascatas</b> e depois aperte <b>Embaralhar ao acaso</b> para comparar.',()=>vis7&&acaso,()=>'Ao acaso: '+seqs()+' sequências (média 26,5). Com 7 cascatas, '+(HS[7]||'–')+': o baralho de papel já fica bem misturado.',()=>!vis7?'Faça cascatas até a 7ª (ou volte à ordem e recomece).':'Agora aperte "Embaralhar ao acaso".']]);
+function draw(){let g='';D.forEach((v,i)=>g+=RC(6+i*6.25,6,6.25,56,cor(v)));
+ const x0=30,y0=190,gw=300,gh=100,Y=v=>y0-gh*v/32;[0,8,16,24,32].forEach(v=>{g+=LN(x0,Y(v),x0+gw,Y(v),GRAYL,.6)+TX(x0-4,Y(v)+3,v,{fs:8,a:'end',c:GRAY,w:500});});
+ g+=LN(x0,Y(26.5),x0+gw,Y(26.5),ORANGE,1.2,'5 4')+TX(x0+gw,Y(26.5)-4,'ao acaso: 26,5',{fs:8,a:'end',c:ORANGE});
+ const bw=gw/11;HS.slice(0,11).forEach((s,k)=>{g+=RC(x0+k*bw+4,Y(s),bw-8,y0-Y(s),BLUE,'rx="2"')+TX(x0+k*bw+bw/2,y0+12,k,{fs:8});});
+ g+=TX(170,80,acaso?'baralho embaralhado ao acaso':K+' cascata'+(K==1?'':'s'),{fs:10});
+ $('fig').innerHTML=SVG(340,210,g);$('k1').textContent=acaso?'ao acaso':K;$('k2').textContent=seqs();$('k3').textContent='26,5 em média';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
