@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O pano da roleta · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>O pano da roleta</h1></header>
+<main>
+<div class="card"><h2>Quais casas ganham?</h2><p class="muted" style="margin-top:0">Escolha o tipo de aposta e toque num número do pano (ou use − e +). A aposta cobre o grupo desse número: a dúzia dele, a coluna dele, a cor dele...</p>
+<div id="cht" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Número tocado</b><input type="range"><span></span></div>
+<div class="kpi"><div>Casas que ganham<b id="k1"></b></div><div>Probabilidade<b id="k2"></b></div><div class="o">Paga<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Explore o pano.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const R$2=v=>'R$ '+(Math.round(v*100)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const TIP=['pleno','dúzia','coluna','cor','par ou ímpar'];let tp=1;
+chips('cht',TIP,1,i=>{tp=i;draw();});
+const SN=SL('sn',0,36,1,17,()=>draw(),v=>v);
+const x0=40,cw=24,ch=34,y0=30;
+const pos=n=>{const c=Math.floor((n-1)/3),r=2-((n-1)%3);return [x0+c*cw,y0+r*ch];};
+toque('fig',(x,y)=>{if(y<y0||y>y0+3*ch)return;if(x<x0&&x>=x0-28){SN.set(0);draw();return;}const c=Math.floor((x-x0)/cw),r=Math.floor((y-y0)/ch);if(c<0||c>11||r<0||r>2)return;SN.set(c*3+(3-r));draw();});
+function cobre(n){const v=SN.get();if(tp==0)return n==v;if(v==0||n==0)return false;
+ if(tp==1)return Math.ceil(n/12)==Math.ceil(v/12);if(tp==2)return n%3==v%3;if(tp==3)return VERMS.has(n)==VERMS.has(v);return n%2==v%2;}
+const PAGA=['35 para 1','2 para 1','2 para 1','1 para 1','1 para 1'];
+const nome=()=>{const v=SN.get();if(tp==0)return 'o '+v;if(v==0)return 'nada (o zero só entra no pleno)';return tp==1?Math.ceil(v/12)+'ª dúzia':tp==2?'coluna do '+v:tp==3?(VERMS.has(v)?'vermelho':'preto'):(v%2?'ímpar':'par');};
+const casas=()=>{let k=0;for(let n=0;n<=36;n++)if(cobre(n))k++;return k;};
+MIS.def(()=>[
+ ['Monte uma aposta que ganha com chance <b>1/37</b>.',()=>tp==0,()=>'Pleno no '+SN.get()+': 1 casa em 37. Paga 35 para 1.',()=>'Agora a aposta cobre '+casas()+' casas. Qual tipo cobre uma só?'],
+ ['Monte uma aposta com chance <b>12/37</b>.',()=>(tp==1||tp==2)&&casas()==12,()=>'A '+nome()+' cobre 12 casas: 12/37 ≈ 32,4%. Paga 2 para 1.',()=>'A aposta cobre '+casas()+' casas. Experimente a dúzia ou a coluna (e toque num número de 1 a 36).'],
+ ['Aposte no <b>vermelho</b>. Quantas casas fazem você perder?',()=>tp==3&&VERMS.has(SN.get()),'Perdem 19 casas: as 18 pretas e o zero. P(vermelho) = 18/37, um pouco menos que 50%.',()=>tp!=3?'Escolha o tipo "cor".':'Toque num número vermelho.'],
+ ['Ache a casa que <b>nenhuma</b> aposta de fora (dúzia, coluna, cor, par ou ímpar) cobre.',()=>tp>0&&SN.get()==0,'O zero! Ele derruba todas as apostas de fora. É dele que vem a vantagem da casa.',()=>tp==0?'Escolha uma aposta de fora (dúzia, coluna, cor ou par).':'Toque na casa verde, fora da grade.']]);
+function draw(){let g=RC(0,0,340,170,'#0F5132','rx="10"');
+ g+=RC(x0-28,y0,26,3*ch,cobre(0)?ORANGE:'#1F7A4D','stroke="#fff" stroke-width="1.5"')+TX(x0-15,y0+1.5*ch+4,'0',{fs:12,c:'#fff'});
+ for(let n=1;n<=36;n++){const [x,y]=pos(n),on=cobre(n);g+=RC(x,y,cw,ch,corN(n),'stroke="'+(on?ORANGE:'#fff')+'" stroke-width="'+(on?3:1)+'"')+TX(x+cw/2,y+ch/2+4,n,{fs:10,c:'#fff'});
+  if(on)g+=RC(x+3,y+3,cw-6,ch-6,'none','stroke="'+ORANGE+'" stroke-width="2"');}
+ if(SN.get()>0){const [x,y]=pos(SN.get());g+=CIR(x+cw/2,y-5,3,'#fff');}
+ g+=TX(170,y0+3*ch+26,'aposta: '+nome(),{fs:11,c:'#fff'});
+ $('fig').innerHTML=SVG(340,170,g);
+ const k=casas();$('k1').textContent=k+' de 37';$('k2').textContent=k+'/37 ≈ '+pct(k/37*100,1);$('k3').textContent=k?PAGA[tp]:'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

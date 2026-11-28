@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A escada do martingale · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A escada do martingale</h1></header>
+<main>
+<div class="card"><h2>Perdeu, dobra</h2><p class="muted" style="margin-top:0">Cada <b>ciclo</b> começa com a aposta inicial no vermelho e dobra a cada derrota, até ganhar ou bater no <b>limite da mesa</b>. Ajuste as barras (arrastando ou com − e +) e jogue.</p>
+<div class="sl" id="sa"><b>Aposta inicial</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Limite da mesa</b><input type="range"><span></span></div>
+<div class="row"><button id="c1">1 ciclo</button><button id="c10">10 ciclos</button><button id="c100">100 ciclos</button><button class="alt" id="cr">Recomeçar</button></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Derrotas aguentadas<b id="k1"></b></div><div>Ciclos (quedas)<b id="k2"></b></div><div>Saldo<b id="k3"></b></div><div class="o">Saldo por ciclo<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Suba a escada.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const R$2=v=>'R$ '+(Math.round(v*100)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const SA=SL('sa',1,100,1,10,()=>{zera();draw();},v=>R0(v));const SLm=SL('sl',100,10000,100,1000,()=>{zera();draw();},v=>R0(v));
+let H=[0],cic=0,qd=0,ult='';
+function zera(){H=[0];cic=0;qd=0;ult='';}
+const K=()=>{const a=SA.get(),L=SLm.get();let k=0;while(a*Math.pow(2,k)<=L)k++;return k;};
+function ciclo(){const a=SA.get(),k=K();let perd=0;for(let i=0;i<k;i++){const b=a*Math.pow(2,i);if(Math.random()<18/37){H.push(H[H.length-1]+b-perd);cic++;ult='ganhou '+R0(a);return;}perd+=b;}
+ H.push(H[H.length-1]-perd);cic++;qd++;ult=k+' derrotas: −'+R0(perd);}
+function joga(n){for(let i=0;i<n;i++)ciclo();draw();}
+$('c1').onclick=()=>joga(1);$('c10').onclick=()=>joga(10);$('c100').onclick=()=>joga(100);$('cr').onclick=()=>{zera();draw();};
+const VEc=()=>{const a=SA.get(),k=K(),q=Math.pow(19/37,k);return (1-q)*a-q*a*(Math.pow(2,k)-1);};
+MIS.def(()=>[
+ ['Com aposta inicial de <b>R$ 10</b> e limite de <b>R$ 5.000</b>, quantas derrotas seguidas o sistema aguenta?',()=>SA.get()==10&&SLm.get()==5000,'9 derrotas: 10, 20, 40, ..., 2.560. A 10ª aposta seria R$ 5.120, acima do limite. Chance de 9 derrotas seguidas: 1 em 403.',()=>'Agora: inicial '+R0(SA.get())+' e limite '+R0(SLm.get())+'. Ajuste para R$ 10 e R$ 5.000.'],
+ ['Jogue até a <b>primeira queda</b> da escada.',()=>qd>=1,()=>'Depois de '+cic+' ciclos, a primeira queda. Cada degrau para cima valia '+R0(SA.get())+'; a queda levou de uma vez o que os degraus juntaram, e mais.',()=>'Já foram '+cic+' ciclos sem queda. Continue (use 100 ciclos).'],
+ ['Com R$ 10 e R$ 5.000, jogue <b>2 000 ciclos</b> e compare o saldo por ciclo com o VE teórico.',()=>SA.get()==10&&SLm.get()==5000&&cic>=2000,()=>'Saldo por ciclo: '+R$2(H[H.length-1]/cic)+'. VE teórico: '+R$2(VEc())+'. O sistema não cria lucro: só esconde as perdas em quedas raras.',()=>SA.get()!=10||SLm.get()!=5000?'Volte para R$ 10 e R$ 5.000.':'Faltam '+(2000-cic)+' ciclos.']]);
+function draw(){let g=RC(0,0,340,220,'#F8FAFC','rx="10"');const x0=50,y0=196,gw=280,gh=180;
+ const lo=Math.min(-SA.get()*5,...H),hi=Math.max(SA.get()*5,...H);const Y=v=>y0-gh*(v-lo)/(hi-lo);const n=H.length-1,X=i=>x0+gw*i/Math.max(1,n);
+ g+=LN(x0,Y(0),x0+gw,Y(0),NAVY,1)+TX(x0-4,Y(0)+3,'R$ 0',{fs:8,a:'end'})+TX(x0-4,Y(hi)+8,R0(hi),{fs:8,a:'end',c:GRAY,w:500})+TX(x0-4,Y(lo),R0(lo).replace('R$ -','−R$ '),{fs:8,a:'end',c:GRAY,w:500});
+ const st=Math.max(1,Math.floor(n/600)),pts=[];for(let i=0;i<=n;i+=st)pts.push([X(i),Y(H[i])]);pts.push([X(n),Y(H[n])]);g+=PL(pts,BLUE,1.6);
+ if(ult)g+=TX(330,16,'último ciclo: '+ult,{fs:9,a:'end',c:ult.startsWith('g')?GREEN:VERM});
+ $('fig').innerHTML=SVG(340,220,g);
+ $('k1').textContent=K();$('k2').textContent=cic+' ('+qd+')';$('k3').textContent=R0(H[n]).replace('R$ -','−R$ ');$('k4').textContent=cic?R$2(H[n]/cic).replace('R$ -','−R$ '):'–';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

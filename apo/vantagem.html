@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A fatia da casa · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A fatia da casa</h1></header>
+<main>
+<div class="card"><h2>De cada R$ 100 apostados</h2><p class="muted" style="margin-top:0">Escolha o jogo e arraste a barra (ou use − e +) do <b>total apostado</b>. Cada quadradinho é R$ 1 de cada R$ 100: os laranja ficam com a casa, em média.</p>
+<div id="chj" style="margin:4px 0"></div>
+<div class="sl" id="st"><b>Total apostado</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Vantagem<b id="k1"></b></div><div>Volta aos apostadores<b id="k2"></b></div><div class="o">Fica com a casa<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Calcule a fatia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERMS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const corN=n=>n==0?'#1F7A4D':VERMS.has(n)?VERM:PRETO;
+const R$2=v=>'R$ '+(Math.round(v*100)/100).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+const JG=[['roleta europeia',1/37],['roleta americana',2/38],['Dado da Sorte · soma 7',0.05],['Dado da Sorte · soma 2',1/18]];let ji=0;
+chips('chj',JG.map(j=>j[0]),0,i=>{ji=i;draw();});
+const tot=k=>1000*Math.pow(10,k/20);
+const ST=SL('st',0,100,0.1,40,()=>draw(),v=>R0(tot(v)));
+const T=()=>tot(ST.get()),vg_=()=>JG[ji][1];
+const perto=(a,b)=>Math.abs(a/b-1)<0.03;
+MIS.def(()=>[
+ ['Confira o <b>outubro da Roleta Fortuna</b>: R$ 48 milhões apostados na roleta europeia.',()=>ji==0&&perto(T(),48e6),()=>'A casa fica com cerca de '+R0(T()/37)+'. A planilha da FortunaBet dizia R$ 1,31 milhão: confere.',()=>ji!=0?'Escolha a roleta europeia.':'Agora: '+R0(T())+'. '+(T()<48e6?'Aumente':'Diminua')+' até uns R$ 48 milhões.'],
+ ['Com os mesmos R$ 48 milhões, troque para a <b>roleta americana</b>.',()=>ji==1&&perto(T(),48e6),()=>'A casa ficaria com '+R0(T()*2/38)+': quase o dobro, por causa de um zero a mais.',()=>ji!=1?'Escolha a roleta americana.':'Leve o total para uns R$ 48 milhões.'],
+ ['Quanto <b>Rafael</b> precisou apostar na soma 7 para a casa ficar com <b>R$ 8 mil</b>?',()=>ji==2&&perto(T()*0.05,8000),()=>'Cerca de '+R0(T())+': com 5% de vantagem, R$ 160 mil apostados levam R$ 8 mil. O dinheiro dele girou 20 vezes.',()=>ji!=2?'Escolha "Dado da Sorte · soma 7".':'A casa fica com '+R0(T()*0.05)+'. Ajuste o total até a casa ficar com R$ 8 mil.']]);
+function draw(){const v=vg_();let g=RC(0,0,340,240,'#F8FAFC','rx="10"');const s=20,x0=70,y0=14;
+ const casa=v*100;
+ for(let i=0;i<100;i++){const r=Math.floor(i/10),c=i%10,x=x0+c*s,y=y0+r*s,k=99-i;let f=k<Math.floor(casa)?ORANGE:BLUE;
+  g+=RC(x+1,y+1,s-2,s-2,f,'rx="3"');
+  if(k==Math.floor(casa)&&casa%1>0){g+=RC(x+1,y+1,(s-2)*(casa%1),s-2,ORANGE,'rx="2"');}}
+ g+=TX(170,y0+10*s+18,'R$ '+r2(casa)+' de cada R$ 100 ficam com a casa',{fs:11,c:ORANGE});
+ $('fig').innerHTML=SVG(340,240,g);
+ $('k1').textContent=pct(v*100,2);$('k2').textContent=R0(T()*(1-v));$('k3').textContent=R0(T()*v);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
