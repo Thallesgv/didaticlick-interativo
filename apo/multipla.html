@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A múltipla que encolhe · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>A múltipla que encolhe</h1></header>
+<main>
+<div class="card"><h2>Quantos jogos precisam dar certo?</h2><p class="muted" style="margin-top:0">Escolha o número de seleções, a odd de cada uma e a margem da casa por jogo (arrastando ou com − e +). As barras mostram a chance de acertar 0, 1, 2... seleções; só a última paga.</p>
+<div class="sl" id="sk"><b>Seleções na múltipla</b><input type="range"><span></span></div>
+<div class="sl" id="so"><b>Odd de cada seleção</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Margem por jogo (%)</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sq"><b>Bilhetes a jogar</b><input type="range"><span></span></div>
+<div class="row"><button id="b1">Jogar os bilhetes</button></div>
+<div class="kpi"><div>Odd total<b id="k1"></b></div><div>Chance real<b id="k2"></b></div><div>Perder por uma<b id="k3"></b></div><div class="o">Volta em média<b id="k4"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Veja a chance encolher.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v));
+const VM='#B91C1C';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const SK=SL('sk',1,10,1,2,()=>{sim=null;draw();},v=>v),SO=SL('so',1.1,3,0.05,1.5,()=>{sim=null;draw();},v=>vir(v)),SM=SL('sm',0,10,0.5,5,()=>{sim=null;draw();},v=>vir(v,1)+'%');
+const SQ=SL('sq',50,2000,50,200,()=>{sim=null;draw();},v=>v);let sim=null,simk=0,simn=200;const C=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return r;};
+const pj=()=>Math.min(1,(1-SM.get()/100)/SO.get());
+const dist=()=>{const k=SK.get(),p=pj();return [...Array(k+1).keys()].map(j=>C(k,j)*Math.pow(p,j)*Math.pow(1-p,k-j));};
+$('b1').onclick=()=>{const k=SK.get(),p=pj();simn=SQ.get();sim=Array(k+1).fill(0);for(let t=0;t<simn;t++){let a=0;for(let i=0;i<k;i++)if(Math.random()<p)a++;sim[a]++;}simk=k;draw();};
+MIS.def(()=>[
+ ['Refaça a múltipla de Rafael: <b>5 seleções</b> a <b>1,50</b> com margem de <b>5%</b>.',()=>SK.get()==5&&Math.abs(SO.get()-1.5)<1e-6&&SM.get()==5,'Odd 7,59, chance real 10,2%, e perder por uma acontece 29,5% das vezes. De cada R$ 100, voltam R$ 77.',()=>'Agora: '+SK.get()+' seleções a '+vir(SO.get())+', margem '+vir(SM.get(),1)+'%.'],
+ ['Com margem de 5%, ache o <b>menor número de seleções</b> em que a casa fica com mais de um terço (volta menos de 66,7%).',()=>SM.get()==5&&SK.get()==8,'8 seleções: volta 66,3%. A margem de 5% por jogo virou 33,7%.',()=>{const v=Math.pow(1-SM.get()/100,SK.get());return SM.get()!=5?'Ponha a margem em 5%.':v>2/3?'Com '+SK.get()+', ainda volta '+pct(100*v,1)+'. Aumente.':'Passou ('+pct(100*v,1)+'), mas é o menor? Diminua e confira.';}],
+ ['Monte uma múltipla de pelo menos <b>5 seleções</b> e jogue pelo menos <b>200 bilhetes</b>.',()=>sim&&simk>=5&&SK.get()==simk&&simn>=200,()=>'Ganharam '+sim[simk]+' de '+simn+' bilhetes; '+sim[simk-1]+' perderam por uma'+(sim[simk]?', '+r1(sim[simk-1]/sim[simk])+' vezes mais':'')+'. Cada "quase" parece azar, mas é o que a conta prevê.',()=>SK.get()<5?'Aumente para 5 seleções ou mais.':(SQ.get()<200?'Ponha pelo menos 200 bilhetes e aperte "Jogar os bilhetes".':'Aperte "Jogar os bilhetes".')]]);
+function draw(){const k=SK.get(),o=SO.get(),p=pj(),d=dist();let g=RC(0,0,340,190,'#F8FAFC','rx="10"');const bw=Math.min(40,300/(k+1)),x0=170-bw*(k+1)/2,y0=150,mx=Math.max(...d,...(sim?sim.map(v=>v/simn):[0]));
+ d.forEach((v,j)=>{const h=120*v/mx,x=x0+j*bw;g+=RC(x+3,y0-h,bw-6,h,j==k?ORANGE:j==k-1?LIGHT:AZC,'rx="2"')+TX(x+bw/2,y0+13,j,{fs:9,c:j==k?ORANGE:NAVY});
+  if(sim&&simk==k){const hs=120*sim[j]/simn/mx;g+=CIR(x+bw/2,y0-hs,3.5,NAVY);}});
+ g+=TX(170,y0+28,'seleções certas (laranja = ganha; pêssego = perdeu por uma)'+(sim&&simk==k?' · pontos: '+simn+' bilhetes':''),{fs:8.5,c:GRAY,w:500});
+ g+=TX(170,18,'odd total '+vir(Math.pow(o,k))+' · chance real de acertar tudo '+pct(100*d[k],1),{fs:10.5,c:ORANGE});
+ $('fig').innerHTML=SVG(340,190,g);$('k1').textContent=vir(Math.pow(o,k));$('k2').textContent=pct(100*d[k],1);$('k3').textContent=k>=1?pct(100*d[k-1],1):'–';$('k4').textContent=pct(100*Math.pow(o,k)*d[k],1);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Odd ou chance? · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/apo.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática da Aposta</div><h1>Odd ou chance?</h1></header>
+<main>
+<div class="card"><h2>A chance escondida na odd</h2><p class="muted" style="margin-top:0">Arraste a odd (ou use − e +). O círculo mostra a probabilidade implícita, 1 ÷ odd, e a barra mostra quanto voltam R$ 10 apostados, se o palpite der certo.</p>
+<div class="sl" id="so"><b>Odd decimal</b><input type="range"><span></span></div>
+<div class="fig" id="fig"></div>
+<div class="kpi"><div>Probabilidade implícita<b id="k1"></b></div><div>Recebe com R$ 10<b id="k2"></b></div><div class="o">Lucro se acertar<b id="k3"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Traduza odds em chances.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const vir=(v,d)=>Number(v).toFixed(d==null?2:d).replace('.',',');
+const sg=v=>(v<0?'−':'+')+R$(Math.abs(v));
+const VM='#B91C1C';
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const SO=SL('so',1.05,12,0.05,3,()=>draw(),v=>vir(v));
+MIS.def(()=>[
+ ['Ache a odd de <b>cara ou coroa</b> (50% de chance).',()=>Math.abs(SO.get()-2)<1e-6,'Odd 2,00: R$ 10 viram R$ 20. Seria uma aposta justa, se a casa pagasse isso.',()=>'Agora: odd '+vir(SO.get())+' = '+pct(100/SO.get(),1)+'. Procure 50%.'],
+ ['Ponha a odd dos <b>Leões: 1,85</b>.',()=>Math.abs(SO.get()-1.85)<1e-6,'1 ÷ 1,85 ≈ 54,1%. R$ 10 viram R$ 18,50; lucro de R$ 8,50.',()=>'Agora: '+vir(SO.get())+'. Leve a 1,85.'],
+ ['Que odd corresponde a <b>25% de chance</b>?',()=>Math.abs(SO.get()-4)<1e-6,'Odd 4,00: 1 ÷ 4 = 25%. Odd alta e chance pequena são a mesma informação.',()=>'Agora: '+pct(100/SO.get(),1)+'. Procure 25%.']]);
+function draw(){const o=SO.get(),p=1/o;let g=RC(0,0,340,180,'#F8FAFC','rx="10"');const cx=80,cy=90,r=62;
+ g+=CIR(cx,cy,r,'#E5E9F2');const a=2*Math.PI*p,x=cx+r*Math.sin(a),y=cy-r*Math.cos(a);
+ g+=p>=0.999?CIR(cx,cy,r,ORANGE):'<path d="M'+cx+','+cy+' L'+cx+','+(cy-r)+' A'+r+','+r+' 0 '+(p>0.5?1:0)+',1 '+x.toFixed(1)+','+y.toFixed(1)+' Z" fill="'+ORANGE+'"/>';
+ g+=TX(cx,cy+6,pct(100*p,1),{fs:16,c:'#fff'})+TX(cx,170,'chance implícita',{fs:9,c:GRAY,w:500});
+ const W=v=>150*v/120;g+=TX(170,48,'aposta',{fs:9,a:'start',c:GRAY,w:500})+RC(170,54,W(10),18,BLUE)+TX(174+W(10),67,'R$ 10',{fs:9,a:'start'});
+ g+=TX(170,98,'recebe se acertar',{fs:9,a:'start',c:GRAY,w:500})+RC(170,104,W(Math.min(10*o,120)),18,ORANGE)+TX(Math.min(174+W(10*o),300),117,R$(10*o),{fs:9,a:Math.min(174+W(10*o),300)>=300?'end':'start'});
+ g+=TX(170,150,'odd '+vir(o)+' = 1 ÷ '+vir(p,3),{fs:10,a:'start'});
+ $('fig').innerHTML=SVG(340,180,g);$('k1').textContent=pct(100*p,1);$('k2').textContent=R$(10*o);$('k3').textContent=R$(10*o-10);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
