@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O novo ponto de queda · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>O novo ponto de queda</h1></header>
+<main>
+<div class="card"><h2>Somar o desvio ao ponto previsto</h2><p class="muted" style="margin-top:0">O ponto previsto é a origem do mapa. Escolha o tempo de aviso (o empurrão de lado é sempre o da Martelo, 3,2 mm/s) e a direção em que o desvio sai. O círculo de <b>87 km</b> do Livro 5 vai junto com o ponto de queda.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Direção do desvio</b><input type="range"><span></span></div>
+<div class="kpi"><div>Desvio<b id="kd"></b></div><div>Novo ponto (km)<b id="kn"></b></div><div class="o">Distância até Pedra Alta<b id="kp"></b></div><div>Cidades no círculo<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Escolha o novo ponto de queda.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZC='#3B82C4';
+const SETA=(x1,y1,x2,y2,c,w)=>{const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),t=Math.min(9,L*0.45);if(L<0.5)return '';
+ return LN(x1,y1,x2-Math.cos(a)*t*0.6,y2-Math.sin(a)*t*0.6,c,w||2.5)+PG([[x2,y2],[x2-t*Math.cos(a-0.42),y2-t*Math.sin(a-0.42)],[x2-t*Math.cos(a+0.42),y2-t*Math.sin(a+0.42)]],c);};
+const CID=[['Pedra Alta',35,19],['Vila Seca',-52,47],['Rio Claro do Sul',-72,-83],['Campo Largo',40,145],['Ponte Funda',85,-50],['Três Barras',175,20],['Serra Nova',142,-141]];
+const AV=[['10 dias',2.8],['1 ano',101],['3 anos',303]];let av=0;
+const A=SL('sa',0,359,1,90,draw,v=>v+'°');
+const np=()=>{const d=AV[av][1],a=A.get()*RAD;return[d*Math.cos(a),d*Math.sin(a)];};
+const dist=c=>{const [x,y]=np();return Math.hypot(c[1]-x,c[2]-y);};
+const dentro=()=>CID.filter(c=>dist(c)<87).map(c=>c[0]);
+MIS.def(()=>[
+ ['Com <b>10 dias</b> de aviso, mande o desvio para <b>longe de Pedra Alta</b>: a cidade tem de ficar a pelo menos 42,6 km do novo ponto.',()=>av==0&&dist(CID[0])>=42.6,()=>'Pedra Alta a '+r1(dist(CID[0]))+' km. Foi o que Otávio fez. Mas a cidade continua dentro do círculo: a evacuação é que salva as pessoas.',()=>av!=0?'Escolha 10 dias.':'Pedra Alta está a '+r1(dist(CID[0]))+' km. Gire a direção para o lado oposto a ela.'],
+ ['Com <b>1 ano</b> de aviso, tire <b>Pedra Alta</b> do círculo.',()=>av==1&&dist(CID[0])>=87,()=>'Pedra Alta a '+fmt(Math.round(dist(CID[0])))+' km, fora do círculo. Com um ano, as casas teriam ficado de pé.',()=>av!=1?'Escolha 1 ano.':'Pedra Alta está a '+fmt(Math.round(dist(CID[0])))+' km.'],
+ ['Ainda com <b>1 ano</b>, tire <b>Pedra Alta e Vila Seca</b> do círculo ao mesmo tempo.',()=>av==1&&dist(CID[0])>=87&&dist(CID[1])>=87,()=>'No círculo: '+(dentro().join(', ')||'nenhuma cidade')+'. Escolher a direção é escolher quem fica perto da queda: uma decisão difícil, que a matemática ajuda a enxergar.',()=>av!=1?'Escolha 1 ano.':'No círculo: '+(dentro().join(', ')||'nenhuma')+'.']]);
+function draw(){const W=340,H=300,cx=140,cy=155,k=0.62;let g=RC(0,0,W,H,'#EEF5E9','rx="10"');
+ const X=x=>cx+x*k,Y=y=>cy-y*k,[nx,ny]=np();
+ g+=`<circle cx="${X(nx)}" cy="${Y(ny)}" r="${87*k}" fill="#FBD5C4" fill-opacity="0.75" stroke="${VERM}" stroke-width="1.3"/>`;
+ g+=`<circle cx="${X(0)}" cy="${Y(0)}" r="4" fill="none" stroke="${VERM}" stroke-width="1.5"/>`;
+ if(AV[av][1]>10)g+=SETA(X(0),Y(0),X(nx),Y(ny),NAVY,2);
+ g+=`<circle cx="${X(nx)}" cy="${Y(ny)}" r="4" fill="${NAVY}"/>`;
+ CID.forEach((c,i)=>{const din=dist(c)<87;g+=RC(X(c[1])-4,Y(c[2])-4,8,8,din?VERM:NAVY)+TX(X(c[1])+7,Y(c[2])+4,c[0],{fs:9,a:'start',c:din?VERM:NAVY});});
+ if(av==0){const zx=58,zy=26,zk=9;g+=RC(zx-50,zy-18,118,110,'#fff','rx="8" stroke="#CBD5E1"')+TX(zx+9,zy-4,'zoom: 1 quadro = 1 km',{fs:8,c:GRAY});
+  for(let i=-4;i<=4;i++){g+=LN(zx+9+i*zk,zy+4,zx+9+i*zk,zy+86,'#E2E8F0',1);g+=LN(zx-27,zy+45+i*zk,zx+45,zy+45+i*zk,'#E2E8F0',1);}
+  const ox=zx+9,oy=zy+45;g+=`<circle cx="${ox}" cy="${oy}" r="3" fill="none" stroke="${VERM}" stroke-width="1.5"/>`+SETA(ox,oy,ox+nx*zk,oy-ny*zk,NAVY,2)+`<circle cx="${ox+nx*zk}" cy="${oy-ny*zk}" r="3" fill="${NAVY}"/>`;}
+ g+=TX(12,H-12,'ponto previsto: ○   novo ponto: ●',{fs:9,a:'start',c:GRAY});
+ $('fig').innerHTML=SVG(W,H,g);$('kd').textContent=r1(AV[av][1])+' km';$('kn').textContent='('+r1(nx)+'; '+r1(ny)+')';$('kp').textContent=r1(dist(CID[0]))+' km';
+ $('kc').textContent=dentro().length?dentro().join(', '):'nenhuma';MIS.ver('m');}
+chips('ch',AV.map(a=>a[0]),0,i=>{av=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto antes, melhor · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>Quanto antes, melhor</h1></header>
+<main>
+<div class="card"><h2>d = Δv · t</h2><p class="muted" style="margin-top:0">A rocha mira o centro da Terra. Escolha o empurrão e o tempo de aviso (entre o empurrão e a chegada) e veja o novo ponto de chegada. Para errar a Terra, ele tem de sair do círculo vermelho, o raio efetivo de <b>15.600 km</b> do Livro 4.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sd"><b>Empurrão</b><input type="range"><span></span></div>
+<div class="sl" id="st"><b>Tempo de aviso</b><input type="range"><span></span></div>
+<div class="kpi"><div>Tempo em segundos<b id="ks"></b></div><div class="o">Desvio<b id="kd"></b></div><div>Resultado<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Desvie a rocha.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZC='#3B82C4';
+const SETA=(x1,y1,x2,y2,c,w)=>{const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),t=Math.min(9,L*0.45);if(L<0.5)return '';
+ return LN(x1,y1,x2-Math.cos(a)*t*0.6,y2-Math.sin(a)*t*0.6,c,w||2.5)+PG([[x2,y2],[x2-t*Math.cos(a-0.42),y2-t*Math.sin(a-0.42)],[x2-t*Math.cos(a+0.42),y2-t*Math.sin(a+0.42)]],c);};
+const CID=[['Pedra Alta',35,19],['Vila Seca',-52,47],['Rio Claro do Sul',-72,-83],['Campo Largo',40,145],['Ponte Funda',85,-50],['Três Barras',175,20],['Serra Nova',142,-141]];
+let modo=0;const LMAX=Math.log10(73050);
+const dias=s=>Math.pow(10,s/1000*LMAX);
+const ROT=s=>{const d=dias(s);return d<365?r1(d)+' dias':r1(d/365.25)+' anos';};
+const DV=SL('sd',0.5,20,0.1,3.2,draw,v=>r1(v)+' mm/s'),TT=SL('st',0,1000,1,206,draw,ROT);
+const tseg=()=>dias(TT.get())*86400,desv=()=>(modo?3:1)*DV.get()*1e-3*tseg()/1000;   // km
+const kmTxt=km=>km<10?r1(km)+' km':fmt(Math.round(km))+' km';
+MIS.def(()=>[
+ ['O caso do Teimoso: <b>3,2 mm/s de lado</b>, com <b>10 dias</b> de aviso.',()=>modo==0&&Math.abs(DV.get()-3.2)<0.05&&Math.abs(dias(TT.get())-10)<0.3,()=>'Desvio de '+kmTxt(desv())+': menos que o tamanho de uma cidade. O ponto quase não sai do lugar.',()=>'Agora: '+r1(DV.get())+' mm/s e '+ROT(TT.get())+'.'],
+ ['O mesmo empurrão (3,2 mm/s de lado) com <b>1 ano</b> de aviso.',()=>modo==0&&Math.abs(DV.get()-3.2)<0.05&&Math.abs(dias(TT.get())/365.25-1)<0.03,()=>'Desvio de '+kmTxt(desv())+'. Com um ano, Pedra Alta ficaria fora do círculo do estrago; mas a rocha ainda bateria na Terra.',()=>'Agora: '+r1(DV.get())+' mm/s e '+ROT(TT.get())+'.'],
+ ['Com os <b>4 mm/s</b> da Martelo dados <b>ao longo da órbita</b> (×3), quanto aviso faria o Teimoso <b>errar a Terra</b>?',()=>modo==1&&Math.abs(DV.get()-4)<0.05&&desv()>=15600,()=>'Uns '+r1(dias(TT.get())/365.25)+' anos de aviso. Décadas: é por isso que a defesa planetária começa achando as rochas cedo.',()=>modo!=1?'Escolha o empurrão ao longo da órbita.':'Desvio de '+kmTxt(desv())+'. Faltam '+kmTxt(Math.max(0,15600-desv()))+'.']]);
+function draw(){const W=340,H=280,cx=170,cy=140,R=95;let g=RC(0,0,W,H,CEU,'rx="10"')+ESTRELAS(0,0,W,H,45,9);
+ const d=desv(),pr=d/15600*R;
+ g+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${VERM}" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+ g+=`<circle cx="${cx}" cy="${cy}" r="${R*6371/15600}" fill="${TERRA}"/>`+TX(cx,cy+4,'Terra',{fs:10,c:'#fff'});
+ g+=TX(cx,cy-R-8,'raio efetivo: 15.600 km',{fs:9,c:'#FCA5A5'});
+ const px=cx+Math.min(pr,150),py=cy;
+ g+=`<circle cx="${cx}" cy="${cy}" r="3" fill="#fff"/>`;
+ if(pr>2)g+=SETA(cx,cy,px,py,ORANGE,2.5);
+ if(pr>2)g+=ROCHA_SVG(px,py-12,6,4)+TX(px,py-24,d>=15600?'erra a Terra!':'',{fs:11,c:'#86EFAC'});
+ if(pr<=2){g+=RC(232,192,98,78,'#0B1640','rx="8" stroke="#94A3B8"')+TX(281,206,'zoom no centro',{fs:8,c:'#BFD0FF'});
+  const zc=246,zk=Math.min(6,40/Math.max(d,0.1));g+=`<circle cx="${zc}" cy="235" r="3" fill="#fff"/>`+SETA(zc,235,zc+Math.min(d*zk*1,80),235,ORANGE,2)+TX(zc+40,258,kmTxt(d),{fs:9,c:ORANGE});}
+ $('fig').innerHTML=SVG(W,H,g);$('ks').textContent=SCI(tseg(),2)+' s';$('kd').textContent=kmTxt(d);$('kr').textContent=d>=15600?'erra a Terra':'ainda bate';MIS.ver('m');}
+chips('ch',['De lado (×1)','Ao longo da órbita (×3)'],0,i=>{modo=i;draw();});
+draw();
+})();
+</script>
+</body>
+</html>

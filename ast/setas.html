@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A soma das setas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/ast.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Asteroide</div><h1>A soma das setas</h1></header>
+<main>
+<div class="card"><h2>Ponta com cauda</h2><p class="muted" style="margin-top:0">Escolha as componentes dos vetores <b style="color:#F7821F">a</b> e <b style="color:#3B82C4">b</b>. O vetor <b>b</b> começa na ponta de <b>a</b>, e a soma <b>a + b</b> (azul-escuro) vai do começo de <b>a</b> até a ponta de <b>b</b>.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sax"><b>a: para o lado (x)</b><input type="range"><span></span></div>
+<div class="sl" id="say"><b>a: para cima (y)</b><input type="range"><span></span></div>
+<div class="sl" id="sbx"><b>b: para o lado (x)</b><input type="range"><span></span></div>
+<div class="sl" id="sby"><b>b: para cima (y)</b><input type="range"><span></span></div>
+<div class="kpi"><div>|a|<b id="ka"></b></div><div>|b|<b id="kb"></b></div><div class="o">a + b<b id="ks"></b></div><div>|a + b|<b id="km"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Some as setas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const AZC='#3B82C4';
+const SETA=(x1,y1,x2,y2,c,w)=>{const a=Math.atan2(y2-y1,x2-x1),L=Math.hypot(x2-x1,y2-y1),t=Math.min(9,L*0.45);if(L<0.5)return '';
+ return LN(x1,y1,x2-Math.cos(a)*t*0.6,y2-Math.sin(a)*t*0.6,c,w||2.5)+PG([[x2,y2],[x2-t*Math.cos(a-0.42),y2-t*Math.sin(a-0.42)],[x2-t*Math.cos(a+0.42),y2-t*Math.sin(a+0.42)]],c);};
+const CID=[['Pedra Alta',35,19],['Vila Seca',-52,47],['Rio Claro do Sul',-72,-83],['Campo Largo',40,145],['Ponte Funda',85,-50],['Três Barras',175,20],['Serra Nova',142,-141]];
+const AX=SL('sax',-6,6,1,2,draw),AY=SL('say',-6,6,1,1,draw),BX=SL('sbx',-6,6,1,1,draw),BY=SL('sby',-6,6,1,2,draw);
+const mod=(x,y)=>Math.sqrt(x*x+y*y),sx=()=>AX.get()+BX.get(),sy=()=>AY.get()+BY.get();
+const v2=(x,y)=>'('+x+', '+y+')';
+MIS.def(()=>[
+ ['Monte <b>a = (3, 0)</b> e <b>b = (0, 4)</b>. Qual o tamanho da soma?',()=>AX.get()==3&&AY.get()==0&&BX.get()==0&&BY.get()==4,'(3, 0) + (0, 4) = (3, 4), de módulo √(9 + 16) = 5. Os módulos somados dariam 7: a soma das setas não é a soma dos tamanhos.',()=>'Agora: a = '+v2(AX.get(),AY.get())+', b = '+v2(BX.get(),BY.get())+'.'],
+ ['Chegue à <b>estrela</b>, no ponto (6, 8), com duas setas diferentes de zero.',()=>sx()==6&&sy()==8&&mod(AX.get(),AY.get())>0&&mod(BX.get(),BY.get())>0,()=>v2(AX.get(),AY.get())+' + '+v2(BX.get(),BY.get())+' = (6, 8). Módulo: √(36 + 64) = 10. Há muitos jeitos de chegar lá.',()=>'A soma está em '+v2(sx(),sy())+'. Some x com x e y com y.'],
+ ['Faça as duas setas se <b>anularem</b>: a soma tem de dar (0, 0), com <b>a</b> de tamanho pelo menos 3.',()=>sx()==0&&sy()==0&&mod(AX.get(),AY.get())>=3,'b = −a: mesmo tamanho, sentido oposto. É o que acontece com duas forças iguais e contrárias: nada se move.',()=>'A soma está em '+v2(sx(),sy())+'.']]);
+function draw(){const W=340,H=300,u=20,ox=10+5*u,oy=10+9*u;let g=RC(0,0,W,H,'#F8FAFC','rx="10"');
+ const X=x=>ox+x*u,Y=y=>oy-y*u;
+ for(let i=-5;i<=11;i++)g+=LN(X(i),Y(9),X(i),Y(-5),i==0?'#94A3B8':'#E2E8F0',i==0?1.4:1);
+ for(let j=-5;j<=9;j++)g+=LN(X(-5),Y(j),X(11),Y(j),j==0?'#94A3B8':'#E2E8F0',j==0?1.4:1);
+ g+=TX(X(6),Y(8)+5,'★',{fs:18,c:'#F4C542'});
+ const ax=AX.get(),ay=AY.get(),bx=BX.get(),by=BY.get();
+ g+=SETA(X(0),Y(0),X(ax),Y(ay),ORANGE,3)+SETA(X(ax),Y(ay),X(ax+bx),Y(ay+by),AZC,3)+SETA(X(0),Y(0),X(sx()),Y(sy()),NAVY,3.5);
+ if(ax||ay)g+=TX((X(0)+X(ax))/2-8,(Y(0)+Y(ay))/2-6,'a',{fs:13,c:ORANGE});
+ if(bx||by)g+=TX((X(ax)+X(ax+bx))/2+9,(Y(ay)+Y(ay+by))/2,'b',{fs:13,c:AZC});
+ g+=TX(W-12,H-12,'1 quadradinho = 1',{fs:9,c:GRAY,a:'end'});
+ $('fig').innerHTML=SVG(W,H,g);
+ $('ka').textContent=r2(mod(ax,ay));$('kb').textContent=r2(mod(bx,by));$('ks').textContent=v2(sx(),sy());$('km').textContent=r2(mod(sx(),sy()));MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
