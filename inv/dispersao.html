@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>O espalhamento · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>O espalhamento</h1></header>
+<main>
+<div class="card"><h2>Desvios e desvio-padrão</h2><p class="muted" style="margin-top:0">Cinco dias de temperatura. Cada barra é o desvio de um dia em relação à média; o quadrado ao lado tem área igual ao desvio ao quadrado. O desvio-padrão é a raiz da média dessas áreas.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="ss"><b>Espalhamento</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Média</b><input type="range"><span></span></div>
+<div class="kpi"><div>Soma dos desvios<b id="kd"></b></div><div>Variância<b id="kv"></b></div><div class="o">Desvio-padrão σ<b id="ks"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Compare os lugares.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0';
+const MEAN=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const MED=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const SD=a=>{const m=MEAN(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const SG=v=>(v>0?'+':v<0?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const SG1=v=>(v>0.04?'+':v<-0.04?'−':'')+fmt(Math.abs(Math.round(v*10)/10));
+const JAN=[26.6,27.2,28.6,26.1,27.5,26.4,26.4,26.4,27.3,27.4,27.1,25.6,28.4,27.0,28.5,27.4,28.0,27.8,27.2,27.9,27.4,25.4,28.0,26.7,26.7,25.8,27.5,28.5,27.0,26.6,28.8,26.4,27.5,26.9,27.1,26.5,27.5,25.2,26.3,26.9,26.5,26.2,27.4,28.1,27.8,27.4,26.2,27.6,26.7,25.2,26.4,27.6,26.0,26.7,28.6,28.0,27.3,27.6,28.1,27.7,25.8,27.9,26.1,25.6,27.2,25.9,27.2,25.5,25.2,27.0,28.0,26.3,27.6,27.1,26.8,28.5,25.7,27.4,28.5,26.6,26.3,26.9,27.2,27.8,27.1,26.7,26.7,26.0,26.6,25.4,26.4,28.2,27.4,26.4,26.7,28.3,25.3,26.3,28.8,27.0];
+const ESTE=24.3;
+let modo=2;const BASE=[-5,-2,0,2,5];
+chips('ch',['Ilha','Continente','Livre'],2,i=>{modo=i;draw();});
+const Sp=SL('ss',0,1.5,0.05,1,()=>{modo=2;chips('ch',['Ilha','Continente','Livre'],2,i=>{modo=i;draw();});draw();},v=>'× '+fmt(v)),C=SL('sc',20,30,0.5,25,()=>{draw();},v=>fmt(v)+' °C');
+const dados=()=>modo==0?[24,25,25,26,25].map(x=>x+C.get()-25):modo==1?[20,23,25,27,30].map(x=>x+C.get()-25):BASE.map(b=>C.get()+b*Sp.get());
+MIS.def(()=>[
+ ['Escolha a <b>ilha</b>. Some os desvios e ache o desvio-padrão.',()=>modo==0,'Desvios −1, 0, 0, +1, 0: soma zero. Variância 2 ÷ 5 = 0,4, σ ≈ 0,63 °C.',()=>'Escolha "Ilha".'],
+ ['Agora o <b>continente</b>, com a mesma média.',()=>modo==1&&C.get()==25,'Desvios −5, −2, 0, +2, +5: a soma ainda é zero, mas os quadrados somam 58. σ = √11,6 ≈ 3,4 °C, cerca de 5 vezes o da ilha.',()=>'Escolha "Continente" com média 25 °C.'],
+ ['No modo livre, deixe o desvio-padrão perto de <b>1,7 °C</b>, a metade do continente.',()=>modo==2&&Math.abs(SD(dados())-1.7)<0.03,()=>'Espalhamento × '+fmt(Sp.get())+': cada desvio ficou com metade do tamanho, e σ caiu à metade.',()=>modo!=2?'Escolha "Livre".':'σ agora: '+r2(SD(dados()))+' °C.'],
+ ['Mantenha σ ≈ 1,7 °C e some 2 °C a todos os dias: média em <b>27 °C</b>.',()=>modo==2&&C.get()==27&&Math.abs(SD(dados())-1.7)<0.03,'A média subiu 2 °C, mas σ não mudou: os dias andaram juntos, e a distância de cada um até a média ficou igual.',()=>modo!=2?'Volte ao modo "Livre".':Math.abs(SD(dados())-1.7)>=0.03?'Volte σ para perto de 1,7 °C.':'Leve a média a 27 °C.']]);
+function quadro(){const W=340,H_=230,d=dados(),m=MEAN(d),y0=110,k=9;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');
+ g+=LN(14,y0,326,y0,NAVY,1.5)+TX(14,18,'linha: média = '+r1(m)+' °C',{fs:10,c:NAVY,a:'start'});
+ d.forEach((x,i)=>{const dv=x-m,cx=34+i*62;const h=Math.abs(dv)*k;
+  if(Math.abs(dv)>0.001)g+=RC(cx-9,dv>0?y0-h:y0,18,h,dv>0?VERM:AZ2,'rx="2"');else g+=RC(cx-9,y0-1,18,2,GRAY);
+  const q=Math.min(Math.abs(dv)*Math.abs(dv)*1.2,48);g+=RC(cx+12,dv>0?y0-q:y0,q,q,ORANGE,'opacity=".35"');
+  g+=TX(cx,dv>=0?y0-h-5:y0+h+13,SG1(dv),{fs:9,c:NAVY})+TX(cx,215,r1(x)+' °C',{fs:9,c:GRAY,w:500});});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const d=dados(),m=MEAN(d);$('kd').textContent=fmt(Math.round(d.reduce((s,x)=>s+x-m,0)*100)/100||0);$('kv').textContent=r2(SD(d)**2)+' °C²';$('ks').textContent=r2(SD(d))+' °C';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

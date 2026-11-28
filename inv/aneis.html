@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Os anéis · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>Os anéis</h1></header>
+<main>
+<div class="card"><h2>A reta dos anéis</h2><p class="muted" style="margin-top:0">Cada ponto é um ano: temperatura de janeiro × largura do anel do pinheiro. Ajuste a inclinação e a altura da reta; os tracinhos vermelhos são os erros. Depois meça um anel e leia a temperatura.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Inclinação (mm por °C)</b><input type="range"><span></span></div>
+<div class="sl" id="sc"><b>Altura da reta em 26,9 °C</b><input type="range"><span></span></div>
+<div class="sl" id="sl"><b>Anel medido</b><input type="range"><span></span></div>
+<div class="kpi"><div>Reta<b id="ke"></b></div><div>Soma dos erros²<b id="kq"></b></div><div class="o">Temperatura lida<b id="kt"></b></div></div>
+<div class="kpi"><div>Correlação r<b id="kr"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ajuste a reta.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0';
+const MEAN=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const MED=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const SD=a=>{const m=MEAN(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const SG=v=>(v>0?'+':v<0?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const SG1=v=>(v>0.04?'+':v<-0.04?'−':'')+fmt(Math.abs(Math.round(v*10)/10));
+const JAN=[26.6,27.2,28.6,26.1,27.5,26.4,26.4,26.4,27.3,27.4,27.1,25.6,28.4,27.0,28.5,27.4,28.0,27.8,27.2,27.9,27.4,25.4,28.0,26.7,26.7,25.8,27.5,28.5,27.0,26.6,28.8,26.4,27.5,26.9,27.1,26.5,27.5,25.2,26.3,26.9,26.5,26.2,27.4,28.1,27.8,27.4,26.2,27.6,26.7,25.2,26.4,27.6,26.0,26.7,28.6,28.0,27.3,27.6,28.1,27.7,25.8,27.9,26.1,25.6,27.2,25.9,27.2,25.5,25.2,27.0,28.0,26.3,27.6,27.1,26.8,28.5,25.7,27.4,28.5,26.6,26.3,26.9,27.2,27.8,27.1,26.7,26.7,26.0,26.6,25.4,26.4,28.2,27.4,26.4,26.7,28.3,25.3,26.3,28.8,27.0];
+const ESTE=24.3;
+const TT=[26.6,25.4,26.4,28.2,27.4,26.4,26.7,28.3,25.3,26.3,28.8,27.0],L0=[1.8,1.2,2.0,2.6,2.6,2.1,2.2,2.8,1.5,1.7,3.2,2.1],LE=[2.1,1.5,2.6,2.0,2.1,2.6,1.2,3.2,2.8,2.2,1.8,1.7],TM=26.9;
+let emb=0;chips('ch',['Dados do pinheiro','Anéis embaralhados'],0,i=>{emb=i;draw();});
+const A=SL('sa',-0.3,1,0.01,0.2,()=>draw(),v=>fmt(v)),Cc=SL('sc',0.5,3.5,0.05,1.5,()=>draw(),v=>fmt(v)+' mm'),Lm=SL('sl',0.5,3.5,0.1,2,()=>draw(),v=>fmt(v)+' mm');
+const LL=()=>emb?LE:L0,b=()=>Cc.get()-A.get()*TM,pred=t=>A.get()*t+b();
+const sse=()=>TT.reduce((s,t,i)=>s+(LL()[i]-pred(t))**2,0);
+function best(){const L=LL(),mt=MEAN(TT),ml=MEAN(L);let sxy=0,sxx=0,syy=0;TT.forEach((t,i)=>{sxy+=(t-mt)*(L[i]-ml);sxx+=(t-mt)**2;syy+=(L[i]-ml)**2;});const a=sxy/sxx,bb=ml-a*mt;return {a,b:bb,r:sxy/Math.sqrt(sxx*syy),s:TT.reduce((s,t,i)=>s+(L[i]-a*t-bb)**2,0)};}
+const ALICE=()=>emb==0&&Math.abs(A.get()-0.5)<1e-6&&Math.abs(Cc.get()-2.15)<0.001;
+const tl=()=>A.get()>0.02?(Lm.get()-b())/A.get():NaN;
+MIS.def(()=>[
+ ['Monte a reta da Dra. Alice: inclinação <b>0,50</b> e altura <b>2,15 mm</b> em 26,9 °C.',ALICE,()=>'L = 0,5T − 11,3. Soma dos erros² '+r2(sse())+': a mínima possível é '+r2(best().s)+'. Ela passa bem perto dos pontos.',()=>'Inclinação '+fmt(A.get())+', altura '+fmt(Cc.get())+' mm.'],
+ ['Meça o anel de 212 anos atrás: <b>0,8 mm</b>. Que janeiro ele conta?',()=>ALICE()&&Math.abs(Lm.get()-0.8)<1e-6,()=>'T = (0,8 + 11,3) ÷ 0,5 = '+r1(tl())+' °C: um janeiro tão frio quanto este, muito antes do termômetro do porto.',()=>!ALICE()?'Mantenha a reta da Dra. Alice.':'Anel medido: 0,8 mm.'],
+ ['E se os anéis não tivessem nada a ver com a temperatura? <b>Embaralhe</b> os anéis.',()=>emb==1,()=>'Com os anéis verdadeiros, r ≈ 0,96; embaralhados, r ≈ '+fmt(Math.round(best().r*100)/100)+'. Os pontos viram uma nuvem sem direção.',()=>'Escolha "Anéis embaralhados".'],
+ ['Com os anéis embaralhados, ajuste a melhor reta possível (soma dos erros² perto da mínima).',()=>emb==1&&sse()<=best().s*1.05+0.01,()=>'Inclinação '+fmt(A.get())+': quase plana. Sem correlação, a reta não serve para ler temperatura nenhuma.',()=>'Soma dos erros² '+r2(sse())+'; a mínima é '+r2(best().s)+'.']]);
+function quadro(){const W=340,H_=230,ax=24,bx=29.5,ay=0.5,by=3.5,X=t=>34+(t-ax)/(bx-ax)*290,Y=l=>200-(l-ay)/(by-ay)*180;let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');
+ for(let l=1;l<=3.5;l+=0.5)g+=LN(34,Y(l),324,Y(l),'#E5E7EB',1)+TX(30,Y(l)+3,fmt(l),{fs:9,c:GRAY,w:500,a:'end'});
+ for(let t=24;t<=29;t++)g+=TX(X(t),214,t,{fs:9,c:GRAY,w:500});g+=TX(324,226,'janeiro (°C)',{fs:9,c:GRAY,w:500,a:'end'})+TX(34,14,'anel (mm)',{fs:9,c:GRAY,w:500,a:'start'});
+ g+=LN(34,200,324,200,NAVY,1.5)+LN(34,20,34,200,NAVY,1.5);
+ const y1=pred(ax),y2=pred(bx);g+=LN(X(ax),Y(y1),X(bx),Y(y2),ORANGE,2.5);
+ TT.forEach((t,i)=>{const l=LL()[i];g+=LN(X(t),Y(l),X(t),Y(pred(t)),VERM,1.5)+CI(X(t),Y(l),5,MARC,'stroke="'+NAVY+'" stroke-width="1.2"');});
+ const t=tl(),lm=Lm.get();g+=LN(34,Y(lm),Number.isFinite(t)?clamp(X(t),34,324):324,Y(lm),AZ2,1.5,'4 3');
+ if(Number.isFinite(t)&&t>=ax&&t<=bx)g+=LN(X(t),Y(lm),X(t),200,AZ2,1.5,'4 3')+CI(X(t),Y(lm),4,AZ2);
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const bb=b();$('ke').textContent='L = '+fmt(A.get())+'T '+(bb<0?'− ':'+ ')+fmt(Math.abs(Math.round(bb*100)/100));$('kq').textContent=r2(sse());const t=tl();$('kt').textContent=Number.isFinite(t)&&t>0&&t<60?r1(t)+' °C':'—';
+ const r=best().r;$('kr').textContent=(r<0?'−':'')+fmt(Math.abs(Math.round(r*100)/100));quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

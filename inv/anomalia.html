@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua das anomalias · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/inv.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Inverno sem Fim</div><h1>A régua das anomalias</h1></header>
+<main>
+<div class="card"><h2>Anomalia = valor − normal</h2><p class="muted" style="margin-top:0">As barras mostram as anomalias dos últimos 30 janeiros e deste (a última, laranja). Escolha os 30 anos que servem de normal e ligue a média móvel.</p>
+<div id="ch" style="margin:6px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sb"><b>Normal: 30 anos que começam há</b><input type="range"><span></span></div>
+<div class="sl" id="sm"><b>Média móvel</b><input type="range"><span></span></div>
+<div class="kpi"><div>Normal<b id="kn"></b></div><div class="o">Anomalia deste janeiro<b id="ka"></b></div><div>Mais quente dos últimos 10<b id="kq"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Ache a anomalia.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PC=(v,d)=>fmt(Math.round(v*Math.pow(10,d==null?1:d))/Math.pow(10,d==null?1:d))+'%';
+const AZ2='#2457D6',VERM='#E5482B',MARC='#7FB2E0';
+const MEAN=a=>a.reduce((s,x)=>s+x,0)/a.length;
+const MED=a=>{const b=[...a].sort((x,y)=>x-y),n=b.length;return n%2?b[(n-1)/2]:(b[n/2-1]+b[n/2])/2;};
+const SD=a=>{const m=MEAN(a);return Math.sqrt(a.reduce((s,x)=>s+(x-m)*(x-m),0)/a.length);};
+const SG=v=>(v>0?'+':v<0?'−':'')+fmt(Math.abs(Math.round(v*100)/100));
+const SG1=v=>(v>0.04?'+':v<-0.04?'−':'')+fmt(Math.abs(Math.round(v*10)/10));
+const JAN=[26.6,27.2,28.6,26.1,27.5,26.4,26.4,26.4,27.3,27.4,27.1,25.6,28.4,27.0,28.5,27.4,28.0,27.8,27.2,27.9,27.4,25.4,28.0,26.7,26.7,25.8,27.5,28.5,27.0,26.6,28.8,26.4,27.5,26.9,27.1,26.5,27.5,25.2,26.3,26.9,26.5,26.2,27.4,28.1,27.8,27.4,26.2,27.6,26.7,25.2,26.4,27.6,26.0,26.7,28.6,28.0,27.3,27.6,28.1,27.7,25.8,27.9,26.1,25.6,27.2,25.9,27.2,25.5,25.2,27.0,28.0,26.3,27.6,27.1,26.8,28.5,25.7,27.4,28.5,26.6,26.3,26.9,27.2,27.8,27.1,26.7,26.7,26.0,26.6,25.4,26.4,28.2,27.4,26.4,26.7,28.3,25.3,26.3,28.8,27.0];
+const ESTE=24.3;
+let est=0;chips('ch',['Porto (nível do mar)','Estação do Pico'],0,i=>{est=i;draw();});
+const PICO=JAN.map((x,i)=>Math.round((x-8+((i*37)%7-3)*0.1)*10)/10),ESTEP=16.6;
+const B=SL('sb',30,100,1,60,()=>draw(),v=>v+' anos'),MM=SL('sm',1,9,2,1,()=>draw(),v=>v==1?'desligada':v+' anos');
+const serie=()=>est?PICO:JAN,este=()=>est?ESTEP:ESTE;
+const normal=()=>{const s=serie(),i0=100-B.get();let m=MEAN(s.slice(i0,i0+30));if(est)m+=19.0-MEAN(PICO.slice(70,100));return m;};
+const anom=()=>este()-normal();
+MIS.def(()=>[
+ ['Use como normal os <b>últimos 30 anos</b> (que começam há 30 anos). Qual a anomalia deste janeiro?',()=>est==0&&B.get()==30,()=>'Normal 27,0 °C: anomalia 24,3 − 27,0 = −2,7 °C.',()=>'Leve a régua para 30 anos.'],
+ ['Mude a base. Ache 30 anos que deixem a anomalia deste janeiro <b>menor que −2,8 °C</b>.',()=>est==0&&anom()<-2.8,()=>'Com a normal de '+r2(normal())+' °C, a anomalia vira '+SG(anom())+' °C. A anomalia depende da base: sempre diga qual foi.',()=>'Agora: '+SG(anom())+' °C. Procure 30 anos mais quentes.'],
+ ['Volte à base dos últimos 30 anos e ligue a <b>média móvel de 5 anos</b>.',()=>est==0&&B.get()==30&&MM.get()==5,'A linha suaviza os altos e baixos de um ano para outro. Mesmo suavizada, nenhuma média chega perto do tombo deste janeiro.',()=>B.get()!=30?'Base: 30 anos.':'Média móvel: 5 anos.'],
+ ['Agora olhe a <b>Estação do Pico</b>, no alto da ilha.',()=>est==1&&B.get()==30,()=>'Normal 19,0 °C, este janeiro 16,6 °C: anomalia −2,4 °C. Termômetros muito diferentes, anomalias parecidas: a ilha inteira esfriou.',()=>est!=1?'Escolha "Estação do Pico".':'Base: últimos 30 anos.']]);
+function quadro(){const W=340,H_=230,s=serie(),n0=70,y0=120,k=22,nm=normal();let g=RC(0,0,W,H_,'#F8FAFC','rx="10"');
+ const vals=s.slice(n0).concat([este()]),X=i=>14+i*10;
+ const i0=100-B.get();if(i0>=n0)g+=RC(X(i0-n0)-1,24,Math.min(30,100-i0)*10,182,'#FDE9D8');
+ g+=LN(10,y0,330,y0,NAVY,1.5)+TX(12,16,'linha do zero: normal de '+r2(nm)+' °C',{fs:10,c:NAVY,a:'start'});
+ vals.forEach((x,i)=>{const a=x-nm,h=Math.abs(a)*k;g+=RC(X(i),a>0?y0-h:y0,8,Math.max(h,1),i==30?ORANGE:a>0?VERM:AZ2);});
+ g+=TX(X(30)+4,y0+anom()*-k+14,SG1(anom()),{fs:10,c:ORANGE});
+ const w=MM.get();if(w>1){const pts=[];for(let i=0;i<30;i++){const lo=n0+i-(w-1)/2,hi=n0+i+(w-1)/2;if(hi>=100)break;pts.push([X(i)+4,y0-(MEAN(s.slice(lo,hi+1))-nm)*k]);}
+  g+='<polyline points="'+pts.map(p=>p.join(',')).join(' ')+'" fill="none" stroke="'+NAVY+'" stroke-width="2.5"/>';}
+ g+=TX(14,222,'há 30 anos',{fs:9,c:GRAY,w:500,a:'start'})+TX(326,222,'este',{fs:9,c:ORANGE,a:'end'});
+ if(i0<n0)g+=TX(170,40,'a normal usa anos mais antigos que os do gráfico',{fs:9,c:GRAY,w:500});
+ $('fig').innerHTML=SVG(W,H_,g);}
+function draw(){const nm=normal(),s=serie().slice(90);$('kn').textContent=r2(nm)+' °C';$('ka').textContent=SG(anom())+' °C';const mx=Math.max(...s);$('kq').textContent=fmt(mx)+' °C ('+SG1(mx-nm)+')';quadro();MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
