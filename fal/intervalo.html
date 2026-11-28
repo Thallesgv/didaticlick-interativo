@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A janela das datas · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A janela das datas</h1></header>
+<main>
+<div class="card"><h2>Pistas viram intervalos</h2><p class="muted" style="margin-top:0">Cada pista é um intervalo de anos possíveis. Escolha uma pista e mexa nas pontas. A faixa verde embaixo é a <b>interseção</b>: os anos que cumprem todas as pistas ligadas.</p>
+<div id="chp" style="margin:4px 0"></div><div id="chl" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="si"><b>Início da pista escolhida</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Fim da pista escolhida</b><input type="range"><span></span></div>
+<div class="kpi"><div>Interseção<b id="ki"></b></div><div>Anos possíveis<b id="kn"></b></div><div class="o">1889 cabe?<b id="kc"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Junte as pistas.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PI=[{n:'Pigmentos S1 a S5',a:1800,b:2026,on:true,c:'#2F55B8'},{n:'Vida de Van Gogh',a:1853,b:1900,on:true,c:'#F2B705'},{n:'Amostra S6',a:1916,b:2026,on:false,c:'#C62828'}];let sel=0;
+const CP=chips('chp',PI.map(p=>p.n),0,i=>{sel=i;SI.set(PI[i].a);SF.set(PI[i].b);draw();});
+function liga(){$('chl').innerHTML=PI.map((p,i)=>`<label style="margin-right:10px;font-size:14px"><input type="checkbox" data-i="${i}" ${p.on?'checked':''}> ${p.n}</label>`).join('');
+ document.querySelectorAll('#chl input').forEach(c=>c.onchange=()=>{PI[+c.dataset.i].on=c.checked;draw();});}
+liga();
+const SI=SL('si',1700,2026,1,PI[0].a,v=>{PI[sel].a=Math.min(v,PI[sel].b);draw();},v=>v),SF=SL('sf',1700,2026,1,PI[0].b,v=>{PI[sel].b=Math.max(v,PI[sel].a);draw();},v=>v>=2026?'hoje':v);
+const ox=24,W=300,X=a=>ox+(a-1700)/326*W;
+const inter=()=>{let a=-1e9,b=1e9;PI.forEach(p=>{if(p.on){a=Math.max(a,p.a);b=Math.min(b,p.b);}});return a<=b?[a,b]:null;};
+toque('fig',(x,y)=>{const t=Math.max(1700,Math.min(2026,Math.round(1700+(x-ox)/W*326)));const p=PI[sel];if(Math.abs(t-p.a)<Math.abs(t-p.b)){p.a=Math.min(t,p.b);SI.set(p.a);}else{p.b=Math.max(t,p.a);SF.set(p.b);}draw();});
+MIS.def(()=>[
+ ['Ajuste a pista dos pigmentos para começar em <b>1838</b> (a viridiana) e a de Van Gogh para terminar em <b>1890</b>. Ligue só essas duas.',()=>PI[0].on&&PI[1].on&&!PI[2].on&&PI[0].a==1838&&PI[1].b==1890,'Interseção [1838, 1890]: 53 anos possíveis, e 1889 está dentro.',()=>!PI[0].on||!PI[1].on||PI[2].on?'Ligue só os pigmentos S1 a S5 e a vida de Van Gogh.':PI[0].a!=1838?'A pista dos pigmentos começa em '+PI[0].a+'. Leve para 1838.':'A pista de Van Gogh termina em '+PI[1].b+'. Leve para 1890.'],
+ ['Agora ligue também a <b>amostra S6</b> (branco de titânio, a partir de 1916).',()=>PI[2].on&&PI[2].a==1916&&!inter()&&PI[1].b==1890,'A interseção some: nenhum ano cumpre "até 1890" e "a partir de 1916" ao mesmo tempo. Alguma pista está errada.',()=>!PI[2].on?'Ligue a amostra S6.':'Confira: S6 começa em 1916 e Van Gogh termina em 1890.'],
+ ['Que pista teria de mudar para o vazio sumir? Teste: com as três ligadas, faça a interseção voltar <b>sem mexer na S6</b>.',()=>PI.every(p=>p.on)&&PI[2].a==1916&&inter(),'Só estendendo "Van Gogh" além de 1916, ou seja, dizendo que não é Van Gogh. É exatamente o que a perícia conclui sobre aquela pincelada.',()=>PI[2].a!=1916?'Volte a S6 para 1916.':'Mexa na pista de Van Gogh e veja quando a interseção volta.']]);
+function draw(){CP;let g=RC(0,0,340,220,'#fff','rx="10"');const I=inter();
+ PI.forEach((p,i)=>{const y=30+i*40;g+=TX(ox,y-8,p.n,{fs:9,a:'start',c:p.on?NAVY:'#B0B7C3'});
+  g+=LN(X(p.a),y,X(p.b),y,p.c,8)+(p.on?'':LN(X(p.a),y,X(p.b),y,'#fff',8,'0')+LN(X(p.a),y,X(p.b),y,p.c,2,'4 4'));
+  if(i==sel)g+=RC(X(p.a)-3,y-7,X(p.b)-X(p.a)+6,14,'none','stroke="'+ORANGE+'" stroke-width="2" rx="4"');});
+ const yI=160;g+=TX(ox,yI-8,'interseção',{fs:9,a:'start',c:GREEN});
+ if(I)g+=LN(X(I[0]),yI,X(I[1]),yI,GREEN,10);else g+=TX(ox+W/2,yI+4,'∅ vazia',{fs:13,c:'#C62828'});
+ g+=LN(X(1889),18,X(1889),yI+12,ORANGE,1,'3 3')+TX(X(1889),yI+24,'1889',{fs:8,c:ORANGE});
+ g+=LN(ox,200,ox+W,200,NAVY,1);for(let t=1700;t<=2000;t+=50)g+=TX(X(t),214,t,{fs:8,c:GRAY});
+ $('fig').innerHTML=SVG(340,220,g);
+ $('ki').textContent=I?'['+I[0]+', '+(I[1]>=2026?'hoje':I[1])+']':'vazia';$('kn').textContent=I?(I[1]-I[0]+1):0;$('kc').textContent=I&&I[0]<=1889&&1889<=I[1]?'sim':'não';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

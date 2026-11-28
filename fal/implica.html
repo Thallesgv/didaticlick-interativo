@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vire a frase · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Vire a frase</h1></header>
+<main>
+<div class="card"><h2>Implicação e suas parentes</h2><p class="muted" style="margin-top:0">Escolha uma frase. Embaixo, a recíproca, a contrária e a contrapositiva. Mude se P e Q são verdadeiras (V) ou falsas (F): cada frase acende verde quando é verdadeira e vermelho quando é falsa.</p>
+<div id="chf" style="margin:4px 0"></div>
+<div id="chp" style="margin:4px 0"></div><div id="chq" style="margin:4px 0"></div>
+<div id="fig" style="display:block;width:100%;margin:8px 0"></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Teste as quatro frases.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const FR=[['o quadro é de 1889','todas as cores existiam em 1889','o quadro não é de 1889','alguma cor não existia em 1889'],['é cipreste','é árvore','não é cipreste','não é árvore'],['tem titânio','foi pintado depois de 1915','não tem titânio','não foi pintado depois de 1915']];let f=0,p=true,q=true;const vistos=new Set();
+chips('chf',['quadro e cores','cipreste','titânio'],0,i=>{f=i;draw();});
+const CP=chips('chp',['P verdadeira','P falsa'],0,i=>{p=!i;draw();}),CQ=chips('chq',['Q verdadeira','Q falsa'],0,i=>{q=!i;draw();});
+const imp=(a,b)=>!a||b;
+MIS.def(()=>[
+ ['Ache a <b>única combinação</b> de P e Q em que "se P, então Q" é <b>falsa</b>.',()=>p&&!q,'P verdadeira e Q falsa: a promessa foi quebrada. Em todas as outras linhas, a implicação é verdadeira.',()=>'Agora a implicação é '+(imp(p,q)?'verdadeira':'falsa')+'. Teste outras combinações.'],
+ ['Na frase "quadro e cores", mostre um caso que derruba a <b>recíproca</b> do advogado (Q → P).',()=>f==0&&q&&!p,'Q verdadeira (todas as cores antigas) e P falsa (quadro não é de 1889): uma cópia moderna feita só com cores antigas.',()=>f!=0?'Escolha a frase "quadro e cores".':'A recíproca "se Q, então P" só é falsa com Q verdadeira e P falsa.'],
+ ['Passe pelas <b>quatro combinações</b> de P e Q e compare as colunas: qual frase dá sempre o mesmo resultado que a original?',()=>vistos.size==4,'A contrapositiva (não Q → não P) acende igual à original nas quatro linhas: elas dizem a mesma coisa.',()=>'Combinações testadas: '+vistos.size+' de 4.']]);
+function draw(){vistos.add(p+''+q);const [P_,Q_,nP,nQ]=FR[f];
+ const L=[['Original','se '+P_+', então '+Q_,imp(p,q)],['Recíproca','se '+Q_+', então '+P_,imp(q,p)],['Contrária','se '+nP+', então '+nQ,imp(!p,!q)],['Contrapositiva','se '+nQ+', então '+nP,imp(!q,!p)]];
+ let h='<div style="display:grid;gap:8px">';
+ L.forEach(([t,s,v])=>{h+=`<div style="border-radius:12px;padding:10px 12px;background:${v?'#E8F5EC':'#FDECEC'};border:2px solid ${v?'#15803D':'#C62828'}"><b style="color:${v?'#15803D':'#C62828'}">${t}: ${v?'V':'F'}</b><div style="font-size:14px;margin-top:3px">${s}</div></div>`;});
+ h+='</div><table style="width:100%;margin-top:10px;border-collapse:collapse;font-size:14px;text-align:center"><tr style="background:#0E2354;color:#fff"><th>P</th><th>Q</th><th>P→Q</th><th>Q→P</th><th>não Q→não P</th></tr>';
+ [[1,1],[1,0],[0,1],[0,0]].forEach(([a,b])=>{const at=a==p&&b==q;h+=`<tr style="background:${at?'#FDE9D8':'#fff'};font-weight:${at?700:400}"><td>${a?'V':'F'}</td><td>${b?'V':'F'}</td><td>${imp(a,b)?'V':'F'}</td><td>${imp(b,a)?'V':'F'}</td><td>${imp(!b,!a)?'V':'F'}</td></tr>`;});
+ $('fig').innerHTML=h+'</table>';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

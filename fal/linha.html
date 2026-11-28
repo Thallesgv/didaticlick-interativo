@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A régua das cores · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A régua das cores</h1></header>
+<main>
+<div class="card"><h2>Que cores existiam?</h2><p class="muted" style="margin-top:0">Arraste o ano pela reta do tempo (ou use − e +). As cores que já existiam naquele ano acendem; as que ainda não tinham nascido ficam apagadas. A faixa amarela é a vida de Van Gogh.</p>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sa"><b>Ano</b><input type="range"><span></span></div>
+<div class="kpi"><div>Cores que existiam<b id="kn"></b></div><div>Cores do quadro que existiam<b id="kq"></b></div><div class="o">Van Gogh<b id="kv"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a reta do tempo.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const PIGS=[['Branco de chumbo',-500,'#F1EFE8'],['Vermelhão',-500,'#C0392B'],['Ocre',-500,'#C98A2E'],['Azul da prússia',1704,'#1D3557'],['Azul cobalto',1802,'#2F55B8'],
+ ['Amarelo de cromo',1810,'#F2B705'],['Verde esmeralda',1814,'#2FA36B'],['Viridiana',1838,'#2E7F6E'],['Branco de titânio',1916,'#E5EAF0'],['Azul ftalocianina',1935,'#1F4FBF']];
+const nasc=n=>n<0?'antiguidade':n==1810?'início dos 1800':n;
+const QUADRO=['Branco de chumbo','Azul cobalto','Verde esmeralda','Amarelo de cromo','Azul da prússia','Viridiana','Branco de titânio'];
+const SA=SL('sa',1700,1960,1,1700,()=>draw(),v=>v);
+const ox=24,W=300,X=a=>ox+(a-1700)/260*W,yl=60;
+toque('fig',(x,y)=>{if(y<110){SA.set(Math.max(1700,Math.min(1960,Math.round(1700+(x-ox)/W*260))));draw();}});
+const existe=(p,a)=>p[1]<=a;const nq=a=>PIGS.filter(p=>QUADRO.includes(p[0])&&existe(p,a)).length;
+MIS.def(()=>[
+ ['Leve o ano até <b>1889</b>. Quantas cores do quadro já existiam?',()=>SA.get()==1889,'6 das 7. Só o branco de titânio ainda não tinha nascido: ele está apagado.',()=>'Agora o ano é '+SA.get()+'.'],
+ ['Ache o <b>primeiro ano</b> em que todas as 7 cores do quadro já existiam.',()=>nq(SA.get())==7&&nq(SA.get()-1)<7,'1916: o ano em que começou a produção comercial do branco de titânio. Um quadro com essas cores só pode ser de 1916 ou depois.',()=>nq(SA.get())<7?'Ainda faltam cores: '+(7-nq(SA.get()))+'. Avance.':'Já existem todas. Volte até achar o primeiro ano.'],
+ ['Leve o ano até a <b>morte de Van Gogh</b> (1890). Quantos anos faltavam para o branco de titânio?',()=>SA.get()==1890,'1916 − 1890 = 26 anos. Van Gogh nunca viu um tubo de branco de titânio.',()=>'Leve o ano até 1890.']]);
+function draw(){const a=SA.get();let g=RC(0,0,340,330,'#fff','rx="10"');
+ g+=RC(X(1853),yl-10,X(1890)-X(1853),20,'#FBE3A0')+LN(ox,yl,ox+W,yl,NAVY,1.5);
+ for(let t=1700;t<=1950;t+=50)g+=LN(X(t),yl-4,X(t),yl+4,NAVY,1)+TX(X(t),yl+20,t,{fs:8,c:GRAY});
+ PIGS.filter(p=>p[1]>0).forEach(p=>g+=CIR(X(p[1]),yl,4,p[2],'stroke="'+NAVY+'" stroke-width=".8"'));
+ g+=LN(X(a),yl-30,X(a),yl+12,ORANGE,3)+TX(X(a),yl-36,a,{fs:12,c:ORANGE});
+ PIGS.forEach((p,i)=>{const on=existe(p,a),y=110+i*21,q=QUADRO.includes(p[0]);
+  g+=RC(20,y,24,16,p[2],'rx="4" stroke="'+NAVY+'" stroke-width=".6" opacity="'+(on?1:.15)+'"');
+  g+=TX(52,y+12,p[0]+(q?' ★':''),{fs:10,a:'start',c:on?NAVY:'#B0B7C3',w:on?700:500})+TX(320,y+12,nasc(p[1]),{fs:9,a:'end',c:on?GRAY:'#C7CDD6'});});
+ g+=TX(20,325,'★ = encontrada no quadro',{fs:8,c:GRAY,a:'start'});
+ $('fig').innerHTML=SVG(340,330,g);
+ $('kn').textContent=PIGS.filter(p=>existe(p,a)).length+' de 10';$('kq').textContent=nq(a)+' de 7';$('kv').textContent=a<1853?'não nasceu':a<=1890?'vivo, '+(a-1853)+' anos':'morreu em 1890';MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
