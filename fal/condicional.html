@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A grade dos 400 · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>A grade dos 400</h1></header>
+<main>
+<div class="card"><h2>A grade dos quadros</h2><p class="muted" style="margin-top:0">Cada quadradinho é um quadro que passou pela perícia. Vermelho: falso; verde: verdadeiro. Os de cor forte têm o sinal (pigmento anacrônico). Escolha se quer ver todos ou só os que têm o sinal.</p>
+<div id="cv" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sn"><b>Quadros</b><input type="range"><span></span></div>
+<div class="sl" id="sp"><b>Falsos</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Falsos com o sinal</b><input type="range"><span></span></div>
+<div class="sl" id="sv"><b>Verdadeiros com o sinal</b><input type="range"><span></span></div>
+<div class="kpi"><div>Com o sinal<b id="ks"></b></div><div>P(sinal | falso)<b id="k1"></b></div><div class="o">P(falso | sinal)<b id="k2"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Leia a grade.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROSA='#F4B4B4',VERDE_C2='#B7DEC3';
+const mi=v=>'R$ '+vg(Math.round(v*100)/100)+' mi';
+let so=0;chips('cv',['ver todos','só os com o sinal'],0,i=>{so=i;draw();});
+const SN=SL('sn',100,1000,100,400,()=>draw(),v=>v),SP=SL('sp',0,100,1,50,()=>draw(),v=>v+'%'),SF=SL('sf',0,100,1,40,()=>draw(),v=>v+'%'),SV=SL('sv',0,100,1,2,()=>draw(),v=>v+'%');
+function k(){const n=SN.get(),f=Math.round(n*SP.get()/100),v=n-f,fs=Math.round(f*SF.get()/100),vs=Math.round(v*SV.get()/100);return{n,f,v,fs,vs,pf:fs+vs?fs/(fs+vs):NaN};}
+const pc=x=>isNaN(x)?'–':r1(x*100)+'%';
+MIS.def(()=>[
+ ['Reproduza a Horizonte: <b>400</b> quadros, <b>75%</b> falsos, sinal em <b>40%</b> dos falsos e <b>2%</b> dos verdadeiros.',()=>{const q=k();return q.n==400&&SP.get()==75&&SF.get()==40&&SV.get()==2;},'120 + 2 = 122 com o sinal; 120 ÷ 122 ≈ 98,4% são falsos. Olhe "só os com o sinal": quase tudo vermelho.',()=>'Faltam: '+[SN.get()!=400?'400 quadros':'',SP.get()!=75?'75% falsos':'',SF.get()!=40?'40% nos falsos':'',SV.get()!=2?'2% nos verdadeiros':''].filter(x=>x).join(', ')+'.'],
+ ['Agora um mundo com poucos falsos: <b>1.000</b> quadros e só <b>10%</b> falsos (mantenha 40% e 2%).',()=>SN.get()==1000&&SP.get()==10&&SF.get()==40&&SV.get()==2,'40 falsos com sinal e 18 verdadeiros com sinal: 40 ÷ 58 ≈ 69%. O mesmo sinal convence bem menos.',()=>'Ajuste quadros, falsos e mantenha 40% e 2%.'],
+ ['Faça o sinal <b>não servir para nada</b>: P(falso | sinal) igual à porcentagem de falsos.',()=>SF.get()>0&&SF.get()==SV.get()&&SP.get()>0&&SP.get()<100,'Se falsos e verdadeiros têm o sinal na mesma proporção, saber do sinal não muda nada. A razão de verossimilhança é 1.',()=>'P(falso | sinal) = '+pc(k().pf)+'; falsos = '+SP.get()+'%. Compare as duas porcentagens de sinal.']]);
+function draw(){const q=k(),cols=25,sz=13,rows=Math.ceil(q.n/cols),H=rows*sz+12;let s=RC(0,0,340,H,'#fff','rx="10"');
+ const cor=i=>i<q.fs?VERM:i<q.f?ROSA:i<q.f+q.vs?GREEN:VERDE_C2,tem=i=>i<q.fs||(i>=q.f&&i<q.f+q.vs);
+ for(let i=0;i<q.n;i++){const x=7+(i%cols)*sz,y=6+Math.floor(i/cols)*sz;s+=RC(x,y,sz-2,sz-2,cor(i),'rx="2"'+(so&&!tem(i)?' opacity=".12"':''));}
+ $('fig').innerHTML=SVG(340,H,s);
+ $('ks').textContent=(q.fs+q.vs);$('k1').textContent=pc(q.f?q.fs/q.f:NaN);$('k2').textContent=pc(q.pf);MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>

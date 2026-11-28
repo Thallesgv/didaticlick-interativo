@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR" translate="no" class="notranslate">
+<head>
+<meta charset="utf-8"><meta name="google" content="notranslate"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Juros sobre juros · DidatiClick</title>
+<link rel="stylesheet" href="../assets/style.css"><link rel="stylesheet" href="../assets/fin.css">
+<script src="../assets/desafio.js"></script><script src="../assets/fin.js"></script><script src="../assets/ass.js?v=1"></script><script src="../assets/fal.js?v=1"></script>
+</head>
+<body>
+<header><div class="brand">Didati<b>Click</b> · A Matemática de um Falsificador</div><h1>Juros sobre juros</h1></header>
+<main>
+<div class="card"><h2>Juros sobre juros</h2><p class="muted" style="margin-top:0">Escolha o capital, a taxa e o tempo. As barras cinza são os juros simples; as laranja, os compostos, ano a ano.</p>
+<div id="cu" style="margin:4px 0"></div>
+<div class="fig" id="fig"></div>
+<div class="sl" id="sc"><b>Capital</b><input type="range"><span></span></div>
+<div class="sl" id="si"><b>Taxa ao ano</b><input type="range"><span></span></div>
+<div class="sl" id="sn"><b>Anos</b><input type="range"><span></span></div>
+<div class="kpi"><div>Simples<b id="ks"></b></div><div>Compostos<b id="kc"></b></div><div class="o">Multiplicou por<b id="kx"></b></div></div>
+<h2 style="margin-top:16px">A franquia e o cosseguro</h2><p class="muted" style="margin-top:0">A apólice de R$ 250 milhões. Escolha o prejuízo, a franquia e a parte da Horizonte.</p>
+<div class="fig" id="fig2"></div>
+<div class="sl" id="sp"><b>Prejuízo (milhões)</b><input type="range"><span></span></div>
+<div class="sl" id="sf"><b>Franquia (% de 250)</b><input type="range"><span></span></div>
+<div class="sl" id="sh"><b>Parte da Horizonte</b><input type="range"><span></span></div>
+<div class="kpi"><div>Franquia<b id="kf"></b></div><div>Indenização<b id="ki"></b></div><div class="o">Horizonte paga<b id="kh"></b></div></div>
+<div id="m"></div></div>
+<div class="card"><h2>Missão</h2><p style="margin:0">Faça o dinheiro crescer.</p></div>
+</main>
+<footer>DidatiClick · Clique e Aprenda · <a href="https://www.instagram.com/didaticlick/" target="_blank" rel="noopener" style="color:var(--orange);font-weight:600;text-decoration:none">@didaticlick</a></footer>
+<script>
+(()=>{
+const VERM='#C62828',ROSA='#F4B4B4',VERDE_C2='#B7DEC3';
+const mi=v=>'R$ '+vg(Math.round(v*100)/100)+' mi';
+const UN=[[1,'reais'],[1e3,'mil'],[1e6,'milhões']];let un=2;chips('cu',['em reais','em mil','em milhões'],2,i=>{un=i;draw();});
+const SC=SL('sc',1,1000,1,1,()=>draw(),v=>fmt(v)+' '+UN[un][1]),SI=SL('si',0.5,20,0.5,10,()=>draw(),v=>vg(v)+'%'),SN=SL('sn',1,30,1,5,()=>draw(),v=>v);
+const SP=SL('sp',0,300,1,250,()=>draw(),v=>v),SF=SL('sf',0,10,0.5,2,()=>draw(),v=>vg(v)+'%'),SH=SL('sh',0,100,5,60,()=>draw(),v=>v+'%');
+const cap=()=>SC.get()*UN[un][0],comp=n=>cap()*Math.pow(1+SI.get()/100,n),simp=n=>cap()*(1+SI.get()/100*n);
+const din=v=>v>=1e6?'R$ '+vg(Math.round(v/1e4)/100)+' mi':'R$ '+fmt(Math.round(v*100)/100);
+const fr=()=>250*SF.get()/100,ind=()=>Math.min(250,Math.max(0,SP.get()-fr()));
+MIS.def(()=>[
+ ['Aplique <b>R$ 1 milhão a 10%</b> ao ano por <b>10 anos</b>. Quanto dão os compostos? E os simples?',()=>cap()==1e6&&SI.get()==10&&SN.get()==10,'Compostos: 2,59 milhões. Simples: 2 milhões. A diferença, 0,59, são os juros dos juros.',()=>'Agora: '+din(cap())+', '+vg(SI.get())+'%, '+SN.get()+' anos.'],
+ ['A 10% ao ano, ache o <b>menor número de anos</b> em que o dinheiro composto passa do dobro.',()=>SI.get()==10&&comp(SN.get())>=2*cap()&&comp(SN.get()-1)<2*cap(),'8 anos: 1,1⁸ ≈ 2,14 (com 7 anos, 1,95). A regra do 72 dá 72 ÷ 10 ≈ 7,2.',()=>SI.get()!=10?'Ponha a taxa em 10%.':'Com '+SN.get()+' anos, multiplicou por '+r2(comp(SN.get())/cap())+'.'],
+ ['Corrija os <b>R$ 800</b> do inventário de 2009 a <b>6%</b> ao ano por <b>17 anos</b>.',()=>cap()==800&&SI.get()==6&&SN.get()==17,'≈ R$ 2.154. O tempo multiplicou o valor por 2,7; a assinatura falsa, por mais de 300 mil.',()=>'Agora: '+din(cap())+', '+vg(SI.get())+'%, '+SN.get()+' anos. Dica: escolha "em reais".'],
+ ['Na apólice, ache um prejuízo (maior que zero) que o seguro <b>não paga</b>.',()=>SP.get()>0&&ind()==0,()=>'Prejuízo de '+SP.get()+' milhões, menor ou igual à franquia de '+vg(fr())+': fica todo com o segurado.',()=>'A franquia agora é de '+vg(fr())+' milhões. Diminua o prejuízo.']]);
+function draw(){const n=SN.get(),W=300,x0=30,y0=180,mx=Math.max(comp(n),simp(n)),bw=W/n;let s=RC(0,0,340,200,'#fff','rx="10"');
+ for(let a=1;a<=n;a++){const hs=150*simp(a)/mx,hc=150*comp(a)/mx,x=x0+(a-1)*bw;s+=RC(x+bw*0.1,y0-hc,bw*0.4,hc,ORANGE)+RC(x+bw*0.5,y0-hs,bw*0.4,hs,'#9CA3AF');
+  if(n<=12||a%5==0)s+=TX(x+bw/2,y0+13,a,{fs:9,c:GRAY,w:500});}
+ const hc0=150*cap()/mx;s+=LN(x0,y0-hc0,x0+W,y0-hc0,NAVY,1,'4 3')+TX(x0-3,y0-hc0+4,'C',{fs:10,a:'end'});
+ s+=LN(x0,y0,x0+W,y0,NAVY,1)+TX(x0+W,22,din(comp(n)),{fs:11,c:ORANGE,a:'end'});
+ $('fig').innerHTML=SVG(340,200,s);
+ $('ks').textContent=din(simp(n));$('kc').textContent=din(comp(n));$('kx').textContent=r2(comp(n)/cap())+' ×';
+ const P=SP.get(),F=Math.min(P,fr()),I=ind(),H=I*SH.get()/100,k=300/300;let g=RC(0,0,340,110,'#fff','rx="10"');
+ g+=TX(20,22,'prejuízo: '+P+' milhões',{fs:10,a:'start'});
+ const w=v=>v*k*1.0;g+=RC(20,30,w(F),30,GRAY)+RC(20+w(F),30,w(H),30,ORANGE)+RC(20+w(F)+w(H),30,w(I-H),30,COBALTO);
+ [['segurado (franquia)',GRAY,20],['Horizonte',ORANGE,140],['resseguradora',COBALTO,225]].forEach(([t,c,x])=>g+=RC(x,76,10,10,c)+TX(x+14,85,t,{fs:9,a:'start',w:500}));
+ $('fig2').innerHTML=SVG(340,100,g);$('kf').textContent=vg(fr())+' mi';$('ki').textContent=vg(I)+' mi';$('kh').textContent=vg(Math.round(H*10)/10)+' mi';
+ MIS.ver('m');}
+draw();
+})();
+</script>
+</body>
+</html>
